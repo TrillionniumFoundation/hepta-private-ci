@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+  "kind": "dense",
+  "task": "binding",
+  "batch": 24,
+  "condition": "long_tokens_128",
+  "backward": true,
+  "calls": [
+    {
+      "index": 0,
+      "cpu_seconds": 0.4143152699999999,
+      "wall_seconds": 0.9164515290030977
+    },
+    {
+      "index": 1,
+      "cpu_seconds": 0.5125507869999999,
+      "wall_seconds": 1.1334271150044515
+    },
+    {
+      "index": 2,
+      "cpu_seconds": 0.577251602,
+      "wall_seconds": 1.2812534080003388
+    },
+    {
+      "index": 3,
+      "cpu_seconds": 0.5377072539999999,
+      "wall_seconds": 1.204094153996266
+    }
+  ],
+  "imports": {
+    "cpu_seconds": 2.079033463,
+    "wall_seconds": 5.19173480799509
+  },
+  "model_data_setup": {
+    "cpu_seconds": 0.0071852909999998715,
+    "wall_seconds": 0.02799345699895639
+  },
+  "construction": {
+    "cpu_seconds": 3.094999999841974e-06,
+    "wall_seconds": 2.9740040190517902e-06,
+    "scripted_cache_empty_before_construction": true,
+    "compiled_here": false
+  },
+  "input_sha256": {
+    "x": "644a15519a59469d619a8707e726d5265c65c3fdd786fef20fd8c7483e8769a8",
+    "dt": "f0740503e14d4a39a7270a771818ed572a34f0419e589b5ea8e678699a99f637",
+    "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+    "y": "8409c71d3f427e215790b6b032d0539b89a40e6017bfe16a7929e8d6dcb6a78f"
+  },
+  "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+  "raw_sha256": "06078be136f875bb69043c377335c4c94974d6fe0cd70f358ef5e5e516df0a21",
+  "source_sha256": {
+    "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+    "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+    "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+  },
+  "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+}

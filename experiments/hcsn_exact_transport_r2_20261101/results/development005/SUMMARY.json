@@ -1,0 +1,2778 @@
+{
+  "schema": "hcsn.exact-addressed-r2.result.v1",
+  "phase": "development",
+  "source": {
+    "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+    "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65",
+    "experiments/hcsn_exact_transport_r2_20261101/PROTOCOL.json": "3e0835c0dbe35392411ab053267fe00b6b79954197572b4247e32fb432adb758",
+    "experiments/hcsn_addressed_flow_20261101/typed_retention.py": "680d156cbd1290794d747d282763559a277ffc4a47b3e7347e1024db0ef23cf4",
+    "experiments/hcsn_propagation_perf_20261101/audit.py": "20cb18d2895e582ac15dd07f4bce76ea30a44d849959488917326c5a6616502d",
+    "experiments/hcsn_propagation_perf_20261101/fused_addressed.py": "c87e6ae821ea0aefe777c952010a23c6b5add9d93e81050419eb4ed3ca12094f",
+    "experiments/hcsn_propagation_perf_20261101/PROTOCOL.json": "ccabb6137bd9334b3e8b695a489940c2eb1a7a8211811f1027339f83cf417bf4",
+    "experiments/hcsn_addressed_flow_20261101/addressed_models.py": "2c2c434c567f66d5e0f48d5befc05e54c201c724f0b2b5d6f211f3784612f25e",
+    "experiments/hcsn_addressed_flow_20261101/data.py": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/operator_audit.py": "2f448bf8166d3d09842d2e7f088fe175176d82af06d8c3772dd1e7bd1dc66a3a",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e",
+    "experiments/hcsn_four_stage_flow_20261031/extended_eval.py": "9c6f9633225625e9696871c4396e5b52f872ac117b8a4d47cba6f125cf53f84d",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6"
+  },
+  "source_unchanged": true,
+  "construction": [
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "stage": "construct",
+      "passed": true,
+      "compiled_here": true,
+      "compile_cpu_seconds": 0.017809049999999882,
+      "compile_wall_seconds": 0.06063202799850842
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "stage": "engineering_complete",
+      "passed": true,
+      "checks": 16
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "stage": "construct",
+      "passed": true,
+      "compiled_here": false,
+      "compile_cpu_seconds": 0.0,
+      "compile_wall_seconds": 0.0
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "stage": "engineering_complete",
+      "passed": true,
+      "checks": 16
+    }
+  ],
+  "checks": [
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "missing",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "gradient_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 0.0,
+        "INPUT/dt": 0.0
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "all_unobserved",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "gradient_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 0.0,
+        "INPUT/dt": 0.0
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "zero_time",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 7.105427357601002e-15,
+      "gradient_errors": {
+        "physical": 0.0,
+        "address_a": 3.552713678800501e-15,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 4.718447854656915e-16,
+        "encode.0.bias": 2.220446049250313e-16,
+        "encode.2.weight": 2.220446049250313e-16,
+        "encode.2.bias": 2.220446049250313e-16,
+        "control.weight": 7.105427357601002e-15,
+        "control.bias": 7.105427357601002e-15,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 1.8189894035458565e-12,
+        "INPUT/dt": 7.73070496506989e-12
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "no_marks",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 9.094947017729282e-13,
+      "gradient_errors": {
+        "physical": 9.094947017729282e-13,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 3.3306690738754696e-16,
+        "encode.0.bias": 2.220446049250313e-16,
+        "encode.2.weight": 4.440892098500626e-16,
+        "encode.2.bias": 1.1102230246251565e-16,
+        "control.weight": 7.105427357601002e-15,
+        "control.bias": 7.105427357601002e-15,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 1.3642420526593924e-12,
+        "INPUT/dt": 8.100187187665142e-13
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "unnormalized_occupancy",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "gradient_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 0.0,
+        "INPUT/dt": 0.0
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "resample",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 4.656612873077393e-10,
+      "gradient_errors": {
+        "physical": 8.640199666842818e-12,
+        "address_a": 2.1316282072803006e-14,
+        "address_b": 0.0,
+        "log_temperature": 5.684341886080802e-14,
+        "encode.0.weight": 6.2727600891321345e-15,
+        "encode.0.bias": 3.9968028886505635e-15,
+        "encode.2.weight": 3.9968028886505635e-15,
+        "encode.2.bias": 4.440892098500626e-15,
+        "control.weight": 8.526512829121202e-14,
+        "control.bias": 7.105427357601002e-14,
+        "roles.weight": 4.656612873077393e-10,
+        "roles.bias": 3.4924596548080444e-10,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 3.4924596548080444e-10,
+        "INPUT/dt": 2.7284841053187847e-11
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "typed_eligibility",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 3.126388037344441e-12,
+      "gradient_errors": {
+        "physical": 8.526512829121202e-14,
+        "address_a": 5.551115123125783e-17,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 7.28583859910259e-17,
+        "encode.0.bias": 4.85722573273506e-17,
+        "encode.2.weight": 5.898059818321144e-17,
+        "encode.2.bias": 6.245004513516506e-17,
+        "control.weight": 1.887379141862766e-15,
+        "control.bias": 1.6653345369377348e-15,
+        "roles.original.weight": 3.126388037344441e-12,
+        "roles.original.bias": 3.126388037344441e-12,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 2.0818902157770935e-12,
+        "INPUT/dt": 1.13464793116691e-13
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "live_parameter_identity",
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "prefix_causality",
+      "passed": true,
+      "error": 0.0
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "invalid_negative_time",
+      "observed": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "invalid_nonfinite_input",
+      "observed": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "invalid_nonboolean_observation",
+      "observed": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "invalid_empty_sequence",
+      "observed": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "unsupported_stateful_decoder",
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "unsupported_original_hooks",
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "real_sgd_update",
+      "error": 0.0,
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "base/B1",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 4.547473508864641e-13,
+      "gradient_errors": {
+        "physical": 4.547473508864641e-13,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 8.881784197001252e-16,
+        "encode.0.bias": 8.881784197001252e-16,
+        "encode.2.weight": 4.440892098500626e-16,
+        "encode.2.bias": 2.220446049250313e-16,
+        "control.weight": 7.105427357601002e-15,
+        "control.bias": 7.105427357601002e-15,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 7.673861546209082e-13,
+        "INPUT/dt": 2.2737367544323206e-13
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "base/B24",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 7.821654435247183e-11,
+      "gradient_errors": {
+        "physical": 7.821654435247183e-11,
+        "address_a": 2.1316282072803006e-14,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 2.2065682614424986e-14,
+        "encode.0.bias": 1.0658141036401503e-14,
+        "encode.2.weight": 1.0658141036401503e-14,
+        "encode.2.bias": 1.0658141036401503e-14,
+        "control.weight": 3.694822225952521e-13,
+        "control.bias": 2.5579538487363607e-13,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 4.656612873077393e-10,
+        "INPUT/dt": 1.1732481652870774e-10
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "base/B64",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 3.979039320256561e-11,
+      "gradient_errors": {
+        "physical": 3.979039320256561e-11,
+        "address_a": 1.4210854715202004e-14,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 1.3766765505351941e-14,
+        "encode.0.bias": 7.105427357601002e-15,
+        "encode.2.weight": 8.881784197001252e-15,
+        "encode.2.bias": 7.105427357601002e-15,
+        "control.weight": 1.4210854715202004e-13,
+        "control.bias": 1.1368683772161603e-13,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 7.275957614183426e-12,
+        "INPUT/dt": 7.503331289626658e-11
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "long_tokens_128/B1",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 5.587935447692871e-08,
+      "gradient_errors": {
+        "physical": 5.587935447692871e-08,
+        "address_a": 3.637978807091713e-12,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 1.6370904631912708e-11,
+        "encode.0.bias": 9.549694368615746e-12,
+        "encode.2.weight": 1.2732925824820995e-11,
+        "encode.2.bias": 1.1368683772161603e-11,
+        "control.weight": 3.4924596548080444e-10,
+        "control.bias": 2.6193447411060333e-10,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 2.2351741790771484e-08,
+        "INPUT/dt": 1.516309566795826e-08
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "mqar",
+      "backend": "integrated",
+      "name": "long_tokens_128/B24",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 1.1920928955078125e-07,
+      "gradient_errors": {
+        "physical": 2.3283064365386963e-10,
+        "address_a": 3.637978807091713e-12,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 1.7053025658242404e-12,
+        "encode.0.bias": 4.973799150320701e-13,
+        "encode.2.weight": 6.821210263296962e-13,
+        "encode.2.bias": 3.410605131648481e-13,
+        "control.weight": 9.458744898438454e-11,
+        "control.bias": 7.275957614183426e-12,
+        "roles.weight": 0.0,
+        "roles.bias": 1.1920928955078125e-07,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 3.725290298461914e-09,
+        "INPUT/dt": 1.994067133637145e-09
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "missing",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 2.6921043172478676e-10,
+      "gradient_errors": {
+        "physical": 8.36735125631094e-11,
+        "address_a": 3.410605131648481e-13,
+        "address_b": 5.684341886080802e-14,
+        "log_temperature": 1.8189894035458565e-12,
+        "encode.0.weight": 2.6921043172478676e-10,
+        "encode.0.bias": 2.6693669497035444e-10,
+        "encode.2.weight": 4.0614622776047327e-11,
+        "encode.2.bias": 5.4853899200679734e-11,
+        "control.weight": 1.0186340659856796e-10,
+        "control.bias": 1.000444171950221e-10,
+        "roles.weight": 2.2026824808563106e-13,
+        "roles.bias": 2.2026824808563106e-13,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 5.311449058353901e-10,
+        "INPUT/dt": 9.240466170012951e-10
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "all_unobserved",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "gradient_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 0.0,
+        "INPUT/dt": 0.0
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "zero_time",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 1.9611368085037384e-11,
+      "gradient_errors": {
+        "physical": 2.842170943040401e-14,
+        "address_a": 1.7763568394002505e-15,
+        "address_b": 5.329070518200751e-15,
+        "log_temperature": 2.842170943040401e-14,
+        "encode.0.weight": 5.4569682106375694e-12,
+        "encode.0.bias": 5.002220859751105e-12,
+        "encode.2.weight": 8.526512829121202e-13,
+        "encode.2.bias": 1.1368683772161603e-12,
+        "control.weight": 1.8189894035458565e-12,
+        "control.bias": 1.3642420526593924e-12,
+        "roles.weight": 1.9611368085037384e-11,
+        "roles.bias": 1.9611368085037384e-11,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 1.0459189070388675e-11,
+        "INPUT/dt": 3.865352482534945e-12
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "no_marks",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 2.9103830456733704e-11,
+      "gradient_errors": {
+        "physical": 1.9326762412674725e-12,
+        "address_a": 1.7763568394002505e-15,
+        "address_b": 1.7763568394002505e-15,
+        "log_temperature": 0.0,
+        "encode.0.weight": 7.617018127348274e-12,
+        "encode.0.bias": 7.673861546209082e-12,
+        "encode.2.weight": 1.1368683772161603e-12,
+        "encode.2.bias": 1.5916157281026244e-12,
+        "control.weight": 2.7853275241795927e-12,
+        "control.bias": 2.7853275241795927e-12,
+        "roles.weight": 2.9103830456733704e-11,
+        "roles.bias": 2.4466428882874425e-11,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 1.2491341294662561e-11,
+        "INPUT/dt": 1.247713043994736e-11
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "unnormalized_occupancy",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "gradient_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 0.0,
+        "INPUT/dt": 0.0
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "resample",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 6.821210263296962e-13,
+      "gradient_errors": {
+        "physical": 3.410605131648481e-13,
+        "address_a": 4.440892098500626e-16,
+        "address_b": 1.7763568394002505e-15,
+        "log_temperature": 0.0,
+        "encode.0.weight": 6.821210263296962e-13,
+        "encode.0.bias": 6.821210263296962e-13,
+        "encode.2.weight": 1.4210854715202004e-13,
+        "encode.2.bias": 1.5631940186722204e-13,
+        "control.weight": 2.8421709430404007e-13,
+        "control.bias": 2.8421709430404007e-13,
+        "roles.weight": 4.909406214892442e-13,
+        "roles.bias": 4.908295991867817e-13,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 1.4495071809506044e-12,
+        "INPUT/dt": 2.2737367544323206e-12
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "typed_eligibility",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 4.909649076179079e-13,
+      "gradient_errors": {
+        "physical": 1.2256862191861728e-13,
+        "address_a": 2.7755575615628914e-17,
+        "address_b": 5.551115123125783e-17,
+        "log_temperature": 0.0,
+        "encode.0.weight": 2.0250467969162855e-13,
+        "encode.0.bias": 1.3855583347321954e-13,
+        "encode.2.weight": 3.019806626980426e-14,
+        "encode.2.bias": 3.2862601528904634e-14,
+        "control.weight": 6.927791673660977e-14,
+        "control.bias": 6.217248937900877e-14,
+        "roles.original.weight": 4.909649076179079e-13,
+        "roles.original.bias": 4.909649076179079e-13,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 2.859934511434403e-13,
+        "INPUT/dt": 1.305622276959184e-13
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "live_parameter_identity",
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "prefix_causality",
+      "passed": true,
+      "error": 0.0
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "invalid_negative_time",
+      "observed": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "invalid_nonfinite_input",
+      "observed": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "invalid_nonboolean_observation",
+      "observed": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "invalid_empty_sequence",
+      "observed": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "unsupported_stateful_decoder",
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "unsupported_original_hooks",
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "real_sgd_update",
+      "error": 0.0,
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "base/B1",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 5.820766091346741e-11,
+      "gradient_errors": {
+        "physical": 5.002220859751105e-12,
+        "address_a": 3.552713678800501e-15,
+        "address_b": 3.552713678800501e-15,
+        "log_temperature": 2.842170943040401e-14,
+        "encode.0.weight": 7.275957614183426e-12,
+        "encode.0.bias": 3.069544618483633e-12,
+        "encode.2.weight": 8.810729923425242e-13,
+        "encode.2.bias": 7.958078640513122e-13,
+        "control.weight": 1.2221335055073723e-12,
+        "control.bias": 1.0800249583553523e-12,
+        "roles.weight": 5.820766091346741e-11,
+        "roles.bias": 2.9103830456733704e-11,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 2.9103830456733704e-11,
+        "INPUT/dt": 1.0459189070388675e-11
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "base/B24",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 1.688000850208482e-10,
+      "gradient_errors": {
+        "physical": 4.18367562815547e-11,
+        "address_a": 5.684341886080802e-14,
+        "address_b": 2.842170943040401e-14,
+        "log_temperature": 0.0,
+        "encode.0.weight": 4.9112713895738125e-11,
+        "encode.0.bias": 4.8203219193965197e-11,
+        "encode.2.weight": 8.29913915367797e-12,
+        "encode.2.bias": 9.890754881780595e-12,
+        "control.weight": 1.4779288903810084e-11,
+        "control.bias": 1.3642420526593924e-11,
+        "roles.weight": 1.688000850208482e-10,
+        "roles.bias": 1.688000850208482e-10,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 9.868017514236271e-11,
+        "INPUT/dt": 3.610978183132829e-11
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "base/B64",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 1.862645149230957e-09,
+      "gradient_errors": {
+        "physical": 1.8189894035458565e-11,
+        "address_a": 5.684341886080802e-14,
+        "address_b": 2.842170943040401e-14,
+        "log_temperature": 0.0,
+        "encode.0.weight": 2.4215296434704214e-11,
+        "encode.0.bias": 2.319211489520967e-11,
+        "encode.2.weight": 4.462208380573429e-12,
+        "encode.2.bias": 5.115907697472721e-12,
+        "control.weight": 8.924416761146858e-12,
+        "control.bias": 8.412825991399586e-12,
+        "roles.weight": 8.356870750958478e-12,
+        "roles.bias": 1.862645149230957e-09,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 4.656612873077393e-10,
+        "INPUT/dt": 9.00399754755199e-11
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "long_tokens_128/B1",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 1.1920928955078125e-07,
+      "gradient_errors": {
+        "physical": 1.6298145055770874e-09,
+        "address_a": 3.637978807091713e-12,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 2.9336661100387573e-08,
+        "encode.0.bias": 2.6542693376541138e-08,
+        "encode.2.weight": 4.540197551250458e-09,
+        "encode.2.bias": 5.471520125865936e-09,
+        "control.weight": 8.614733815193176e-09,
+        "control.bias": 8.149072527885437e-09,
+        "roles.weight": 0.0,
+        "roles.bias": 1.1920928955078125e-07,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 7.404014468193054e-08,
+        "INPUT/dt": 1.5599653124809265e-08
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    },
+    {
+      "task": "binding",
+      "backend": "integrated",
+      "name": "long_tokens_128/B24",
+      "passed": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 4.889443516731262e-09,
+      "gradient_errors": {
+        "physical": 2.0954757928848267e-09,
+        "address_a": 3.637978807091713e-12,
+        "address_b": 3.637978807091713e-12,
+        "log_temperature": 0.0,
+        "encode.0.weight": 4.889443516731262e-09,
+        "encode.0.bias": 4.190951585769653e-09,
+        "encode.2.weight": 7.566995918750763e-10,
+        "encode.2.bias": 7.566995918750763e-10,
+        "control.weight": 2.7939677238464355e-09,
+        "control.bias": 9.313225746154785e-10,
+        "roles.weight": 2.8489921533036977e-09,
+        "roles.bias": 2.848878466465976e-09,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0,
+        "INPUT/x": 5.3551048040390015e-09,
+        "INPUT/dt": 2.8230715543031693e-09
+      },
+      "gradient_keys_equal": true,
+      "scored_argmax_identical": true,
+      "all_argmax_identical": true,
+      "diagnostics_identical": true
+    }
+  ],
+  "rows": [
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.051567253,
+          0.055326522,
+          0.062739905,
+          0.057057002,
+          0.061363981000000005,
+          0.031782038,
+          0.062484548
+        ],
+        "integrated": [
+          0.044555766000000004,
+          0.048364729,
+          0.061033622,
+          0.050775192000000004,
+          0.036806216,
+          0.05724209500000001,
+          0.039675309000000006
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.075031781,
+          0.042945565000000005,
+          0.055795437
+        ],
+        "integrated": [
+          0.040085115000000004,
+          0.040611152000000005,
+          0.040808815000000005
+        ]
+      },
+      "order": [
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.057057002,
+        "integrated": 0.048364729
+      },
+      "dense_over_adapter": {
+        "integrated": 1.1797233889183996
+      },
+      "task": "mqar",
+      "batch": 1,
+      "condition": "base",
+      "steps": 12
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.105084361,
+          0.17800996800000002,
+          0.187382758,
+          0.17488029200000002,
+          0.16065076,
+          0.18453127300000002,
+          0.174097304
+        ],
+        "integrated": [
+          0.09111272100000001,
+          0.168991903,
+          0.13446961400000002,
+          0.11632402200000001,
+          0.16421417900000002,
+          0.206244332,
+          0.152148993
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.191556931,
+          0.146519052,
+          0.134768405
+        ],
+        "integrated": [
+          0.141281036,
+          0.130123236,
+          0.123184841
+        ]
+      },
+      "order": [
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.17488029200000002,
+        "integrated": 0.152148993
+      },
+      "dense_over_adapter": {
+        "integrated": 1.1494015737586907
+      },
+      "task": "mqar",
+      "batch": 1,
+      "condition": "base",
+      "steps": 12
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.054174059000000004,
+          0.053016958,
+          0.073104076,
+          0.066804242,
+          0.056469003000000004,
+          0.051071711000000006,
+          0.053762460000000005
+        ],
+        "integrated": [
+          0.11711631400000001,
+          0.090092379,
+          0.056944255000000006,
+          0.07831037,
+          0.076182003,
+          0.08252234900000001,
+          0.070313094
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.10519233200000001,
+          0.09644591300000001,
+          0.08414651100000001
+        ],
+        "integrated": [
+          0.062264594000000006,
+          0.087342262,
+          0.094017657
+        ]
+      },
+      "order": [
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.054174059000000004,
+        "integrated": 0.07831037
+      },
+      "dense_over_adapter": {
+        "integrated": 0.6917865283997509
+      },
+      "task": "mqar",
+      "batch": 24,
+      "condition": "base",
+      "steps": 12
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.23568940500000002,
+          0.270173457,
+          0.20690680900000002,
+          0.258720347,
+          0.042705951000000006,
+          0.040065526000000004,
+          0.045045751
+        ],
+        "integrated": [
+          0.22092592400000002,
+          0.271687141,
+          0.29215751,
+          0.133302623,
+          0.030956306000000003,
+          0.044917992000000004,
+          0.054776939000000004
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.20851712700000002,
+          0.24556533700000002,
+          0.26452927800000003
+        ],
+        "integrated": [
+          0.15706160300000002,
+          0.16798600600000002,
+          0.234698387
+        ]
+      },
+      "order": [
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.20690680900000002,
+        "integrated": 0.133302623
+      },
+      "dense_over_adapter": {
+        "integrated": 1.5521585723035622
+      },
+      "task": "mqar",
+      "batch": 24,
+      "condition": "base",
+      "steps": 12
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.015871349,
+          0.014943287000000001,
+          0.016747905,
+          0.031430007,
+          0.017098224000000002,
+          0.029934895000000003,
+          0.016108831
+        ],
+        "integrated": [
+          0.022380845,
+          0.016144403,
+          0.015717382000000002,
+          0.015005819,
+          0.015477066000000001,
+          0.014998209,
+          0.015748798
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.027029148000000003,
+          0.015644934000000003,
+          0.016351349
+        ],
+        "integrated": [
+          0.014162212,
+          0.013668021,
+          0.014760176000000002
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.016747905,
+        "integrated": 0.015717382000000002
+      },
+      "dense_over_adapter": {
+        "integrated": 1.0655658175133746
+      },
+      "task": "mqar",
+      "batch": 64,
+      "condition": "base",
+      "steps": 12
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.092460659,
+          0.101686676,
+          0.095855008,
+          0.061592011,
+          0.116275005,
+          0.049474522,
+          0.051791538000000005
+        ],
+        "integrated": [
+          0.110482353,
+          0.09575127300000001,
+          0.055843349,
+          0.058161978,
+          0.12220274,
+          0.056024297,
+          0.06412865100000001
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.068025101,
+          0.084071644,
+          0.09715335400000001
+        ],
+        "integrated": [
+          0.08008643600000001,
+          0.087794859,
+          0.095000079
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.092460659,
+        "integrated": 0.06412865100000001
+      },
+      "dense_over_adapter": {
+        "integrated": 1.4417995320063723
+      },
+      "task": "mqar",
+      "batch": 64,
+      "condition": "base",
+      "steps": 12
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.060916463000000004,
+          0.044500476000000004,
+          0.072040692,
+          0.07398130600000001,
+          0.059298029,
+          0.092834893,
+          0.14187738500000002
+        ],
+        "integrated": [
+          0.037803412,
+          0.067574707,
+          0.058842375,
+          0.063999542,
+          0.07295948000000001,
+          0.072099889,
+          0.09098874200000001
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.07410370200000001,
+          0.049774144000000006,
+          0.059820742
+        ],
+        "integrated": [
+          0.051631411,
+          0.046751775,
+          0.049185774
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.072040692,
+        "integrated": 0.067574707
+      },
+      "dense_over_adapter": {
+        "integrated": 1.0660895947354978
+      },
+      "task": "mqar",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "steps": 128
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.270383246,
+          0.233672064,
+          0.26702926400000004,
+          0.353754141,
+          0.31667358300000004,
+          0.495319602,
+          0.30450017300000004
+        ],
+        "integrated": [
+          0.167382582,
+          0.23343439600000002,
+          0.222998675,
+          0.218014544,
+          0.253808684,
+          0.29465660200000005,
+          0.30789566300000004
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.259384697,
+          0.23890470600000002,
+          0.24757611000000002
+        ],
+        "integrated": [
+          0.212857809,
+          0.206448662,
+          0.21661222100000002
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.30450017300000004,
+        "integrated": 0.23343439600000002
+      },
+      "dense_over_adapter": {
+        "integrated": 1.3044357567596851
+      },
+      "task": "mqar",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "steps": 128
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.10670969400000001,
+          0.143068303,
+          0.200638372,
+          0.136452448,
+          0.095216513,
+          0.070520938,
+          0.083616463
+        ],
+        "integrated": [
+          0.09635803500000001,
+          0.067833112,
+          0.09574636700000001,
+          0.16195457100000002,
+          0.079811085,
+          0.075395606,
+          0.088916546
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.15420441000000001,
+          0.08513574,
+          0.073819836
+        ],
+        "integrated": [
+          0.11075902300000001,
+          0.075065027,
+          0.080816923
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.10670969400000001,
+        "integrated": 0.088916546
+      },
+      "dense_over_adapter": {
+        "integrated": 1.200110652071438
+      },
+      "task": "mqar",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "steps": 128
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.5853041360000001,
+          0.520084093,
+          0.604524497,
+          0.555882329,
+          0.59177302,
+          0.518501911,
+          0.541583982
+        ],
+        "integrated": [
+          0.5084737100000001,
+          0.38802342500000003,
+          0.353285827,
+          0.49993613700000006,
+          0.611338857,
+          0.544881513,
+          0.557622218
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.441067136,
+          0.528513603,
+          0.490841106
+        ],
+        "integrated": [
+          0.602674095,
+          0.532536863,
+          0.5456149170000001
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.555882329,
+        "integrated": 0.5084737100000001
+      },
+      "dense_over_adapter": {
+        "integrated": 1.0932371095449556
+      },
+      "task": "mqar",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "steps": 128
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.007186807000000001,
+          0.006686579000000001,
+          0.006967203000000001,
+          0.006536727,
+          0.007195962,
+          0.007341696000000001,
+          0.007663532000000001
+        ],
+        "integrated": [
+          0.00626212,
+          0.006085199,
+          0.006006050000000001,
+          0.023920392000000002,
+          0.011146843,
+          0.006216974,
+          0.013214792000000001
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.008344019000000001,
+          0.008092326,
+          0.007871030000000001
+        ],
+        "integrated": [
+          0.020103678,
+          0.006541532,
+          0.0062800270000000005
+        ]
+      },
+      "order": [
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.007186807000000001,
+        "integrated": 0.00626212
+      },
+      "dense_over_adapter": {
+        "integrated": 1.147663570803498
+      },
+      "task": "binding",
+      "batch": 1,
+      "condition": "base",
+      "steps": 16
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.144097192,
+          0.065190774,
+          0.05206028,
+          0.041286587,
+          0.027470614,
+          0.026929956,
+          0.040484159000000006
+        ],
+        "integrated": [
+          0.090241127,
+          0.08079211900000001,
+          0.06108160000000001,
+          0.025390539,
+          0.023726107,
+          0.031933474,
+          0.025555644000000002
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.030499931,
+          0.08635337400000001,
+          0.12052865100000001
+        ],
+        "integrated": [
+          0.041066627,
+          0.109631526,
+          0.11884673400000001
+        ]
+      },
+      "order": [
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.041286587,
+        "integrated": 0.031933474
+      },
+      "dense_over_adapter": {
+        "integrated": 1.2928936889234162
+      },
+      "task": "binding",
+      "batch": 1,
+      "condition": "base",
+      "steps": 16
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.012126733,
+          0.012431105000000001,
+          0.024092979,
+          0.024243642000000003,
+          0.031903270000000004,
+          0.012390243,
+          0.013303633
+        ],
+        "integrated": [
+          0.023736542000000003,
+          0.011491504000000001,
+          0.017758262,
+          0.021766489,
+          0.026142890000000002,
+          0.019706633,
+          0.011445066
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.011861841000000001,
+          0.011980197000000001,
+          0.011636089
+        ],
+        "integrated": [
+          0.011007569,
+          0.010266072000000001,
+          0.011560997
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.013303633,
+        "integrated": 0.019706633
+      },
+      "dense_over_adapter": {
+        "integrated": 0.6750840186651875
+      },
+      "task": "binding",
+      "batch": 24,
+      "condition": "base",
+      "steps": 16
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.06727730300000001,
+          0.065981606,
+          0.11278639300000001,
+          0.097293271,
+          0.154599749,
+          0.171856317,
+          0.146856745
+        ],
+        "integrated": [
+          0.065977991,
+          0.08078294500000001,
+          0.11199407300000001,
+          0.11119541000000001,
+          0.104539588,
+          0.18209482000000002,
+          0.075468159
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.042423969000000006,
+          0.068345793,
+          0.06955697400000001
+        ],
+        "integrated": [
+          0.066676925,
+          0.052765161000000005,
+          0.07079943100000001
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.11278639300000001,
+        "integrated": 0.104539588
+      },
+      "dense_over_adapter": {
+        "integrated": 1.0788869093304634
+      },
+      "task": "binding",
+      "batch": 24,
+      "condition": "base",
+      "steps": 16
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.030055715,
+          0.019744998,
+          0.027533725000000002,
+          0.047890249,
+          0.044991061000000006,
+          0.03624,
+          0.031542023
+        ],
+        "integrated": [
+          0.03767369,
+          0.018110491,
+          0.020586973,
+          0.023192671,
+          0.030195000000000003,
+          0.029261281,
+          0.029287900000000002
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.037810993,
+          0.038304573,
+          0.021431812
+        ],
+        "integrated": [
+          0.03097944,
+          0.024982063000000002,
+          0.020976559000000002
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.031542023,
+        "integrated": 0.029261281
+      },
+      "dense_over_adapter": {
+        "integrated": 1.0779440243918235
+      },
+      "task": "binding",
+      "batch": 64,
+      "condition": "base",
+      "steps": 16
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.09280661800000001,
+          0.09691253500000001,
+          0.073486488,
+          0.073706083,
+          0.08030066500000001,
+          0.077100313,
+          0.08429441
+        ],
+        "integrated": [
+          0.10056107600000001,
+          0.085424292,
+          0.081939809,
+          0.07168158000000001,
+          0.072623453,
+          0.060268132,
+          0.07293939
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.09255089500000001,
+          0.10973550200000001,
+          0.099909863
+        ],
+        "integrated": [
+          0.09882571400000001,
+          0.076711178,
+          0.12700207500000002
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.08030066500000001,
+        "integrated": 0.07293939
+      },
+      "dense_over_adapter": {
+        "integrated": 1.1009231774491122
+      },
+      "task": "binding",
+      "batch": 64,
+      "condition": "base",
+      "steps": 16
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.064951177,
+          0.09614864000000001,
+          0.08961358600000001,
+          0.083556189,
+          0.046586209,
+          0.054905993,
+          0.053144728
+        ],
+        "integrated": [
+          0.065342725,
+          0.05631781,
+          0.06984354200000001,
+          0.035825797,
+          0.032849916,
+          0.032594459,
+          0.032556844
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.066760764,
+          0.09579736600000001,
+          0.08673621200000001
+        ],
+        "integrated": [
+          0.061605059000000004,
+          0.077309632,
+          0.060738437000000006
+        ]
+      },
+      "order": [
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.064951177,
+        "integrated": 0.035825797
+      },
+      "dense_over_adapter": {
+        "integrated": 1.8129722836312616
+      },
+      "task": "binding",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "steps": 128
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.336594057,
+          0.31979508100000004,
+          0.269355212,
+          0.269497242,
+          0.24136053500000001,
+          0.358725008,
+          0.301012345
+        ],
+        "integrated": [
+          0.257217483,
+          0.272816581,
+          0.201031538,
+          0.320395248,
+          0.198572552,
+          0.191737959,
+          0.312366295
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.24526107100000002,
+          0.295105555,
+          0.328217515
+        ],
+        "integrated": [
+          0.14955584700000002,
+          0.268713437,
+          0.358591977
+        ]
+      },
+      "order": [
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "integrated",
+          "dense"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.301012345,
+        "integrated": 0.257217483
+      },
+      "dense_over_adapter": {
+        "integrated": 1.1702639396405259
+      },
+      "task": "binding",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "steps": 128
+    },
+    {
+      "backward": false,
+      "raw_seconds": {
+        "dense": [
+          0.20704860700000002,
+          0.225616382,
+          0.20858853300000002,
+          0.281570184,
+          0.26643842700000003,
+          0.169014081,
+          0.11793107100000001
+        ],
+        "integrated": [
+          0.092502659,
+          0.172666383,
+          0.119946221,
+          0.18046213,
+          0.149814879,
+          0.180816904,
+          0.112800985
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.13863334000000002,
+          0.086279647,
+          0.088900193
+        ],
+        "integrated": [
+          0.091309845,
+          0.070475436,
+          0.071942406
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 0.20858853300000002,
+        "integrated": 0.149814879
+      },
+      "dense_over_adapter": {
+        "integrated": 1.3923085236413668
+      },
+      "task": "binding",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "steps": 128
+    },
+    {
+      "backward": true,
+      "raw_seconds": {
+        "dense": [
+          0.992201693,
+          1.036964086,
+          1.1892758060000002,
+          0.49288271300000003,
+          0.668366409,
+          1.0861189980000001,
+          1.215250812
+        ],
+        "integrated": [
+          0.7505428190000001,
+          1.209759837,
+          1.505113414,
+          0.46707318700000006,
+          0.960726178,
+          0.600017684,
+          0.671890996
+        ]
+      },
+      "raw_warmup_seconds": {
+        "dense": [
+          0.41208728600000005,
+          0.7692679400000001,
+          0.6515898910000001
+        ],
+        "integrated": [
+          0.526308171,
+          0.930656608,
+          0.5063296030000001
+        ]
+      },
+      "order": [
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "integrated",
+          "dense"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ],
+        [
+          "dense",
+          "integrated"
+        ]
+      ],
+      "median_seconds": {
+        "dense": 1.036964086,
+        "integrated": 0.7505428190000001
+      },
+      "dense_over_adapter": {
+        "integrated": 1.381618822736348
+      },
+      "task": "binding",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "steps": 128
+    }
+  ],
+  "candidates": [
+    {
+      "backend": "integrated",
+      "numerical_eligible": true,
+      "minimum_ratio": 0.6750840186651875,
+      "stable_speed_gate": false
+    }
+  ],
+  "selected_backend": "integrated",
+  "body_cpu_seconds": 51.280442268,
+  "body_wall_seconds": 83.53826587599906,
+  "runtime": {
+    "python": "3.12.14",
+    "torch": "2.6.0+cpu",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "threads": 1,
+  "production_activation": false,
+  "original_default_modified": false,
+  "energy_joules": null,
+  "scope": "Exact same trained Flow implementation comparison only. The decoder batching optimization is architecture-independent and does not establish analytical-vs-ordinary model advantage, full training economics, GPU, energy or production readiness."
+}

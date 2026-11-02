@@ -1,0 +1,99 @@
+{
+  "schema": "hcsn-sealed-cpu-envelope-r2.v1",
+  "source": {
+    "worker.py": "9b9652104a25867615fdee3c5f15818a19a8c66e5d2d4854a007640d5e964e32",
+    "campaign.py": "2d240a2499b68c0ab373a066a57e66a068922faa2b2373e27a273588165b62f2"
+  },
+  "checkpoints": "Unchanged R1 missing-trained seed17 MQAR/Binding Flow/Diagonal",
+  "cases": [
+    {
+      "task": "mqar",
+      "core": "flow",
+      "condition": "base",
+      "batch": 1
+    },
+    {
+      "task": "mqar",
+      "core": "flow",
+      "condition": "base",
+      "batch": 24
+    },
+    {
+      "task": "mqar",
+      "core": "flow",
+      "condition": "long_tokens_128",
+      "batch": 24
+    },
+    {
+      "task": "mqar",
+      "core": "diagonal",
+      "condition": "base",
+      "batch": 1
+    },
+    {
+      "task": "mqar",
+      "core": "diagonal",
+      "condition": "base",
+      "batch": 24
+    },
+    {
+      "task": "mqar",
+      "core": "diagonal",
+      "condition": "long_tokens_128",
+      "batch": 24
+    },
+    {
+      "task": "binding",
+      "core": "flow",
+      "condition": "base",
+      "batch": 1
+    },
+    {
+      "task": "binding",
+      "core": "flow",
+      "condition": "base",
+      "batch": 24
+    },
+    {
+      "task": "binding",
+      "core": "flow",
+      "condition": "long_tokens_128",
+      "batch": 24
+    },
+    {
+      "task": "binding",
+      "core": "diagonal",
+      "condition": "base",
+      "batch": 1
+    },
+    {
+      "task": "binding",
+      "core": "diagonal",
+      "condition": "base",
+      "batch": 24
+    },
+    {
+      "task": "binding",
+      "core": "diagonal",
+      "condition": "long_tokens_128",
+      "batch": 24
+    }
+  ],
+  "modes": [
+    "no",
+    "yes"
+  ],
+  "memory_worker_limit_bytes": 536870912,
+  "supervisor_plus_worker_upper_limit_bytes": 671088640,
+  "data": "Development namespace, seed923417; this is engineering compatibility/cost, not independent task-quality qualification",
+  "gates": "All sealed cases must finish, exact output hashes and quality must match unsealed cases, worker RSS and conservative supervisor-plus-worker RSS bound satisfy limits",
+  "memory_scope": "No parallel workers. Single-process family proven by kernel syscall restrictions applied before numerical import; ru_maxrss is worker lifetime highwater. Sum of supervisor and worker maxima is only an upper bound, not simultaneous peak.",
+  "excludes": [
+    "GPU",
+    "device joules",
+    "filesystem page cache",
+    "production deployment ownership",
+    "arbitrary multi-process worker"
+  ],
+  "seccomp_api_source": "https://github.com/seccomp/libseccomp/blob/main/include/seccomp.h.in"
+}

@@ -1,0 +1,11 @@
+{
+  "phase": "Engineering probe; formal profile never opened",
+  "exit_code": 1,
+  "failure": "RUSAGE_CHILDREN was already nonzero before Torch import after the seccomp setup",
+  "cause_scope": "Bootstrap or library setup may carry waited-child counters; no specific origin is claimed without a trace",
+  "source_preserved": "development_source_v5/",
+  "repair": "Record the pre-numerical baseline and reject any additional waited-child CPU after seal instead of assuming an absolute zero counter",
+  "retired_before_execution_protocol": "results/run004/PROTOCOL.json",
+  "cost_cpu_seconds": null,
+  "full_family_qualification": false
+}

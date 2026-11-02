@@ -1,0 +1,60 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_video_raw_r2_20261101.external_grid.range_zip",
+    "--url",
+    "https://spandh.dcs.shef.ac.uk/gridcorpus/s1/video/s1.mpg_vcd.zip",
+    "--out",
+    "experiments/hcsn_video_raw_r2_20261101/external_grid/SPEAKER1_METADATA.json"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T01:25:49.901456+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_video_raw_r2_20261101/external_grid/metadata_probe.stdout.log",
+  "stderr_path": "experiments/hcsn_video_raw_r2_20261101/external_grid/metadata_probe.stderr.log",
+  "pid": 6,
+  "finished_utc": "2026-11-02T01:26:04.107581+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 14.205874954997853,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 0.100621,
+  "system_cpu_seconds": 0.012761999999999999,
+  "total_cpu_seconds": 0.113383,
+  "peak_rss_bytes": 17563648,
+  "peak_rss_native_units": 17152,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_video_raw_r2_20261101/external_grid/metadata_probe.stdout.log",
+      "is_file": true,
+      "bytes": 570,
+      "sha256": "1b9167b41373af794abf725054371fecd2e72113193de91aaebc823c0ef1ab2d"
+    },
+    {
+      "path": "experiments/hcsn_video_raw_r2_20261101/external_grid/metadata_probe.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_video_raw_r2_20261101/external_grid/SPEAKER1_METADATA.json",
+      "is_file": true,
+      "bytes": 225338,
+      "sha256": "1408d366362b9d710e163aa713f20d1b481f9df1bb0631a9ae8ff2999fe4f6c4"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0012784649999999995,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

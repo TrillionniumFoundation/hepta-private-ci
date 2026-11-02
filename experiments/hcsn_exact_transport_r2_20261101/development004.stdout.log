@@ -1,0 +1,21 @@
+{"task": "mqar", "batch": 1, "condition": "base", "ratios": [{"separate_online": 1.8444625521076208}, {"separate_online": 1.1845597584499965}]}
+{"task": "mqar", "batch": 24, "condition": "base", "ratios": [{"separate_online": 0.9678838715171181}, {"separate_online": 1.0329005255644852}]}
+{"task": "mqar", "batch": 64, "condition": "base", "ratios": [{"separate_online": 0.9454945939040866}, {"separate_online": 1.023459310893583}]}
+{"task": "mqar", "batch": 1, "condition": "long_tokens_128", "ratios": [{"separate_online": 1.5957774878053759}, {"separate_online": 1.2769431441519796}]}
+{"task": "mqar", "batch": 24, "condition": "long_tokens_128", "ratios": [{"separate_online": 1.127482992691441}, {"separate_online": 0.990515562307645}]}
+{"task": "binding", "batch": 1, "condition": "base", "ratios": [{"separate_online": 1.4737027167841177}, {"separate_online": 1.8528424956108904}]}
+{"task": "binding", "batch": 24, "condition": "base", "ratios": [{"separate_online": 1.1477697055404097}, {"separate_online": 1.3682814390576887}]}
+{"task": "binding", "batch": 64, "condition": "base", "ratios": [{"separate_online": 1.1125399912550116}, {"separate_online": 0.7525004885897127}]}
+{"task": "binding", "batch": 1, "condition": "long_tokens_128", "ratios": [{"separate_online": 1.7280065489137826}, {"separate_online": 0.9307278461293664}]}
+{"task": "binding", "batch": 24, "condition": "long_tokens_128", "ratios": [{"separate_online": 1.2863557774555852}, {"separate_online": 1.1054802965858603}]}
+{
+  "selected": "separate_online",
+  "candidates": [
+    {
+      "backend": "separate_online",
+      "numerical_eligible": true,
+      "minimum_ratio": 0.7525004885897127,
+      "stable_speed_gate": false
+    }
+  ]
+}

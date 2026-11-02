@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn.external-independent-review-references.v1",
+  "files": [
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_JOINT_CANDIDATE.json",
+      "bytes": 1447,
+      "sha256": "e771525ce51635ef1d51d456d5f0ee8d38a43b6e3184146e2d67837968524f51"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/audit_joint_candidate.py",
+      "bytes": 5611,
+      "sha256": "e45e73336121a26b2451f8bb38b1c5026da3e3b9cd0e0163e88369c7bc2fcf81"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_CREMA_JOINT.json",
+      "bytes": 1847,
+      "sha256": "6a8c6268d29546ac410f72e09e1ec6f9e133c9112575a21c6ab48f4b3004e1c6"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/audit_crema_results.py",
+      "bytes": 8053,
+      "sha256": "a31b5af50e8934eaf2b85faafe7fc0490c0775c94119028d3744062a9a2cf56b"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_CROSS_LANE.json",
+      "bytes": 923,
+      "sha256": "12ec122ebf6bee40588fb618132c04704aaf2cf12e48e0a3b3f3297d27da2a04"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_TERMINOLOGY_ADDENDUM.json",
+      "bytes": 979,
+      "sha256": "e2976dfa62b60a62ac11fb249cf521610acd123b260ee8dd2f314d4569048e4b"
+    }
+  ],
+  "reviewer": "Separate frontend_audit agent; no candidate fitting, raw media decoding or neural AV encoder forward. Frozen logistic classifier and relation-head predictions were independently recomputed from caches.",
+  "review_cpu_seconds": null,
+  "copied_into_component": false
+}

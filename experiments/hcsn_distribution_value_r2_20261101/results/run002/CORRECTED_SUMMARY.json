@@ -1,0 +1,684 @@
+{
+  "action_counts": {
+    "A_ordinary_light": [
+      24625,
+      12239,
+      13380,
+      11459,
+      0
+    ],
+    "B_ordinary_value": [
+      23002,
+      13862,
+      17185,
+      12402,
+      6060
+    ],
+    "C_analytic_light": [
+      24625,
+      12239,
+      13380,
+      11459,
+      0
+    ],
+    "D_analytic_value": [
+      23002,
+      13862,
+      17185,
+      12402,
+      6060
+    ],
+    "factor_train_factor_execute": [
+      25341,
+      11523,
+      22389,
+      1563,
+      8103
+    ],
+    "factor_train_joint_execute": [
+      25314,
+      11550,
+      18239,
+      1563,
+      8103
+    ],
+    "joint_train_factor_execute": [
+      25341,
+      11523,
+      22389,
+      1563,
+      8103
+    ],
+    "joint_train_mean_execute": [
+      23022,
+      13842,
+      18595,
+      13854,
+      6060
+    ]
+  },
+  "all_blockers_closed": false,
+  "analytic_increment_gate": false,
+  "association_primary": {
+    "conditional_context_interval": [
+      0.12440152994791664,
+      0.18819578857421868
+    ],
+    "mean": 0.15302430555555552,
+    "per_context": [
+      0.11381770833333331,
+      0.2249511718749999,
+      0.1669303385416666,
+      0.17442089843749997,
+      0.11467415364583329,
+      0.12335156249999997
+    ],
+    "per_fit": [
+      0.15456412760416663,
+      0.1513053385416666,
+      0.1532034505208333
+    ],
+    "strictly_positive_gate": true
+  },
+  "association_projection_episode_action_differences": 9083,
+  "distribution_mechanism_gate": true,
+  "energy_joules": null,
+  "interaction_arithmetic_correction": {
+    "corrected_interaction": {
+      "conditional_context_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_context": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "per_fit": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "strictly_positive_gate": false
+    },
+    "exact_zero_interaction": true,
+    "original_interaction": {
+      "conditional_context_interval": [
+        5.468068248386097e-20,
+        9.19689551174336e-19
+      ],
+      "mean": 5.019140786341315e-19,
+      "per_context": [
+        3.952820420520068e-20,
+        1.1163894244811678e-18,
+        8.108928748381169e-19,
+        -3.9979955110402976e-19,
+        4.144814555231043e-19,
+        1.0299920638612292e-18
+      ],
+      "per_fit": [
+        5.373012328749779e-19,
+        5.982876050772875e-19,
+        3.7015339795012925e-19
+      ],
+      "strictly_positive_gate": true
+    },
+    "original_summary_sha256": "f01706324f2eeb24af7464f3c9eada6c383e41451f6fa599bb7af3b37fba9dbb",
+    "paired_files_checked": 576,
+    "reason": "Frozen analyzer evaluated D-C-B+A sequentially. Registered (D-C)-(B-A) must subtract paired differences; ordinary/analytic saved outcomes and actions are exactly equal. The spurious positive ~5e-19 flag is invalid.",
+    "schema": "hcsn-r2-paired-arithmetic-correction.v1",
+    "scope": "No source/protocol/model/action/raw test record changed. This is deterministic reanalysis of the same paired outcomes, not a new confirmation. Main D-B and association gates unchanged.",
+    "source_sha256": "b35f54b2b9635da808be154b0db1683d0717fa14ac26287b14aa57d3d4580bcd"
+  },
+  "main_2x2": {
+    "(D-C)-(B-A)": {
+      "conditional_context_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_context": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "per_fit": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "strictly_positive_gate": false
+    },
+    "B-A": {
+      "conditional_context_interval": [
+        0.02615180121527778,
+        0.03479645453559028
+      ],
+      "mean": 0.03043967013888889,
+      "per_context": [
+        0.029818196614583334,
+        0.0336708984375,
+        0.021380289713541667,
+        0.03866959635416667,
+        0.031490804036458334,
+        0.027608235677083332
+      ],
+      "per_fit": [
+        0.029771443684895833,
+        0.029960734049479163,
+        0.03158683268229167
+      ],
+      "strictly_positive_gate": true
+    },
+    "C-A": {
+      "conditional_context_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_context": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "per_fit": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "strictly_positive_gate": false
+    },
+    "D-B": {
+      "conditional_context_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_context": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "per_fit": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "strictly_positive_gate": false
+    },
+    "D-C": {
+      "conditional_context_interval": [
+        0.02615180121527778,
+        0.03479645453559028
+      ],
+      "mean": 0.03043967013888889,
+      "per_context": [
+        0.029818196614583334,
+        0.0336708984375,
+        0.021380289713541667,
+        0.03866959635416667,
+        0.031490804036458334,
+        0.027608235677083332
+      ],
+      "per_fit": [
+        0.029771443684895833,
+        0.029960734049479163,
+        0.03158683268229167
+      ],
+      "strictly_positive_gate": true
+    }
+  },
+  "matched_mean_and_association_witnesses": [
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.5872785967275921,
+        0.4127214032724079
+      ],
+      "context": 0,
+      "fit_seed": 211,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.9245012741361546,
+        0.839501803903792,
+        0.839501803903792,
+        0.839501803903792
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.7605459802107918,
+        0.23945401978920836
+      ],
+      "context": 1,
+      "fit_seed": 211,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.7766748571144151,
+        0.6239130884392395,
+        0.6239130884392395,
+        0.6239130884392395
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6395166803086237,
+        0.36048331969137626
+      ],
+      "context": 2,
+      "fit_seed": 211,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8790860769774584,
+        0.7630404761539855,
+        0.7630404761539855,
+        0.7630404761539855
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6776120123552467,
+        0.32238798764475324
+      ],
+      "context": 3,
+      "fit_seed": 211,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8911366545232421,
+        0.7262335344833291,
+        0.7262335344833291,
+        0.7262335344833291
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6843846300205867,
+        0.31561536997941325
+      ],
+      "context": 4,
+      "fit_seed": 211,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8329758977171551,
+        0.703633339016937,
+        0.703633339016937,
+        0.703633339016937
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6504544300010523,
+        0.3495455699989476
+      ],
+      "context": 5,
+      "fit_seed": 211,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8672513322924061,
+        0.7477154837810664,
+        0.7477154837810664,
+        0.7477154837810664
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.5966416512108367,
+        0.40335834878916327
+      ],
+      "context": 0,
+      "fit_seed": 337,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.9092234813743885,
+        0.8225635609798928,
+        0.8225635609798928,
+        0.8225635609798928
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.7666453246526466,
+        0.2333546753473534
+      ],
+      "context": 1,
+      "fit_seed": 337,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.7668238106795101,
+        0.6165373721863671,
+        0.6165373721863671,
+        0.6165373721863671
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6491217437009065,
+        0.3508782562990935
+      ],
+      "context": 2,
+      "fit_seed": 337,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8634593896528259,
+        0.7478889781526707,
+        0.7478889781526707,
+        0.7478889781526707
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6606877961817959,
+        0.33931220381820426
+      ],
+      "context": 3,
+      "fit_seed": 337,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8935978282936884,
+        0.7443422163995137,
+        0.7443422163995137,
+        0.7443422163995137
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6972930863757976,
+        0.3027069136242025
+      ],
+      "context": 4,
+      "fit_seed": 337,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8151673198354179,
+        0.686307483795678,
+        0.686307483795678,
+        0.686307483795678
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6612714756636091,
+        0.33872852433639095
+      ],
+      "context": 5,
+      "fit_seed": 337,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8506172338380105,
+        0.7313979403544186,
+        0.7313979403544186,
+        0.7313979403544186
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.5996755704707635,
+        0.4003244295292366
+      ],
+      "context": 0,
+      "fit_seed": 499,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.9025508870159749,
+        0.8165677777922702,
+        0.8165677777922702,
+        0.8165677777922702
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.7694883049160443,
+        0.23051169508395586
+      ],
+      "context": 1,
+      "fit_seed": 499,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.7644207749592384,
+        0.6138685392734571,
+        0.6138685392734571,
+        0.6138685392734571
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6526802455508705,
+        0.34731975444912966
+      ],
+      "context": 2,
+      "fit_seed": 499,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8569979824227094,
+        0.7421580300687161,
+        0.7421580300687161,
+        0.7421580300687161
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6745509884848464,
+        0.32544901151515354
+      ],
+      "context": 3,
+      "fit_seed": 499,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8822211029285855,
+        0.727298883653942,
+        0.727298883653942,
+        0.727298883653942
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6991596631784773,
+        0.3008403368215225
+      ],
+      "context": 4,
+      "fit_seed": 499,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8111742837154456,
+        0.6834132106845738,
+        0.6834132106845738,
+        0.6834132106845738
+      ]
+    },
+    {
+      "conditional_y0_probabilities": [
+        0.5,
+        0.5,
+        0.6643127655279024,
+        0.33568723447209753
+      ],
+      "context": 5,
+      "fit_seed": 499,
+      "interpretation": "Cues0/1 share physical mean1 and bit marginal. Cues2/3 share both physical and bit marginals but opposite association. These are fitted-law diagnostics, not true-law posterior input to any policy.",
+      "no_outage_probabilities": [
+        0.8447828877627648,
+        0.7265252694831514,
+        0.7265252694831514,
+        0.7265252694831514
+      ]
+    }
+  ],
+  "mean_accuracy": {
+    "A_ordinary_light": 0.7173665364583334,
+    "B_ordinary_value": 0.7757703993055556,
+    "C_analytic_light": 0.7173665364583334,
+    "D_analytic_value": 0.7757703993055556,
+    "factor_train_factor_execute": 0.7406412760416666,
+    "factor_train_joint_execute": 0.7386067708333334,
+    "joint_train_factor_execute": 0.7406412760416666,
+    "joint_train_mean_execute": 0.7768012152777778
+  },
+  "mean_utility": {
+    "A_ordinary_light": 0.6785841471354167,
+    "B_ordinary_value": 0.7090238172743055,
+    "C_analytic_light": 0.6785841471354167,
+    "D_analytic_value": 0.7090238172743055,
+    "factor_train_factor_execute": 0.6699323323567707,
+    "factor_train_joint_execute": 0.6721007080078125,
+    "joint_train_factor_execute": 0.6699323323567707,
+    "joint_train_mean_execute": 0.706577175564236
+  },
+  "ordinary_vs_analytic_value_action_differences": 0,
+  "original_learned_core_advantage_established": false,
+  "paired_scope": "Episode worlds shared across all arms and three fitted model replicates. Bootstrap resamples6 context clusters, not individual rollout count.",
+  "production_activation": false,
+  "rollout_records": 294912,
+  "secondary": {
+    "joint_execute_effect_factor_train": {
+      "conditional_context_interval": [
+        0.00010701497395833055,
+        0.004135685221354162
+      ],
+      "mean": 0.002168375651041664,
+      "per_context": [
+        0.003248291015624997,
+        0.006102294921874998,
+        0.0019167480468749972,
+        0.0012458496093749976,
+        -0.0021745605468750026,
+        0.0026716308593749973
+      ],
+      "per_fit": [
+        0.0021674397786458307,
+        0.0021674397786458307,
+        0.0021702473958333307
+      ],
+      "strictly_positive_gate": true
+    },
+    "joint_execute_effect_joint_train": {
+      "conditional_context_interval": [
+        0.0315569118923611,
+        0.04855731709798174
+      ],
+      "mean": 0.03909148491753471,
+      "per_context": [
+        0.029350179036458326,
+        0.05865356445312498,
+        0.042737467447916656,
+        0.044685546875,
+        0.028359700520833322,
+        0.030762451171874997
+      ],
+      "per_fit": [
+        0.03947550455729166,
+        0.038660807291666655,
+        0.03913814290364582
+      ],
+      "strictly_positive_gate": true
+    },
+    "joint_train_effect_factor_execute": {
+      "conditional_context_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_context": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "per_fit": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "strictly_positive_gate": false
+    },
+    "joint_train_effect_joint_execute": {
+      "conditional_context_interval": [
+        0.02987721320258246,
+        0.04466935221354165
+      ],
+      "mean": 0.036923109266493045,
+      "per_context": [
+        0.026101888020833325,
+        0.05255126953124998,
+        0.040820719401041664,
+        0.043439697265624994,
+        0.03053426106770833,
+        0.028090820312499997
+      ],
+      "per_fit": [
+        0.03730806477864582,
+        0.036493367513020826,
+        0.036967895507812494
+      ],
+      "strictly_positive_gate": true
+    },
+    "mean_projection_effect": {
+      "conditional_context_interval": [
+        0.00027446831597222103,
+        0.004937757703993053
+      ],
+      "mean": 0.002446641710069443,
+      "per_context": [
+        0.0009302571614583323,
+        0.007514648437499998,
+        -0.0005963541666666678,
+        0.003604573567708332,
+        -0.0008476562500000012,
+        0.004074381510416666
+      ],
+      "per_fit": [
+        0.003042399088541665,
+        0.0022437744140624987,
+        0.0020537516276041656
+      ],
+      "strictly_positive_gate": true
+    }
+  }
+}

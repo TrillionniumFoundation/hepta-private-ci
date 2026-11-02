@@ -1,0 +1,20 @@
+{
+  "schema": "hcsn.rawvideo.runtime.v1",
+  "python": "3.12.14",
+  "machine": "x86_64",
+  "system": "Linux",
+  "torch": "2.6.0+cpu",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "ffprobe_version": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers",
+  "thread_configuration": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "torch_training_threads": 1,
+  "cuda_used": false,
+  "device_energy_joules": null,
+  "scope": "Version snapshot in the same request after correcttraining; sharedCPU scheduling is not controlled. Trainingrecord binds actualTorch/NumPy versions; noGPU orenergy measurement."
+}

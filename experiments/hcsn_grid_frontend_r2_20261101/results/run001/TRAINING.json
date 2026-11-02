@@ -1,0 +1,304 @@
+{
+  "confirmation_loaded": false,
+  "development_loaded": false,
+  "fits": [
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.01646062100000023,
+      "features": 1536,
+      "gradient_inf": 7.926408406661034e-06,
+      "iterations": 57,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "A/fold0"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.010554165000000282,
+      "features": 1536,
+      "gradient_inf": 1.1532918653472599e-05,
+      "iterations": 36,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "A/fold1"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.01297581499999989,
+      "features": 1536,
+      "gradient_inf": 1.6892624965028635e-05,
+      "iterations": 55,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "A/fold2"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.0177012190000001,
+      "features": 1536,
+      "gradient_inf": 2.284438998077787e-05,
+      "iterations": 60,
+      "rows": 192,
+      "status": 0,
+      "success": true,
+      "tag": "A/full"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.01140652799999975,
+      "features": 1024,
+      "gradient_inf": 4.048952922397486e-05,
+      "iterations": 61,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "V/fold0"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.00877560899999974,
+      "features": 1024,
+      "gradient_inf": 6.053061357648437e-05,
+      "iterations": 54,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "V/fold1"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.008688389000000019,
+      "features": 1024,
+      "gradient_inf": 0.00017598854063696767,
+      "iterations": 58,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "V/fold2"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.013953662999999672,
+      "features": 1024,
+      "gradient_inf": 0.00011448269465469396,
+      "iterations": 64,
+      "rows": 192,
+      "status": 0,
+      "success": true,
+      "tag": "V/full"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.0009910790000002834,
+      "features": 26,
+      "gradient_inf": 2.579923830126063e-09,
+      "iterations": 7,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "T/fold0"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.0008883470000000671,
+      "features": 26,
+      "gradient_inf": 2.579923830126063e-09,
+      "iterations": 7,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "T/fold1"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.0008544969999997321,
+      "features": 26,
+      "gradient_inf": 2.579923830126063e-09,
+      "iterations": 7,
+      "rows": 128,
+      "status": 0,
+      "success": true,
+      "tag": "T/fold2"
+    },
+    {
+      "C": 0.1,
+      "cpu_seconds": 0.0008757379999999593,
+      "features": 26,
+      "gradient_inf": 7.947232205651744e-07,
+      "iterations": 7,
+      "rows": 192,
+      "status": 0,
+      "success": true,
+      "tag": "T/full"
+    },
+    {
+      "C": 1.0,
+      "cpu_seconds": 0.0016492750000001166,
+      "features": 3,
+      "gradient_inf": 0.0002963315772053221,
+      "iterations": 13,
+      "rows": 768,
+      "status": 0,
+      "success": true,
+      "tag": "AT"
+    },
+    {
+      "C": 1.0,
+      "cpu_seconds": 0.0038712979999999675,
+      "features": 7,
+      "gradient_inf": 0.0006196875607975549,
+      "iterations": 28,
+      "rows": 768,
+      "status": 0,
+      "success": true,
+      "tag": "AVT"
+    }
+  ],
+  "folds": [
+    {
+      "checkpoint": "A_fold0.npz",
+      "fit_actors": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "fold": 0,
+      "held_actors": [
+        1,
+        5
+      ],
+      "modality": "A"
+    },
+    {
+      "checkpoint": "A_fold1.npz",
+      "fit_actors": [
+        1,
+        4,
+        5,
+        7
+      ],
+      "fold": 1,
+      "held_actors": [
+        3,
+        6
+      ],
+      "modality": "A"
+    },
+    {
+      "checkpoint": "A_fold2.npz",
+      "fit_actors": [
+        1,
+        3,
+        5,
+        6
+      ],
+      "fold": 2,
+      "held_actors": [
+        4,
+        7
+      ],
+      "modality": "A"
+    },
+    {
+      "checkpoint": "V_fold0.npz",
+      "fit_actors": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "fold": 0,
+      "held_actors": [
+        1,
+        5
+      ],
+      "modality": "V"
+    },
+    {
+      "checkpoint": "V_fold1.npz",
+      "fit_actors": [
+        1,
+        4,
+        5,
+        7
+      ],
+      "fold": 1,
+      "held_actors": [
+        3,
+        6
+      ],
+      "modality": "V"
+    },
+    {
+      "checkpoint": "V_fold2.npz",
+      "fit_actors": [
+        1,
+        3,
+        5,
+        6
+      ],
+      "fold": 2,
+      "held_actors": [
+        4,
+        7
+      ],
+      "modality": "V"
+    },
+    {
+      "checkpoint": "T_fold0.npz",
+      "fit_actors": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "fold": 0,
+      "held_actors": [
+        1,
+        5
+      ],
+      "modality": "T"
+    },
+    {
+      "checkpoint": "T_fold1.npz",
+      "fit_actors": [
+        1,
+        4,
+        5,
+        7
+      ],
+      "fold": 1,
+      "held_actors": [
+        3,
+        6
+      ],
+      "modality": "T"
+    },
+    {
+      "checkpoint": "T_fold2.npz",
+      "fit_actors": [
+        1,
+        3,
+        5,
+        6
+      ],
+      "fold": 2,
+      "held_actors": [
+        4,
+        7
+      ],
+      "modality": "T"
+    }
+  ],
+  "oof_accuracy": {
+    "A": 0.9791666666666666,
+    "T": 1.0,
+    "V": 0.7395833333333334
+  },
+  "train_features_sha256": "01f671146932ea0f64bbf0a7417f481d93d9df4ae13381ad00caec40abf95fef",
+  "train_identity_sha256": "ec4c2a3b793ca4db6572f98411aae6d58a0266e7747fc6186de27fdac128030e"
+}

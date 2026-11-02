@@ -1,0 +1,88 @@
+{
+  "schema": "hcsn.exact-addressed-r2.cost.v1",
+  "outer_receipts": [
+    {
+      "name": "development001",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/development001.receipt.json",
+      "sha256": "c055fc24c8eb6788be3fd14046cbacf34b8ddaf01cb914b4d0236d7b6f138190",
+      "returncode": 120,
+      "cpu_seconds": 57.663724,
+      "wall_seconds": 58.151686281002185
+    },
+    {
+      "name": "development002",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/development002.receipt.json",
+      "sha256": "41eeb539548e925a8fffd883a4b070a6b099ed850695ff4ce3864cd37ac778d4",
+      "returncode": 0,
+      "cpu_seconds": 70.793987,
+      "wall_seconds": 75.87133685500157
+    },
+    {
+      "name": "development003",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/development003.receipt.json",
+      "sha256": "cab8b6b29cf2f7f6f245dc8a0836fb97412ee849dc8b7f30cfb756367e129a3c",
+      "returncode": 0,
+      "cpu_seconds": 39.806268,
+      "wall_seconds": 44.79281304500182
+    },
+    {
+      "name": "read_layout001",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/read_layout001.receipt.json",
+      "sha256": "9b73a44c2b4220dc7d6aa445730b8d8948bb76c1fcbdfb86334ae8216b837392",
+      "returncode": 0,
+      "cpu_seconds": 3.063316,
+      "wall_seconds": 9.591242728994985
+    },
+    {
+      "name": "development004",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/development004.receipt.json",
+      "sha256": "c0dd970049dcdb0f1e05c37fa79842f223c8df3aa444bb514481c1f180401636",
+      "returncode": 0,
+      "cpu_seconds": 60.537924,
+      "wall_seconds": 150.31507173499995
+    },
+    {
+      "name": "development005",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/development005.receipt.json",
+      "sha256": "27d486ed2afa0eb451f3a215e94a7a98a31e19817a9a19d79a0d45f354963b6b",
+      "returncode": 0,
+      "cpu_seconds": 54.495791000000004,
+      "wall_seconds": 92.14809780799987
+    },
+    {
+      "name": "confirmation001",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/confirmation001.receipt.json",
+      "sha256": "88ea4dc3f3c64122c2ca536fd34255c69b35630f72d4807922b8e0096a375096",
+      "returncode": 0,
+      "cpu_seconds": 100.569733,
+      "wall_seconds": 137.2885851969986
+    },
+    {
+      "name": "cold001",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/cold001.receipt.json",
+      "sha256": "8256d1ae3d64b8bcfe4de8e5e8d89db7ff7f871ab9213a537e37057a7e647a7d",
+      "returncode": 0,
+      "cpu_seconds": 148.177729,
+      "wall_seconds": 177.27441292200092
+    }
+  ],
+  "total_measured_non_nested_child_cpu_seconds": 535.108472,
+  "failed_process_cpu_included": true,
+  "nested_cold_worker_cpu_seconds": 143.19575700000001,
+  "nested_cold_workers": 40,
+  "cold_outer_cpu_seconds": 148.177729,
+  "nested_worker_cpu_not_added_again": true,
+  "cold_parent_and_wrapper_cpu_difference": 4.981971999999985,
+  "wall_seconds_not_summed": true,
+  "complete_lifecycle_cpu_seconds": null,
+  "energy_joules": null,
+  "gpu": null,
+  "unknown_or_inherited_costs": [
+    "R1 source, original fitting and checkpoint preparation",
+    "preliminary setup/scout probes",
+    "source development",
+    "freeze commands",
+    "publication, report generation and transfer"
+  ],
+  "rss_note": "Per-worker wait4 RSS is a direct-process highwater, not aggregate attributable process-family memory"
+}

@@ -1,0 +1,23 @@
+{
+  "admitted_acquisition_sources": [
+    "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8",
+    "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339"
+  ],
+  "confirmation_frames_accessed": false,
+  "dependencies": {
+    "prior_training_pilot_sha256": "0668ad3747303af91612d4097d06f8ddb28b19e724d6312d8db8d5c2b53cb78e"
+  },
+  "files": {
+    "COHORT_SELECTION.json": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa",
+    "PROTOCOL.json": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1",
+    "SOURCE_FREEZE_V1.json": "c1f8c1db621806735616ed087e5474d47be29a047a188e622f2893510ca017f6",
+    "collect_metadata.py": "e0cd6847d3676a65dce5c1808fe32890eb026581452f5f359e1a25085a6f7b52",
+    "data.py": "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8",
+    "data_v1.py": "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8",
+    "data_v2.py": "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339",
+    "metadata_range.py": "4908b4d5ec998e4887469c799455eb72aec9d86c933b4b46ec86f7750e48db1b"
+  },
+  "new_mpeg_payloads_acquired": 0,
+  "qualified_prefix_entrypoint": "data_v2.prefix only; data.py/data_v1.py retained as original acquisition and unsafe historical decoder snapshots",
+  "scope": "V2 fail-fast source/cohort/member/role/publication/completeacquisitionSHA guards before anyprefix/model input. Existingv1HTTPacquisitionmaycomplete unchanged; no pixelpreprocess/objective/split changes."
+}

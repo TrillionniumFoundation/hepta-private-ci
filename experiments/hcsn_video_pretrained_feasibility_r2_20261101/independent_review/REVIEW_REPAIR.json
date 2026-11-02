@@ -1,0 +1,25 @@
+{
+  "all_blockers_closed": false,
+  "checks": {
+    "current_source_hashes": true,
+    "failed_attempt_receipt_and_logs_preserved": true,
+    "no_fit_or_heldout_at_registration": true,
+    "retired_source_hashes": true,
+    "same_checkpoint": true,
+    "same_descriptor_and_encoder_math": true,
+    "same_inherited_audio_text": true,
+    "unchanged_study": true
+  },
+  "failed_attempt": {
+    "returncode": 1,
+    "total_cpu_seconds": 68.709255,
+    "wall_seconds": 68.89999178900325
+  },
+  "fit_performed": false,
+  "held_media_decoded": false,
+  "protocol_sha256": "5400c545717048b584422d71f64985a8c83c7457016f79b4f092e60cd1223a8b",
+  "qualification": "Offline presentation-prefix only; compressed-reference lookahead is uninstrumented and live causal 1s remains unqualified.",
+  "repair_diff": "--- retired/encoder.py\n+++ encoder.py\n@@ -1,7 +1,9 @@\n \"\"\"Frozen original-author lipreading model on the accepted1s native prefix.\n \n The fixed native crop is an explicit CREMA adaptation, not the upstream\n-68-landmark affine alignment. It never sees another clip or future-frame pixels.\n+68-landmark affine alignment. It never sees another clip or after-cutoff presentation pixels.\n+B-frame compressed references may require later presentation material during\n+offline decoding; this adapter does not qualify live causal one-second input.\n \"\"\"\n import hashlib\n import json\n@@ -47,7 +49,6 @@\n         'stream=codec_type,codec_name,has_b_frames,start_time,width,height:frame=media_type,best_effort_timestamp_time','-of','json',str(path)]))\n     timestamps=np.asarray([float(f['best_effort_timestamp_time']) for f in probe['frames'] if f.get('media_type')=='video'])\n     audio=next(s for s in probe['streams'] if s['codec_type']=='audio');video=next(s for s in probe['streams'] if s['codec_type']=='video')\n-    assert video.get('has_b_frames',0)==0, 'Future-reordered frames are outside this registered prefix profile'\n     origin=max(float(audio.get('start_time',0)),float(timestamps[0]));cutoffs=origin+np.arange(1,26)/25\n     assert np.all(np.diff(timestamps)>0) and timestamps[-1]>=origin+1\n     selected=np.searchsorted(timestamps,cutoffs,side='right')-1\n@@ -61,7 +62,7 @@\n     assert len(frames)==count\n     gray=np.stack([np.asarray(Image.fromarray(frame).convert('L'))[4:92,4:92] for frame in frames[selected]])\n     assert gray.shape==(25,88,88)\n-    return gray,dict(clip=row['clip'],raw_sha256=row['sha256'],origin=origin,accepted_end=origin+1,cutoffs=cutoffs.tolist(),selected_indices=selected.tolist(),selected_timestamps=timestamps[selected].tolist(),decoded_frames=count,codec_name=video.get('codec_name'),has_b_frames=video.get('has_b_frames',0),crop_native_xywh=[x,y,96,96],source_geometry=[video['width'],video['height']])\n+    return gray,dict(clip=row['clip'],raw_sha256=row['sha256'],origin=origin,accepted_end=origin+1,cutoffs=cutoffs.tolist(),selected_indices=selected.tolist(),selected_timestamps=timestamps[selected].tolist(),decoded_frames=count,codec_name=video.get('codec_name'),has_b_frames=video.get('has_b_frames',0),crop_native_xywh=[x,y,96,96],source_geometry=[video['width'],video['height']],input_scope='offline presentation-prefix pixels',live_causal_qualification=False,compressed_reference_lookahead='not bounded or instrumented')\n \n \n def encode(model,pixels):\n",
+  "schema": "hcsn.visual.decoder-amendment.independent-review.v1",
+  "source_freeze_sha256": "a7ddb7a8f45b7d88aec00840ea0be609715021b9cbbb48dfb9afdc32dc640682"
+}

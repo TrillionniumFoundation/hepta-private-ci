@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_distribution_value_r2_20261101.correct_interaction"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T01:33:08.911221+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_distribution_value_r2_20261101/results/correction001.stdout.log",
+  "stderr_path": "experiments/hcsn_distribution_value_r2_20261101/results/correction001.stderr.log",
+  "pid": 6,
+  "finished_utc": "2026-11-02T01:33:10.160400+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 1.2489599140026257,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 0.512133,
+  "system_cpu_seconds": 0.030577999999999998,
+  "total_cpu_seconds": 0.5427109999999999,
+  "peak_rss_bytes": 23461888,
+  "peak_rss_native_units": 22912,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_distribution_value_r2_20261101/results/correction001.stdout.log",
+      "is_file": true,
+      "bytes": 1322,
+      "sha256": "20189f01ec3ebb91f04836b31cae8cca5a20934b1fce4f32ee17a5ff083dab16"
+    },
+    {
+      "path": "experiments/hcsn_distribution_value_r2_20261101/results/correction001.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0009799139999999984,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

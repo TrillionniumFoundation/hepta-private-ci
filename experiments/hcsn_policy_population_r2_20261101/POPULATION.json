@@ -1,0 +1,91 @@
+{
+  "accepted_ambiguous_pairs": 20288,
+  "accepted_by_observed_update_key": [
+    5075,
+    5097,
+    5087,
+    5029
+  ],
+  "accepted_by_query_key": [
+    5011,
+    5114,
+    5045,
+    5118
+  ],
+  "accepted_fraction": {
+    "decimal": 0.2515873015873016,
+    "exact": "317/1260"
+  },
+  "all_blockers_closed": false,
+  "ambiguous_state_query_pairs": 80640,
+  "body_cpu_seconds": 0.11700877399999998,
+  "canceled_freedoms": {
+    "distractors": "Typed DISTRACTOR events do not change these maps",
+    "erasure_position": "Either final update can be erased; both yield the same visible-state law and missing_final=1",
+    "hidden_completion": "Erased final key and fresh value do not enter the visible state or hash",
+    "prelude_order": "Initial/update maps canonicalize by key; positions within each registered stage do not enter hash",
+    "query_order": "Each key is queried once; hash uses the current key, no query index",
+    "task": "Selective so aliases are all255",
+    "time": "Clocks never enter hash"
+  },
+  "conditional_visible_states": 26880,
+  "derivation": [
+    "Conditional on a final-update erasure: each visible initial assignment, observed update key and observed fresh value has equal weight; three possible erased keys and three possible missing fresh values remain, independently of the hash.",
+    "A given ambiguous query retains its old value and remains available with probability2/3. Its accepted subset therefore has correctness2/3, not95%.",
+    "Initial erasures occur with probability4/6. Half are later overwritten, producing4 certain answers; half leave3 certain answers plus one rejected initial-unknown query. Thus this branch contributes mean3.5 certain accepted/available answers.",
+    "Final erasures occur with probability2/6. They produce1 certain accepted answer,3 ambiguous queries, and3 available targets. If hash acceptance fraction is a, accepted count is1+3a and accepted correct/available count is1+2a.",
+    "Across all four queries, expected accepted correctness=(8+2a)/(8+3a), known-answer coverage=(8+2a)/10, total acceptance coverage=(8+3a)/12."
+  ],
+  "enumeration_sha256": "23bea6bf4ec1eecd8c1d86aaf99dfd4206f9134fe2c141cf12fa6e3291ee3aa0",
+  "frozen_policy_q": 0.666626592930993,
+  "hash_free_fields": [
+    "ordered visible initial values by key",
+    "ordered visible update values by key",
+    "ordered visible B-to-A alias map",
+    "current A query key",
+    "counts of initial/final missing WRITE slots",
+    "declared task and fixed salt"
+  ],
+  "law": "Four distinct original values sampled uniformly from eight; Selective updates two distinct uniformly selected keys with two fresh distinct values; erase one of six WRITE events uniformly, independently of values; score each of four keys once",
+  "new_confirmation_draws": 0,
+  "other_conditions": "MQAR/Binding one-erasure accepted answers are certain with known coverage1; nonmissing four-query correctness1; registered typed filler128 does not affect the canonical state or hash",
+  "policy_changed": false,
+  "population_gate": {
+    "accepted_correctness_at_least_95_percent": true,
+    "conditional_ambiguous_95_percent": false,
+    "known_answer_coverage_at_least_80_percent": true
+  },
+  "production_activation": false,
+  "rejected_ambiguous_pairs": 60352,
+  "schema": "hcsn.r2.exact-finite-policy-population.v1",
+  "scope_limits": [
+    "Exact finite uniform sampling-law calculation, not a distribution over all PCG seeds",
+    "Ordinary shared task-law readout; learned-neural and analytic-core increments remain unestablished",
+    "Aggregate reliability does not imply95 percent correctness for each accepted answer",
+    "No multiple erasures, shifted/unknown laws, READ repair, resampling, open-domain, hardware or production qualification"
+  ],
+  "selective_missing": {
+    "accepted_ambiguous_correctness": {
+      "decimal": 0.6666666666666666,
+      "exact": "2/3"
+    },
+    "accepted_correctness": {
+      "decimal": 0.9712628048227722,
+      "exact": "10714/11031"
+    },
+    "known_answer_coverage": {
+      "decimal": 0.8503174603174604,
+      "exact": "5357/6300"
+    },
+    "overall_query_coverage": {
+      "decimal": 0.729563492063492,
+      "exact": "3677/5040"
+    }
+  },
+  "source_sha256": {
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e",
+    "experiments/hcsn_missing_reliability_r2_20261101/posterior.py": "3c9b1bb881cd5f9b3fd038596735f85bdf59a88404c4a8ab58afb237f9e1dbfa",
+    "experiments/hcsn_missing_reliability_r2_20261101/results/run001/CANDIDATE.json": "96527ef05c4db795bf7ba069b4f056ddb0ba4430853b8559dd947cfa6304cb88",
+    "experiments/hcsn_policy_population_r2_20261101/enumerate_policy.py": "0313fed52cd1ebd1f47cad79554caf75df95451813954db1ef169ffd7085df90"
+  }
+}

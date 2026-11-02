@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+  "kind": "dense",
+  "task": "binding",
+  "batch": 1,
+  "condition": "long_tokens_128",
+  "backward": false,
+  "calls": [
+    {
+      "index": 0,
+      "cpu_seconds": 0.05125404599999994,
+      "wall_seconds": 0.11261310699774185
+    },
+    {
+      "index": 1,
+      "cpu_seconds": 0.06810173100000005,
+      "wall_seconds": 0.08586787700187415
+    },
+    {
+      "index": 2,
+      "cpu_seconds": 0.06931503500000025,
+      "wall_seconds": 0.09426953200454591
+    },
+    {
+      "index": 3,
+      "cpu_seconds": 0.07164714399999994,
+      "wall_seconds": 0.10210318500321591
+    }
+  ],
+  "imports": {
+    "cpu_seconds": 2.072972397,
+    "wall_seconds": 6.133370180003112
+  },
+  "model_data_setup": {
+    "cpu_seconds": 0.007783998000000292,
+    "wall_seconds": 0.016998176004562993
+  },
+  "construction": {
+    "cpu_seconds": 2.422999999751596e-06,
+    "wall_seconds": 2.553999365773052e-06,
+    "scripted_cache_empty_before_construction": true,
+    "compiled_here": false
+  },
+  "input_sha256": {
+    "x": "c379a8626bfec4f221de9710a812669cfcec69663927c36e8eb13ea11d36995e",
+    "dt": "994569d6ddf2141950ee084a8b16271fb96d064dc10a07ad07b8f6cd3d5c29d0",
+    "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+    "y": "239aa648add0582cd60b51bdf66eccde10225a072f90b259acd40b8309f808c4"
+  },
+  "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+  "raw_sha256": "ca6f0b10b5a261eed0388a9578cb2829f60a232a4d2437449d585c0f8990973b",
+  "source_sha256": {
+    "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+    "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+    "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+  },
+  "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+}

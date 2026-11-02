@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_missing_reliability_r2_20261101.campaign",
+    "confirmation",
+    "--out",
+    "experiments/hcsn_missing_reliability_r2_20261101/results/run001",
+    "--candidate-sha",
+    "96527ef05c4db795bf7ba069b4f056ddb0ba4430853b8559dd947cfa6304cb88",
+    "--publication",
+    "c798ad6e967e4135dd12cec13e252f8c7a8867bc"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T01:25:22.562313+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_missing_reliability_r2_20261101/results/run001/confirm_meter.stdout.log",
+  "stderr_path": "experiments/hcsn_missing_reliability_r2_20261101/results/run001/confirm_meter.stderr.log",
+  "pid": 6,
+  "finished_utc": "2026-11-02T01:27:55.566581+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 153.004052520002,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 143.773594,
+  "system_cpu_seconds": 0.49687,
+  "total_cpu_seconds": 144.270464,
+  "peak_rss_bytes": 300720128,
+  "peak_rss_native_units": 293672,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_missing_reliability_r2_20261101/results/run001/confirm_meter.stdout.log",
+      "is_file": true,
+      "bytes": 850,
+      "sha256": "349b4b2266a060c0e22ede116c77994a346984ec05fb81d5fbda814540ae3350"
+    },
+    {
+      "path": "experiments/hcsn_missing_reliability_r2_20261101/results/run001/confirm_meter.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_missing_reliability_r2_20261101/results/run001/confirmation/SUMMARY.json",
+      "is_file": true,
+      "bytes": 354040,
+      "sha256": "ee91e69a2b1a2bfb07483796f38f3d896eddc6a69c80862c3c5916c5ba302599"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.001270995000000004,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

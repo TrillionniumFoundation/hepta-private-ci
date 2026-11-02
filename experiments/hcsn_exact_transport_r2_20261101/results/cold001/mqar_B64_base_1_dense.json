@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+  "kind": "dense",
+  "task": "mqar",
+  "batch": 64,
+  "condition": "base",
+  "backward": true,
+  "calls": [
+    {
+      "index": 0,
+      "cpu_seconds": 0.10501075999999987,
+      "wall_seconds": 0.13645333900058176
+    },
+    {
+      "index": 1,
+      "cpu_seconds": 0.0934673880000001,
+      "wall_seconds": 0.17596464099915465
+    },
+    {
+      "index": 2,
+      "cpu_seconds": 0.09731068200000026,
+      "wall_seconds": 0.16091893200064078
+    },
+    {
+      "index": 3,
+      "cpu_seconds": 0.09335514400000022,
+      "wall_seconds": 0.1139883159994497
+    }
+  ],
+  "imports": {
+    "cpu_seconds": 2.28581909,
+    "wall_seconds": 4.583855550001317
+  },
+  "model_data_setup": {
+    "cpu_seconds": 0.013536543999999928,
+    "wall_seconds": 0.01524280000012368
+  },
+  "construction": {
+    "cpu_seconds": 2.964000000105216e-06,
+    "wall_seconds": 2.7839996619150043e-06,
+    "scripted_cache_empty_before_construction": true,
+    "compiled_here": false
+  },
+  "input_sha256": {
+    "x": "193a53b983785acfe4f45d5e371582eb9604ba463de86f208687ab220eed410a",
+    "dt": "e76431a76047b139227a4948b6278507e57dc279e81d31ca30f3447866461546",
+    "observed": "1b1c08af714b3f3f6f5cafb74783b571dc82d6ac612ecffbe816df938117b099",
+    "y": "452554640b0d8a25982ccb3b01c3f0f4748edd4109cb4987233af4298d091873"
+  },
+  "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+  "raw_sha256": "668fcd97668c8e55959315d5ea8364aff4efc16e97ee7009bdafc992c29a0eec",
+  "source_sha256": {
+    "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+    "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+    "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+  },
+  "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+}

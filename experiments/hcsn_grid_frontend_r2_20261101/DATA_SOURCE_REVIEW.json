@@ -1,0 +1,48 @@
+{
+  "current_identity_checks": [
+    "All five currently published source/protocol/cohort file hashes match SOURCE_FREEZE",
+    "Prior speaker1 pilot manifest SHA matches frozen dependency",
+    "Current cohort.protocol_sha and speaker roles match prospective protocol",
+    "Existing speaker1 pilot contains exactly the32 registered training members"
+  ],
+  "current_identity_checks_passed": true,
+  "findings": [
+    {
+      "function": "acquire_role",
+      "issue": "Train/development acquisition does not itself validate SOURCE_FREEZE.files or cohort.protocol_sha256 against the current protocol. Current bytes match, but missing runtime fail-fast checks allow an unnoticed changed source/cohort to acquire data under a new receipt.",
+      "line": 106,
+      "priority": "Enforce before confirmation stage",
+      "resolution": "Check every frozen source/protocol/cohort/helper hash and cohort.protocol_sha256 at the common acquisition/feature entry; preserve the existing published source snapshot if revised."
+    },
+    {
+      "function": "prefix",
+      "issue": "prefix(row) is a low-level unconditional decoder: confirmation authorization is only in acquire_role. An already-cached held MPEG could therefore be decoded by a caller that bypasses the acquisition entry.",
+      "line": 78,
+      "priority": "Enforce before confirmation decoding",
+      "resolution": "Require the same candidate/publication validation at the feature extraction entry before any held prefix call, or factor it into a common role guard used by both acquisition and prefix."
+    },
+    {
+      "function": "prefix",
+      "issue": "Raw cache reads in prefix are checked by length+CRC32, not by SHA256 from a frozen acquisition manifest. Actor1 prior SHA is checked only in the acquisition reuse branch; a newly acquired actor1 path also lacks that prior-SHA comparison.",
+      "line": 78,
+      "priority": "Bind before feature/candidate freeze",
+      "resolution": "Bind every feature input to the role acquisition record SHA256 and source identity; use the known prior pilot SHA for speaker1 regardless of reuse/new-download branch."
+    }
+  ],
+  "no_current_held_payload_or_frame_access_observed": true,
+  "review_kind": "Read-only static/data-metadata audit; no new HTTP requests, MPEG byte reads, decoding or model execution",
+  "reviewed_file": "data.py",
+  "reviewed_source_sha256": "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8",
+  "schema": "hcsn.grid.data-source-review.v1",
+  "sound_paths_and_semantics": [
+    "RAW resolves to the same scratch/grid_raw_r2_media cache as the original speaker1 pilot",
+    "Only speaker1 may use a legacy basename; all other speakers are namespaced under sN and selected source names remain bound to speaker URL/CRC/size",
+    "Existing speaker1 cache reuse checks full SHA against the frozen prior pilot manifest",
+    "Video uses max(audio start, first video PTS),25 last-original frames through exactly1s,native96square crop at registered(.50W,.76H),then88center pixels",
+    "Audio decodes native-rate mono, crops physical1s before rational resampling, accepts only15998..16000samples and pads fractional tail",
+    "Confirmation acquisition entry requires a publication-bound candidate, exact protocol/cohort hash, source file hashes and candidate artifact hashes",
+    "Network range parsing and bounded decompression reject status/range/header/CRC/length disagreements; concurrency is3"
+  ],
+  "source_publication_commit": "07f4ca798edf941edaa84ba79909372d32439ad8",
+  "status": "Current source identities and physical-prefix semantics pass; enforce the listed stage and SHA guards before confirmation feature extraction"
+}

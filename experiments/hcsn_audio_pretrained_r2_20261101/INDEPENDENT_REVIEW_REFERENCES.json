@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn.external-independent-review-references.v1",
+  "files": [
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_AUDIO_CANDIDATE.json",
+      "bytes": 2573,
+      "sha256": "7db4e8d796d212b9067035354cbea3f7160a0b48edee42ff5276c701d6beb47e"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/audit_audio_candidate.py",
+      "bytes": 9039,
+      "sha256": "62f28a4e1b6000bacf2159494fa444d1130a12f4b33bf3b76fc8255b19ceb089"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_CREMA_AUDIO.json",
+      "bytes": 1793,
+      "sha256": "80500141a5024781baba77c39b6f6b227797e69bdd3ee9ef40d9ac495b666453"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/audit_crema_results.py",
+      "bytes": 8053,
+      "sha256": "a31b5af50e8934eaf2b85faafe7fc0490c0775c94119028d3744062a9a2cf56b"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_CROSS_LANE.json",
+      "bytes": 923,
+      "sha256": "12ec122ebf6bee40588fb618132c04704aaf2cf12e48e0a3b3f3297d27da2a04"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_TERMINOLOGY_ADDENDUM.json",
+      "bytes": 979,
+      "sha256": "e2976dfa62b60a62ac11fb249cf521610acd123b260ee8dd2f314d4569048e4b"
+    }
+  ],
+  "reviewer": "Separate frontend_audit agent; no candidate fitting, raw media decoding or neural AV encoder forward. Frozen logistic classifier and relation-head predictions were independently recomputed from caches.",
+  "review_cpu_seconds": null,
+  "copied_into_component": false
+}

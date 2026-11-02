@@ -1,0 +1,21 @@
+{
+  "audio_pretraining": "LibriSpeech train-clean-100 + train-clean-360 + train-other-500, 960h audio",
+  "audio_pretraining_identity_scope": "LibriSpeech/GRIDhumanidentityoverlap not audited; externalpretrainingprior explicit",
+  "creator_archive": "https://zenodo.org/records/3625687",
+  "dataset": "GRID audiovisual sentence corpus",
+  "dataset_terms": "Officialpage states research availability; broadercommercial/redistributionpermission is not established here. RawMPEGs excluded from repository/evidence.",
+  "discovery": "GRIDspeaker2publicexamplealignment excludedbyactor; existing32speaker1pilottrainingrecords reused, one0.6sbinframeusedforfixedcropgeometry only",
+  "model_terms": {
+    "audio": "MIT; official model documentation explicitly licenses redistributed weights",
+    "video": "Repository custom noncommercial research/comparative-benchmark conditions, including BBC-content restrictions; commercial/production permission not established. Preserve upstream terms and attribution. Third-party weights are not republished in this lane."
+  },
+  "official_source": "https://spandh.dcs.shef.ac.uk/gridcorpus/",
+  "online_causality": false,
+  "recordings": "Historicalpubliccorpusrecordings; not recordedtoday",
+  "schema": "hcsn.grid.source-identity.v1",
+  "scope": "OfflinePTS-bounded1sprefix only; whole-filedecode mayreadreorderedcodedframes and is fully costed. Notstreaming1sarrival/productionqualification.",
+  "source_classes": "Two command codes bin/set, fixed source member selection from corpus filenames; constructed AVT consistency task",
+  "speaker_scope": "Disjoint numeric IDs withinthisregistered GRIDstudy only; no auditedglobalhumanidentity/pretraining-exclusion claim",
+  "visual_pretraining": "LRW per official repository; upstream reported LRW performance is not a CREMA result",
+  "visual_pretraining_identity_scope": "LRW/GRIDhumanidentityoverlap not audited; externalpretrainingprior explicit"
+}
