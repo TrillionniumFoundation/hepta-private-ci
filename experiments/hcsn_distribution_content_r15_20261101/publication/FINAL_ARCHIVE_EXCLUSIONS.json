@@ -1,0 +1,495 @@
+{
+  "schema": "hcsn.r15.publication.final-archive-exclusions.v1",
+  "utc": "2026-11-02T00:27:09.562Z",
+  "purpose": "Exact duplicate-backup exclusions for whole-study packaging; completeness and size correction, never scientific result selection.",
+  "parent_plan": {
+    "path": "experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PLAN.json",
+    "sha256": "ecd043a8f6e6769ff6b5e5fb19061bf3969fa162f9036d09fa67e7a4f201af1e",
+    "unchanged": true
+  },
+  "coordinator_reported_source_publication_commit": "10e8b6e11a259bf6db14f93c1eae5f1ad7b2eff1",
+  "scope": {
+    "no_canonical_results_fit_work_root_or_test_content_reads": true,
+    "restored_checkpoint_raw_content_reads": false,
+    "reads_used": "Completed publication manifests/verification/helpers and copied operational metadata; stat-only inventory of two fresh restores and one retained internal temporary tree.",
+    "all_writers_must_finish_before_pack": true,
+    "full_pack_or_restore_started": false,
+    "files_deleted": false,
+    "science_guard_report_sources_modified": false,
+    "remote_writes_performed": false,
+    "later_backup_copies_require_new_explicit_review": true
+  },
+  "archive_prefix_assumption": "repository/experiments/hcsn_distribution_content_r15_20261101",
+  "exclusion_semantics": "Original pack_results.py uses fnmatchcase on the full archive-relative directory path and stops recursion when that directory matches. These seven literal paths contain no wildcard and cover only publication backup copies.",
+  "additional_pack_arguments": [
+    "--exclude",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/attempts",
+    "--exclude",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/receipts",
+    "--exclude",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_fresh_restore_001",
+    "--exclude",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/publication/.hcsn-restore-_f_mjboi",
+    "--exclude",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/attempts",
+    "--exclude",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/receipts",
+    "--exclude",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_fresh_restore_001"
+  ],
+  "exact_exclusions": [
+    {
+      "archive_relative_pattern": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/attempts",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/attempts",
+      "kind": "duplicated completed-job operational metadata",
+      "regular_files": 31,
+      "logical_bytes": 62237,
+      "retained_target_rule": "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03/attempts/<same relative path>",
+      "proof": "Current copied metadata bytes/SHA256 match the verified partial manifest. Final canonical identity must satisfy the final-manifest equality gate.",
+      "partial_manifest_sha256": "6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab"
+    },
+    {
+      "archive_relative_pattern": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/receipts",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/receipts",
+      "kind": "duplicated completed-job operational metadata",
+      "regular_files": 5,
+      "logical_bytes": 5550,
+      "retained_target_rule": "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03/receipts/<same relative path>",
+      "proof": "Current copied metadata bytes/SHA256 match the verified partial manifest. Final canonical identity must satisfy the final-manifest equality gate.",
+      "partial_manifest_sha256": "6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab"
+    },
+    {
+      "archive_relative_pattern": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_fresh_restore_001",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_fresh_restore_001",
+      "kind": "fresh-restore verification copy",
+      "regular_files": 70,
+      "logical_bytes": 31051349,
+      "retained_target_rule": "formal_03/* -> canonical results/formal_03/*; checkpoint-note members -> preserved metadata/checkpoint_note/*",
+      "proof": "Current exact paths, sizes, directories and zero mtimes match the partial manifest; no extra/missing entries. Prior complete byte verification is preserved. Restored checkpoint/raw bytes were not reopened.",
+      "partial_manifest_sha256": "6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab"
+    },
+    {
+      "archive_relative_pattern": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/.hcsn-restore-_f_mjboi",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/.hcsn-restore-_f_mjboi",
+      "kind": "retained original-tool private restore temporary directory",
+      "regular_files": 71,
+      "logical_bytes": 31897857,
+      "retained_target_rule": "Same 70 members as checkpoint_resumed_first5; compressed stream identity retained in its manifest.",
+      "proof": "Exactly 70 members plus results.tar.xz, no additional files/directories. Every member shares its current inode/device with the corresponding fresh restore member. Stream size matches the previously verified archive; stream bytes were not reopened.",
+      "partial_manifest_sha256": "6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab",
+      "already_automatically_omitted_stream_bytes": 846508,
+      "already_automatically_omitted_stream_files": 1,
+      "current_members_same_inode_as_fresh_restore": true
+    },
+    {
+      "archive_relative_pattern": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/attempts",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/attempts",
+      "kind": "duplicated completed-job operational metadata",
+      "regular_files": 43,
+      "logical_bytes": 71003,
+      "retained_target_rule": "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03/attempts/<same relative path>",
+      "proof": "Current copied metadata bytes/SHA256 match the verified partial manifest. Final canonical identity must satisfy the final-manifest equality gate.",
+      "partial_manifest_sha256": "4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df"
+    },
+    {
+      "archive_relative_pattern": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/receipts",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/receipts",
+      "kind": "duplicated completed-job operational metadata",
+      "regular_files": 7,
+      "logical_bytes": 7828,
+      "retained_target_rule": "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03/receipts/<same relative path>",
+      "proof": "Current copied metadata bytes/SHA256 match the verified partial manifest. Final canonical identity must satisfy the final-manifest equality gate.",
+      "partial_manifest_sha256": "4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df"
+    },
+    {
+      "archive_relative_pattern": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_fresh_restore_001",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_fresh_restore_001",
+      "kind": "fresh-restore verification copy",
+      "regular_files": 96,
+      "logical_bytes": 43519477,
+      "retained_target_rule": "formal_03/* -> canonical results/formal_03/*; checkpoint-note members -> preserved metadata/checkpoint_note/*",
+      "proof": "Current exact paths, sizes, directories and zero mtimes match the partial manifest; no extra/missing entries. Prior complete byte verification is preserved. Restored checkpoint/raw bytes were not reopened.",
+      "partial_manifest_sha256": "4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df"
+    }
+  ],
+  "proof_records": [
+    {
+      "bundle": "checkpoint_resumed_first5",
+      "partial_manifest_path": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_resumed_first5/manifest.json",
+      "partial_manifest_sha256": "6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab",
+      "manifest_members": 70,
+      "verification_path": "experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/VERIFICATION.json",
+      "verification_sha256": "8fbf510acc19c9870b8ca45ff6f464f6de9ed8a806284bc0145c454f8e05b61e",
+      "prior_all_member_hash_and_byte_checks_passed": true,
+      "prior_original_source_verification_count": 66,
+      "current_restore_inventory_exact": true,
+      "current_metadata_hashes_exact": true,
+      "current_raw_restore_file_contents_rehashed": false,
+      "metadata_files_checked": 40,
+      "metadata_bytes_checked": 91985,
+      "unique_note_files_preserved": 4
+    },
+    {
+      "bundle": "checkpoint_binding_15132_15135light",
+      "partial_manifest_path": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_binding_15132_15135light/manifest.json",
+      "partial_manifest_sha256": "4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df",
+      "manifest_members": 96,
+      "verification_path": "experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/VERIFICATION.json",
+      "verification_sha256": "263b0fc2b4851c93901100d1f50e27a2f9aeec567375029853bbae39eca82ac2",
+      "prior_all_member_hash_and_byte_checks_passed": true,
+      "prior_original_source_verification_count": 92,
+      "current_restore_inventory_exact": true,
+      "current_metadata_hashes_exact": true,
+      "current_raw_restore_file_contents_rehashed": false,
+      "metadata_files_checked": 54,
+      "metadata_bytes_checked": 127389,
+      "unique_note_files_preserved": 4
+    }
+  ],
+  "proof_limits": "Historical receipts establish full bytes/SHA256 equality. Current restored checkpoint/raw bytes were not reread; exact file/directory inventory, sizes, zero mtimes and retained hardlink identities were checked. The final manifest equality gate must pass before claiming that exclusions lost no historical member.",
+  "retained_unique_note_files": [
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/NOTE.md",
+      "bytes": 1120,
+      "sha256": "de2d205dad19f385e80f81cec97bbab1f0ce2ad5a48b9e90ce540a485c37fd18"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/PACKING_DESIGN.json",
+      "bytes": 1347,
+      "sha256": "05a532f9f69896a54acee13b8148e249c920780fe736fbe8252ab7d146f390c0"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/PRESERVATION_POINTER.json",
+      "bytes": 363,
+      "sha256": "3097b569abb44f27592d8a2821edfdda47f8ba8621ed8fb0cf11dd58d13c8dba"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/SOURCE_FILES.json",
+      "bytes": 21368,
+      "sha256": "0e6b8ddadafac006ea80cb7cc03ed66f491f120223b3c764ad2e9d897e51e9cb"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/NOTE.md",
+      "bytes": 1052,
+      "sha256": "a8cae137d41b912109c6a886dc14e8a4ac27ce57b3848e55f3e1740409000f9e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/PACKING_DESIGN.json",
+      "bytes": 5328,
+      "sha256": "a7543dbba7c6d0fcb68e60485da837f364121429e5af2b3f2bff1f290a9f961c"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/PRESERVATION_POINTER.json",
+      "bytes": 368,
+      "sha256": "ee5512dccfb46dd049eaccfb9a0723c4ed69f5db1da337ddada8ba9428745f2d"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/SOURCE_FILES.json",
+      "bytes": 41810,
+      "sha256": "18932c8e68996ee0db00b93a666f7df197f1dfc60c94fe906bf02b246f9fd624"
+    }
+  ],
+  "protected_publication_files": [
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/EXECUTION_SCOPE.json",
+      "bytes": 2152,
+      "sha256": "037e0a752f20cbc072d084edb4f0a954baef3ded70e69f7e2756a9c706950b8e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/PACK_RECEIPT.json",
+      "bytes": 1945,
+      "sha256": "dbe2061eadd75c4a5026a722378df5e3a8a969bd89ac578a7c97d0b125034301"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/PUBLICATION_FILES.json",
+      "bytes": 8015,
+      "sha256": "fca3b47b79d9af9e060920408a37808d8f1a5665203e5e613204bfab9cfa722e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/PUBLICATION_FILES_FINAL.json",
+      "bytes": 8545,
+      "sha256": "282b8937e9087d09ea2f15b9f9bbaf0d77a279d634d138717d27cf8b1efae44e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/RESTORE_RECEIPT.json",
+      "bytes": 404,
+      "sha256": "5fc5a3344138d610aaaec73a4e63fde2bebe57803ababc9b6996721a155ddd31"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/VERIFICATION.json",
+      "bytes": 22779,
+      "sha256": "8fbf510acc19c9870b8ca45ff6f464f6de9ed8a806284bc0145c454f8e05b61e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/before_metadata_staging_DISK_GATE.json",
+      "bytes": 197,
+      "sha256": "d07128692699a20360108ff36cd5ceae0b2ac74df65d2a0d6830a08d13ab397a"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/before_pack_DISK_GATE.json",
+      "bytes": 185,
+      "sha256": "608975700c0359cf75d4bc02c72ba97ab542dfeb7a59d0941c005733e8be13f0"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/before_restore_DISK_GATE.json",
+      "bytes": 188,
+      "sha256": "c6585d334fb10a60a41d867f44149975698fb8dbf971128686e7a55bd4ad9a53"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/preserve.py",
+      "bytes": 14832,
+      "sha256": "41e3f744e3c75c04390c3cc251b95fdab6b2929b3153d2947e10b917becd0aac"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/EXECUTION_SCOPE.json",
+      "bytes": 824,
+      "sha256": "4e63d6bcea38fcaf6bb150955e26c8d7b9be24d2e493b37308823c85f0373cd6"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/PACK_CLI.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/PACK_CLI.stdout.txt",
+      "bytes": 2296,
+      "sha256": "53ead6edb668a9089418c618f276d40187ab71d6beac8967ea0033a97948606f"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/PACK_RECEIPT.json",
+      "bytes": 2360,
+      "sha256": "3515dd52b6798b6c25c2c2a78d063d0afe58716815b06878170699793c1d2d77"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/PUBLICATION_FILES.json",
+      "bytes": 13649,
+      "sha256": "f4232e77696ccdde0d1f4d273648217a40d760abcf6a05150ee8e61f10e0923f"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/RESTORE_CLI.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/RESTORE_CLI.stdout.txt",
+      "bytes": 398,
+      "sha256": "c5bad0960f6c518f0c442d5c5c7f65d1a87664a447653cd09e634942284b9cfd"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/RESTORE_RECEIPT.json",
+      "bytes": 414,
+      "sha256": "88dc5f36bb826d069238519d74a8f445f21ac9c6fc992c94e7fdca7311482854"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/VERIFICATION.json",
+      "bytes": 34578,
+      "sha256": "263b0fc2b4851c93901100d1f50e27a2f9aeec567375029853bbae39eca82ac2"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/before_metadata_staging_DISK_GATE.json",
+      "bytes": 242,
+      "sha256": "88b20df31ca0c7388e87199f3361b276217617ad8225a6953143e7d1059dfcda"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/before_pack_DISK_GATE.json",
+      "bytes": 230,
+      "sha256": "fc15c305c3db2cd2f2cff63eda58000142a563f1556e076d69d9e459587fe73b"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/before_preflight_DISK_GATE.json",
+      "bytes": 235,
+      "sha256": "d65033c05c903f4da236b1256026f5bcf5f14f9194072fce3fe11501b8eecd1e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/before_restore_DISK_GATE.json",
+      "bytes": 233,
+      "sha256": "b2bae0fd646b5836f8f44efd79c3e466d612691f20d5d260c1783a309627b01d"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_verification_001/preserve.py",
+      "bytes": 19834,
+      "sha256": "277bd491c194dbe3e5c1677f99b6130a5b3de5db5c8703f16f47f63647cc6dbe"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/NOTE.md",
+      "bytes": 1120,
+      "sha256": "de2d205dad19f385e80f81cec97bbab1f0ce2ad5a48b9e90ce540a485c37fd18"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/PACKING_DESIGN.json",
+      "bytes": 1347,
+      "sha256": "05a532f9f69896a54acee13b8148e249c920780fe736fbe8252ab7d146f390c0"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/PRESERVATION_POINTER.json",
+      "bytes": 363,
+      "sha256": "3097b569abb44f27592d8a2821edfdda47f8ba8621ed8fb0cf11dd58d13c8dba"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/SOURCE_FILES.json",
+      "bytes": 21368,
+      "sha256": "0e6b8ddadafac006ea80cb7cc03ed66f491f120223b3c764ad2e9d897e51e9cb"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/NOTE.md",
+      "bytes": 1052,
+      "sha256": "a8cae137d41b912109c6a886dc14e8a4ac27ce57b3848e55f3e1740409000f9e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/PACKING_DESIGN.json",
+      "bytes": 5328,
+      "sha256": "a7543dbba7c6d0fcb68e60485da837f364121429e5af2b3f2bff1f290a9f961c"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/PRESERVATION_POINTER.json",
+      "bytes": 368,
+      "sha256": "ee5512dccfb46dd049eaccfb9a0723c4ed69f5db1da337ddada8ba9428745f2d"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/SOURCE_FILES.json",
+      "bytes": 41810,
+      "sha256": "18932c8e68996ee0db00b93a666f7df197f1dfc60c94fe906bf02b246f9fd624"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_binding_15132_15135light/manifest.json",
+      "bytes": 25304,
+      "sha256": "4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_binding_15132_15135light/manifest.sha256",
+      "bytes": 80,
+      "sha256": "5d39554543b4e022fc807b156a661c70989af2ba2f0eb9e7eb6ea6c15eade1a9"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15131/manifest.json",
+      "bytes": 9028,
+      "sha256": "c66f2643f2c2df64c7a0f2efc900568ab4bb43859573d74ad8768de48a64b73e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15131/manifest.sha256",
+      "bytes": 80,
+      "sha256": "1f4a1a2f7ff62d72c6e7a3119d4b6fe25a9696968d4beaeb21f491e017a0f9cb"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15132_15134/manifest.json",
+      "bytes": 21420,
+      "sha256": "24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15132_15134/manifest.sha256",
+      "bytes": 80,
+      "sha256": "5389da6be7191b84f8ed4daa885c2efabd3638ac05fdf6a44f65af46d0a83b06"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15135_15137light/manifest.json",
+      "bytes": 18674,
+      "sha256": "464a3eae6e0cbf0d7e62f5e19fee9365b99d0f170a9b04713264cbd640a29512"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15135_15137light/manifest.sha256",
+      "bytes": 80,
+      "sha256": "9f191f725727d5c4c5cd251a1c81840e32b47e7ba1a0b47344e508645b54b55b"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_resumed_first5/manifest.json",
+      "bytes": 18659,
+      "sha256": "6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_resumed_first5/manifest.sha256",
+      "bytes": 80,
+      "sha256": "43e0987e3a6a5753cc9f08a01e378d290aecda7c9ca52031af0ad4ef772ce958"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PLAN.json",
+      "bytes": 21472,
+      "sha256": "ecd043a8f6e6769ff6b5e5fb19061bf3969fa162f9036d09fa67e7a4f201af1e"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PREPARATION.json",
+      "bytes": 7076,
+      "sha256": "8f6f4c9228867f61d3ad57b36adf07262d844ba9e8fcef5b2b0d5ad988279c03"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PREPARATION_02.json",
+      "bytes": 1195,
+      "sha256": "c76f35aeca4ff5e91019d621a7cb46cf662379c2fa807a714d25265416241486"
+    },
+    {
+      "archive_path": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PREPARATION_03.json",
+      "bytes": 2369,
+      "sha256": "026d70ffa6f0c5c072cf26f4cf419f8875e9c7cf06f2fbd196395229c035d5dd"
+    }
+  ],
+  "protected_scopes": [
+    "All actual results/formal_01, formal_02 and formal_03 trees, including original attempts, work roots, fits, raw results and registrations.",
+    "All external development01/development02 evidence from the parent plan.",
+    "All publication verification/helper/validation evidence and preserved partial manifest/checksum pairs. There is no broad checkpoint_* exclusion.",
+    "Both metadata/checkpoint_note directories: all eight files, including NOTE.md, PACKING_DESIGN.json, SOURCE_FILES.json and PRESERVATION_POINTER.json."
+  ],
+  "size_effect": {
+    "excluded_path_regular_files": 323,
+    "excluded_path_logical_bytes": 106615301,
+    "already_automatic_existing_archive_files": 1,
+    "already_automatic_existing_archive_bytes": 846508,
+    "additional_explicit_omitted_file_entries": 322,
+    "additional_explicit_omitted_uncompressed_member_bytes": 105768793,
+    "preserved_unique_note_files": 8,
+    "preserved_unique_note_bytes": 72756,
+    "interpretation": "Uncompressed path-byte accounting only, not predicted XZ savings or disk reclamation. First-five fresh restore and retained temporary members share inodes. Nothing was deleted."
+  },
+  "fifth_manifest_copy": {
+    "status": "completed; separate immutable preparation receipt",
+    "preparation_receipt": "experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PREPARATION_03.json",
+    "preparation_receipt_sha256": "026d70ffa6f0c5c072cf26f4cf419f8875e9c7cf06f2fbd196395229c035d5dd",
+    "files": [
+      {
+        "already_identical": false,
+        "byte_identical": true,
+        "bytes": 25304,
+        "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_binding_15132_15135light/manifest.json",
+        "sha256": "4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df",
+        "source": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/manifest.json"
+      },
+      {
+        "already_identical": false,
+        "byte_identical": true,
+        "bytes": 80,
+        "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_binding_15132_15135light/manifest.sha256",
+        "sha256": "5d39554543b4e022fc807b156a661c70989af2ba2f0eb9e7eb6ea6c15eade1a9",
+        "source": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/manifest.sha256"
+      }
+    ],
+    "remote_commit_reported_by_coordinator": "8a3ff71b390d08bb8c885863c5e722ac2a272dff",
+    "coordinator_reports_all_40_blob_readbacks_passed": true,
+    "remote_readback_not_repeated_here": true
+  },
+  "final_manifest_coverage_gate": {
+    "required_before_release": true,
+    "parameters": {
+      "FINAL_MANIFEST": "Path to the completed final bundle manifest.json",
+      "FINAL_MANIFEST_SHA256": "Pin from the completed final pack receipt; do not derive this supposedly trusted argument from the same manifest during the check.",
+      "REPO_ROOT": "Repository root containing preserved prior_checkpoint_manifests and this exclusion record."
+    },
+    "partial_member_count": 166,
+    "distinct_retained_target_count": 165,
+    "mapping_rules": [
+      {
+        "source_prefix": "formal_03/",
+        "target_prefix": "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03/"
+      },
+      {
+        "source_prefix": "checkpoint_resumed_first5/",
+        "target_prefix": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_metadata_001/checkpoint_note/"
+      },
+      {
+        "source_prefix": "checkpoint_binding_15132_15135light/",
+        "target_prefix": "repository/experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_binding_15132_15135light_metadata_001/checkpoint_note/"
+      }
+    ],
+    "exact_command": "python -B - \"$FINAL_MANIFEST\" \"$FINAL_MANIFEST_SHA256\" \"$REPO_ROOT\" <<'COVERAGE'\nimport hashlib, json, sys\nfrom pathlib import Path\nfinal_path, pinned_sha, repository = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])\nraw = final_path.read_bytes()\nassert hashlib.sha256(raw).hexdigest() == pinned_sha, 'Final manifest SHA256 mismatch'\nfinal = json.loads(raw)\nretained = {row['path']: row for row in final['members']}\nassert len(retained) == len(final['members']), 'Duplicate final member paths'\nbase = 'repository/experiments/hcsn_distribution_content_r15_20261101'\npub = repository / 'experiments/hcsn_distribution_content_r15_20261101/publication'\npartials = [\n    ('checkpoint_resumed_first5', '6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab', 70),\n    ('checkpoint_binding_15132_15135light', '4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df', 96),\n]\nchecks = []\nfor label, expected_sha, expected_count in partials:\n    partial_path = pub / 'prior_checkpoint_manifests' / label / 'manifest.json'\n    partial_raw = partial_path.read_bytes()\n    assert hashlib.sha256(partial_raw).hexdigest() == expected_sha, label\n    partial = json.loads(partial_raw)\n    assert len(partial['members']) == expected_count, label\n    for row in partial['members']:\n        if row['path'].startswith('formal_03/'):\n            target = base + '/results/' + row['path']\n        else:\n            assert row['path'].startswith(label + '/'), row['path']\n            target = base + '/publication/' + label + '_metadata_001/checkpoint_note/' + row['path'][len(label)+1:]\n        kept = retained[target]\n        assert (kept['bytes'], kept['sha256']) == (row['bytes'], row['sha256']), target\n        checks.append({'partial': label, 'partial_member': row['path'], 'final_member': target, 'bytes': row['bytes'], 'sha256': row['sha256']})\nassert len(checks) == 166\nassert len({c['final_member'] for c in checks}) == 165\nexclusions_path = pub / 'FINAL_ARCHIVE_EXCLUSIONS.json'\nexclusions_raw = exclusions_path.read_bytes()\nexclusions_entry = retained[base + '/publication/FINAL_ARCHIVE_EXCLUSIONS.json']\nassert (len(exclusions_raw), hashlib.sha256(exclusions_raw).hexdigest()) == (exclusions_entry['bytes'], exclusions_entry['sha256'])\nexclusions = json.loads(exclusions_raw)\nfor row in exclusions['protected_publication_files']:\n    kept = retained[row['archive_path']]\n    assert (kept['bytes'], kept['sha256']) == (row['bytes'], row['sha256']), row['archive_path']\nprint(json.dumps({'passed': True, 'final_manifest_sha256': pinned_sha, 'partial_members_verified': len(checks), 'distinct_retained_targets': 165, 'protected_publication_files_verified': len(exclusions['protected_publication_files']), 'only_manifest_and_operational_metadata_read': True, 'checks': checks}, indent=2))\nCOVERAGE",
+    "command_syntax_checked": true,
+    "command_executed": false,
+    "failure_action": "Do not claim completeness or publish a final success receipt. Retain excluded copies and restore the missing member under a distinct historical path, or revise the exact exclusions and repack. Do not delete or overwrite source evidence."
+  }
+}
