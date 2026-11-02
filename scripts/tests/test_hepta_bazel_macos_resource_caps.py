@@ -10,7 +10,9 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 WRAPPER = ROOT / ".github" / "scripts" / "run-bazel-ci.sh"
 GUARD = 'if [[ "${RUNNER_OS:-}" == "macOS" && "${GITHUB_ACTIONS:-}" == "true" ]]; then'
-CAPS = "post_config_bazel_args+=(--jobs=24 --loading_phase_threads=8 --local_test_jobs=8)"
+CAPS = (
+    "post_config_bazel_args+=(--jobs=24 --loading_phase_threads=8 --local_test_jobs=8)"
+)
 
 
 def validate_policy(source: str) -> None:
@@ -63,7 +65,9 @@ class HostedMacosBazelResourceCapsTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             validate_policy(
                 self.source.replace(
-                    CAPS, CAPS + "\n  post_config_bazel_args+=(--test_tag_filters=-native)", 1
+                    CAPS,
+                    CAPS + "\n  post_config_bazel_args+=(--test_tag_filters=-native)",
+                    1,
                 )
             )
 
