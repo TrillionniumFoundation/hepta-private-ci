@@ -1,0 +1,43 @@
+{
+  "body_cpu_seconds": 0.13602358000000003,
+  "case_count": 634,
+  "checker_sha256": "54f2f6024dd77efdb692c4fda704e02bffe9ad97b22cb6a63b5e7f84f269ef33",
+  "frozen_manifest_sha256": "cb65df2e75c2226c5441b9f4a293e8fe0ae8305a51cc3f4a5a61b6fdede160d6",
+  "numpy_isclose_source_sha256": "8ff754327a8adcec72c463de6ed1d4d9f7093bb1df5579edd5b8bad724f4b257",
+  "numpy_version": "2.3.5",
+  "passed": true,
+  "publication_source_commit": "5a8472045183fa638e77ac8f2ad903f3b00e3d06",
+  "raw_sha256": "2669cfd6790fbe4a835f1d8d94ac8ac5a3eef738d27e06ee2463887e8469673b",
+  "scope": "Deterministic threshold/type/ownership/I-O-equivalence evidence; no resource-gain or full model-adoption inference.",
+  "source_sha256": {
+    "tools/hcsn/checkpoint_fastpath_r21_20261101/execution.py": "e9d7f1985df4780009b0e4258fc9723786e4c7bd49a0190e661a65ff45418c45",
+    "tools/hcsn/planner_r22_20261102/execution.py": "40fa7f1b05ce49df15e4fe45b9c11dc4fda285771958cc300260971daa311442",
+    "tools/hcsn/planner_r22_20261102/memory.py": "fb57c57fb4a6cd87c71990a7da2dc3df1715061f0f9bd917feefd323cefb761d",
+    "tools/hcsn/support_retention_r16_20261101/compression.py": "4ab10b3c945916dc0f7abfdd517cee5cf27eea6e363f76781195a6b6cea35d6a"
+  },
+  "static_contracts": [
+    "all_declared_frozen_dependency_hashes_match",
+    "same_function_object_persist",
+    "same_function_object_load",
+    "same_function_object_restore_owned",
+    "execute_body_AST_identical",
+    "PackedBeliefMemory___init___AST_identical",
+    "PackedBeliefMemory_beliefs_AST_identical",
+    "PackedBeliefMemory_advance_AST_identical",
+    "PackedBeliefMemory_observe_AST_identical",
+    "PackedBeliefMemory_write_AST_identical",
+    "PackedBeliefMemory_checkpoint_AST_identical",
+    "PackedBeliefMemory_restore_AST_identical",
+    "AnchoredPackedMemory___init___AST_identical",
+    "AnchoredPackedMemory_materialize_AST_identical",
+    "AnchoredPackedMemory_beliefs_AST_identical",
+    "AnchoredPackedMemory_advance_AST_identical",
+    "AnchoredPackedMemory_observe_AST_identical",
+    "AnchoredPackedMemory_write_AST_identical",
+    "AnchoredPackedMemory_checkpoint_AST_identical",
+    "AnchoredPackedMemory_restore_AST_identical",
+    "_probability_only_mass_predicate_changed",
+    "Law._belief_only_mass_predicate_changed",
+    "BeliefMemory.restore_only_mass_predicate_changed"
+  ]
+}

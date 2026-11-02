@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "tools.hcsn.planner_r22_20261102.independent_r22_validation",
+    "--output",
+    "tools/hcsn/planner_r22_20261102/INDEPENDENT_VALIDATION.json.gz"
+  ],
+  "cost_scope": "Full invoked child process and waited descendants, including interpreter imports/build/native calls/final serialization. Excludes this small wrapper and transport; nested inner timing must not be added.",
+  "exit_code": 0,
+  "family_simultaneous_peak_rss_kib": null,
+  "full_child_family_cpu_seconds": 0.524629,
+  "max_single_process_rss_kib": 50592,
+  "pid": 5,
+  "system_cpu_seconds": 0.048839,
+  "user_cpu_seconds": 0.47579,
+  "wall_seconds": 0.5256781490024878
+}
