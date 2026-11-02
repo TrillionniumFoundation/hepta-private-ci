@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-r20-independent-financial-review-process-v1",
+  "started_utc": "2026-11-02T01:35:50.266703+00:00",
+  "completed_utc": "2026-11-02T01:36:13.488999+00:00",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "tools/hcsn/native_financial_r20_20261101/independent_financial_audit.py",
+    "--out",
+    "tools/hcsn/native_financial_r20_20261101/INDEPENDENT_REVIEW.json"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 23.222374297998613,
+  "complete_child_user_cpu_seconds": 10.025002,
+  "complete_child_system_cpu_seconds": 0.16308599999999998,
+  "cumulative_child_maximum_rss_linux_kib": 69484,
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "scope": "Entire independent audit interpreter including imports/input checking/adaptive precision work/all native guard subprocesses/finalserialization. Inner CPU is nested, not added.",
+  "energy_joules": null
+}

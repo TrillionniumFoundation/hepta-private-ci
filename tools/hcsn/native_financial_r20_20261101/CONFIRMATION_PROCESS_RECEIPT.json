@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "tools.hcsn.native_financial_r20_20261101.verify",
+    "--output",
+    "tools/hcsn/native_financial_r20_20261101/confirmation_01",
+    "--namespace",
+    "202011017",
+    "--formal"
+  ],
+  "exit_code": 0,
+  "complete_child_cpu_seconds": 2.5898149999999998,
+  "wall_seconds": 9.269531564998033,
+  "maximum_rss_linux_kib": 140020,
+  "source_checkpoint": "aebb58339dda8010888569d78d29cfdb226bb712",
+  "scope": "Complete child interpreter/import/build/numerical references/allnativeprocesses/outputserialization. Inner intervals are nested and not added. Supervisor and priorunmeasuredengineeringcost excluded."
+}
