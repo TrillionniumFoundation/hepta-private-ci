@@ -106,7 +106,10 @@ def probe_pairs(policy, records, adapter, confusion, protocol, fit, split):
     runtime = FactorRuntime(policy)
     episodes = []
     for i, record in enumerate(records):
-        seed = protocol["probe_seed_base"] + fit * 100000 + (20000 if "ood" in split else 10000) + i
+        seed = protocol["probe_seed_base"] + fit * 100000 + {
+            "train": 0, "validation": 10000, "validation_ood": 20000,
+            "iid": 30000, "ood": 40000,
+        }[split] + i
         episode, _ = run_episode(runtime, record, adapter, confusion, "fixed", seed)
         episode.update(fit=fit, split=split, candidate="fpt_base_multi")
         episodes.append(episode)

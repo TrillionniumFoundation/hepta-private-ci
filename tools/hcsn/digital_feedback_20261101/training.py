@@ -25,24 +25,27 @@ class CpuExpired(BaseException):
 
 @contextmanager
 def cpu_deadline(seconds):
-    """Interrupt Python/CPU library work using Linux process CPU accounting.
+    """Use periodic wakeups, with process_time as the only deadline clock.
 
-    A native call may deliver its pending signal only on return. Every actual
-    overrun is consequently measured and rejected, never inferred from the
-    existence of this timer. The caller owns the model transaction boundary.
+    ITIMER_PROF ticks can disagree with process_time under CPU contention.
+    An early wakeup must return without interrupting or restarting the work.
+    Native calls may defer Python signal delivery; actual overrun is therefore
+    still measured and rejected by the caller's registered CPU tolerance.
     """
     if not hasattr(signal, "ITIMER_PROF") or not math.isfinite(seconds) or seconds <= 0:
         raise ValueError("positive CPU deadline and ITIMER_PROF platform required")
     if signal.getitimer(signal.ITIMER_PROF) != (0., 0.):
         raise RuntimeError("another process CPU timer is already active")
     previous = signal.getsignal(signal.SIGPROF)
+    deadline = time.process_time() + seconds
 
     def expired(signum, frame):
-        raise CpuExpired("registered process CPU budget reached")
+        if time.process_time() >= deadline:
+            raise CpuExpired("registered process CPU budget reached")
 
     signal.signal(signal.SIGPROF, expired)
-    signal.setitimer(signal.ITIMER_PROF, seconds)
     try:
+        signal.setitimer(signal.ITIMER_PROF, .01, .01)
         yield
     finally:
         signal.setitimer(signal.ITIMER_PROF, 0.)

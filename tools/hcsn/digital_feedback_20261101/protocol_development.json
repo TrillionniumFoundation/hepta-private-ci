@@ -125,13 +125,13 @@
     1129,
     1151
   ],
-  "batch_seed_base": 971000,
-  "occupancy_seed_base": 972000000,
-  "execution_seed_base": 973000000,
+  "batch_seed_base": 18000000000000,
+  "occupancy_seed_base": 12000000000000,
+  "execution_seed_base": 14000000000000,
   "training_cpu_seconds": 8.0,
   "development_ood_seed_base": 975000000000,
-  "probe_seed_base": 974000000,
-  "candidate_order_seed_base": 976000,
+  "probe_seed_base": 16000000000000,
+  "candidate_order_seed_base": 20000000000000,
   "cpu_tolerance_seconds": 0.16,
   "feedback_round_fractions": [
     0.2,
@@ -162,5 +162,6 @@
       "ordinary_multi",
       "ordinary_single"
     ]
-  }
+  },
+  "rng_namespace_contract": "Registered fits below10000, worlds below10000. Execution role bases separated by2e12, per-fit stride100000, per-split stride10000; TRAIN probe differs from IID/OOD probe. Candidate pairing within a fit intentionally shares its role stream. Development_001 is retained failed development and is not used as new confirmation."
 }

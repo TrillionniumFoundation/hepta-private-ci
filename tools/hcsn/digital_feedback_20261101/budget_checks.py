@@ -212,6 +212,21 @@ class BudgetChecks(unittest.TestCase):
         self.assertEqual(receipt["behavior_rows_with_support"], [])
 
 
+    def test_early_prof_signals_do_not_end_process_cpu_budget(self):
+        start = time.process_time()
+        returned_early_signals = 0
+        with self.assertRaises(CpuExpired):
+            with cpu_deadline(.04):
+                for _ in range(8):
+                    signal.raise_signal(signal.SIGPROF)
+                    returned_early_signals += 1
+                while True:
+                    sum(i * i for i in range(100))
+        self.assertEqual(returned_early_signals, 8)
+        self.assertGreaterEqual(time.process_time() - start, .04)
+        self.assertLess(time.process_time() - start, .16)
+
+
 if __name__ == "__main__":
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(BudgetChecks)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
