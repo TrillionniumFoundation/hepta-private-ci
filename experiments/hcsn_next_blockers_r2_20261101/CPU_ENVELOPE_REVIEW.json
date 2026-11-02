@@ -1,0 +1,16 @@
+{
+  "attributable_full_family_peak_rss_bytes": null,
+  "case_pairs": 12,
+  "full_family_memory_gate": false,
+  "guarded_worker_compatibility_rss_gate": true,
+  "limits": [
+    "Kernel prevents new process/thread creation after seal; initial descendants cannot be independently enumerated",
+    "Nonzero pre-numerical waited-child CPU is retained; only post-seal delta is checked zero",
+    "wait4 lifetime worker RSS; supervisor-plus-worker sum bounds those two measured processes only",
+    "No full-family, filesystem page cache, GPU, energy or production qualification"
+  ],
+  "record_checks": 24,
+  "review_source_sha256": "1d9d82d25c54fb5f881d2664886b0d6e01be89591ba1507dab8473df68a9f318",
+  "status": "verified",
+  "summary_sha256": "46b21f8397ca797bbee5aa4acf6712e1b52e724f673b35c8510070005e359087"
+}

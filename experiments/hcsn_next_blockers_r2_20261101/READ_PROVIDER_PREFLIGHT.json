@@ -1,0 +1,20 @@
+{
+  "all_blockers_closed": false,
+  "all_conservative_repaired_answers_match_environment": true,
+  "cache_once_per_slot": true,
+  "client_full_table_uses": "Exactly one full_x load, passed only to RawProvider construction; no client peek",
+  "fixtures": "Train-only seeds424131/424137; no dev/confirm or neural model execution",
+  "negative_checks": 17,
+  "original_source_slot_checks": 116352,
+  "passed": true,
+  "production_activation": false,
+  "query_replays": 2304,
+  "schema": "hcsn.read-repair-r2.independent-preflight.v1",
+  "scope": "Supplied local provider contract and prefix reconstruction only; no task efficacy, external provider ownership or production qualification",
+  "sessions": 576,
+  "source_hashes": {
+    "experiments/hcsn_next_blockers_r2_20261101/read_provider_preflight.py": "27f76e6e65982d35cd2f2db60cc9d0a40c45ff69f2e5241b50cb33d4704e79f1",
+    "experiments/hcsn_read_repair_r2_20261101/provider.py": "b7ebc2a7b1217a6a45182554631c701f981be75c348a32a02367e5bba47acda6",
+    "experiments/hcsn_read_repair_r2_20261101/worlds.py": "8fc20c7f05d086c9ed3c6aac2542e9a9c225874bcd8d6f5e790475c007d967ca"
+  }
+}

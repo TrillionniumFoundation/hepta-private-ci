@@ -1,0 +1,72 @@
+{
+  "all_blockers_closed": false,
+  "all_candidate_optimizers_success": true,
+  "all_registered_members_preserved": true,
+  "candidate": "secondary",
+  "candidate_sha256": "01c515bc4214de328c2097de144d5a44ce744e2e4bd008ea2df301752778c84b",
+  "confirmation": {
+    "AVT_actor_bootstrap_975": [
+      0.7122395833333334,
+      0.7799479166666666
+    ],
+    "AVT_minus_AT": {
+      "accuracy": -0.0703125,
+      "accuracy_actor_bootstrap_975": [
+        -0.11197916666666669,
+        -0.04427083333333333
+      ],
+      "brier": 0.015742407478835565,
+      "brier_actor_bootstrap_975": [
+        0.0046396483644651,
+        0.0286788055119157
+      ]
+    },
+    "actors": [
+      10,
+      11,
+      12,
+      13
+    ],
+    "episodes": 512,
+    "failed_source_clips": 0,
+    "family_adjusted_gate": false,
+    "qualified_source_clips": 128,
+    "registered_clips": 128,
+    "sentence_accuracy": {
+      "A": 1.0,
+      "T": 1.0,
+      "V": 0.59375
+    },
+    "status": "EVALUATED_COMPLETE_REGISTERED_GROUP",
+    "weighted_AT_accuracy": 0.8255208333333334,
+    "weighted_AVT_accuracy": 0.7552083333333334
+  },
+  "cost_ledger_sha256": "98078edf39eb8c8c73f003f82d9b5d11dc0dae34eb8e5972853957c4d26b796c",
+  "development": {
+    "failed_source_clips": 3,
+    "model_quality_scores": null,
+    "qualified_source_clips": 61,
+    "registered_clips": 64,
+    "status": "SOURCE_FAILURE_HOLD",
+    "valid_subset_adoption": false
+  },
+  "held_driven_selection": false,
+  "independent_audit_index": {
+    "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/AUDIT_INDEX.json",
+    "sha256": "833f58426b4e78b77a6ef90859d21c14da5e37d12cb1ee4b8a2f837f03824819"
+  },
+  "independent_provenance_cost_inventory_sha256": "57f68b51e7d7eb52b8457066db01aa12e5c418a3d58ffe3ce40a80578922c605",
+  "independent_reviews": {
+    "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_GRID_CONFIRMATION.json": "a6b1bb7e76dfa0993180954fd84c33ed164164fa4ec5eba8bbb8cb1e0ed48cbe",
+    "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_GRID_FAMILY_CONFIRMATION.json": "fdcef1462dcf06b43319f21df290cde793ab2bab61dc685009187ca38b293131",
+    "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_GRID_SOURCE_INVENTORY_CONFIRMATION.json": "a1c059ced5d5a1215a591a0b1b6652b450065f8c5526612959b74f22e590b3be",
+    "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_GRID_SOURCE_INVENTORY_DEVELOPMENT.json": "a6226eea2f25896978c501804736101df98eaf7897c79af1e8662108ad899f1d"
+  },
+  "primary_controls_bitwise_reused": true,
+  "primary_new_fits": 14,
+  "primary_original_95_registered_quality_gate": false,
+  "production_activation": false,
+  "schema": "hcsn.grid.acceptance.v1",
+  "scope": "Historical public GRID recordings, numeric speaker-disjoint groups within this corpus only; four-actor bounded closed-command experiment; no global human/pretraining exclusion, CREMA retrospective gate, open-domain, analytic-core or GPU/energy adoption.",
+  "secondary_new_fits": 5
+}

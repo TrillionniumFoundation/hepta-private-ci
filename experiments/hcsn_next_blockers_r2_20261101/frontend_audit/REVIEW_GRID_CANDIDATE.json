@@ -1,0 +1,165 @@
+{
+  "OOF_probability_max_error": 1.1102230246251565e-16,
+  "actor_folds_verified": 9,
+  "all_blockers_closed": false,
+  "candidate_sha256": "408843812ca057e5500b8006eafbba8fc1a66e69e512633246f3a19f5528dd5c",
+  "clips": 192,
+  "episode_count": 768,
+  "exact_registered_command_pairing": true,
+  "feature_sha256": "01f671146932ea0f64bbf0a7417f481d93d9df4ae13381ad00caec40abf95fef",
+  "fit_performed": false,
+  "fits": [
+    {
+      "C": 0.1,
+      "features": 1536,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 7.926408407507579e-06,
+      "optimizer_iterations": 57,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "A/fold0"
+    },
+    {
+      "C": 0.1,
+      "features": 1536,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 1.1532918652582685e-05,
+      "optimizer_iterations": 36,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "A/fold1"
+    },
+    {
+      "C": 0.1,
+      "features": 1536,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 1.6892624964542913e-05,
+      "optimizer_iterations": 55,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "A/fold2"
+    },
+    {
+      "C": 0.1,
+      "features": 1536,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 2.2844389980861135e-05,
+      "optimizer_iterations": 60,
+      "optimizer_success": true,
+      "rows": 192,
+      "tag": "A/full"
+    },
+    {
+      "C": 0.1,
+      "features": 1024,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 4.0489529224391196e-05,
+      "optimizer_iterations": 61,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "V/fold0"
+    },
+    {
+      "C": 0.1,
+      "features": 1024,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 6.053061357559619e-05,
+      "optimizer_iterations": 54,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "V/fold1"
+    },
+    {
+      "C": 0.1,
+      "features": 1024,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 0.00017598854063730074,
+      "optimizer_iterations": 58,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "V/fold2"
+    },
+    {
+      "C": 0.1,
+      "features": 1024,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 0.00011448269465275107,
+      "optimizer_iterations": 64,
+      "optimizer_success": true,
+      "rows": 192,
+      "tag": "V/full"
+    },
+    {
+      "C": 0.1,
+      "features": 26,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 2.57993271191026e-09,
+      "optimizer_iterations": 7,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "T/fold0"
+    },
+    {
+      "C": 0.1,
+      "features": 26,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 2.57993271191026e-09,
+      "optimizer_iterations": 7,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "T/fold1"
+    },
+    {
+      "C": 0.1,
+      "features": 26,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 2.57993271191026e-09,
+      "optimizer_iterations": 7,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "T/fold2"
+    },
+    {
+      "C": 0.1,
+      "features": 26,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 7.947232134597471e-07,
+      "optimizer_iterations": 7,
+      "optimizer_success": true,
+      "rows": 192,
+      "tag": "T/full"
+    },
+    {
+      "C": 1.0,
+      "features": 3,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 0.0002963315772017694,
+      "optimizer_iterations": 13,
+      "optimizer_success": true,
+      "rows": 768,
+      "tag": "AT"
+    },
+    {
+      "C": 1.0,
+      "features": 7,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 0.0006196875607989982,
+      "optimizer_iterations": 28,
+      "optimizer_success": true,
+      "rows": 768,
+      "tag": "AVT"
+    }
+  ],
+  "frozen_candidate_files_checked": 30,
+  "held_media_decoded": false,
+  "model_inference_performed": false,
+  "model_source_freeze_sha256": "0297923d4b0b59a7e01aa873bd8556d190b2be710b60c032e17a751ca053ebe5",
+  "oof_accuracy": {
+    "A": 0.9791666666666666,
+    "T": 1.0,
+    "V": 0.7395833333333334
+  },
+  "real_media_opened": false,
+  "schema": "hcsn.grid.independent-candidate-numerical-audit.v1",
+  "scope": "Cached-feature and frozen-fit audit. Registered training group only; no development/confirmation quality claim and no remote publication verification."
+}

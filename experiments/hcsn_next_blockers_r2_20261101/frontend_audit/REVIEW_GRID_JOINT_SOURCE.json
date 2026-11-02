@@ -1,0 +1,29 @@
+{
+  "all_blockers_closed": false,
+  "automated_execution_proof": false,
+  "fit_performed": false,
+  "grid": {
+    "actor_partition": "3folds, train actors[1,3,4,5,6,7], hold2/fit4; fit-only standardization",
+    "encoder_inputs": "Accepted1s waveform and25fixedROI frames only; A1536D/V1024D mean/std, T26D literalcommandcharacterbag",
+    "issue": "Original model-source train() does not persist9outer-fold checkpoints; reports record fit metadata only. Prospective additive checkpoint-retention amendment requested before any14classifier/head fits. Existing feature extraction source must stay truthful.",
+    "relation": "16lexicographic pairedordinalclips percommand/actor; all8A/V/T command combinations; allsamepositivesweight3 else1; cleanAT3D vsAVT7D",
+    "review_closed": false
+  },
+  "held_media_decoded": false,
+  "joint": {
+    "actor_partition": "Provider actual four18fit/6heldfolds match; both provider candidates separately numerically audited",
+    "relation": "Exact288binarysentenceOOF clips,1152sameoriginalallthreeequal targets/sampleweights; Anew modality0,Vnewmodality1,frozenR1Tmodality2. FixedC1 independentclean3D AT_unique vs7D AVT.",
+    "review_closed": true,
+    "source_and_candidate_guards": "Jointsourcepublication and currentprovidershash checks beforefit; all-headpublication and provideridentity check beforeevaluate. Visualremotecommit readback is separate parent handshake."
+  },
+  "manual_review": true,
+  "schema": "hcsn.frontend.manual-source-review.v1",
+  "source_files": {
+    "experiments/hcsn_grid_frontend_r2_20261101/ENCODERS.json": "682ec79d732a12d0ba1237838f7ed5deecd924accf18d03ff55a5d3ad87822f6",
+    "experiments/hcsn_grid_frontend_r2_20261101/MODEL_SOURCE_FREEZE.json": "c9558991beee56190c69e0c01678e021c18b68e22dac660dbefadb66de30791b",
+    "experiments/hcsn_grid_frontend_r2_20261101/study.py": "d3f0d014851ea23c9838e42cb903d3e8bc8f817405f436470f5088d6adb663f8",
+    "experiments/hcsn_joint_pretrained_av_r2_20261101/PROTOCOL.json": "34566d8c141acb5dd60641e90e9019b6575418b3ad46ee9d72c39860d2f173dd",
+    "experiments/hcsn_joint_pretrained_av_r2_20261101/SOURCE_FREEZE.json": "fa43f9d50ed35febed03b3097ca58bf768e2e839eb69fa85e89f83cedfa94e37",
+    "experiments/hcsn_joint_pretrained_av_r2_20261101/study.py": "09f2e2493b2b8daf52b54d02096bb68cadde62c0eadb8ccd8b0e7f16b8eea149"
+  }
+}

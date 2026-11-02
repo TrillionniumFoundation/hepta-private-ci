@@ -1,0 +1,82 @@
+{
+  "removed_files_reproducible": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/artifacts",
+      "bytes": 131123379,
+      "reason": "Redundant pinned archive checkout; immutable public Git bytes retained"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/artifacts",
+      "bytes": 94695478,
+      "reason": "Redundant pinned archive checkout; immutable public Git bytes retained"
+    },
+    {
+      "path": "baseline",
+      "bytes": 12875223,
+      "reason": "Obsolete V9 discovery copy from separate lineage"
+    },
+    {
+      "path": "inputs",
+      "bytes": 11257341,
+      "reason": "Obsolete V9 discovery copy from separate lineage"
+    },
+    {
+      "path": "deliverables/transport_roundtrip_verified.zip",
+      "bytes": 43572900,
+      "reason": "Duplicate verified R1 ZIP; primary deliverable retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/test_lazy",
+      "bytes": 5007912,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/test_dist_autograd",
+      "bytes": 656048,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/test_jit",
+      "bytes": 7322208,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/HashStoreTest",
+      "bytes": 644528,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/FileStoreTest",
+      "bytes": 639048,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/test_edge_op_registration",
+      "bytes": 642864,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/test_tensorexpr",
+      "bytes": 9050856,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/TCPStoreTest",
+      "bytes": 677544,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/test_api",
+      "bytes": 14932088,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    },
+    {
+      "path": "runtime_deps/torch/bin/test_cpp_rpc",
+      "bytes": 812272,
+      "reason": "Unneeded packaged test executable; inference binaries retained"
+    }
+  ],
+  "logical_bytes": 333909689,
+  "official_model_weights_untouched": true,
+  "scientific_source_and_outputs_untouched": true
+}

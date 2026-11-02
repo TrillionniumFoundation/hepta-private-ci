@@ -1,0 +1,52 @@
+{
+  "all_blockers_closed": false,
+  "failed_source_clips": 3,
+  "failures": [
+    {
+      "frames": 8,
+      "last_pts": 0.28,
+      "member": "s8/bbar6a.mpg",
+      "raw_sha256": "de0e29e8b8dd3eed5a1547562674f2125a65ab32b1e8cc0d6a51bc9c0d0d368d",
+      "speaker": 8
+    },
+    {
+      "frames": 9,
+      "last_pts": 0.32,
+      "member": "s8/bbay9p.mpg",
+      "raw_sha256": "53282e2e30156903774f99279d473a403e45441d80c442757c329746186ae69c",
+      "speaker": 8
+    },
+    {
+      "frames": 5,
+      "last_pts": 0.16,
+      "member": "s8/sbaaza.mpg",
+      "raw_sha256": "8eca812f52def9c078ea770fcdc85394494967197617a5f919b8a6ff0a0c3e24",
+      "speaker": 8
+    }
+  ],
+  "ffprobe_processes": 0,
+  "fit_performed": false,
+  "holds": [
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/DEVELOPMENT_HOLD.json",
+      "sha256": "400dd8b3eca625f1bb8a853b9b06b467b760ce236b0432e6e1d71463a501ff44"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/DEVELOPMENT_HOLD.json",
+      "sha256": "317d95ea247a90641aa3438ffb4a574fdc6c0ad00452e5e624202184fcc45f60"
+    }
+  ],
+  "neural_encoder_inference_performed": false,
+  "qa_sha256": "b1c7acbb8e99bd03daf11577ab4dd132256a0d32b8533d91a05fd5fb11d90f20",
+  "qualified_source_clips": 61,
+  "quality_accuracy": null,
+  "raw_media_opened": false,
+  "registered_clips": 64,
+  "registered_gate_status": "HOLD",
+  "role": "development",
+  "schema": "hcsn.grid.complete-source-inventory.independent-record-audit.v1",
+  "source_inventory_complete": true,
+  "source_qa_cpu_seconds": 14.225522000000002,
+  "source_qa_receipt_sha256": "f0d4567b88335a46f5f84b153c5064881effd1400428df0586c414d42c9be38a",
+  "valid_subset_qualification": false
+}

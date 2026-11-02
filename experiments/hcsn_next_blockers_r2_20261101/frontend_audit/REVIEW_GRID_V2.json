@@ -1,0 +1,263 @@
+{
+  "actual_decoder_processes": 0,
+  "all_blockers_closed": false,
+  "cases": [
+    {
+      "case": "valid train does not require candidate",
+      "expected": null,
+      "observed": "accepted synthetic fixture identity",
+      "passed": true
+    },
+    {
+      "case": "valid confirmation identity",
+      "expected": null,
+      "observed": "accepted synthetic fixture identity",
+      "passed": true
+    },
+    {
+      "case": "valid development identity",
+      "expected": null,
+      "observed": "accepted synthetic fixture identity",
+      "passed": true
+    },
+    {
+      "case": "valid train reaches only synthetic decoder sentinel",
+      "expected": "SYNTHETIC_DECODER_SENTINEL",
+      "observed": "SYNTHETIC_DECODER_SENTINEL",
+      "passed": true
+    },
+    {
+      "case": "valid confirmation reaches only synthetic decoder sentinel",
+      "expected": "SYNTHETIC_DECODER_SENTINEL",
+      "observed": "SYNTHETIC_DECODER_SENTINEL",
+      "passed": true
+    },
+    {
+      "case": "row mutation sentence_target",
+      "expected": "Unregisteredormutatedcohortmember",
+      "observed": "Unregisteredormutatedcohortmember",
+      "passed": true
+    },
+    {
+      "case": "row mutation speaker",
+      "expected": "Unregisteredormutatedcohortmember",
+      "observed": "Unregisteredormutatedcohortmember",
+      "passed": true
+    },
+    {
+      "case": "row mutation name",
+      "expected": "Unregisteredormutatedcohortmember",
+      "observed": "Unregisteredormutatedcohortmember",
+      "passed": true
+    },
+    {
+      "case": "row mutation role",
+      "expected": "Unregisteredormutatedcohortmember",
+      "observed": "Unregisteredormutatedcohortmember",
+      "passed": true
+    },
+    {
+      "case": "confirmation without candidate",
+      "expected": "Heldprefixrequirespublishedcandidate",
+      "observed": "Heldprefixrequirespublishedcandidate",
+      "passed": true
+    },
+    {
+      "case": "development without candidate",
+      "expected": "Heldprefixrequirespublishedcandidate",
+      "observed": "Heldprefixrequirespublishedcandidate",
+      "passed": true
+    },
+    {
+      "case": "confirmation publication missing",
+      "expected": "Candidatepublicationmissing",
+      "observed": "Candidatepublicationmissing",
+      "passed": true
+    },
+    {
+      "case": "source publication source_commit",
+      "expected": "Publishedsourcefreezeidentity",
+      "observed": "Publishedsourcefreezeidentity",
+      "passed": true
+    },
+    {
+      "case": "source publication source_freeze_sha256",
+      "expected": "Publishedsourcefreezeidentity",
+      "observed": "Publishedsourcefreezeidentity",
+      "passed": true
+    },
+    {
+      "case": "candidate publication candidate_commit",
+      "expected": "Candidatepublicationidentity",
+      "observed": "Candidatepublicationidentity",
+      "passed": true
+    },
+    {
+      "case": "candidate publication candidate_sha256",
+      "expected": "Candidatepublicationidentity",
+      "observed": "Candidatepublicationidentity",
+      "passed": true
+    },
+    {
+      "case": "candidate protocol_sha256",
+      "expected": "Candidatesourcecohortidentity",
+      "observed": "Candidatesourcecohortidentity",
+      "passed": true
+    },
+    {
+      "case": "candidate cohort_sha256",
+      "expected": "Candidatesourcecohortidentity",
+      "observed": "Candidatesourcecohortidentity",
+      "passed": true
+    },
+    {
+      "case": "candidate source_freeze_sha256",
+      "expected": "Candidatesourcefreezeidentity",
+      "observed": "Candidatesourcefreezeidentity",
+      "passed": true
+    },
+    {
+      "case": "empty source identity",
+      "expected": "Emptycandidateidentity",
+      "observed": "Emptycandidateidentity",
+      "passed": true
+    },
+    {
+      "case": "empty head identity",
+      "expected": "Emptycandidateidentity",
+      "observed": "Emptycandidateidentity",
+      "passed": true
+    },
+    {
+      "case": "source traversal ../escape",
+      "expected": "Candidatesourcefileidentity",
+      "observed": "Candidatesourcefileidentity",
+      "passed": true
+    },
+    {
+      "case": "head traversal ../escape",
+      "expected": "Candidateheadidentity",
+      "observed": "Candidateheadidentity",
+      "passed": true
+    },
+    {
+      "case": "source traversal /escape",
+      "expected": "Candidatesourcefileidentity",
+      "observed": "Candidatesourcefileidentity",
+      "passed": true
+    },
+    {
+      "case": "head traversal /escape",
+      "expected": "Candidateheadidentity",
+      "observed": "Candidateheadidentity",
+      "passed": true
+    },
+    {
+      "case": "candidate source hash mismatch",
+      "expected": "Candidatesourcefileidentity",
+      "observed": "Candidatesourcefileidentity",
+      "passed": true
+    },
+    {
+      "case": "candidate head hash mismatch",
+      "expected": "Candidateheadidentity",
+      "observed": "Candidateheadidentity",
+      "passed": true
+    },
+    {
+      "case": "ledger role",
+      "expected": "Acquisitioncohortidentity",
+      "observed": "Acquisitioncohortidentity",
+      "passed": true
+    },
+    {
+      "case": "ledger protocol_sha256",
+      "expected": "Acquisitioncohortidentity",
+      "observed": "Acquisitioncohortidentity",
+      "passed": true
+    },
+    {
+      "case": "ledger cohort_sha256",
+      "expected": "Acquisitioncohortidentity",
+      "observed": "Acquisitioncohortidentity",
+      "passed": true
+    },
+    {
+      "case": "unadmitted acquisition source",
+      "expected": "Acquisitionsourceidentity",
+      "observed": "Acquisitionsourceidentity",
+      "passed": true
+    },
+    {
+      "case": "ledger coverage missing",
+      "expected": "Acquisitionmembercoverage",
+      "observed": "Acquisitionmembercoverage",
+      "passed": true
+    },
+    {
+      "case": "ledger coverage duplicate",
+      "expected": "Acquisitionmembercoverage",
+      "observed": "Acquisitionmembercoverage",
+      "passed": true
+    },
+    {
+      "case": "ledger coverage extra",
+      "expected": "Acquisitionmembercoverage",
+      "observed": "Acquisitionmembercoverage",
+      "passed": true
+    },
+    {
+      "case": "ledger member role",
+      "expected": "Acquisitionmemberidentity",
+      "observed": "Acquisitionmemberidentity",
+      "passed": true
+    },
+    {
+      "case": "ledger member bytes",
+      "expected": "Acquisitionmemberidentity",
+      "observed": "Acquisitionmemberidentity",
+      "passed": true
+    },
+    {
+      "case": "ledger member sha256",
+      "expected": "Acquisitionmemberidentity",
+      "observed": "Acquisitionmemberidentity",
+      "passed": true
+    },
+    {
+      "case": "raw missing",
+      "expected": "AcquisitionrawSHAidentity",
+      "observed": "AcquisitionrawSHAidentity",
+      "passed": true
+    },
+    {
+      "case": "raw size",
+      "expected": "AcquisitionrawSHAidentity",
+      "observed": "AcquisitionrawSHAidentity",
+      "passed": true
+    },
+    {
+      "case": "raw same_size_corruption",
+      "expected": "AcquisitionrawSHAidentity",
+      "observed": "AcquisitionrawSHAidentity",
+      "passed": true
+    },
+    {
+      "case": "raw symlink",
+      "expected": "AcquisitionrawSHAidentity",
+      "observed": "AcquisitionrawSHAidentity",
+      "passed": true
+    }
+  ],
+  "failed": 0,
+  "held_media_decoded": false,
+  "network_requests": 0,
+  "passed": 41,
+  "real_frozen_sources_verified": 8,
+  "real_media_opened": false,
+  "schema": "hcsn.grid-v2.independent-guards.v1",
+  "scope": "Real data_v2 guard functions exercised on isolated synthetic registry/raw/head identities. No media-quality or remote publication verification claim.",
+  "source_freeze_sha256": "de816c9311705db8d95c118ff117b155e1fcc49edffc9b55d9ae4106cd62a654",
+  "source_sha256": "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339",
+  "synthetic_decoder_sentinel_probes": 2
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_grid_temporal_r2_20261101.study",
+    "features",
+    "--role",
+    "train",
+    "--out",
+    "experiments/hcsn_grid_temporal_r2_20261101/features/train"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T02:22:38.381344+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_grid_temporal_r2_20261101/features_train.stdout.log",
+  "stderr_path": "experiments/hcsn_grid_temporal_r2_20261101/features_train.stderr.log",
+  "pid": 6,
+  "finished_utc": "2026-11-02T02:24:20.407904+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 102.0262939000022,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 82.185443,
+  "system_cpu_seconds": 18.117273,
+  "total_cpu_seconds": 100.302716,
+  "peak_rss_bytes": 575250432,
+  "peak_rss_native_units": 561768,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_train.stdout.log",
+      "is_file": true,
+      "bytes": 582,
+      "sha256": "62774fcb3b9f2039f809830dd685a2f102f6aaf962e082fa31580bde1b394a93"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_train.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features/train/FEATURES.npz",
+      "is_file": true,
+      "bytes": 2189219,
+      "sha256": "6b89da440fc847dda1c9208308ebb8c25569aa3e03bef3823d8f09191bee12ed"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.003679724999999995,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

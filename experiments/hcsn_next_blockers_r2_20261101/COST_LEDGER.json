@@ -1,0 +1,148 @@
+{
+  "accounting": [
+    "GRID family479.628925 appears in both GRID ledgers and is counted only once",
+    "JointA/V provider costs counted in their own components, not a second time in jointheads",
+    "Cold40worker CPU143.195757 is contained in148.177729outer; workerprofile56.657249 in56.744202outer",
+    "No body timers, perarm timers or shared model views multiplied into totals",
+    "Six-decimal normalization of reported CPU counters only; no claim of measurement accuracy at that precision"
+  ],
+  "additional_root_and_metered_review_cpu_seconds": 14.112595,
+  "additional_root_and_metered_review_receipts": [
+    {
+      "cpu_seconds": 7.765303,
+      "path": "experiments/hcsn_next_blockers_r2_20261101/final_independent_review.receipt.json",
+      "returncode": 0,
+      "sha256": "5a8cd5a4496193138a72645159f429a2860b7c12591f881267846ef34d7927ab",
+      "wall_seconds": 8.050877065994428
+    },
+    {
+      "cpu_seconds": 0.234932,
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_confirmation_family001.receipt.json",
+      "returncode": 0,
+      "sha256": "71ae7fe81d90c75edb194a286ef9f8f5a4887c6114d74247baa640bdf2280355",
+      "wall_seconds": 0.23829205299989553
+    },
+    {
+      "cpu_seconds": 0.112047,
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_confirmation_inventory001.receipt.json",
+      "returncode": 0,
+      "sha256": "645b4044c4f5e8a9b32e470de679055d047d208846ca6cd88c795d862e4faae8",
+      "wall_seconds": 0.11235503799980506
+    },
+    {
+      "cpu_seconds": 0.172285,
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_confirmation_primary001.receipt.json",
+      "returncode": 0,
+      "sha256": "323994aea963f92df82c901436662928c51a1f8030fdc90ae641727720fdae82",
+      "wall_seconds": 0.1852589780028211
+    },
+    {
+      "cpu_seconds": 0.214274,
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_development_failure001.receipt.json",
+      "returncode": 0,
+      "sha256": "e5db3e0aca931c7fa4cd2ce050f821fb2440765be569104a43701692c7728d79",
+      "wall_seconds": 0.21421964400360594
+    },
+    {
+      "cpu_seconds": 0.102255,
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_development_inventory001.receipt.json",
+      "returncode": 0,
+      "sha256": "d97893eca003a65a413207580a04a6b2c65155b39f829680557656077828e5b3",
+      "wall_seconds": 0.1027250949991867
+    },
+    {
+      "cpu_seconds": 2.202273,
+      "path": "experiments/hcsn_next_blockers_r2_20261101/operator_regression.receipt.json",
+      "returncode": 0,
+      "sha256": "e82bfbae0d03744bb7fef841360d3d4a1f3e6eca3194b7b782a6a8fb2fc51a35",
+      "wall_seconds": 2.2350319600009243
+    },
+    {
+      "cpu_seconds": 3.309226,
+      "path": "experiments/hcsn_next_blockers_r2_20261101/optional_numeric.receipt.json",
+      "returncode": 0,
+      "sha256": "a12f7e3a24a5a057a5dfc19c918aa864872108bfd3101f17d33e34107e5429a1",
+      "wall_seconds": 3.3280327020038385
+    }
+  ],
+  "all_activity_cpu_seconds": null,
+  "all_blockers_closed": false,
+  "attributable_simultaneous_process_family_peak_rss_bytes": null,
+  "component_known_non_nested_cpu_seconds": 2013.757656,
+  "component_ledgers": [
+    {
+      "cpu_seconds": 151.93115,
+      "field": "measured_component_cpu_seconds",
+      "path": "experiments/hcsn_missing_reliability_r2_20261101/COST_LEDGER.json",
+      "sha256": "6c0a4514b99e938ec706ac36d4c9bf667fc67c0d18cc00503db6c2f6508f0538"
+    },
+    {
+      "cpu_seconds": 86.963778,
+      "field": "total_observed_outer_cpu_seconds",
+      "path": "experiments/hcsn_distribution_value_r2_20261101/COST_LEDGER.json",
+      "sha256": "b2b6a3e712f8760d2148d3a64e466d455b6755f6047bd80914cf12490ea5f95b"
+    },
+    {
+      "cpu_seconds": 535.108472,
+      "field": "total_measured_non_nested_child_cpu_seconds",
+      "path": "experiments/hcsn_exact_transport_r2_20261101/COST_LEDGER.json",
+      "sha256": "ac490b1857f3d7e0e299d30159d4e50ed9aea492cf266b95771453a26875d49a"
+    },
+    {
+      "cpu_seconds": 56.744202,
+      "field": "complete_profile_outer_cpu_seconds",
+      "path": "experiments/hcsn_cpu_envelope_r2_20261101/COST_LEDGER.json",
+      "sha256": "e8e1bf240de0739743dd96efb7f4f6ffb5a9da1ac911a3793b52777991b00794"
+    },
+    {
+      "cpu_seconds": 92.624831,
+      "field": "measured_component_cpu_seconds",
+      "path": "experiments/hcsn_read_repair_r2_20261101/COST_LEDGER.json",
+      "sha256": "20bdd10631d32f40ea067cde63cbf66308f4db6830940ed451da08a29f7bbc9c"
+    },
+    {
+      "cpu_seconds": 161.923121,
+      "field": "known_cpu_seconds_lower_bound",
+      "path": "experiments/hcsn_video_raw_r2_20261101/COST_LEDGER.json",
+      "sha256": "39a8dc7f3c62c94e0a5b1f62a36a63eb57694015ded0c90925d06d26d4f318c8"
+    },
+    {
+      "cpu_seconds": 281.099838,
+      "field": "measured_non_nested_outer_cpu_seconds",
+      "path": "experiments/hcsn_video_pretrained_feasibility_r2_20261101/COST_LEDGER.json",
+      "sha256": "097d6440aa57c4a9c330426e5a3a6474bd1025c9e0acc575df7554f26c7b3ce0"
+    },
+    {
+      "cpu_seconds": 161.391499,
+      "field": "measured_component_cpu_seconds",
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/COST_LEDGER.json",
+      "sha256": "1cb38179e4df76e5521d564864331c3edfdc9d5b0efa2a37b906f6604d3d78b6"
+    },
+    {
+      "cpu_seconds": 6.34184,
+      "field": "measured_component_cpu_seconds",
+      "path": "experiments/hcsn_joint_pretrained_av_r2_20261101/COST_LEDGER.json",
+      "sha256": "b602612ab08fe1fb0dea5e2884be5f3ef5f8bc3b70c0e3583acb00f7c6e9bde8"
+    },
+    {
+      "cpu_seconds": 479.628925,
+      "field": "family_known_complete_child_cpu_lower_bound",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/COST_LEDGER.json",
+      "sha256": "11f09c759d3a4656ae26c5bd6af37298ccf228c3f50068268698ce7c64800b25"
+    }
+  ],
+  "energy_joules": null,
+  "gpu_seconds": null,
+  "known_complete_child_cpu_lower_bound": 2027.870251,
+  "production_activation": false,
+  "schema": "hcsn.next-blockers.r2.cost.v1",
+  "scope": "Observed lower bound for recorded non-nested complete-child envelopes, not a complete lifecycle or deployment-cost certificate",
+  "unknown_costs": [
+    "Interrupted wrong-target CNN fit has no final complete receipt",
+    "Historical encoder pretraining, R1 fits, early probes and source development",
+    "Unmetered portions of independent review and exact symbolic theorem",
+    "Source freezing, writing, formatting, archive construction, transfers and publication",
+    "Target device energy, broad population and external provider ownership/SLA"
+  ],
+  "wall_seconds_not_summed": true
+}

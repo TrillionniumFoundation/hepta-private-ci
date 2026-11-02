@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_grid_frontend_r2_20261101.study",
+    "features",
+    "--role",
+    "development",
+    "--out",
+    "experiments/hcsn_grid_frontend_r2_20261101/features/development",
+    "--candidate",
+    "experiments/hcsn_grid_frontend_r2_20261101/results/run001/CANDIDATE_FREEZE.json"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T02:30:08.925255+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_grid_frontend_r2_20261101/features_development.stdout.log",
+  "stderr_path": "experiments/hcsn_grid_frontend_r2_20261101/features_development.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-02T02:30:23.472851+00:00",
+  "returncode": 1,
+  "wrapper_exit_code": 1,
+  "wall_seconds": 14.547364597994601,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 12.165836,
+  "system_cpu_seconds": 2.364605,
+  "total_cpu_seconds": 14.530441,
+  "peak_rss_bytes": 1053655040,
+  "peak_rss_native_units": 1028960,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features_development.stdout.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features_development.stderr.log",
+      "is_file": true,
+      "bytes": 988,
+      "sha256": "64c464d324b98661d3cef8ae6e89f4273da3fc3b51508c3ce07d4c279a9a0b6e"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features/development/FEATURES.npz",
+      "is_file": false
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0021428559999999985,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

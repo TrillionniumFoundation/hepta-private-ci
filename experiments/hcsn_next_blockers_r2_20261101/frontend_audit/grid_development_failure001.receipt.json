@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-B",
+    "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/audit_grid_source_failure.py",
+    "development"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T02:32:23.169719+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_development_failure001.stdout.log",
+  "stderr_path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_development_failure001.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-02T02:32:23.384235+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 0.21421964400360594,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 0.17105299999999998,
+  "system_cpu_seconds": 0.043220999999999996,
+  "total_cpu_seconds": 0.21427399999999996,
+  "peak_rss_bytes": 33005568,
+  "peak_rss_native_units": 32232,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_development_failure001.stdout.log",
+      "is_file": true,
+      "bytes": 285,
+      "sha256": "5e4f87e8828ceff50510c7381e12c90249ae74d339fb29fda2def26281248752"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/grid_development_failure001.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/REVIEW_GRID_SOURCE_FAILURE_DEVELOPMENT.json",
+      "is_file": true,
+      "bytes": 2469,
+      "sha256": "6ee7fa0451c6a196d0dd824f0d385e505192e3baecf19e6c02638acc24d7c02a"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0010757550000000046,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

@@ -1,0 +1,73 @@
+{
+  "OOF_video_probability_max_error": 1.1102230246251565e-16,
+  "all_blockers_closed": false,
+  "candidate_sha256": "01c515bc4214de328c2097de144d5a44ce744e2e4bd008ea2df301752778c84b",
+  "episode_count": 768,
+  "exact_primary_files_reused": 9,
+  "feature_sha256": "6b89da440fc847dda1c9208308ebb8c25569aa3e03bef3823d8f09191bee12ed",
+  "fit_performed": false,
+  "fits": [
+    {
+      "C": 0.1,
+      "features": 3060,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 2.476539753579199e-05,
+      "optimizer_iterations": 78,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "V/fold0"
+    },
+    {
+      "C": 0.1,
+      "features": 3060,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 4.149098853004074e-05,
+      "optimizer_iterations": 71,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "V/fold1"
+    },
+    {
+      "C": 0.1,
+      "features": 3060,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 5.413598667201869e-05,
+      "optimizer_iterations": 77,
+      "optimizer_success": true,
+      "rows": 128,
+      "tag": "V/fold2"
+    },
+    {
+      "C": 0.1,
+      "features": 3060,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 7.592757059662891e-05,
+      "optimizer_iterations": 84,
+      "optimizer_success": true,
+      "rows": 192,
+      "tag": "V/full"
+    },
+    {
+      "C": 1.0,
+      "features": 7,
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 0.0009962085417791755,
+      "optimizer_iterations": 32,
+      "optimizer_success": true,
+      "rows": 768,
+      "tag": "AVT"
+    }
+  ],
+  "frozen_candidate_files_checked": 21,
+  "frozen_head_predictions_recomputed": true,
+  "input_clips": 192,
+  "neural_encoder_inference_performed": false,
+  "oof_video_accuracy": 0.765625,
+  "primary_AT_OOF_columns_bit_identical": true,
+  "primary_prefix_metadata_bit_identical": true,
+  "real_media_opened": false,
+  "registered_episode_pairing_exact": true,
+  "schema": "hcsn.grid-temporal.independent-candidate-audit.v1",
+  "scope": "Five fixed secondary fits audited before held quality. No primary replacement, outcome-driven selection, or remote publication verification claim.",
+  "source_freeze_sha256": "5a519a60410879fb474f469731f0f701f1e29bfe1bcb919eab569a68d99b5f66"
+}

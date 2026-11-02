@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_grid_temporal_r2_20261101.study",
+    "evaluate",
+    "--role",
+    "confirmation",
+    "--features",
+    "experiments/hcsn_grid_temporal_r2_20261101/features/confirmation",
+    "--out",
+    "experiments/hcsn_grid_temporal_r2_20261101/results/run001"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T02:37:48.472758+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_grid_temporal_r2_20261101/evaluate_confirmation.stdout.log",
+  "stderr_path": "experiments/hcsn_grid_temporal_r2_20261101/evaluate_confirmation.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-02T02:37:51.024015+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 2.550986214002478,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 2.340171,
+  "system_cpu_seconds": 0.19611499999999998,
+  "total_cpu_seconds": 2.5362859999999996,
+  "peak_rss_bytes": 266592256,
+  "peak_rss_native_units": 260344,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/evaluate_confirmation.stdout.log",
+      "is_file": true,
+      "bytes": 1989,
+      "sha256": "6b8ae231c0ab24577c5c50fd6b77c198498517ea138dfb4ca909eed4d381acff"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/evaluate_confirmation.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/confirmation_FAMILY_RESULT.json",
+      "is_file": true,
+      "bytes": 2791,
+      "sha256": "c100d67fb8c0ac3c21c71bd761c8403693b1cd4da2b15319862f46ef2bfba565"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0008053839999999993,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

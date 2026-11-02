@@ -1,0 +1,18 @@
+{
+  "seed": 861111,
+  "threads": 1,
+  "matrix_float64_atol": 2e-11,
+  "matrix_float32_atol": 3e-05,
+  "gradient_atol": 2e-07,
+  "benchmark_warmups": 4,
+  "benchmark_repeats": 11,
+  "benchmark_batches": [
+    24,
+    384,
+    1536
+  ],
+  "benchmark_states": 5,
+  "quality_scope": "same finite CTMC; not a model-quality experiment",
+  "formal_preregistration": false,
+  "numerical_bound_scope": "truncation only; separate empirical roundoff checks"
+}
