@@ -143,6 +143,16 @@ jobs:
       - name: Expose DotSlash for existing integration tests
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      # Research-only formatter diagnosis. Never modifies source or changes the gate.
+      - name: Observe pinned buildifier diff (temporary research diagnostic)
+        if: matrix.lane == 'source-head' && steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        shell: bash
+        run: |
+          set +e
+          dotslash tools/buildifier -mode=diff defs.bzl
+          diagnostic_status=$?
+          printf 'Pinned buildifier diagnostic exit=%s\n' "$diagnostic_status"
+          exit 0
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         with:
