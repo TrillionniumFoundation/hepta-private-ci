@@ -1,0 +1,69 @@
+{
+  "calibration": {
+    "conditions": [
+      "base",
+      "missing"
+    ],
+    "episodes": 512,
+    "method": "Largest dev coverage with Wilson lower bound >= .95; zero-coverage if none",
+    "seed": 172019,
+    "split": "dev",
+    "target_correctness": 0.95,
+    "temperature_grid": [
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0
+    ],
+    "threshold_grid": [
+      0.125,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      0.95,
+      0.98,
+      0.99,
+      0.995,
+      0.999,
+      1.000001
+    ]
+  },
+  "confirmation": {
+    "conditions": [
+      "base",
+      "missing",
+      "long_tokens_128",
+      "missing_tokens_128"
+    ],
+    "episodes": 512,
+    "seed": 173029,
+    "split": "confirm"
+  },
+  "frozen_utc": "2026-11-02T01:03:04.957630+00:00",
+  "gates": {
+    "accepted_correctness_min": 0.95,
+    "accepted_known_coverage_min": 0.8,
+    "known_accuracy_min": 0.95,
+    "missing_brier_better_than_baseline": true,
+    "missing_nll_better_than_baseline": true,
+    "unavailable_accuracy": "Descriptive, cannot recover erased information"
+  },
+  "identity": {
+    "candidate_sha256": "88842f4a56d921910821d42acc092805e456332c90a6f719c413b7ba63a39db9",
+    "evaluation_source_sha256": "22f8c020d0e952c4ea29af3094df5c0cef3025fd016dcefffbe2419cb27692e7",
+    "historical_candidate_sha256": "468459cd0353f7a84dd108edd5c7b416dc2beda0e972cdca87224d9e135c59a4",
+    "protocol_sha256": "4dae7a396460abb9dba65b5c23aa8162a4124ac102a5eb426fb1fc5243897b38"
+  },
+  "policy": "All calibrations freeze and publish before confirmation; no post-confirmation refit"
+}
