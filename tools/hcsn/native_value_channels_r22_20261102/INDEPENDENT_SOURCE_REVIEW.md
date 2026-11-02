@@ -1,0 +1,25 @@
+# Independent review of native continuation value channels
+
+This is a separate collaborating agent's static mathematical and source review. No future formal point was generated or evaluated by this reviewer. The thirteen reviewed sources and SCOPE identity are bound in the accompanying JSON; the read-only review_contract.py is ready for execution after publication. No static mathematical blocker was found for the declared continuation-only experiment. Numerical qualification is still pending.
+
+The mapping to the primary paper is correct. Debt/F/G follow Eqs8/9 at the particular horizon tau=m. Equity follows the A5/A7 construction; its boundary uses the equivalent Eq12 representation. The retained R11 snapshot is byte-identical to its original69f5b28c... kernel. See [the author-hosted paper](https://www.princeton.edu/~wxiong/papers/rollover.pdf).
+
+For the boundary rewrite, eta=z-a and gamma=z+a imply eta*gamma=2r/sigma² and delta=.5sigma²(eta-1)(gamma+1). Therefore delta/(eta-1)=.5sigma²(gamma+1). Also, at y=±a the paper's lower-case b equals exp(-(r+liquidity)m)B(y). These two identities explain the native formula without a model change.
+
+For A, let N(u) be the numerator used by the high-precision direct quotient. At u=z, the Gaussian terms cancel pairwise exactly: N(z)=0. Differentiating N gives the native derivative expression: the first Gaussian-density term, minus u*s² times the common exponential term, then the positive/negative exponential-CDF derivative pairs. Consequently
+
+`N(u)/(z-u) = -integral_0^1 N'(z-t(z-u)) dt`.
+
+Both signed arguments are included. Forward dual propagation through the moving z/u endpoints retains their parameter derivatives. B has the analogous identity about its numerator zero at -z. CDF intervals use positive-width Gaussian integration since x/s>0. These are exact smooth real-function identities; replacing the integrals by16-point quadrature still needs numerical error checks and supplies no uniform error theorem.
+
+An independent real-domain bound is available. Put d=r-delta and v=sigma². The function(d-v/2)²/v is convex in either positive rectangle coordinate, so its maximum occurs at a corner and equals.112225. Combining rate/maturity bounds yields(zt*s)²<=.70845; state bounds give(x/s)²<=32. All Gaussian arguments in the native A/B/F/G paths thus have absolute value<.842+5.657=6.499<12. This proves a strict real-domain CDF admission margin, not a libm/quadrature FP64 error certificate.
+
+The separate Volterra equity reference is consistent with the log-state ODE. Its homogeneous roots are eta and-gamma; the forcing kernel and negative sign implement zero boundary value and slope. The boundary uses an unbounded Mills/Laplace integral rather than candidate quadrature, and whole-function complex-step derivatives avoid candidate dual code. The script imports no candidate, primary reference or R11 module. Its new implementation was composed by the producer using a separately supplied derivation: this is distinct numerical-path evidence, not blind external authorship. Its density cross-checks are two old baseline points, separate from the six fixed formal indices.
+
+The CDF primitive combines the identified Linux libm-erfc value with an analytic Gaussian first tangent. That is ordinary mathematical AD of the specified smooth Gaussian function. It is not a literal derivative of the rounded libm algorithm, and neither first-derivative agreement nor finite differences qualify higher derivatives or every platform.
+
+The coordinate contract matters. Input ORDER and inverse Jacobian permutation are correct. Physical derivatives hold independent x=log(V/b) fixed, so the asset V moves with b. At strict continuation points a fixed-asset caller would need f_theta|V=f_theta|x-f_x*b_theta/b and f_V=f_x/(b*exp(x)); the native API does not implement or qualify that conversion/default boundary. The debt output is one newly issued unit d(V,m), not aggregate stationary debt. Varying m moves debt structure/unitization and the evaluation horizon together; no independent tau coordinate is provided.
+
+Every admitted state is above the entire R11 Taylor/C2 blend interval. The raw continuation branch is therefore the proper R11 comparison; default, x0, asset, min-limit ties and mixed/FP32 branches remain excluded. The rationalized eta branch computes the same smooth real identity on both sides of a=0; finite-precision branch behavior still belongs to the numerical qualification rather than a rounding-map derivative claim.
+
+The195-point prospective roster contains64fresh parameter vectors at three shared log-states plus three states at the old baseline. It is not195 independent worlds, all-corner coverage or a uniform-box proof. The prespecified finite-difference slopes use domain-based steps and adjacent Richardson extrapolates without error-based repair. Existing old-point development results do not substitute for that fresh qualification. No model learning, real runtime ownership, exclusive D-B benefit, full cost advantage or production activation follows from this native value port.

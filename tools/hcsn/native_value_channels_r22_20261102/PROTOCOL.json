@@ -1,0 +1,108 @@
+{
+  "admission": "Finite registered parameters and strict continuation-only log-distance .005..6e-1; boundary denominator/flow and final finite-value/tangent checks; CDF argument abs<=12. No clipping or default extension. A/B poles are removed by integral identities; no reset interpolation map exists in this component.",
+  "all_blockers_closed": false,
+  "baseline": [
+    0.08,
+    0.02,
+    0.6,
+    0.27,
+    6.39,
+    61.68,
+    0.3,
+    0.02,
+    1.3
+  ],
+  "baseline_commit": "ff611d62793c2829cab85b38d6ab246691b3ba1d",
+  "confirmation_namespace": 2026110210,
+  "debt_semantics": "One newly issued debt-unit value d(V,m) at maturity tau=m; not aggregate stationary debt integral D(V)=integral_0^m d(V,tau)dtau. The maturity column changes both stationary parameters/unitization and evaluation horizon; no independent tau coordinate.",
+  "excluded_branches": "No asset-coordinate or asset-default API, no x=0 boundary derivative, no Taylor/blend or min-limit tie derivatives, no FP32/mixed precision qualification. Since R11 blend limit<=.002, every admitted state is strictly in the raw continuation branch.",
+  "finite_difference": "Central or domain-inward three-point slopes at h,h/2,h/4, two adjacent Richardson extrapolates for all five channels/all ten coordinates; no error-based step repair.",
+  "finite_difference_tolerance": 5e-06,
+  "finite_difference_width_fraction": 0.001,
+  "formal_roster": "64 fresh fixed seeded nine-parameter interior draws, each at three fixed log-distances, plus old baseline at the same three states;195 numeric points. Not195 independent task worlds or all-corner coverage.",
+  "formal_states": [
+    0.01,
+    0.2,
+    0.5
+  ],
+  "independent_math_selected_indices": [
+    0,
+    46,
+    95,
+    142,
+    189,
+    194
+  ],
+  "jacobian_atol": 2e-08,
+  "jacobian_columns": "Nine physical coordinates in the above order, then independent log-distance state; five output rows",
+  "jacobian_rtol": 2e-10,
+  "lower": [
+    0.079,
+    0.0195,
+    0.59,
+    0.265,
+    6.3,
+    61.0,
+    0.15,
+    0.002,
+    0.5
+  ],
+  "native_numeric_primitives": "Linux host libm erfc supplies scalar CDF value; exact Gaussian pdf supplies its mathematical first tangent. A and B divided differences are evaluated by smooth derivative integrals at16 Gauss-Legendre points. CDF intervals use a positive Gaussian integral. This is FP64 mathematical AD, not a derivative of machine rounding.",
+  "output_reservation": "Allocate RAW extents before generating the new roster; final gzip must fit the reserved8MiB, overwrites allocated extents and truncates. This reduces observed ENOSPC outcome-loss risk; no arbitrary I/O failure, SIGKILL or power-loss recovery guarantee.",
+  "output_reservation_bytes": 8388608,
+  "outputs": [
+    "boundary",
+    "equity",
+    "F",
+    "G",
+    "debt"
+  ],
+  "parameter_order": [
+    "r",
+    "delta",
+    "alpha",
+    "tax",
+    "coupon",
+    "principal",
+    "sigma",
+    "liquidity",
+    "maturity"
+  ],
+  "physical_jacobian_semantics": "Physical partials at fixed log-distance, not fixed asset. For continuation asset V=b*exp(x), f_theta|V=f_theta|x-f_x*b_theta/b and f_V=f_x/V; these are explanatory chain identities, not a newly admitted asset API.",
+  "production_activation": false,
+  "reference": "Unchanged R11 kernel snapshot with explicitly remapped parameter/Jacobian order; independent80-digit direct erfc/B/A quotients with mp.diff for every value and derivative; selected separate Volterra-ODE equity/Laplace-boundary audit.",
+  "schema": "hcsn.r22.native-five-value-channels.v1",
+  "sources": [
+    "dual.rs",
+    "channels.rs",
+    "main.rs",
+    "reference.py",
+    "verify.py",
+    "independent_check.py",
+    "independent_math.py",
+    "r11_kernel_snapshot.py",
+    "PROTOCOL.json",
+    "DEPENDENCIES.json",
+    "measure.py",
+    "review_contract.py",
+    "REVIEW_PROTOCOL.json"
+  ],
+  "state_box": [
+    0.005,
+    0.6
+  ],
+  "state_coordinate": "log_distance",
+  "upper": [
+    0.081,
+    0.0205,
+    0.61,
+    0.275,
+    6.48,
+    62.4,
+    0.4,
+    0.04,
+    2.0
+  ],
+  "values_atol": 2e-09,
+  "values_rtol": 2e-11
+}
