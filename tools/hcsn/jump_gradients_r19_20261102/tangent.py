@@ -13,7 +13,7 @@ from numpy.polynomial.legendre import leggauss
 
 from ..continuous_task_r18_20261101 import positive_reference
 from ..continuous_task_r18_20261101.task import payoff
-from .coordinates import P, Nondifferentiable, differentials, interpolation
+from .coordinates import P, Nondifferentiable, bind, differentials, interpolation
 
 
 TOL = 1e-10
@@ -77,7 +77,8 @@ def reset_jacobian(solution, previous, previous_jacobian, differentials):
 
 
 def jump(solution, raw, strict=True):
-    config, d, reward = differentials(raw, solution["x"], solution["config"])
+    bound_config = bind(raw, solution)
+    config, d, reward = differentials(raw, solution["x"], bound_config)
     # Reset interpolation must expose its real piecewise differentiability.
     interpolation(solution["x"], config["reset_x"])
     values, lag, dt = solution["values"], solution["lag"], solution["dt"]
@@ -136,12 +137,16 @@ def density_tangent(config, intervals, dt, nodes=8):
 
 
 def positive(solution, raw, strict=True):
-    config, d, reward = differentials(raw, solution["x"], solution["config"])
+    bound_config = bind(raw, solution)
+    config, d, reward = differentials(raw, solution["x"], bound_config)
     interpolation(solution["x"], config["reset_x"])
     values, lag, dt = solution["values"], solution["lag"], solution["dt"]
     jacobian = np.zeros(values.shape + (P,))
     jacobian[0] = np.moveaxis(d["reward"], 0, -1)
-    dop = density_tangent(config, len(solution["x"]) - 1, dt)
+    nodes = solution["operator"]["quadrature_nodes_per_half_hat"]
+    if not isinstance(nodes, (int, np.integer)) or nodes <= 0 or abs(solution["operator"]["dx"] - solution["dx"]) > 1e-14 or abs(solution["operator"]["dt"] - dt) > 1e-14:
+        raise ValueError("Actual positive operator topology/quadrature does not bind")
+    dop = density_tangent(config, len(solution["x"]) - 1, dt, nodes)
     critical_count, branches = 0, []
     for index in range(1, len(values)):
         waiting = positive_reference.heat(values[index - 1], solution["operator"]) - config["wait_cost"] * dt

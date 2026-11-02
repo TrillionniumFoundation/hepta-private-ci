@@ -50,6 +50,15 @@ def decode(raw, fixed=DEFAULT):
     return result
 
 
+def bind(raw, solution):
+    config = decode(raw, solution["config"])
+    for key in ("sigma", "wait_cost", "recovery_cost", "reset_fee", "reset_x", "content_transition", "reward_base", "reward_amplitude", "reward_slope"):
+        expected, actual = np.asarray(config[key]), np.asarray(solution["config"][key])
+        if expected.shape != actual.shape or not np.allclose(expected, actual, rtol=2e-13, atol=2e-14):
+            raise ValueError(f"Raw coordinates do not bind to actual primal field {key}")
+    return config
+
+
 def differentials(raw, x, fixed=DEFAULT):
     config = decode(raw, fixed)
     zero = np.zeros(P)
@@ -93,6 +102,10 @@ def interpolation(x, state, ordinary=True, direction=0.):
 
 
 def query(solution, gradient, time_index, mode, state):
+    if not isinstance(time_index, (int, np.integer)) or not 0 <= time_index < len(solution["times"]) or mode not in (0, 1):
+        raise ValueError("Query time/mode index is outside the actual primal")
+    if gradient.shape != solution["values"].shape + (P,):
+        raise ValueError("Query Jacobian shape does not match actual primal")
     lower, weights, slopes = interpolation(solution["x"], state)
     values = solution["values"][time_index, mode, lower:lower + 2]
     return float(values @ weights), gradient[time_index, mode, lower:lower + 2].T @ weights, float(values @ slopes)

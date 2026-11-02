@@ -1,18 +1,26 @@
 {
-  "schema": "hcsn-r19-actual-jump-gradient-source-freeze-v1",
-  "created_utc": "2026-11-02T00:40:30.661530+00:00",
+  "schema": "hcsn-r19-actual-jump-gradient-source-freeze-v2",
+  "created_utc": "2026-11-02T00:43:59.951509+00:00",
+  "supersedes": "ed595bf9132e2361863de0c32751bd64f511292c823ad163c3284ab4afb12adc",
   "files": {
-    "coordinates.py": "a5c8d139768b1b099f1e3399944037f979af94ed0f9ab752de5e51363f539f85",
+    "coordinates.py": "f6173ccd14895336897f2acde5e8dd37af398180a363897bffc6a7350e3877c3",
     "capture.py": "641f6736f8e9659d10f883a6543d9aa0083c9509dafe8ae1f41805f4165b51a0",
-    "tangent.py": "997d1f98b992b404136737de2e45a31cf11dec5df263297c75f46b99d4c18c8f",
+    "tangent.py": "c541fbe14aef6826ba817502f4e32ee6349b7f91f6b6e6d82043e1cff90eb064",
     "global_reference.py": "0203d4fa90a852c40217f07453fd58453d555edc8fb22c1d4a36fde418831eae",
-    "directional.py": "0bf9b84b245c98ab936a2b516a44a814f5f3f602d49b9acafc5d716ae2d24bbc",
+    "directional.py": "37e16b15a7994802ea233d69ed6739796fd42ce0ce5d51eea4f875e19b91ccfe",
     "training.py": "3805f6b0975e8397d15d76cbacdabedf991794a48bd040d9d9b033301b971844",
-    "checks.py": "54157a26bf97a0fe366d06e05b23a26a337f4fa0577d1fdf2a9d16d3170defcb",
+    "checks.py": "0f6abbd018b51f7673b110554ed7a6afe4810333ec52a3a118740b621e652406",
     "meter.py": "977a58c9a2e541928ad418d5e77677286bd0ab8f30b66f10449ada4884fa1965",
-    "PROTOCOL.json": "5b6e7739c9b63f078583b534ae8bcbb755f8ca41ab4303de4827d82ff332fa9e",
+    "PROTOCOL.json": "afb17ed1bce10261f5e5f27e07ee0e5160b40b26e7667468b4e7d6a66c1fb81b",
     "DEVELOPMENT.md": "de65fc76fb857295f07f105347bf9cc2b999187f4c2a5c1214143c21270db311",
-    "DEPENDENCIES.json": "8131db51803d68d94c615498e34dea97c6de4e49df7b57f391375aadb8e60e62"
+    "DEPENDENCIES.json": "8131db51803d68d94c615498e34dea97c6de4e49df7b57f391375aadb8e60e62",
+    "PREOUTCOME_REVIEW.md": "993b7ef99bd0d5f65b5250a3886916861666da0d2f0b21a11ac46826d47884d7",
+    "source_before_review/PROTOCOL_v1.json": "5b6e7739c9b63f078583b534ae8bcbb755f8ca41ab4303de4827d82ff332fa9e",
+    "source_before_review/SOURCE_FREEZE_v1.json": "ed595bf9132e2361863de0c32751bd64f511292c823ad163c3284ab4afb12adc",
+    "source_before_review/checks_v1.py": "54157a26bf97a0fe366d06e05b23a26a337f4fa0577d1fdf2a9d16d3170defcb",
+    "source_before_review/coordinates_v1.py": "a5c8d139768b1b099f1e3399944037f979af94ed0f9ab752de5e51363f539f85",
+    "source_before_review/directional_v1.py": "0bf9b84b245c98ab936a2b516a44a814f5f3f602d49b9acafc5d716ae2d24bbc",
+    "source_before_review/tangent_v1.py": "997d1f98b992b404136737de2e45a31cf11dec5df263297c75f46b99d4c18c8f"
   },
-  "state": "Frozen before all declared numerical checks, nonsmooth cases and fixed-target training smoke"
+  "state": "Frozen after API review, before all registered checks/corners/training"
 }

@@ -8,12 +8,13 @@ is solved, not replaced by a straight-through derivative of a hard decision.
 import numpy as np
 from scipy.linalg import solve_banded
 
-from .coordinates import differentials, interpolation
+from .coordinates import bind, differentials, interpolation
 from .tangent import TOL, coefficients, left_info
 
 
 def solve(solution, raw, direction):
-    config, d, reward = differentials(raw, solution["x"], solution["config"])
+    bound_config = bind(raw, solution)
+    config, d, reward = differentials(raw, solution["x"], bound_config)
     direction = np.asarray(direction, dtype=float)
     if direction.shape != (15,) or not np.isfinite(direction).all():
         raise ValueError("Expected15finite direction coordinates")
