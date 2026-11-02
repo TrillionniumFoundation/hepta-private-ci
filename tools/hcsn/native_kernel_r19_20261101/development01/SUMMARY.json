@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn-native-kernel-r19-v1",
+  "namespace": 19110001,
+  "gates": {
+    "no_valid_failure": true,
+    "numerical": true,
+    "mass": true,
+    "tiny_first": true,
+    "repeated_events": true,
+    "cold_restart": true,
+    "semigroup": true,
+    "rejection": true
+  },
+  "maximum": {
+    "state": 8.881784197001252e-16,
+    "future": 1.176836406102666e-14,
+    "survivor": 1.3655743202889425e-14,
+    "first": 4.6629367034256575e-15,
+    "events": 1.5010215292932116e-13,
+    "mass": 1.0658141036401503e-14,
+    "tiny_first_relative": 4.440892098500626e-16
+  },
+  "cases": 64,
+  "cold_equal": 64,
+  "semigroup_checks": 64,
+  "repeated_over_one": 48,
+  "tiny_positive": 32,
+  "negatives": 11,
+  "failures": [],
+  "source_sha256": {
+    "main.rs": "45b5da6550dbb92898de5e91922edc7ec74d652d5e02b6657eac99cbe11b2bca",
+    "verify.py": "9bd10b8f753fe50b80a61107b5e488439f1e222ffe43e2519373af14d6b744d2",
+    "PROTOCOL.json": "e3682c89243007f4e08117fc2ef6118d12607ce87020c9d18bb0e30967ca157f"
+  },
+  "binary_sha256": "a81b5afe84b51f6aafd5602203a8c2160f4d2b83307828c58e8f8a884196d788",
+  "rustc_version": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "cpu_scope": "whole verify process plus waited compiler/native children, including build and failed negative cases; not development or project cost",
+  "parent_cpu_seconds": 61.334154831999996,
+  "child_cpu_seconds": 1.597408,
+  "wall_seconds": 18.698571048000304,
+  "production_activation": false
+}
