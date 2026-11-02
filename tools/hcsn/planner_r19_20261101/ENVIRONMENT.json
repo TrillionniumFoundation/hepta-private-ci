@@ -1,0 +1,24 @@
+{
+  "available_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "scope": "same host paired actor measurements; parallel tasks on other CPUs, unrelated system activity may remain; no energy or GPU measurements",
+  "threads": {
+    "MKL_NUM_THREADS": 1,
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1
+  },
+  "timing_affinity": [
+    8
+  ]
+}

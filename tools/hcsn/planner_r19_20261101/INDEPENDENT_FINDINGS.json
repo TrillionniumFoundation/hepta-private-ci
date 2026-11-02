@@ -1,0 +1,45 @@
+{
+  "implementation_review": {
+    "exact_value_cases": 288,
+    "layout": "Full projection must preserve R18 C layout. np.ascontiguousarray restores the relevant contract; prior last-bit defect is retained.",
+    "numeric_checks": 1296,
+    "ownership": "Fresh joint allocation and separate likelihood reduction permit in-place divide; every impossible-likelihood row is fully overwritten by the unchanged prior. Forest consumers only read input beliefs.",
+    "readonly_input_checks": true
+  },
+  "limits": [
+    "Six CPU thresholds pass at original 0.90 bound only in this one-fit engineering campaign, not all eight original fits or general model admission.",
+    "Allocation maxima are eight warmed calls per variant/group, not all 18,000 timed calls or resident RSS.",
+    "Serial actor wall throughput excludes separately measured preparation, shared owner/world generation, source checks and raw archive output.",
+    "All six groups reuse 1,000 unique worlds; 6,000 paired world uses are not 6,000 independent worlds.",
+    "Strong ordinary same-matrix HMM receives the optimization; no HX-exclusive D-B result.",
+    "Historical measured investment alone, 141.098189 s, already exceeds actual savings of 23.660112315 s before new costs; full-investment adoption remainsfalse.",
+    "No GPU, joules, real AV, all-domain floating-point identity or production qualification."
+  ],
+  "record_review": {
+    "actor_cpu_with_preparation": {
+      "baseline": 86.91463397500078,
+      "r18": 59.67000013799927,
+      "r19": 63.25452165999978
+    },
+    "actual_baseline_minus_r19_cpu_seconds": 23.660112315001,
+    "checks": 522090,
+    "independent_fits": 1,
+    "memory_replays": 144,
+    "net_minus_prior_investment": -117.43807668499899,
+    "passed": true,
+    "prior_investment_alone_cpu_seconds": 141.098189,
+    "timed_executions": 18000,
+    "unique_worlds": 1000
+  },
+  "required_scope_correction": {
+    "actual": "Only query == 2 (the third query) is fsynced/readback, matching inherited R16/R18 execution. Preserve frozen protocol and publish explicit erratum; do not promote to all-query-boundary recovery qualification.",
+    "field": "scope",
+    "frozen_text": "all query boundaries fsynced",
+    "path": "PROTOCOL.json"
+  },
+  "review_cost_scope": "Review outputs record after-import process CPU only, not full interpreter startup or all reasoning/IO cost. No nested campaign timers added to wait4 child CPU.",
+  "schema": "hcsn-r19-independent-findings-v1",
+  "source_commit": "6d6b75efa8a72dd02500447c1dc84f885a5aeef8",
+  "source_identity": "All four candidate/source-manifest Git blob IDs independently fetched at exact commit and matched local Git object hashes. All 17 frozen source/input SHA256 digests also match.",
+  "verdict": "bounded_engineering_result_supported_with_scope_correction"
+}

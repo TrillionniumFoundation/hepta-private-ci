@@ -1,0 +1,125 @@
+{
+  "groups": {
+    "free|anchored": {
+      "baseline": {
+        "actor_episodes_per_second": 67.08609437166804,
+        "mean_seconds": 0.014906218782984069,
+        "median_seconds": 0.013153606505511561,
+        "p95_nearest_rank_seconds": 0.022634351000306197
+      },
+      "r18": {
+        "actor_episodes_per_second": 90.85893098846384,
+        "mean_seconds": 0.011006072701064113,
+        "median_seconds": 0.00972957799967844,
+        "p95_nearest_rank_seconds": 0.016719295002985746
+      },
+      "r19": {
+        "actor_episodes_per_second": 85.84838520616117,
+        "mean_seconds": 0.011648442747042282,
+        "median_seconds": 0.010190554497967241,
+        "p95_nearest_rank_seconds": 0.01761619999888353
+      }
+    },
+    "free|full": {
+      "baseline": {
+        "actor_episodes_per_second": 76.07377477826829,
+        "mean_seconds": 0.013145134481819696,
+        "median_seconds": 0.011771736997616244,
+        "p95_nearest_rank_seconds": 0.020802692000870593
+      },
+      "r18": {
+        "actor_episodes_per_second": 115.55822616369393,
+        "mean_seconds": 0.008653646159153141,
+        "median_seconds": 0.0076783194999734405,
+        "p95_nearest_rank_seconds": 0.012844224002037663
+      },
+      "r19": {
+        "actor_episodes_per_second": 109.57461007582394,
+        "mean_seconds": 0.009126201766157464,
+        "median_seconds": 0.008068842500506435,
+        "p95_nearest_rank_seconds": 0.013588765003078151
+      }
+    },
+    "hmm_same_matrix|anchored": {
+      "baseline": {
+        "actor_episodes_per_second": 33.95277372166019,
+        "mean_seconds": 0.029452674712170848,
+        "median_seconds": 0.02518104600312654,
+        "p95_nearest_rank_seconds": 0.059608536001178436
+      },
+      "r18": {
+        "actor_episodes_per_second": 44.31577441288679,
+        "mean_seconds": 0.022565328333948854,
+        "median_seconds": 0.018696690003707772,
+        "p95_nearest_rank_seconds": 0.047711209997942206
+      },
+      "r19": {
+        "actor_episodes_per_second": 43.40180389729823,
+        "mean_seconds": 0.023040516987872253,
+        "median_seconds": 0.019352841500221984,
+        "p95_nearest_rank_seconds": 0.047411354003997985
+      }
+    },
+    "hmm_same_matrix|full": {
+      "baseline": {
+        "actor_episodes_per_second": 57.56702288549579,
+        "mean_seconds": 0.01737105637700006,
+        "median_seconds": 0.013857528996595647,
+        "p95_nearest_rank_seconds": 0.03528963099961402
+      },
+      "r18": {
+        "actor_episodes_per_second": 90.4051630616923,
+        "mean_seconds": 0.011061315152073804,
+        "median_seconds": 0.009021133504575118,
+        "p95_nearest_rank_seconds": 0.022065201002988033
+      },
+      "r19": {
+        "actor_episodes_per_second": 83.94135067718877,
+        "mean_seconds": 0.011913079691148597,
+        "median_seconds": 0.009706443499453599,
+        "p95_nearest_rank_seconds": 0.022494384997116867
+      }
+    },
+    "hx|anchored": {
+      "baseline": {
+        "actor_episodes_per_second": 36.66490014339265,
+        "mean_seconds": 0.027274041278964434,
+        "median_seconds": 0.02219110000078217,
+        "p95_nearest_rank_seconds": 0.05736828599765431
+      },
+      "r18": {
+        "actor_episodes_per_second": 47.968181455271264,
+        "mean_seconds": 0.020847152626214664,
+        "median_seconds": 0.01648778299932019,
+        "p95_nearest_rank_seconds": 0.04645536899624858
+      },
+      "r19": {
+        "actor_episodes_per_second": 45.77944489463077,
+        "mean_seconds": 0.021843864693022623,
+        "median_seconds": 0.016884253498574253,
+        "p95_nearest_rank_seconds": 0.04720606999762822
+      }
+    },
+    "hx|full": {
+      "baseline": {
+        "actor_episodes_per_second": 33.476567185991165,
+        "mean_seconds": 0.02987164109283185,
+        "median_seconds": 0.02574217649817001,
+        "p95_nearest_rank_seconds": 0.06046369599789614
+      },
+      "r18": {
+        "actor_episodes_per_second": 52.8434180645823,
+        "mean_seconds": 0.018923832647953533,
+        "median_seconds": 0.015465002499695402,
+        "p95_nearest_rank_seconds": 0.03996918399934657
+      },
+      "r19": {
+        "actor_episodes_per_second": 49.795917665768215,
+        "mean_seconds": 0.02008196749605122,
+        "median_seconds": 0.016810708500997862,
+        "p95_nearest_rank_seconds": 0.04191028000059305
+      }
+    }
+  },
+  "scope": "Descriptive serial actor timings on actual1000uses/group; p95 nearest-rank; not concurrency/productionthroughput or added acceptance gates"
+}

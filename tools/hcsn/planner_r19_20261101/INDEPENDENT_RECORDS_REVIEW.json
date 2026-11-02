@@ -1,0 +1,113 @@
+{
+  "actual_actor_cpu_savings": 23.660112315001,
+  "actual_actor_cpu_totals": {
+    "baseline": 86.91463397500078,
+    "r18": 59.67000013799927,
+    "r19": 63.25452165999978
+  },
+  "checks": 522090,
+  "full_investment_gate_passed": false,
+  "groups": [
+    {
+      "cpu_ratio": 0.6739205117619483,
+      "group": "free_full",
+      "peak_ratio": 0.7060143262603055
+    },
+    {
+      "cpu_ratio": 0.7686771190161737,
+      "group": "free_anchored",
+      "peak_ratio": 0.6521951905842627
+    },
+    {
+      "cpu_ratio": 0.6646648696232569,
+      "group": "hmm_same_matrix_full",
+      "peak_ratio": 0.7060843566635893
+    },
+    {
+      "cpu_ratio": 0.7989204587800428,
+      "group": "hmm_same_matrix_anchored",
+      "peak_ratio": 0.6522419920118904
+    },
+    {
+      "cpu_ratio": 0.6638678824552997,
+      "group": "hx_full",
+      "peak_ratio": 0.7061842333906126
+    },
+    {
+      "cpu_ratio": 0.7879799922019389,
+      "group": "hx_anchored",
+      "peak_ratio": 0.6521951905842627
+    }
+  ],
+  "historical_r18_investment_only": 141.098189,
+  "historical_r18_ledger_sha256": "e993ea9de774a9e027c711111435b08a62664c54140752fc6271ce45111473fe",
+  "passed": true,
+  "raw_file_sha256": {
+    "free_anchored_00.json.gz": "9e9c2c36cf4bd9cfdff1b66815ab8fe4013d161f54461683802a4e7ebf2ec77e",
+    "free_anchored_01.json.gz": "bf8e920c13f7cec6f47b2529d8163ba1482d5cdc4c51a781e98dbcfe8004e9f7",
+    "free_anchored_02.json.gz": "15a08668ef818891b49f9e48234cc8a233ec43f0f3ddc84050282b9e24ac7276",
+    "free_anchored_03.json.gz": "b62d8197dbfae7e85fd2337c6c6b7949257b76674bee99ae80c6c7392b1aff7f",
+    "free_anchored_04.json.gz": "1405311eaccf8a30f6e72b5e91c32f19e7aefc58b1a8c4d09479c4517efa96b5",
+    "free_anchored_05.json.gz": "60e7a4b75461efc9ccb6b83b4280f1047b40da3f02517197c09761d100c1a5c0",
+    "free_anchored_06.json.gz": "282af0ea8eb46f166c532b92548814c9ff11d94e4ae5be586dd5d61995c50052",
+    "free_anchored_07.json.gz": "352bc44895cc73ca4c6f523b62bbc0d9cdbe83fc2df30eb111fffa2bb776861c",
+    "free_anchored_08.json.gz": "b94880b0e4a548556773175c5936b1aac250531b0bbb9fd5e2c5e877b9df2bf6",
+    "free_anchored_09.json.gz": "160a83bc2cae8436df23015d30eed50a29ee6530a2406df9755f3e7b230b9b96",
+    "free_full_00.json.gz": "d9a46cc8ac07657ec4c7d5437eedd3b770334614681b4a2c00148e69167e08f3",
+    "free_full_01.json.gz": "a5455ff9ed09bcb59343b7fe497e21aa396464789e588e41e0918c99b2e38dc5",
+    "free_full_02.json.gz": "bc3090cf38acbb7b4890efcb5b72efdd12becd886840e58d11c8014f3816d09b",
+    "free_full_03.json.gz": "f76b05fa474991d119ac5d169ea8fa758145552b29a64aedd343b15eb3980b16",
+    "free_full_04.json.gz": "9d1d1a152e207e5b1f2fdfc7deb7f02386b6abfd839abc6927db3e91dda17a88",
+    "free_full_05.json.gz": "508875599ea2fec618e480393c364290692001898624ef90d3d24518d808f5fe",
+    "free_full_06.json.gz": "0481d4775d7cb66a3f14e96ab7d28f68551458189b111fa236487c467e4482d3",
+    "free_full_07.json.gz": "ce71d87f1f1fcde785a9dfe95d61ab94adcf1021cbe07318c10cd4d73ac6787a",
+    "free_full_08.json.gz": "01d5bd4103c9544e73864611a2815b13141fe78c46787eeaa9d63d266a6158dd",
+    "free_full_09.json.gz": "008009e4e0d9bf64e3c30229f4e671f231a2e300563e6eaf1a27be6cbb6d7ce0",
+    "hmm_same_matrix_anchored_00.json.gz": "9da44e65f34442ccd013438c05eaa5ecfe76c3598428c9748f3b5ec6d0ac0e1a",
+    "hmm_same_matrix_anchored_01.json.gz": "6caf73d59e0ef64334aa2870e11e52898697e89f3099c7aa5363e2626483c544",
+    "hmm_same_matrix_anchored_02.json.gz": "5b1941350e4d63ef4d7e76d55b2ffa163a0d135d1a0464ca8129d7157b0b2f24",
+    "hmm_same_matrix_anchored_03.json.gz": "e010b00aa6f89874035c00696f8e044c3c79519a16f701c4bf41772f0713387c",
+    "hmm_same_matrix_anchored_04.json.gz": "79af2ce228f82efcb95a4670ba0c2c742163b8b5ef3ff4265ca4c059cdc090fc",
+    "hmm_same_matrix_anchored_05.json.gz": "6d0ceb1350bc538315e75bb0e55ed6a36877ad970ae006879fc1864130f33705",
+    "hmm_same_matrix_anchored_06.json.gz": "ef3488c6f5209cdff1c67ef615dbded727d15db507ec4502dbe2b8bd158579d6",
+    "hmm_same_matrix_anchored_07.json.gz": "668f754e6d199abf9078c65ccbdb55b44f7ebc0c63c2efcbdc4bcb2e87993a9c",
+    "hmm_same_matrix_anchored_08.json.gz": "3a50d8b8590c4c156546bc01a982d38bb0c54fc49a580706270850d106f95de2",
+    "hmm_same_matrix_anchored_09.json.gz": "34e3dccb4e62c4e8cf77888f2d14b4fdfff276449e0546549c96f91ad0b37ce5",
+    "hmm_same_matrix_full_00.json.gz": "020f37190064d4ea8a69000ecf427de98c9dceca3fde720721e1d1cf6c0b32ee",
+    "hmm_same_matrix_full_01.json.gz": "da430b2454621f2187a29b9c94994bd26db238ac70de06aeec9c74289fc5a8cf",
+    "hmm_same_matrix_full_02.json.gz": "3dcafa9da8efc2673b7cfec827f5d53aa522a37290c8738ac6e104d8e744f4a2",
+    "hmm_same_matrix_full_03.json.gz": "63fa1215d91003115b246d00d3a5840d55180734105a21f5b7ae4ac805fef206",
+    "hmm_same_matrix_full_04.json.gz": "639409b59f9741372e326a74c9407171463397fd001d39558ba41f4b01a965c7",
+    "hmm_same_matrix_full_05.json.gz": "0e58aff018d95afd34c1e346c84bad181046af445000b4e7229bce3bbfdcfb88",
+    "hmm_same_matrix_full_06.json.gz": "4f491176a5bb5be9eb9536f58bc98565bd230f7eaabad2ebade62cb9266c2d67",
+    "hmm_same_matrix_full_07.json.gz": "16fc15a77e42e2097decb85c64bea4f2e1c5939da257d471ea6592af805b4fcd",
+    "hmm_same_matrix_full_08.json.gz": "ea32ecdae4870772ad5aa538e99ba54650da4d070861cf28601ba8868c415db3",
+    "hmm_same_matrix_full_09.json.gz": "b660d64c0185adcc965b38d79496a2a9274800f68d2a121cf9554b185e47967b",
+    "hx_anchored_00.json.gz": "ee04008854508fd449a29bbc898a8e1846164e85748c42060fac6df620d5e6c5",
+    "hx_anchored_01.json.gz": "8ef242dcdcc0b9371cc3612a607abb33d2078c03a80e02b480d9c5c0d080b88f",
+    "hx_anchored_02.json.gz": "35e42328585f111fada77d9e741f2e91f0a35eb22781c2a487d79870b728fdc7",
+    "hx_anchored_03.json.gz": "8df46bc172cac9eced4861767b1e4f255745c112502a7606b0eb3c00c150d9c2",
+    "hx_anchored_04.json.gz": "75c784a1d45933f40ec3b6f1666f1df7fc5ccef6e696068fe0279ff28cce40d1",
+    "hx_anchored_05.json.gz": "255ce9426dafc54ecf3dbbd40ac8636108d28a5066335cf15e55ae05ef66e706",
+    "hx_anchored_06.json.gz": "21ae5fc0b1bc8442452812c1051d35f31617e3f82b61ca284fcf972e9121413d",
+    "hx_anchored_07.json.gz": "0f2addd36ba2133df16a73d7a350386cd6d29633000959c71e62b1de4d46057e",
+    "hx_anchored_08.json.gz": "ec13ab20a46ec812167fda0ae19b096ca7b138bc1c0b5186b5143029922959b6",
+    "hx_anchored_09.json.gz": "d1e2af8857bd0274b52d790d5d8e6ea3991a55574810b4266faff2e56a26ac67",
+    "hx_full_00.json.gz": "6e8045a8fdaf1ccdff08bdcfe56a10f404e243d20fa4f7900ecbc690bf191170",
+    "hx_full_01.json.gz": "370b28a0b1bfe995c28120fbd2b427800306d4f1ec06f53d40843280dc7be2ab",
+    "hx_full_02.json.gz": "c2894d673a53b0e3530be657c50628edb233b5e4473909b43c234854bec74eba",
+    "hx_full_03.json.gz": "71fe92ff6ffe6b3d27b573e5d707d920326f4a1a54496cb6551a14d1f19708ab",
+    "hx_full_04.json.gz": "837652e8f4577a1146c7cfc228efe3386047c2552ee12a84297267f0c2d77eba",
+    "hx_full_05.json.gz": "c1d22a2093f5f6e2fcaa2e766b32b1103392a0dae3b8d78e2aab0caab8bee5b8",
+    "hx_full_06.json.gz": "97cbf15bf113268cc9fd987fbf3195e7253583aa5d900e10cd482b57dd6278b7",
+    "hx_full_07.json.gz": "247851e87e38a6380a6a3d52229c810fdc73c82bdf891b785770dab362d586ce",
+    "hx_full_08.json.gz": "0c7f626a3c9e2ef4b414cc9f78a00c21bfbb8f5b3b48e1f2da30bbd3d5d0df35",
+    "hx_full_09.json.gz": "0fc3e3733f9a10e84d3d4323a148fe29a4fdfbaf3751505a52620656ca51fcdb"
+  },
+  "review_process_cpu_seconds_after_imports": 1.916494459,
+  "savings_minus_historical_investment": -117.43807668499899,
+  "scope": "Independent standard-library raw reconstruction, not hidden-world resimulation or whole-project cost. All six groups reuse the same 1000 unique worlds and one fitted seed.",
+  "source_manifest_sha256": "e108f819e446c92c619fbb0b3fba826342267817e56895abe48abd718c6d5728",
+  "summary_sha256": "6bec1a95faecc241b26bcbae95e718251a8427c691e39c2c7053ad4c06e222ed",
+  "unique_worlds": 1000
+}
