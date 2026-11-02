@@ -1,0 +1,102 @@
+{
+  "flush_reserve": {
+    "executed": false,
+    "reason": "Reserving flush time changes the execution protocol; it requires a separate registered actual run."
+  },
+  "interpretation": "Positive risk effect under the frozen contract can arise from waiting to hard deadline then flushing late. It is not evidence of general content or analytic-core advantage.",
+  "modes": {
+    "logical": {
+      "retained_actions_scoring_grid": [
+        {
+          "deadline_penalty_per_miss": 0.0,
+          "full_minus_zero": -0.10177500000000006,
+          "mean_net_utility": {
+            "full": 0.6748499949999999,
+            "full_on_zero": 0.7766249949999999,
+            "zero": 0.7766249949999999,
+            "zero_on_full": 0.6748499949999999
+          }
+        },
+        {
+          "deadline_penalty_per_miss": 0.25,
+          "full_minus_zero": 0.02322499999999994,
+          "mean_net_utility": {
+            "full": 0.6748499949999999,
+            "full_on_zero": 0.6516249949999999,
+            "zero": 0.6516249949999999,
+            "zero_on_full": 0.6748499949999999
+          }
+        },
+        {
+          "deadline_penalty_per_miss": 0.5,
+          "full_minus_zero": 0.14822499999999994,
+          "mean_net_utility": {
+            "full": 0.6748499949999999,
+            "full_on_zero": 0.5266249949999999,
+            "zero": 0.5266249949999999,
+            "zero_on_full": 0.6748499949999999
+          }
+        },
+        {
+          "deadline_penalty_per_miss": 1.0,
+          "full_minus_zero": 0.3982249999999999,
+          "mean_net_utility": {
+            "full": 0.6748499949999999,
+            "full_on_zero": 0.276624995,
+            "zero": 0.276624995,
+            "zero_on_full": 0.6748499949999999
+          }
+        }
+      ],
+      "worlds": 16
+    },
+    "real": {
+      "retained_actions_scoring_grid": [
+        {
+          "deadline_penalty_per_miss": 0.0,
+          "full_minus_zero": 0.023222318376874995,
+          "mean_net_utility": {
+            "full": 0.47400761648375,
+            "full_on_zero": 0.45073272910374995,
+            "zero": 0.450785298106875,
+            "zero_on_full": 0.4740988901525
+          }
+        },
+        {
+          "deadline_penalty_per_miss": 0.25,
+          "full_minus_zero": 0.148222318376875,
+          "mean_net_utility": {
+            "full": 0.47400761648375,
+            "full_on_zero": 0.32573272910374995,
+            "zero": 0.325785298106875,
+            "zero_on_full": 0.4740988901525
+          }
+        },
+        {
+          "deadline_penalty_per_miss": 0.5,
+          "full_minus_zero": 0.273222318376875,
+          "mean_net_utility": {
+            "full": 0.47400761648375,
+            "full_on_zero": 0.20073272910374998,
+            "zero": 0.200785298106875,
+            "zero_on_full": 0.4740988901525
+          }
+        },
+        {
+          "deadline_penalty_per_miss": 1.0,
+          "full_minus_zero": 0.523222318376875,
+          "mean_net_utility": {
+            "full": 0.47400761648375,
+            "full_on_zero": -0.04926727089625005,
+            "zero": -0.049214701893125004,
+            "zero_on_full": 0.4740988901525
+          }
+        }
+      ],
+      "worlds": 8
+    }
+  },
+  "raw_sha256": "325f1049b0357991e807c89c82c7dab5aab922edeb29878618b52c94a6f0ac2f",
+  "schema": "hcsn-v9-risk-scoring-sensitivity.v1",
+  "scope": "post-freeze sensitivity; retained realized actions, not retraining or reoptimization"
+}

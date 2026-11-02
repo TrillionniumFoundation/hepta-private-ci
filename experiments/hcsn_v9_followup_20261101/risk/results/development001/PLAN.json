@@ -1,0 +1,185 @@
+{
+  "architecture_acceptance": false,
+  "arms": [
+    "full",
+    "zero",
+    "full_on_zero",
+    "zero_on_full"
+  ],
+  "costs": {
+    "deadline_miss": 1.0,
+    "elapsed_second": 0.005,
+    "observation": 0.02
+  },
+  "deadline": 2.2,
+  "intervention": "only explicit deadline_miss_probability; identical future correctness incl timeout, elapsed and read count",
+  "limitations": [
+    "fixed public sensor law",
+    "untrained common head",
+    "8 actual worlds only",
+    "one optional read",
+    "not natural AV",
+    "not Put-channel or analytic-core necessity",
+    "no energy measurement"
+  ],
+  "logical_quadrature": "full joint factor enumeration; weighted by public independent sensor/noise/service law",
+  "logical_timeout_scoring": "sink adds declared one microsecond flush; actual run uses measured flush",
+  "logical_worlds": [
+    {
+      "audio": 1,
+      "fast": false,
+      "id": "synthetic-bsc-00",
+      "target": 0,
+      "video": 1,
+      "weight": 0.00375
+    },
+    {
+      "audio": 1,
+      "fast": true,
+      "id": "synthetic-bsc-01",
+      "target": 0,
+      "video": 1,
+      "weight": 0.00375
+    },
+    {
+      "audio": 1,
+      "fast": false,
+      "id": "synthetic-bsc-02",
+      "target": 0,
+      "video": 0,
+      "weight": 0.07125
+    },
+    {
+      "audio": 1,
+      "fast": true,
+      "id": "synthetic-bsc-03",
+      "target": 0,
+      "video": 0,
+      "weight": 0.07125
+    },
+    {
+      "audio": 0,
+      "fast": false,
+      "id": "synthetic-bsc-04",
+      "target": 0,
+      "video": 1,
+      "weight": 0.008749999999999999
+    },
+    {
+      "audio": 0,
+      "fast": true,
+      "id": "synthetic-bsc-05",
+      "target": 0,
+      "video": 1,
+      "weight": 0.008749999999999999
+    },
+    {
+      "audio": 0,
+      "fast": false,
+      "id": "synthetic-bsc-06",
+      "target": 0,
+      "video": 0,
+      "weight": 0.16624999999999998
+    },
+    {
+      "audio": 0,
+      "fast": true,
+      "id": "synthetic-bsc-07",
+      "target": 0,
+      "video": 0,
+      "weight": 0.16624999999999998
+    },
+    {
+      "audio": 0,
+      "fast": false,
+      "id": "synthetic-bsc-08",
+      "target": 1,
+      "video": 0,
+      "weight": 0.00375
+    },
+    {
+      "audio": 0,
+      "fast": true,
+      "id": "synthetic-bsc-09",
+      "target": 1,
+      "video": 0,
+      "weight": 0.00375
+    },
+    {
+      "audio": 0,
+      "fast": false,
+      "id": "synthetic-bsc-10",
+      "target": 1,
+      "video": 1,
+      "weight": 0.07125
+    },
+    {
+      "audio": 0,
+      "fast": true,
+      "id": "synthetic-bsc-11",
+      "target": 1,
+      "video": 1,
+      "weight": 0.07125
+    },
+    {
+      "audio": 1,
+      "fast": false,
+      "id": "synthetic-bsc-12",
+      "target": 1,
+      "video": 0,
+      "weight": 0.008749999999999999
+    },
+    {
+      "audio": 1,
+      "fast": true,
+      "id": "synthetic-bsc-13",
+      "target": 1,
+      "video": 0,
+      "weight": 0.008749999999999999
+    },
+    {
+      "audio": 1,
+      "fast": false,
+      "id": "synthetic-bsc-14",
+      "target": 1,
+      "video": 1,
+      "weight": 0.16624999999999998
+    },
+    {
+      "audio": 1,
+      "fast": true,
+      "id": "synthetic-bsc-15",
+      "target": 1,
+      "video": 1,
+      "weight": 0.16624999999999998
+    }
+  ],
+  "primary": "weighted logical and descriptive paired actual full-minus-zero net utility; fixed-action content invariance",
+  "public_law": {
+    "audio_accuracy": 0.7,
+    "fast_delay": 0.12,
+    "slow_delay": 1.4,
+    "video_accuracy": 0.95,
+    "video_fast_probability": 0.5
+  },
+  "real_arm_order": "Latin rotation of full,zero,full_on_zero,zero_on_full by world index modulo four",
+  "real_world_ids": [
+    "synthetic-bsc-00",
+    "synthetic-bsc-03",
+    "synthetic-bsc-05",
+    "synthetic-bsc-06",
+    "synthetic-bsc-09",
+    "synthetic-bsc-10",
+    "synthetic-bsc-12",
+    "synthetic-bsc-15"
+  ],
+  "real_world_selection": "before execution; even-parity half-fraction balances target/audio correctness/video correctness/service, descriptive unweighted subset",
+  "schema": "hcsn-v9-service-risk-development.v1",
+  "scope": "controlled_synthetic_service_risk_not_real_AV",
+  "source_sha256": {
+    "hcsn_v7_support_20261101/content_interface/content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+    "hcsn_v8_execution_20261101/scheduler/execution.py": "f38d0ea01ba71d7c128da9ddd86597e41b83b79cbba428eaade0f33e4177243b",
+    "hcsn_v8_execution_20261101/scheduler/planning.py": "3b616986599fb242d715c5a8b92fb73a68be01858723c6c6cc3111cda773ed61",
+    "hcsn_v9_followup_20261101/risk/study.py": "cfce684338deec129387affad76a85f31850ce763d0936b5e2bab05c5a4dfe6c"
+  }
+}
