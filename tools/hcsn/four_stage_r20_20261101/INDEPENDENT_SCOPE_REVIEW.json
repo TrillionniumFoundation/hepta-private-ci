@@ -1,0 +1,366 @@
+{
+  "schema": "hcsn-r20-r21-independent-integrated-scope-review-v1",
+  "review_mode": "Read-only cross-component result/receipt consistency and scalar arithmetic; no experiment reruns or component source changes",
+  "review_consistency_passed": true,
+  "scientific_gates_all_passed": false,
+  "components": {
+    "financial": {
+      "status": "PASS_DECLARED_FINITE_PROFILE_OPEN_GLOBAL",
+      "cases": 72,
+      "cdf_cases": 129,
+      "registered_negative_cases": 7,
+      "formal_maximum_boundary_error": 2.842170943040401e-14,
+      "independent_adaptive_selected_cases": 12,
+      "independent_adaptive_maximum_error": 1.7538927806265077e-14,
+      "open": [
+        "all-box quadrature/FP64 proof",
+        "full equity/debt",
+        "full nine-parameter gradients",
+        "continuous neural boundary",
+        "model adoption"
+      ]
+    },
+    "continuous": {
+      "status": "PASS_EXACT_TIE_DIRECTIONAL_CONTRACT_FAIL_GENERIC_GATE",
+      "exact_cases": 96,
+      "whole_array_comparisons": 192,
+      "generic_signed_directions": 78,
+      "generic_both_step_passes": 30,
+      "generic_individual_step_passes": 71,
+      "generic_maximum_error": 1.2711191807740496,
+      "generic_math_qualification": false,
+      "original_r19_gates_preserved_failed": true,
+      "open": [
+        "generic numerical branch certificate",
+        "moving delay/horizon/domain",
+        "continuum/full financial/neural gradients"
+      ]
+    },
+    "runtime": {
+      "status": "PASS_DECLARED_TRUSTED_LOCAL_NUMERICAL_OWNER_PROFILE",
+      "unique_worlds": 20,
+      "schedules": 180,
+      "native_processes": 605,
+      "controls": 15,
+      "opaque_successor_replay_used": false,
+      "maximum_final_reference_difference": 3.391731340229853e-14,
+      "maximum_intermediate_reference_difference": 3.980149543281186e-14,
+      "open": [
+        "authenticated cross-host ownership",
+        "power loss",
+        "paired rollback",
+        "cross-artifact migration",
+        "production lifecycle"
+      ],
+      "exact_binary_restoration_artifacts": 4,
+      "retained_paid_checkpoint_delivery_replay_passed": true,
+      "delivery_replay_is_new_independent_world": false
+    },
+    "planner": {
+      "status": "PASS_QUERY_BOUNDARY_RECOVERY_AND_MEMORY_FAIL_CPU_AND_INVESTMENT",
+      "fit_groups": 48,
+      "actual_uses_per_fit_group": 64,
+      "unique_worlds": 512,
+      "timed_executions": 12288,
+      "original_cpu_failed_groups": 1,
+      "joint_failed_groups": 10,
+      "allocation_peak_pass_groups": 48,
+      "normal_cold_schedules": 48,
+      "scripted_cold_schedules": 24,
+      "full_investment_gate": false,
+      "open": [
+        "strict per-group CPU gate",
+        "full investment economics",
+        "mid-query external effects",
+        "full process RSS/GPU/joules"
+      ]
+    },
+    "content": {
+      "status": "PASS_FOUR_RESEARCH_PANELS_FAIL_ALL_PANEL_ADOPTION",
+      "worlds": 86016,
+      "independent_generators": 21504,
+      "policy_executions": 430080,
+      "research_panels_passed": 4,
+      "coverage_risk_panels_passed": 3,
+      "panels": [
+        {
+          "panel": "confirm",
+          "worlds": 4096,
+          "independent_generators": 1024,
+          "fractional_answers": 267,
+          "fractional_errors": 4,
+          "risk_upper95": 0.02867383512544803,
+          "research_gate": true,
+          "coverage_risk_subgate": true
+        },
+        {
+          "panel": "lag2",
+          "worlds": 32768,
+          "independent_generators": 8192,
+          "fractional_answers": 543,
+          "fractional_errors": 35,
+          "risk_upper95": 0.08171612559009651,
+          "research_gate": true,
+          "coverage_risk_subgate": false
+        },
+        {
+          "panel": "lag2_skip",
+          "worlds": 32768,
+          "independent_generators": 8192,
+          "fractional_answers": 1063,
+          "fractional_errors": 52,
+          "risk_upper95": 0.06005524564752947,
+          "research_gate": true,
+          "coverage_risk_subgate": true
+        },
+        {
+          "panel": "relabeled_lag2",
+          "worlds": 8192,
+          "independent_generators": 2048,
+          "fractional_answers": 153,
+          "fractional_errors": 17,
+          "risk_upper95": 0.15492957746478872,
+          "research_gate": false,
+          "coverage_risk_subgate": false
+        },
+        {
+          "panel": "reverse",
+          "worlds": 8192,
+          "independent_generators": 2048,
+          "fractional_answers": 366,
+          "fractional_errors": 5,
+          "risk_upper95": 0.024324324324324326,
+          "research_gate": true,
+          "coverage_risk_subgate": true
+        }
+      ],
+      "full_model_adoption": false,
+      "open": [
+        "symbol-conjugacy risk",
+        "lag-two adoption coverage",
+        "independent retraining",
+        "arbitrary unknown generators",
+        "real AV/open-domain binding",
+        "strongest feasible baseline/full costs"
+      ]
+    },
+    "r21_checkpoint": {
+      "status": "PASS_CORRECTNESS_ONLY_RESOURCE_ADMISSION_NOT_ESTABLISHED",
+      "source_commit": "df35a6d3869cbcafce8e15b9e40d4bcdd1164439",
+      "cold_schedules": 54,
+      "processes": 117,
+      "admission_controls": 60,
+      "development_cpu_ratio": 0.9837114896279165,
+      "performance_confirmation": false,
+      "open": [
+        "new strict resource campaign",
+        "all lifecycle and external-effect fault domains"
+      ],
+      "cold_record_checks": 3078,
+      "original_manifest_byte_hash_records": 498,
+      "original_manifest_validation_passed": true,
+      "inherited_direct_restore_apis_hardened": false
+    }
+  },
+  "content_auditor_dependency": {
+    "status": "FINAL_CHECKOUT_DELIVERED_HISTORICAL_PREFORMAL_REMOTE_GAP_RETAINED",
+    "helper": "independent_v2_calibration_check.py",
+    "sha256": "7ef2949b35d7f61e393b6aa975d3adca365b55c3f7ec67ea6cde3215f7072c2e",
+    "matches_preformal_executed_checker_receipt": true,
+    "present_in_preformal_effective22_manifest": false,
+    "present_in_preformal_post14_manifest": false,
+    "effective_source_freeze_file": "CALIBRATION_V2_SOURCE_FREEZE.json",
+    "effective_source_freeze_sha256": "1361aa3e25c5215723b7ff9acfd692d31e022bc0291c3250e6c2f1b4909114cc",
+    "post_freeze_sha256": "ff721c8d1c6fbf82c86acfb9352dbb7b68d61257e2e79e8ee513b76b7d28cd85",
+    "late_delivery_commit": "e1c32010652ced52662c67ef76a5b0dae112618c",
+    "late_delivery_verified": true,
+    "remotely_bound_before_formal": false,
+    "scientific_sources_or_old_freezes_rewritten": false
+  },
+  "clarifications": [
+    {
+      "severity": "wording",
+      "topic": "financial reference",
+      "finding": "Formal comparison lifts unchanged R12 boundary/phase generator to the declared four-content law and constructs fixed emissions; it is not a literal port of every original R12 Cell interface or learned emission.",
+      "recommended_wording": "Reference constructed from unchanged R12 for the declared40-state synthetic extension."
+    },
+    {
+      "severity": "scope",
+      "topic": "integration",
+      "finding": "A union of tested component sources does not establish one end-to-end learned multimodal production composition."
+    },
+    {
+      "severity": "scope",
+      "topic": "R21",
+      "finding": "Correctness receipts and development aggregate speed do not supersede failed R20 strict CPU/investment gates."
+    }
+  ],
+  "global_open": [
+    "analytic-core independent D-minus-B",
+    "full financial/neural continuum gradients",
+    "real multimodal and open-domain binding",
+    "same-condition quality/latency/throughput/energy adoption",
+    "GPU and authenticated production lifecycle"
+  ],
+  "all_blockers_closed": false,
+  "production_activation": false,
+  "evidence_snapshot": [
+    {
+      "path": "tools/hcsn/native_financial_r20_20261101/confirmation_01/SUMMARY.json",
+      "sha256": "6941c0140c49dbcc0356fc4167454206b3d8a9dd4e0dd5bffee99b990e5e7178"
+    },
+    {
+      "path": "tools/hcsn/native_financial_r20_20261101/INDEPENDENT_REVIEW.json",
+      "sha256": "b6b1546a5d223f739180a5512dd0defacd9657899656bedc5b253e18f276749c"
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r20_20261101/ACCEPTANCE.json",
+      "sha256": "acdde58ee23b241375a1d0bf940beb22f7548fa3bb35306644dd5869e6a4405a"
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r20_20261101/EXACT_V2_RAW_REPLAY.json",
+      "sha256": "8d10f64214a997581b15ad5e26b3c48ba64e684007a8d84ef83ee4230c228682"
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r20_20261101/GENERIC_V2_RAW_REPLAY.json",
+      "sha256": "0e9978d767f7d2cf1843b8771a275c89dd97f8ff199e4865c5ad5825d76a6485"
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/ACCEPTANCE.json",
+      "sha256": "e7b604036b65defade495309f06a0e84ebaad91d638650524905645cd8d5b6a4"
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/RESULT.json",
+      "sha256": "f3c66581e562fa1f1ed020759001e452ba645c58432c5f05af5c8971f945af84"
+    },
+    {
+      "path": "tools/hcsn/planner_r20_20261101/ACCEPTANCE.json",
+      "sha256": "7c6cf885218a82caa2cebb94226b4dc56e07f24b150bee15b8cc57871d9959d0"
+    },
+    {
+      "path": "tools/hcsn/planner_r20_20261101/confirmation_01/SUMMARY.json",
+      "sha256": "82bbea708be30b394c201810a0abaf316a7a141b3f389dde22106bdabf36e15d"
+    },
+    {
+      "path": "tools/hcsn/planner_r20_20261101/COST_LEDGER.json",
+      "sha256": "11a77956db48fa125840f8a7b4fd562b24cd30f1a61654e392ea3dbd638752fa"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/ACCEPTANCE.json",
+      "sha256": "fcb3a60f05398a1abd1a17cd13c4aadbd699ea1ae0973e26992068bfd6416ab5"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/confirm_v2_01/SUMMARY.json",
+      "sha256": "6f552d43e4de6179ec94d2dfc2edcf455f6499125a959ec9b521159a24ccb734"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/ADOPTION_COVERAGE_EVALUATION.json",
+      "sha256": "3f5849decf6cb8847182a28b32be6614741196a7e6dc91ca500e42a0bf01e9ba"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/V2_AUDIT_DEPENDENCY_REVIEW.json",
+      "sha256": "1fb1ee56089f8483947e705d8b0cc7ad31cad52c41b0a5df267c4c7317645627"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/AUDIT_DEPENDENCY_BINDING_ADDENDUM.json",
+      "sha256": "aea66229e3fba0d56615c86a4b511269a1b775cc67208cd9186c4eefcdf160e5"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/V2_AUDIT_DEPENDENCY_DELIVERY_CHECK.json",
+      "sha256": "0b0b103343132182cf04f7a462090515c1dc4e15e4e2b05598c2edb80cc3344c"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/V2_INDEPENDENT_CALIBRATION_CHECK.json",
+      "sha256": "5c6620f3381cb5314eb948bad5e7105bfbfdbea02e9dba4f16a1222e1e80e552"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/CALIBRATION_V2_SOURCE_FREEZE.json",
+      "sha256": "1361aa3e25c5215723b7ff9acfd692d31e022bc0291c3250e6c2f1b4909114cc"
+    },
+    {
+      "path": "experiments/hcsn_unknown_generator_r20_20261101/POSTCALIBRATION_V2_FREEZE.json",
+      "sha256": "ff721c8d1c6fbf82c86acfb9352dbb7b68d61257e2e79e8ee513b76b7d28cd85"
+    },
+    {
+      "path": "tools/hcsn/checkpoint_fastpath_r21_20261101/INDEPENDENT_REVIEW.json",
+      "sha256": "209996a2e149f1e2692244b653c93bf963c5cd533dd27693232b5d5201ff28a2"
+    },
+    {
+      "path": "tools/hcsn/checkpoint_fastpath_r21_20261101/INDEPENDENT_ADMISSION_V2_RECEIPT.json",
+      "sha256": "a95f62a34c8a191f09ff3aab6042e2b89010e762bcc40a34054ab63a7a93153f"
+    },
+    {
+      "path": "tools/hcsn/checkpoint_fastpath_r21_20261101/v2_cold_confirmation_01/SUMMARY.json",
+      "sha256": "eeffbbc39d298554803d66fbd991b96ba20d411bb80b61aa6530ecd100e8113b"
+    },
+    {
+      "path": "tools/hcsn/checkpoint_fastpath_r21_20261101/v2_cold_confirmation_01/PROCESS_RECEIPT.json",
+      "sha256": "56d4704094009f9e3dff22839ef7296de2679c2ca248f454a425c6972615d7d9"
+    },
+    {
+      "path": "tools/hcsn/checkpoint_fastpath_r21_20261101/V2_PUBLICATION.json",
+      "sha256": "3fa2b1b123f4339a1a4d881c48dfd1983bb082547f1fb982f60c28a13809897c"
+    },
+    {
+      "path": "tools/hcsn/checkpoint_fastpath_r21_20261101/ACCEPTANCE.json",
+      "sha256": "731661294b283691a1229034c6235ecc3176969c04097026d7c0d292882ca7c9"
+    },
+    {
+      "path": "tools/hcsn/checkpoint_fastpath_r21_20261101/V2_COLD_RECORD_AUDIT.json",
+      "sha256": "0d86b1a8fa9f758afc10dcae23203337b70ef769c57d8fa470ecbf67b4175f64"
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/BINARY_CHECKPOINT_REPLAY.json",
+      "sha256": "9c289820429fda2afd6b5604f6557a9deffd3fc415e7c581e58b723d5339bf19"
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/BINARY_ROUNDTRIP.json",
+      "sha256": "1d70a60db5bcf192b7e9c4bcd4c8c9ed2af70636260f6094080ef0bf8a79de36"
+    },
+    {
+      "path": "tools/hcsn/four_stage_r20_20261101/ENVIRONMENT.json",
+      "sha256": "405ab407e10b7d59661929d6ab9c3b7a3a39634c37ab885323ca5cf45bf8d55e"
+    },
+    {
+      "path": "tools/hcsn/four_stage_r20_20261101/REPORT_ZH.md",
+      "sha256": "72530d88bcfabb87bcd973d01a576fc11cee9c655f82978f7e35263efa1ec937"
+    },
+    {
+      "path": "tools/hcsn/four_stage_r20_20261101/STATUS.json",
+      "sha256": "9d9968e45788211c256ce15da9c5f3359ae3d859d4e52995ff92729cdcf7446f"
+    },
+    {
+      "path": "tools/hcsn/four_stage_r20_20261101/LOCAL_MANIFEST_CHECK.json",
+      "sha256": "318eba70e5e3855600fec9ab3af2409ca4cbbb9dcfebea200e12cc3334366a92"
+    },
+    {
+      "path": "tools/hcsn/four_stage_r20_20261101/IDENTIFICATION.md",
+      "sha256": "649bb8abc997ddca45d5a3e786a33533202c97ba3ada5efbdf5010d6c37b4b90"
+    }
+  ],
+  "root_report_review": {
+    "prose_and_status_consistent_after_corrections": true,
+    "numeric_experiments_rerun": false,
+    "component_sources_modified": false,
+    "changes": [
+      "Conservative content fallback is executable but its failed original .95 calibration is not promoted to passed",
+      "Financial comparison names the declared four-content40-state extension, not literal full R12",
+      "Runtime15controls include positive interventions/compatibility and rejections",
+      "Planner12288timed and1536memorydiagnostic executions separated",
+      "R21V1engineeringtiming does not qualifyV2",
+      "Finite2-4missingness evidence distinguished from broader robustness",
+      "Same-roster repair revalidation is not a new independent namespace",
+      "GPUscope tied to actual measured evidence",
+      "Future delivery/PR composition claims deferred to actual receipts"
+    ],
+    "status_flags_preserved_false": [
+      "all_blockers_closed",
+      "production_activation",
+      "model_adoption"
+    ]
+  },
+  "identification_review": {
+    "pathwise_same_law_equality_valid_under_stated_assumptions": true,
+    "scope": "Same initialbelief,finiteQ/emissions/reset/publicprices/deterministiccontroller/tie/owner tape, positive evidence and exact mathematical maps; does not equate generic GRU/SSM or FP64 approximations."
+  }
+}

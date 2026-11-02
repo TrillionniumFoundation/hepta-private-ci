@@ -1,0 +1,14 @@
+{
+  "stage": "R20 delivery infrastructure construction",
+  "error": "OSError [Errno 28] No space left on device",
+  "operation": "Path.write_text for new copied build_transport.py",
+  "effect": "New delivery-only builder truncated; regenerated from unchanged R19 helper after space returned",
+  "frozen_candidate_files_changed": false,
+  "raw_evidence_changed": false,
+  "cleanup_review": {
+    "rejected_action": "rm -rf on four verified reproducible roundtrip directories",
+    "reason": "rm -f style commands are not permitted. Use a safer approach",
+    "safer_action": "Python hardcoded path list guarded by is_dir and not is_symlink, shutil.rmtree only the same four reproducible directories",
+    "other_project_cache_files_deleted_by_this_agent": 0
+  }
+}

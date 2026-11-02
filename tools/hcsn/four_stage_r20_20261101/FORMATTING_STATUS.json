@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/tmp/hcsn-r15-yaml-alias-tools/just",
+    "fmt"
+  ],
+  "cwd": "/workspace/scratch/671a3fc18e7e/repo/codex-rs",
+  "attempted": true,
+  "ran": false,
+  "exit_code": null,
+  "error": "[Errno 2] No such file or directory: PosixPath('/workspace/scratch/671a3fc18e7e/repo/codex-rs')",
+  "reason": "This is a partial reconstructed research checkout; codex-rs is absent. Standalone Rust source was formatted and built before its frozen scientific runs. No codex-rs crate or dependency was modified.",
+  "scientific_tests_completed_before_this_attempt": true,
+  "tests_rerun_after_fmt": false
+}
