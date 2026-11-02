@@ -1,0 +1,107 @@
+{
+  "all_blockers_closed": false,
+  "answer": "FrozenR1 neural argmax after actual causal prefix reconstruction; ordinary exact-law/generictyped reference receives same acquired bytes and actions",
+  "artifact_scope": "Query logits, source-world arrays, executed provider traces, replay pool hashes and model-call ledger; target<15MB",
+  "branches": "Original pre-acquisition visible-prefix ambiguity on qualified primary; secondary additionally evaluation-only final-target availability. Neither used as controller oracle.",
+  "confirmation": {
+    "episodes": 64,
+    "primary": [
+      "base",
+      "missing",
+      "long_tokens_128",
+      "missing_tokens_128"
+    ],
+    "secondary": [
+      "two_erased",
+      "shifted_order_values"
+    ],
+    "seed": 173117,
+    "split": "confirm"
+  },
+  "conservative_secondary": "always_read is applied to every cohort and reads all visible missing slots, then uses generictyped replay; it never relies on unknown hidden-law certification",
+  "control": "R2 visible-prefix confidence<.95; observable multiple slots or parser rejection causes all-visible-missing READ fallback. No condition/familyID/availability/label to controller",
+  "cores": [
+    "flow",
+    "diagonal"
+  ],
+  "development": {
+    "condition": "missing",
+    "cutoffs": [
+      -1.0,
+      0.02,
+      0.08,
+      0.16,
+      0.32,
+      0.64
+    ],
+    "episodes": 128,
+    "seed": 172117,
+    "selection": "Maximum ordinary exact-law executed-continuation utility; ties use lower price cutoff; one cutoff per task",
+    "split": "dev"
+  },
+  "execution": "Shared executed provider trace per policy/world reused as matched information across6 frozen core/seed arms and ordinary reference; no duplicated service executions claimed. Neural cache reuses exact hashed prefix arrays only.",
+  "frozen_utc": "2026-11-02T01:44:57.403798+00:00",
+  "gates": {
+    "conditional_answer_accuracy_min": 0.95,
+    "conditional_coverage_min": 0.8,
+    "known_accuracy_min": 0.95,
+    "nonmissing_all4_min": 0.95
+  },
+  "model_seeds": [
+    17,
+    29,
+    43
+  ],
+  "policies": [
+    "confidence_read",
+    "always_read",
+    "never_read",
+    "simple_threshold"
+  ],
+  "prices": [
+    0.02,
+    0.08,
+    0.16,
+    0.32,
+    0.64
+  ],
+  "production_activation": false,
+  "q": 0.666626592930993,
+  "r1_candidate_sha256": "88842f4a56d921910821d42acc092805e456332c90a6f719c413b7ba63a39db9",
+  "r2_candidate_sha256": "96527ef05c4db795bf7ba069b4f056ddb0ba4430853b8559dd947cfa6304cb88",
+  "read": {
+    "billing": "Once per acquired slot per policy/world session, cached repeats charge/wait zero",
+    "request": "Only an already-ingested observed-missing slot index",
+    "response": "Actual original rawWRITE and original source timestamp; never label/posterior/dependency",
+    "semantics": "Retrospective internal reconstruction after acquisition, not changing prior environment actions; all actual neural replays counted",
+    "source_clock": "READwait <=.2, next source gap>=.25; replay subtracts elapsedwait, rejects overlap instead of dropping events",
+    "wait": 0.1
+  },
+  "schema": "hcsn.paid-read-repair.r2.v1",
+  "secondary_limits": "confidence_read may miss observationally indistinguishable shifted hidden writes; qualify only conservative always_read on secondary, report other outcomes without hidden-family routing",
+  "source_hashes": {
+    "experiments/hcsn_addressed_flow_20261101/addressed_models.py": "2c2c434c567f66d5e0f48d5befc05e54c201c724f0b2b5d6f211f3784612f25e",
+    "experiments/hcsn_addressed_flow_20261101/data.py": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+    "experiments/hcsn_addressed_flow_20261101/study.py": "06b650f82d75e6677651a109cee8ef89a7f21d41c8852981153c0a88e080b3b1",
+    "experiments/hcsn_addressed_flow_20261101/typed_retention.py": "680d156cbd1290794d747d282763559a277ffc4a47b3e7347e1024db0ef23cf4",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/dynamic_data.py": "df016a6142ecc5a9fffaa45956ec253169ce33adb7101f8b18d41b4a845102c7",
+    "experiments/hcsn_four_stage_flow_20261031/extended_eval.py": "9c6f9633225625e9696871c4396e5b52f872ac117b8a4d47cba6f125cf53f84d",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e",
+    "experiments/hcsn_missing_answers_20261101/__init__.py": "027ad7b3a9677e15d743d52e41d6bd1a1efb0a100de1e4a981651b2862fd3f78",
+    "experiments/hcsn_missing_answers_20261101/campaign.py": "5c39d4673027d9815bd15a76803792fbbef86750f7bd2eab4aa38afd2706c1fb",
+    "experiments/hcsn_missing_reliability_r2_20261101/posterior.py": "3c9b1bb881cd5f9b3fd038596735f85bdf59a88404c4a8ab58afb237f9e1dbfa",
+    "experiments/hcsn_read_repair_r2_20261101/__init__.py": "dd053ecd587d3b8712d2a383289725ba7b6631113eebede4ee287320232f2a5e",
+    "experiments/hcsn_read_repair_r2_20261101/campaign.py": "a3434247b3e72aeabcc70c9362654e19440bc89808599bedf7c37909fd9de32d",
+    "experiments/hcsn_read_repair_r2_20261101/provider.py": "62d69234b5cb6c319033f687c931af1ab0ec02388b9b1012f9481fd25bd1ae29",
+    "experiments/hcsn_read_repair_r2_20261101/worlds.py": "8fc20c7f05d086c9ed3c6aac2542e9a9c225874bcd8d6f5e790475c007d967ca"
+  },
+  "tasks": [
+    "mqar",
+    "selective",
+    "binding"
+  ],
+  "utility": "Mean of four emitted answers correct, minus total actual READ fees; all policies emit four answers. No dilution by abstention. Symbolic fees/waits separate from CPU."
+}

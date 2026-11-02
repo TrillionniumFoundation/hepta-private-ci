@@ -1,0 +1,150 @@
+{
+  "actual_neural_forward_calls": 2292,
+  "actual_neural_replay_frames": 2412840,
+  "actual_neural_replay_sequences": 49506,
+  "actual_paid_read_requests": 2493,
+  "actual_provider_world_sessions": 4608,
+  "all_blockers_closed": false,
+  "audit_source_sha256": "fa972fb75baef09f1684aec86e49dd80bb42b9b69d3639bb5163a4aaeeab4af5",
+  "cohorts": [
+    {
+      "condition": "base",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "mqar",
+      "unique_prefixes": 256
+    },
+    {
+      "condition": "missing",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "mqar",
+      "unique_prefixes": 614
+    },
+    {
+      "condition": "long_tokens_128",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "mqar",
+      "unique_prefixes": 256
+    },
+    {
+      "condition": "missing_tokens_128",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "mqar",
+      "unique_prefixes": 614
+    },
+    {
+      "condition": "two_erased",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "mqar",
+      "unique_prefixes": 512
+    },
+    {
+      "condition": "shifted_order_values",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "mqar",
+      "unique_prefixes": 579
+    },
+    {
+      "condition": "base",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "selective",
+      "unique_prefixes": 256
+    },
+    {
+      "condition": "missing",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "selective",
+      "unique_prefixes": 563
+    },
+    {
+      "condition": "long_tokens_128",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "selective",
+      "unique_prefixes": 256
+    },
+    {
+      "condition": "missing_tokens_128",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "selective",
+      "unique_prefixes": 563
+    },
+    {
+      "condition": "two_erased",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "selective",
+      "unique_prefixes": 512
+    },
+    {
+      "condition": "shifted_order_values",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "selective",
+      "unique_prefixes": 512
+    },
+    {
+      "condition": "base",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "binding",
+      "unique_prefixes": 256
+    },
+    {
+      "condition": "missing",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "binding",
+      "unique_prefixes": 611
+    },
+    {
+      "condition": "long_tokens_128",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "binding",
+      "unique_prefixes": 256
+    },
+    {
+      "condition": "missing_tokens_128",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "binding",
+      "unique_prefixes": 611
+    },
+    {
+      "condition": "two_erased",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "binding",
+      "unique_prefixes": 512
+    },
+    {
+      "condition": "shifted_order_values",
+      "episodes": 64,
+      "service_sessions": 256,
+      "task": "binding",
+      "unique_prefixes": 512
+    }
+  ],
+  "limits": [
+    "Same executed service traces shared across six frozen core/seed arms and ordinary reference; not independent service repetitions",
+    "No neural model rerun; every saved logit index bound to independently reconstructed prefix bytes",
+    "Only conservative always_read qualified on shifted/unknown laws; confidence may fail on indistinguishable hidden histories",
+    "Symbolic service fees/waits separate from actual replay CPU and external provider ownership"
+  ],
+  "passed": true,
+  "production_activation": false,
+  "query_prefix_checks": 18432,
+  "record_checks": 504,
+  "review_cpu_seconds": null,
+  "schema": "hcsn.read-repair-r2.independent-record-review.v1",
+  "summary_sha256": "4cfe20b9f5264a947f76cc0f861cf60fba61e747948f868e3c87e7ad7ce5a5fc"
+}
