@@ -1,0 +1,38 @@
+   Compiling version_check v0.9.5
+   Compiling proc-macro2 v1.0.106
+   Compiling typenum v1.20.1
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.21
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.151
+   Compiling cfg-if v1.0.4
+   Compiling cpufeatures v0.2.17
+   Compiling memchr v2.8.1
+   Compiling itoa v1.0.18
+   Compiling libc v0.2.186
+   Compiling generic-array v0.14.7
+   Compiling syn v3.0.9
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.10.7
+   Compiling sha2 v0.10.9
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/hepta-types)
+   Compiling serde_derive v1.0.229
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/hepta-neuron)
+   Compiling hepta-digital-joint-native v0.1.0 (/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/digital-joint-native)
+error[E0599]: no method named `validate` found for struct `cell::State` in the current scope
+  --> digital-joint-native/src/owner.rs:70:19
+   |
+70 |         self.cell.validate()?;
+   |                   ^^^^^^^^ method not found in `cell::State`
+   |
+  ::: digital-joint-native/src/cell.rs:9:1
+   |
+ 9 | pub struct State {
+   | ---------------- method `validate` not found for this struct
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `hepta-digital-joint-native` (bin "hepta-digital-joint-native") due to 1 previous error
