@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/4464023fd803/project/tools/hcsn/learned_native_r19_20261102/driver.py", line 129, in <module>
+    run(args.output, args.development)
+  File "/workspace/scratch/4464023fd803/project/tools/hcsn/learned_native_r19_20261102/driver.py", line 111, in run
+    assert state_error <= 5e-9 and logits_error <= 1e-5 and probs_error <= 2e-6 and exact
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
