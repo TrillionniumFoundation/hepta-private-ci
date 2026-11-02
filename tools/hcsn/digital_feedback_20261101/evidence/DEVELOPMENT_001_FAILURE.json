@@ -1,0 +1,19 @@
+{
+  "study": "development_001",
+  "completed_fits": 6,
+  "candidate_attempts": 90,
+  "training_invalid": 0,
+  "cpu_noncompliant": 54,
+  "actual_cpu_range": [
+    6.730946157999995,
+    8.252603006000001
+  ],
+  "whole_worker_cpu_seconds": 935.672778,
+  "admission": "failed CPU matching; retained development only; excluded from new planning and confirmation",
+  "repairs": [
+    "Periodic signal checked against real process CPU time",
+    "Disjoint execution/visitation/readout roles; separate TRAIN and IID probe streams"
+  ],
+  "unchanged_budget_seconds": 8.0,
+  "unchanged_tolerance_seconds": 0.16
+}

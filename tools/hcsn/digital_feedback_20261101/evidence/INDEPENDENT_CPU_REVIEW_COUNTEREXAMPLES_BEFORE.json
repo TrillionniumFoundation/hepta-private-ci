@@ -1,0 +1,42 @@
+{
+  "schema": "digital-feedback-cpu-cross-review-counterexamples-v1",
+  "reviewed_source_sha256": "be58ba6517632bd84015500d69ac1e517a4413c0a29a774a8e57d1d7e419e9f5",
+  "artificial_only": true,
+  "confirmation_accessed": false,
+  "cases": [
+    {
+      "case": "complete_marked_with_partial_registered_worlds",
+      "erroneously_passed": true,
+      "all_training_valid": true,
+      "review": {
+        "numeric_comparisons": 0,
+        "equality_comparisons": 204,
+        "violation_count": 0,
+        "violations": [],
+        "violations_truncated": false,
+        "maximum_absolute_difference": 0.0,
+        "absolute_tolerance": 1e-12,
+        "relative_tolerance": 1e-10,
+        "numeric_bitwise_equality_claim": false,
+        "passed": true
+      }
+    },
+    {
+      "case": "collected_but_never_supervised_row",
+      "erroneously_passed": true,
+      "all_training_valid": true,
+      "review": {
+        "numeric_comparisons": 0,
+        "equality_comparisons": 204,
+        "violation_count": 0,
+        "violations": [],
+        "violations_truncated": false,
+        "maximum_absolute_difference": 0.0,
+        "absolute_tolerance": 1e-12,
+        "relative_tolerance": 1e-10,
+        "numeric_bitwise_equality_claim": false,
+        "passed": true
+      }
+    }
+  ]
+}

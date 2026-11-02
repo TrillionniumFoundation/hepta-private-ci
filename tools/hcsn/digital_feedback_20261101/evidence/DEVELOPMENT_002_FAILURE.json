@@ -1,0 +1,22 @@
+{
+  "candidates": 90,
+  "valid": 89,
+  "failures": [
+    {
+      "fit": 1129,
+      "candidate": "fpt_pooled_common",
+      "failures": [
+        {
+          "cpu_seconds": 0.15912603199998898,
+          "kind": "RuntimeError",
+          "message": "element 0 of tensors does not require grad and does not have a grad_fn",
+          "phase": "optimization"
+        }
+      ],
+      "cpu": 0.16752021499999614
+    }
+  ],
+  "whole_worker_cpu_seconds": 940.8517979999999,
+  "planning_uses": "all six registered independent DEV fit pairs of the four primary comparisons are present and valid; the failed nonprimary arm is not discarded or used for inference",
+  "no_new_confirmation_claim": true
+}

@@ -1,0 +1,51 @@
+{
+  "check_cpu_seconds": 0.035645767999999994,
+  "checks": [
+    {
+      "name": "confirmation_requires_seal",
+      "passed": true,
+      "reason": "confirmation packaging requires --seal"
+    },
+    {
+      "name": "wrong_worker_seal",
+      "passed": true,
+      "reason": "confirmation worker seal/publication binding differs: 1"
+    },
+    {
+      "name": "wrong_published_model_commit",
+      "passed": true,
+      "reason": "confirmation worker seal/publication binding differs: 1"
+    },
+    {
+      "name": "seal_source_mismatch",
+      "passed": true,
+      "reason": "confirmation seal differs from frozen source/protocol/fits"
+    },
+    {
+      "name": "full_derived_audits_required",
+      "passed": true,
+      "reason": "complete original and derived confirmation files required: 1: ['iid_audits.json.gz']"
+    },
+    {
+      "files": 17,
+      "name": "only_completed_fit_cold_restored_with_all_original_and_derived_files",
+      "passed": true
+    },
+    {
+      "name": "control_waits_for_every_registered_fit_and_empty_active_pending",
+      "passed": true
+    },
+    {
+      "name": "existing_three_argument_training_scan_remains_compatible",
+      "passed": true
+    }
+  ],
+  "existing_training_watcher_touched": false,
+  "helper_sha256": "d781e2eb962c8303b7d07313b34b86916ba19df16b785df6b990f85881a7de49",
+  "network_operations": 0,
+  "passed": true,
+  "real_confirmation_accessed": false,
+  "schema": "digital-feedback-confirmation-live-pack-checks-v1",
+  "synthetic_only": true,
+  "worlds_generated": 0
+}

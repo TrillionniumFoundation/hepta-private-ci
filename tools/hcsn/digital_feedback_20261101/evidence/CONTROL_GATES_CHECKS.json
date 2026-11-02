@@ -1,0 +1,62 @@
+{
+  "actual_workers_spawned": 0,
+  "errors": 0,
+  "expected_rejections": [
+    {
+      "case": 0,
+      "confirmation_rejected": true,
+      "cpu_matching": null,
+      "seal_rejected": true,
+      "worlds_generated": false
+    },
+    {
+      "case": 1,
+      "confirmation_rejected": true,
+      "cpu_matching": {},
+      "seal_rejected": true,
+      "worlds_generated": false
+    },
+    {
+      "case": 2,
+      "confirmation_rejected": true,
+      "cpu_matching": {
+        "all_actual_cpu_matching": false,
+        "all_training_valid": true
+      },
+      "seal_rejected": true,
+      "worlds_generated": false
+    },
+    {
+      "case": 3,
+      "confirmation_rejected": true,
+      "cpu_matching": {
+        "all_actual_cpu_matching": true,
+        "all_training_valid": false
+      },
+      "seal_rejected": true,
+      "worlds_generated": false
+    },
+    {
+      "case": 4,
+      "confirmation_rejected": true,
+      "cpu_matching": {
+        "all_actual_cpu_matching": 1,
+        "all_training_valid": 1
+      },
+      "seal_rejected": true,
+      "worlds_generated": false
+    }
+  ],
+  "failures": 0,
+  "passed": true,
+  "process_cpu_to_report_seconds": 1.667467,
+  "schema": "digital-feedback-control-gate-checks-v1",
+  "source_sha256": {
+    "freeze.py": "6bd53e3ef039491fe21ffb2336ac4193f235bfee730af6f40c6dc622c0d1bc0e",
+    "study.py": "0858868ba16869ae93398b82abe198432cefe162bfe956792cdac254b9c660fd"
+  },
+  "synthetic_fixtures_only": true,
+  "test_cpu_seconds": 0.014715653000000106,
+  "tests_run": 3,
+  "worlds_generated": false
+}
