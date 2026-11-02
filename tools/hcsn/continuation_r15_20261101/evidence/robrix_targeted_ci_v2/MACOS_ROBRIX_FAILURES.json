@@ -1,0 +1,90 @@
+{
+  "source_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "log_provenance": "Exact primary decoded job logs fetched after terminal cancellation; full gzip files are archived separately in native_f52. These cases failed before cancellation.",
+  "jobs": [
+    {
+      "job_id": 125028471674,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471674",
+      "matches": [
+        {
+          "line": 10569,
+          "context": [
+            "2026-11-02T00:30:25.1895740Z test robrix_control_v2_generated_projection_and_cross_parser_corpus ... FAILED",
+            "2026-11-02T00:30:25.1896210Z ",
+            "2026-11-02T00:30:25.1899790Z failures:",
+            "2026-11-02T00:30:25.1900100Z ",
+            "2026-11-02T00:30:25.1900870Z ---- writer_reproduces_the_tracked_artifact_set_byte_for_byte stdout ----",
+            "2026-11-02T00:30:25.1901250Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+            "2026-11-02T00:30:25.1901450Z ",
+            "2026-11-02T00:30:25.1901620Z ---- robrix_control_v2_generated_projection_and_cross_parser_corpus stdout ----"
+          ]
+        },
+        {
+          "line": 10572,
+          "context": [
+            "2026-11-02T00:30:25.1900100Z ",
+            "2026-11-02T00:30:25.1900870Z ---- writer_reproduces_the_tracked_artifact_set_byte_for_byte stdout ----",
+            "2026-11-02T00:30:25.1901250Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+            "2026-11-02T00:30:25.1901450Z ",
+            "2026-11-02T00:30:25.1901620Z ---- robrix_control_v2_generated_projection_and_cross_parser_corpus stdout ----",
+            "2026-11-02T00:30:25.1901980Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+            "2026-11-02T00:30:25.1902160Z ",
+            "2026-11-02T00:30:25.1902160Z "
+          ]
+        }
+      ],
+      "identity": {
+        "job_id": 125028471674,
+        "file": "JOB_125028471674.log.gz",
+        "raw_bytes": 1208551,
+        "raw_sha256": "a678e61399f7759915529493c5f1bf0b87cc865bddc3b42d3d95a0969f1523c4",
+        "gzip_bytes": 142453,
+        "gzip_sha256": "ecfff357144bc74146b8c7b027ade09d241f527aca7e39a435712ecf05e2e9f8",
+        "parts": 21,
+        "under_480000": true
+      }
+    },
+    {
+      "job_id": 125028471783,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471783",
+      "matches": [
+        {
+          "line": 1781,
+          "context": [
+            "2026-11-02T00:28:40.9745570Z test writer_reproduces_the_tracked_artifact_set_byte_for_byte ... FAILED",
+            "2026-11-02T00:28:41.0749730Z ",
+            "2026-11-02T00:28:41.1751820Z failures:",
+            "2026-11-02T00:28:41.2753220Z ",
+            "2026-11-02T00:28:41.3755030Z ---- robrix_control_v2_generated_projection_and_cross_parser_corpus stdout ----",
+            "2026-11-02T00:28:41.4757200Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+            "2026-11-02T00:28:41.5758210Z ",
+            "2026-11-02T00:28:41.6760930Z ---- writer_reproduces_the_tracked_artifact_set_byte_for_byte stdout ----"
+          ]
+        },
+        {
+          "line": 1784,
+          "context": [
+            "2026-11-02T00:28:41.2753220Z ",
+            "2026-11-02T00:28:41.3755030Z ---- robrix_control_v2_generated_projection_and_cross_parser_corpus stdout ----",
+            "2026-11-02T00:28:41.4757200Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+            "2026-11-02T00:28:41.5758210Z ",
+            "2026-11-02T00:28:41.6760930Z ---- writer_reproduces_the_tracked_artifact_set_byte_for_byte stdout ----",
+            "2026-11-02T00:28:41.7763660Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+            "2026-11-02T00:28:41.8765530Z ",
+            "2026-11-02T00:28:41.9767550Z "
+          ]
+        }
+      ],
+      "identity": {
+        "job_id": 125028471783,
+        "file": "JOB_125028471783.log.gz",
+        "raw_bytes": 1227352,
+        "raw_sha256": "1476aa174a6bbbeac2525a7d0f9c245b8fe6b0cfffcd9ac078dd4f6492d782b8",
+        "gzip_bytes": 150208,
+        "gzip_sha256": "22ceff1fbb7f8882989632a809f21bb26f6c6fcf7b293aa75b3307eda22f6a59",
+        "parts": 21,
+        "under_480000": true
+      }
+    }
+  ]
+}

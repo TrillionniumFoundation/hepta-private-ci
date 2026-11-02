@@ -1,0 +1,72 @@
+{
+  "workflow_sha256": "08e885ff1c0f475d5b80a0c267fddcbf6d2ffb527d1c5c8c9dffc9c43ade1091",
+  "baseline_workflow_sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491",
+  "actionlint_binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4",
+  "executions": [
+    {
+      "argv": [
+        "/tmp/hcsn-bp-ci-tools/actionlint",
+        ".github/workflows/hcsn-robrix-fixture-r16.yml"
+      ],
+      "cwd": "/tmp/hcsn-robrix-targeted-ci-v2/candidate",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hcsn-bp-ci-tools/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hcsn-robrix-fixture-r16.yml"
+      ],
+      "cwd": "/tmp/hcsn-robrix-targeted-ci-v2/candidate",
+      "exit_code": 0,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/tmp/hcsn-robrix-targeted-ci-v2/candidate",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "only_semantic_change": "Append macOS ARM and Intel matrix rows. All prior workflow fields and shell bodies are equal.",
+  "new_matrix": [
+    {
+      "os": "ubuntu-24.04",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "os": "windows-latest",
+      "target": "x86_64-pc-windows-msvc"
+    },
+    {
+      "os": "macos-15",
+      "target": "aarch64-apple-darwin"
+    },
+    {
+      "os": "macos-15-intel",
+      "target": "x86_64-apple-darwin"
+    }
+  ],
+  "unchanged_support_files": 15,
+  "just_fmt": {
+    "argv": "env PATH=/tmp/hcsn-r15-runtime-tools/cargo/bin:/tmp/hcsn-r15-yaml-alias-tools:$PATH CARGO_HOME=/tmp/hcsn-r15-runtime-tools/cargo RUSTUP_HOME=/tmp/hcsn-r15-runtime-tools/rustup RUSTUP_TOOLCHAIN=1.95.0 /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+    "cwd": "/tmp/hcsn-robrix-targeted-ci-v2/candidate/codex-rs",
+    "result": {
+      "chunk_id": "c0af36",
+      "wall_time_seconds": 0.207660865,
+      "exit_code": 0,
+      "original_token_count": 19,
+      "output": "No changed files need formatting. Use --all for a full repository check.\n"
+    },
+    "scope": "Actual repository recipe; YAML is outside its owning-language selectors, so Prettier/actionlint independently validate the workflow."
+  }
+}

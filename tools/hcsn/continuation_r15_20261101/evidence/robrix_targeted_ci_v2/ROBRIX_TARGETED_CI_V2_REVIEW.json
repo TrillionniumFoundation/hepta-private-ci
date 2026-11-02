@@ -1,0 +1,20 @@
+{
+  "schema": "robrix-targeted-ci-v2-review",
+  "baseline_workflow_sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491",
+  "candidate_workflow_sha256": "08e885ff1c0f475d5b80a0c267fddcbf6d2ffb527d1c5c8c9dffc9c43ade1091",
+  "change": "Append macos-15/aarch64-apple-darwin and macos-15-intel/x86_64-apple-darwin to the two existing matrix entries. Original job fields, shell bodies, permissions, target, assertions, source patch and gates remain unchanged.",
+  "reason": "Both exact f52 macOS primary logs show the same INSTA_WORKSPACE_ROOT fixture-loader error in both original Robrix tests. Passing Windows/GNU cannot certify those macOS platforms.",
+  "validation": {
+    "actionlint_1_7_12_exit": 0,
+    "prettier_3_5_3_exit": 0,
+    "git_diff_check_exit": 0,
+    "actual_just_fmt_exit": 0,
+    "unchanged_support_files": 15,
+    "whole_yaml_except_matrix_equality": true,
+    "actual_shell_wrapper_cases": 8,
+    "actual_git_head_controls": 2,
+    "native_tests_executed_locally": 0
+  },
+  "synthetic_boundary": "The existing run-bazel-ci.sh actually runs on the Linux audit host; only its lower Python executor is replaced by an explicit argument/exit double. Both macOS matrix branches use ci-macos and propagate injected failure37. These are command-wiring controls, not macOS/Bazel/Rust test passes.",
+  "acceptance_remaining": "All four exact-source-head hosted matrix jobs must execute and pass the sole complete original target and clean-worktree gate. V1 artifacts remain retained; no workflow dispatch was made locally."
+}

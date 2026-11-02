@@ -1,0 +1,81 @@
+{
+  "schema": "robrix-targeted-ci-v2-publication",
+  "source_head_evidence": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "baseline_workflow_sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491",
+  "candidate_workflow_sha256": "08e885ff1c0f475d5b80a0c267fddcbf6d2ffb527d1c5c8c9dffc9c43ade1091",
+  "change": "Four added matrix lines only; source fixture and locks unchanged from separately reviewed V1 repair.",
+  "native_acceptance_pending": true,
+  "preserve_previous_v1_evidence": true,
+  "files": [
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci-v2/candidate/.github/workflows/hcsn-robrix-fixture-r16.yml",
+      "destination": ".github/workflows/hcsn-robrix-fixture-r16.yml",
+      "bytes": 4159,
+      "sha256": "08e885ff1c0f475d5b80a0c267fddcbf6d2ffb527d1c5c8c9dffc9c43ade1091",
+      "git_blob": "56f025c433419c74cb9d2035590370b277110393"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci-v2/ROBRIX_TARGETED_CI_V2.patch",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/ROBRIX_TARGETED_CI_V2.patch",
+      "bytes": 629,
+      "sha256": "04c6823f115694c6425674540e092a2d7a5ac73d9ed88f6a021943407ed7ca98",
+      "git_blob": "0b1582c389eeb7a2ea9ef7e317580271802c15b7"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci-v2/ROBRIX_TARGETED_CI_V2_REVIEW.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/ROBRIX_TARGETED_CI_V2_REVIEW.json",
+      "bytes": 1557,
+      "sha256": "946b9e5061ba4fbce50f0620cf4f27f352f9f7044311e4caea2fc0b469e6e9e5",
+      "git_blob": "71899279b145471ab588d91dd8c27787a7b59e8c"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci-v2/SOURCE_IDENTITIES.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/SOURCE_IDENTITIES.json",
+      "bytes": 4657,
+      "sha256": "47e7dda98ad9938eea8e525d83c8dab2b57ba2ae14239281d901ac358f27f6af",
+      "git_blob": "5b2f644b9805ce122c9497a6f23300d63bd84ead"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci-v2/MACOS_ROBRIX_FAILURES.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/MACOS_ROBRIX_FAILURES.json",
+      "bytes": 4286,
+      "sha256": "9dfb5f1d44d2e3eff5f1f4626cfd8d6ddf9bd40d8a8b78ad678e87f0bf2352f6",
+      "git_blob": "61e5358066d21087555f87e1aef954902b70632b"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci-v2/FORMAT_AND_LINT_V2.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/FORMAT_AND_LINT_V2.json",
+      "bytes": 2457,
+      "sha256": "16367a04fce0b92be74056f3cbfd170b1ff31255a936cd071f627de8cfb0b1df",
+      "git_blob": "b6fba26a463a435175c94f4ee0143c79e8a795b9"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci-v2/audit_workflow_wiring.py",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/audit_workflow_wiring.py",
+      "bytes": 8340,
+      "sha256": "e7eee1301d08883640e4003429c37a15ecac79be1674b7b67c16efcfe4903902",
+      "git_blob": "99affddf9f92d9abf99d280893ce645f967771ab"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci-v2/WIRING_EXECUTION_V2.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/WIRING_EXECUTION_V2.json",
+      "bytes": 18130,
+      "sha256": "694c702603f27a705586e3a8f71007aba762abf0a2e4787e397d045e824bbaac",
+      "git_blob": "d2babf14b6bd5e1bf3f7eca81410b9901c1728fd"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-ci-v2-independent-review.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/TARGETED_CI_V2_INDEPENDENT_REVIEW.json",
+      "bytes": 4706,
+      "sha256": "7546f519f052af4197a8a5009f9f174ead5f427d972c4af9626a6d39949d7079",
+      "git_blob": "965f19c325357377883f441b4fb0ebf84804b71c"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-ci-v2-independent-review.py",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci_v2/independent_review.py",
+      "bytes": 6646,
+      "sha256": "e596a8327ab22e27cb487f26b735d24e8357916675f57a1abcb63044a2cf54f7",
+      "git_blob": "6adae9a2f02a8fff6bd4aae1555bd6ca5be99b74"
+    }
+  ]
+}
