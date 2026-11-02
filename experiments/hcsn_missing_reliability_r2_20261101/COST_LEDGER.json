@@ -1,0 +1,29 @@
+{
+  "accounting": "Distinct outer wait4 receipts include startup/imports/writes and waited descendants; nested body timers are not added again",
+  "aggregate_family_memory_peak_bytes": null,
+  "complete_campaign_cpu_seconds": null,
+  "complete_child_measured_components": {
+    "confirm": {
+      "cpu_seconds": 144.270464,
+      "receipt_sha256": "885093edda8bb312c82aadec37ca4bdb88f021fd66c2b23698b3f6cdc567e197",
+      "wall_seconds": 153.004052520002
+    },
+    "dev": {
+      "cpu_seconds": 4.591279999999999,
+      "receipt_sha256": "df5bd0f4fd58112a0c16d170f2689734dfad41ab7fe5b4ecabd890506f45b3b2",
+      "wall_seconds": 4.593192028005433
+    },
+    "fit": {
+      "cpu_seconds": 3.069406,
+      "receipt_sha256": "cab8ec98638b57028988dd5bf108c7a08ede8d97d078dd71f4f09d959e6bee2f",
+      "wall_seconds": 3.29440725799941
+    }
+  },
+  "energy_joules": null,
+  "exclusions": "Historical training/preparation, source publication, extra query-permutation fixture and independent audit preparation remain outside measured components. No GPU or energy measurement; no amortization/adoption claim.",
+  "historical_neural_training_and_calibration_cpu_seconds": null,
+  "measured_component_cpu_seconds": 151.93115,
+  "schema": "hcsn.missing-reliability.r2.cost.v1",
+  "scope": "Fit one scalar and causal checks; development; confirmation including all18 R1 neural baselines and both ordinary posterior computations. This is not per-model standalone execution cost.",
+  "supplemental_fixture_and_audit_preparation_cpu_seconds": null
+}

@@ -1,0 +1,102 @@
+{
+  "all_blockers_closed": false,
+  "branch_metrics": [
+    "certain",
+    "initial_unknown",
+    "final_ambiguous"
+  ],
+  "confirmation": {
+    "conditions": [
+      "base",
+      "missing",
+      "long_tokens_128",
+      "missing_tokens_128"
+    ],
+    "episodes": 1024,
+    "seed": 173071,
+    "split": "confirm"
+  },
+  "cores": [
+    "flow",
+    "diagonal"
+  ],
+  "development": {
+    "conditions": [
+      "base",
+      "missing"
+    ],
+    "episodes": 1024,
+    "seed": 172051,
+    "split": "dev"
+  },
+  "exact_reference": "Same ordinary parser with exactq=2/3; output matches fitted law up to finite train smoothing",
+  "fit": {
+    "condition": "missing",
+    "episodes": 4096,
+    "estimator": "Jeffreys Binomial posterior mean (retained+.5)/(ambiguous+1)",
+    "parameter": "q=P(old value | ambiguous erased final update)",
+    "seed": 421051,
+    "split": "train",
+    "task": "selective"
+  },
+  "frozen_utc": "2026-11-02T01:23:21.454028+00:00",
+  "gates": {
+    "accepted_correctness_min": 0.95,
+    "accepted_known_coverage_min": 0.8,
+    "known_accuracy_min": 0.95,
+    "nonmissing_all4_min": 0.95
+  },
+  "input_contract": "forward(x,dt,observed) only; declared task law fixed at construction; y used only fit/scorer, availability only scorer",
+  "model_seeds": [
+    17,
+    29,
+    43
+  ],
+  "policy": {
+    "ambiguous_final": "Fixed one-quarter blake2b subset of visible semantic state + query + preregistered salt; no IDs/rows/splits/targets/future",
+    "certain": true,
+    "rationale": "Designed after R1 failure: certainty-only known coverage80% at population boundary; quarter ambiguity has ideal correctness34/35 and known coverage85%",
+    "selection": "No dev temperature/threshold search, no post-dev policy change",
+    "unknown_initial": false
+  },
+  "prior": "Four distinct original values; Selective adds two distinct fresh values on distinct keys; exactly zero or one erased WRITE; fixed8-slot original prelude after binding bridges",
+  "production_activation": false,
+  "r1_calibration_sha256": "83d2ce808219056902b3cff33ae59930b05ec33c5e18c5689b5513f0cdb68115",
+  "r1_candidate_sha256": "88842f4a56d921910821d42acc092805e456332c90a6f719c413b7ba63a39db9",
+  "readout": "Ordinary visible-event parser, shared by Flow/Diagonal; bypasses neural content state and cannot establish its value",
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "threads": 1,
+    "torch": "2.6.0+cpu"
+  },
+  "schema": "hcsn.missing-reliability.r2.v1",
+  "scope_limits": [
+    "Not resample-qualified: every unobserved slot is a registered erased WRITE, not a clock subdivision placeholder",
+    "Fixed observable prelude/update stage contract; no arbitrary unknown generator or multiple erasure claim",
+    "Class-law-known symbolic posterior adapter, not a trained neural uncertainty mechanism or analytical-core advantage"
+  ],
+  "source_hashes": {
+    "experiments/hcsn_addressed_flow_20261101/addressed_models.py": "2c2c434c567f66d5e0f48d5befc05e54c201c724f0b2b5d6f211f3784612f25e",
+    "experiments/hcsn_addressed_flow_20261101/data.py": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+    "experiments/hcsn_addressed_flow_20261101/study.py": "06b650f82d75e6677651a109cee8ef89a7f21d41c8852981153c0a88e080b3b1",
+    "experiments/hcsn_addressed_flow_20261101/typed_retention.py": "680d156cbd1290794d747d282763559a277ffc4a47b3e7347e1024db0ef23cf4",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/dynamic_data.py": "df016a6142ecc5a9fffaa45956ec253169ce33adb7101f8b18d41b4a845102c7",
+    "experiments/hcsn_four_stage_flow_20261031/extended_eval.py": "9c6f9633225625e9696871c4396e5b52f872ac117b8a4d47cba6f125cf53f84d",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e",
+    "experiments/hcsn_missing_answers_20261101/__init__.py": "027ad7b3a9677e15d743d52e41d6bd1a1efb0a100de1e4a981651b2862fd3f78",
+    "experiments/hcsn_missing_answers_20261101/campaign.py": "5c39d4673027d9815bd15a76803792fbbef86750f7bd2eab4aa38afd2706c1fb",
+    "experiments/hcsn_missing_reliability_r2_20261101/__init__.py": "bf3cfcce5422025d7610adf643b02a4bf6b3933ff8e0605d4192e996b2330a91",
+    "experiments/hcsn_missing_reliability_r2_20261101/campaign.py": "05c03343a27998e4794b8ef193bab4fba145d4764b99d57362847c3e5e21c7f4",
+    "experiments/hcsn_missing_reliability_r2_20261101/posterior.py": "3c9b1bb881cd5f9b3fd038596735f85bdf59a88404c4a8ab58afb237f9e1dbfa"
+  },
+  "tasks": [
+    "mqar",
+    "selective",
+    "binding"
+  ],
+  "uncertainty": "Query observations paired within episodes; same shared posterior reused across six core/seed pairs; no multiplication of independent sample size"
+}

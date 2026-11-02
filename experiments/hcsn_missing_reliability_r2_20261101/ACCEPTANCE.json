@@ -1,0 +1,165 @@
+{
+  "all_blockers_closed": false,
+  "all_errors_in_final_update_ambiguity_branch": true,
+  "all_unique_point_gates_pass": true,
+  "analytic_core_advantage_established": false,
+  "augmented_rows": 72,
+  "candidate_sha256": "96527ef05c4db795bf7ba069b4f056ddb0ba4430853b8559dd947cfa6304cb88",
+  "confirmation_sha256": "ee91e69a2b1a2bfb07483796f38f3d896eddc6a69c80862c3c5916c5ba302599",
+  "final_update_ambiguity_branch": {
+    "accepted_accuracy": 0.6590038314176245,
+    "accepted_correct": 172,
+    "accepted_count": 261,
+    "accepted_known_count": 172,
+    "branch95percent_reliability_pass": false,
+    "class_confidence": 0.666626592930993,
+    "full_branch_accuracy": 0.6666666666666666,
+    "known_count": 674,
+    "known_coverage": 0.2551928783382789,
+    "queries": 1011
+  },
+  "fit_affected_episodes": 1386,
+  "fit_ambiguous_queries": 4158,
+  "fitted_parameter_q": 0.666626592930993,
+  "full_cost_adoption": false,
+  "gates": {
+    "accepted_correctness_min": 0.95,
+    "accepted_known_coverage_min": 0.8,
+    "known_accuracy_min": 0.95,
+    "nonmissing_all4_min": 0.95
+  },
+  "independent_law_permutation_batches": 288,
+  "independent_law_query_checks": 1536,
+  "independent_record_checks": 156,
+  "known_query_accuracy_min": 1.0,
+  "missing_proper_score_improved_against_r1": {
+    "brier": 36,
+    "nll": 36
+  },
+  "multiple_erasures_qualified": false,
+  "neural_uncertainty_repair_established": false,
+  "nonmissing_all4_min": 1.0,
+  "ordinary_reference_matches_predictions_and_acceptance": true,
+  "ordinary_reference_max_probability_difference": 4.007373567360695e-05,
+  "production_activation": false,
+  "proper_score_comparisons": 36,
+  "protocol_sha256": "ea1a1652734af111565aa88f9e3e3b842d808d8aae33853e026b1bcc89cd66b4",
+  "publication_commit": "c798ad6e967e4135dd12cec13e252f8c7a8867bc",
+  "resample_qualified": false,
+  "schema": "hcsn.missing-reliability.r2.acceptance.v1",
+  "shared_input_and_posterior": "One shared posterior per task/condition; repeated core/seed rows not independent",
+  "status": "restricted_observation_law_aggregate_point_gates_pass",
+  "total_records": 156,
+  "unique_conditions": 12,
+  "unique_gate_checks": [
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 1.0,
+      "condition": "base",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 1.0,
+      "condition": "long_tokens_128",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 0.2041015625,
+      "condition": "missing",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 0.2041015625,
+      "condition": "missing_tokens_128",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 1.0,
+      "condition": "base",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 1.0,
+      "condition": "long_tokens_128",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 0.2197265625,
+      "condition": "missing",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 0.2197265625,
+      "condition": "missing_tokens_128",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 1.0,
+      "condition": "base",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "accepted_correctness": 1.0,
+      "accepted_known_coverage": 1.0,
+      "all4": 1.0,
+      "condition": "long_tokens_128",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "accepted_correctness": 0.9703333333333334,
+      "accepted_known_coverage": 0.8529153237620861,
+      "all4": 0.4423828125,
+      "condition": "missing",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "accepted_correctness": 0.9703333333333334,
+      "accepted_known_coverage": 0.8529153237620861,
+      "all4": 0.4423828125,
+      "condition": "missing_tokens_128",
+      "known_accuracy": 1.0,
+      "passed": true,
+      "task": "selective"
+    }
+  ],
+  "unknown_generator_qualified": false
+}
