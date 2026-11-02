@@ -1,0 +1,20 @@
+--- tools/hcsn/checkpoint_fastpath_r21_20261101/execution.py
++++ tools/hcsn/planner_r22_20261102/execution.py
+@@ -5,14 +5,14 @@
+ import numpy as np
+ 
+ from ..addressed_decision_r15_20261101.execution import price
+-from ..addressed_decision_r15_20261101.planner import BeliefMemory, Planner
++from ..addressed_decision_r15_20261101.planner import Planner
+ from ..planner_fastpath_r18_20261101.planner import BatchedPlanner
+ from ..planner_r19_20261101.planner import OwnedPlanner
+-from ..support_retention_r16_20261101.compression import AnchoredPackedMemory, PackedBeliefMemory
++from .memory import AnchoredPackedMemory, PackedBeliefMemory, BeliefMemory
+ from ..support_retention_r16_20261101.execution import AnchoredPlanner
+ from ..planner_r20_20261101.planner import BatchOwnedPlanner
+ from ..planner_r20_20261101.persistence import load, persist
+-from .admission import restore_owned
++from ..checkpoint_fastpath_r21_20261101.admission import restore_owned
+ 
+ 
+ def execute(law, episode, variant, representation, checkpoint_path, cache=None,

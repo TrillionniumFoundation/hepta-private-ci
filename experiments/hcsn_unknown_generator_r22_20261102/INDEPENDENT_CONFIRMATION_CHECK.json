@@ -1,0 +1,92 @@
+{
+  "all_panels_contract": false,
+  "audit_cpu_seconds": 95.121073898,
+  "audit_wall_seconds": 95.13118300199858,
+  "checker_sha256": "21cb37460d9415ae362d562d15f24a3c838b009aa9b5156d1c28f49c6abc1dc2",
+  "costs": {
+    "outer_descendant_cpu_seconds": 1389.177605,
+    "outer_includes_workers_do_not_add": true,
+    "peak_concurrent_family_rss_known": false,
+    "wall_seconds": 715.2877687639993,
+    "worker_cpu_seconds": 1389.0600709999999
+  },
+  "helper_sha256": "95e8419af3e2af6b265dff4321311e5f19dceffec196d06f7789f7179534789f",
+  "max_rss_kib": 127524,
+  "maximum_absolute_recompute_difference": 1.2212453270876722e-15,
+  "new_world_generator_calls": 0,
+  "panels": {
+    "confirm": {
+      "archives": 16,
+      "bootstrap_model_coordinates": 270336,
+      "cartesian_policies": 88,
+      "cartesian_worlds": 8,
+      "contract": true,
+      "paid_utility": true,
+      "paired_coordinates": 81920,
+      "primary_risk_coverage": true,
+      "rows": 4096,
+      "strict_brier": true
+    },
+    "lag2": {
+      "archives": 128,
+      "bootstrap_model_coordinates": 270336,
+      "cartesian_policies": 88,
+      "cartesian_worlds": 8,
+      "contract": true,
+      "paid_utility": true,
+      "paired_coordinates": 81920,
+      "primary_risk_coverage": true,
+      "rows": 32768,
+      "strict_brier": true
+    },
+    "lag2_skip": {
+      "archives": 64,
+      "bootstrap_model_coordinates": 270336,
+      "cartesian_policies": 88,
+      "cartesian_worlds": 8,
+      "contract": false,
+      "paid_utility": true,
+      "paired_coordinates": 81920,
+      "primary_risk_coverage": true,
+      "rows": 16384,
+      "strict_brier": false
+    },
+    "relabeled_lag2": {
+      "archives": 128,
+      "bootstrap_model_coordinates": 270336,
+      "cartesian_policies": 88,
+      "cartesian_worlds": 8,
+      "contract": false,
+      "paid_utility": true,
+      "paired_coordinates": 81920,
+      "primary_risk_coverage": true,
+      "rows": 32768,
+      "strict_brier": false
+    },
+    "reverse": {
+      "archives": 32,
+      "bootstrap_model_coordinates": 270336,
+      "cartesian_policies": 88,
+      "cartesian_worlds": 8,
+      "contract": false,
+      "paid_utility": true,
+      "paired_coordinates": 81920,
+      "primary_risk_coverage": true,
+      "rows": 8192,
+      "strict_brier": false
+    }
+  },
+  "passed": true,
+  "postcalibration": {
+    "files": 15,
+    "freeze_sha256": "aa1ce5d118f101858eadfdc43a22c70ad96d3593987ba67174b3b8d11cdea982",
+    "publication_sha256": "edf3f19bdab35598b41386f859f9987e370fb1d9261ccb8157794c5b25793976"
+  },
+  "scope": "Independent arithmetic and bounded Cartesian replay; finite known law families only; no universal coverage or analytic-core attribution",
+  "source": {
+    "files": 75,
+    "freeze_sha256": "ccb16aa56f1f09d65efb25385a8b89ee0e911c583731e6c13f018032c613d308",
+    "publication_sha256": "fe5b467aac6c116f4c8f9140a659572f4243f07b6860dfedf72326c1ab985616"
+  },
+  "stage": "confirmation"
+}

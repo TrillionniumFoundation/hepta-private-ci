@@ -1,0 +1,103 @@
+{
+  "all_blockers_closed": false,
+  "calibration_sha256": "f6bbdacbd1737ee5ca2e987fd625f8acc4af7ddf069a65f667771a5ad9ca024e",
+  "fresh_confirmation_opened": false,
+  "full_model_adoption": false,
+  "policies": {
+    "context_mixture": {
+      "base_arm": "context_mixture",
+      "base_calibration_qualified": false,
+      "forecast_law": "context_mixture",
+      "kind": "fixed scientific arm",
+      "threshold": 0.9
+    },
+    "context_orbit": {
+      "base_arm": "context_orbit",
+      "base_calibration_qualified": false,
+      "forecast_law": "context_orbit",
+      "kind": "fixed scientific arm",
+      "threshold": 0.9
+    },
+    "context_robust": {
+      "base_arm": "context_robust",
+      "base_calibration_qualified": true,
+      "forecast_law": "context_mixture",
+      "kind": "fixed scientific arm",
+      "threshold": 0.9
+    },
+    "feasible_first_mixture": {
+      "base_arm": "first_mixture",
+      "base_calibration_qualified": false,
+      "calibration_qualification_borrowed": false,
+      "forecast_law": "first_mixture",
+      "kind": "frozen feasible comparison policy",
+      "nontrivial_coverage_qualification_claim": false,
+      "threshold": 0.999999999999,
+      "uses_fallback": true
+    },
+    "feasible_first_orbit": {
+      "base_arm": "first_orbit",
+      "base_calibration_qualified": false,
+      "calibration_qualification_borrowed": false,
+      "forecast_law": "first_orbit",
+      "kind": "frozen feasible comparison policy",
+      "nontrivial_coverage_qualification_claim": false,
+      "threshold": 0.999999999999,
+      "uses_fallback": true
+    },
+    "feasible_first_robust": {
+      "base_arm": "first_robust",
+      "base_calibration_qualified": false,
+      "calibration_qualification_borrowed": false,
+      "forecast_law": "first_mixture",
+      "kind": "frozen feasible comparison policy",
+      "nontrivial_coverage_qualification_claim": false,
+      "threshold": 0.999999999999,
+      "uses_fallback": true
+    },
+    "feasible_r20_context_common": {
+      "base_arm": "r20_context_common",
+      "base_calibration_qualified": false,
+      "calibration_qualification_borrowed": false,
+      "forecast_law": "r20_context_common",
+      "kind": "frozen feasible comparison policy",
+      "nontrivial_coverage_qualification_claim": false,
+      "threshold": 0.999999999999,
+      "uses_fallback": true
+    },
+    "first_mixture": {
+      "base_arm": "first_mixture",
+      "base_calibration_qualified": false,
+      "forecast_law": "first_mixture",
+      "kind": "fixed scientific arm",
+      "threshold": 0.9
+    },
+    "first_orbit": {
+      "base_arm": "first_orbit",
+      "base_calibration_qualified": false,
+      "forecast_law": "first_orbit",
+      "kind": "fixed scientific arm",
+      "threshold": 0.9
+    },
+    "first_robust": {
+      "base_arm": "first_robust",
+      "base_calibration_qualified": false,
+      "forecast_law": "first_mixture",
+      "kind": "fixed scientific arm",
+      "threshold": 0.9
+    },
+    "r20_context_common": {
+      "base_arm": "r20_context_common",
+      "base_calibration_qualified": false,
+      "forecast_law": "r20_context_common",
+      "kind": "fixed scientific arm",
+      "threshold": 0.9
+    }
+  },
+  "primary": "context_robust",
+  "producer_freeze_sha256": "aa1ce5d118f101858eadfdc43a22c70ad96d3593987ba67174b3b8d11cdea982",
+  "protocol_sha256": "e47a941e87f9dae82034db7ccdc01ae5cfc8ac8ae18e243027b46dce8454cff4",
+  "schema": "hcsn.r22.postcalibration.policies.v1",
+  "scope": "Deterministic realization of pre-calibration rules; no new model/threshold/selection decision. Fallback controls have no borrowed risk or coverage qualification; actual formal actions/errors/fees will be reported.",
+  "strict_brier_gate_unchanged": true
+}

@@ -1,0 +1,20 @@
+{
+  "reason": "Low free space before already authorized fixed-N output. No active compiler/linker observed immediately before cleanup; remove only rebuildable static/object/metadata caches, preserving all runtime executables/shared libraries, sources, toolchains and raw evidence.",
+  "active_compilers": [],
+  "deleted": [
+    {
+      "root": "/tmp/chain-pq-native-target/debug",
+      "files": 335,
+      "bytes": 809080236,
+      "skipped_errors": 0
+    },
+    {
+      "root": "/tmp/trnm-m06-456d23a7-target/debug",
+      "files": 316,
+      "bytes": 743770016,
+      "skipped_errors": 0
+    }
+  ],
+  "free_before": 394186752,
+  "free_after": 1948401664
+}

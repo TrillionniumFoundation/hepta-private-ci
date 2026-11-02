@@ -1,0 +1,35 @@
+{
+  "schema": "hcsn-r22-independent-postfreeze-source-review-v1",
+  "source_freeze_sha256": "7b7e7afee08f7da2a040970a8a617fb0a9401b73470c7cb7b5c983c7a006694c",
+  "frozen_files_verified": 17,
+  "scope": [
+    "solver.py",
+    "certificate.py",
+    "correction.py",
+    "complex_reference.py",
+    "DERIVATIVE_CONTRACT.md",
+    "PROTOCOL.json"
+  ],
+  "fresh_profiles_drawn": false,
+  "formal_numerical_execution": false,
+  "frozen_source_modified": false,
+  "review_added_to_freeze": false,
+  "actual_algebraic_flaw_identified": false,
+  "checks": [
+    "M-matrix residual comparison and causal enclosure propagation",
+    "strict interval classification with unknown-tie rejection",
+    "expression identity key sufficiency within one fixed certificate call",
+    "affine unused-slack and input-domain radius",
+    "explicit binary-rational true and near tie witness",
+    "policy correction followed by complete recertification",
+    "independent primal complex replay on certified policy"
+  ],
+  "gate_boundary": "qualified gates derivative enclosure error, branch certification and policy agreement; primal enclosure error is reported but not independently thresholded there. Claims of both bounds passing require a separate check.",
+  "trusted_dependencies": "Frozen bundled mpmath outward interval arithmetic and the stated finite-dimensional M-matrix proof; runtime implementations not formally verified",
+  "remaining_open": [
+    "arbitrary unrecognized true ties",
+    "moving delay/horizon/domain",
+    "continuum and full neural gradients",
+    "old finite-step acceptance gates"
+  ]
+}

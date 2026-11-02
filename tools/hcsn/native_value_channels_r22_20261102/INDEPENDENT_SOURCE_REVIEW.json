@@ -1,0 +1,92 @@
+{
+  "schema": "hcsn.r22.native-value-independent-source-review.v1",
+  "review_classification": "Independent static mathematical/source review by a separate collaborating agent; not an external blind human referee or an independently executed future formal audit.",
+  "static_contract_review_passed": true,
+  "future_formal_data_opened": false,
+  "review_contract_executed": false,
+  "numeric_formal_qualification_pending": true,
+  "reviewed_source_sha256": {
+    "dual.rs": "90fbfe4f4e9040cb7280ea4637690ef98fe47bf05e731d1a3989cf89fa97b884",
+    "channels.rs": "e3a0e776cd24deaaf2aca7ed5272f60c372f320d07c41858765fe1d1b9eba7ea",
+    "main.rs": "b8a495b5d618adabe3a51c2acd107c2d3e8e15255b02f6f2d7d8a1ae5daaf29c",
+    "reference.py": "7666c56ab981c7517209162c014c7f178bd7efb8dad4eaf92b13a0bdc0ed6cde",
+    "verify.py": "fa85da38f3b4a0658fc68bd448146f4c6f9d0577c0d35c1f8f4daf37d3590f50",
+    "independent_check.py": "d83d9a14c782d046cf62493ff6586676ee415e64200025fa80102f24d6769548",
+    "independent_math.py": "9c1ccb29fe997df447f3822919c02e11d78cfaa055b52e3f13a6ea562ca1aef7",
+    "r11_kernel_snapshot.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "PROTOCOL.json": "6aead40afdc3a8fbda144105be9445abba142c35a640cec8933450295d8542be",
+    "DEPENDENCIES.json": "d7c6fd163a4cefb9a2d35c6479368b8e4e3155826447d0ab0655f648813baf6b",
+    "measure.py": "8e11cc19ef70356f4bf85e9a9c8cb053031eb33f35dfd97dab4e87ad58e227f0",
+    "review_contract.py": "d711e9d5300c65bec3c64c1424081e6c38714b6b62241ff44a54fa2593db8051",
+    "REVIEW_PROTOCOL.json": "7249a6d0bdeb0f5d721b74564ebda6e800628ffb800d28a70d37a42e4e9c1591"
+  },
+  "scope_sha256": "ee2836f3cbf51323d4cd5fad3fe7f446a7b3251b74261cedaf9bf4e4bc525a6e",
+  "primary_source": {
+    "url": "https://www.princeton.edu/~wxiong/papers/rollover.pdf",
+    "equations": [
+      "8",
+      "9",
+      "11",
+      "12",
+      "A5",
+      "A7"
+    ],
+    "pdf_pages_zero_based": [
+      8,
+      9,
+      10,
+      29,
+      31
+    ]
+  },
+  "mathematical_findings": [
+    {
+      "id": "paper_boundary_rewrite",
+      "result": "correct",
+      "derivation": "With eta=z-a,gamma=z+a, eta*gamma=2r/sigma^2 and delta=.5sigma^2(eta-1)(gamma+1). Thus paper delta/(eta-1) equals native .5sigma^2(gamma+1). At y=\u00b1a, the paper little-b term equals exp(-(r+liquidity)m)*B(y)."
+    },
+    {
+      "id": "A_integral",
+      "result": "correct exact real identity",
+      "derivation": "The common numerator N satisfies N(z)=0. Direct differentiation gives the six native N-prime terms, so each N(u)/(z-u)=-integral_0^1 N-prime(z-t(z-u))dt, including moving z/u parameter derivatives. The u=\u00b1y sum has both endpoint tangent chains."
+    },
+    {
+      "id": "B_integral",
+      "result": "correct exact real identity",
+      "derivation": "D(y)=Phi(ys)-exp((z^2-y^2)s^2/2)Phi(-zs) has D(-z)=0. B(y)=integral_0^1 D-prime(-z+t(z+y))dt, with D-prime(v)=sphi(vs)+v*s^2*exp((z^2-v^2)s^2/2)Phi(-zs)."
+    },
+    {
+      "id": "equity_ODE_reference",
+      "result": "correct distinct representation",
+      "derivation": "In log-state, E-double-prime+2aE-prime-2rE/sigma^2=-2flow/sigma^2 with E(0)=E-prime(0)=0. The native-independent Volterra kernel exp(-gamma*d)*expm1(2z*d)/(z*sigma^2) has the correct sign and initial conditions."
+    },
+    {
+      "id": "first_passage_and_unit_debt",
+      "result": "matches paper at tau=m",
+      "derivation": "F and discounted first-passage G match Eq9; Eq8 is evaluated for ONE newly issued debt unit d(V,m), with c=C/m and p=P/m. Aggregate outstanding debt is not computed."
+    },
+    {
+      "id": "coordinates",
+      "result": "correct explicit remapping",
+      "derivation": "ORDER[0,1,6,2,3,7,8,4,5] maps inputs to unchanged R11 order; INVERSE[0,1,3,4,7,8,2,5,6,9] maps Jacobian columns back. Physical columns hold x=log(V/b) fixed; at fixed V use f_theta|V=f_theta|x-f_x*b_theta/b and f_V=f_x/(b*exp(x))."
+    },
+    {
+      "id": "CDF_real_domain",
+      "result": "strict real-domain admission margin",
+      "derivation": "Exact rational rectangle bounds give max((r-delta-sigma^2/2)^2/sigma^2)=.112225,(zt*s)^2<=.70845,(x/s)^2<=32, hence every native real CDF argument has abs<6.499<12. This is not a quadrature or floating-point error proof."
+    }
+  ],
+  "limitations": [
+    "libm-erfc values use analytic Gaussian first tangents. This is first-order mathematical AD, not differentiation of every libm instruction or of discontinuous rounding.",
+    "Whole A/B and CDF-interval16-point quadrature errors remain numerical. Identities remove poles but do not prove uniform FP64/gradient accuracy over the entire admitted box.",
+    "All admitted x>=.005 lie above R11 Taylor/blend upper limit<=.002. Default/asset/x0/min-tie and FP32 branches are excluded rather than qualified.",
+    "The maturity column changes stationary debt structure and horizon tau=m together; no independent remaining-tenor derivative is implemented.",
+    "The selected Volterra/Laplace/complex-step script imports no candidate/R11/primary code, but was composed by the producer using another agent supplied derivation. Distinct numeric path is not blind authorship independence.",
+    "F/G first-passage density cross-checks in the mathematical auditor use two OLD baseline states; do not relabel them as density checks at all six fresh selected indices.",
+    "Future195 roster contains64fresh parameter vectors times three shared states plus three old-baseline states; it is not195 independent task worlds or all-corner/uniform coverage.",
+    "Exposing financial channels does not prove learned-network consumption, full training/runtime gradients, exclusive analytic-core quality gain, full model cost advantage or production ownership."
+  ],
+  "recommendation": "No static mathematical blocker found for freezing and running the declared195-point continuation-only contract and fixed six-point distinct-path audit, keeping every failure and the stated limits.",
+  "production_activation": false,
+  "all_blockers_closed": false
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "hcsn.r22.native-value-independent-static-contract.v1",
+  "classification": "Independent symbolic/source review only, not a new numerical confirmation run.",
+  "reviewer_source": "review_contract.py",
+  "source_imports": "Python standard library only. No candidate, R11 or mpmath evaluation imports.",
+  "checks": "Protocol constants, ten-coordinate permutation, unchanged R11 byte identity, primary/Volterra-reference import separation, exact-rational real-domain CDF argument bound and exclusion of the R11 Taylor/blend region.",
+  "rational_argument": "For d=r-delta and v=sigma^2, (d-v/2)^2/v is convex in each positive coordinate, so its maximum over the registered rectangle occurs at a corner and equals.112225. Then(zt*s)^2<=.70845 and(x/s)^2<=32, giving every real CDF argumentabs<.842+5.657=6.499<12. This is not a floating-point/quadrature error bound.",
+  "analytical_review": "A divided-difference numerator satisfies N(z)=0. Differentiating it gives the native N'(u), so N(u)/(z-u)=-integral_0^1 N'(z-t(z-u))dt. B similarly uses a numerator zero at -z. Boundary denominator rewriting uses delta=.5 sigma^2(eta-1)(gamma+1). Full equity independently satisfies its log-state Volterra/ODE representation.",
+  "state_scope": "Physical columns hold log-distance x fixed. Fixed-asset derivatives require an explicit chain conversion and are outside the native API.",
+  "qualification_limit": "Five channels at tau=m, including one-unit newly issued debt d(V,m); no aggregate outstanding debt, independent bond maturity, default/Taylor/asset-coordinate branch, training/runtime integration, universal error proof or core-exclusive gain.",
+  "future_formal_data_opened_by_reviewer": false
+}

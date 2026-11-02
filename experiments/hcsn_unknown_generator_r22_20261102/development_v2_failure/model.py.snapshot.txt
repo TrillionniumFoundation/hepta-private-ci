@@ -1,0 +1,155 @@
+"""Finite ordinary predictive densities with a separate initial pair and uncertain rows."""
+
+from itertools import permutations, product
+
+import numpy as np
+
+from experiments.hcsn_unknown_generator_r18_20261101.posterior import decode
+
+SEQUENCES = np.asarray(list(product(range(4), repeat=6)), dtype=int)
+POWERS = np.asarray([1024, 256, 64, 16, 4, 1])
+ORBIT = np.asarray([np.asarray(p)[SEQUENCES] @ POWERS for p in permutations(range(4))])
+ORIENTATION_GRID = (.125, .25, .5, .75, 1.)
+
+
+def extract(prefixes):
+    sequences, distinct = [], []
+    for prefix in prefixes:
+        raw = np.asarray(prefix)
+        if raw.ndim != 2 or raw.shape[1] != 24 or len(raw) not in (14, 30):
+            raise ValueError("Expected complete public training prefix")
+        writes = [event for event in map(decode, raw) if event[0] == 0]
+        if len(writes) != 6 or len({row[1] for row in writes[:4]}) != 4:
+            raise ValueError("Six WRITEs and initial key permutation required")
+        sequences.append([event[2] for event in writes])
+        distinct.append(writes[4][1] != writes[5][1])
+    if len(sequences) < 8:
+        raise ValueError("Insufficient within-generator public selection streams")
+    return np.asarray(sequences, dtype=int), np.asarray(distinct, dtype=bool)
+
+
+def parameters(sequences):
+    pair = np.full((4, 4), .5)
+    rows = [np.full((4, 4), .5), np.full((4, 4), .5), np.full((16, 4), .5)]
+    np.add.at(pair, (sequences[:, 0], sequences[:, 1]), 1)
+    for step in range(2, 6):
+        a, b, c = sequences[:, step - 2], sequences[:, step - 1], sequences[:, step]
+        for row, key in zip(rows, (b, a, 4 * a + b), strict=True):
+            np.add.at(row, (key, c), 1)
+    return pair, rows
+
+
+def stationary_parameters(sequences):
+    initial, row = np.full(4, .5), np.full((4, 4), .5)
+    np.add.at(initial, sequences[:, 0], 1)
+    for step in range(1, 6):
+        np.add.at(row, (sequences[:, step - 1], sequences[:, step]), 1)
+    return initial, row
+
+
+def predictive(sequences, head, row, mode):
+    probability = (head[sequences[:, 0]] if mode == -1
+                   else head[sequences[:, 0], sequences[:, 1]]) / head.sum()
+    previous = []
+    for step in range(1 if mode == -1 else 2, 6):
+        value = sequences[:, step]
+        key = (sequences[:, step - 1] if mode in (-1, 0) else sequences[:, step - 2] if mode == 1
+               else 4 * sequences[:, step - 2] + sequences[:, step - 1])
+        numerator, denominator = row[key, value].copy(), row[key].sum(1)
+        for earlier_key, earlier_value in previous:
+            same = earlier_key == key
+            numerator += same & (earlier_value == value)
+            denominator += same
+        probability *= numerator / denominator
+        previous.append((key, value))
+    return probability
+
+
+def q_posterior_mean(distinct):
+    # A degree128 likelihood and degree129 first moment are exactly integrated
+    # by65-point Gauss-Legendre in real arithmetic; the implementation is FP64.
+    nodes, weights = np.polynomial.legendre.leggauss((len(distinct) + 3) // 2)
+    q = (nodes + 1) / 2
+    d, s = int(distinct.sum()), int((~distinct).sum())
+    log_weight = np.log(weights / 2) + d * np.log((3 + q) / 48) + s * np.log((1 - q) / 16)
+    mass = np.exp(log_weight - log_weight.max())
+    mean = float(mass @ q / mass.sum())
+    if not 0 < mean < 1:
+        raise ValueError("Key-law posterior lost full support")
+    return mean
+
+
+def group_laws(sequences, distinct):
+    split = 3 * len(sequences) // 4
+    pair, rows = parameters(sequences[:split])
+    initial, stationary = stationary_parameters(sequences[:split])
+    scores = np.asarray([np.log(predictive(sequences[split:], head, row, mode)).sum()
+                         for head, row, mode in [(initial, stationary, -1)] + [(pair, row, mode) for mode, row in enumerate(rows)]])
+    weights = np.exp(scores - scores.max())
+    weights /= weights.sum()
+    first_weights = np.exp(scores[:2] - scores[:2].max())
+    first_weights /= first_weights.sum()
+    pair, rows = parameters(sequences)
+    initial, stationary = stationary_parameters(sequences)
+    probabilities = np.asarray([predictive(SEQUENCES, head, row, mode)
+        for head, row, mode in [(initial, stationary, -1)] + [(pair, row, mode) for mode, row in enumerate(rows)]])
+    if not np.allclose(probabilities.sum(1), 1., rtol=0, atol=2e-12):
+        raise ValueError("Dirichlet predictive six-value law is not normalized")
+    return first_weights @ probabilities[:2], weights @ probabilities, q_posterior_mean(distinct), dict(
+        pair=pair.tolist(), rows=[row.tolist() for row in rows],
+        stationary_initial=initial.tolist(), stationary_rows=stationary.tolist(),
+        selection_log_likelihoods=scores.tolist(), first_weights=first_weights.tolist(), context_weights=weights.tolist())
+
+
+def aggregate(groups):
+    laws = {name:{key:np.zeros(4096) for key in ("same", "distinct")} for name in ("first", "context")}
+    diagnostics = []
+    for sequences, distinct in groups:
+        first, context, q, detail = group_laws(sequences, distinct)
+        detail["q_posterior_mean"] = q
+        diagnostics.append(detail)
+        for name, probability in (("first", first), ("context", context)):
+            laws[name]["same"] += probability * (1 - q) / 16 / len(groups)
+            laws[name]["distinct"] += probability * ((1 - q) / 16 + q / 12) / len(groups)
+    orbit = {name:{key:value[ORBIT].mean(0) for key, value in law.items()} for name, law in laws.items()}
+    return laws, orbit, diagnostics
+
+
+def fit(public_groups):
+    groups = [extract(group) for group in public_groups]
+    if len(groups) < 8 or len(groups) % 4:
+        raise ValueError("Four equal generator-group folds required")
+    scores = np.zeros(len(ORIENTATION_GRID))
+    fold_records = []
+    for fold in range(4):
+        train = [group for i, group in enumerate(groups) if i % 4 != fold]
+        raw, orbit, _ = aggregate(train)
+        before = scores.copy()
+        for i, (sequences, distinct) in enumerate(groups):
+            if i % 4 != fold:
+                continue
+            code = sequences @ POWERS
+            for name in ("first", "context"):
+                a = np.where(distinct, raw[name]["distinct"][code], raw[name]["same"][code])
+                b = np.where(distinct, orbit[name]["distinct"][code], orbit[name]["same"][code])
+                for column, weight in enumerate(ORIENTATION_GRID):
+                    scores[column] += .5 * np.log((1 - weight) * a + weight * b).sum()
+        fold_records.append(dict(fold=fold, score_contribution=(scores - before).tolist()))
+    # Ties prefer the broader orbit prior. The same chosen weight is used by
+    # both dynamics families so the four arms form a declared factorial design.
+    weight = max(zip(scores, ORIENTATION_GRID, strict=True))[1]
+    raw, orbit, diagnostics = aggregate(groups)
+    models = {}
+    for name in ("first", "context"):
+        models[name + "_orbit"] = orbit[name]
+        models[name + "_mixture"] = {key:(1 - weight) * raw[name][key] + weight * orbit[name][key]
+                                     for key in ("same", "distinct")}
+    for model in models.values():
+        if any(not np.isfinite(value).all() or np.any(value <= 0) for value in model.values()):
+            raise ValueError("Predictive law lost positive support")
+        if abs(4 * model["same"].sum() + 12 * model["distinct"].sum() - 1) > 2e-12:
+            raise ValueError("Predictive key/value law is not normalized")
+    return {name:{key:value.tolist() for key, value in model.items()} for name, model in models.items()}, dict(
+        orientation_orbit_weight=float(weight), orientation_grid=list(ORIENTATION_GRID),
+        orientation_group_crossvalidation_scores=scores.tolist(), folds=fold_records, groups=diagnostics,
+        training_information="Complete public raw streams and generator grouping only; no family labels or owner query targets")

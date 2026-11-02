@@ -1,0 +1,71 @@
+--- tools/hcsn/support_retention_r16_20261101/compression.py
++++ tools/hcsn/planner_r22_20261102/memory.py
+@@ -10,19 +10,19 @@
+ import numpy as np
+ 
+ from ..addressed_decision_r15_20261101.law import Law
+-
+-
+-GROUP = np.repeat(np.arange(2), [32, 8]) * 4 + np.arange(40) % 4
+-COLLECT = np.eye(8)[GROUP]
+-SPREAD = COLLECT.T / np.repeat([8, 2], 4)[:, None]
+-COLLECT.setflags(write=False)
+-SPREAD.setflags(write=False)
++from ..addressed_decision_r15_20261101.planner import BeliefMemory as OriginalBeliefMemory, canonical
++from ..support_retention_r16_20261101.compression import COLLECT, SPREAD, GROUP
++
++
++def normalized_rows(p, tolerance):
++    """Exact scalar-one, rtol-zero predicate after the original dtype checks."""
++    return np.all(np.abs(p.sum(-1) - 1.) <= tolerance)
+ 
+ 
+ def _probability(value, size):
+     p = np.asarray(value, dtype=float)
+     if (p.ndim < 1 or p.shape[-1] != size or not np.isfinite(p).all()
+-            or np.any(p < 0) or not np.allclose(p.sum(-1), 1, rtol=0, atol=2e-11)):
++            or np.any(p < 0) or not normalized_rows(p, 2e-11)):
+         raise ValueError(f"Expected nonnegative normalized {size}-state probability")
+     return p
+ 
+@@ -43,6 +43,14 @@
+ 
+ class BlockLaw(Law):
+     """The original forty-state law plus a separately named block projection."""
++
++    def _belief(self, belief):
++        p = np.asarray(belief, dtype=float)
++        if (p.ndim < 1 or p.shape[-1] != self.state_count or not np.isfinite(p).all()
++                or np.any(p < -1e-13) or not normalized_rows(p, 2e-11)):
++            raise ValueError("Belief must be normalized with final dimension 40")
++        return p
++
+ 
+     def project(self, p, mode="full"):
+         if mode == "block":
+@@ -209,3 +217,25 @@
+         result.packed, result.anchor_times, result.clock = p.copy(), anchors.copy(), clock
+         result.operations = dict(body["operations"])
+         return result
++
++
++class BeliefMemory(OriginalBeliefMemory):
++    """Full state with unchanged restore checks and scalar-one mass predicate."""
++
++    @classmethod
++    def restore(cls, law, payload):
++        body = dict(payload)
++        digest = body.pop("sha256", None)
++        if digest != hashlib.sha256(canonical(body).encode()).hexdigest():
++            raise ValueError("Checkpoint checksum mismatch")
++        if body["schema"] != "hcsn-r15-addressed-state-v1" or body["model"] != law.identity:
++            raise ValueError("Checkpoint model/schema mismatch")
++        p = np.asarray(body["beliefs"], dtype=float)
++        if (p.shape != (4, 40) or not np.isfinite(p).all() or p.min() < -1e-13
++                or not normalized_rows(p, 1e-11)
++                or not np.isfinite(body["clock"]) or body["clock"] < 0):
++            raise ValueError("Invalid checkpoint state")
++        result = cls(law, [0, 0, 0, 0], body["projection"], body["method"])
++        result.clock, result.beliefs = float(body["clock"]), p.copy()
++        result.operations = dict(body["operations"])
++        return result

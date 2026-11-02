@@ -1,0 +1,362 @@
+{
+  "failed_development_fit_cpu_seconds": 6.020429,
+  "other_separate_self_timed_audit_lower_bounds": [
+    {
+      "cpu_seconds": 0.21568422699999998,
+      "path": "REFERENCE_SELF_CHECK.json",
+      "scope": "Self-timed body only; imports and launcher unmetered"
+    },
+    {
+      "cpu_seconds": 8.638793489,
+      "path": "INDEPENDENT_FITTED_MODEL_CHECK.json",
+      "scope": "Self-timed body only; imports and launcher unmetered"
+    },
+    {
+      "cpu_seconds": 6.028440522,
+      "path": "INDEPENDENT_CONTROLLER_CHECK.json",
+      "scope": "Self-timed body only; imports and launcher unmetered"
+    },
+    {
+      "cpu_seconds": 0.017410217000000006,
+      "path": "ENGINEERING_CHECK.json",
+      "scope": "Self-timed body only; imports and launcher unmetered"
+    },
+    {
+      "cpu_seconds": 0.477491036,
+      "path": "R20_DEVELOPMENT_EQUIVARIANCE.json",
+      "scope": "Self-timed body only; imports and launcher unmetered"
+    },
+    {
+      "cpu_seconds": 0.25842828100000004,
+      "path": "INDEPENDENT_CAMPAIGN_SELF_CHECK.json",
+      "scope": "Self-timed body only; imports and launcher unmetered"
+    }
+  ],
+  "read_costs": {
+    "confirm": {
+      "context_mixture": {
+        "fees": 172.66000000000048,
+        "reads": 988
+      },
+      "context_orbit": {
+        "fees": 165.06000000000017,
+        "reads": 975
+      },
+      "context_robust": {
+        "fees": 171.64000000000038,
+        "reads": 1005
+      },
+      "feasible_first_mixture": {
+        "fees": 229.68000000000058,
+        "reads": 1215
+      },
+      "feasible_first_orbit": {
+        "fees": 226.80000000000058,
+        "reads": 1210
+      },
+      "feasible_first_robust": {
+        "fees": 223.68000000000058,
+        "reads": 1201
+      },
+      "feasible_r20_context_common": {
+        "fees": 230.70000000000059,
+        "reads": 1219
+      },
+      "first_mixture": {
+        "fees": 162.18000000000026,
+        "reads": 978
+      },
+      "first_orbit": {
+        "fees": 161.58000000000027,
+        "reads": 974
+      },
+      "first_robust": {
+        "fees": 164.42000000000036,
+        "reads": 989
+      },
+      "r20_context_common": {
+        "fees": 163.70000000000022,
+        "reads": 975
+      }
+    },
+    "lag2": {
+      "context_mixture": {
+        "fees": 1628.039999999908,
+        "reads": 8505
+      },
+      "context_orbit": {
+        "fees": 1625.1999999999098,
+        "reads": 8668
+      },
+      "context_robust": {
+        "fees": 1609.51999999991,
+        "reads": 8668
+      },
+      "feasible_first_mixture": {
+        "fees": 1929.0799999998937,
+        "reads": 9606
+      },
+      "feasible_first_orbit": {
+        "fees": 1916.3599999998967,
+        "reads": 9587
+      },
+      "feasible_first_robust": {
+        "fees": 1878.6199999998992,
+        "reads": 9494
+      },
+      "feasible_r20_context_common": {
+        "fees": 1951.7599999998947,
+        "reads": 9657
+      },
+      "first_mixture": {
+        "fees": 1594.31999999991,
+        "reads": 8680
+      },
+      "first_orbit": {
+        "fees": 1588.979999999914,
+        "reads": 8646
+      },
+      "first_robust": {
+        "fees": 1591.319999999915,
+        "reads": 8713
+      },
+      "r20_context_common": {
+        "fees": 1638.6799999999082,
+        "reads": 8731
+      }
+    },
+    "lag2_skip": {
+      "context_mixture": {
+        "fees": 761.9399999999943,
+        "reads": 4101
+      },
+      "context_orbit": {
+        "fees": 763.7399999999942,
+        "reads": 4207
+      },
+      "context_robust": {
+        "fees": 765.199999999994,
+        "reads": 4219
+      },
+      "feasible_first_mixture": {
+        "fees": 968.8599999999926,
+        "reads": 4786
+      },
+      "feasible_first_orbit": {
+        "fees": 956.1999999999927,
+        "reads": 4764
+      },
+      "feasible_first_robust": {
+        "fees": 945.2199999999925,
+        "reads": 4738
+      },
+      "feasible_r20_context_common": {
+        "fees": 959.3799999999926,
+        "reads": 4771
+      },
+      "first_mixture": {
+        "fees": 767.5999999999941,
+        "reads": 4174
+      },
+      "first_orbit": {
+        "fees": 765.279999999994,
+        "reads": 4192
+      },
+      "first_robust": {
+        "fees": 767.1599999999942,
+        "reads": 4216
+      },
+      "r20_context_common": {
+        "fees": 767.4599999999942,
+        "reads": 4207
+      }
+    },
+    "relabeled_lag2": {
+      "context_mixture": {
+        "fees": 1558.5599999999222,
+        "reads": 8517
+      },
+      "context_orbit": {
+        "fees": 1597.2999999999222,
+        "reads": 8608
+      },
+      "context_robust": {
+        "fees": 1573.8599999999228,
+        "reads": 8635
+      },
+      "feasible_first_mixture": {
+        "fees": 1855.259999999905,
+        "reads": 9457
+      },
+      "feasible_first_orbit": {
+        "fees": 1851.2399999999059,
+        "reads": 9443
+      },
+      "feasible_first_robust": {
+        "fees": 1805.3999999999075,
+        "reads": 9342
+      },
+      "feasible_r20_context_common": {
+        "fees": 1882.1999999999039,
+        "reads": 9500
+      },
+      "first_mixture": {
+        "fees": 1533.879999999926,
+        "reads": 8518
+      },
+      "first_orbit": {
+        "fees": 1562.6799999999246,
+        "reads": 8602
+      },
+      "first_robust": {
+        "fees": 1539.8999999999278,
+        "reads": 8604
+      },
+      "r20_context_common": {
+        "fees": 1599.999999999922,
+        "reads": 8641
+      }
+    },
+    "reverse": {
+      "context_mixture": {
+        "fees": 403.6800000000018,
+        "reads": 2094
+      },
+      "context_orbit": {
+        "fees": 392.4000000000019,
+        "reads": 2120
+      },
+      "context_robust": {
+        "fees": 398.38000000000187,
+        "reads": 2138
+      },
+      "feasible_first_mixture": {
+        "fees": 498.90000000000214,
+        "reads": 2467
+      },
+      "feasible_first_orbit": {
+        "fees": 481.32000000000204,
+        "reads": 2436
+      },
+      "feasible_first_robust": {
+        "fees": 476.58000000000186,
+        "reads": 2423
+      },
+      "feasible_r20_context_common": {
+        "fees": 482.2200000000019,
+        "reads": 2437
+      },
+      "first_mixture": {
+        "fees": 398.4200000000019,
+        "reads": 2092
+      },
+      "first_orbit": {
+        "fees": 390.40000000000185,
+        "reads": 2118
+      },
+      "first_robust": {
+        "fees": 391.40000000000185,
+        "reads": 2123
+      },
+      "r20_context_common": {
+        "fees": 393.52000000000186,
+        "reads": 2129
+      }
+    }
+  },
+  "read_fee_unit": "Registered synthetic utility units, not currency",
+  "schema": "hcsn.r22.cost.v1",
+  "scope": "Full wait4 child envelopes cover each listed fitting/evaluation/fresh generation/own policy READ action/registered bootstrap/IO execution and each full fresh independent audit. This is a measured lower bound on total project cost; no per-arm CPU or production cost advantage is claimed.",
+  "storage": {
+    "calibration_01": {
+      "compressed_bytes": 41208861,
+      "gzip_files": 368,
+      "physical_filesystem_IO_bytes": null,
+      "uncompressed_json_payload_bytes": 718439879
+    },
+    "confirmation_01": {
+      "compressed_bytes": 57725973,
+      "gzip_files": 378,
+      "physical_filesystem_IO_bytes": null,
+      "uncompressed_json_payload_bytes": 1022107244
+    }
+  },
+  "sum_measured_execution_wall_seconds": 1676.689054306,
+  "unique_measured_wait4_child_cpu_seconds": 2971.3560150000003,
+  "unique_measured_wait4_executions": [
+    {
+      "cpu": 6.388603,
+      "exit_code": 0,
+      "kind": "old-data development",
+      "path": "development_v1/DEVELOPMENT_FIT_PROCESS_RECEIPT.json",
+      "wall": 7.821228050997888
+    },
+    {
+      "cpu": 6.020429,
+      "exit_code": 1,
+      "kind": "old-data development",
+      "path": "development_v2_failure/PROCESS_RECEIPT.json",
+      "wall": 6.684115928997926
+    },
+    {
+      "cpu": 4.95049,
+      "exit_code": 0,
+      "kind": "old-data development",
+      "path": "development_fit_final_PROCESS_RECEIPT.json",
+      "wall": 4.989061979002145
+    },
+    {
+      "cpu": 84.472262,
+      "exit_code": 0,
+      "kind": "old-data development",
+      "path": "MASKED_DEVELOPMENT_01_PROCESS_RECEIPT.json",
+      "wall": 90.46096610899986
+    },
+    {
+      "cpu": 13.829649999999999,
+      "exit_code": 0,
+      "kind": "old-data development",
+      "path": "ROBUST_DEVELOPMENT_01_PROCESS_RECEIPT.json",
+      "wall": 13.852704354001617
+    },
+    {
+      "cpu": 1304.132853,
+      "exit_code": 0,
+      "kind": "fresh campaign or independent audit",
+      "path": "CALIBRATION_PROCESS_RECEIPT.json",
+      "wall": 675.1911456719972
+    },
+    {
+      "cpu": 67.168768,
+      "exit_code": 0,
+      "kind": "fresh campaign or independent audit",
+      "path": "CALIBRATION_AUDIT_PROCESS_RECEIPT.json",
+      "wall": 67.17622191800183
+    },
+    {
+      "cpu": 1389.177605,
+      "exit_code": 0,
+      "kind": "fresh campaign or independent audit",
+      "path": "CONFIRMATION_PROCESS_RECEIPT.json",
+      "wall": 715.2877687639993
+    },
+    {
+      "cpu": 95.215355,
+      "exit_code": 0,
+      "kind": "fresh campaign or independent audit",
+      "path": "CONFIRMATION_AUDIT_PROCESS_RECEIPT.json",
+      "wall": 95.22584153000207
+    }
+  ],
+  "unmetered_not_zero": [
+    "outer launcher self CPU",
+    "interactive source drafting/inspection and early audit preparation/failures",
+    "imports/launchers of self-timed-only old audits",
+    "source publication/transport and final report generation",
+    "concurrent family RSS peak",
+    "physical filesystem IO and energy",
+    "GPU and production monetary cost"
+  ],
+  "v1_duplicate_archives_and_receipts_counted_once": true,
+  "worker_cpu_in_outer_totals_do_not_add": true
+}

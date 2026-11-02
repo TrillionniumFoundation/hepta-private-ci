@@ -1,0 +1,97 @@
+{
+  "actual_arm_cpu_with_preparation": {
+    "baseline|new": 25.21018012000015,
+    "baseline|old": 31.06316180100017,
+    "r18|new": 23.373834434000486,
+    "r18|old": 24.52869001699979,
+    "r19|new": 24.127295830999415,
+    "r19|old": 25.474880753000132,
+    "r20|new": 22.846784186000335,
+    "r20|old": 24.270204287999725
+  },
+  "actual_new_r20_vs_shared_baseline_actor_savings": 2.363395933999815,
+  "actual_shared_software_actor_cpu_savings": 9.778842287999431,
+  "actual_shared_software_cpu_ratio": 0.9071660655835375,
+  "actual_shared_software_new_cpu": 95.55809457100038,
+  "actual_shared_software_old_cpu": 105.33693685899982,
+  "all_recorded_cpu_lower_bound": 1280.5701264210002,
+  "full_investment_gate": false,
+  "historical_floor_source": "tools/hcsn/checkpoint_fastpath_r21_20261101/COST_LEDGER.json",
+  "historical_r18_investment_cpu_seconds": 141.098189,
+  "historical_recorded_cpu_floor": 941.053004113,
+  "nested_actor_profiler_or_checker_body_timers_added_again": false,
+  "r22_nonoverlapping_recorded_phases": [
+    {
+      "cpu_seconds": 2.962058,
+      "name": "baseline_profile",
+      "receipt": "profile_01/PROCESS_RECEIPT.json",
+      "receipt_sha256": "8310d73d22863b775d42f132624fd2587c8c0b1970f6ca4991969c231e5245c9",
+      "scope": "Complete instrumented old-actor development child; nested profiler wall and actor timers not added."
+    },
+    {
+      "cpu_seconds": 17.30976,
+      "name": "development",
+      "receipt": "development_01/PROCESS_RECEIPT.json",
+      "receipt_sha256": "fdb1c021d0266c797295ade2534d3d5b687ab92a4d636b000bb4200245cb663b",
+      "scope": "Complete first fixed-fixture old/new child with checks and probes; not formal evidence."
+    },
+    {
+      "cpu_seconds": 0.524629,
+      "name": "independent_validation",
+      "receipt": "INDEPENDENT_VALIDATION.process.json",
+      "receipt_sha256": "dd72fceaa6896f98e5815c5c5d10f7c662d1790ce7b69fe594db7b3caf1bc3c5",
+      "scope": "Independent complete checker child; body timer not added again."
+    },
+    {
+      "cpu_seconds": 39.466213999999994,
+      "name": "cold_confirmation",
+      "receipt": "cold_confirmation_01/PROCESS_RECEIPT.json",
+      "receipt_sha256": "b6fed04558905527d90fe4b7b43306428624021de4a268a553d180e60d948a08",
+      "scope": "Complete cold controller and waited descendants including in-process legacy references."
+    },
+    {
+      "cpu_seconds": 278.758955,
+      "name": "resource_confirmation",
+      "receipt": "confirmation_01/PROCESS_RECEIPT.json",
+      "receipt_sha256": "96a9bad13803f04df69d67cde6818eb61b9a3005d5267cce085c676372b75339",
+      "scope": "Complete serial child, every arm, preparation, worlds, memory probes, actual disk work and archives; actor timers not added again."
+    },
+    {
+      "cpu_seconds": 0.49550630799999995,
+      "name": "raw_audit_body",
+      "receipt": "confirmation_01/RAW_AUDIT.json",
+      "receipt_sha256": "8483b89324847a88bdeed21613a65f37c1ec7a67a73fa0c829463707db08d628",
+      "scope": "Separate stdlib raw reconstruction body; imports/supervisor excluded and unknown."
+    }
+  ],
+  "r22_recorded_cpu_lower_bound": 339.517122308,
+  "savings_vs_all_known_cost": {
+    "r20_vs_shared_baseline_savings_minus_current_total_floor": -1278.2067304870002,
+    "shared_software_savings_minus_current_total_floor": -1270.7912841330008,
+    "shared_software_savings_minus_historical_floor": -931.2741618250006
+  },
+  "schema": "r22-recorded-cost-ledger-v1",
+  "scope": "Recorded CPU lower bound only. Every known earlier investment remains charged, including141.098189 and allR19/R20/R21 recorded work. Campaign process cost includes its actor observations, which are not added twice. Actual finite32-use workload; no break-even extrapolation or spend-until-pass repetitions.",
+  "unknown_or_excluded": [
+    {
+      "cpu_seconds": null,
+      "phase": "Supervisor startup/imports outside child or body timers; shell source/hash/bookkeeping/report/transport work."
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "Continuous peer reported review, which has no process/raw receipt."
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "Independent source-review prose outside its measured checker child."
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "GitHub connector/publication/reasoning and inherited unknown historical costs."
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "GPU, joules, physical power-loss, concurrent ownership and production lifecycle."
+    }
+  ]
+}

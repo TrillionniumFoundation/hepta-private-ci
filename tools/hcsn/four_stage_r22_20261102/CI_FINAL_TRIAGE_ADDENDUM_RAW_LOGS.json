@@ -1,0 +1,52 @@
+{
+  "schema": "hcsn.r22.ci-addendum-raw-log-receipts.v1",
+  "scope": "Complete decoded log text reencoded UTF8; deterministic gzip mtime0, no content edits. Not an HTTP archive byte-identity claim.",
+  "files": [
+    {
+      "job_id": 125069635148,
+      "restored_path": "CI_ADDENDUM_LOG_125069635148.log.gz",
+      "gzip_bytes": 73500,
+      "gzip_sha256": "f2a94aaea6e69367726a3bc3fbd0bde0e62d2960482ca74ce84d6228b49def2d",
+      "decoded_utf8_bytes": 749588,
+      "decoded_utf8_sha256": "f3d62b59337e9f5c7ce94940a783d1e283c0022750708025937bcdc585c1afec",
+      "transport_parts": [
+        {
+          "path": "CI_ADDENDUM_LOG_125069635148.log.gz",
+          "bytes": 73500,
+          "sha256": "f2a94aaea6e69367726a3bc3fbd0bde0e62d2960482ca74ce84d6228b49def2d"
+        }
+      ]
+    },
+    {
+      "job_id": 125069635246,
+      "restored_path": "CI_ADDENDUM_LOG_125069635246.log.gz",
+      "gzip_bytes": 108740,
+      "gzip_sha256": "5765df8b7539ca0bc3bfe89db5e30b34867c848e0a91bdee696fb7f9f2d3d1f7",
+      "decoded_utf8_bytes": 985165,
+      "decoded_utf8_sha256": "41aa5149f1b819b4c7e04d74839fcf704e1e4a0f42c36629785f639ff28e60c8",
+      "transport_parts": [
+        {
+          "path": "CI_ADDENDUM_LOG_125069635246.log.gz",
+          "bytes": 108740,
+          "sha256": "5765df8b7539ca0bc3bfe89db5e30b34867c848e0a91bdee696fb7f9f2d3d1f7"
+        }
+      ]
+    },
+    {
+      "job_id": 125078966527,
+      "restored_path": "CI_ADDENDUM_LOG_125078966527.log.gz",
+      "gzip_bytes": 1071,
+      "gzip_sha256": "5f4a3eff3e1e31300cdb0528bdd66bdb5bc2138e87fd05726e4e4b6e06bd4669",
+      "decoded_utf8_bytes": 2645,
+      "decoded_utf8_sha256": "0303325f3b4b7e2555ceaf0b5daff7bb505d7e772ff084c8afab438bb3a0fca1",
+      "transport_parts": [
+        {
+          "path": "CI_ADDENDUM_LOG_125078966527.log.gz",
+          "bytes": 1071,
+          "sha256": "5f4a3eff3e1e31300cdb0528bdd66bdb5bc2138e87fd05726e4e4b6e06bd4669"
+        }
+      ]
+    }
+  ],
+  "restore": "Concatenate transport_parts in listed order and verify gzip_sha256, gzip-decompress then verify decoded_utf8_sha256."
+}

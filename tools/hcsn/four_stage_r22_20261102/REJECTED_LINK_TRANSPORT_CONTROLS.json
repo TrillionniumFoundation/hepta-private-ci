@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "controls": [
+    {
+      "name": "allowed_metadata",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "undeclared",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "wrong_target",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "traversal",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "unlisted_upload",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "capacity",
+      "passed": true,
+      "exit_code": 1
+    }
+  ],
+  "scope": "Declared rejected input links become literal metadata; source and extracted archive links remain forbidden."
+}

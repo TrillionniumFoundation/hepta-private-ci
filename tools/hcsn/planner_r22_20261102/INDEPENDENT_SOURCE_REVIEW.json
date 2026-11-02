@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn.r22.independent-validator-source-review.v1",
+  "passed": true,
+  "candidate_changed": false,
+  "published_source_commit": "5a8472045183fa638e77ac8f2ad903f3b00e3d06",
+  "frozen_manifest_sha256": "cb65df2e75c2226c5441b9f4a293e8fe0ae8305a51cc3f4a5a61b6fdede160d6",
+  "deterministic_cases": 634,
+  "static_contracts": 23,
+  "full_child_family_cpu_seconds": 0.524629,
+  "wall_seconds": 0.5256781490024878,
+  "raw_sha256": "2669cfd6790fbe4a835f1d8d94ac8ac5a3eef738d27e06ee2463887e8469673b",
+  "checker_sha256": "54f2f6024dd77efdb692c4fda704e02bffe9ad97b22cb6a63b5e7f84f269ef33",
+  "predicate_proof": "Both paths first coerce to FP64. NumPy2.3.5 isclose(s,1,rtol=0,atol=t) evaluates (abs(s-1)<=t) or(s==1), whose equality term is redundant for fixed positive finite t. All finite/negative/shape gates remain, sum order/dtype are unchanged. Full restore admits only shape(4,40), where axis1 andaxis-1 are identical. NaN/infinite/overflow sums reject identically.",
+  "ownership_scope": "Old/new accepted outputs retain identical alias and readonly behavior; restored actor states/counter maps detach mutable payloads. Existing permissive legacy behavior is preserved, not silently recast as new hardening.",
+  "static_driver_review": {
+    "campaign_counts_consistent": true,
+    "fit_model_representation_groups": 48,
+    "shared_software_groups": 192,
+    "timed_actors": 12288,
+    "memory_probe_actors": 1536,
+    "unique_task_worlds": 256,
+    "paired_runtime_order_randomized": true,
+    "preparation_order_randomized_after_review_before_freeze": true,
+    "preparation_cpu_charged": true,
+    "all_six_query_semantics_and_receipt_history_compared": true,
+    "final_durable_wire_all_eight_arms_compared": true,
+    "cold_child_new_blocklaw_route_confirmed": true,
+    "raw_audit_record_schema_matches_driver": true,
+    "per_group_and_historical_investment_gates_remain_separate": true
+  },
+  "no_resource_or_analytic_exclusive_gain_inferred": true,
+  "limitations": [
+    "Deterministic branch and threshold correctness checks are not new performance measurements.",
+    "Source-equivalent persistence preserves actual fsync/readback calls; this checker itself does not independently count those syscalls. The separate prospective cold harness does.",
+    "Empty leading batches and inherited coercions remain as before for operator helpers; generated memory restore still enforces its exact shape.",
+    "Read-only raw audit is separately authored by the candidate cost agent and is not labeled an independent author.",
+    "Concurrent project execution may influence cache/disk/wall observations in the future resource campaign; dedicated-host and GPU/joule claims are absent."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn.r22.final-local-checks.v1",
+  "recorded_utc": "2026-11-02T03:44:46.763Z",
+  "codespell": {
+    "command": "PYTHONPATH=/tmp/hcsn-r22-tools python -m codespell_lib --config .codespellrc .",
+    "scope": "Entire reconstructed partial checkout including final component sources, raw diagnostics and final triage addendum; configured immutable binary exclusions retained.",
+    "chunk_id": "6b14c9",
+    "wall_time_seconds": 4.166749096,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "required_final_format": {
+    "command": "/tmp/hcsn-r15-yaml-alias-tools/just fmt",
+    "cwd": "repo/codex-rs",
+    "chunk_id": "c94424",
+    "wall_time_seconds": 0.000027751,
+    "exit_code": 1,
+    "original_token_count": 7,
+    "output": "error: no justfile found\n",
+    "full_workspace_format_passed": false
+  },
+  "transport_controls": {
+    "source_sha256": "4666e30c8785537d9a7165589751c219f6c7d6d503aafd7a91e2679ad272c46a",
+    "base_controls": 16,
+    "rejected_link_controls": 6,
+    "separate_carrier_controls": 2,
+    "passed": true,
+    "receipts": [
+      "TRANSPORT_CONTROLS.json",
+      "REJECTED_LINK_TRANSPORT_CONTROLS.json",
+      "SEPARATE_CARRIER_CONTROLS.json"
+    ]
+  },
+  "scientific_suites": "Recorded frozen component receipts and independently audited manifests; no new scientific reruns during final packaging.",
+  "after_final_format": "No implementation tests or linters run after the final format attempt. Subsequent work only writes delivery metadata and verifies Git object identities/refs.",
+  "full_repository_or_hosted_candidate_passed": false,
+  "production_activation": false
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn.r22.auth-independent-source-review.v1",
+  "candidate_frozen_sources_unchanged": true,
+  "candidate_source_sha256": {
+    "tools/hcsn/auth_recovery_r22_20261102/security.py": "41d97f53dc53ce5e25612d81d8cb997d068d5b0ddf4ffacc66a1a0a88d1a6daa",
+    "tools/hcsn/auth_recovery_r22_20261102/witness.py": "f72ad0424a11a413966ed24f78c2971fac898b5cb79ed4c92015b0ea266591c4",
+    "tools/hcsn/auth_recovery_r22_20261102/checkpoint.py": "854c90d251fb0cbac38fdc486bbcdb6cb04f593ee1a13a03038332607df43c08",
+    "tools/hcsn/auth_recovery_r22_20261102/verify.py": "8c23aff325ce0b29a72c2642bad7a8c25610c5ab0c83b611f33006195efaad96",
+    "tools/hcsn/auth_recovery_r22_20261102/meter.py": "96823fe5499c4f725153b1dbb6707cd5872c0e0556912d55a16294c9e177f2e8",
+    "tools/hcsn/auth_recovery_r22_20261102/audit.py": "1e092b6321049e8bd3a915c8200f343257e88925e9822f228c7456e598b5207b",
+    "tools/hcsn/auth_recovery_r22_20261102/PROTOCOL.json": "f77365aea655063559034b436de87171d01157fe74a3dd3f235b04038da6fbe3"
+  },
+  "prior_recorded_safety_checks_consistent": true,
+  "prior_bounded_mac_and_retained_witness_safety_refuted": false,
+  "availability_counterexample_observed": true,
+  "victim_timeout_seconds": 3.0036174339984427,
+  "attack_bytes": 23,
+  "attack_drip_seconds": 4.4,
+  "service_recovers_when_attack_closes": true,
+  "complete_counterexample_process_cpu_seconds": 0.116789,
+  "counterexample_exit_code": 0,
+  "first_counterexample_remote_prefreeze": false,
+  "first_counterexample_history": "Locally written deterministic checker/protocol executed under an earlier root instruction. Its receipt completed2026-11-02T02:30:09Z; remote source commit daf9f9ce28834ad4540c07f2ea0a5e3a085457e5 was created02:30:20Z. No retroactive prepublication binding is claimed.",
+  "reviewer_findings": [
+    {
+      "id": "serial_idle_timeout",
+      "severity": "bounded-service blocker",
+      "status": "actual_reproduced",
+      "finding": "Socket settimeout(3) is idle per receive; serial witness can be occupied by an unauthenticated partial frame. No absolute request completion deadline."
+    },
+    {
+      "id": "client_idle_response_timeout",
+      "severity": "bounded-service blocker for untrusted response endpoint",
+      "status": "source_identified",
+      "finding": "Client.query also reads a potentially1MiB frame with only an idle3s socket timeout; a slow fake endpoint can delay rejection. Current localhost/endpoint custody narrows reach; general cross-host service remains open."
+    },
+    {
+      "id": "commit_retry_semantics",
+      "severity": "scope clarification",
+      "status": "source_identified",
+      "finding": "A new commit() call after an already committed but lost acknowledgement queries the latest tip and may create the next sequence for identical opaque states. Do not claim exactly-once public checkpoint API or infer semantic monotonicity."
+    },
+    {
+      "id": "witness_storage_truncation",
+      "severity": "declared assumption",
+      "status": "already_disclosed",
+      "finding": "Suffix or complete rollback of witness storage is outside independently retained witness custody. The chain alone is not an external rollback anchor."
+    },
+    {
+      "id": "concurrent_actor_lifecycle",
+      "severity": "retained limitation",
+      "status": "not_qualified",
+      "finding": "Witness CAS serializes commits, but there is no multi-actor lifecycle lease; do not turn sequential trusted-coordinator tests into a concurrent-owner guarantee."
+    }
+  ],
+  "production_activation": false,
+  "all_blockers_closed": false
+}

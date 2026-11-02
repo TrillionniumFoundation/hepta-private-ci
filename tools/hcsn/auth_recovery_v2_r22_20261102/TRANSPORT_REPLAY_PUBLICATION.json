@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn.r22.auth-v2-transport-replay-publication.v1",
+  "classification": "Prospectively published existing-world delivery engineering supplements; no alteration of original nine frozen auth sources or scientific admission gates.",
+  "attempts": [
+    {
+      "driver": "replay_after_transport.py",
+      "protocol": "TRANSPORT_REPLAY_PROTOCOL.json",
+      "source_commit": "6929fa4d4c3d630864ceae6fbcaedd1f10554ff1",
+      "remote_blob_sha_and_size_readback_before_execution": true,
+      "exit_code": 1,
+      "full_child_family_cpu_seconds": 0.126102,
+      "outputs": "after_transport_replay01",
+      "failure": "Endpoint existence preceded complete JSON publication. No signed checkpoint admitted and no native Rust process started. Witness stopped/reaped by driver finally."
+    },
+    {
+      "driver": "replay_after_transport_v2.py",
+      "protocol": "TRANSPORT_REPLAY_V2_PROTOCOL.json",
+      "source_commit": "99eb14252da8caba206ad293d0b805728cf9010a",
+      "remote_blob_sha_and_size_readback_before_execution": true,
+      "exit_code": 0,
+      "full_child_family_cpu_seconds": 0.178339,
+      "outputs": "after_transport_replay02",
+      "change": "Five-second bounded live-child readiness poll for a complete valid endpoint before Client construction; no MAC/context/state rejection retries."
+    }
+  ],
+  "pinned_original_artifact_manifest_sha256": "abf5923571a9a4f97faf5a751aee868be96ef5b25fce95ee5ed521244ddfe6af",
+  "pinned_original_artifact_manifest_bytes": 81654,
+  "candidate_source_freeze_matches_pinned_original_artifact_manifest": true,
+  "candidate_source_freeze_sha256": "35a535a5b78b5d16e6bc27dd3ab72c8346c49594f14876544bd23fc02b21d25a",
+  "source_sha256": {
+    "replay_after_transport.py": "49c16fa6ab910c8452f3a0e89c9869f4367b75679d116024ec89591bc71f9d63",
+    "TRANSPORT_REPLAY_PROTOCOL.json": "b5f43986c67ce43d429eeb9d3865aac2861da65b5252f17333a0392a65b38529",
+    "TRANSPORT_REPLAY_INPUT_MANIFEST.json": "abf5923571a9a4f97faf5a751aee868be96ef5b25fce95ee5ed521244ddfe6af",
+    "replay_after_transport_v2.py": "5fa4a79bd32164a05c950900c6e08be3c24adbb9fa86d3ca404d05c2f23946ab",
+    "TRANSPORT_REPLAY_V2_PROTOCOL.json": "7259fd78e009c0503635b8c2a3f5864b3992f1837c31477d10c9b31b1c098780"
+  },
+  "meter": "Published tools/hcsn/full_parameters_r22_20261102/measure.py, complete invoked worker and waited children.",
+  "receipt_written_after_execution": true,
+  "all_existing_auth_scientific_sources_unchanged": true
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-r22-v2-independent-postfreeze-diff-review-v1",
+  "remote_freeze": "c21de56597fc60857b179c8422b0108d5ef7c61b",
+  "source_freeze_sha256": "1265f45f19932c6c5e2a2d8cbb9fc9f386e699a006c60ad5ad3cad47ed061488",
+  "frozen_files_verified": 17,
+  "timing": "After V2 freeze and after fresh confirmation launch; not prequalification evidence",
+  "fresh_arrays_or_outcomes_inspected": false,
+  "numerical_reruns": false,
+  "source_edits": false,
+  "review_added_to_freeze": false,
+  "scope": [
+    "certificate.py initial-left maxima and primal gate",
+    "study.py two initial-left corruption controls and engineering phase",
+    "record_check.py primal admission and hexadecimal/Fraction control replay",
+    "PROTOCOL.json and DERIVATIVE_CONTRACT.md changes"
+  ],
+  "prior_v1_review_missed_initial_left_omission": true,
+  "v1_hole_preserved": "Correctly initializing builder differs from incomplete verifier coverage. Saved initial-left slices were not included in V1 maxima.",
+  "v2_repair_assessment": "Both initial-left slices now enter their correct maxima; primal and derivative admission both use unchanged1e-10; affine admission strengthened too.",
+  "control_initial_row": 0,
+  "control_original_values": {
+    "left_values": "5/8",
+    "left_tangent": "0"
+  },
+  "control_exact_injection": "1/2",
+  "control_scope": "Hex/Fraction replay verifies injection and stored rejection consistency; it does not independently execute interval certification.",
+  "unchanged_protocol_fields_verified": [
+    "fresh_seed",
+    "fresh_profiles",
+    "fresh_ranges",
+    "mesh",
+    "interval_digits",
+    "local_tolerance",
+    "complex_increment",
+    "original_real_steps",
+    "original_finite_step_tolerance",
+    "decomposition_tolerance",
+    "tie_config",
+    "tie_meshes",
+    "fee_ulps"
+  ],
+  "actual_algebraic_flaw_identified_in_diff": false,
+  "qualification": "Narrow source-diff review only; no fresh success or all-dependency formal proof claim."
+}

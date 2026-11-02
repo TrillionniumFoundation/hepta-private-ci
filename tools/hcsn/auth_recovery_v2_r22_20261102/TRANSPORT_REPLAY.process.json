@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "tools.hcsn.auth_recovery_v2_r22_20261102.replay_after_transport",
+    "--transported",
+    "/workspace/scratch/671a3fc18e7e/r22-auth-v2-roundtrip-final",
+    "--output",
+    "tools/hcsn/auth_recovery_v2_r22_20261102/after_transport_replay01"
+  ],
+  "cost_scope": "Full invoked child process and waited descendants, including interpreter imports/build/native calls/final serialization. Excludes this small wrapper and transport; nested inner timing must not be added.",
+  "exit_code": 1,
+  "family_simultaneous_peak_rss_kib": null,
+  "full_child_family_cpu_seconds": 0.126102,
+  "max_single_process_rss_kib": 27708,
+  "pid": 5,
+  "system_cpu_seconds": 0.036136999999999996,
+  "user_cpu_seconds": 0.08996499999999999,
+  "wall_seconds": 0.17101262499636505
+}
