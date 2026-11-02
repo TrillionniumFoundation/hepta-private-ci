@@ -1,0 +1,70 @@
+{
+  "schema": "r19-exact-continuum-proof-arithmetic-v1",
+  "classification": "Deductive rational proof checks only; no solver, random world, sampled boundary or convergence-rate experiment",
+  "source_sha256": "3b133e4491fdc0b1c6da93a5c177bbefc81d6ff9b8ad145de6ba77e4425c4482",
+  "strict_jump": {
+    "no_reset_upper": {
+      "numerator": 21647,
+      "denominator": 70000
+    },
+    "new_reset_lower": {
+      "numerator": 421,
+      "denominator": 1000
+    },
+    "strict_gap_lower": {
+      "numerator": 7823,
+      "denominator": 70000
+    }
+  },
+  "all_reset": {
+    "sigmoid_lower": {
+      "numerator": 540823,
+      "denominator": 790823
+    },
+    "policy_lower_returns": [
+      {
+        "numerator": 679140441,
+        "denominator": 1581646000
+      },
+      {
+        "numerator": 2981514087,
+        "denominator": 6326584000
+      },
+      {
+        "numerator": 12720913317,
+        "denominator": 25306336000
+      }
+    ],
+    "R3_above_half": {
+      "numerator": 67745317,
+      "denominator": 25306336000
+    }
+  },
+  "reset_bracket": {
+    "lower_state": {
+      "numerator": -1,
+      "denominator": 4
+    },
+    "upper_state": {
+      "numerator": 5,
+      "denominator": 4
+    },
+    "lower_no_reset_upper": {
+      "numerator": 4201,
+      "denominator": 10000
+    },
+    "B_upper": {
+      "numerator": 13797,
+      "denominator": 32000
+    },
+    "upper_payoff_lower": {
+      "numerator": 13,
+      "denominator": 30
+    },
+    "strict_upper_margin": {
+      "numerator": 209,
+      "denominator": 96000
+    }
+  },
+  "all_exact_inequalities_hold": true
+}
