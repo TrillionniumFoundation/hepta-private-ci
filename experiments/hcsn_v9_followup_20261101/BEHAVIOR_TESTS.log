@@ -1,0 +1,33 @@
+test_admission (unittest.loader._FailedTest.test_admission) ... ERROR
+test_analytic_and_raw_history_equivalence (experiments.hcsn_v9_followup_20261101.persistent_core.test_models.PersistentTests.test_analytic_and_raw_history_equivalence) ... ok
+test_gradients_independent_finite_difference (experiments.hcsn_v9_followup_20261101.persistent_core.test_models.PersistentTests.test_gradients_independent_finite_difference) ... ok
+test_prefix_causality_and_episode_reset (experiments.hcsn_v9_followup_20261101.persistent_core.test_models.PersistentTests.test_prefix_causality_and_episode_reset) ... ok
+test_state_persists_and_no_event_is_identity (experiments.hcsn_v9_followup_20261101.persistent_core.test_models.PersistentTests.test_state_persists_and_no_event_is_identity) ... ok
+test_training_inputs_are_accepted_events (experiments.hcsn_v9_followup_20261101.persistent_core.test_models.PersistentTests.test_training_inputs_are_accepted_events) ... ok
+test_extracted_definitions_preserve_baseline_ast (experiments.hcsn_v9_followup_20261101.refit_ablation.test_refit.RefitChecks.test_extracted_definitions_preserve_baseline_ast) ... ok
+test_independent_ig_generator_matches_count_probabilities (experiments.hcsn_v9_followup_20261101.refit_ablation.test_refit.RefitChecks.test_independent_ig_generator_matches_count_probabilities) ... ok
+test_likelihood_gradient_matches_finite_difference (experiments.hcsn_v9_followup_20261101.refit_ablation.test_refit.RefitChecks.test_likelihood_gradient_matches_finite_difference) ... ok
+test_mean_preserving_shape_remains_a_different_content_feature (experiments.hcsn_v9_followup_20261101.refit_ablation.test_refit.RefitChecks.test_mean_preserving_shape_remains_a_different_content_feature) ... ok
+test_refitting_changes_weights_and_improves_training_objective (experiments.hcsn_v9_followup_20261101.refit_ablation.test_refit.RefitChecks.test_refitting_changes_weights_and_improves_training_objective) ... ok
+test_fixed_actions_preserve_content (experiments.hcsn_v9_followup_20261101.risk.test_study.RiskTests.test_fixed_actions_preserve_content) ... ok
+test_future_payload_and_delay_not_available_to_forecast (experiments.hcsn_v9_followup_20261101.risk.test_study.RiskTests.test_future_payload_and_delay_not_available_to_forecast) ... ok
+test_intervention_only_changes_explicit_risk (experiments.hcsn_v9_followup_20261101.risk.test_study.RiskTests.test_intervention_only_changes_explicit_risk) ... ok
+test_late_result_discarded_before_drain (experiments.hcsn_v9_followup_20261101.risk.test_study.RiskTests.test_late_result_discarded_before_drain) ... ok
+
+======================================================================
+ERROR: test_admission (unittest.loader._FailedTest.test_admission)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_admission
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v9_followup_20261101/frontend/test_admission.py", line 10, in <module>
+    from admission import KNOWN_PRIOR_CAMPAIGNS, V6_COMMIT, strict_json, validate
+ModuleNotFoundError: No module named 'admission'
+
+
+----------------------------------------------------------------------
+Ran 15 tests in 1.981s
+
+FAILED (errors=1)

@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn-frontend-admission-result.v1",
+  "status": "FAIL",
+  "errors": [
+    "audio_evaluation: missing artifact",
+    "av_evaluation: missing artifact",
+    "confirmation_index: missing artifact",
+    "history_catalog: missing artifact",
+    "history_ledger: missing artifact",
+    "history_reconciliation: missing artifact",
+    "original_v6_head: missing artifact",
+    "original_v6_protocol: missing artifact",
+    "strong_audio_head: missing artifact",
+    "protocol: missing original task/quality contract",
+    "protocol: original v6 campaign identity missing or mismatched",
+    "protocol: original_v6_head is not bound to original contract",
+    "protocol: strong_audio_head is not bound to original contract",
+    "protocol: missing positive independent-recording requirement",
+    "history: campaign catalog is missing, empty or duplicated",
+    "history: catalog omits known prior v3/v5/v6/v7/v8 campaigns",
+    "history: complete development/calibration/selection/confirmation scope undeclared",
+    "history: ledger does not cover the full declared campaign catalog",
+    "history: byte-bound reconciliation including exploration/failures is missing",
+    "confirmation: insufficient independent new recordings",
+    "confirmation: frozen case catalog missing",
+    "av_evaluation: protocol, fitted head or confirmation identities are unbound",
+    "av_evaluation: raw predictions missing",
+    "av_evaluation: frozen case coverage incomplete or unexpected",
+    "audio_evaluation: protocol, fitted head or confirmation identities are unbound",
+    "audio_evaluation: raw predictions missing",
+    "audio_evaluation: frozen case coverage incomplete or unexpected"
+  ],
+  "verified_artifacts": {},
+  "recomputed_quality": {
+    "av_evaluation": {},
+    "audio_evaluation": {}
+  },
+  "scope": "Offline submitted-byte and identity contract only; external completeness/acquisition authenticity requires independent review.",
+  "production_authorized": false
+}

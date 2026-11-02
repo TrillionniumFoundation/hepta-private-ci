@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn-v9-raw-byte-transport.v1",
+  "original": {
+    "path": "persistent_core/results/development001/evaluation/runs.jsonl.gz",
+    "bytes": 18371753,
+    "sha256": "85f79c4265d77082ba8fca243f82d55184bab11608d759ce302771e591535a66",
+    "git_blob": "9a1a3c8a25ef94e49d3aee28f00000cb9a1ef4eb"
+  },
+  "parts": [
+    {
+      "path": "publication/persistent-runs.part-000.bin",
+      "bytes": 9000000,
+      "sha256": "8e6baa8d7fd9937ec00a92892c37241f59964b93485954161dca75b9e87d5f7c",
+      "git_blob": "062f5dc2c4e80b315d95272a35e09275ea97bc39"
+    },
+    {
+      "path": "publication/persistent-runs.part-001.bin",
+      "bytes": 9000000,
+      "sha256": "78f41155587d63c1bcc67e2e6af77ed57cd0f136f4accfeacdedc9c2ba99fac3",
+      "git_blob": "21d1b1425ea699ef3073489bef3c5447215c849f"
+    },
+    {
+      "path": "publication/persistent-runs.part-002.bin",
+      "bytes": 371753,
+      "sha256": "e337685320d7337b63486cc3d7fd5e1c7224bac9b1221a6f06f227a9187f04a7",
+      "git_blob": "74092d0e5da8f75e0d2f4ab92ba491adc6380e25"
+    }
+  ],
+  "reason": "GitHub connector transport has a 16 MiB request body bound. Preserve original compressed bytes as ordered binary parts; restore before raw replay."
+}

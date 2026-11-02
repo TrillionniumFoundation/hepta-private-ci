@@ -1,0 +1,24 @@
+{
+  "behavior_tests": [
+    {
+      "path": "BEHAVIOR_FRONTEND.log",
+      "tests": 21,
+      "passed": true,
+      "sha256": "e8f3d5e73283e0ae5208eed143e4437fd8f1cfacfe291144d974546144e8749e"
+    },
+    {
+      "path": "BEHAVIOR_CORE_MECHANISMS.log",
+      "tests": 14,
+      "passed": true,
+      "sha256": "68626d9179fd464e70e3234dd9ef3886995226df647f61a036b47ad3687a841a"
+    }
+  ],
+  "passed_total": 35,
+  "initial_aggregate_invocation": {
+    "log": "BEHAVIOR_TESTS.log",
+    "result": "frontend test script requires discovery directory import context; corrected reproduction commands, unchanged candidate source"
+  },
+  "transport_checks": 6,
+  "cross_module_independent_reconstruction": "review/RECONSTRUCTION.json",
+  "full_Rust_CI_pass": false
+}

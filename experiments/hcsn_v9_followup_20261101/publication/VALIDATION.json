@@ -1,0 +1,34 @@
+{
+  "checks": [
+    {
+      "name": "exact_compressed_byte_recovery",
+      "passed": true
+    },
+    {
+      "name": "existing_identical_bytes_idempotent",
+      "passed": true
+    },
+    {
+      "name": "refuse_overwrite_divergent_evidence",
+      "passed": true
+    },
+    {
+      "name": "corrupt_part_rejected",
+      "passed": true
+    },
+    {
+      "name": "corruption_creates_no_output",
+      "passed": true
+    },
+    {
+      "name": "path_escape_rejected",
+      "passed": true
+    }
+  ],
+  "passed": 6,
+  "source_sha256": {
+    "restore.py": "a7d0fad4bf600c8eb952a63d93f40bc7430dba7e6b2f2a98fa87799d7570dde0",
+    "validate_transport.py": "67c83d916fabe566b239c77cc71fb965ad17c5f9417f6abaee5d6ab726fedf54",
+    "TRANSPORT.json": "8e84a03577d6810b35d83bda7c6aca3a9fd0c910bd85fb069abf4ee4a0717c8a"
+  }
+}

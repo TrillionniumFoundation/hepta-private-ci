@@ -1,0 +1,19 @@
+{
+  "schema": "hcsn-v9-frontend-validation.v1",
+  "tests": 21,
+  "exit_code": 0,
+  "wall_seconds": 0.2699791729974095,
+  "child_user_cpu_seconds": 0.10553799999999999,
+  "child_system_cpu_seconds": 0.023252,
+  "scope": "Local synthetic contract validation only; not AV model preparation or deployment cost.",
+  "prior_iteration": {
+    "tests": 20,
+    "failed": 1,
+    "failure": "Synthetic original recording media was incorrectly parsed as JSON. Fixed binary media handling before this final run."
+  },
+  "source_sha256": {
+    "admission.py": "46314a555819d1e677cf1c1045262b8cffbe162d1f9983368043209f58511551",
+    "test_admission.py": "aef4810e1cbb86d82b799b834104ee4014c153e0faf45e651d38e8f25466e2c9"
+  },
+  "independent_review_repair": "Freeze common expected case/label catalog; reject easy-subset selection and cross-head label drift."
+}

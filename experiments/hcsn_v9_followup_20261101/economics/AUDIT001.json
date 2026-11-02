@@ -1,0 +1,299 @@
+{
+  "schema": "hcsn-v9-cost-audit.v1",
+  "rows": [
+    {
+      "directory": "experiments/hcsn_v9_followup_20261101/economics/results/behavior001",
+      "receipt_sha256": "fa063fcf6660759bbf314179df646d2b9f4b3149ca23433d0c3c85e8ec02dd04",
+      "checks": {
+        "sample_digest": true,
+        "sample_count": true,
+        "rss_sum_each_sample": true,
+        "pss_sum_each_sample": true,
+        "rss_peak": true,
+        "pss_peak": true,
+        "waited_cpu_sum": true,
+        "enclosing_cpu_counted_once": true,
+        "no_complete_memory_claim": true,
+        "no_energy_claim": true
+      },
+      "all_checks_pass": true,
+      "fixture_diagnostics": [],
+      "task_success": false,
+      "task_cpu_seconds": 0.089977,
+      "monitor_cpu_seconds": 0.029419000000000015,
+      "observed_nonatomic_rss_peak_bytes": 26988544,
+      "observed_nonatomic_pss_peak_bytes": 18434048
+    },
+    {
+      "directory": "experiments/hcsn_v9_followup_20261101/economics/results/behavior002",
+      "receipt_sha256": "2f8c3851103601bcadfd93213416f2fd94ee826bde21ab076e70e39ce3b02fbd",
+      "checks": {
+        "sample_digest": true,
+        "sample_count": true,
+        "rss_sum_each_sample": true,
+        "pss_sum_each_sample": true,
+        "rss_peak": true,
+        "pss_peak": true,
+        "waited_cpu_sum": true,
+        "enclosing_cpu_counted_once": true,
+        "no_complete_memory_claim": true,
+        "no_energy_claim": true
+      },
+      "all_checks_pass": true,
+      "fixture_diagnostics": [],
+      "task_success": true,
+      "task_cpu_seconds": 0.078871,
+      "monitor_cpu_seconds": 0.020265,
+      "observed_nonatomic_rss_peak_bytes": 26525696,
+      "observed_nonatomic_pss_peak_bytes": 18059264
+    },
+    {
+      "directory": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001",
+      "receipt_sha256": "4da2036e7f1066bce43c75691238a454181f09118134f887ed8f21c23c116947",
+      "checks": {
+        "sample_digest": true,
+        "sample_count": true,
+        "rss_sum_each_sample": true,
+        "pss_sum_each_sample": true,
+        "rss_peak": true,
+        "pss_peak": true,
+        "waited_cpu_sum": true,
+        "enclosing_cpu_counted_once": true,
+        "no_complete_memory_claim": true,
+        "no_energy_claim": true,
+        "waited_cpu_covers_fixture_self_cpu": true
+      },
+      "all_checks_pass": true,
+      "fixture_diagnostics": [
+        {
+          "role": "child",
+          "allocated_bytes": 12582912,
+          "self_cpu_seconds": 0.384783,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            484420,
+            484406
+          ],
+          "identity": {
+            "pid": 484421,
+            "start_ticks": 5393814
+          }
+        },
+        {
+          "role": "grandchild",
+          "allocated_bytes": 16777216,
+          "self_cpu_seconds": 0.549624,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            484421
+          ],
+          "identity": {
+            "pid": 484423,
+            "start_ticks": 5393817
+          }
+        },
+        {
+          "role": "root",
+          "allocated_bytes": 8388608,
+          "self_cpu_seconds": 0.175727,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            484406
+          ],
+          "identity": {
+            "pid": 484420,
+            "start_ticks": 5393806
+          }
+        },
+        {
+          "role": "short",
+          "allocated_bytes": 25165824,
+          "self_cpu_seconds": 0.048466999999999996,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            484420
+          ],
+          "identity": {
+            "pid": 484422,
+            "start_ticks": 5393814
+          }
+        }
+      ],
+      "task_success": true,
+      "task_cpu_seconds": 1.192432,
+      "monitor_cpu_seconds": 0.272961,
+      "observed_nonatomic_rss_peak_bytes": 98308096,
+      "observed_nonatomic_pss_peak_bytes": 79590400
+    },
+    {
+      "directory": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001",
+      "receipt_sha256": "af125c146d606206d30b34dbdd6ba7bf17f9f9bd292333e19d6bd66e44b2b9f7",
+      "checks": {
+        "sample_digest": true,
+        "sample_count": true,
+        "rss_sum_each_sample": true,
+        "pss_sum_each_sample": true,
+        "rss_peak": true,
+        "pss_peak": true,
+        "waited_cpu_sum": true,
+        "enclosing_cpu_counted_once": true,
+        "no_complete_memory_claim": true,
+        "no_energy_claim": true,
+        "waited_cpu_covers_fixture_self_cpu": true
+      },
+      "all_checks_pass": true,
+      "fixture_diagnostics": [
+        {
+          "role": "child",
+          "allocated_bytes": 12582912,
+          "self_cpu_seconds": 0.381779,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            485011
+          ],
+          "identity": {
+            "pid": 485013,
+            "start_ticks": 5396201
+          }
+        },
+        {
+          "role": "grandchild",
+          "allocated_bytes": 16777216,
+          "self_cpu_seconds": 0.537225,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            485013
+          ],
+          "identity": {
+            "pid": 485015,
+            "start_ticks": 5396204
+          }
+        },
+        {
+          "role": "root",
+          "allocated_bytes": 8388608,
+          "self_cpu_seconds": 0.48102999999999996,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            485008
+          ],
+          "identity": {
+            "pid": 485011,
+            "start_ticks": 5396198
+          }
+        },
+        {
+          "role": "short",
+          "allocated_bytes": 25165824,
+          "self_cpu_seconds": 0.044219999999999995,
+          "identity_seen": true,
+          "resident_memory_sample_seen": false,
+          "observed_ppids": [
+            485011
+          ],
+          "identity": {
+            "pid": 485014,
+            "start_ticks": 5396201
+          }
+        }
+      ],
+      "task_success": true,
+      "task_cpu_seconds": 1.47201,
+      "monitor_cpu_seconds": 0.015924,
+      "observed_nonatomic_rss_peak_bytes": 81854464,
+      "observed_nonatomic_pss_peak_bytes": 66712576
+    },
+    {
+      "directory": "experiments/hcsn_v9_followup_20261101/economics/results/tree001",
+      "receipt_sha256": "3e8a1b0e0b79ec413fa6af9a76da3a7a3e32d0db5e04991e820f81eef582352e",
+      "checks": {
+        "sample_digest": true,
+        "sample_count": true,
+        "rss_sum_each_sample": true,
+        "pss_sum_each_sample": true,
+        "rss_peak": true,
+        "pss_peak": true,
+        "waited_cpu_sum": true,
+        "enclosing_cpu_counted_once": true,
+        "no_complete_memory_claim": true,
+        "no_energy_claim": true,
+        "waited_cpu_covers_fixture_self_cpu": true
+      },
+      "all_checks_pass": true,
+      "fixture_diagnostics": [
+        {
+          "role": "child",
+          "allocated_bytes": 12582912,
+          "self_cpu_seconds": 0.392816,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            484268
+          ],
+          "identity": {
+            "pid": 484269,
+            "start_ticks": 5393440
+          }
+        },
+        {
+          "role": "grandchild",
+          "allocated_bytes": 16777216,
+          "self_cpu_seconds": 0.546383,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            484269
+          ],
+          "identity": {
+            "pid": 484271,
+            "start_ticks": 5393444
+          }
+        },
+        {
+          "role": "root",
+          "allocated_bytes": 8388608,
+          "self_cpu_seconds": 0.493248,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            484263
+          ],
+          "identity": {
+            "pid": 484268,
+            "start_ticks": 5393435
+          }
+        },
+        {
+          "role": "short",
+          "allocated_bytes": 25165824,
+          "self_cpu_seconds": 0.047742999999999994,
+          "identity_seen": true,
+          "resident_memory_sample_seen": true,
+          "observed_ppids": [
+            484268
+          ],
+          "identity": {
+            "pid": 484270,
+            "start_ticks": 5393440
+          }
+        }
+      ],
+      "task_success": true,
+      "task_cpu_seconds": 1.510799,
+      "monitor_cpu_seconds": 0.28259899999999993,
+      "observed_nonatomic_rss_peak_bytes": 81928192,
+      "observed_nonatomic_pss_peak_bytes": 66807808
+    }
+  ],
+  "all_checks_pass": true,
+  "failed_workloads_retained": [
+    "experiments/hcsn_v9_followup_20261101/economics/results/behavior001"
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "schema": "hcsn-v9-process-family-cost.v1",
+  "command": [
+    "python",
+    "experiments/hcsn_v9_followup_20261101/economics/memory_fixture.py",
+    "--out",
+    "experiments/hcsn_v9_followup_20261101/economics/results/tree001/fixture"
+  ],
+  "source_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "observer_identity": {
+    "pid": 484263,
+    "state": "R",
+    "ppid": 484260,
+    "start_ticks": 5393430,
+    "getpid": 2
+  },
+  "boundary_begin_ns": 53934357596884,
+  "boundary_end_ns": 53935017338020,
+  "elapsed_seconds": 0.659741136,
+  "sample_interval_seconds": 0.01,
+  "task_cpu_seconds": 1.510799,
+  "measurement_cpu_seconds": 0.28259899999999993,
+  "enclosing_observed_cpu_seconds": 1.7933979999999998,
+  "cpu_scope": "Disjoint wait4 child subtrees, adopted children included; observer CPU delta added once",
+  "cpu_complete_for_ordinary_waitable_family": true,
+  "wait4_subtrees": [
+    {
+      "namespace_pid": 6,
+      "direct_worker": true,
+      "exit_code": 0,
+      "user_cpu_seconds": 0.8217979999999999,
+      "system_cpu_seconds": 0.689001,
+      "cpu_seconds": 1.510799,
+      "largest_process_hwm_bytes": 35520512
+    }
+  ],
+  "task_success": true,
+  "capabilities": {
+    "cgroup": {
+      "available": false,
+      "attributable_memory_peak_bytes": null,
+      "reason": "[Errno 30] Read-only file system: '/sys/fs/cgroup/hcsn-v9-capability-2'"
+    },
+    "energy": {
+      "joules": null,
+      "attributable": false,
+      "counters": {
+        "/sys/class/powercap": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/hwmon": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/drm": {
+          "exists": false,
+          "energy_files": []
+        }
+      },
+      "reason": "No configured attributable device-energy counter"
+    }
+  },
+  "errors": [],
+  "memory": {
+    "status": "sampled_partial",
+    "samples": 38,
+    "observed_peak_nonatomic_rss_sum_bytes": 81928192,
+    "observed_peak_nonatomic_pss_sum_bytes": 66807808,
+    "samples_with_all_enumerated_members_read": 7,
+    "continuous_complete_family_peak_bytes": null,
+    "complete": false,
+    "seen_processes": [
+      {
+        "identity": {
+          "pid": 484263,
+          "start_ticks": 5393430
+        },
+        "sample_count": 38,
+        "available_samples": 38,
+        "observed_ppids": [
+          484260
+        ],
+        "namespace_pids": [
+          484263,
+          2
+        ]
+      },
+      {
+        "identity": {
+          "pid": 484268,
+          "start_ticks": 5393435
+        },
+        "sample_count": 38,
+        "available_samples": 37,
+        "observed_ppids": [
+          484263
+        ],
+        "namespace_pids": [
+          484268,
+          6
+        ]
+      },
+      {
+        "identity": {
+          "pid": 484269,
+          "start_ticks": 5393440
+        },
+        "sample_count": 33,
+        "available_samples": 33,
+        "observed_ppids": [
+          484268
+        ],
+        "namespace_pids": [
+          484269,
+          7
+        ]
+      },
+      {
+        "identity": {
+          "pid": 484270,
+          "start_ticks": 5393440
+        },
+        "sample_count": 33,
+        "available_samples": 3,
+        "observed_ppids": [
+          484268
+        ],
+        "namespace_pids": [
+          484270,
+          8
+        ]
+      },
+      {
+        "identity": {
+          "pid": 484271,
+          "start_ticks": 5393444
+        },
+        "sample_count": 30,
+        "available_samples": 30,
+        "observed_ppids": [
+          484269
+        ],
+        "namespace_pids": [
+          484271,
+          9
+        ]
+      }
+    ],
+    "limits": [
+      "Enumeration and smaps reads are non-atomic",
+      "Processes born and exited between samples may be absent",
+      "RSS double-counts shared pages; PSS apportions pages shared outside the family",
+      "Observed sums are not a simultaneous physical memory measurement"
+    ]
+  },
+  "historical_preparation_cpu_seconds": null,
+  "economic_advantage_established": false,
+  "sample_sha256": "bb960955eb7181f9670db81711b1fe0254df9e66042d9f16c29e898c5dc26a1e"
+}

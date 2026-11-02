@@ -1,0 +1,36 @@
+{
+  "runs": [
+    {
+      "run": "development001",
+      "prediction_rows_replayed": 30720,
+      "nll_contrasts": {
+        "mean_two_point_refit_minus_original": 0.061915105021182006,
+        "mean_two_point_refit_minus_same_weight": -0.06407330616013754,
+        "single_transition_refit_minus_original": 0.1984206275422176,
+        "single_transition_refit_minus_same_weight": -0.9539614935347105
+      },
+      "source_directory": "refit_ablation/results/development001/source_snapshot",
+      "optimizer_success_candidates": 5,
+      "optimizer_candidates": 30,
+      "maximum_terminal_gradient": 0.006259546635351308,
+      "scope": "Frozen analytic-kernel readout refitting only; full analytic network not retrained",
+      "raw_sha256": "d6e5327c58affcb74b1180712f8a01c1145dff9d42edc30e41c5453d7d8ccd2c"
+    },
+    {
+      "run": "development002",
+      "prediction_rows_replayed": 30720,
+      "nll_contrasts": {
+        "mean_two_point_refit_minus_original": 0.04727386185316816,
+        "mean_two_point_refit_minus_same_weight": -0.058217100178148296,
+        "single_transition_refit_minus_original": 0.23550840090762618,
+        "single_transition_refit_minus_same_weight": -1.0771758005535674
+      },
+      "source_directory": "refit_ablation",
+      "optimizer_success_candidates": 30,
+      "optimizer_candidates": 30,
+      "maximum_terminal_gradient": 0.00026016123226862,
+      "scope": "Frozen analytic-kernel readout refitting only; full analytic network not retrained",
+      "raw_sha256": "014f48e7bf82abeb325bd2d75738442f92e68347f2e79ca13ba3a484f5b20663"
+    }
+  ]
+}

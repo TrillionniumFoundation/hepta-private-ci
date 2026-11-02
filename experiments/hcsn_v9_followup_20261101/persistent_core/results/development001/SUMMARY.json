@@ -1,0 +1,118 @@
+{
+  "claim_scope": "Synthetic finite CTMC task with noisy A/V sensors, not real audio/video and not renewal/first-passage propagation",
+  "real_AV_confirmation": false,
+  "production_acceptance": false,
+  "strong_ordinary_qualification": false,
+  "test_worlds": 256,
+  "runs": 6144,
+  "outputs": 98304,
+  "fits": {
+    "91101": {
+      "selected_family": "gru",
+      "means": {
+        "A": 0.7570898437500001,
+        "B": 0.8593750000000002,
+        "C": 0.7595312500000001,
+        "D": 0.8630761718750001,
+        "H": 0.8630761718750001
+      },
+      "contrasts": {
+        "B-A": 0.10228515624999995,
+        "D-C": 0.10354492187499996,
+        "C-A": 0.00244140625,
+        "D-B": 0.003701171875000001,
+        "interaction": 0.0012597656250000005,
+        "D-H": 0.0
+      }
+    },
+    "91103": {
+      "selected_family": "gru",
+      "means": {
+        "A": 0.7566015625000001,
+        "B": 0.860302734375,
+        "C": 0.7595312500000001,
+        "D": 0.8630761718750001,
+        "H": 0.8630761718750001
+      },
+      "contrasts": {
+        "B-A": 0.10370117187499996,
+        "D-C": 0.10354492187499996,
+        "C-A": 0.0029296875,
+        "D-B": 0.0027734375000000046,
+        "interaction": -0.0001562499999999958,
+        "D-H": 0.0
+      }
+    },
+    "91107": {
+      "selected_family": "ssm",
+      "means": {
+        "A": 0.7573339843750001,
+        "B": 0.8495312500000001,
+        "C": 0.7595312500000001,
+        "D": 0.8630761718750001,
+        "H": 0.8630761718750001
+      },
+      "contrasts": {
+        "B-A": 0.092197265625,
+        "D-C": 0.10354492187499996,
+        "C-A": 0.002197265625,
+        "D-B": 0.013544921874999987,
+        "interaction": 0.011347656249999987,
+        "D-H": 0.0
+      }
+    },
+    "91109": {
+      "selected_family": "gru",
+      "means": {
+        "A": 0.7580664062500001,
+        "B": 0.8546923828125002,
+        "C": 0.7595312500000001,
+        "D": 0.8630761718750001,
+        "H": 0.8630761718750001
+      },
+      "contrasts": {
+        "B-A": 0.09662597656249997,
+        "D-C": 0.10354492187499996,
+        "C-A": 0.00146484375,
+        "D-B": 0.008383789062500004,
+        "interaction": 0.006918945312500003,
+        "D-H": 0.0
+      }
+    },
+    "91113": {
+      "selected_family": "gru",
+      "means": {
+        "A": 0.7585546875000001,
+        "B": 0.8638623046875,
+        "C": 0.7595312500000001,
+        "D": 0.8630761718750001,
+        "H": 0.8630761718750001
+      },
+      "contrasts": {
+        "B-A": 0.10530761718749995,
+        "D-C": 0.10354492187499996,
+        "C-A": 0.0009765625,
+        "D-B": -0.0007861328124999984,
+        "interaction": -0.0017626953124999989,
+        "D-H": 0.0
+      }
+    }
+  },
+  "D_minus_B_mean": 0.005523437500000001,
+  "D_minus_B_two_way_bootstrap_95": [
+    -0.0026886718749999945,
+    0.014935205078124994
+  ],
+  "interval_unit": "Resample independent fit seeds and independent worlds, not 98304 correlated outputs",
+  "direct_history_max_probability_error": 0.0,
+  "direct_history_actions_identical": true,
+  "analytic_better_than_exact_history": false,
+  "execution_cpu_seconds_sum": 20.943690764000088,
+  "execution_wall_seconds_sum": 26.56413016714214,
+  "raw_sha256": {
+    "evaluation/worlds.jsonl.gz": "35728169dbb8baca8f146950eeb8c84b07d20bc69dcbd021e85dfbad3e9abe37",
+    "evaluation/paired_D_minus_B.npz": "f7d99f4c82533600a7f31b9fe4a00dbdb83fe0e36f13fcb193f8ce4b56af832d",
+    "evaluation/runs.jsonl.gz": "85f79c4265d77082ba8fca243f82d55184bab11608d759ce302771e591535a66"
+  },
+  "interpretation": "Persistent filters now evaluated over actual observation sequences. Known-law analytic Bayes may outperform finite-budget learned models; exact raw-history recomputation has identical quality, so this is not a core necessity or real-AV result."
+}

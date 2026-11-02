@@ -1,0 +1,157 @@
+{
+  "schema": "hcsn-v9-process-family-cost.v1",
+  "command": [
+    "python",
+    "experiments/hcsn_v9_followup_20261101/economics/memory_fixture.py",
+    "--out",
+    "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/fixture"
+  ],
+  "source_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "observer_identity": {
+    "pid": 485008,
+    "state": "R",
+    "ppid": 485007,
+    "start_ticks": 5396193,
+    "getpid": 2
+  },
+  "boundary_begin_ns": 53961981052519,
+  "boundary_end_ns": 53962753527759,
+  "elapsed_seconds": 0.77247524,
+  "sample_interval_seconds": 0.25,
+  "task_cpu_seconds": 1.47201,
+  "measurement_cpu_seconds": 0.015924,
+  "enclosing_observed_cpu_seconds": 1.487934,
+  "cpu_scope": "Disjoint wait4 child subtrees, adopted children included; observer CPU delta added once",
+  "cpu_complete_for_ordinary_waitable_family": true,
+  "wait4_subtrees": [
+    {
+      "namespace_pid": 5,
+      "direct_worker": true,
+      "exit_code": 0,
+      "user_cpu_seconds": 0.8528859999999999,
+      "system_cpu_seconds": 0.619124,
+      "cpu_seconds": 1.47201,
+      "largest_process_hwm_bytes": 35520512
+    }
+  ],
+  "task_success": true,
+  "capabilities": {
+    "cgroup": {
+      "available": false,
+      "attributable_memory_peak_bytes": null,
+      "reason": "[Errno 30] Read-only file system: '/sys/fs/cgroup/hcsn-v9-capability-2'"
+    },
+    "energy": {
+      "joules": null,
+      "attributable": false,
+      "counters": {
+        "/sys/class/powercap": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/hwmon": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/drm": {
+          "exists": false,
+          "energy_files": []
+        }
+      },
+      "reason": "No configured attributable device-energy counter"
+    }
+  },
+  "errors": [],
+  "memory": {
+    "status": "sampled_partial",
+    "samples": 4,
+    "observed_peak_nonatomic_rss_sum_bytes": 81854464,
+    "observed_peak_nonatomic_pss_sum_bytes": 66712576,
+    "samples_with_all_enumerated_members_read": 1,
+    "continuous_complete_family_peak_bytes": null,
+    "complete": false,
+    "seen_processes": [
+      {
+        "identity": {
+          "pid": 485008,
+          "start_ticks": 5396193
+        },
+        "sample_count": 4,
+        "available_samples": 4,
+        "observed_ppids": [
+          485007
+        ],
+        "namespace_pids": [
+          485008,
+          2
+        ]
+      },
+      {
+        "identity": {
+          "pid": 485011,
+          "start_ticks": 5396198
+        },
+        "sample_count": 4,
+        "available_samples": 3,
+        "observed_ppids": [
+          485008
+        ],
+        "namespace_pids": [
+          485011,
+          5
+        ]
+      },
+      {
+        "identity": {
+          "pid": 485013,
+          "start_ticks": 5396201
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          485011
+        ],
+        "namespace_pids": [
+          485013,
+          6
+        ]
+      },
+      {
+        "identity": {
+          "pid": 485014,
+          "start_ticks": 5396201
+        },
+        "sample_count": 2,
+        "available_samples": 0,
+        "observed_ppids": [
+          485011
+        ],
+        "namespace_pids": null
+      },
+      {
+        "identity": {
+          "pid": 485015,
+          "start_ticks": 5396204
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          485013
+        ],
+        "namespace_pids": [
+          485015,
+          8
+        ]
+      }
+    ],
+    "limits": [
+      "Enumeration and smaps reads are non-atomic",
+      "Processes born and exited between samples may be absent",
+      "RSS double-counts shared pages; PSS apportions pages shared outside the family",
+      "Observed sums are not a simultaneous physical memory measurement"
+    ]
+  },
+  "historical_preparation_cpu_seconds": null,
+  "economic_advantage_established": false,
+  "sample_sha256": "d642ac99b7f1ff9304d719dec1b5e6f260227ca510c566dd54619b1edff3ee2c"
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "hcsn-v9-independent-reconstruction.v1",
+  "candidate_implementations_imported": false,
+  "persistent_core": {
+    "runs_replayed": 6144,
+    "outputs_replayed": 98304,
+    "D_minus_B": 0.005523437500000001,
+    "D_minus_exact_history": 0.0,
+    "maximum_state_replay_error": 0.0,
+    "raw_sha256": "85f79c4265d77082ba8fca243f82d55184bab11608d759ce302771e591535a66",
+    "scientific_scope": "Synthetic known-law CTMC; finite-budget ordinary fit, no AV/renewal-core adoption claim"
+  },
+  "refit_ablation": {
+    "runs": [
+      {
+        "run": "development001",
+        "prediction_rows_replayed": 30720,
+        "nll_contrasts": {
+          "mean_two_point_refit_minus_original": 0.061915105021182006,
+          "mean_two_point_refit_minus_same_weight": -0.06407330616013754,
+          "single_transition_refit_minus_original": 0.1984206275422176,
+          "single_transition_refit_minus_same_weight": -0.9539614935347105
+        },
+        "source_directory": "refit_ablation/results/development001/source_snapshot",
+        "optimizer_success_candidates": 5,
+        "optimizer_candidates": 30,
+        "maximum_terminal_gradient": 0.006259546635351308,
+        "scope": "Frozen analytic-kernel readout refitting only; full analytic network not retrained",
+        "raw_sha256": "d6e5327c58affcb74b1180712f8a01c1145dff9d42edc30e41c5453d7d8ccd2c"
+      },
+      {
+        "run": "development002",
+        "prediction_rows_replayed": 30720,
+        "nll_contrasts": {
+          "mean_two_point_refit_minus_original": 0.04727386185316816,
+          "mean_two_point_refit_minus_same_weight": -0.058217100178148296,
+          "single_transition_refit_minus_original": 0.23550840090762618,
+          "single_transition_refit_minus_same_weight": -1.0771758005535674
+        },
+        "source_directory": "refit_ablation",
+        "optimizer_success_candidates": 30,
+        "optimizer_candidates": 30,
+        "maximum_terminal_gradient": 0.00026016123226862,
+        "scope": "Frozen analytic-kernel readout refitting only; full analytic network not retrained",
+        "raw_sha256": "014f48e7bf82abeb325bd2d75738442f92e68347f2e79ca13ba3a484f5b20663"
+      }
+    ]
+  },
+  "risk": {
+    "rows_recomputed": 96,
+    "full_minus_zero_net_utility": {
+      "logical": 0.3982249999999999,
+      "real": 0.523222318376875
+    },
+    "retained_actions_without_deadline_penalty_full_minus_zero": {
+      "logical": -0.10177499999999992,
+      "real": 0.023222318376875002
+    },
+    "scope": "Controlled synthetic service-risk fixture, real subset descriptive, no Put-necessity claim",
+    "raw_sha256": "325f1049b0357991e807c89c82c7dab5aab922edeb29878618b52c94a6f0ac2f"
+  },
+  "economics": {
+    "receipts_recomputed": 11,
+    "reports": [
+      {
+        "directory": "behavior001",
+        "task_success": false,
+        "cpu_seconds": 0.089977,
+        "memory_samples_recomputed": 4,
+        "sampled_rss_sum_peak_bytes": 26988544,
+        "sampled_pss_sum_peak_bytes": 18434048
+      },
+      {
+        "directory": "behavior002",
+        "task_success": true,
+        "cpu_seconds": 0.078871,
+        "memory_samples_recomputed": 5,
+        "sampled_rss_sum_peak_bytes": 26525696,
+        "sampled_pss_sum_peak_bytes": 18059264
+      },
+      {
+        "directory": "orphan001",
+        "task_success": true,
+        "cpu_seconds": 1.192432,
+        "memory_samples_recomputed": 46,
+        "sampled_rss_sum_peak_bytes": 98308096,
+        "sampled_pss_sum_peak_bytes": 79590400
+      },
+      {
+        "directory": "persistent_audit001",
+        "task_success": true,
+        "cpu_seconds": 7.460617999999999,
+        "memory_samples_recomputed": 136,
+        "sampled_rss_sum_peak_bytes": 207343616,
+        "sampled_pss_sum_peak_bytes": 194669568
+      },
+      {
+        "directory": "persistent_prepare001",
+        "task_success": true,
+        "cpu_seconds": 0.093752,
+        "memory_samples_recomputed": 5,
+        "sampled_rss_sum_peak_bytes": 34820096,
+        "sampled_pss_sum_peak_bytes": 23969792
+      },
+      {
+        "directory": "persistent_run001",
+        "task_success": true,
+        "cpu_seconds": 51.333473,
+        "memory_samples_recomputed": 941,
+        "sampled_rss_sum_peak_bytes": 195239936,
+        "sampled_pss_sum_peak_bytes": 181009408
+      },
+      {
+        "directory": "refit_execute001",
+        "task_success": true,
+        "cpu_seconds": 15.808897,
+        "memory_samples_recomputed": 295,
+        "sampled_rss_sum_peak_bytes": 81326080,
+        "sampled_pss_sum_peak_bytes": 61722624
+      },
+      {
+        "directory": "refit_execute002",
+        "task_success": true,
+        "cpu_seconds": 14.363539999999999,
+        "memory_samples_recomputed": 252,
+        "sampled_rss_sum_peak_bytes": 81342464,
+        "sampled_pss_sum_peak_bytes": 63256576
+      },
+      {
+        "directory": "risk_execute001",
+        "task_success": true,
+        "cpu_seconds": 4.269031,
+        "memory_samples_recomputed": 830,
+        "sampled_rss_sum_peak_bytes": 41947136,
+        "sampled_pss_sum_peak_bytes": 28683264
+      },
+      {
+        "directory": "short_gap001",
+        "task_success": true,
+        "cpu_seconds": 1.47201,
+        "memory_samples_recomputed": 4,
+        "sampled_rss_sum_peak_bytes": 81854464,
+        "sampled_pss_sum_peak_bytes": 66712576
+      },
+      {
+        "directory": "tree001",
+        "task_success": true,
+        "cpu_seconds": 1.510799,
+        "memory_samples_recomputed": 38,
+        "sampled_rss_sum_peak_bytes": 81928192,
+        "sampled_pss_sum_peak_bytes": 66807808
+      }
+    ],
+    "scope": "Non-atomic sampled family memory; continuous complete peak and attributable energy unavailable"
+  },
+  "frontend_observed_status": "FAIL",
+  "all_reconstructions_pass": true
+}

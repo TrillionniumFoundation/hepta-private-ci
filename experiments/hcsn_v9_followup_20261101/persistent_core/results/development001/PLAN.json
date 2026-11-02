@@ -1,0 +1,72 @@
+{
+  "schema": "hcsn-v9-persistent-synthetic-development.v1",
+  "source_sha256": {
+    "models.py": "7bd238c1b5224248cb376516ed5bf6c1dea43c3ea3208a8bc8b1f76dc97b4508",
+    "campaign.py": "10ae0f8dec97757de20651bfdb175d8a7a7112dbe5f17ead0bb9a2b0e9082671",
+    "test_models.py": "911209a460d9cff11f0e4f302f95c8688b7d728080cb9ea860fbd147081df4f9"
+  },
+  "created_unix": 1793579606.387464,
+  "fit_seeds": [
+    91101,
+    91103,
+    91107,
+    91109,
+    91113
+  ],
+  "families": [
+    "gru",
+    "ssm"
+  ],
+  "width": 16,
+  "epochs": 100,
+  "train_size": 384,
+  "validation_size": 128,
+  "test_worlds": 256,
+  "ticks": 16,
+  "learning_rate": 0.008,
+  "batch_size": 128,
+  "rate": 0.35,
+  "sensor_accuracy": {
+    "A": 0.78,
+    "V": 0.9
+  },
+  "read_cost": {
+    "A": 0.035,
+    "V": 0.06
+  },
+  "interval_seconds": [
+    0.04,
+    0.7
+  ],
+  "training_event_probabilities": {
+    "skip": 0.3,
+    "A": 0.35,
+    "V": 0.35
+  },
+  "ordinary_selection": "Lowest separate validation latent-label NLL, all epochs including zero; both families retained",
+  "test_seed_namespace": [
+    20261101,
+    91997
+  ],
+  "information": "All methods receive only dt and accepted noisy sensor events; fixed rate/accuracy are public task constants",
+  "analytic_prior": "Known two-state continuous-time Markov law; ordinary networks learn from sampled latent training labels",
+  "controls": {
+    "light": "Read every third tick, alternating A and V",
+    "value": "Common one-step expected posterior correctness minus actual issued-read fee; SKIP wins ties"
+  },
+  "training_target": "Current latent binary class after each advance/event substep; label never enters recurrent input",
+  "persistent_state": "Retained across all 16 ticks, reset only at episode boundary; tentative actions clone state",
+  "no_core_reference": "Exact filtering recomputed from full raw visible history for each candidate, identical public physics",
+  "claim_scope": "Synthetic finite CTMC task with noisy A/V sensors, not real audio/video and not renewal/first-passage propagation",
+  "real_AV_confirmation": false,
+  "strong_ordinary_qualification": false,
+  "production_acceptance": false,
+  "limitations": [
+    "single public fixed law",
+    "synthetic binary targets",
+    "one-step control",
+    "no raw AV content",
+    "no architectural adoption claim",
+    "ordinary fit budget not a convergence certificate"
+  ]
+}
