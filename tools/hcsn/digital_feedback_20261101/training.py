@@ -150,6 +150,37 @@ class HeadAdamW:
 
 
 def fit_candidate(spec, fit, data, adapter, protocol):
+    """Own and restore autograd mode across asynchronous CPU interruptions.
+
+    A signal during a nested no_grad context's entry/exit can leave thread-local
+    mode disabled despite every parameter still requiring gradients. The outer
+    guard runs after the body's timer is disarmed and restores the caller's
+    observed mode explicitly, including when the body raises.
+    """
+    start_cpu, start_wall = time.process_time(), time.perf_counter()
+    original_grad_enabled = torch.is_grad_enabled()
+    receipt = None
+    try:
+        torch.set_grad_enabled(True)
+        result = _fit_candidate_body(spec, fit, data, adapter, protocol)
+        receipt = result[2]
+        return result
+    finally:
+        torch.set_grad_enabled(original_grad_enabled)
+        if receipt is not None:
+            receipt["autograd_mode"] = dict(incoming_enabled=original_grad_enabled,
+                training_entry_enabled=True, restored_enabled=torch.is_grad_enabled(),
+                contract="explicit enable at candidate entry; explicit restore after timer disarm on every exit")
+            elapsed = time.process_time() - start_cpu
+            receipt["autograd_guard_cpu_seconds"] = elapsed - receipt["candidate_cpu_seconds"]
+            receipt.update(candidate_cpu_seconds=elapsed, learning_cpu_seconds=elapsed,
+                candidate_wall_seconds=time.perf_counter() - start_wall,
+                cpu_budget_overshoot=max(0., elapsed - protocol["training_cpu_seconds"]),
+                cpu_budget_undershoot=max(0., protocol["training_cpu_seconds"] - elapsed),
+                cpu_compliant=abs(elapsed - protocol["training_cpu_seconds"]) <= protocol["cpu_tolerance_seconds"])
+
+
+def _fit_candidate_body(spec, fit, data, adapter, protocol):
     """Return the last completed model, every attempt, and actual CPU compliance."""
     start, wall = time.process_time(), time.perf_counter()
     budget = float(protocol["training_cpu_seconds"])

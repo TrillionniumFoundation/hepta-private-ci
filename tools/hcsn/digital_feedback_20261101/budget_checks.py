@@ -11,7 +11,7 @@ import torch
 
 from ..digital_read_before_20261031.task import initial, legal
 from .factors import FactorPolicy, candidates
-from .training import CpuExpired, HeadAdamW, cpu_deadline, encode_rows, fit_candidate
+from .training import CpuExpired, HeadAdamW, _fit_candidate_body, cpu_deadline, encode_rows, fit_candidate
 
 
 def fixture():
@@ -150,7 +150,7 @@ class BudgetChecks(unittest.TestCase):
                 triggered = []
 
                 def interrupt_at_boundary(frame, event, arg):
-                    if event == "line" and frame.f_code is fit_candidate.__code__:
+                    if event == "line" and frame.f_code is _fit_candidate_body.__code__:
                         state = frame.f_locals
                         record = state.get("record", {})
                         committed_episode = (record.get("complete_worlds") == 1
@@ -189,7 +189,7 @@ class BudgetChecks(unittest.TestCase):
         triggered = []
 
         def interrupt_at_commit(frame, event, arg):
-            if event == "line" and frame.f_code is fit_candidate.__code__:
+            if event == "line" and frame.f_code is _fit_candidate_body.__code__:
                 state = frame.f_locals
                 committed = state.get("committed")
                 if committed is not None and len(state.get("updates", [])) > committed[1]:
@@ -225,6 +225,57 @@ class BudgetChecks(unittest.TestCase):
         self.assertEqual(returned_early_signals, 8)
         self.assertGreaterEqual(time.process_time() - start, .04)
         self.assertLess(time.process_time() - start, .16)
+
+    def test_disabled_autograd_entry_is_reproduced_and_repaired(self):
+        data, protocol = fixture()
+        spec = next(s for s in candidates() if s["id"] == "acc_structured_off")
+        original = torch.is_grad_enabled()
+        try:
+            torch.set_grad_enabled(False)
+            policy, _, old_receipt = _fit_candidate_body(spec, 43, data, None, protocol)
+            self.assertTrue(all(p.requires_grad for p in policy.parameters()))
+            self.assertEqual(old_receipt["optimizer_updates"], 0)
+            self.assertIn("does not require grad", old_receipt["failures"][0]["message"])
+            self.assertFalse(torch.is_grad_enabled())
+            _, _, receipt = fit_candidate(spec, 43, data, None, protocol)
+            self.assertGreater(receipt["optimizer_updates"], 0)
+            self.assertTrue(receipt["training_valid"])
+            self.assertTrue(receipt["cpu_compliant"])
+            self.assertFalse(torch.is_grad_enabled())
+            self.assertEqual(receipt["autograd_mode"]["incoming_enabled"], False)
+            self.assertEqual(receipt["autograd_mode"]["restored_enabled"], False)
+        finally:
+            torch.set_grad_enabled(original)
+
+    def test_enabled_autograd_restored_after_consecutive_timed_fits(self):
+        data, protocol = fixture()
+        protocol.update(training_cpu_seconds=.16)
+        spec = next(s for s in candidates() if s["id"] == "acc_structured_off")
+        original = torch.is_grad_enabled()
+        try:
+            torch.set_grad_enabled(True)
+            for fit in (47, 53, 59):
+                _, _, receipt = fit_candidate(spec, fit, data, None, protocol)
+                self.assertEqual(receipt["stop_reason"], "cpu_deadline")
+                self.assertGreater(receipt["optimizer_updates"], 0)
+                self.assertTrue(torch.is_grad_enabled())
+                self.assertEqual(receipt["autograd_mode"]["incoming_enabled"], True)
+                self.assertEqual(receipt["autograd_mode"]["restored_enabled"], True)
+        finally:
+            torch.set_grad_enabled(original)
+
+    def test_autograd_mode_restored_when_body_raises(self):
+        data, protocol = fixture()
+        protocol.update(training_cpu_seconds=0.)
+        spec = next(s for s in candidates() if s["id"] == "acc_structured_off")
+        original = torch.is_grad_enabled()
+        try:
+            torch.set_grad_enabled(False)
+            with self.assertRaises(ValueError):
+                fit_candidate(spec, 61, data, None, protocol)
+            self.assertFalse(torch.is_grad_enabled())
+        finally:
+            torch.set_grad_enabled(original)
 
 
 if __name__ == "__main__":

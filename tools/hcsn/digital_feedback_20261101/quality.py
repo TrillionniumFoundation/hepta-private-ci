@@ -10,8 +10,10 @@ import json
 import numpy as np
 
 PRIMARY_CANDIDATES = ("fpt_base_multi", "fpt_base_single", "ordinary_multi", "ordinary_single")
+TEACHER_TIE_TOLERANCE = 1e-12
 THRESHOLD_KEYS = ("belief_teacher_rmse_max", "selected_q_rmse_max", "pairwise_ranking_error_max",
-                  "margin_absolute_error_mean_max", "teacher_regret_mean_max", "coarse_seen_fraction_min")
+                  "margin_absolute_error_mean_max", "teacher_regret_mean_max", "coarse_seen_fraction_min",
+                  "actual_label_brier_max", "actual_label_ece_max")
 
 
 def _number(value):
@@ -25,20 +27,25 @@ def _key(value):
 def quality_audit(audits_by_candidate, thresholds):
     """Recompute registered criteria from raw decision audit rows.
 
-    The six THRESHOLD_KEYS must be explicitly supplied. The requested four
+    All eight THRESHOLD_KEYS must be explicitly supplied. The requested four
     primary candidates are always included, with absent candidates marked
     incomplete. Extra supplied candidates receive the same descriptive checks.
     Undefined ranking at an all-tied teacher state is not counted as zero error;
     its count is retained and the ranking gate is null if no decision is ranked.
+    Actual-label calibration is a separate decision-occupancy qualification,
+    not the teacher-target error or an independent-fit confidence interval.
     """
     if any(not _number(thresholds.get(name)) or thresholds[name] < 0 for name in THRESHOLD_KEYS):
-        raise ValueError("all six finite nonnegative quality thresholds must be registered")
+        raise ValueError("all eight finite nonnegative quality thresholds must be registered")
     if thresholds["coarse_seen_fraction_min"] > 1:
         raise ValueError("coverage threshold outside [0,1]")
+    if any(thresholds[name] > 1 for name in ("actual_label_brier_max", "actual_label_ece_max")):
+        raise ValueError("actual-label calibration threshold outside [0,1]")
     candidates = list(dict.fromkeys([*PRIMARY_CANDIDATES, *audits_by_candidate]))
     output = {}
     for candidate in candidates:
-        result = dict(status="incomplete", reasons=[], metrics=None, gates=None, overall=None)
+        result = dict(status="incomplete", reasons=[], metrics=None, gates=None, overall=None,
+                      actual_label_calibration=None)
         audit = audits_by_candidate.get(candidate)
         try:
             if audit is None:
@@ -64,9 +71,12 @@ def quality_audit(audits_by_candidate, thresholds):
                 if key not in support:
                     raise ValueError("decision stratum omitted from declared counts")
                 metric = row["metrics"]
-                required = ("belief_teacher_mse", "selected_q_mse", "predicted_margin", "teacher_margin", "teacher_regret")
+                required = ("belief_teacher_mse", "selected_q_mse", "predicted_margin", "teacher_margin",
+                            "teacher_regret", "actual_label_brier", "belief_prediction")
                 if any(not _number(metric.get(name)) or metric[name] < 0 for name in required):
                     raise ValueError("missing, negative or nonfinite required decision metric")
+                if metric["actual_label_brier"] > 1 or metric["belief_prediction"] > 1:
+                    raise ValueError("actual Brier or belief probability outside [0,1]")
                 if "pairwise_ranking_error" not in metric:
                     raise ValueError("ranking metric absent")
                 rank = metric["pairwise_ranking_error"]
@@ -74,15 +84,52 @@ def quality_audit(audits_by_candidate, thresholds):
                     if not _number(rank) or not 0 <= rank <= 1:
                         raise ValueError("invalid pairwise ranking error")
                     rankings.append(rank)
-                elif metric["teacher_margin"] != 0 or metric["teacher_regret"] != 0:
+                elif (metric["teacher_margin"] > TEACHER_TIE_TOLERANCE
+                      or metric["teacher_regret"] > TEACHER_TIE_TOLERANCE):
                     raise ValueError("undefined rank inconsistent with all-tied teacher state")
                 if not isinstance(row["exact_unseen"], bool):
                     raise ValueError("missing exact support decision")
                 seen += int(support[key])
                 exact_seen += int(not row["exact_unseen"])
                 values.append(metric)
+            calibration = audit["actual_label_calibration"]
+            if (calibration["kind"] != "actual label" or not isinstance(calibration["count"], int)
+                    or isinstance(calibration["count"], bool) or calibration["count"] != len(rows)):
+                raise ValueError("actual-label calibration does not cover every final decision")
+            bins = calibration["bins"]
+            if not isinstance(bins, list) or len(bins) != 10:
+                raise ValueError("actual-label calibration requires all ten declared bins")
+            weighted_gap, total = 0., 0
+            for index, group in enumerate(bins):
+                if group["lower"] != index / 10 or group["upper"] != (index + 1) / 10:
+                    raise ValueError("actual-label calibration bin boundaries differ from declaration")
+                predictions = [v["belief_prediction"] for v in values
+                               if min(int(v["belief_prediction"] * 10), 9) == index]
+                count = group["count"]
+                if (not isinstance(count, int) or isinstance(count, bool) or count < 0
+                        or count != len(predictions)):
+                    raise ValueError("actual-label bin count differs from final decision occupancy")
+                coordinates = [group[name] for name in ("mean_prediction", "mean_target", "absolute_gap")]
+                if not count:
+                    if any(value is not None for value in coordinates):
+                        raise ValueError("empty actual-label bin must retain null metrics")
+                else:
+                    if any(not _number(value) or not 0 <= value <= 1 for value in coordinates):
+                        raise ValueError("missing or invalid actual-label bin metric")
+                    prediction, target, gap = coordinates
+                    if (not math.isclose(prediction, float(np.mean(predictions)), rel_tol=1e-10, abs_tol=1e-12)
+                            or not math.isclose(gap, abs(prediction - target), rel_tol=1e-10, abs_tol=1e-12)):
+                        raise ValueError("inconsistent actual-label bin mean or calibration gap")
+                    weighted_gap += count * gap
+                total += count
+            actual_ece = weighted_gap / len(rows)
+            if (total != len(rows) or not _number(calibration.get("ece"))
+                    or not math.isclose(calibration["ece"], actual_ece, rel_tol=1e-10, abs_tol=1e-12)):
+                raise ValueError("actual-label ECE or total count inconsistent with declared bins")
             metrics = dict(decisions=len(rows), episodes=counts["episodes"],
                 belief_teacher_rmse=math.sqrt(float(np.mean([v["belief_teacher_mse"] for v in values]))),
+                actual_label_brier=float(np.mean([v["actual_label_brier"] for v in values])),
+                actual_label_ece=actual_ece,
                 selected_q_rmse=math.sqrt(float(np.mean([v["selected_q_mse"] for v in values]))),
                 pairwise_ranking_error=float(np.mean(rankings)) if rankings else None,
                 ranking_evaluable_decisions=len(rankings), ranking_undefined_decisions=len(rows) - len(rankings),
@@ -93,6 +140,7 @@ def quality_audit(audits_by_candidate, thresholds):
             if not _number(metrics["actual_utility_mean"]):
                 raise ValueError("actual terminal utility missing")
             mapping = dict(belief_teacher_rmse="belief_teacher_rmse_max", selected_q_rmse="selected_q_rmse_max",
+                           actual_label_brier="actual_label_brier_max", actual_label_ece="actual_label_ece_max",
                            pairwise_ranking_error="pairwise_ranking_error_max",
                            margin_absolute_error_mean="margin_absolute_error_mean_max",
                            teacher_regret_mean="teacher_regret_mean_max")
@@ -100,11 +148,13 @@ def quality_audit(audits_by_candidate, thresholds):
                      for name, limit in mapping.items()}
             gates["coarse_seen_fraction"] = metrics["coarse_seen_fraction"] >= thresholds["coarse_seen_fraction_min"]
             result.update(status="complete", metrics=metrics, gates=gates,
+                          actual_label_calibration=dict(calibration, bins=[dict(group) for group in bins]),
                           overall=None if any(value is None for value in gates.values()) else all(gates.values()))
         except (KeyError, ValueError, TypeError) as error:
             result["reasons"].append(str(error))
         output[candidate] = result
-    return dict(schema="digital-feedback-control-quality-v1", thresholds=dict(thresholds),
+    return dict(schema="digital-feedback-control-quality-v2", thresholds=dict(thresholds),
+                teacher_tie_tolerance=TEACHER_TIE_TOLERANCE,
                 required_candidates=list(PRIMARY_CANDIDATES), candidates=output,
                 all_required_pass=all(output[name]["overall"] is True for name in PRIMARY_CANDIDATES),
                 interpretation="Each registered fit/domain must pass every required candidate and criterion; utility benefit additionally requires the separately registered simultaneous intervals.",

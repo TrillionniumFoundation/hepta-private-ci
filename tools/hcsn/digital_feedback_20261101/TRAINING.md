@@ -39,6 +39,8 @@ The implementation requires a platform with `ITIMER_PROF` and uses a process CPU
 
 After each complete optimizer update the model state is copied and committed with its update number. An interruption during an optimizer write cannot publish partially changed weights. On any interruption or exception the returned state is restored to the last complete committed update. Interrupted moment estimates are discarded because this function never resumes a partial fit. All completed update records, interruption reasons, failures, collection attempts and parameter changes remain in the receipt.
 
+The outer candidate function explicitly enables autograd before entering the timed body and explicitly restores its caller's observed mode after the timer is disarmed. This also applies when the body raises. An asynchronous interruption during a nested `no_grad` context's entry or exit must not leave the following candidate unable to construct a backward graph. Each returned receipt records incoming, training-entry, and restored modes. The wrapper's measured CPU is included in the candidate CPU gate. This safeguard changes neither the objective nor successful optimizer update equations.
+
 `training_valid` requires at least one complete optimizer update, no scientific/program exception, and completion of all registered feedback rounds. `cpu_compliant` independently requires the measured candidate CPU interval to lie within the registered two-sided tolerance. Every fit/arm remains in the experiment; accepting only successful or under-budget fits would change the estimand. Missing or invalid registered arms must block the associated formal inference under the protocol's failure rule.
 
 ## Verification
