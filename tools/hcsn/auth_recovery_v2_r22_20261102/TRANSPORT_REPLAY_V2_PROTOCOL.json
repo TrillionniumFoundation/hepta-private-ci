@@ -1,0 +1,48 @@
+{
+  "binary": {
+    "bytes": 4952336,
+    "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/negative/identical_artifact",
+    "sha256": "b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798"
+  },
+  "classification": "Existing-world delivery engineering replay after exact artifact transport, not a new scientific/model-adoption or security campaign.",
+  "controlled_rehydration": "A new private0700 TEST log uses verified recorded00000000.before-tamper as its fresh00000000.record plus recorded records1..67. The original intentionally damaged00000000.record and every transported input remain unchanged. This is not automatic production log repair or accepted witness rollback.",
+  "custody": "Copy public fixture key0600 and signed checkpoint into fresh current-user0700 directories. Restore transport retains file bytes/modes, not a production directory custody guarantee.",
+  "expected_R20_files": {
+    "confirmation01/cases/16_00/owner.state": {
+      "bytes": 1213,
+      "sha256": "7f8f5d48139a7fc30cb3989cf05b735b83f1dd7b71dfad09b1286e464c609268"
+    },
+    "confirmation01/cases/16_00/provider.state": {
+      "bytes": 535,
+      "sha256": "7cf2bb504136cf6775f1bb1489ca80785fb75ba07559403830a1591d53f6834a"
+    }
+  },
+  "expected_same_world_uninterrupted": [
+    16,
+    0
+  ],
+  "gate": "All used transported files match original pinned manifest SHA/size; original R20 ELF/expected states match their manifest; real authenticated witness restore and exact paid-pending Rust continuation match both original final files; all inputs/tampered record unchanged.",
+  "independent_host_or_powerloss_claim": false,
+  "native_processes": 2,
+  "new_independent_task_worlds": 0,
+  "original_R20_manifest_sha256": "0dcae64e78c0341bd4443c57f6af2be48d80b9ab5d1f3a8e7c4e8a4d7441f2a0",
+  "pinned_input_manifest": "TRANSPORT_REPLAY_INPUT_MANIFEST.json",
+  "pinned_input_manifest_sha256": "abf5923571a9a4f97faf5a751aee868be96ef5b25fce95ee5ed521244ddfe6af",
+  "predecessor": {
+    "failure": "Endpoint file existed before JSON publication completed; Client saw emptyJSON. Failed source/output/process receipt retained. No state admitted and no Rust actor started.",
+    "full_child_family_cpu_seconds": 0.126102,
+    "observed_exit_code": 1,
+    "protocol_sha256": "b5f43986c67ce43d429eeb9d3865aac2861da65b5252f17333a0392a65b38529",
+    "source_commit": "6929fa4d4c3d630864ceae6fbcaedd1f10554ff1"
+  },
+  "production_activation": false,
+  "real_TCP_witness_processes": 1,
+  "roundtrip_input": "/workspace/scratch/671a3fc18e7e/r22-auth-v2-roundtrip-final",
+  "schema": "hcsn.r22.auth-v2-after-transport-native-replay.v2",
+  "selected_case": [
+    16,
+    3
+  ],
+  "startup_readiness": "Before Client initialization, poll for a complete valid endpoint JSON object under a five-second monotonic startup budget and live child check. This only handles file publication during process startup; no signature/context/witness/state rejection is retried.",
+  "witness_log_records": 68
+}
