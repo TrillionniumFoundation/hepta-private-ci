@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+  "kind": "integrated",
+  "task": "mqar",
+  "batch": 24,
+  "condition": "long_tokens_128",
+  "backward": false,
+  "calls": [
+    {
+      "index": 0,
+      "cpu_seconds": 0.2093906539999999,
+      "wall_seconds": 0.4742558740035747
+    },
+    {
+      "index": 1,
+      "cpu_seconds": 0.08440575600000022,
+      "wall_seconds": 0.19180053700256394
+    },
+    {
+      "index": 2,
+      "cpu_seconds": 0.0662557989999999,
+      "wall_seconds": 0.15367272299772594
+    },
+    {
+      "index": 3,
+      "cpu_seconds": 0.0659700980000002,
+      "wall_seconds": 0.14599018099397654
+    }
+  ],
+  "imports": {
+    "cpu_seconds": 2.191973619,
+    "wall_seconds": 5.04968426200503
+  },
+  "model_data_setup": {
+    "cpu_seconds": 0.009379202999999947,
+    "wall_seconds": 0.022330482002871577
+  },
+  "construction": {
+    "cpu_seconds": 0.013595383000000183,
+    "wall_seconds": 0.025608990996261127,
+    "scripted_cache_empty_before_construction": true,
+    "compiled_here": true
+  },
+  "input_sha256": {
+    "x": "902a6172680a8697cd61a62c444f4acc855c487167b9e9119bad4fbaeb417f42",
+    "dt": "48df9bb892e2ec529664794e5a6307cc3fbfc14d4fc6b0cbbed39ca06f01bd94",
+    "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+    "y": "533a57e2de0eea8d42155f3920a9e0f069d05c483b341d7db0deaa09845bb95f"
+  },
+  "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+  "raw_sha256": "1c62a25e89496663ed449a3286269254bb7f95a5dcf7cb5593a8b2fbf841c676",
+  "source_sha256": {
+    "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+    "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+    "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+  },
+  "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn-r2-available-capability.v1",
+  "scope": "Current selected executor only, not all user devices or configured environments",
+  "cpu_max": "800000 100000",
+  "memory_max": "8589934592",
+  "nvidia_devices": [],
+  "powercap_path_exists": false,
+  "hwmon_energy_inputs": [],
+  "cgroup_probe": {
+    "writable_empty_scope_probe": false,
+    "errno": 30,
+    "error": "Read-only file system"
+  },
+  "remote_environment_status_tool_exposed": false,
+  "directory_search_queries": [
+    "cloud environment GPU remote execution",
+    "Cloud Environment Runpod GPU Tailscale"
+  ],
+  "directory_observation": "Results offered Render/Railway and unrelated apps; none is a connected instrumented GPU/energy executor capability. No matching plugin was installed or represented as ready.",
+  "gpu_qualification": false,
+  "energy_qualification": false,
+  "production_owner": null
+}

@@ -1,0 +1,38 @@
+{
+  "cold_first_use": {
+    "fresh_processes": 40,
+    "paired_workloads": 20,
+    "scope": "Four first-use calls per fresh process; compilation/import/setup retained; no steady-speed gate substitution",
+    "status": "verified",
+    "summary_sha256": "de801d5606a073283ecf79ba9fe4cc02a5a89230b86b5833998da440aea3dbcc"
+  },
+  "cost_and_projection": {
+    "ledger_sha256": "ac490b1857f3d7e0e299d30159d4e50ed9aea492cf266b95771453a26875d49a",
+    "lifecycle_complete": false,
+    "measured_non_nested_cpu_seconds": 535.108472,
+    "nested_cold_worker_cpu_seconds": 143.19575700000001,
+    "outer_receipts": 8,
+    "projection_rows": 20,
+    "projection_sha256": "1b7f9cc73f61bd7d912a10d0a4723f942a20dd88b7b7269c2c1df6e5f2239dea",
+    "status": "verified"
+  },
+  "limits": [
+    "Same trained Flow weights only; no strong ordinary-core speed claim",
+    "Final integrated script retains original separate moment transport and per-time decoder order/shapes",
+    "Compile/warmup/startup costs remain additional to steady timing",
+    "No GPU, joules, production tail latency or full-training economic qualification"
+  ],
+  "local_same_core_speed_gate": false,
+  "max_output_error": 0.0,
+  "max_parameter_gradient_error": 1.1920928955078125e-07,
+  "minimum_speed_ratio": 0.9552501447248212,
+  "numerical_engineering_records": 42,
+  "record_checks": 20,
+  "remote_freeze_before_confirmation": true,
+  "review_source_sha256": "c410749f68f7bc6a6d439f797d12d83bfb296bbf64c60384bcc2f475fa53d215",
+  "selected_backend": "integrated",
+  "source_commit": "714c16870a03fd8dbbffb0eb1471f38a67296660",
+  "status": "verified",
+  "summary_sha256": "e2233fabe1b835de16b6f46c0d7c956c77d3fbd49e84a4cae66ddbb9c8dc47c7",
+  "timing_rows_above_five_percent": 13
+}

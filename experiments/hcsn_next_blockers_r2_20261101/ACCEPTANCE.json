@@ -1,0 +1,200 @@
+{
+  "all_blockers_closed": false,
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "core_independent_review": {
+    "bytes": 9504,
+    "path": "experiments/hcsn_next_blockers_r2_20261101/INDEPENDENT_REVIEW.json",
+    "sha256": "da2899dfe26a933ad493177eacc7ce5cafb735703516a1544c96234f9c27fe43"
+  },
+  "decision": "NO_GO for original full-model/analytic advantage and complete multimodal/hardware adoption",
+  "independent_scientific_record_reconstruction_pass": true,
+  "frontend_independent_review": {
+    "bytes": 12586,
+    "path": "experiments/hcsn_next_blockers_r2_20261101/frontend_audit/AUDIT_INDEX.json",
+    "sha256": "833f58426b4e78b77a6ef90859d21c14da5e37d12cb1ee4b8a2f837f03824819"
+  },
+  "gates": [
+    {
+      "checks": 174,
+      "id": "OPERATOR_CORRECTNESS",
+      "passed": 174,
+      "status": "PASS_BOUNDED"
+    },
+    {
+      "checks": 202,
+      "id": "OPTIONAL_NUMERICS",
+      "passed": 202,
+      "status": "PASS_BOUNDED"
+    },
+    {
+      "ambiguous_branch_95_reliability": false,
+      "id": "RESTRICTED_POSTERIOR_AGGREGATE",
+      "independent_conditions": 12,
+      "ordinary_matches": true,
+      "selective_accepted_accuracy": 0.9703333333333334,
+      "selective_known_coverage": 0.8529153237620861,
+      "status": "PASS_BOUNDED"
+    },
+    {
+      "accepted_accuracy": 1,
+      "ambiguous_branch_coverage": 0,
+      "finite_batch_coverage_guaranteed": false,
+      "id": "CERTAINTY_ONLY_EXACT_LAW_THEOREM",
+      "per_episode_mean_known_coverage": 0.7777777777777778,
+      "pooled_known_coverage": 0.8,
+      "status": "PROVED_BOUNDED_NOT_NEW_CONFIRMATION"
+    },
+    {
+      "coverage": 1,
+      "id": "PAID_RAW_READ_ACCURACY",
+      "ordinary_matches": true,
+      "primary_confidence_and_secondary_conservative_accuracy": 1,
+      "selective_hard_branch_correct": 63,
+      "selective_hard_branch_queries": 63,
+      "status": "PASS_BOUNDED"
+    },
+    {
+      "external_service_ownership_qualified": false,
+      "high_price_single_slot_read_utility": 0.36,
+      "id": "PAID_READ_ECONOMIC_SUPERIORITY",
+      "status": "FAIL",
+      "two_slot_all_read_utility": -0.28
+    },
+    {
+      "actual_policy_rollouts": 294912,
+      "conditional_interval_95": [
+        0.1244015,
+        0.1881958
+      ],
+      "id": "FINITE_IDENTIFIED_JOINT_ASSOCIATION",
+      "paired_utility_gain": 0.1530243,
+      "status": "PASS_BOUNDED"
+    },
+    {
+      "dense_minus_strong_ordinary_utility": 0,
+      "full_law_action_differences": 0,
+      "id": "ANALYTIC_NEURAL_CORE_ADVANTAGE",
+      "original_learned_task_negative_preserved": true,
+      "status": "NOT_ESTABLISHED"
+    },
+    {
+      "default_changed": false,
+      "fresh_numerical_checks": 42,
+      "id": "STABLE_COMPLETE_MODEL_SPEED",
+      "passed": 42,
+      "speed_ratio_range": [
+        0.9552501447248212,
+        1.4736696729625731
+      ],
+      "status": "FAIL",
+      "workloads": 20,
+      "workloads_at_least_1_05": 13
+    },
+    {
+      "fixed_case_pairs": 12,
+      "full_family_memory_qualified": false,
+      "full_process_family_peak_rss_bytes": null,
+      "id": "SEALED_WORKER_RSS_POINT",
+      "status": "PASS_BOUNDED",
+      "worker_records": 24
+    },
+    {
+      "correct": 69,
+      "id": "CREMA_AUDIO",
+      "status": "PASS_HISTORICAL_DEVELOPMENT_ONLY",
+      "total": 72
+    },
+    {
+      "id": "CREMA_VIDEO",
+      "pretrained_correct": 39,
+      "raw_CNN_correct": 28,
+      "status": "FAIL",
+      "total_each": 72
+    },
+    {
+      "accuracy_gain": 0.016203703703703703,
+      "actor_interval_95": [
+        -0.023148148148148147,
+        0.04861111111111111
+      ],
+      "id": "CREMA_JOINT_AVT",
+      "status": "FAIL",
+      "video_accuracy": 0.5416666666666666
+    },
+    {
+      "complete_prefixes": 61,
+      "id": "GRID_DEVELOPMENT_SOURCE",
+      "incomplete_video_prefixes": 3,
+      "registered_clips": 64,
+      "status": "HOLD",
+      "valid_subset_scored": false
+    },
+    {
+      "actors": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "episodes": 512,
+      "id": "GRID_CONFIRMATION_SOURCE",
+      "qualified_clips": 128,
+      "registered_clips": 128,
+      "status": "PASS_BOUNDED"
+    },
+    {
+      "AT_accuracy": 0.8255208333333334,
+      "AVT_accuracy": 0.7786458333333334,
+      "accuracy_gain": -0.046875,
+      "audio_accuracy": 1,
+      "family_interval_975": [
+        -0.1171875,
+        0.04166666666666667
+      ],
+      "id": "GRID_PRIMARY_QUALITY",
+      "status": "FAIL",
+      "text_accuracy": 1,
+      "total": 128,
+      "video_correct": 80
+    },
+    {
+      "AT_accuracy": 0.8255208333333334,
+      "AVT_accuracy": 0.7552083333333334,
+      "accuracy_gain": -0.0703125,
+      "audio_accuracy": 1,
+      "family_interval_975": [
+        -0.11197916666666669,
+        -0.04427083333333333
+      ],
+      "id": "GRID_TEMPORAL_QUALITY",
+      "status": "FAIL",
+      "text_accuracy": 1,
+      "total": 128,
+      "video_correct": 76
+    },
+    {
+      "attributable_simultaneous_family_peak_rss_bytes": null,
+      "energy_joules": null,
+      "external_provider_ownership_and_SLA_qualified": false,
+      "id": "HARDWARE_AND_PRODUCTION",
+      "status": "NOT_QUALIFIED",
+      "target_GPU_measurements": null
+    }
+  ],
+  "prior_evidence_commit": "57df8353c103a31dca85ed95b5931bc349735324",
+  "production_activation": false,
+  "remaining_blockers": [
+    "Original learned/analytic core quality-cost advantage over a strong ordinary model",
+    "All-workload stable end-to-end speed benefit",
+    "Usable video and positive added-video quality for the original and registered new frontend routes",
+    "Independent broad-domain/pretraining-identity qualification",
+    "Target hardware full latency/throughput/family memory/energy and actual service ownership"
+  ],
+  "schema": "hcsn.next-blockers.r2.acceptance.v1",
+  "scope": [
+    "New finite laws and adapters do not replace old failed task gates",
+    "Source/candidate publication and independent output consistency do not establish positive scientific effects",
+    "GRID family intervals are nominal two-candidate actor bootstrap summaries on only four registered confirmation IDs",
+    "All priors/typed inputs, cost exclusions, failed attempts and data-source HOLDs remain explicit"
+  ]
+}

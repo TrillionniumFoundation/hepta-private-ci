@@ -1,0 +1,63 @@
+{
+  "accounting": "Five disjoint outer child envelopes include interpreter startup, import, all candidate preparation, all8 policy alternatives, real world simulation and main output writes. Inner cell times are already included and are not added again. Wall times are not an end-to-end parallel sum.",
+  "complete_adoption_cost": false,
+  "energy_joules": null,
+  "independent_review_cpu_seconds": null,
+  "nested_body_scope": "Per-arm cell clocks include operator construction, policy search, all64 executions and local array stacking. Shared archive writing/aggregation and interpreter overhead remain in the outer envelope.",
+  "nested_planning_execution_cpu_seconds_by_arm": {
+    "A_ordinary_light": 6.388474618999989,
+    "B_ordinary_value": 10.753896636999984,
+    "C_analytic_light": 4.9525619940000425,
+    "D_analytic_value": 9.420460778000002,
+    "factor_train_factor_execute": 11.512302295999977,
+    "factor_train_joint_execute": 8.837954954999859,
+    "joint_train_factor_execute": 11.545655870999983,
+    "joint_train_mean_execute": 17.99046765099984
+  },
+  "outer_receipts": [
+    {
+      "cpu_seconds": 1.128341,
+      "path": "results/prepare001.receipt.json",
+      "returncode": 0,
+      "sha256": "a66d85be2bc9b0956835d90fc6d792df7bbcb637786ec4300a9574a6ef7b58c1",
+      "wall_seconds": 1.1340757039943128
+    },
+    {
+      "cpu_seconds": 0.570676,
+      "path": "results/development_probe001.receipt.json",
+      "returncode": 0,
+      "sha256": "ab0f39321d69a99936f4693634aa73a4055bee10a46918225bc7532888ada7bd",
+      "wall_seconds": 0.5729085700004362
+    },
+    {
+      "cpu_seconds": 0.771853,
+      "path": "results/prepare002.receipt.json",
+      "returncode": 0,
+      "sha256": "0f5a2a610c026dbb0403d79bbedf17eb1bb83c94f4f2d8414f6502579c2446ef",
+      "wall_seconds": 1.190392274002079
+    },
+    {
+      "cpu_seconds": 83.950197,
+      "path": "results/confirm001.receipt.json",
+      "returncode": 0,
+      "sha256": "24b0543fe0938302238ef8b36c4b0cac9f86e9fe17de8dd9b2e1185e3dae07c0",
+      "wall_seconds": 129.41878112500126
+    },
+    {
+      "cpu_seconds": 0.5427109999999999,
+      "path": "results/correction001.receipt.json",
+      "returncode": 0,
+      "sha256": "316c175ad6c347fffe3b8f8dab0bdb0bdae9b516871e63222eb10758d7ce48c9",
+      "wall_seconds": 1.2489599140026257
+    }
+  ],
+  "schema": "hcsn-r2-cost-ledger.v1",
+  "simultaneous_family_peak_memory_bytes": null,
+  "total_observed_outer_cpu_seconds": 86.963778,
+  "unmeasured_costs": [
+    "Source preparation and freeze commands",
+    "Independent source/output review and grouped verification",
+    "Additional record-count scan and report/packaging/publication",
+    "Prior scalar-study and earlier research investment"
+  ]
+}

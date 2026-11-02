@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "exact two-part binary reconstruction",
+    "existing output refused",
+    "one-byte same-size corruption refused before final publish",
+    "failed assembly partial retained",
+    "symlink part refused"
+  ],
+  "cpu_seconds": null,
+  "network_calls": 0,
+  "parts": 2,
+  "passed": true,
+  "payload_bytes": 7,
+  "real_evidence_archive_created": false,
+  "schema": "hcsn.r2.transport-helper.offline-check.v1",
+  "scientific_experiments_run": false,
+  "source_sha256": {
+    "prepare_transport.py": "ddeb76be8ea9b9f0af6fd160f4ef6076369e20181ddbda6d259768f2844ebbdf",
+    "restore_transport.py": "e322f6d0efa5fcabcfc2a8f3a450353b3d4b71fe99bdd8ca58125a6650ff60ae"
+  }
+}

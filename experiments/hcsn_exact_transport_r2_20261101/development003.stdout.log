@@ -1,0 +1,21 @@
+{"task": "mqar", "batch": 1, "condition": "base", "ratios": [{"joint_online": 1.3990112430674546}, {"joint_online": 1.1702950273793167}]}
+{"task": "mqar", "batch": 24, "condition": "base", "ratios": [{"joint_online": 1.4496668299590902}, {"joint_online": 1.0450228591544084}]}
+{"task": "mqar", "batch": 64, "condition": "base", "ratios": [{"joint_online": 1.0218656627296503}, {"joint_online": 1.0499259086965498}]}
+{"task": "mqar", "batch": 1, "condition": "long_tokens_128", "ratios": [{"joint_online": 1.633623426270328}, {"joint_online": 1.8821224808314778}]}
+{"task": "mqar", "batch": 24, "condition": "long_tokens_128", "ratios": [{"joint_online": 1.4865482756704778}, {"joint_online": 1.0272957850287865}]}
+{"task": "binding", "batch": 1, "condition": "base", "ratios": [{}, {}]}
+{"task": "binding", "batch": 24, "condition": "base", "ratios": [{}, {}]}
+{"task": "binding", "batch": 64, "condition": "base", "ratios": [{}, {}]}
+{"task": "binding", "batch": 1, "condition": "long_tokens_128", "ratios": [{}, {}]}
+{"task": "binding", "batch": 24, "condition": "long_tokens_128", "ratios": [{}, {}]}
+{
+  "selected": null,
+  "candidates": [
+    {
+      "backend": "joint_online",
+      "numerical_eligible": false,
+      "minimum_ratio": 0,
+      "stable_speed_gate": false
+    }
+  ]
+}

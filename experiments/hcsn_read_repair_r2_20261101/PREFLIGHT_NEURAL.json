@@ -1,0 +1,152 @@
+{
+  "body_cpu_seconds": 3.549323133,
+  "policy": "always_read",
+  "rows": [
+    {
+      "accuracy": 1.0,
+      "condition": "missing_tokens_128",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "mqar"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "missing_tokens_128",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "mqar"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "two_erased",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "mqar"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "two_erased",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "mqar"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "shifted_order_values",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "mqar"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "shifted_order_values",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "mqar"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "missing_tokens_128",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "selective"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "missing_tokens_128",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "selective"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "two_erased",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "selective"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "two_erased",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "selective"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "shifted_order_values",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "selective"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "shifted_order_values",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "selective"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "missing_tokens_128",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "binding"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "missing_tokens_128",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "binding"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "two_erased",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "binding"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "two_erased",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "binding"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "shifted_order_values",
+      "core": "flow",
+      "queries": 8,
+      "seed": 17,
+      "task": "binding"
+    },
+    {
+      "accuracy": 1.0,
+      "condition": "shifted_order_values",
+      "core": "diagonal",
+      "queries": 8,
+      "seed": 17,
+      "task": "binding"
+    }
+  ],
+  "scope": "Train-only structural smoke; not confirmation or selected model/checkpoint",
+  "train_fixture_seed": 421149
+}

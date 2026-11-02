@@ -1,0 +1,60 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_exact_transport_r2_20261101.cold_start",
+    "--kind",
+    "integrated",
+    "--task",
+    "mqar",
+    "--batch",
+    "24",
+    "--condition",
+    "long_tokens_128",
+    "--out",
+    "experiments/hcsn_exact_transport_r2_20261101/results/cold001/mqar_B24_long_tokens_128_1_integrated.json",
+    "--backward"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T01:44:13.439416+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_exact_transport_r2_20261101/results/cold001/mqar_B24_long_tokens_128_1_integrated.worker.stdout.log",
+  "stderr_path": "experiments/hcsn_exact_transport_r2_20261101/results/cold001/mqar_B24_long_tokens_128_1_integrated.worker.stderr.log",
+  "pid": 47,
+  "finished_utc": "2026-11-02T01:44:27.529053+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 14.089331731003767,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 5.459156,
+  "system_cpu_seconds": 0.35045,
+  "total_cpu_seconds": 5.8096060000000005,
+  "peak_rss_bytes": 425566208,
+  "peak_rss_native_units": 415592,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_exact_transport_r2_20261101/results/cold001/mqar_B24_long_tokens_128_1_integrated.worker.stdout.log",
+      "is_file": true,
+      "bytes": 181,
+      "sha256": "fa0b42432c7e85ca09c89054d7212805b0c328cbf1015ac76e50dcc40d557cbb"
+    },
+    {
+      "path": "experiments/hcsn_exact_transport_r2_20261101/results/cold001/mqar_B24_long_tokens_128_1_integrated.worker.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0009904839999999998,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

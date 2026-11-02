@@ -1,0 +1,104 @@
+{
+  "audit_source_sha256": "839692030ac568b072d2b76ad5a2dfad95d1d0459268a73460a7a6c76977b92d",
+  "distinct_posterior_records": 12,
+  "final_ambiguous_branch": [
+    {
+      "accepted_correct": 172,
+      "accepted_count": 261,
+      "accuracy": 0.6666666666666666,
+      "brier": 0.5185185206597243,
+      "condition": "missing",
+      "confidence": 0.6666265929309929,
+      "count": 1011,
+      "nll": 1.0027182681306561,
+      "task": "selective"
+    },
+    {
+      "accepted_correct": 172,
+      "accepted_count": 261,
+      "accuracy": 0.6666666666666666,
+      "brier": 0.5185185206597243,
+      "condition": "missing_tokens_128",
+      "confidence": 0.6666265929309929,
+      "count": 1011,
+      "nll": 1.0027182681306561,
+      "task": "selective"
+    }
+  ],
+  "gate_checks": [
+    {
+      "condition": "base",
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "condition": "missing",
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "condition": "long_tokens_128",
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "condition": "missing_tokens_128",
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "condition": "base",
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "condition": "missing",
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "condition": "long_tokens_128",
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "condition": "missing_tokens_128",
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "condition": "base",
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "condition": "missing",
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "condition": "long_tokens_128",
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "condition": "missing_tokens_128",
+      "passed": true,
+      "task": "binding"
+    }
+  ],
+  "law_audit_sha256": "773edcb8566852e99e3658610f347cfb794b1afef6e495277710d861bc69c382",
+  "law_query_checks": 1536,
+  "limits": [
+    "Same posterior repeated across six core/seed pairs; not independent evidence",
+    "Class-law parser bypasses neural state; analytic-core increment is zero by construction",
+    "Overall selective correctness is not per-answer 95 percent confidence; accepted ambiguous queries retain about two-thirds correctness",
+    "No resample, multiple-erasure, unknown-generator or open-language qualification"
+  ],
+  "record_checks": 156,
+  "restricted_interface_point_gates_pass": true,
+  "schema": "hcsn.missing-r2.independent-record-audit.v1",
+  "scope": "Independent saved inputs, visible-consistent hidden completions, fixed hash acceptance and raw metrics; not neural reexecution or population certification",
+  "status": "verified",
+  "summary_sha256": "ee91e69a2b1a2bfb07483796f38f3d896eddc6a69c80862c3c5916c5ba302599"
+}

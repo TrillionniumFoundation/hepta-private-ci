@@ -1,0 +1,150 @@
+{
+  "all_blockers_closed": false,
+  "fit_performed": false,
+  "held_media_decoded": false,
+  "passed": {
+    "binary_target_counts": {
+      "DFA": 144,
+      "IOM": 144
+    },
+    "grid_raw_bytes": 161257472,
+    "grid_role_speakers": {
+      "confirmation": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "development": [
+        8,
+        9
+      ],
+      "train": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "grid_selected_count": 384,
+    "historical_development_actor_count": 6,
+    "inherited_checkpoints_bound": true,
+    "inherited_oof_rows": 1152,
+    "inherited_outer_folds": [
+      {
+        "fit_count": 18,
+        "fold": 0,
+        "held_count": 6,
+        "modality": "audio"
+      },
+      {
+        "fit_count": 18,
+        "fold": 1,
+        "held_count": 6,
+        "modality": "audio"
+      },
+      {
+        "fit_count": 18,
+        "fold": 2,
+        "held_count": 6,
+        "modality": "audio"
+      },
+      {
+        "fit_count": 18,
+        "fold": 3,
+        "held_count": 6,
+        "modality": "audio"
+      },
+      {
+        "fit_count": 18,
+        "fold": 0,
+        "held_count": 6,
+        "modality": "text"
+      },
+      {
+        "fit_count": 18,
+        "fold": 1,
+        "held_count": 6,
+        "modality": "text"
+      },
+      {
+        "fit_count": 18,
+        "fold": 2,
+        "held_count": 6,
+        "modality": "text"
+      },
+      {
+        "fit_count": 18,
+        "fold": 3,
+        "held_count": 6,
+        "modality": "text"
+      }
+    ],
+    "inherited_unique_probability_mappings": {
+      "audio": 288,
+      "text": 288
+    },
+    "train_clips": 288,
+    "training_actor_count": 24
+  },
+  "review_findings": [
+    "Original no-B-frame extraction failure correctly enforced its original frozen protocol; its archived source/protocol and failed extraction are preserved. The repaired snapshot explicitly broadens to offline presentation-prefix decoding before any target fit.",
+    "Presentation-timestamp selected pixels support an offline presentation-prefix task. B-frame references/reordering do not establish live causal physical-prefix availability; no strict streaming 1s claim follows.",
+    "Visual encoder receives only the 25 cropped grayscale frames. Binary sentence labels train supervised heads; filenames and actor IDs route verified records and split folds, and are not numeric head features.",
+    "Inherited audio/text OOF generation selects hyperparameters inside outer training actors, normalizes on each fit subset, and predicts outer-held actors. The new visual train fold uses the same actor partition. Pretraining actor overlap remains unknown.",
+    "GRID uses native timestamp prefix selection and crops audio before resampling; complete offline decoding cost is explicit. It does not qualify online streaming latency.",
+    "GRID acquisition namespacing, CRC/length checks, and legacy-speaker1 SHA check are coherent. Confirmation acquisition guard validates candidate/source/head hashes. At this snapshot prefix(row) has no role guard itself, and new cache use is not bound to acquisition-receipt SHA. Campaign must enforce verified manifest and confirmation guard before invoking prefix."
+  ],
+  "schema": "hcsn.frontend.independent-initial-audit.v1",
+  "source_files": {
+    "experiments/hcsn_grid_frontend_r2_20261101/COHORT_SELECTION.json": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa",
+    "experiments/hcsn_grid_frontend_r2_20261101/PROTOCOL.json": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1",
+    "experiments/hcsn_grid_frontend_r2_20261101/SOURCE_FREEZE.json": "c1f8c1db621806735616ed087e5474d47be29a047a188e622f2893510ca017f6",
+    "experiments/hcsn_grid_frontend_r2_20261101/data.py": "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8",
+    "experiments/hcsn_video_pretrained_feasibility_r2_20261101/PROTOCOL.json": "5400c545717048b584422d71f64985a8c83c7457016f79b4f092e60cd1223a8b",
+    "experiments/hcsn_video_pretrained_feasibility_r2_20261101/SOURCE_FREEZE.json": "a7ddb7a8f45b7d88aec00840ea0be609715021b9cbbb48dfb9afdc32dc640682",
+    "experiments/hcsn_video_pretrained_feasibility_r2_20261101/encoder.py": "76208ab62714e0291e7a1c15294b1ce4c66bbab9b01bcfb7883aad744b7e8a96",
+    "experiments/hcsn_video_pretrained_feasibility_r2_20261101/study.py": "c75be7cae6919c6da2a03ac051da9e1c4ba41578fa811fbfcc7b6b60a52b659c"
+  },
+  "training_decoder_failure": {
+    "clip": "1037_DFA_ANG_XX",
+    "codec": "h264",
+    "has_b_frames": 2,
+    "ordinal_zero_based": 144,
+    "origin": 0.067,
+    "selected_B_frame_examples": [
+      {
+        "cutoff": 0.10700000000000001,
+        "packet_position": 11364,
+        "pict_type": "B",
+        "selected_pts": 0.1
+      },
+      {
+        "cutoff": 0.267,
+        "packet_position": 18916,
+        "pict_type": "B",
+        "selected_pts": 0.267
+      },
+      {
+        "cutoff": 0.307,
+        "packet_position": 20817,
+        "pict_type": "B",
+        "selected_pts": 0.301
+      },
+      {
+        "cutoff": 0.387,
+        "packet_position": 26731,
+        "pict_type": "B",
+        "selected_pts": 0.367
+      },
+      {
+        "cutoff": 0.427,
+        "packet_position": 25592,
+        "pict_type": "B",
+        "selected_pts": 0.401
+      }
+    ]
+  }
+}

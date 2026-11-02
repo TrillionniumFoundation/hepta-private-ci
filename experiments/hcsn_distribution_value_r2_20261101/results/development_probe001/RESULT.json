@@ -1,0 +1,85 @@
+{
+  "context": [
+    0.0,
+    0.0
+  ],
+  "cue": 2,
+  "episodes": 16,
+  "profile": 1,
+  "rows": [
+    {
+      "actual_utility": 0.715375,
+      "arm": "A_ordinary_light",
+      "cache_nodes": 45,
+      "cpu_seconds": 0.006297824999999979,
+      "predicted_root_value": 0.7723830089073258,
+      "root_action": 3,
+      "wall_seconds": 0.006298446998698637
+    },
+    {
+      "actual_utility": 0.715375,
+      "arm": "B_ordinary_value",
+      "cache_nodes": 545,
+      "cpu_seconds": 0.010016307000000002,
+      "predicted_root_value": 0.8032035143006288,
+      "root_action": 3,
+      "wall_seconds": 0.01001371400343487
+    },
+    {
+      "actual_utility": 0.715375,
+      "arm": "C_analytic_light",
+      "cache_nodes": 45,
+      "cpu_seconds": 0.0039017639999999743,
+      "predicted_root_value": 0.7723830089073259,
+      "root_action": 3,
+      "wall_seconds": 0.0039003599958959967
+    },
+    {
+      "actual_utility": 0.715375,
+      "arm": "D_analytic_value",
+      "cache_nodes": 545,
+      "cpu_seconds": 0.007890186000000021,
+      "predicted_root_value": 0.8032035143006285,
+      "root_action": 3,
+      "wall_seconds": 0.007888250001997221
+    },
+    {
+      "actual_utility": 0.625,
+      "arm": "joint_train_factor_execute",
+      "cache_nodes": 489,
+      "cpu_seconds": 0.008899321999999987,
+      "predicted_root_value": 0.5,
+      "root_action": 0,
+      "wall_seconds": 0.008896731000277214
+    },
+    {
+      "actual_utility": 0.625,
+      "arm": "factor_train_joint_execute",
+      "cache_nodes": 505,
+      "cpu_seconds": 0.006546614000000006,
+      "predicted_root_value": 0.5,
+      "root_action": 0,
+      "wall_seconds": 0.006545232994540129
+    },
+    {
+      "actual_utility": 0.625,
+      "arm": "factor_train_factor_execute",
+      "cache_nodes": 489,
+      "cpu_seconds": 0.008865801999999978,
+      "predicted_root_value": 0.5,
+      "root_action": 0,
+      "wall_seconds": 0.00886381199961761
+    },
+    {
+      "actual_utility": 0.715375,
+      "arm": "joint_train_mean_execute",
+      "cache_nodes": 545,
+      "cpu_seconds": 0.016840281999999984,
+      "predicted_root_value": 0.8145949627465007,
+      "root_action": 3,
+      "wall_seconds": 0.016837958995893132
+    }
+  ],
+  "scope": "Development software/cost probe, not registered confirmation; no source/model/profile revision based on these outcomes",
+  "world_seed": 556173
+}

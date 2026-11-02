@@ -1,0 +1,29 @@
+{
+  "status": "incomplete_failed_process",
+  "returncode": 120,
+  "summary_available": false,
+  "observed_rows": "TIMINGS.jsonl contains complete early rows and a partial final JSON line",
+  "stderr_bytes": 0,
+  "cause": null,
+  "scope": "Partial developmental timings; no eligible candidate or scientific pass inferred",
+  "source_snapshot": [
+    {
+      "original_path": "experiments/hcsn_exact_transport_r2_20261101/adapter.py",
+      "snapshot_path": "experiments/hcsn_exact_transport_r2_20261101/source_v1/adapter.py",
+      "bytes": 7775,
+      "sha256": "61605e4f449beaa6b04642b60bb717ccd538121d4edcb945a505dbf93014fd29"
+    },
+    {
+      "original_path": "experiments/hcsn_exact_transport_r2_20261101/audit.py",
+      "snapshot_path": "experiments/hcsn_exact_transport_r2_20261101/source_v1/audit.py",
+      "bytes": 15150,
+      "sha256": "e52f060fc0318d09656100e6caa286ad7b48133f198f968bc870866138aa3b35"
+    },
+    {
+      "original_path": "experiments/hcsn_exact_transport_r2_20261101/PROTOCOL.json",
+      "snapshot_path": "experiments/hcsn_exact_transport_r2_20261101/source_v1/PROTOCOL.json",
+      "bytes": 1944,
+      "sha256": "e88993c7e08bfdddc57a79508ef64c00f980749e3b921f685a060ba207b9146b"
+    }
+  ]
+}

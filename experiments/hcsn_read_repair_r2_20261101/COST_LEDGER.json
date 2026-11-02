@@ -1,0 +1,47 @@
+{
+  "accounting": "Distinct complete-child wait4 envelopes; startup/imports/writes included. Inner neural timers and replay ledgers are contained in confirm and never added a second time. No independent enumeration of live descendants.",
+  "aggregate_family_memory_peak_bytes": null,
+  "all_blockers_closed": false,
+  "complete_campaign_cpu_seconds": null,
+  "confirmation_neural_forward_calls": 2292,
+  "confirmation_neural_replay_frames": 2412840,
+  "confirmation_neural_replay_sequences": 49506,
+  "energy_joules": null,
+  "exclusions": [
+    "Source development, protocol freezing/publication, provider structural preflight and record audit preparation unmetered",
+    "Frozen R1 checkpoint training and historical R2 posterior fit not repeated or amortized here",
+    "No external provider ownership/SLA/energy/production qualification"
+  ],
+  "gpu_seconds": null,
+  "historical_neural_training_cpu_seconds": null,
+  "logical_wait": "0.1 simulated clock per paid slot; not external network latency",
+  "measured_component_cpu_seconds": 92.624831,
+  "measured_components": [
+    {
+      "cpu_seconds": 4.912695,
+      "peak_rss_bytes": 207618048,
+      "phase": "prepare",
+      "receipt": "results/run001/prepare_meter.receipt.json",
+      "receipt_sha256": "1fc0124959e421628da28379ddc99f26b050826767feded0403341690003258d",
+      "scope": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+      "wall_seconds": 15.845623430002888
+    },
+    {
+      "cpu_seconds": 87.712136,
+      "peak_rss_bytes": 262623232,
+      "phase": "confirm",
+      "receipt": "results/run001/confirm_meter.receipt.json",
+      "receipt_sha256": "cd68d9b2ff7b4f59711253940e0abd345b5024614f4808a7fc69fc9b0aacb1e8",
+      "scope": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+      "wall_seconds": 133.41621190099977
+    }
+  ],
+  "production_activation": false,
+  "provider_confirmation_actual_paid_read_requests": 2493,
+  "provider_confirmation_actual_policy_world_sessions": 4608,
+  "provider_dev_actual_paid_read_requests": 342,
+  "schema": "hcsn.read-repair.r2.cost.v1",
+  "symbolic_fees": "Known event fees .02/.08/.16/.32/.64 charged once per acquired slot; not currency or compute cost",
+  "train_only_neural_preflight_body_cpu_seconds": 3.549323133,
+  "train_only_neural_preflight_scope": "Body-only timer; not complete-child envelope and not included in measured component sum"
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "experiments.hcsn_four_stage_flow_20261031.operator_audit",
+    "--out",
+    "experiments/hcsn_next_blockers_r2_20261101/operator_regression_results",
+    "--stage",
+    "formal",
+    "--frozen-commit",
+    "a793d55c23a7742378b081b162252da428a9fdb2"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T02:05:23.117810+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_next_blockers_r2_20261101/operator_regression.stdout.log",
+  "stderr_path": "experiments/hcsn_next_blockers_r2_20261101/operator_regression.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-02T02:05:25.353074+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 2.2350319600009243,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 2.041625,
+  "system_cpu_seconds": 0.16064799999999999,
+  "total_cpu_seconds": 2.202273,
+  "peak_rss_bytes": 274018304,
+  "peak_rss_native_units": 267596,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/operator_regression.stdout.log",
+      "is_file": true,
+      "bytes": 581,
+      "sha256": "7c0844a170d2eec23c9e2d6aa2711c1d0cc3bf4e6f365dbd66bb76a129af4dd2"
+    },
+    {
+      "path": "experiments/hcsn_next_blockers_r2_20261101/operator_regression.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0007346390000000022,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

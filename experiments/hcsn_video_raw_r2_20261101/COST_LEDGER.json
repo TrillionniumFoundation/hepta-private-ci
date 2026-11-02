@@ -1,0 +1,81 @@
+{
+  "schema": "hcsn.rawvideo.r2.cost.v1",
+  "nonoverlapping_complete_child_envelopes": [
+    {
+      "path": "acquire_development_raw.receipt.json",
+      "cpu_seconds": 0.463491,
+      "wall_seconds": 94.22918319900054,
+      "exit_code": 0
+    },
+    {
+      "path": "acquire_train.receipt.json",
+      "cpu_seconds": 0.282118,
+      "wall_seconds": 40.06678939000267,
+      "exit_code": 120
+    },
+    {
+      "path": "acquire_train_repaired.receipt.json",
+      "cpu_seconds": 67.114857,
+      "wall_seconds": 447.8003017660012,
+      "exit_code": 0
+    },
+    {
+      "path": "acquire_train_retry.receipt.json",
+      "cpu_seconds": 0.187235,
+      "wall_seconds": 7.445428058999823,
+      "exit_code": 1
+    },
+    {
+      "path": "acquire_train_retry3.receipt.json",
+      "cpu_seconds": 0.211621,
+      "wall_seconds": 4.2439404990000185,
+      "exit_code": 1
+    },
+    {
+      "path": "evaluate_development.receipt.json",
+      "cpu_seconds": 2.621613,
+      "wall_seconds": 3.041187746996002,
+      "exit_code": 0
+    },
+    {
+      "path": "external_grid/acquire_pilot.receipt.json",
+      "cpu_seconds": 2.465789,
+      "wall_seconds": 89.09698776399455,
+      "exit_code": 0
+    },
+    {
+      "path": "external_grid/metadata_probe.receipt.json",
+      "cpu_seconds": 0.113383,
+      "wall_seconds": 14.205874954997853,
+      "exit_code": 0
+    },
+    {
+      "path": "prepare_development.receipt.json",
+      "cpu_seconds": 15.570776,
+      "wall_seconds": 20.694936316998792,
+      "exit_code": 0
+    },
+    {
+      "path": "train_model_corrected.receipt.json",
+      "cpu_seconds": 72.89223799999999,
+      "wall_seconds": 116.1234659019974,
+      "exit_code": 0
+    }
+  ],
+  "known_cpu_seconds_lower_bound": 161.92312099999998,
+  "wrong_target_run001_complete_cpu_seconds": null,
+  "wrong_target_run001_receipt": "train_model.receipt.json",
+  "wrong_target_run001_status": "Originalwait4receiptremainsrunningaftertoolinterruption130; actualprocessgone; do nottreatasactiveorsuccessful; no completeCPUenveloperecovered",
+  "unmeasured": [
+    "initialtraininggeometrysampledownload/inspection",
+    "prefix/targetchecks,sourceediting,staticandnumericalaudits",
+    "label-onlycachecorrection",
+    "GRIDsingletraining-membercontentprobe",
+    "inheritedA/Tpreparationandpretraining"
+  ],
+  "full_campaign_cpu_seconds": null,
+  "energy_joules": null,
+  "gpu_measured": false,
+  "rss_scope": "Individualwait4childhighwateronly,notsimultaneousfamilymemory",
+  "additivity": "InnerfitCPUalreadycontained; do notaddagain. Parallelwalltimesarenotuserelapsed. GRIDpilotCPUappearsheretoavoidcountingitdoubleinnewGRIDstudy."
+}

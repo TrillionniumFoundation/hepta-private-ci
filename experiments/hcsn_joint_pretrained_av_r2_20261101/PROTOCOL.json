@@ -1,0 +1,20 @@
+{
+  "schema":"hcsn.joint.pretrained-av.r2.v1",
+  "audio_provider":"hcsn_audio_pretrained_r2_20261101 final officialWAV2VEC2_ASR_BASE_960H frozen1652D, fixedC1 head; provider candidate commit21663ea761d1f8deefc99f3a3872c1984527df46",
+  "video_provider":"hcsn_video_pretrained_feasibility_r2_20261101 original-author frozenLRW model and fixed3060D/C1head; candidate commit9906bbebe603440c2191fe7097326c9847da26f8",
+  "text_provider":"Unchanged R1nested text OOF/fullhead hcsn_video_followup_20261101/results/run002",
+  "selection":"No source/encoder/descriptor/head hyperparameter selection. Use exact declared providers regardless of their trainOOF scores.",
+  "source_gate":"Publish this source/protocol and exact provider fingerprints before fitting joint relation heads; publish all joint heads and input/probability identities before any development labels/features.",
+  "train":"Same1152 original train relation episodes. Both provider288clipOOF sets must match clip,actor,binaryDFA/IOMtargets and the same four sorted-actor heldout folds. No full-fit probabilities enter relation training.",
+  "target_semantics":"Episode y=1 iff all three sentence_indices match; inherited sample_weight retained. Modality binary sentence target DFA0/IOM1, never six-way emotion.",
+  "heads":{"AT_unique":"C1 logistic with3features[pA,pT,pA*pT]","AVT":"Independent C1 logistic with7nonempty polynomial products of[pA,pV,pT]"},
+  "optimizer":"Reuse frozen audio provider fit: fold-free full training-relation means/scales only, L-BFGS-B,maxiter2000,ftol1e-12,gtol1e-7,unpenalized intercept",
+  "development":"Exactly original72 clips from6 historical validation actors per provider, and corresponding original relation episodes; no1019,oldtest,newindependent-population claim. All providers frozen before shared dev opening.",
+  "physical_scope":"Both providers use the same fixed1s presentation-time prefix, aligned origin=max(native audio start,firstvideoPTS). Video compressed reference lookahead is unqualified; neither joint inference nor offlineFLVdecoding qualifies livecausal1s acquisition.",
+  "paired_inference":"AVT minus cleanAT_unique accuracy/Brier per actor,10000 actor bootstrap resamples seed20261113; descriptive historical development only",
+  "negative_control":"FrozenAVThead with video probabilities permuted within each validation actor100times seed20261114; no retraining/selection",
+  "joint_gate":"Both sentence accuracies A,V>=0.90 and AVT-AT_unique actor-bootstrap accuracy lowerbound>0. No gate change from observed dev.",
+  "attribution":"This separate Anew+Vpretrained+T candidate never replaces the V-only primary attribution using fixedR1A/T. No analytic-core contribution is tested.",
+  "pretraining_costs":"Inherited official audio and visual pretraining, actor overlap and hardware energy are not newly measured. Joint relation-fit CPU is additional to provider extraction/fitting costs, not a full adoption total.",
+  "gpu":null,"energy_joules":null,"production_activation":false
+}

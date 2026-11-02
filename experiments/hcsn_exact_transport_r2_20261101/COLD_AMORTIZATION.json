@@ -1,0 +1,1209 @@
+{
+  "schema": "hcsn.exact-addressed-r2.cold-amortization.v1",
+  "rows": [
+    {
+      "task": "mqar",
+      "batch": 1,
+      "condition": "base",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 3.654999999991304e-06,
+        "wall_seconds": 3.444998583290726e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.009628020999999709,
+        "wall_seconds": 0.011340570003085304,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.013727406000000109,
+      "candidate_first_call_cpu_seconds": 0.06322061299999993,
+      "dense_first_call_wall_seconds": 0.033897915003763046,
+      "candidate_first_call_wall_seconds": 0.11354645500250626,
+      "candidate_first_four_call_cpu_seconds": 0.10918812300000003,
+      "steady_dense_wall_median_seconds": 0.028685358,
+      "steady_candidate_wall_median_seconds": 0.022125378,
+      "steady_dense_over_candidate": 1.2964912057095703,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 19,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.03390136000234634,
+          "candidate_wall_seconds": 0.12488702500559157,
+          "candidate_minus_dense_wall_seconds": 0.09098566500324523,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.1260895160085056,
+          "candidate_wall_seconds": 0.2227793000129168,
+          "candidate_minus_dense_wall_seconds": 0.0966897840044112,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 0.5850552440085056,
+          "candidate_wall_seconds": 0.5767853480129168,
+          "candidate_minus_dense_wall_seconds": -0.008269895995588805,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 286.8649280840085,
+          "candidate_wall_seconds": 221.38805778801293,
+          "candidate_minus_dense_wall_seconds": -65.47687029599558,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 1,
+      "condition": "base",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 1.2510000000354182e-06,
+        "wall_seconds": 1.0510048014111817e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.015821041999999785,
+        "wall_seconds": 0.0211742690007668,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.025679464999999846,
+      "candidate_first_call_cpu_seconds": 0.08586326399999988,
+      "dense_first_call_wall_seconds": 0.025681967003038153,
+      "candidate_first_call_wall_seconds": 0.13887174599949503,
+      "candidate_first_four_call_cpu_seconds": 0.8600026049999996,
+      "steady_dense_wall_median_seconds": 0.039494208,
+      "steady_candidate_wall_median_seconds": 0.035957362,
+      "steady_dense_over_candidate": 1.098362221344269,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 515,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.025683018007839564,
+          "candidate_wall_seconds": 0.16004601500026183,
+          "candidate_minus_dense_wall_seconds": 0.13436299699242227,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.1153506230111816,
+          "candidate_wall_seconds": 1.9201619310042588,
+          "candidate_minus_dense_wall_seconds": 1.8048113079930772,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 0.7472579510111816,
+          "candidate_wall_seconds": 2.4954797230042587,
+          "candidate_minus_dense_wall_seconds": 1.748221771993077,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 394.8994537910112,
+          "candidate_wall_seconds": 361.34995248300424,
+          "candidate_minus_dense_wall_seconds": -33.54950130800694,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "condition": "base",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 2.7639999999884424e-06,
+        "wall_seconds": 2.6439956855028868e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.015781974000000254,
+        "wall_seconds": 0.015782105998368934,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.02146143700000014,
+      "candidate_first_call_cpu_seconds": 0.08304296099999986,
+      "dense_first_call_wall_seconds": 0.036936671000148635,
+      "candidate_first_call_wall_seconds": 0.09469313199952012,
+      "candidate_first_four_call_cpu_seconds": 0.1400317659999999,
+      "steady_dense_wall_median_seconds": 0.019137298,
+      "steady_candidate_wall_median_seconds": 0.017332589000000002,
+      "steady_dense_over_candidate": 1.1041222981748426,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 17,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.03693931499583414,
+          "candidate_wall_seconds": 0.11047523799788905,
+          "candidate_minus_dense_wall_seconds": 0.07353592300205491,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.14502434299356537,
+          "candidate_wall_seconds": 0.16746972199325683,
+          "candidate_minus_dense_wall_seconds": 0.022445378999691457,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 0.4512211109935654,
+          "candidate_wall_seconds": 0.44479114599325686,
+          "candidate_minus_dense_wall_seconds": -0.006429965000308513,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 191.44145515099356,
+          "candidate_wall_seconds": 173.42402936599328,
+          "candidate_minus_dense_wall_seconds": -18.017425785000285,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "condition": "base",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 2.3840000000774353e-06,
+        "wall_seconds": 2.3030006559565663e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.01436608500000025,
+        "wall_seconds": 0.014377358995261602,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.06650553299999995,
+      "candidate_first_call_cpu_seconds": 0.11009295100000038,
+      "dense_first_call_wall_seconds": 0.0741201149940025,
+      "candidate_first_call_wall_seconds": 0.1218990049965214,
+      "candidate_first_four_call_cpu_seconds": 0.9605085830000006,
+      "steady_dense_wall_median_seconds": 0.149785251,
+      "steady_candidate_wall_median_seconds": 0.141498239,
+      "steady_dense_over_candidate": 1.058566184700009,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 128,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.07412241799465846,
+          "candidate_wall_seconds": 0.136276363991783,
+          "candidate_minus_dense_wall_seconds": 0.06215394599712454,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.25272774899349315,
+          "candidate_wall_seconds": 1.2799129089908092,
+          "candidate_minus_dense_wall_seconds": 1.027185159997316,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 2.6492917649934933,
+          "candidate_wall_seconds": 3.543884732990809,
+          "candidate_minus_dense_wall_seconds": 0.8945929679973159,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 1497.5060967449936,
+          "candidate_wall_seconds": 1415.6963099529908,
+          "candidate_minus_dense_wall_seconds": -81.8097867920028,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 64,
+      "condition": "base",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 3.005000000166902e-06,
+        "wall_seconds": 3.015004040207714e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.015366406999999915,
+        "wall_seconds": 0.03338707699731458,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.020392187999999978,
+      "candidate_first_call_cpu_seconds": 0.09148658300000001,
+      "dense_first_call_wall_seconds": 0.032228203999693505,
+      "candidate_first_call_wall_seconds": 0.20779362799657974,
+      "candidate_first_four_call_cpu_seconds": 0.16904679700000025,
+      "steady_dense_wall_median_seconds": 0.027696073,
+      "steady_candidate_wall_median_seconds": 0.026312349000000002,
+      "steady_dense_over_candidate": 1.0525883873005788,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 248,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.03223121900373371,
+          "candidate_wall_seconds": 0.24118070499389432,
+          "candidate_minus_dense_wall_seconds": 0.2089494859901606,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.08087038801750168,
+          "candidate_wall_seconds": 0.41712972198729403,
+          "candidate_minus_dense_wall_seconds": 0.33625933396979235,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 0.5240075560175017,
+          "candidate_wall_seconds": 0.838127305987294,
+          "candidate_minus_dense_wall_seconds": 0.3141197499697923,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 276.9308160960175,
+          "candidate_wall_seconds": 263.4353703259873,
+          "candidate_minus_dense_wall_seconds": -13.495445770030187,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 64,
+      "condition": "base",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 2.964000000105216e-06,
+        "wall_seconds": 2.7839996619150043e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.012283157999999794,
+        "wall_seconds": 0.01228333199833287,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.10501075999999987,
+      "candidate_first_call_cpu_seconds": 0.1045800520000002,
+      "dense_first_call_wall_seconds": 0.13645333900058176,
+      "candidate_first_call_wall_seconds": 0.11668936999922153,
+      "candidate_first_four_call_cpu_seconds": 0.9335996879999997,
+      "steady_dense_wall_median_seconds": 0.110750078,
+      "steady_candidate_wall_median_seconds": 0.11399790600000001,
+      "steady_dense_over_candidate": 0.971509757380982,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": null,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.13645612300024368,
+          "candidate_wall_seconds": 0.1289727019975544,
+          "candidate_minus_dense_wall_seconds": -0.007483421002689283,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.5873280119994888,
+          "candidate_wall_seconds": 1.107068540986802,
+          "candidate_minus_dense_wall_seconds": 0.5197405289873132,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 2.359329259999489,
+          "candidate_wall_seconds": 2.931035036986802,
+          "candidate_minus_dense_wall_seconds": 0.5717057769873133,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 1107.6451076999995,
+          "candidate_wall_seconds": 1140.6301369169869,
+          "candidate_minus_dense_wall_seconds": 32.985029216987414,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 3.2649999996969825e-06,
+        "wall_seconds": 3.364002623129636e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.009311120999999645,
+        "wall_seconds": 0.01735076699696947,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.08307121500000036,
+      "candidate_first_call_cpu_seconds": 0.095659999,
+      "dense_first_call_wall_seconds": 0.17889928999647964,
+      "candidate_first_call_wall_seconds": 0.20912636000139173,
+      "candidate_first_four_call_cpu_seconds": 0.18364369599999986,
+      "steady_dense_wall_median_seconds": 0.085577868,
+      "steady_candidate_wall_median_seconds": 0.07066567600000001,
+      "steady_dense_over_candidate": 1.2110245432308606,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 4,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.17890265399910277,
+          "candidate_wall_seconds": 0.2264771269983612,
+          "candidate_minus_dense_wall_seconds": 0.04757447299925843,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.724486346996855,
+          "candidate_wall_seconds": 0.42594545600150013,
+          "candidate_minus_dense_wall_seconds": -0.29854089099535486,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 2.093732234996855,
+          "candidate_wall_seconds": 1.5565962720015003,
+          "candidate_minus_dense_wall_seconds": -0.5371359629953547,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 856.1608548749969,
+          "candidate_wall_seconds": 706.8000427520016,
+          "candidate_minus_dense_wall_seconds": -149.3608121229953,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 7.001000000173008e-06,
+        "wall_seconds": 6.880000000819564e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.016990987000000235,
+        "wall_seconds": 0.06961605599644827,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.3242363309999998,
+      "candidate_first_call_cpu_seconds": 0.372406861,
+      "dense_first_call_wall_seconds": 1.095848108001519,
+      "candidate_first_call_wall_seconds": 1.2464766259945463,
+      "candidate_first_four_call_cpu_seconds": 1.962355005,
+      "steady_dense_wall_median_seconds": 0.48756197700000004,
+      "steady_candidate_wall_median_seconds": 0.33084889100000003,
+      "steady_dense_over_candidate": 1.4736696729625731,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 8,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 1.0958549880015198,
+          "candidate_wall_seconds": 1.3160926819909946,
+          "candidate_minus_dense_wall_seconds": 0.2202376939894748,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 5.362990218003688,
+          "candidate_wall_seconds": 5.967932372986979,
+          "candidate_minus_dense_wall_seconds": 0.6049421549832914,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 13.163981850003688,
+          "candidate_wall_seconds": 11.26151462898698,
+          "candidate_minus_dense_wall_seconds": -1.9024672210167086,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 4879.032512310004,
+          "candidate_wall_seconds": 3313.133446808987,
+          "candidate_minus_dense_wall_seconds": -1565.8990655010166,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 3.1950000001224055e-06,
+        "wall_seconds": 2.9750008252449334e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.013595383000000183,
+        "wall_seconds": 0.025608990996261127,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.14108851599999994,
+      "candidate_first_call_cpu_seconds": 0.2093906539999999,
+      "dense_first_call_wall_seconds": 0.3147841320023872,
+      "candidate_first_call_wall_seconds": 0.4742558740035747,
+      "candidate_first_four_call_cpu_seconds": 0.4260223070000002,
+      "steady_dense_wall_median_seconds": 0.101727728,
+      "steady_candidate_wall_median_seconds": 0.101090835,
+      "steady_dense_over_candidate": 1.0063002051570749,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 4,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.31478710700321244,
+          "candidate_wall_seconds": 0.49986486499983585,
+          "candidate_minus_dense_wall_seconds": 0.1850777579966234,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 1.219909062005172,
+          "candidate_wall_seconds": 0.9913283059941023,
+          "candidate_minus_dense_wall_seconds": -0.22858075601106975,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 2.8475527100051723,
+          "candidate_wall_seconds": 2.608781665994102,
+          "candidate_minus_dense_wall_seconds": -0.2387710440110702,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 1018.0902781500052,
+          "candidate_wall_seconds": 1011.4953149659941,
+          "candidate_minus_dense_wall_seconds": -6.594963184011135,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 3.535000000054467e-06,
+        "wall_seconds": 3.1849995139054954e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.015879086999999625,
+        "wall_seconds": 0.03227886300010141,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.4838661550000001,
+      "candidate_first_call_cpu_seconds": 0.5520708780000003,
+      "dense_first_call_wall_seconds": 0.6211220969998976,
+      "candidate_first_call_wall_seconds": 1.249748289003037,
+      "candidate_first_four_call_cpu_seconds": 2.8649723630000006,
+      "steady_dense_wall_median_seconds": 0.6833374990000001,
+      "steady_candidate_wall_median_seconds": 0.5492641580000001,
+      "steady_dense_over_candidate": 1.2440962859986944,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 25,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.6211252819994115,
+          "candidate_wall_seconds": 1.2820271520031383,
+          "candidate_minus_dense_wall_seconds": 0.6609018700037268,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 4.545473503996618,
+          "candidate_wall_seconds": 7.340634163010691,
+          "candidate_minus_dense_wall_seconds": 2.7951606590140727,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 15.47887348799662,
+          "candidate_wall_seconds": 16.128860691010694,
+          "candidate_minus_dense_wall_seconds": 0.6499872030140743,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 6835.187113507997,
+          "candidate_wall_seconds": 5497.7851575310115,
+          "candidate_minus_dense_wall_seconds": -1337.4019559769858,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 1,
+      "condition": "base",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 4.926999999987913e-06,
+        "wall_seconds": 4.8670044634491205e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.012996166000000198,
+        "wall_seconds": 0.02626988299743971,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.013816861000000014,
+      "candidate_first_call_cpu_seconds": 0.06699626699999994,
+      "dense_first_call_wall_seconds": 0.037599083996610716,
+      "candidate_first_call_wall_seconds": 0.14697646199783776,
+      "candidate_first_four_call_cpu_seconds": 0.10928922599999957,
+      "steady_dense_wall_median_seconds": 0.014530949000000001,
+      "steady_candidate_wall_median_seconds": 0.012845687000000001,
+      "steady_dense_over_candidate": 1.1311928276004233,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 110,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.037603951001074165,
+          "candidate_wall_seconds": 0.17324634499527747,
+          "candidate_minus_dense_wall_seconds": 0.1356423939942033,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.09198265300801722,
+          "candidate_wall_seconds": 0.2699159420080832,
+          "candidate_minus_dense_wall_seconds": 0.177933289000066,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 0.32447783700801724,
+          "candidate_wall_seconds": 0.47544693400808324,
+          "candidate_minus_dense_wall_seconds": 0.150969097000066,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 145.34334885700804,
+          "candidate_wall_seconds": 128.6754031940081,
+          "candidate_minus_dense_wall_seconds": -16.667945662999927,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 1,
+      "condition": "base",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 8.352000000044768e-06,
+        "wall_seconds": 7.661998097319156e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.016978896999999993,
+        "wall_seconds": 0.044998771998507436,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.0522621270000001,
+      "candidate_first_call_cpu_seconds": 0.08950211199999991,
+      "dense_first_call_wall_seconds": 0.11583204199996544,
+      "candidate_first_call_wall_seconds": 0.30029083500267006,
+      "candidate_first_four_call_cpu_seconds": 0.8925755749999995,
+      "steady_dense_wall_median_seconds": 0.054609700000000004,
+      "steady_candidate_wall_median_seconds": 0.052977586,
+      "steady_dense_over_candidate": 1.0308076324957502,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 1493,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.11583970399806276,
+          "candidate_wall_seconds": 0.3452896070011775,
+          "candidate_minus_dense_wall_seconds": 0.22944990300311474,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.47315797999181086,
+          "candidate_wall_seconds": 2.903267178997339,
+          "candidate_minus_dense_wall_seconds": 2.4301091990055284,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 1.346913179991811,
+          "candidate_wall_seconds": 3.750908554997339,
+          "candidate_minus_dense_wall_seconds": 2.403995375005528,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 546.3517191799918,
+          "candidate_wall_seconds": 532.4672168349973,
+          "candidate_minus_dense_wall_seconds": -13.88450234499453,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "condition": "base",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 2.9839999999836664e-06,
+        "wall_seconds": 2.944994776044041e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.012981541999999902,
+        "wall_seconds": 0.041755035003006924,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.029888683999999888,
+      "candidate_first_call_cpu_seconds": 0.059974031000000316,
+      "dense_first_call_wall_seconds": 0.10267955800372874,
+      "candidate_first_call_wall_seconds": 0.20249519999924814,
+      "candidate_first_four_call_cpu_seconds": 0.12214623100000077,
+      "steady_dense_wall_median_seconds": 0.019800352,
+      "steady_candidate_wall_median_seconds": 0.019399780000000002,
+      "steady_dense_over_candidate": 1.0206482753928137,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 451,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.10268250299850479,
+          "candidate_wall_seconds": 0.24425023500225507,
+          "candidate_minus_dense_wall_seconds": 0.14156773200375028,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.2874102589994436,
+          "candidate_wall_seconds": 0.4661876300087897,
+          "candidate_minus_dense_wall_seconds": 0.1787773710093461,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 0.6042158909994436,
+          "candidate_wall_seconds": 0.7765841100087898,
+          "candidate_minus_dense_wall_seconds": 0.17236821900934618,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 198.21172885099944,
+          "candidate_wall_seconds": 194.3863885100088,
+          "candidate_minus_dense_wall_seconds": -3.8253403409906355,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "condition": "base",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 3.4250000000568548e-06,
+        "wall_seconds": 3.626002580858767e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.01027109500000023,
+        "wall_seconds": 0.010270437000144739,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.08039282399999959,
+      "candidate_first_call_cpu_seconds": 0.08600991399999991,
+      "dense_first_call_wall_seconds": 0.26756955399469007,
+      "candidate_first_call_wall_seconds": 0.09770291899621952,
+      "candidate_first_four_call_cpu_seconds": 0.8458246030000001,
+      "steady_dense_wall_median_seconds": 0.054865445000000006,
+      "steady_candidate_wall_median_seconds": 0.052189769000000004,
+      "steady_dense_over_candidate": 1.0512682092921315,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 180,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.2675731799972709,
+          "candidate_wall_seconds": 0.10797335599636426,
+          "candidate_minus_dense_wall_seconds": -0.15959982400090666,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 1.0932483370052068,
+          "candidate_wall_seconds": 1.5628138020038023,
+          "candidate_minus_dense_wall_seconds": 0.4695654649985954,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 1.971095457005207,
+          "candidate_wall_seconds": 2.397850106003802,
+          "candidate_minus_dense_wall_seconds": 0.42675464899859517,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 549.5282365570052,
+          "candidate_wall_seconds": 523.2517447260038,
+          "candidate_minus_dense_wall_seconds": -26.276491831001408,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 64,
+      "condition": "base",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 2.904000000025775e-06,
+        "wall_seconds": 2.9650036594830453e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.008593056999999682,
+        "wall_seconds": 0.008593247999669984,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.03308633299999997,
+      "candidate_first_call_cpu_seconds": 0.054228583999999636,
+      "dense_first_call_wall_seconds": 0.15597344599518692,
+      "candidate_first_call_wall_seconds": 0.055282758999965154,
+      "candidate_first_four_call_cpu_seconds": 0.1187829159999998,
+      "steady_dense_wall_median_seconds": 0.027077016000000002,
+      "steady_candidate_wall_median_seconds": 0.027197225000000002,
+      "steady_dense_over_candidate": 0.9955801005433459,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": null,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.1559764109988464,
+          "candidate_wall_seconds": 0.06387600699963514,
+          "candidate_minus_dense_wall_seconds": -0.09210040399921127,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.49480999300430994,
+          "candidate_wall_seconds": 0.215263853999204,
+          "candidate_minus_dense_wall_seconds": -0.27954613900510594,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 0.92804224900431,
+          "candidate_wall_seconds": 0.6504194539992041,
+          "candidate_minus_dense_wall_seconds": -0.2776227950051059,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 271.1566619290043,
+          "candidate_wall_seconds": 272.0787249539992,
+          "candidate_minus_dense_wall_seconds": 0.922063024994884,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 64,
+      "condition": "base",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 1.633000000111906e-06,
+        "wall_seconds": 1.7929996829479933e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.016068178999999905,
+        "wall_seconds": 0.028060215001460165,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.08680157700000013,
+      "candidate_first_call_cpu_seconds": 0.15406346199999987,
+      "dense_first_call_wall_seconds": 0.18734062099974835,
+      "candidate_first_call_wall_seconds": 0.35294749199965736,
+      "candidate_first_four_call_cpu_seconds": 1.0523470120000002,
+      "steady_dense_wall_median_seconds": 0.182712236,
+      "steady_candidate_wall_median_seconds": 0.191271613,
+      "steady_dense_over_candidate": 0.9552501447248212,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": null,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.1873424139994313,
+          "candidate_wall_seconds": 0.3810077070011175,
+          "candidate_minus_dense_wall_seconds": 0.19366529300168622,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.8781978950064513,
+          "candidate_wall_seconds": 3.0424124430064694,
+          "candidate_minus_dense_wall_seconds": 2.164214548000018,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 3.8015936710064513,
+          "candidate_wall_seconds": 6.1027582510064695,
+          "candidate_minus_dense_wall_seconds": 2.3011645800000182,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 1827.2697089510064,
+          "candidate_wall_seconds": 1914.9934559910066,
+          "candidate_minus_dense_wall_seconds": 87.72374704000026,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 2.422999999751596e-06,
+        "wall_seconds": 2.553999365773052e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.01134115999999974,
+        "wall_seconds": 0.03589919699879829,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.05125404599999994,
+      "candidate_first_call_cpu_seconds": 0.11952003499999986,
+      "dense_first_call_wall_seconds": 0.11261310699774185,
+      "candidate_first_call_wall_seconds": 0.4459404880035436,
+      "candidate_first_four_call_cpu_seconds": 0.207050454,
+      "steady_dense_wall_median_seconds": 0.08920220200000001,
+      "steady_candidate_wall_median_seconds": 0.06839054700000001,
+      "steady_dense_over_candidate": 1.3043060176138084,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 28,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.11261566099710763,
+          "candidate_wall_seconds": 0.48183968500234187,
+          "candidate_minus_dense_wall_seconds": 0.36922402400523424,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.3948562550067436,
+          "candidate_wall_seconds": 0.8849013779909001,
+          "candidate_minus_dense_wall_seconds": 0.4900451229841565,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 1.8220914870067437,
+          "candidate_wall_seconds": 1.9791501299909002,
+          "candidate_minus_dense_wall_seconds": 0.1570586429841565,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 892.0600674470069,
+          "candidate_wall_seconds": 684.516809189991,
+          "candidate_minus_dense_wall_seconds": -207.54325825701585,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 6.920000000132376e-06,
+        "wall_seconds": 6.759997631888837e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.013171095000000133,
+        "wall_seconds": 0.044351682998239994,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.24685308500000014,
+      "candidate_first_call_cpu_seconds": 0.38393162999999975,
+      "dense_first_call_wall_seconds": 1.0777773400041042,
+      "candidate_first_call_wall_seconds": 1.2810044359939639,
+      "candidate_first_four_call_cpu_seconds": 1.619087851999999,
+      "steady_dense_wall_median_seconds": 0.38161848800000003,
+      "steady_candidate_wall_median_seconds": 0.312496117,
+      "steady_dense_over_candidate": 1.2211943356723374,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 4,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 1.077784100001736,
+          "candidate_wall_seconds": 1.3253561189922038,
+          "candidate_minus_dense_wall_seconds": 0.24757201899046777,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 5.071069650002755,
+          "candidate_wall_seconds": 4.445142305987247,
+          "candidate_minus_dense_wall_seconds": -0.6259273440155084,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 11.176965458002755,
+          "candidate_wall_seconds": 9.445080177987247,
+          "candidate_minus_dense_wall_seconds": -1.7318852800155078,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 3819.729475698003,
+          "candidate_wall_seconds": 3128.1563278379876,
+          "candidate_minus_dense_wall_seconds": -691.5731478600155,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "backward": false,
+      "construction": {
+        "cpu_seconds": 2.343000000015749e-06,
+        "wall_seconds": 2.3839966161176562e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.009666399000000103,
+        "wall_seconds": 0.01764892099890858,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.10391048600000019,
+      "candidate_first_call_cpu_seconds": 0.16226191300000004,
+      "dense_first_call_wall_seconds": 0.22272366999823134,
+      "candidate_first_call_wall_seconds": 0.3689556400058791,
+      "candidate_first_four_call_cpu_seconds": 0.39516880600000004,
+      "steady_dense_wall_median_seconds": 0.102090703,
+      "steady_candidate_wall_median_seconds": 0.10596604500000001,
+      "steady_dense_over_candidate": 0.9634284548413597,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": null,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.22272605399484746,
+          "candidate_wall_seconds": 0.3866045610047877,
+          "candidate_minus_dense_wall_seconds": 0.16387850700994022,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 0.8449300929933088,
+          "candidate_wall_seconds": 0.9383520530027454,
+          "candidate_minus_dense_wall_seconds": 0.09342196000943659,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 2.478381340993309,
+          "candidate_wall_seconds": 2.6338087730027455,
+          "candidate_minus_dense_wall_seconds": 0.15542743200943665,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 1021.3435972809933,
+          "candidate_wall_seconds": 1060.1749378730028,
+          "candidate_minus_dense_wall_seconds": 38.8313405920095,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "backward": true,
+      "construction": {
+        "cpu_seconds": 3.094999999841974e-06,
+        "wall_seconds": 2.9740040190517902e-06,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": false
+      },
+      "candidate_construction": {
+        "cpu_seconds": 0.011107823999999988,
+        "wall_seconds": 0.02400216000387445,
+        "scripted_cache_empty_before_construction": true,
+        "compiled_here": true
+      },
+      "dense_first_call_cpu_seconds": 0.4143152699999999,
+      "candidate_first_call_cpu_seconds": 0.58228597,
+      "dense_first_call_wall_seconds": 0.9164515290030977,
+      "candidate_first_call_wall_seconds": 1.2761880030011525,
+      "candidate_first_four_call_cpu_seconds": 2.7111928670000003,
+      "steady_dense_wall_median_seconds": 0.590054286,
+      "steady_candidate_wall_median_seconds": 0.49977319600000003,
+      "steady_dense_over_candidate": 1.1806441216187191,
+      "steady_cpu_per_call_seconds": null,
+      "isolated_lazy_profiling_cpu_seconds": null,
+      "first_call_includes_model_execution_and_possible_lazy_profiling": true,
+      "projected_sustained_break_even_after_four_calls": 12,
+      "conditional_projections": [
+        {
+          "calls": 1,
+          "dense_wall_seconds": 0.9164545030071167,
+          "candidate_wall_seconds": 1.300190163005027,
+          "candidate_minus_dense_wall_seconds": 0.38373565999791026,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 4,
+          "dense_wall_seconds": 4.535229180008173,
+          "candidate_wall_seconds": 5.256791098006943,
+          "candidate_minus_dense_wall_seconds": 0.7215619179987698,
+          "observed_invocation_prefix_only": true
+        },
+        {
+          "calls": 20,
+          "dense_wall_seconds": 13.976097756008173,
+          "candidate_wall_seconds": 13.253162234006943,
+          "candidate_minus_dense_wall_seconds": -0.7229355220012295,
+          "observed_invocation_prefix_only": false
+        },
+        {
+          "calls": 10000,
+          "dense_wall_seconds": 5902.717872036008,
+          "candidate_wall_seconds": 5000.989658314007,
+          "candidate_minus_dense_wall_seconds": -901.7282137220009,
+          "observed_invocation_prefix_only": false
+        }
+      ]
+    }
+  ],
+  "interpretation": "Constructor CPU includes adapter validation and script lowering. First call includes actual model execution and any lazy profiling; profiling-only CPU was not isolated. Steady medians are wall time, not CPU.",
+  "projection_assumption": "After the four measured calls, every later call is assigned its warmed confirmation median. H20 and H10000 are conditional extrapolations, not executed campaigns. Invocation boundary excludes interpreter imports and model/data preparation, which remain separately recorded in each cold worker and outer receipt.",
+  "complete_training_or_adoption_cost_proved": false,
+  "energy_joules": null
+}

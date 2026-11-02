@@ -1,0 +1,1355 @@
+{
+  "acquisition_metadata": {
+    "confirmation": {
+      "clips": 128,
+      "ledger_sha256": "5a663ed91feb5ac2c94d92b8b16a5fa5a09189c73a172ea8a4861cafcbef61f7",
+      "new_clips": 128,
+      "new_compressed_member_payload_bytes": 51121484,
+      "new_raw_bytes": 52332544,
+      "raw_bytes": 52332544,
+      "raw_media_read_by_inventory": false,
+      "reused_clips": 0,
+      "reused_raw_bytes": 0,
+      "source_sha256": "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339",
+      "status": "complete_metadata_verified"
+    },
+    "development": {
+      "clips": 64,
+      "ledger_sha256": "9a965c4b871736e629dfd5716db62577fbd5fe0797b18dc9a5c0eb774d71ae62",
+      "new_clips": 64,
+      "new_compressed_member_payload_bytes": 25922257,
+      "new_raw_bytes": 26523648,
+      "raw_bytes": 26523648,
+      "raw_media_read_by_inventory": false,
+      "reused_clips": 0,
+      "reused_raw_bytes": 0,
+      "source_sha256": "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339",
+      "status": "complete_metadata_verified"
+    },
+    "train": {
+      "clips": 192,
+      "ledger_sha256": "68402904535f828a54047814b1a75b68337d50865c7360b7bb001b07085c393f",
+      "new_clips": 160,
+      "new_compressed_member_payload_bytes": 66857447,
+      "new_raw_bytes": 68466688,
+      "raw_bytes": 82401280,
+      "raw_media_read_by_inventory": false,
+      "reused_clips": 32,
+      "reused_raw_bytes": 13934592,
+      "source_sha256": "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8",
+      "status": "complete_metadata_verified"
+    }
+  },
+  "all_blockers_closed": false,
+  "check_count": 145,
+  "checks": [
+    "exact original384-member cohort SHA",
+    "protocol unchanged",
+    "role namespaces match registered protocol",
+    "384 unique selected identities",
+    "exact selected clip counts: confirmation",
+    "balanced selected classes: confirmation",
+    "exact selected clip counts: development",
+    "balanced selected classes: development",
+    "exact selected clip counts: train",
+    "balanced selected classes: train",
+    "161257472selected raw bytes under170MB",
+    "SOURCE_FREEZE.json: PROTOCOL.json",
+    "SOURCE_FREEZE.json: COHORT_SELECTION.json",
+    "SOURCE_FREEZE.json: collect_metadata.py",
+    "SOURCE_FREEZE.json: metadata_range.py",
+    "SOURCE_FREEZE.json: data.py",
+    "SOURCE_FREEZE.json dependency: prior_training_pilot_sha256",
+    "SOURCE_FREEZE_V2.json: COHORT_SELECTION.json",
+    "SOURCE_FREEZE_V2.json: PROTOCOL.json",
+    "SOURCE_FREEZE_V2.json: SOURCE_FREEZE_V1.json",
+    "SOURCE_FREEZE_V2.json: collect_metadata.py",
+    "SOURCE_FREEZE_V2.json: data.py",
+    "SOURCE_FREEZE_V2.json: data_v1.py",
+    "SOURCE_FREEZE_V2.json: data_v2.py",
+    "SOURCE_FREEZE_V2.json: metadata_range.py",
+    "SOURCE_FREEZE_V2.json dependency: prior_training_pilot_sha256",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json: COHORT_SELECTION.json",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json: ENC0DERS.json",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json: ENCODERS.json",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json: PROTOCOL.json",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json: SOURCE_FREEZE_V2.json",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json: SOURCE_IDENTITY.json",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json: data_v2.py",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json: study.py",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json dependency: experiments/hcsn_audio_pretrained_r2_20261101/CHECKPOINT.json",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json dependency: experiments/hcsn_audio_pretrained_r2_20261101/encoder.py",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json dependency: experiments/hcsn_video_pretrained_feasibility_r2_20261101/SOURCE_IDENTITY.json",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json dependency: experiments/hcsn_video_pretrained_feasibility_r2_20261101/encoder.py",
+    "MODEL_SOURCE_FREEZE.json: COHORT_SELECTION.json",
+    "MODEL_SOURCE_FREEZE.json: ENC0DERS.json",
+    "MODEL_SOURCE_FREEZE.json: ENCODERS.json",
+    "MODEL_SOURCE_FREEZE.json: MODEL_SOURCE_FREEZE_FEATURES_V1.json",
+    "MODEL_SOURCE_FREEZE.json: PROTOCOL.json",
+    "MODEL_SOURCE_FREEZE.json: SOURCE_FREEZE_V2.json",
+    "MODEL_SOURCE_FREEZE.json: SOURCE_IDENTITY.json",
+    "MODEL_SOURCE_FREEZE.json: data_v2.py",
+    "MODEL_SOURCE_FREEZE.json: study.py",
+    "MODEL_SOURCE_FREEZE.json: study_features_v1.py",
+    "MODEL_SOURCE_FREEZE.json dependency: experiments/hcsn_audio_pretrained_r2_20261101/CHECKPOINT.json",
+    "MODEL_SOURCE_FREEZE.json dependency: experiments/hcsn_audio_pretrained_r2_20261101/encoder.py",
+    "MODEL_SOURCE_FREEZE.json dependency: experiments/hcsn_video_pretrained_feasibility_r2_20261101/SOURCE_IDENTITY.json",
+    "MODEL_SOURCE_FREEZE.json dependency: experiments/hcsn_video_pretrained_feasibility_r2_20261101/encoder.py",
+    "secondary source: PROTOCOL.json",
+    "secondary source: study.py",
+    "secondary dependency: experiments/hcsn_grid_frontend_r2_20261101/COHORT_SELECTION.json",
+    "secondary dependency: experiments/hcsn_grid_frontend_r2_20261101/ENCODERS.json",
+    "secondary dependency: experiments/hcsn_grid_frontend_r2_20261101/MODEL_SOURCE_FREEZE.json",
+    "secondary dependency: experiments/hcsn_grid_frontend_r2_20261101/PROTOCOL.json",
+    "secondary dependency: experiments/hcsn_grid_frontend_r2_20261101/features/train/FEATURES.npz",
+    "secondary dependency: experiments/hcsn_grid_frontend_r2_20261101/results/run001/CANDIDATE_FREEZE.json",
+    "secondary dependency: experiments/hcsn_grid_frontend_r2_20261101/results/run001/TRAIN_OOF.npz",
+    "secondary dependency: experiments/hcsn_grid_frontend_r2_20261101/study.py",
+    "secondary dependency: experiments/hcsn_video_pretrained_feasibility_r2_20261101/encoder.py",
+    "exact primary candidate identity",
+    "exact secondary candidate identity",
+    "secondary pins primary candidate",
+    "primary trained artifact: AT_head.npz",
+    "primary trained artifact: AVT_head.npz",
+    "primary trained artifact: A_classifier.npz",
+    "primary trained artifact: A_fold0.npz",
+    "primary trained artifact: A_fold1.npz",
+    "primary trained artifact: A_fold2.npz",
+    "primary trained artifact: TRAINING.json",
+    "primary trained artifact: TRAIN_OOF.npz",
+    "primary trained artifact: T_classifier.npz",
+    "primary trained artifact: T_fold0.npz",
+    "primary trained artifact: T_fold1.npz",
+    "primary trained artifact: T_fold2.npz",
+    "primary trained artifact: V_classifier.npz",
+    "primary trained artifact: V_fold0.npz",
+    "primary trained artifact: V_fold1.npz",
+    "primary trained artifact: V_fold2.npz",
+    "primary trained artifact: optimizer_AT.json",
+    "primary trained artifact: optimizer_AVT.json",
+    "primary trained artifact: optimizer_A_fold0.json",
+    "primary trained artifact: optimizer_A_fold1.json",
+    "primary trained artifact: optimizer_A_fold2.json",
+    "primary trained artifact: optimizer_A_full.json",
+    "primary trained artifact: optimizer_T_fold0.json",
+    "primary trained artifact: optimizer_T_fold1.json",
+    "primary trained artifact: optimizer_T_fold2.json",
+    "primary trained artifact: optimizer_T_full.json",
+    "primary trained artifact: optimizer_V_fold0.json",
+    "primary trained artifact: optimizer_V_fold1.json",
+    "primary trained artifact: optimizer_V_fold2.json",
+    "primary trained artifact: optimizer_V_full.json",
+    "secondary trained artifact: AT_head.npz",
+    "secondary trained artifact: AVT_head.npz",
+    "secondary trained artifact: A_classifier.npz",
+    "secondary trained artifact: A_fold0.npz",
+    "secondary trained artifact: A_fold1.npz",
+    "secondary trained artifact: A_fold2.npz",
+    "secondary trained artifact: TRAINING.json",
+    "secondary trained artifact: TRAIN_OOF.npz",
+    "secondary trained artifact: T_classifier.npz",
+    "secondary trained artifact: T_fold0.npz",
+    "secondary trained artifact: T_fold1.npz",
+    "secondary trained artifact: T_fold2.npz",
+    "secondary trained artifact: V_classifier.npz",
+    "secondary trained artifact: V_fold0.npz",
+    "secondary trained artifact: V_fold1.npz",
+    "secondary trained artifact: V_fold2.npz",
+    "secondary trained artifact: optimizer_AVT.json",
+    "secondary trained artifact: optimizer_V_fold0.json",
+    "secondary trained artifact: optimizer_V_fold1.json",
+    "secondary trained artifact: optimizer_V_fold2.json",
+    "secondary trained artifact: optimizer_V_full.json",
+    "primary candidate source/cohort bindings",
+    "secondary candidate source binding",
+    "nine shared A/T classifiers andAT head byte-identical",
+    "V2 publication binds exact V2freeze",
+    "initial feature-source publication matches preservedsnapshot",
+    "retention amendment publication matches currentmodel source",
+    "secondary publication binds secondarysource",
+    "primary initially remained heldpaused",
+    "global go cross-binds both published candidates",
+    "secondary go cross-binds primary publication",
+    "V2 stalezero counter correction remains explicitunknown",
+    "historical model-freeze binding resolves preservedv1 snapshot",
+    "provenance addendum historical binding: MODEL_SOURCE_FREEZE.json",
+    "provenance addendum historical binding: SOURCE_FREEZE.json",
+    "provenance addendum historical binding: SOURCE_FREEZE_V2.json",
+    "provenance addendum historical binding: acquire_train.receipt.json",
+    "retainedoriginalfeature-extraction envelope",
+    "acquisition exact registeredcoverage: confirmation",
+    "acquisition source/cohort/rolebinding: confirmation",
+    "acquisition exactbytes/roles: confirmation",
+    "acquisition exact registeredcoverage: development",
+    "acquisition source/cohort/rolebinding: development",
+    "acquisition exactbytes/roles: development",
+    "acquisition exact registeredcoverage: train",
+    "acquisition source/cohort/rolebinding: train",
+    "acquisition exactbytes/roles: train",
+    "primary/train/train finished before developmentrawacquisition",
+    "secondary/train/train finished before developmentrawacquisition"
+  ],
+  "checks_passed": true,
+  "complete_known_child_cpu_seconds": 479.628925,
+  "cost_interpretation": "PrimaryjointA/Vextraction mixesdecoder+encoder work. ThecampaignCPUsubtotal cannot establish isolatedAT-versusAVTdeployment speed, latency, energy or netadoptionbenefit.",
+  "cpu_quantity_kind": "Lowerbound from all currently completed primary/secondary outer wait4 receipts, including nonzero-exit failures; shared acquisition/metadata each counted once and nestedbody/fit times never added",
+  "energy_joules": null,
+  "final_cost_inventory_ready": true,
+  "fit_inventory": {
+    "primary_new_fits": 14,
+    "secondary_new_fits": 5,
+    "shared_existing_models_copied_without_refit": 9,
+    "total_new_fits": 19
+  },
+  "held_media_features_or_results_read": false,
+  "inventory_source_sha256": "4bcda711fb6c964d6b8b2fdcc15870286733c251788afd5949f8ac544bd316c9",
+  "isolated_AT_vs_AVT_deployment_latency_measured": false,
+  "numerical_quality_outcome_audited": false,
+  "omitted_or_external_costs": [
+    {
+      "cpu_seconds": null,
+      "item": "First failed-prefix probe QA",
+      "scope": "Unmetered diagnostic before the separately metered full registered role sourceQA"
+    },
+    {
+      "cpu_seconds": null,
+      "item": "Original32speaker1 training-source pilot and initial geometry/source discovery",
+      "scope": "Earlierowner activities outside this GRID primary/secondary subtotal; must be attributed once if aggregating cross-componentcampaign cost"
+    },
+    {
+      "cpu_seconds": null,
+      "item": "Third-party checkpoint acquisition and originalLRW/LibriSpeechpretraining",
+      "scope": "External/upstreamdependency costs, not zero and not duplicated as GRIDfit cost"
+    },
+    {
+      "cpu_seconds": null,
+      "item": "Audit, sourceauthoring, publication, packaging and transfers",
+      "scope": "Outside core outerreceipts unless separately metered; this inventory doesnot complete that history"
+    }
+  ],
+  "parallel_wall_total_seconds": null,
+  "pending_receipts": [],
+  "production_activation": false,
+  "publication_chain": {
+    "ordering_evidence_scope": "Exactcross-fileSHA/commitbindings and recordedstagepermissions plus meterUTC training-before-heldraw ordering. This inventory makes no new GitHubrequests to independently reauthenticate remotecommit timestamps.",
+    "primary_source": {
+      "PRIMARY_CANDIDATE_PUBLICATION.json": {
+        "candidate_commit": "2763bf774aea6401c1cce07a49e63aee7ecfb1ef",
+        "candidate_freeze_git_blob_readback": "4e7aba8b09288a5abdbcf0b0abd6164793f199a2",
+        "candidate_sha256": "408843812ca057e5500b8006eafbba8fc1a66e69e512633246f3a19f5528dd5c",
+        "held_access_permitted": false,
+        "scope": "Primarycandidatecompleteandpublic; actualheldpermitwithhelduntilsecondaryalsofixedandpublished"
+      },
+      "PUBLICATION_CANDIDATE.json": {
+        "candidate_commit": "2763bf774aea6401c1cce07a49e63aee7ecfb1ef",
+        "candidate_git_blob_readback": "4e7aba8b09288a5abdbcf0b0abd6164793f199a2",
+        "candidate_sha256": "408843812ca057e5500b8006eafbba8fc1a66e69e512633246f3a19f5528dd5c",
+        "global_held_go": true,
+        "scope": "Bothfixedcandidatespublishedandindependentlyauditedbeforeanyheldpayload; exactdev64/confirmation128 only,HTTPtotal<=3,nooutcome-drivenchanges",
+        "secondary_candidate_commit": "920e59dc80ff76026ef9641a417bd239afe81cf2",
+        "secondary_candidate_sha256": "01c515bc4214de328c2097de144d5a44ce744e2e4bd008ea2df301752778c84b"
+      },
+      "PUBLICATION_MODEL_SOURCE.json": {
+        "model_source_freeze_git_blob_readback": "48aad4b0d1d4fde20f8669156cd2a8cd03dcc37b",
+        "model_source_freeze_sha256": "0297923d4b0b59a7e01aa873bd8556d190b2be710b60c032e17a751ca053ebe5",
+        "scope": "Additivefoldcheckpoint/optimizerreceipt retention source frozenbeforeall14fits; originalfeaturebank andsourcepublication preserved; no hparam/descriptor change",
+        "source_commit": "64b339c9f60ba51a4aa0775cc8ccde9bdb3b959a"
+      },
+      "PUBLICATION_MODEL_SOURCE_FEATURES_V1.json": {
+        "model_source_freeze_git_blob_readback": "98cb78cc04620a0551059043c09eccd2d6fa2514",
+        "model_source_freeze_sha256": "c9558991beee56190c69e0c01678e021c18b68e22dac660dbefadb66de30791b",
+        "scope": "Exactfixedencoderbindings,meanstdfeatures,3actorfoldC.1 andAT/AVTC1source frozenbeforeGRIDmodel featureextraction/fits; no development/confirmationprefixes yet",
+        "source_commit": "21aaed6adbbafc1650ef947b55061eae9be88f35"
+      },
+      "PUBLICATION_SOURCE.json": {
+        "branch": "research/hcsn-grid-frontend-r2-20261101",
+        "cohort_sha256": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa",
+        "new_payload_acquisition_started": false,
+        "scope": "Exactprotocol/384membermetadata/source frozen/readback before any new MPEGpayloads. Train192/development64raw-only acquisition permitted; confirmation128 payloads inaccessible until candidatepublication.",
+        "source_commit": "07f4ca798edf941edaa84ba79909372d32439ad8",
+        "source_freeze_git_blob_readback": "1bbcbb90669f6e762262c801e7ce1261816a93a9"
+      },
+      "PUBLICATION_SOURCE_V2.json": {
+        "scope": "Qualifiedprefixentrypoint=data_v2 only; allsource/registeredmember/acquisitionSHA/heldcandidateguards remotelyfrozen beforeanyprefix extraction orfitting.",
+        "source_commit": "7ecdec607a7d76bf302b4139e91f51ca7e434df1",
+        "source_freeze_git_blob_readback": "c75ce16a7836ced3faee76bffda17b403a418382",
+        "source_freeze_sha256": "de816c9311705db8d95c118ff117b155e1fcc49edffc9b55d9ae4106cd62a654"
+      }
+    },
+    "secondary_source": {
+      "PUBLICATION_CANDIDATE.json": {
+        "candidate_commit": "920e59dc80ff76026ef9641a417bd239afe81cf2",
+        "candidate_git_blob_readback": "0e310f33c42670dff42c002051695bde9609c9b8",
+        "candidate_sha256": "01c515bc4214de328c2097de144d5a44ce744e2e4bd008ea2df301752778c84b",
+        "global_held_go": true,
+        "primary_candidate_commit": "2763bf774aea6401c1cce07a49e63aee7ecfb1ef",
+        "scope": "Bothcandidatefamilieslockedbeforeheldmedia/features/modeloutcomes; class-bearingmetadataalreadyknown"
+      },
+      "PUBLICATION_SOURCE.json": {
+        "scope": "Exactlyonefixedsecondary3060Ddescriptor source/protocol frozenbeforetrainV extraction/5fits andbeforeanyheldmedia/features/outcomes; targets knownmetadata explicit",
+        "source_commit": "e280d073837740b5bf90667044a4e1d29846f2df",
+        "source_freeze_git_blob_readback": "137009ead316a14bdeac0ec793c5fd5bc361154e",
+        "source_freeze_sha256": "5a519a60410879fb474f469731f0f701f1e29bfe1bcb919eab569a68d99b5f66"
+      }
+    },
+    "v2_payload_count_correction": {
+      "actual_order": "V1protocol/cohort/source publishedbeforeallnewMPEGpayloads. V1HTTPacquisitionwas alreadyrunningwhenV2guardswerefrozen/published; exactnewpayloadcount atV2freeze unknown. V2guards andmodelsource frozenbeforeanyqualifiedprefix/features/fits. No development/confirmationpixelsaccessed.",
+      "corrected_observation": null,
+      "original_published_counter": 0,
+      "reason": "SOURCE_FREEZE_V2.json inherited new_mpeg_payloads_acquired:0 fromV1template. This isnot a realinventory observation atV2freeze andmustnotbeusedasone. Theoriginalpublishedfreeze ispreservedunchanged."
+    }
+  },
+  "receipts": [
+    {
+      "artifacts": [
+        {
+          "bytes": 29553,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/inputs/CONFIRMATION_ACQUISITION.json",
+          "sha256": "5a663ed91feb5ac2c94d92b8b16a5fa5a09189c73a172ea8a4861cafcbef61f7"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.data_v2",
+        "confirmation",
+        "--candidate",
+        "experiments/hcsn_grid_frontend_r2_20261101/results/run001/CANDIDATE_FREEZE.json",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/inputs/CONFIRMATION_ACQUISITION.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 2.228903,
+      "finished_utc": "2026-11-02T02:35:56.619600+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/acquire_confirmation.receipt.json",
+      "returncode": 0,
+      "sha256": "d29589377826e3ef8ae5a431fe02f0a9014a435bfada2caed3d26983cca61937",
+      "stage": "shared/acquire/confirmation",
+      "started_utc": "2026-11-02T02:30:04.248101+00:00",
+      "status": "completed",
+      "wall_seconds": 352.3710643049999
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 14813,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/inputs/DEVELOPMENT_ACQUISITION.json",
+          "sha256": "9a965c4b871736e629dfd5716db62577fbd5fe0797b18dc9a5c0eb774d71ae62"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.data_v2",
+        "development",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/inputs/DEVELOPMENT_ACQUISITION.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 1.602841,
+      "finished_utc": "2026-11-02T02:29:55.044530+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/acquire_development.receipt.json",
+      "returncode": 0,
+      "sha256": "37b41669c95a1059241decfe64fda8bf2d412521e9944711a2ce3b19bbfe1e16",
+      "stage": "shared/acquire/development",
+      "started_utc": "2026-11-02T02:26:30.253757+00:00",
+      "status": "completed",
+      "wall_seconds": 204.79057468899555
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 42324,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/inputs/TRAIN_ACQUISITION.json",
+          "sha256": "68402904535f828a54047814b1a75b68337d50865c7360b7bb001b07085c393f"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.data",
+        "train",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/inputs/TRAIN_ACQUISITION.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 2.279274,
+      "finished_utc": "2026-11-02T02:08:27.970189+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/acquire_train.receipt.json",
+      "returncode": 0,
+      "sha256": "81a3c8e6da5c1df5e734355c2a85ceb1333fa38565b0c989b132ef59cf4593d9",
+      "stage": "shared/acquire/train",
+      "started_utc": "2026-11-02T02:01:21.765700+00:00",
+      "status": "completed",
+      "wall_seconds": 426.2041627560029
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 3623,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/confirmation_RESULT.json",
+          "sha256": "addc5ddfe350d56ca443c14c6f14d1ec523cb0fd57cf18cea3479e0b69de7a70"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.study",
+        "evaluate",
+        "--role",
+        "confirmation",
+        "--features",
+        "experiments/hcsn_grid_frontend_r2_20261101/features/confirmation",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/results/run001"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 2.4106989999999997,
+      "finished_utc": "2026-11-02T02:37:50.881861+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/evaluate_confirmation.receipt.json",
+      "returncode": 0,
+      "sha256": "1d28dd86ec55781a034277b71dc617f93eb73b443ee084e00c2fd361116412eb",
+      "stage": "primary/evaluate/confirmation",
+      "started_utc": "2026-11-02T02:37:48.464080+00:00",
+      "status": "completed",
+      "wall_seconds": 2.417344540997874
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 1211810,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/features/confirmation/FEATURES.npz",
+          "sha256": "e840bc25e4df01629f8420e006c9a04953ef93ee9bd429dd772a159ecceaf07c"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.study",
+        "features",
+        "--role",
+        "confirmation",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/features/confirmation",
+        "--candidate",
+        "experiments/hcsn_grid_frontend_r2_20261101/results/run001/CANDIDATE_FREEZE.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 87.665478,
+      "finished_utc": "2026-11-02T02:37:32.379214+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features_confirmation.receipt.json",
+      "returncode": 0,
+      "sha256": "d8f7f85efc21124d7412df5f1a788c0923d0961aeeb57197a312bab03fc5d7c1",
+      "stage": "primary/features/confirmation",
+      "started_utc": "2026-11-02T02:36:04.421598+00:00",
+      "status": "completed",
+      "wall_seconds": 87.95736961599323
+    },
+    {
+      "artifacts": [
+        {
+          "is_file": false,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/features/development/FEATURES.npz"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.study",
+        "features",
+        "--role",
+        "development",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/features/development",
+        "--candidate",
+        "experiments/hcsn_grid_frontend_r2_20261101/results/run001/CANDIDATE_FREEZE.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 14.530441,
+      "finished_utc": "2026-11-02T02:30:23.472851+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features_development.receipt.json",
+      "returncode": 1,
+      "sha256": "b1fc5b601cf767552b962418eeba0b5f9b7b09b35e1956bbcc8976c96771a67d",
+      "stage": "primary/features/development",
+      "started_utc": "2026-11-02T02:30:08.925255+00:00",
+      "status": "completed",
+      "wall_seconds": 14.547364597994601
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 1817181,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/features/train/FEATURES.npz",
+          "sha256": "01f671146932ea0f64bbf0a7417f481d93d9df4ae13381ad00caec40abf95fef"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.study",
+        "features",
+        "--role",
+        "train",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/features/train"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 134.20462799999999,
+      "finished_utc": "2026-11-02T02:13:03.722218+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features_train.receipt.json",
+      "returncode": 0,
+      "sha256": "b35b374bb30ffccc683f704220c1d01621defc93f1572a23e123eed2963af706",
+      "stage": "primary/features/train",
+      "started_utc": "2026-11-02T02:10:48.502248+00:00",
+      "status": "completed",
+      "wall_seconds": 135.21967509500246
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 261144,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/COHORT_SELECTION.json",
+          "sha256": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.collect_metadata"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 0.562307,
+      "finished_utc": "2026-11-02T01:57:11.489323+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/metadata_collect.receipt.json",
+      "returncode": 0,
+      "sha256": "0443c1ef2713bb5a4eca01387b732993aa2bb2b74b0046231dc977bcf78bebcb",
+      "stage": "shared/metadata",
+      "started_utc": "2026-11-02T01:56:37.871879+00:00",
+      "status": "completed",
+      "wall_seconds": 33.617177512001945
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 149660,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/CONFIRMATION_SOURCE_QA.json",
+          "sha256": "31b4f2265b8227c88777c35ce6ea69709263d5fa6712887ece9c1669fcb70d61"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.integration.source_qa",
+        "confirmation",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/CONFIRMATION_SOURCE_QA.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 31.165381,
+      "finished_utc": "2026-11-02T02:36:35.897606+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/source_qa_confirmation.receipt.json",
+      "returncode": 0,
+      "sha256": "b77b3e8a8764dd493519e9636b9d1e525c60676a96f10424c30a675370a47c95",
+      "stage": "other/experiments.hcsn_grid_frontend_r2_20261101.integration.source_qa",
+      "started_utc": "2026-11-02T02:36:04.453519+00:00",
+      "status": "completed",
+      "wall_seconds": 31.443885007000063
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 73299,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/DEVELOPMENT_SOURCE_QA.json",
+          "sha256": "b1c7acbb8e99bd03daf11577ab4dd132256a0d32b8533d91a05fd5fb11d90f20"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.integration.source_qa",
+        "development",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/DEVELOPMENT_SOURCE_QA.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 14.225522000000002,
+      "finished_utc": "2026-11-02T02:32:02.053363+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/source_qa_development.receipt.json",
+      "returncode": 0,
+      "sha256": "f0d4567b88335a46f5f84b153c5064881effd1400428df0586c414d42c9be38a",
+      "stage": "other/experiments.hcsn_grid_frontend_r2_20261101.integration.source_qa",
+      "started_utc": "2026-11-02T02:31:47.978012+00:00",
+      "status": "completed",
+      "wall_seconds": 14.075120556000911
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 4352,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/CANDIDATE_FREEZE.json",
+          "sha256": "408843812ca057e5500b8006eafbba8fc1a66e69e512633246f3a19f5528dd5c"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_frontend_r2_20261101.study",
+        "train",
+        "--features",
+        "experiments/hcsn_grid_frontend_r2_20261101/features/train",
+        "--out",
+        "experiments/hcsn_grid_frontend_r2_20261101/results/run001"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 2.897316,
+      "finished_utc": "2026-11-02T02:15:57.253231+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "primary",
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/train_heads.receipt.json",
+      "returncode": 0,
+      "sha256": "3fcfc198501302329e523848045d4106e51f779aa37aba5af05622fcd9f4cb76",
+      "stage": "primary/train/train",
+      "started_utc": "2026-11-02T02:15:52.952076+00:00",
+      "status": "completed",
+      "wall_seconds": 4.300845817000663
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 2791,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/confirmation_FAMILY_RESULT.json",
+          "sha256": "c100d67fb8c0ac3c21c71bd761c8403693b1cd4da2b15319862f46ef2bfba565"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_temporal_r2_20261101.study",
+        "evaluate",
+        "--role",
+        "confirmation",
+        "--features",
+        "experiments/hcsn_grid_temporal_r2_20261101/features/confirmation",
+        "--out",
+        "experiments/hcsn_grid_temporal_r2_20261101/results/run001"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 2.5362859999999996,
+      "finished_utc": "2026-11-02T02:37:51.024015+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "secondary",
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/evaluate_confirmation.receipt.json",
+      "returncode": 0,
+      "sha256": "dc52879addfea10ab51b8c193431ffee7bcd2baa26b77c04c4091a55894b3c8c",
+      "stage": "secondary/evaluate/confirmation",
+      "started_utc": "2026-11-02T02:37:48.472758+00:00",
+      "status": "completed",
+      "wall_seconds": 2.550986214002478
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 1459957,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_temporal_r2_20261101/features/confirmation/FEATURES.npz",
+          "sha256": "ff133fee140c36cf5037acf788ccc2a9ed8320b08131ecbb34b05a7c02721294"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_temporal_r2_20261101.study",
+        "features",
+        "--role",
+        "confirmation",
+        "--out",
+        "experiments/hcsn_grid_temporal_r2_20261101/features/confirmation",
+        "--candidate",
+        "experiments/hcsn_grid_temporal_r2_20261101/results/run001/CANDIDATE_FREEZE.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 69.63332,
+      "finished_utc": "2026-11-02T02:37:14.407347+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "secondary",
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_confirmation.receipt.json",
+      "returncode": 0,
+      "sha256": "6345b1f10dd98b2a1fdbbea3d0710dfe781fd78fa9c44a8f662a6e156137fd94",
+      "stage": "secondary/features/confirmation",
+      "started_utc": "2026-11-02T02:36:04.423712+00:00",
+      "status": "completed",
+      "wall_seconds": 69.98340195600031
+    },
+    {
+      "artifacts": [
+        {
+          "is_file": false,
+          "path": "experiments/hcsn_grid_temporal_r2_20261101/features/development/FEATURES.npz"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_temporal_r2_20261101.study",
+        "features",
+        "--role",
+        "development",
+        "--out",
+        "experiments/hcsn_grid_temporal_r2_20261101/features/development",
+        "--candidate",
+        "experiments/hcsn_grid_temporal_r2_20261101/results/run001/CANDIDATE_FREEZE.json"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 11.14852,
+      "finished_utc": "2026-11-02T02:30:20.113097+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "secondary",
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_development.receipt.json",
+      "returncode": 1,
+      "sha256": "622003a582611a9ef8007ccfb045f527507c1339b3a6c878c4591bc9b051ba58",
+      "stage": "secondary/features/development",
+      "started_utc": "2026-11-02T02:30:08.914391+00:00",
+      "status": "completed",
+      "wall_seconds": 11.19843692699942
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 2189219,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_temporal_r2_20261101/features/train/FEATURES.npz",
+          "sha256": "6b89da440fc847dda1c9208308ebb8c25569aa3e03bef3823d8f09191bee12ed"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_temporal_r2_20261101.study",
+        "features",
+        "--role",
+        "train",
+        "--out",
+        "experiments/hcsn_grid_temporal_r2_20261101/features/train"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 100.302716,
+      "finished_utc": "2026-11-02T02:24:20.407904+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "secondary",
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_train.receipt.json",
+      "returncode": 0,
+      "sha256": "e06cf2312653bdda106a9004cc4cbb8c9bba580e302d69fbf2203fe386e44232",
+      "stage": "secondary/features/train",
+      "started_utc": "2026-11-02T02:22:38.381344+00:00",
+      "status": "completed",
+      "wall_seconds": 102.0262939000022
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 2141,
+          "is_file": true,
+          "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/CANDIDATE_FREEZE.json",
+          "sha256": "01c515bc4214de328c2097de144d5a44ce744e2e4bd008ea2df301752778c84b"
+        }
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_grid_temporal_r2_20261101.study",
+        "train",
+        "--features",
+        "experiments/hcsn_grid_temporal_r2_20261101/features/train",
+        "--out",
+        "experiments/hcsn_grid_temporal_r2_20261101/results/run001"
+      ],
+      "complete_child_accounting": true,
+      "cpu_seconds": 2.235293,
+      "finished_utc": "2026-11-02T02:24:37.182417+00:00",
+      "held_artifact_contents_not_read": true,
+      "owner": "secondary",
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/train_heads.receipt.json",
+      "returncode": 0,
+      "sha256": "3bffd3fe2ce9943cc893bad4e4e1159ffb42e67f471b03504f771ee1cfe7f8a1",
+      "stage": "secondary/train/train",
+      "started_utc": "2026-11-02T02:24:34.945285+00:00",
+      "status": "completed",
+      "wall_seconds": 2.2368893189996015
+    }
+  ],
+  "reported_wrapper_cpu_seconds_partial": 0.02513107199999999,
+  "required_confirmation_evaluation_stages": [
+    "primary/evaluate/confirmation",
+    "secondary/evaluate/confirmation"
+  ],
+  "schema": "hcsn.grid.independent-provenance-cost-inventory.v1",
+  "selected_compressed_payload_bytes": 157548293,
+  "selected_raw_bytes": 161257472,
+  "selected_role_inventory": {
+    "confirmation": {
+      "clips": 128,
+      "compressed_payload_bytes": 51121484,
+      "raw_bytes": 52332544,
+      "speaker_ids": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "targets": {
+        "0": 64,
+        "1": 64
+      }
+    },
+    "development": {
+      "clips": 64,
+      "compressed_payload_bytes": 25922257,
+      "raw_bytes": 26523648,
+      "speaker_ids": [
+        8,
+        9
+      ],
+      "targets": {
+        "0": 32,
+        "1": 32
+      }
+    },
+    "train": {
+      "clips": 192,
+      "compressed_payload_bytes": 80504552,
+      "raw_bytes": 82401280,
+      "speaker_ids": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "targets": {
+        "0": 96,
+        "1": 96
+      }
+    }
+  },
+  "snapshot_utc": "2026-11-02T02:39:04.735992+00:00",
+  "source_and_train_artifact_bindings": [
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/PROTOCOL.json",
+      "sha256": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/COHORT_SELECTION.json",
+      "sha256": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/collect_metadata.py",
+      "sha256": "e0cd6847d3676a65dce5c1808fe32890eb026581452f5f359e1a25085a6f7b52"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/metadata_range.py",
+      "sha256": "4908b4d5ec998e4887469c799455eb72aec9d86c933b4b46ec86f7750e48db1b"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/data.py",
+      "sha256": "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8"
+    },
+    {
+      "path": "experiments/hcsn_video_raw_r2_20261101/external_grid/PILOT_ACQUISITION.json",
+      "sha256": "0668ad3747303af91612d4097d06f8ddb28b19e724d6312d8db8d5c2b53cb78e"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/COHORT_SELECTION.json",
+      "sha256": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/PROTOCOL.json",
+      "sha256": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/SOURCE_FREEZE_V1.json",
+      "sha256": "c1f8c1db621806735616ed087e5474d47be29a047a188e622f2893510ca017f6"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/collect_metadata.py",
+      "sha256": "e0cd6847d3676a65dce5c1808fe32890eb026581452f5f359e1a25085a6f7b52"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/data.py",
+      "sha256": "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/data_v1.py",
+      "sha256": "0c0deab85332b3cf987a62d947bd8155c1426ea0c969bee1aaa2903d80538be8"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/data_v2.py",
+      "sha256": "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/metadata_range.py",
+      "sha256": "4908b4d5ec998e4887469c799455eb72aec9d86c933b4b46ec86f7750e48db1b"
+    },
+    {
+      "path": "experiments/hcsn_video_raw_r2_20261101/external_grid/PILOT_ACQUISITION.json",
+      "sha256": "0668ad3747303af91612d4097d06f8ddb28b19e724d6312d8db8d5c2b53cb78e"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/COHORT_SELECTION.json",
+      "sha256": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/ENC0DERS.json",
+      "sha256": "682ec79d732a12d0ba1237838f7ed5deecd924accf18d03ff55a5d3ad87822f6"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/ENCODERS.json",
+      "sha256": "682ec79d732a12d0ba1237838f7ed5deecd924accf18d03ff55a5d3ad87822f6"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/PROTOCOL.json",
+      "sha256": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/SOURCE_FREEZE_V2.json",
+      "sha256": "de816c9311705db8d95c118ff117b155e1fcc49edffc9b55d9ae4106cd62a654"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/SOURCE_IDENTITY.json",
+      "sha256": "6c5d08e2457ff36267d0c65964bf8d407b72785da502eb33c508b73f32fa52f8"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/data_v2.py",
+      "sha256": "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/study_features_v1.py",
+      "sha256": "d3f0d014851ea23c9838e42cb903d3e8bc8f817405f436470f5088d6adb663f8"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/CHECKPOINT.json",
+      "sha256": "e889ebdfa1e4a48171223a080223b4a31cc67504e30d72d3d65506579e761bfa"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/encoder.py",
+      "sha256": "77df75fb588936b5bf4bc70e89d93eb752cef113dd4cf513f5a5ab94be33085a"
+    },
+    {
+      "path": "experiments/hcsn_video_pretrained_feasibility_r2_20261101/SOURCE_IDENTITY.json",
+      "sha256": "f59ab89cf37d7df734e3d252cfa28b018699d4fc63feed63bb7c822cb917ee93"
+    },
+    {
+      "path": "experiments/hcsn_video_pretrained_feasibility_r2_20261101/encoder.py",
+      "sha256": "76208ab62714e0291e7a1c15294b1ce4c66bbab9b01bcfb7883aad744b7e8a96"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/COHORT_SELECTION.json",
+      "sha256": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/ENC0DERS.json",
+      "sha256": "682ec79d732a12d0ba1237838f7ed5deecd924accf18d03ff55a5d3ad87822f6"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/ENCODERS.json",
+      "sha256": "682ec79d732a12d0ba1237838f7ed5deecd924accf18d03ff55a5d3ad87822f6"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/MODEL_SOURCE_FREEZE_FEATURES_V1.json",
+      "sha256": "c9558991beee56190c69e0c01678e021c18b68e22dac660dbefadb66de30791b"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/PROTOCOL.json",
+      "sha256": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/SOURCE_FREEZE_V2.json",
+      "sha256": "de816c9311705db8d95c118ff117b155e1fcc49edffc9b55d9ae4106cd62a654"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/SOURCE_IDENTITY.json",
+      "sha256": "6c5d08e2457ff36267d0c65964bf8d407b72785da502eb33c508b73f32fa52f8"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/data_v2.py",
+      "sha256": "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/study.py",
+      "sha256": "8e3b1b489f8c885de8df72f78e0ee8a2ea44313aa425b6afd12cb3e4eceef4e4"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/study_features_v1.py",
+      "sha256": "d3f0d014851ea23c9838e42cb903d3e8bc8f817405f436470f5088d6adb663f8"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/CHECKPOINT.json",
+      "sha256": "e889ebdfa1e4a48171223a080223b4a31cc67504e30d72d3d65506579e761bfa"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/encoder.py",
+      "sha256": "77df75fb588936b5bf4bc70e89d93eb752cef113dd4cf513f5a5ab94be33085a"
+    },
+    {
+      "path": "experiments/hcsn_video_pretrained_feasibility_r2_20261101/SOURCE_IDENTITY.json",
+      "sha256": "f59ab89cf37d7df734e3d252cfa28b018699d4fc63feed63bb7c822cb917ee93"
+    },
+    {
+      "path": "experiments/hcsn_video_pretrained_feasibility_r2_20261101/encoder.py",
+      "sha256": "76208ab62714e0291e7a1c15294b1ce4c66bbab9b01bcfb7883aad744b7e8a96"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/PROTOCOL.json",
+      "sha256": "9600ac2fcfc96c38dd7b12cd77a5aba83f5cdac5eee6c2817d209d2e9c22b215"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/study.py",
+      "sha256": "c8bd8907dec2a480b708bb46bf1f2726a17ea094387df497f60d485516ce3aa0"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/COHORT_SELECTION.json",
+      "sha256": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/ENCODERS.json",
+      "sha256": "682ec79d732a12d0ba1237838f7ed5deecd924accf18d03ff55a5d3ad87822f6"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/MODEL_SOURCE_FREEZE.json",
+      "sha256": "0297923d4b0b59a7e01aa873bd8556d190b2be710b60c032e17a751ca053ebe5"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/PROTOCOL.json",
+      "sha256": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features/train/FEATURES.npz",
+      "sha256": "01f671146932ea0f64bbf0a7417f481d93d9df4ae13381ad00caec40abf95fef"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/CANDIDATE_FREEZE.json",
+      "sha256": "408843812ca057e5500b8006eafbba8fc1a66e69e512633246f3a19f5528dd5c"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/TRAIN_OOF.npz",
+      "sha256": "19ad0e8082a0a7a9356af1424def66a2adc62f1f5eeaff1f80466f0b298e42d4"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/study.py",
+      "sha256": "8e3b1b489f8c885de8df72f78e0ee8a2ea44313aa425b6afd12cb3e4eceef4e4"
+    },
+    {
+      "path": "experiments/hcsn_video_pretrained_feasibility_r2_20261101/encoder.py",
+      "sha256": "76208ab62714e0291e7a1c15294b1ce4c66bbab9b01bcfb7883aad744b7e8a96"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/AT_head.npz",
+      "sha256": "a470dca8bc56dd7879c4f15eb158a7313af65a8306e25af5c4640392d31482a3"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/AVT_head.npz",
+      "sha256": "5ec91c45cb18b8ac8ef75f8e6ea03e1c7bc7ffd1ae1980a5010f4a3543db86ea"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/A_classifier.npz",
+      "sha256": "86e1f71d209e2684fa866e09f8c2070fa75b84c775ddfb4481c4950c3e6e6f12"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/A_fold0.npz",
+      "sha256": "8f2bc7c2a9552da76ae3cdf75ee4cf3317d44fe78132124fa1ccafccd3929e66"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/A_fold1.npz",
+      "sha256": "0c7359748a37d321e71aed622c1e684e93a43772171080169950c37a0f18c20f"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/A_fold2.npz",
+      "sha256": "9eb47e3f5715fd96ce4bc1884c5596ac4d17dd959874e59dbcf6e9142a27a6e3"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/TRAINING.json",
+      "sha256": "402bfceba1de489dd986b0ca6d8551da7731cd86e1756cbdeb74f8c005ce7764"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/TRAIN_OOF.npz",
+      "sha256": "19ad0e8082a0a7a9356af1424def66a2adc62f1f5eeaff1f80466f0b298e42d4"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/T_classifier.npz",
+      "sha256": "4156277bb1d019679801bd64e9750e0ce448943a7ee27c0085e1481210827d0b"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/T_fold0.npz",
+      "sha256": "ff608fef21aa78bb579e1cc4f9525cf8f92c57e10311b83cda6ddf7928ab129e"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/T_fold1.npz",
+      "sha256": "ff608fef21aa78bb579e1cc4f9525cf8f92c57e10311b83cda6ddf7928ab129e"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/T_fold2.npz",
+      "sha256": "ff608fef21aa78bb579e1cc4f9525cf8f92c57e10311b83cda6ddf7928ab129e"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/V_classifier.npz",
+      "sha256": "0b349846f3433bf6981f71384a76f3fc9d457f23850e5f953070954dc4f945ba"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/V_fold0.npz",
+      "sha256": "33b91ad80ff79b3741ebc685221aea56aee0c62154c701108bf7b6f838854bd5"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/V_fold1.npz",
+      "sha256": "3e0cd544bd8195f86e63a27d668ab9039ba89626583e822c33d54c1349aa7b21"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/V_fold2.npz",
+      "sha256": "67e9b2bd87eb16556dfb1242efb206838647a87c8ee568578ed6ddae4c1033c2"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_AT.json",
+      "sha256": "4785ab6b8f89351a3dbde4ae32d5b39534596a9c91b6d70abba1daf921dbdcee"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_AVT.json",
+      "sha256": "7573e894db9d8ab99b8d07d059079ea2d42de7a1ca70cb8c6fabacf3485c353f"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_A_fold0.json",
+      "sha256": "f2121027c5d31e09eb25b854fe704e8835c835ea2971bd985c92f923a364028b"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_A_fold1.json",
+      "sha256": "fa79ccc702587dd463fc6477958fbb9ab42207d3bdb909bf91085fd77880846e"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_A_fold2.json",
+      "sha256": "ab7501482b7894ce54bfaed29b4dfbe452613a31e23b5778070d2c8a7026ac54"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_A_full.json",
+      "sha256": "aa496d27e9274938af3aec160a06028ef6f4c6027191e03142b046734efac3d3"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_T_fold0.json",
+      "sha256": "43ad1e8635230fd029ad4fc73457a70db14b0fb5f3d4a418fa36dd924ff64556"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_T_fold1.json",
+      "sha256": "cf14ac75ab5b9c1deaff7786e78cf20961970e2969fe23c012767c3b817548d5"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_T_fold2.json",
+      "sha256": "3cbc43bea5d373e41cd79878d1366e461c2f86d69c4ba2e6c79259e3e68c84f2"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_T_full.json",
+      "sha256": "b0f8281a91066fa73c3ffd68dcceb826d8e89a1646bb0895824f2326f8ece1d3"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_V_fold0.json",
+      "sha256": "2f019479705a749a8a61aefa12ec3689bf5b20331acbbe5b2c4ebf61e334c343"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_V_fold1.json",
+      "sha256": "5e417a31b2ff8b6b4b6795405db6aa32878c25a2c577c28d6c9abc1893d2a3cc"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_V_fold2.json",
+      "sha256": "3b06e46cdfedb290457ac2341224ce2ca6133afc781576d88a93d1b434efedf5"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/optimizer_V_full.json",
+      "sha256": "aa5bcd0b6c081fa0a04b8f4cd88a00bbd096a4050d0a760d90b76c29b09fabb8"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/AT_head.npz",
+      "sha256": "a470dca8bc56dd7879c4f15eb158a7313af65a8306e25af5c4640392d31482a3"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/AVT_head.npz",
+      "sha256": "2f9d98899bb241d9ab92d2116bb16922a1235866d55d6828903adf92360e1c4d"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/A_classifier.npz",
+      "sha256": "86e1f71d209e2684fa866e09f8c2070fa75b84c775ddfb4481c4950c3e6e6f12"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/A_fold0.npz",
+      "sha256": "8f2bc7c2a9552da76ae3cdf75ee4cf3317d44fe78132124fa1ccafccd3929e66"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/A_fold1.npz",
+      "sha256": "0c7359748a37d321e71aed622c1e684e93a43772171080169950c37a0f18c20f"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/A_fold2.npz",
+      "sha256": "9eb47e3f5715fd96ce4bc1884c5596ac4d17dd959874e59dbcf6e9142a27a6e3"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/TRAINING.json",
+      "sha256": "2edfe5fbf9354badc4537efac8268841a4592e6003ef2fd4f04d7345767d0e00"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/TRAIN_OOF.npz",
+      "sha256": "04b4538a6ce528b44d6450c17cc91eea1c6e0672d1c3342412f26fe6ddca8630"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/T_classifier.npz",
+      "sha256": "4156277bb1d019679801bd64e9750e0ce448943a7ee27c0085e1481210827d0b"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/T_fold0.npz",
+      "sha256": "ff608fef21aa78bb579e1cc4f9525cf8f92c57e10311b83cda6ddf7928ab129e"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/T_fold1.npz",
+      "sha256": "ff608fef21aa78bb579e1cc4f9525cf8f92c57e10311b83cda6ddf7928ab129e"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/T_fold2.npz",
+      "sha256": "ff608fef21aa78bb579e1cc4f9525cf8f92c57e10311b83cda6ddf7928ab129e"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/V_classifier.npz",
+      "sha256": "5cd754352eda0dcf7d9e4ab68438b0ee11693ee8b4e6d839c1676b9fef63d921"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/V_fold0.npz",
+      "sha256": "a4046737079ab2348272749091d6bb8bb032b4e8dbcaadb0c1b57bc9ec0e0496"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/V_fold1.npz",
+      "sha256": "7cde29a3b09a3e3a5cfb80a1eb397d3a1fdf1846e4cbaa3bdcf33c25ac450fa4"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/V_fold2.npz",
+      "sha256": "8d0d3a998eeab16d477206d6d672fdfe5e0380194fefb85748e12a6d88ae7618"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/optimizer_AVT.json",
+      "sha256": "a3108dc7a999e13fc67cd2370987aaee3e0ad60df0e697563a87fdf006151862"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/optimizer_V_fold0.json",
+      "sha256": "2c79dfdf48f2e02ab05179d7c1ae4460927d05131db94031843d0f7d0b9a42ba"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/optimizer_V_fold1.json",
+      "sha256": "536a35e76ba51b362198c8ab56b7da2843b70a04a4d7b3e69c4322e1df712581"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/optimizer_V_fold2.json",
+      "sha256": "269bd6739b3e23f5f060fa48f8d692b0551c9648900beaebef893b9450b95158"
+    },
+    {
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/results/run001/optimizer_V_full.json",
+      "sha256": "ea16e79071aae14d812e2aed9c4e320c8e7d0b218b9f94debe748a33ee5d3656"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/MODEL_SOURCE_FREEZE_FEATURES_V1.json",
+      "sha256": "c9558991beee56190c69e0c01678e021c18b68e22dac660dbefadb66de30791b"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/SOURCE_FREEZE.json",
+      "sha256": "c1f8c1db621806735616ed087e5474d47be29a047a188e622f2893510ca017f6"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/SOURCE_FREEZE_V2.json",
+      "sha256": "de816c9311705db8d95c118ff117b155e1fcc49edffc9b55d9ae4106cd62a654"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/acquire_train.receipt.json",
+      "sha256": "81a3c8e6da5c1df5e734355c2a85ceb1333fa38565b0c989b132ef59cf4593d9"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features_train.receipt.json",
+      "sha256": "b35b374bb30ffccc683f704220c1d01621defc93f1572a23e123eed2963af706"
+    }
+  ],
+  "source_holds": {
+    "development": {
+      "aggregate_model_scores": null,
+      "failed_source_clips": 3,
+      "padding_or_short_prefix_exception": false,
+      "qualified_source_clips": 61,
+      "registered_actors": [
+        8,
+        9
+      ],
+      "registered_clips": 64,
+      "registered_sample_replaced": false,
+      "retained_feature_bank": false,
+      "source_or_candidate_changed": false,
+      "status": "SOURCE_FAILURE_HOLD",
+      "valid_subset_scores": null
+    }
+  },
+  "source_quality_metadata": {
+    "confirmation": {
+      "failed_source_clips": 0,
+      "method_changed": false,
+      "models_loaded": false,
+      "qualified_source_clips": 128,
+      "registered_actors": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "registered_clips": 128,
+      "scores_generated": false,
+      "sha256": "31b4f2265b8227c88777c35ce6ea69709263d5fa6712887ece9c1669fcb70d61",
+      "status": "SOURCE_QUALIFIED",
+      "valid_subset_adoption": false
+    },
+    "development": {
+      "failed_source_clips": 3,
+      "method_changed": false,
+      "models_loaded": false,
+      "qualified_source_clips": 61,
+      "registered_actors": [
+        8,
+        9
+      ],
+      "registered_clips": 64,
+      "scores_generated": false,
+      "sha256": "b1c7acbb8e99bd03daf11577ab4dd132256a0d32b8533d91a05fd5fb11d90f20",
+      "status": "SOURCE_FAILURE_HOLD",
+      "valid_subset_adoption": false
+    }
+  },
+  "wall_scope": "Per-envelope wall times retained only; parallel wall durations are never summed",
+  "wrapper_scope": "Separateknown parent-process partialtimers; initial/finalreceipt and interpreter startup gaps remain, not part of childsubtotal"
+}

@@ -1,0 +1,27 @@
+{"task": "mqar", "batch": 1, "condition": "base", "ratios": [{"joint_fused": 1.660663975216676, "joint_reference": 1.276656046909152}, {"joint_fused": 2.1167467183203827, "joint_reference": 1.7262514114441723}]}
+{"task": "mqar", "batch": 24, "condition": "base", "ratios": [{"joint_fused": 1.8766554986464348, "joint_reference": 1.743465325256458}, {"joint_fused": 1.7305072691890033, "joint_reference": 1.6025103330262152}]}
+{"task": "mqar", "batch": 64, "condition": "base", "ratios": [{"joint_fused": 1.3724067202229067, "joint_reference": 1.2655242953772377}, {"joint_fused": 1.1707345383207073, "joint_reference": 1.079390555541183}]}
+{"task": "mqar", "batch": 1, "condition": "long_tokens_128", "ratios": [{"joint_fused": 2.4649562887783767, "joint_reference": 2.518105391128037}, {"joint_fused": 1.5501972091802365, "joint_reference": 1.623446355090707}]}
+{"task": "mqar", "batch": 24, "condition": "long_tokens_128", "ratios": [{"joint_fused": 1.4556488045045481, "joint_reference": 1.4695316614864427}, {"joint_fused": 1.4307453680799607, "joint_reference": 1.4389214926622251}]}
+{"task": "binding", "batch": 1, "condition": "base", "ratios": [{"joint_fused": 1.8120692280639419, "joint_reference": 1.8380140706363535}, {"joint_fused": 1.46659047079919, "joint_reference": 1.429681675530326}]}
+{"task": "binding", "batch": 24, "condition": "base", "ratios": [{"joint_fused": 1.549817119712686, "joint_reference": 1.3810032228065656}, {"joint_fused": 1.4103242955144009, "joint_reference": 1.4324210332325238}]}
+{"task": "binding", "batch": 64, "condition": "base", "ratios": [{"joint_fused": 1.4041791926209855, "joint_reference": 1.2712983749432651}, {"joint_fused": 0.8829975997958041, "joint_reference": 0.9080001012024651}]}
+{"task": "binding", "batch": 1, "condition": "long_tokens_128", "ratios": [{"joint_fused": 1.506272363550046, "joint_reference": 2.6518352200728614}, {"joint_fused": 1.3449702983485623, "joint_reference": 1.4140288487069637}]}
+{"task": "binding", "batch": 24, "condition": "long_tokens_128", "ratios": [{"joint_fused": 1.5344622827440713, "joint_reference": 1.6600356086057642}, {"joint_fused": 1.5176256156241694, "joint_reference": 1.4837477027064463}]}
+{
+  "selected": "joint_reference",
+  "candidates": [
+    {
+      "backend": "joint_fused",
+      "numerical_eligible": true,
+      "minimum_ratio": 0.8829975997958041,
+      "stable_speed_gate": false
+    },
+    {
+      "backend": "joint_reference",
+      "numerical_eligible": true,
+      "minimum_ratio": 0.9080001012024651,
+      "stable_speed_gate": false
+    }
+  ]
+}

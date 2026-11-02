@@ -1,0 +1,34 @@
+{
+  "attributable_process_family_memory_peak_bytes": null,
+  "calibration_complete_child_cpu_seconds": 20.068745,
+  "calibration_wall_seconds": 26.46559768100269,
+  "complete_campaign_cpu_seconds": null,
+  "complete_training_cpu_seconds": null,
+  "confirmation_complete_child_cpu_seconds": 127.874395,
+  "confirmation_wall_seconds": 161.14054386399948,
+  "development_checks_cpu_seconds": null,
+  "energy_joules": null,
+  "historical_training_and_preparation_cpu_seconds": null,
+  "measured_campaign_cpu_lower_bound_seconds": 656.667426541,
+  "metering_limits": "wait4 peak RSS is not aggregate process-family peak; CPU seconds are not joules; publication, environment installation, archive recovery, independent auditing and development checks remain outside measured campaign bound",
+  "no_double_counting": "Fit and evaluation body CPU are nested in their enclosing phase or whole-child receipt and are not added again",
+  "receipts": [
+    {
+      "path": "results/run001/ALL_CHECKPOINTS.json",
+      "sha256": "88842f4a56d921910821d42acc092805e456332c90a6f719c413b7ba63a39db9"
+    },
+    {
+      "path": "results/run001/calibration_meter.receipt.json",
+      "sha256": "2768a18533ca6e165639ae1fc8f32979cd718205f14d61956aff7700fe786a29"
+    },
+    {
+      "path": "results/run001/confirmation_meter.receipt.json",
+      "sha256": "dc01217cddd787981e74db9fdda7a87e6949086130c54d9e9e8befe47d54a8b7"
+    }
+  ],
+  "schema": "hcsn.missing-answers.cost.v1",
+  "training_parent_initial_import_cpu_seconds": null,
+  "training_phase_lower_bound_cpu_seconds": 508.72428654099997,
+  "training_phase_wall_seconds": 328.4271706360014,
+  "training_scope": "Parent process_time after imports plus RUSAGE_CHILDREN delta after all three worker processes were joined; spawned worker imports/writes included, initial parent startup/import excluded"
+}

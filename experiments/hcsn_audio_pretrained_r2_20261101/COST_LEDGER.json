@@ -1,0 +1,144 @@
+{
+  "schema": "hcsn.pretrained-frontend.outer-cost-ledger.v1",
+  "component": "hcsn_audio_pretrained_r2_20261101",
+  "receipt_count": 8,
+  "receipt_rows": [
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/acquire001.receipt.json",
+      "bytes": 2118,
+      "sha256": "7ebfb78be476234e1ed4e67dc265c96e2c160c3143fcaa7c7003a03587493ea8",
+      "started_utc": "2026-11-02T01:53:46.663775+00:00",
+      "finished_utc": "2026-11-02T01:53:58.260308+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 1.054684,
+      "wall_seconds": 11.595870687997376,
+      "peak_rss_bytes": 18911232,
+      "phase": "acquire001"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/checks001.receipt.json",
+      "bytes": 2043,
+      "sha256": "1623033cfeb797e07da9a3b03b97e3ddbf2a611e3ac439aa49f9dd54bec0f77a",
+      "started_utc": "2026-11-02T02:00:27.284551+00:00",
+      "finished_utc": "2026-11-02T02:00:31.272375+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 3.9567200000000002,
+      "wall_seconds": 3.9876352669962216,
+      "peak_rss_bytes": 1052176384,
+      "phase": "checks001"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/checks002.receipt.json",
+      "bytes": 2034,
+      "sha256": "2bc5d44f8fcd7ae23ffb751079d53304085d71f347726f5afa974968ed14febd",
+      "started_utc": "2026-11-02T02:01:52.629743+00:00",
+      "finished_utc": "2026-11-02T02:01:57.172133+00:00",
+      "returncode": 1,
+      "total_cpu_seconds": 4.492565,
+      "wall_seconds": 4.542154353999649,
+      "peak_rss_bytes": 1052581888,
+      "phase": "checks002"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/checks003.receipt.json",
+      "bytes": 2028,
+      "sha256": "697593fd42fe5baba6dfe14076c96526130f7c5275fb1605ad29428f4666ac0b",
+      "started_utc": "2026-11-02T02:03:39.694515+00:00",
+      "finished_utc": "2026-11-02T02:03:44.438628+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 4.7233,
+      "wall_seconds": 4.743891878002614,
+      "peak_rss_bytes": 1052643328,
+      "phase": "checks003"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/extract_train001.receipt.json",
+      "bytes": 2343,
+      "sha256": "79ff7fcb0a528159097a9d2004555338aa5f0fe5d5dd555b79d818047c8a11fe",
+      "started_utc": "2026-11-02T02:05:19.758766+00:00",
+      "finished_utc": "2026-11-02T02:07:06.833819+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 107.396369,
+      "wall_seconds": 107.0747630879996,
+      "peak_rss_bytes": 1051693056,
+      "phase": "extract_train001"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/train001.receipt.json",
+      "bytes": 2207,
+      "sha256": "be1cfa2aa600accff5e9b2d8193c9471c0e8460cfa2ca40859d445a786bfb2c5",
+      "started_utc": "2026-11-02T02:07:37.148332+00:00",
+      "finished_utc": "2026-11-02T02:07:39.679987+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 2.514809,
+      "wall_seconds": 2.5314554639990092,
+      "peak_rss_bytes": 304996352,
+      "phase": "train001"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/extract_validation001.receipt.json",
+      "bytes": 2457,
+      "sha256": "49921927e7e83a2385e45b1d330d5f74a05cafd33f1e4330c4d6638263e4e56e",
+      "started_utc": "2026-11-02T02:15:16.845556+00:00",
+      "finished_utc": "2026-11-02T02:15:58.987678+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 34.236987,
+      "wall_seconds": 42.141835713002365,
+      "peak_rss_bytes": 1051717632,
+      "phase": "extract_validation001"
+    },
+    {
+      "path": "experiments/hcsn_audio_pretrained_r2_20261101/evaluate001.receipt.json",
+      "bytes": 2239,
+      "sha256": "1792b3d88bf0797b8f270a1d449f653661767ac0cdd25d82279ff5620814dd91",
+      "started_utc": "2026-11-02T02:17:00.095331+00:00",
+      "finished_utc": "2026-11-02T02:17:04.438334+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 3.016065,
+      "wall_seconds": 4.342718731000787,
+      "peak_rss_bytes": 301993984,
+      "phase": "evaluate001"
+    }
+  ],
+  "measured_component_cpu_seconds": 161.391499,
+  "sum_of_invocation_wall_seconds": 180.96032518299762,
+  "summed_wall_is_end_to_end_elapsed": false,
+  "receipt_intervals_nonoverlapping_within_component": true,
+  "known_failed_metered_invocations": [
+    "checks002"
+  ],
+  "measurement": "Outer os.wait4 direct-child receipts including process startup/imports, awaited decoding children and writes. No nested fit/body CPU is added. Wrapper CPU is recorded separately in each receipt, not part of this sum.",
+  "peak_memory_scope": "Per-invocation wait4 peak RSS only; not aggregate concurrent process-tree memory.",
+  "observation_seconds_per_clip": 1.0,
+  "observation_plus_inference_latency_measured": false,
+  "standalone_steady_inference_benchmark": null,
+  "hardware": "CPU execution, OMP_NUM_THREADS=OPENBLAS_NUM_THREADS=MKL_NUM_THREADS=1; no GPU execution claimed",
+  "inherited_provider_costs": [
+    {
+      "scope": "Original train/validation raw media acquisition shared with video lane",
+      "ledger_in_this_component": false,
+      "cpu_seconds_added_here": 0,
+      "total_unknown_from_this_component": true
+    },
+    {
+      "scope": "Official neural pretraining and inherited R1 nested video/text providers",
+      "cpu_seconds": null
+    }
+  ],
+  "complete_lifecycle_cpu_seconds": null,
+  "gpu": null,
+  "energy_joules": null,
+  "independent_review_cpu_seconds": null,
+  "source_preparation_install_freeze_finalization_cpu_seconds": null,
+  "unknown_cost_policy": "Unmetered source preparation, package installation, interactive failed freeze attempts, review and finalization are unknown rather than zero; upstream neural pretraining and previously shared media acquisition are not part of this component sum.",
+  "unmetered_failed_attempts": [
+    {
+      "phase": "source-freeze preliminary invocation",
+      "durable_artifact": "FREEZE.log",
+      "stdout_bytes": 0,
+      "stderr_durably_retained": false,
+      "cpu_seconds": null,
+      "reason": "Failed before final published SOURCE_FREEZE; exact failure stderr/cost unavailable in this component."
+    }
+  ]
+}

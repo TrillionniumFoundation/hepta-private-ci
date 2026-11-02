@@ -1,0 +1,62 @@
+{
+  "accounting": "Seven separate direct-child envelopes. Inner fit CPU is included, not added again; overlapping walls are not summed.",
+  "complete_adoption_cost": false,
+  "energy_joules": null,
+  "receipts": [
+    {
+      "cpu_seconds": 53.202559,
+      "path": "results/train001.receipt.json",
+      "returncode": 1,
+      "sha256": "18913a371f9c9ea3a90b2adcd3ff137d9ca36748d415325a615b8dc926ed9cfc",
+      "wall_seconds": 103.30352668699925
+    },
+    {
+      "cpu_seconds": 168.599394,
+      "path": "results/train002.receipt.json",
+      "returncode": 0,
+      "sha256": "0bac21ad01cdd5f06abdf10e29c3883b01da0103a434e6df0ade1f3d92296610",
+      "wall_seconds": 300.8508236179987
+    },
+    {
+      "cpu_seconds": 1.9945639999999998,
+      "path": "results/behavior001.receipt.json",
+      "returncode": 0,
+      "sha256": "38c5a81e386aa41ef00d399543130681b971449d57d23a62d7c05e3a4a72de36",
+      "wall_seconds": 2.7903407019985025
+    },
+    {
+      "cpu_seconds": 11.975687,
+      "path": "results/confirm001.receipt.json",
+      "returncode": 0,
+      "sha256": "673f4601f8cc81c9f94a607380209e5d82262665c9cc54da0375bcc4aed80268",
+      "wall_seconds": 14.06060546200024
+    },
+    {
+      "cpu_seconds": 0.276782,
+      "path": "results/audit001.receipt.json",
+      "returncode": 0,
+      "sha256": "cd6ecae074ec8d3affcc2b58c7d2fcc4608682715be1d0e8fb35f22ca6d8c4ab",
+      "wall_seconds": 0.5985083380001015
+    },
+    {
+      "cpu_seconds": 7.751744,
+      "path": "results/secondary001.receipt.json",
+      "returncode": 0,
+      "sha256": "435fecfe3dad22c6a22b494f285b74d4f44fae55c78d0edd48eca991a80cf432",
+      "wall_seconds": 10.239484316996823
+    },
+    {
+      "cpu_seconds": 0.36382,
+      "path": "results/secondary_audit001.receipt.json",
+      "returncode": 0,
+      "sha256": "ef5343dfb0efff5b30d7e13edae6c4684d4ea713b1b7debe497ed2cb4c3e3c05",
+      "wall_seconds": 0.41621559399936814
+    }
+  ],
+  "total_observed_cpu_seconds": 244.16455,
+  "unmeasured": [
+    "Freeze commands, source preparation, earlier research investment, manual review, packaging/publication",
+    "GPU and device energy",
+    "Simultaneous process-family RSS"
+  ]
+}

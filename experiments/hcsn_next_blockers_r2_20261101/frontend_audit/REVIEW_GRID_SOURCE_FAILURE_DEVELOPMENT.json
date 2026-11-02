@@ -1,0 +1,72 @@
+{
+  "accepted_end": 1.0,
+  "acquisition_sha256": "9a965c4b871736e629dfd5716db62577fbd5fe0797b18dc9a5c0eb774d71ae62",
+  "actual_frozen_guard_rejects": true,
+  "all_blockers_closed": false,
+  "attempts": [
+    {
+      "candidate_sha256": "408843812ca057e5500b8006eafbba8fc1a66e69e512633246f3a19f5528dd5c",
+      "no_feature_bank": true,
+      "no_quality_outputs": true,
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/features_development.receipt.json",
+      "returncode": 1,
+      "sha256": "b1fc5b601cf767552b962418eeba0b5f9b7b09b35e1956bbcc8976c96771a67d",
+      "total_cpu_seconds": 14.530441
+    },
+    {
+      "candidate_sha256": "01c515bc4214de328c2097de144d5a44ce744e2e4bd008ea2df301752778c84b",
+      "no_feature_bank": true,
+      "no_quality_outputs": true,
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_development.receipt.json",
+      "returncode": 1,
+      "sha256": "622003a582611a9ef8007ccfb045f527507c1339b3a6c878c4591bc9b051ba58",
+      "total_cpu_seconds": 11.14852
+    }
+  ],
+  "audio_start": 0.0,
+  "complete_registered_prefix": false,
+  "ffprobe_command": [
+    "ffprobe",
+    "-v",
+    "error",
+    "-show_streams",
+    "-show_frames",
+    "-show_entries",
+    "stream=codec_type,start_time,width,height,sample_rate:frame=media_type,best_effort_timestamp_time",
+    "-of",
+    "json",
+    "/workspace/scratch/65d0df4e0cbd/grid_raw_r2_media/s8/bbar6a.mpg"
+  ],
+  "ffprobe_processes": 1,
+  "ffprobe_stderr": "",
+  "fit_performed": false,
+  "member": "s8/bbar6a.mpg",
+  "neural_encoder_inference_performed": false,
+  "ordered": true,
+  "ordinal": 11,
+  "origin": 0.0,
+  "original_crc32": "43642952",
+  "qa_sha256": "93cae945da137f3e250773b1638dae7ae03a2fca17875ab553ba146e9cc57349",
+  "quality_accuracy": null,
+  "raw_bytes": 126976,
+  "raw_media_opened": true,
+  "raw_sha256": "de0e29e8b8dd3eed5a1547562674f2125a65ab32b1e8cc0d6a51bc9c0d0d368d",
+  "registered_gate_status": "HOLD",
+  "replacement_or_padding_performed": false,
+  "role": "development",
+  "schema": "hcsn.grid-source-failure.independent-probe-audit.v1",
+  "scope": "Registered original bytes independently match CRC/length/acquisition SHA. Probe-only verification; both frozen methods correctly reject insufficient prefix. No subset quality, replacement or protocol repair.",
+  "speaker": 8,
+  "timestamps": [
+    0.0,
+    0.04,
+    0.08,
+    0.12,
+    0.16,
+    0.2,
+    0.24,
+    0.28
+  ],
+  "valid_subset_qualification": false,
+  "video_frames": 8
+}

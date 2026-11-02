@@ -1,0 +1,139 @@
+{
+  "all_blockers_closed": false,
+  "ambiguity_information_bound": {
+    "READ_explanation": "A truthful acquired raw WRITE changes the observation and can identify the missing key/value; it is additional information, so the pre-READ bound no longer applies.",
+    "accepted_ambiguous_95_percent_without_information_possible": false,
+    "each_of_three_fresh_labels_completions": 1,
+    "final_erasure_hidden_completions": 9,
+    "initial_unknown_mqar_binding_max_correctness": "1/5",
+    "initial_unknown_selective_max_correctness": "1/3",
+    "max_correctness_without_additional_information": "2/3",
+    "positive_mass_observation_measurable_accepted_subset_max_correctness": "2/3",
+    "randomized_policy_scope": "Private randomness must be independent of hidden completion conditional on all admitted observations.",
+    "retained_old_label_completions": 6,
+    "zero_acceptance_conditional_accuracy": null
+  },
+  "constructive_policy": {
+    "description": "Accept exactly when all positive-probability hidden completions consistent with the visible typed prefix give the same target. Otherwise abstain. Equivalent to exact posterior point mass / CERTAIN group; no hash sampling.",
+    "inputs": "Declared task-law plus observed x/dt/observed only; no labels, target_available, hidden erased payload, IDs, seeds, prior truth feedback or future information.",
+    "ordinary_reference_identical": true,
+    "quarter_policy_replaced": false
+  },
+  "finite_sample_limits": {
+    "branch_counts": "nA initial-erased-overwritten; nB initial-erased-still-needed; nC final-update-erased",
+    "coverage_at_least_80_percent_iff": "4*nA+3*nB>=7*nC",
+    "finite_cohort_80_percent_guaranteed": false,
+    "per_episode_average_is_a_different_metric": true,
+    "pooled_coverage": "(4*nA+3*nB+nC)/(4*nA+3*nB+3*nC)",
+    "population_80_percent_has_zero_margin": true
+  },
+  "general_visible_only_MAP_acceptance_family": {
+    "a0_does_not_use_quarter_hash": true,
+    "accepted_correctness": "(8+2a)/(8+3a)",
+    "aggregate_95_correctness_condition": "0<=a<=8/17",
+    "known_coverage_pooled": "(8+2a)/10",
+    "overall_coverage": "(8+3a)/12",
+    "parameter_a": "Population fraction of final-ambiguous state-query observations accepted; independent of hidden completion conditional on the observation. All certain accepted; initial-unknown rejected."
+  },
+  "independent_symbolic_check": {
+    "branches": {
+      "final_update_erased": {
+        "accepted_and_available": 24,
+        "available": 72,
+        "certain_accepted": 24,
+        "queries": 96,
+        "uncertain_queries": 72,
+        "worlds": 24
+      },
+      "initial_erased_overwritten": {
+        "accepted_and_available": 96,
+        "available": 96,
+        "certain_accepted": 96,
+        "queries": 96,
+        "worlds": 24
+      },
+      "initial_erased_still_needed": {
+        "accepted_and_available": 72,
+        "available": 72,
+        "certain_accepted": 72,
+        "queries": 96,
+        "uncertain_queries": 24,
+        "worlds": 24
+      }
+    },
+    "completion_histories_counted_with_multiplicity": 360,
+    "completion_query_marginals": 1440,
+    "distinct_value_assignments": 20160,
+    "excludes_nuisance_multiplicities": true,
+    "expanded_available_queries": 4838400,
+    "expanded_certain_accepted_queries": 3870720,
+    "expanded_query_positions": 5806080,
+    "expanded_structural_histories": 1451520,
+    "method": "Fix injective value assignment originals0..3/fresh4..5; exhaust all12 ordered update-key pairs and6 erased WRITE identities. For each visible prefix enumerate all3 initial-erasure or9 final-erasure completions; point mass depends only on these visible completions. Evaluate final-WRITE availability separately as verification-only bookkeeping. A bijection of eight value classes lifts the counts to every injective assignment.",
+    "passed": true,
+    "query_positions": 288,
+    "reduced_structural_histories": 72,
+    "totals": {
+      "accepted_and_available": 192,
+      "available": 240,
+      "certain_accepted": 192,
+      "queries": 288,
+      "worlds": 72
+    }
+  },
+  "law": "Four distinct original values uniformly sampled from eight; two distinct uniformly selected ordered Selective update keys assigned two distinct fresh values; one of six WRITE events erased uniformly and independently; each of four keys queried once. Independent nuisance clocks/query order/typed distractors disclose no hidden completion.",
+  "new_confirmation_draws": 0,
+  "new_model_fits": 0,
+  "new_policy_executed": false,
+  "new_policy_implemented": false,
+  "original_policy_and_results_changed": false,
+  "production_activation": false,
+  "read_fee_upper_bound": {
+    "arbitrary_neural_before_after_gain_may_exceed_law_specific_bound": true,
+    "at_fee_64_over_100": {
+      "mqar_binding_net_gain_upper_bound": "-11/25",
+      "selective_net_gain_upper_bound": "-39/100"
+    },
+    "derivation": "(sum_j [1-max_y P(Y_j=y|visible prefix)])/4. Revealing earlier/more than an actual causal READ is a relaxation; already-emitted answers cannot increase the bound.",
+    "law_specific_baseline": "Bayes MAP of the exact admitted observation law, no abstention, fixed four equally weighted queries, pure mean correctness minus one actual READ fee; truthful READ resolves the sole erased WRITE. Not an arbitrary frozen neural baseline.",
+    "perfect_information_quality_gain_upper_bounds": {
+      "mqar_or_binding_single_erasure": "1/5",
+      "selective_final_update_erasure": "1/4",
+      "selective_initial_erasure_overwritten": "0",
+      "selective_initial_erasure_still_needed": "1/6"
+    },
+    "universal_average_four_query_accuracy_gain_at_most": "1",
+    "universal_net_single_READ_gain_upper_bound": "1-c",
+    "universal_optimal_policy_claim": false
+  },
+  "schema": "hcsn.r2.certainty-only.exact-law-theorem.v1",
+  "scope_limits": [
+    "Exact stated finite sampling law, not a distribution over actual NumPy PRNG seeds or arbitrary raw observation sources",
+    "Available/known coverage uses evaluation-only final-WRITE-observed mask only in theorem scoring, never policy input",
+    "Pooled population ratio is not per-episode mean, finite-batch confidence bound, or per-branch coverage guarantee",
+    "No new neural mechanism, analytic-core increment, implementation/adoption or empirical gate pass",
+    "No multiple erasures, shifted/unknown laws, resampling, open-domain, GPU, energy or production qualification"
+  ],
+  "selective_missing_population": {
+    "accepted_correctness": "1",
+    "accepted_known_coverage_pooled": "4/5",
+    "ambiguous_branch_acceptance_coverage": "0",
+    "ambiguous_branch_conditional_accepted_correctness": null,
+    "expected_accepted_queries_per_episode": "8/3",
+    "expected_available_queries_per_episode": "10/3",
+    "known_target_MAP_accuracy": "1",
+    "nonmissing_all4_correctness": "1",
+    "overall_query_coverage": "2/3",
+    "per_episode_mean_known_coverage": "7/9"
+  },
+  "source_sha256": {
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e",
+    "experiments/hcsn_missing_reliability_r2_20261101/AUDIT_LAW.json": "773edcb8566852e99e3658610f347cfb794b1afef6e495277710d861bc69c382",
+    "experiments/hcsn_missing_reliability_r2_20261101/campaign.py": "05c03343a27998e4794b8ef193bab4fba145d4764b99d57362847c3e5e21c7f4",
+    "experiments/hcsn_missing_reliability_r2_20261101/independent_audit.py": "9488252281d4a4decf68bc595ea75042eae7bf75f695e1d3fe434161b88f388d",
+    "experiments/hcsn_missing_reliability_r2_20261101/posterior.py": "3c9b1bb881cd5f9b3fd038596735f85bdf59a88404c4a8ab58afb237f9e1dbfa",
+    "experiments/hcsn_policy_population_r2_20261101/POPULATION.json": "8dc034d83c168a349e6b438f5e4645912e4def06a660e1840aa8a697026ea628",
+    "experiments/hcsn_policy_population_r2_20261101/enumerate_policy.py": "0313fed52cd1ebd1f47cad79554caf75df95451813954db1ef169ffd7085df90"
+  },
+  "status": "constructive_exact_law_theorem_not_empirical_confirmation"
+}

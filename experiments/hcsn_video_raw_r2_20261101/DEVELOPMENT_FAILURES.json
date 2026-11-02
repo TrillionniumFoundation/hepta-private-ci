@@ -1,0 +1,19 @@
+{
+  "phase": "train raw acquisition",
+  "exit_code": 120,
+  "reason": "ENOSPC",
+  "receipt": "acquire_train.receipt.json",
+  "zero_byte_outputs": [
+    "1009_DFA_FEA_XX.flv",
+    "1009_DFA_HAP_XX.flv",
+    "1009_DFA_NEU_XX.flv",
+    "1009_DFA_SAD_XX.flv",
+    "1009_IOM_ANG_XX.flv",
+    "1009_IOM_DIS_XX.flv",
+    "1009_IOM_FEA_XX.flv",
+    "1009_IOM_HAP_XX.flv"
+  ],
+  "visual_training_started": false,
+  "validation_decoded": false,
+  "repair": "Only these verified zero-byte failed acquisition outputs are removed; all nonempty hash-bound clips retained; resume exact frozen source under fresh meter."
+}

@@ -1,0 +1,42 @@
+{
+  "all_blockers_closed": false,
+  "candidate_sha256": "e84aa62d8805d2a8619522d6870dc8ab487677a09bce9b7d7c164daec178cdd1",
+  "clean_AT_head_bit_identical_to_audio_candidate": true,
+  "episodes": 1152,
+  "exact_provider_clip_maps": true,
+  "fit_performed": false,
+  "fits": [
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 8.777373230017815e-06,
+      "optimizer_iterations": 13,
+      "optimizer_success": true,
+      "tag": "joint/AT_unique"
+    },
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 0.0001883487567502229,
+      "optimizer_iterations": 29,
+      "optimizer_success": true,
+      "tag": "joint/AVT"
+    }
+  ],
+  "frozen_candidate_files_checked": 4,
+  "held_media_decoded": false,
+  "inherited_text_bit_identical": true,
+  "provider_common_actor_folds_verified": 4,
+  "real_media_opened": false,
+  "schema": "hcsn.joint-pretrained.independent-candidate-audit.v1",
+  "scope": "Local independent numerical audit of fixed two-head candidate; training scores are diagnostics, not development evidence. Remote publication readback is separate parent gate.",
+  "source_freeze_sha256": "fa43f9d50ed35febed03b3097ca58bf768e2e839eb69fa85e89f83cedfa94e37",
+  "training_metrics": {
+    "AT_unique": {
+      "accuracy": 0.8032407407407407,
+      "brier": 0.14737188309387214
+    },
+    "AVT": {
+      "accuracy": 0.8258101851851852,
+      "brier": 0.12765768371939512
+    }
+  }
+}

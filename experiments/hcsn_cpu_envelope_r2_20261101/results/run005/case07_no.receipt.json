@@ -1,0 +1,60 @@
+{
+  "case": {
+    "task": "binding",
+    "core": "flow",
+    "condition": "base",
+    "batch": 24
+  },
+  "mode": "no",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "experiments.hcsn_cpu_envelope_r2_20261101.worker",
+    "--out",
+    "experiments/hcsn_cpu_envelope_r2_20261101/results/run005/case07_no.json",
+    "--sealed",
+    "no",
+    "--task",
+    "binding",
+    "--core",
+    "flow",
+    "--condition",
+    "base",
+    "--batch",
+    "24"
+  ],
+  "exit_code": 0,
+  "whole_child_cpu_seconds": 2.068408,
+  "wall_seconds": 7.9970948139962275,
+  "wait4_peak_rss_bytes": 229535744,
+  "result": {
+    "task": "binding",
+    "core": "flow",
+    "condition": "base",
+    "batch": 24,
+    "sealed": null,
+    "torch": "2.6.0+cpu",
+    "output_sha256": "79213b7a8df29f92437731929a4907ae3985794ccfca66cbd6c896340fb5b45e",
+    "checkpoint_sha256": "d328f770b30684b5bdfd69e70465a4b77da56f5a4252cb1fb1e7bdb1a4fab221",
+    "accuracy": 1.0,
+    "raw_latency_seconds": [
+      0.045895147,
+      0.04681077,
+      0.061728068,
+      0.049519425,
+      0.062638375
+    ],
+    "body_cpu_seconds": 0.08115830500000021,
+    "peak_rss_before_result_write_bytes": 229044224,
+    "pre_numerical_waited_child_cpu_seconds": 0.0,
+    "post_seal_waited_child_cpu_delta_seconds": 0.0,
+    "live_children": null,
+    "child_procfs_supported": false,
+    "final_tasks": 1,
+    "energy_joules": null,
+    "production_activation": false,
+    "scope": "Internal RSS is through inference; authoritative worker lifetime highwater including final write is parent wait4. New task creation is denied after seal. Initial descendants are not independently observable when child procfs and ptrace are unavailable; full-family peak remains unqualified."
+  },
+  "supervisor_plus_worker_rss_upper_bound_bytes": 241332224
+}

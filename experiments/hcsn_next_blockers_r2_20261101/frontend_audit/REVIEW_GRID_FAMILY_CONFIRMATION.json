@@ -1,0 +1,77 @@
+{
+  "A_T_clip_and_episode_probabilities_bit_identical": true,
+  "actors": [
+    10,
+    11,
+    12,
+    13
+  ],
+  "all_blockers_closed": false,
+  "any_candidate_family_gate": false,
+  "clean_AT_scores_bit_identical": true,
+  "fit_performed": false,
+  "frozen_head_predictions_recomputed": true,
+  "limitation": "Two candidates were registered before shared held media; both are reported. Nominal Bonferroni bounds use a small actor-cluster bootstrap and do not guarantee population coverage or global identity exclusion.",
+  "neural_encoder_inference_performed": false,
+  "original_primary_outputs_bit_identical": true,
+  "output_sha256": "fb3b28af273c47880bb64e6a8ee23267c6fb1602fcc4077993ad9073cc010626",
+  "primary_original_result_sha256": "addc5ddfe350d56ca443c14c6f14d1ec523cb0fd57cf18cea3479e0b69de7a70",
+  "quantiles": [
+    0.0125,
+    0.9875
+  ],
+  "real_media_opened": false,
+  "reports": {
+    "primary": {
+      "accuracy": 0.7786458333333334,
+      "actor_bootstrap_975": [
+        0.7135416666666666,
+        0.8645833333333333
+      ],
+      "brier": 0.13752100492261143,
+      "family_adjusted_gate": false,
+      "paired_actor_bootstrap_975": [
+        [
+          -0.11718750000000001,
+          0.04166666666666667
+        ],
+        [
+          -0.04264505186760495,
+          0.0498030935055352
+        ]
+      ],
+      "sentence_accuracy": {
+        "A": 1.0,
+        "T": 1.0,
+        "V": 0.625
+      }
+    },
+    "secondary": {
+      "accuracy": 0.7552083333333334,
+      "actor_bootstrap_975": [
+        0.7122395833333334,
+        0.7799479166666666
+      ],
+      "brier": 0.14493340447925565,
+      "family_adjusted_gate": false,
+      "paired_actor_bootstrap_975": [
+        [
+          -0.11197916666666669,
+          -0.04427083333333333
+        ],
+        [
+          0.0046396483644651,
+          0.0286788055119157
+        ]
+      ],
+      "sentence_accuracy": {
+        "A": 1.0,
+        "T": 1.0,
+        "V": 0.59375
+      }
+    }
+  },
+  "result_sha256": "c100d67fb8c0ac3c21c71bd761c8403693b1cd4da2b15319862f46ef2bfba565",
+  "role": "confirmation",
+  "schema": "hcsn.grid-two-candidate-family.independent-output-audit.v1"
+}

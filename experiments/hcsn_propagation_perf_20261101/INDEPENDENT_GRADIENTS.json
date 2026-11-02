@@ -1,0 +1,112 @@
+{
+  "schema": "hcsn.addressed-preparation.physical-gradient.v1",
+  "rows": [
+    {
+      "task": "mqar",
+      "parameter": 0,
+      "scipy_central_difference": -0.13918547210334253,
+      "autograd": -0.13918547332286835,
+      "absolute_error": 1.2195258136671328e-09,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "parameter": 1,
+      "scipy_central_difference": -0.42813395482177435,
+      "autograd": -0.4281339645385742,
+      "absolute_error": 9.716799864722958e-09,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "parameter": 2,
+      "scipy_central_difference": -0.8427581778436276,
+      "autograd": -0.8427581787109375,
+      "absolute_error": 8.673098905731536e-10,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "parameter": 3,
+      "scipy_central_difference": -0.0030676065243540047,
+      "autograd": -0.003067606594413519,
+      "absolute_error": 7.005951417962675e-11,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "mqar",
+      "parameter": 4,
+      "scipy_central_difference": -4.378366558199786e-05,
+      "autograd": -4.37836570199579e-05,
+      "absolute_error": 8.562039959132944e-12,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "parameter": 0,
+      "scipy_central_difference": -0.013429270118159307,
+      "autograd": -0.013429270125925541,
+      "absolute_error": 7.766233836581371e-12,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "parameter": 1,
+      "scipy_central_difference": -0.2801825978782091,
+      "autograd": -0.2801826000213623,
+      "absolute_error": 2.1431532104543294e-09,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "parameter": 2,
+      "scipy_central_difference": -0.29296492383146244,
+      "autograd": -0.2929649353027344,
+      "absolute_error": 1.1471271932350646e-08,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "parameter": 3,
+      "scipy_central_difference": -0.00012094867329892621,
+      "autograd": -0.00012094868725398555,
+      "absolute_error": 1.3955059343880895e-11,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    },
+    {
+      "task": "binding",
+      "parameter": 4,
+      "scipy_central_difference": 3.3234837104600956e-05,
+      "autograd": 3.323483906569891e-05,
+      "absolute_error": 1.9610979506978765e-12,
+      "step": 1e-05,
+      "tolerance": 2e-05,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "source_sha256": {
+    "experiments/hcsn_propagation_perf_20261101/independent_gradients.py": "5e3bf99d4314f800ef576092fa2f0a314cef31ea21add4b0ceef1554851f9e09",
+    "experiments/hcsn_propagation_perf_20261101/fused_addressed.py": "c87e6ae821ea0aefe777c952010a23c6b5add9d93e81050419eb4ed3ca12094f",
+    "experiments/hcsn_four_stage_flow_20261031/operator_audit.py": "2f448bf8166d3d09842d2e7f088fe175176d82af06d8c3772dd1e7bd1dc66a3a"
+  },
+  "scope": "Physical parameters at initial-policy interval; not a uniform gradient bound"
+}

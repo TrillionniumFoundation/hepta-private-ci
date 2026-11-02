@@ -1,0 +1,2534 @@
+{
+  "schema": "hcsn.exact-addressed-r2.cold-campaign.v1",
+  "workers": 2,
+  "source_sha256": {
+    "experiments/hcsn_exact_transport_r2_20261101/cold_campaign.py": "5c488e7052e74bf8b1cb8d4003dbb26c7d8a912fd45fa60626f006d7532a1bf6",
+    "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d"
+  },
+  "source_freeze_sha256": "8a3d0bfb90785ff245ebe64db9785e3640ae4b8e9885d4d90a32905eb53fbdfc",
+  "passed": true,
+  "process_count": 40,
+  "rows": [
+    {
+      "task": "mqar",
+      "batch": 1,
+      "condition": "base",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 1,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.013727406000000109,
+            "wall_seconds": 0.033897915003763046
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.012427500999999896,
+            "wall_seconds": 0.024688407000212464
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.01380583599999996,
+            "wall_seconds": 0.0301925960011431
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.013647117999999736,
+            "wall_seconds": 0.037307153004803695
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.379548752,
+          "wall_seconds": 5.995538118004333
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.007766632000000051,
+          "wall_seconds": 0.01176005999877816
+        },
+        "construction": {
+          "cpu_seconds": 3.654999999991304e-06,
+          "wall_seconds": 3.444998583290726e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "3664f831d2368671bede54ae13ac94505a85369309ec016d8e70e1e593435626",
+          "dt": "9bcf997ffe76a244b2a96438c1f73b91245f2cde2eb93070bf0bae36feed74f8",
+          "observed": "3ee5f0d83bf791f0fb4d750a5719ce19d6d352ef7e5a4264e4b760f0f9c15014",
+          "y": "2ed32de8d6c429285f6f694f4f8fded8ca74341e3abb8287c5839e4b3b4f7dc9"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "eb46c56c98feb04d818dd2770d084d2b13bc3fbd4a5bbec94f0cfcaa5f147783",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 1,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.06322061299999993,
+            "wall_seconds": 0.11354645500250626
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.023159739000000013,
+            "wall_seconds": 0.048606335003569257
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.010976712000000166,
+            "wall_seconds": 0.02047917299933033
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.011831058999999922,
+            "wall_seconds": 0.028806767004425637
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.201880878,
+          "wall_seconds": 3.989057940998464
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.00522814000000027,
+          "wall_seconds": 0.005229121998127084
+        },
+        "construction": {
+          "cpu_seconds": 0.009628020999999709,
+          "wall_seconds": 0.011340570003085304,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "3664f831d2368671bede54ae13ac94505a85369309ec016d8e70e1e593435626",
+          "dt": "9bcf997ffe76a244b2a96438c1f73b91245f2cde2eb93070bf0bae36feed74f8",
+          "observed": "3ee5f0d83bf791f0fb4d750a5719ce19d6d352ef7e5a4264e4b760f0f9c15014",
+          "y": "2ed32de8d6c429285f6f694f4f8fded8ca74341e3abb8287c5839e4b3b4f7dc9"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "eb46c56c98feb04d818dd2770d084d2b13bc3fbd4a5bbec94f0cfcaa5f147783",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 1,
+      "condition": "base",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 1,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.025679464999999846,
+            "wall_seconds": 0.025681967003038153
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.02647210099999997,
+            "wall_seconds": 0.04044658000202617
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.0258469830000001,
+            "wall_seconds": 0.025894892001815606
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.023323992999999987,
+            "wall_seconds": 0.02332613299950026
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.8140758959999999,
+          "wall_seconds": 2.2373809769997024
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.005094991999999854,
+          "wall_seconds": 0.005096425993542653
+        },
+        "construction": {
+          "cpu_seconds": 1.2510000000354182e-06,
+          "wall_seconds": 1.0510048014111817e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "3664f831d2368671bede54ae13ac94505a85369309ec016d8e70e1e593435626",
+          "dt": "9bcf997ffe76a244b2a96438c1f73b91245f2cde2eb93070bf0bae36feed74f8",
+          "observed": "3ee5f0d83bf791f0fb4d750a5719ce19d6d352ef7e5a4264e4b760f0f9c15014",
+          "y": "2ed32de8d6c429285f6f694f4f8fded8ca74341e3abb8287c5839e4b3b4f7dc9"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "eb46c56c98feb04d818dd2770d084d2b13bc3fbd4a5bbec94f0cfcaa5f147783",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 1,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.08586326399999988,
+            "wall_seconds": 0.13887174599949503
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.46080080899999976,
+            "wall_seconds": 0.9852255410005455
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.05676331999999995,
+            "wall_seconds": 0.14159121800184948
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.256575212,
+            "wall_seconds": 0.633299157001602
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.2539398,
+          "wall_seconds": 4.167666621004173
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.007062228000000115,
+          "wall_seconds": 0.008638994993816596
+        },
+        "construction": {
+          "cpu_seconds": 0.015821041999999785,
+          "wall_seconds": 0.0211742690007668,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "3664f831d2368671bede54ae13ac94505a85369309ec016d8e70e1e593435626",
+          "dt": "9bcf997ffe76a244b2a96438c1f73b91245f2cde2eb93070bf0bae36feed74f8",
+          "observed": "3ee5f0d83bf791f0fb4d750a5719ce19d6d352ef7e5a4264e4b760f0f9c15014",
+          "y": "2ed32de8d6c429285f6f694f4f8fded8ca74341e3abb8287c5839e4b3b4f7dc9"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "eb46c56c98feb04d818dd2770d084d2b13bc3fbd4a5bbec94f0cfcaa5f147783",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "condition": "base",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 24,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.02146143700000014,
+            "wall_seconds": 0.036936671000148635
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.019918659999999644,
+            "wall_seconds": 0.03154380100022536
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.020892148999999804,
+            "wall_seconds": 0.05419251100101974
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.019634213999999872,
+            "wall_seconds": 0.022348715996486135
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.2659871849999997,
+          "wall_seconds": 3.3848307430016575
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.008877589000000352,
+          "wall_seconds": 0.015330148002249189
+        },
+        "construction": {
+          "cpu_seconds": 2.7639999999884424e-06,
+          "wall_seconds": 2.6439956855028868e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "34b71b48b7a344daa6824166cec317152e89c71777e102ce4531a36c07cfb108",
+          "dt": "e5fc3fe49e7510345671e60f8b260a15daa827e796d5b7f5273d093586b3e330",
+          "observed": "c3be2af8b2e98345a8cea9cf6862d443bd323fe273f4103d667529c6842a1cb8",
+          "y": "d27aae928b78136906202f712a86346bf5110180c9591f4b7a88085babc3bc0c"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "c16a681bbe619f5d9a6c9bd2e344ed5b12638bda22b08b319b8badbc2ee38e4f",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 24,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.08304296099999986,
+            "wall_seconds": 0.09469313199952012
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.026924130000000268,
+            "wall_seconds": 0.02692619399749674
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.014973304999999826,
+            "wall_seconds": 0.014975403995777015
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.015091369999999937,
+            "wall_seconds": 0.01509288600209402
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.2181996400000004,
+          "wall_seconds": 3.6283173249976244
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.009190943999999757,
+          "wall_seconds": 0.009193913996568881
+        },
+        "construction": {
+          "cpu_seconds": 0.015781974000000254,
+          "wall_seconds": 0.015782105998368934,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "34b71b48b7a344daa6824166cec317152e89c71777e102ce4531a36c07cfb108",
+          "dt": "e5fc3fe49e7510345671e60f8b260a15daa827e796d5b7f5273d093586b3e330",
+          "observed": "c3be2af8b2e98345a8cea9cf6862d443bd323fe273f4103d667529c6842a1cb8",
+          "y": "d27aae928b78136906202f712a86346bf5110180c9591f4b7a88085babc3bc0c"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "c16a681bbe619f5d9a6c9bd2e344ed5b12638bda22b08b319b8badbc2ee38e4f",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "condition": "base",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 24,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.06650553299999995,
+            "wall_seconds": 0.0741201149940025
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.06145985200000004,
+            "wall_seconds": 0.07710538899846142
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.03747183499999984,
+            "wall_seconds": 0.03747273199405754
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.05634353900000022,
+            "wall_seconds": 0.06402721000631573
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.90646338,
+          "wall_seconds": 2.716761552001117
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.009265124000000124,
+          "wall_seconds": 0.00926665300357854
+        },
+        "construction": {
+          "cpu_seconds": 2.3840000000774353e-06,
+          "wall_seconds": 2.3030006559565663e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "34b71b48b7a344daa6824166cec317152e89c71777e102ce4531a36c07cfb108",
+          "dt": "e5fc3fe49e7510345671e60f8b260a15daa827e796d5b7f5273d093586b3e330",
+          "observed": "c3be2af8b2e98345a8cea9cf6862d443bd323fe273f4103d667529c6842a1cb8",
+          "y": "d27aae928b78136906202f712a86346bf5110180c9591f4b7a88085babc3bc0c"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "c16a681bbe619f5d9a6c9bd2e344ed5b12638bda22b08b319b8badbc2ee38e4f",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 24,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.11009295100000038,
+            "wall_seconds": 0.1218990049965214
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.557845736,
+            "wall_seconds": 0.8157960259995889
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.09941181500000029,
+            "wall_seconds": 0.11113651099731214
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.19315808099999998,
+            "wall_seconds": 0.2167040080021252
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.202585983,
+          "wall_seconds": 2.4974255909983185
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.009182952000000189,
+          "wall_seconds": 0.009198811996611767
+        },
+        "construction": {
+          "cpu_seconds": 0.01436608500000025,
+          "wall_seconds": 0.014377358995261602,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "34b71b48b7a344daa6824166cec317152e89c71777e102ce4531a36c07cfb108",
+          "dt": "e5fc3fe49e7510345671e60f8b260a15daa827e796d5b7f5273d093586b3e330",
+          "observed": "c3be2af8b2e98345a8cea9cf6862d443bd323fe273f4103d667529c6842a1cb8",
+          "y": "d27aae928b78136906202f712a86346bf5110180c9591f4b7a88085babc3bc0c"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "c16a681bbe619f5d9a6c9bd2e344ed5b12638bda22b08b319b8badbc2ee38e4f",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 64,
+      "condition": "base",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 64,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.020392187999999978,
+            "wall_seconds": 0.032228203999693505
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.01591527100000012,
+            "wall_seconds": 0.015916615004243795
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.014379825000000235,
+            "wall_seconds": 0.016736376004701015
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.015587205999999743,
+            "wall_seconds": 0.01598617800482316
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.940271359,
+          "wall_seconds": 2.546136821998516
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.008309276999999948,
+          "wall_seconds": 0.00853043300594436
+        },
+        "construction": {
+          "cpu_seconds": 3.005000000166902e-06,
+          "wall_seconds": 3.015004040207714e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "193a53b983785acfe4f45d5e371582eb9604ba463de86f208687ab220eed410a",
+          "dt": "e76431a76047b139227a4948b6278507e57dc279e81d31ca30f3447866461546",
+          "observed": "1b1c08af714b3f3f6f5cafb74783b571dc82d6ac612ecffbe816df938117b099",
+          "y": "452554640b0d8a25982ccb3b01c3f0f4748edd4109cb4987233af4298d091873"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "668fcd97668c8e55959315d5ea8364aff4efc16e97ee7009bdafc992c29a0eec",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 64,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.09148658300000001,
+            "wall_seconds": 0.20779362799657974
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.030471122000000017,
+            "wall_seconds": 0.06874417799554067
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.021787294000000124,
+            "wall_seconds": 0.058506572000624146
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.025301798000000097,
+            "wall_seconds": 0.048698266997234896
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.8165186690000001,
+          "wall_seconds": 2.7388902960010455
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.014278871000000137,
+          "wall_seconds": 0.026680305003537796
+        },
+        "construction": {
+          "cpu_seconds": 0.015366406999999915,
+          "wall_seconds": 0.03338707699731458,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "193a53b983785acfe4f45d5e371582eb9604ba463de86f208687ab220eed410a",
+          "dt": "e76431a76047b139227a4948b6278507e57dc279e81d31ca30f3447866461546",
+          "observed": "1b1c08af714b3f3f6f5cafb74783b571dc82d6ac612ecffbe816df938117b099",
+          "y": "452554640b0d8a25982ccb3b01c3f0f4748edd4109cb4987233af4298d091873"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "668fcd97668c8e55959315d5ea8364aff4efc16e97ee7009bdafc992c29a0eec",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 64,
+      "condition": "base",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 64,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.10501075999999987,
+            "wall_seconds": 0.13645333900058176
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.0934673880000001,
+            "wall_seconds": 0.17596464099915465
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.09731068200000026,
+            "wall_seconds": 0.16091893200064078
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.09335514400000022,
+            "wall_seconds": 0.1139883159994497
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.28581909,
+          "wall_seconds": 4.583855550001317
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.013536543999999928,
+          "wall_seconds": 0.01524280000012368
+        },
+        "construction": {
+          "cpu_seconds": 2.964000000105216e-06,
+          "wall_seconds": 2.7839996619150043e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "193a53b983785acfe4f45d5e371582eb9604ba463de86f208687ab220eed410a",
+          "dt": "e76431a76047b139227a4948b6278507e57dc279e81d31ca30f3447866461546",
+          "observed": "1b1c08af714b3f3f6f5cafb74783b571dc82d6ac612ecffbe816df938117b099",
+          "y": "452554640b0d8a25982ccb3b01c3f0f4748edd4109cb4987233af4298d091873"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "668fcd97668c8e55959315d5ea8364aff4efc16e97ee7009bdafc992c29a0eec",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 64,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.1045800520000002,
+            "wall_seconds": 0.11668936999922153
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.5132899789999996,
+            "wall_seconds": 0.6156105189947993
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.09040083199999982,
+            "wall_seconds": 0.09813721599493874
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.22532882500000007,
+            "wall_seconds": 0.2643481039995095
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.211358573,
+          "wall_seconds": 4.068282174994238
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.010257564999999857,
+          "wall_seconds": 0.010258880000037607
+        },
+        "construction": {
+          "cpu_seconds": 0.012283157999999794,
+          "wall_seconds": 0.01228333199833287,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "193a53b983785acfe4f45d5e371582eb9604ba463de86f208687ab220eed410a",
+          "dt": "e76431a76047b139227a4948b6278507e57dc279e81d31ca30f3447866461546",
+          "observed": "1b1c08af714b3f3f6f5cafb74783b571dc82d6ac612ecffbe816df938117b099",
+          "y": "452554640b0d8a25982ccb3b01c3f0f4748edd4109cb4987233af4298d091873"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "668fcd97668c8e55959315d5ea8364aff4efc16e97ee7009bdafc992c29a0eec",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 1,
+        "condition": "long_tokens_128",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.08307121500000036,
+            "wall_seconds": 0.17889928999647964
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.07614141499999993,
+            "wall_seconds": 0.1721292679940234
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.07805506900000037,
+            "wall_seconds": 0.18204219899780583
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.07642984899999972,
+            "wall_seconds": 0.191412226005923
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.263106631,
+          "wall_seconds": 4.895269537002605
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.008034520999999906,
+          "wall_seconds": 0.01603743500163546
+        },
+        "construction": {
+          "cpu_seconds": 3.2649999996969825e-06,
+          "wall_seconds": 3.364002623129636e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "12ba254692c2853a451a59effe3fb2cda57c9e0fc1448326206a3dbaea2c9260",
+          "dt": "b48a86cb76d73e19e5adaa1643cc48285a02deab46af951136a12bd1b349bc57",
+          "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+          "y": "359b453016b786c3e4f6c4a9ead19f62069100d9def7533cbbcbdfa23f656f51"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "7414995ba63e51adeafe09c4ace53056a8db8097d249dbf6bed783441309a293",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 1,
+        "condition": "long_tokens_128",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.095659999,
+            "wall_seconds": 0.20912636000139173
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.03410973100000003,
+            "wall_seconds": 0.08165273199847434
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.027577768000000003,
+            "wall_seconds": 0.06757934100460261
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.026296197999999826,
+            "wall_seconds": 0.050236256000061985
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.3131875159999997,
+          "wall_seconds": 4.657514080994588
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.005343621000000187,
+          "wall_seconds": 0.0134593330003554
+        },
+        "construction": {
+          "cpu_seconds": 0.009311120999999645,
+          "wall_seconds": 0.01735076699696947,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "12ba254692c2853a451a59effe3fb2cda57c9e0fc1448326206a3dbaea2c9260",
+          "dt": "b48a86cb76d73e19e5adaa1643cc48285a02deab46af951136a12bd1b349bc57",
+          "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+          "y": "359b453016b786c3e4f6c4a9ead19f62069100d9def7533cbbcbdfa23f656f51"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "7414995ba63e51adeafe09c4ace53056a8db8097d249dbf6bed783441309a293",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 1,
+        "condition": "long_tokens_128",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.3242363309999998,
+            "wall_seconds": 1.095848108001519
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.3415762870000001,
+            "wall_seconds": 1.1592723990033846
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.4523517360000002,
+            "wall_seconds": 1.5195836380007677
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.4686864019999999,
+            "wall_seconds": 1.5882791929980158
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.0662677410000003,
+          "wall_seconds": 4.792721434998384
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.007757727999999631,
+          "wall_seconds": 0.02398195199930342
+        },
+        "construction": {
+          "cpu_seconds": 7.001000000173008e-06,
+          "wall_seconds": 6.880000000819564e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "12ba254692c2853a451a59effe3fb2cda57c9e0fc1448326206a3dbaea2c9260",
+          "dt": "b48a86cb76d73e19e5adaa1643cc48285a02deab46af951136a12bd1b349bc57",
+          "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+          "y": "359b453016b786c3e4f6c4a9ead19f62069100d9def7533cbbcbdfa23f656f51"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "7414995ba63e51adeafe09c4ace53056a8db8097d249dbf6bed783441309a293",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 1,
+        "condition": "long_tokens_128",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.372406861,
+            "wall_seconds": 1.2464766259945463
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.6195410349999997,
+            "wall_seconds": 1.6964714689966058
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.40989994500000027,
+            "wall_seconds": 1.0827051249943906
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.5605071640000001,
+            "wall_seconds": 1.8726630970049882
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.371423655,
+          "wall_seconds": 7.477743966999697
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.008707306000000248,
+          "wall_seconds": 0.024695361993508413
+        },
+        "construction": {
+          "cpu_seconds": 0.016990987000000235,
+          "wall_seconds": 0.06961605599644827,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "12ba254692c2853a451a59effe3fb2cda57c9e0fc1448326206a3dbaea2c9260",
+          "dt": "b48a86cb76d73e19e5adaa1643cc48285a02deab46af951136a12bd1b349bc57",
+          "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+          "y": "359b453016b786c3e4f6c4a9ead19f62069100d9def7533cbbcbdfa23f656f51"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "7414995ba63e51adeafe09c4ace53056a8db8097d249dbf6bed783441309a293",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 24,
+        "condition": "long_tokens_128",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.14108851599999994,
+            "wall_seconds": 0.3147841320023872
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.11952298100000025,
+            "wall_seconds": 0.2738106830001925
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.11502413799999989,
+            "wall_seconds": 0.2660364710027352
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.12509088600000018,
+            "wall_seconds": 0.36527480099903187
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.167878657,
+          "wall_seconds": 6.99029436300043
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.009839606999999972,
+          "wall_seconds": 0.022819625002739485
+        },
+        "construction": {
+          "cpu_seconds": 3.1950000001224055e-06,
+          "wall_seconds": 2.9750008252449334e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "902a6172680a8697cd61a62c444f4acc855c487167b9e9119bad4fbaeb417f42",
+          "dt": "48df9bb892e2ec529664794e5a6307cc3fbfc14d4fc6b0cbbed39ca06f01bd94",
+          "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+          "y": "533a57e2de0eea8d42155f3920a9e0f069d05c483b341d7db0deaa09845bb95f"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "1c62a25e89496663ed449a3286269254bb7f95a5dcf7cb5593a8b2fbf841c676",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 24,
+        "condition": "long_tokens_128",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.2093906539999999,
+            "wall_seconds": 0.4742558740035747
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.08440575600000022,
+            "wall_seconds": 0.19180053700256394
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.0662557989999999,
+            "wall_seconds": 0.15367272299772594
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.0659700980000002,
+            "wall_seconds": 0.14599018099397654
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.191973619,
+          "wall_seconds": 5.04968426200503
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.009379202999999947,
+          "wall_seconds": 0.022330482002871577
+        },
+        "construction": {
+          "cpu_seconds": 0.013595383000000183,
+          "wall_seconds": 0.025608990996261127,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "902a6172680a8697cd61a62c444f4acc855c487167b9e9119bad4fbaeb417f42",
+          "dt": "48df9bb892e2ec529664794e5a6307cc3fbfc14d4fc6b0cbbed39ca06f01bd94",
+          "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+          "y": "533a57e2de0eea8d42155f3920a9e0f069d05c483b341d7db0deaa09845bb95f"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "1c62a25e89496663ed449a3286269254bb7f95a5dcf7cb5593a8b2fbf841c676",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "mqar",
+        "batch": 24,
+        "condition": "long_tokens_128",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.4838661550000001,
+            "wall_seconds": 0.6211220969998976
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.529045446,
+            "wall_seconds": 1.2199032969947439
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.6175720240000002,
+            "wall_seconds": 1.4318474640022032
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.5675969849999998,
+            "wall_seconds": 1.2725974610002595
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.9327781050000001,
+          "wall_seconds": 4.213324887001363
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.010423159999999987,
+          "wall_seconds": 0.018430675998388324
+        },
+        "construction": {
+          "cpu_seconds": 3.535000000054467e-06,
+          "wall_seconds": 3.1849995139054954e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "902a6172680a8697cd61a62c444f4acc855c487167b9e9119bad4fbaeb417f42",
+          "dt": "48df9bb892e2ec529664794e5a6307cc3fbfc14d4fc6b0cbbed39ca06f01bd94",
+          "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+          "y": "533a57e2de0eea8d42155f3920a9e0f069d05c483b341d7db0deaa09845bb95f"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "1c62a25e89496663ed449a3286269254bb7f95a5dcf7cb5593a8b2fbf841c676",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "mqar",
+        "batch": 24,
+        "condition": "long_tokens_128",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.5520708780000003,
+            "wall_seconds": 1.249748289003037
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.8545955390000004,
+            "wall_seconds": 1.5015849000046728
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.5857276839999996,
+            "wall_seconds": 1.6590153400029521
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.8725782620000002,
+            "wall_seconds": 2.8980067709999275
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.120721765,
+          "wall_seconds": 4.946979290994932
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.0078385700000001,
+          "wall_seconds": 0.015999249000742566
+        },
+        "construction": {
+          "cpu_seconds": 0.015879086999999625,
+          "wall_seconds": 0.03227886300010141,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "902a6172680a8697cd61a62c444f4acc855c487167b9e9119bad4fbaeb417f42",
+          "dt": "48df9bb892e2ec529664794e5a6307cc3fbfc14d4fc6b0cbbed39ca06f01bd94",
+          "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+          "y": "533a57e2de0eea8d42155f3920a9e0f069d05c483b341d7db0deaa09845bb95f"
+        },
+        "checkpoint_sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+        "raw_sha256": "1c62a25e89496663ed449a3286269254bb7f95a5dcf7cb5593a8b2fbf841c676",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 1,
+      "condition": "base",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 1,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.013816861000000014,
+            "wall_seconds": 0.037599083996610716
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.00939101000000031,
+            "wall_seconds": 0.018172943004174158
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.00860149099999985,
+            "wall_seconds": 0.016585716002737172
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.008221368000000062,
+            "wall_seconds": 0.01962004300003173
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.2260349059999998,
+          "wall_seconds": 6.361893818000681
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.006902861000000371,
+          "wall_seconds": 0.015969434003636707
+        },
+        "construction": {
+          "cpu_seconds": 4.926999999987913e-06,
+          "wall_seconds": 4.8670044634491205e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "7e5f58fce06a16e54accd8def53c5111b4e723cd2a850002bc47bcfa2ad9e2bf",
+          "dt": "577d7511a8dc955b0f3455d32e691ff9cab577502d8c8d02e867089b30039334",
+          "observed": "cc8cd41cef907c4d216069122c4b89936211361f9050a717a1e37ad1862e952f",
+          "y": "733dda283ed7fbb71758639d0c95b70f316a646b661e02e5d21f249057496229"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "aca196558dd0b9a6418c95dea595f2dd1dd33ae779df12fdd4ee74ab153d39b4",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 1,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.06699626699999994,
+            "wall_seconds": 0.14697646199783776
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.01822518399999984,
+            "wall_seconds": 0.046236055000917986
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.010339114999999843,
+            "wall_seconds": 0.022337589005474
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.013728659999999948,
+            "wall_seconds": 0.028095953006413765
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.358212701,
+          "wall_seconds": 5.334153935997165
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.006960498000000204,
+          "wall_seconds": 0.018620583003212232
+        },
+        "construction": {
+          "cpu_seconds": 0.012996166000000198,
+          "wall_seconds": 0.02626988299743971,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "7e5f58fce06a16e54accd8def53c5111b4e723cd2a850002bc47bcfa2ad9e2bf",
+          "dt": "577d7511a8dc955b0f3455d32e691ff9cab577502d8c8d02e867089b30039334",
+          "observed": "cc8cd41cef907c4d216069122c4b89936211361f9050a717a1e37ad1862e952f",
+          "y": "733dda283ed7fbb71758639d0c95b70f316a646b661e02e5d21f249057496229"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "aca196558dd0b9a6418c95dea595f2dd1dd33ae779df12fdd4ee74ab153d39b4",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 1,
+      "condition": "base",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 1,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.0522621270000001,
+            "wall_seconds": 0.11583204199996544
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.05388079000000001,
+            "wall_seconds": 0.1168338719944586
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.04989799699999997,
+            "wall_seconds": 0.11106389099586522
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.05349259999999978,
+            "wall_seconds": 0.12942051300342428
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.341962983,
+          "wall_seconds": 4.8712114470035885
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.006433497000000177,
+          "wall_seconds": 0.014657182000519242
+        },
+        "construction": {
+          "cpu_seconds": 8.352000000044768e-06,
+          "wall_seconds": 7.661998097319156e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "7e5f58fce06a16e54accd8def53c5111b4e723cd2a850002bc47bcfa2ad9e2bf",
+          "dt": "577d7511a8dc955b0f3455d32e691ff9cab577502d8c8d02e867089b30039334",
+          "observed": "cc8cd41cef907c4d216069122c4b89936211361f9050a717a1e37ad1862e952f",
+          "y": "733dda283ed7fbb71758639d0c95b70f316a646b661e02e5d21f249057496229"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "aca196558dd0b9a6418c95dea595f2dd1dd33ae779df12fdd4ee74ab153d39b4",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 1,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.08950211199999991,
+            "wall_seconds": 0.30029083500267006
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.5536740239999998,
+            "wall_seconds": 1.8399380149930948
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.07722021199999984,
+            "wall_seconds": 0.2674272030053544
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.172179227,
+            "wall_seconds": 0.4506123539977125
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.170997822,
+          "wall_seconds": 6.886900274002983
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.0075602769999996156,
+          "wall_seconds": 0.0356540020002285
+        },
+        "construction": {
+          "cpu_seconds": 0.016978896999999993,
+          "wall_seconds": 0.044998771998507436,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "7e5f58fce06a16e54accd8def53c5111b4e723cd2a850002bc47bcfa2ad9e2bf",
+          "dt": "577d7511a8dc955b0f3455d32e691ff9cab577502d8c8d02e867089b30039334",
+          "observed": "cc8cd41cef907c4d216069122c4b89936211361f9050a717a1e37ad1862e952f",
+          "y": "733dda283ed7fbb71758639d0c95b70f316a646b661e02e5d21f249057496229"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "aca196558dd0b9a6418c95dea595f2dd1dd33ae779df12fdd4ee74ab153d39b4",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "condition": "base",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 24,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.029888683999999888,
+            "wall_seconds": 0.10267955800372874
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.024415670000000222,
+            "wall_seconds": 0.08440704700478818
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.0175952709999998,
+            "wall_seconds": 0.054539511002076324
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.013860945999999874,
+            "wall_seconds": 0.04578119799407432
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.176860084,
+          "wall_seconds": 6.772236634002184
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.009465851999999941,
+          "wall_seconds": 0.02547621299891034
+        },
+        "construction": {
+          "cpu_seconds": 2.9839999999836664e-06,
+          "wall_seconds": 2.944994776044041e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "82698993c1606d72b0e8bf16221a2a79de5cccf7e69c9a6e12226882fd196b32",
+          "dt": "e7226c042e3d288349e2eed05b68d4163d845c33b2ecb941c92ed488ff7e9c37",
+          "observed": "5cf4c99653bf7b21460a25273680c8992f5b25adba052ba176464ab1bd8ec3e2",
+          "y": "da325eccd5bfb91e5d44de2bff554fa2a58237a1ba7e9dfbd788853c0f1be0d9"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "8b7bee057c43d71c750c163ba900e4ac3df36d2a2c810a8edf683fec1cc55c91",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 24,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.059974031000000316,
+            "wall_seconds": 0.20249519999924814
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.025032155999999972,
+            "wall_seconds": 0.08956918600597419
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.02037358200000039,
+            "wall_seconds": 0.06899741000233917
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.016766462000000093,
+            "wall_seconds": 0.06337079899822129
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.159964965,
+          "wall_seconds": 6.1830603039998095
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.006396081999999748,
+          "wall_seconds": 0.01040127099986421
+        },
+        "construction": {
+          "cpu_seconds": 0.012981541999999902,
+          "wall_seconds": 0.041755035003006924,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "82698993c1606d72b0e8bf16221a2a79de5cccf7e69c9a6e12226882fd196b32",
+          "dt": "e7226c042e3d288349e2eed05b68d4163d845c33b2ecb941c92ed488ff7e9c37",
+          "observed": "5cf4c99653bf7b21460a25273680c8992f5b25adba052ba176464ab1bd8ec3e2",
+          "y": "da325eccd5bfb91e5d44de2bff554fa2a58237a1ba7e9dfbd788853c0f1be0d9"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "8b7bee057c43d71c750c163ba900e4ac3df36d2a2c810a8edf683fec1cc55c91",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "condition": "base",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 24,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.08039282399999959,
+            "wall_seconds": 0.26756955399469007
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.07868456299999993,
+            "wall_seconds": 0.25472371299838414
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.07266306499999997,
+            "wall_seconds": 0.2679968450029264
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.06909498700000016,
+            "wall_seconds": 0.30295459900662536
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.253237976,
+          "wall_seconds": 7.291036863003683
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.010140701999999724,
+          "wall_seconds": 0.026126365002710372
+        },
+        "construction": {
+          "cpu_seconds": 3.4250000000568548e-06,
+          "wall_seconds": 3.626002580858767e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "82698993c1606d72b0e8bf16221a2a79de5cccf7e69c9a6e12226882fd196b32",
+          "dt": "e7226c042e3d288349e2eed05b68d4163d845c33b2ecb941c92ed488ff7e9c37",
+          "observed": "5cf4c99653bf7b21460a25273680c8992f5b25adba052ba176464ab1bd8ec3e2",
+          "y": "da325eccd5bfb91e5d44de2bff554fa2a58237a1ba7e9dfbd788853c0f1be0d9"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "8b7bee057c43d71c750c163ba900e4ac3df36d2a2c810a8edf683fec1cc55c91",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 24,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.08600991399999991,
+            "wall_seconds": 0.09770291899621952
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.516062195,
+            "wall_seconds": 1.0308144740047283
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.07509937500000019,
+            "wall_seconds": 0.1378259750053985
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.16865311900000002,
+            "wall_seconds": 0.28619999699731125
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.021553635,
+          "wall_seconds": 3.9146147559949895
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.006817365999999936,
+          "wall_seconds": 0.020096426997042727
+        },
+        "construction": {
+          "cpu_seconds": 0.01027109500000023,
+          "wall_seconds": 0.010270437000144739,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "82698993c1606d72b0e8bf16221a2a79de5cccf7e69c9a6e12226882fd196b32",
+          "dt": "e7226c042e3d288349e2eed05b68d4163d845c33b2ecb941c92ed488ff7e9c37",
+          "observed": "5cf4c99653bf7b21460a25273680c8992f5b25adba052ba176464ab1bd8ec3e2",
+          "y": "da325eccd5bfb91e5d44de2bff554fa2a58237a1ba7e9dfbd788853c0f1be0d9"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "8b7bee057c43d71c750c163ba900e4ac3df36d2a2c810a8edf683fec1cc55c91",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 64,
+      "condition": "base",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 64,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.03308633299999997,
+            "wall_seconds": 0.15597344599518692
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.025803488999999846,
+            "wall_seconds": 0.10943464699812466
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.026261057000000143,
+            "wall_seconds": 0.11577857800148195
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.02583027700000029,
+            "wall_seconds": 0.11362035700585693
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.212968541,
+          "wall_seconds": 7.444021975003125
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.014076326000000083,
+          "wall_seconds": 0.05006942099862499
+        },
+        "construction": {
+          "cpu_seconds": 2.904000000025775e-06,
+          "wall_seconds": 2.9650036594830453e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "a4cb97a4f5507154c975328385a8127f268f85fa0dd30e23c3c5b31adf870548",
+          "dt": "fe17bb158cfa2a777416915410ce5ee3b014bec3f97598f6e789fde0c3b6c8be",
+          "observed": "5a648d8015900d89664e00e125df179636301a2d8fa191c1aa2bd9358ea53a69",
+          "y": "6eefa205d5b3e94769db91f372aedb26620a9f2670cd97fc7644f82070ef502a"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "bca3ef1d3ae8e216e9ddb66539b2f51610081578faa12a433a74575fc015433d",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 64,
+        "condition": "base",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.054228583999999636,
+            "wall_seconds": 0.055282758999965154
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.02458167900000019,
+            "wall_seconds": 0.05977939900185447
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.018573200999999706,
+            "wall_seconds": 0.03858947499975329
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.021399452000000263,
+            "wall_seconds": 0.0530189729979611
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.0852749090000002,
+          "wall_seconds": 4.079183046997059
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.010262742999999741,
+          "wall_seconds": 0.010263978001603391
+        },
+        "construction": {
+          "cpu_seconds": 0.008593056999999682,
+          "wall_seconds": 0.008593247999669984,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "a4cb97a4f5507154c975328385a8127f268f85fa0dd30e23c3c5b31adf870548",
+          "dt": "fe17bb158cfa2a777416915410ce5ee3b014bec3f97598f6e789fde0c3b6c8be",
+          "observed": "5a648d8015900d89664e00e125df179636301a2d8fa191c1aa2bd9358ea53a69",
+          "y": "6eefa205d5b3e94769db91f372aedb26620a9f2670cd97fc7644f82070ef502a"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "bca3ef1d3ae8e216e9ddb66539b2f51610081578faa12a433a74575fc015433d",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 64,
+      "condition": "base",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 64,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.08680157700000013,
+            "wall_seconds": 0.18734062099974835
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.08940995399999996,
+            "wall_seconds": 0.19792938900354784
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.11106845300000012,
+            "wall_seconds": 0.2608763070020359
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.10590104399999989,
+            "wall_seconds": 0.23204978500143625
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.756591427,
+          "wall_seconds": 3.6774632949964143
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.010890944000000014,
+          "wall_seconds": 0.0228837089962326
+        },
+        "construction": {
+          "cpu_seconds": 1.633000000111906e-06,
+          "wall_seconds": 1.7929996829479933e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "a4cb97a4f5507154c975328385a8127f268f85fa0dd30e23c3c5b31adf870548",
+          "dt": "fe17bb158cfa2a777416915410ce5ee3b014bec3f97598f6e789fde0c3b6c8be",
+          "observed": "5a648d8015900d89664e00e125df179636301a2d8fa191c1aa2bd9358ea53a69",
+          "y": "6eefa205d5b3e94769db91f372aedb26620a9f2670cd97fc7644f82070ef502a"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "bca3ef1d3ae8e216e9ddb66539b2f51610081578faa12a433a74575fc015433d",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 64,
+        "condition": "base",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.15406346199999987,
+            "wall_seconds": 0.35294749199965736
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.5936172320000002,
+            "wall_seconds": 1.9382927359984023
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.131959814,
+            "wall_seconds": 0.3153056990049663
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.1727065040000002,
+            "wall_seconds": 0.40780630100198323
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.1312488999999997,
+          "wall_seconds": 8.364810327999294
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.014150116000000157,
+          "wall_seconds": 0.03415301399945747
+        },
+        "construction": {
+          "cpu_seconds": 0.016068178999999905,
+          "wall_seconds": 0.028060215001460165,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "a4cb97a4f5507154c975328385a8127f268f85fa0dd30e23c3c5b31adf870548",
+          "dt": "fe17bb158cfa2a777416915410ce5ee3b014bec3f97598f6e789fde0c3b6c8be",
+          "observed": "5a648d8015900d89664e00e125df179636301a2d8fa191c1aa2bd9358ea53a69",
+          "y": "6eefa205d5b3e94769db91f372aedb26620a9f2670cd97fc7644f82070ef502a"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "bca3ef1d3ae8e216e9ddb66539b2f51610081578faa12a433a74575fc015433d",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 1,
+        "condition": "long_tokens_128",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.05125404599999994,
+            "wall_seconds": 0.11261310699774185
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.06810173100000005,
+            "wall_seconds": 0.08586787700187415
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.06931503500000025,
+            "wall_seconds": 0.09426953200454591
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.07164714399999994,
+            "wall_seconds": 0.10210318500321591
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.072972397,
+          "wall_seconds": 6.133370180003112
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.007783998000000292,
+          "wall_seconds": 0.016998176004562993
+        },
+        "construction": {
+          "cpu_seconds": 2.422999999751596e-06,
+          "wall_seconds": 2.553999365773052e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "c379a8626bfec4f221de9710a812669cfcec69663927c36e8eb13ea11d36995e",
+          "dt": "994569d6ddf2141950ee084a8b16271fb96d064dc10a07ad07b8f6cd3d5c29d0",
+          "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+          "y": "239aa648add0582cd60b51bdf66eccde10225a072f90b259acd40b8309f808c4"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "ca6f0b10b5a261eed0388a9578cb2829f60a232a4d2437449d585c0f8990973b",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 1,
+        "condition": "long_tokens_128",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.11952003499999986,
+            "wall_seconds": 0.4459404880035436
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.033604331000000265,
+            "wall_seconds": 0.15389035800035344
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.02914475300000019,
+            "wall_seconds": 0.1283992229946307
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.024781334999999682,
+            "wall_seconds": 0.12077211199357407
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.235163918,
+          "wall_seconds": 6.233169558996451
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.007789496000000007,
+          "wall_seconds": 0.0389376489983988
+        },
+        "construction": {
+          "cpu_seconds": 0.01134115999999974,
+          "wall_seconds": 0.03589919699879829,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "c379a8626bfec4f221de9710a812669cfcec69663927c36e8eb13ea11d36995e",
+          "dt": "994569d6ddf2141950ee084a8b16271fb96d064dc10a07ad07b8f6cd3d5c29d0",
+          "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+          "y": "239aa648add0582cd60b51bdf66eccde10225a072f90b259acd40b8309f808c4"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "ca6f0b10b5a261eed0388a9578cb2829f60a232a4d2437449d585c0f8990973b",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 1,
+      "condition": "long_tokens_128",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 1,
+        "condition": "long_tokens_128",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.24685308500000014,
+            "wall_seconds": 1.0777773400041042
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.3798273499999998,
+            "wall_seconds": 1.4816823459987063
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.4793682749999997,
+            "wall_seconds": 1.5948724010013393
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.27640467699999993,
+            "wall_seconds": 0.9167308030009735
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.2181572419999998,
+          "wall_seconds": 7.802542017001542
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.006973667000000017,
+          "wall_seconds": 0.04748925499734469
+        },
+        "construction": {
+          "cpu_seconds": 6.920000000132376e-06,
+          "wall_seconds": 6.759997631888837e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "c379a8626bfec4f221de9710a812669cfcec69663927c36e8eb13ea11d36995e",
+          "dt": "994569d6ddf2141950ee084a8b16271fb96d064dc10a07ad07b8f6cd3d5c29d0",
+          "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+          "y": "239aa648add0582cd60b51bdf66eccde10225a072f90b259acd40b8309f808c4"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "ca6f0b10b5a261eed0388a9578cb2829f60a232a4d2437449d585c0f8990973b",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 1,
+        "condition": "long_tokens_128",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.38393162999999975,
+            "wall_seconds": 1.2810044359939639
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.6675834149999997,
+            "wall_seconds": 2.019573973993829
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.25519638199999983,
+            "wall_seconds": 0.5760262260009767
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.3123764249999996,
+            "wall_seconds": 0.5241859870002372
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.1966996250000004,
+          "wall_seconds": 5.923706008004956
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.0077238389999996215,
+          "wall_seconds": 0.027895073995750863
+        },
+        "construction": {
+          "cpu_seconds": 0.013171095000000133,
+          "wall_seconds": 0.044351682998239994,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "c379a8626bfec4f221de9710a812669cfcec69663927c36e8eb13ea11d36995e",
+          "dt": "994569d6ddf2141950ee084a8b16271fb96d064dc10a07ad07b8f6cd3d5c29d0",
+          "observed": "7eb24a18990ee4c958c89773da6cc9fbc5c278357762d02ec6ab947eb28726ff",
+          "y": "239aa648add0582cd60b51bdf66eccde10225a072f90b259acd40b8309f808c4"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "ca6f0b10b5a261eed0388a9578cb2829f60a232a4d2437449d585c0f8990973b",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "backward": false,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 24,
+        "condition": "long_tokens_128",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.10391048600000019,
+            "wall_seconds": 0.22272366999823134
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.11414741699999986,
+            "wall_seconds": 0.26555684600316454
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.07985637899999976,
+            "wall_seconds": 0.1843594279998797
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.0757711879999996,
+            "wall_seconds": 0.1722877649954171
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.947209661,
+          "wall_seconds": 4.703464161997545
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.010818005000000186,
+          "wall_seconds": 0.020996939994802233
+        },
+        "construction": {
+          "cpu_seconds": 2.343000000015749e-06,
+          "wall_seconds": 2.3839966161176562e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "644a15519a59469d619a8707e726d5265c65c3fdd786fef20fd8c7483e8769a8",
+          "dt": "f0740503e14d4a39a7270a771818ed572a34f0419e589b5ea8e678699a99f637",
+          "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+          "y": "8409c71d3f427e215790b6b032d0539b89a40e6017bfe16a7929e8d6dcb6a78f"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "06078be136f875bb69043c377335c4c94974d6fe0cd70f358ef5e5e516df0a21",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 24,
+        "condition": "long_tokens_128",
+        "backward": false,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.16226191300000004,
+            "wall_seconds": 0.3689556400058791
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.10071022500000026,
+            "wall_seconds": 0.24133742800040636
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.06886969799999987,
+            "wall_seconds": 0.1720074309996562
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.06332696999999987,
+            "wall_seconds": 0.13840263299789513
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.895801562,
+          "wall_seconds": 3.9347573589984677
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.006357343999999987,
+          "wall_seconds": 0.015395519003504887
+        },
+        "construction": {
+          "cpu_seconds": 0.009666399000000103,
+          "wall_seconds": 0.01764892099890858,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "644a15519a59469d619a8707e726d5265c65c3fdd786fef20fd8c7483e8769a8",
+          "dt": "f0740503e14d4a39a7270a771818ed572a34f0419e589b5ea8e678699a99f637",
+          "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+          "y": "8409c71d3f427e215790b6b032d0539b89a40e6017bfe16a7929e8d6dcb6a78f"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "06078be136f875bb69043c377335c4c94974d6fe0cd70f358ef5e5e516df0a21",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "condition": "long_tokens_128",
+      "backward": true,
+      "max_cold_output_error": 0.0,
+      "argmax_identical": true,
+      "input_identical": true,
+      "passed": true,
+      "dense": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "dense",
+        "task": "binding",
+        "batch": 24,
+        "condition": "long_tokens_128",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.4143152699999999,
+            "wall_seconds": 0.9164515290030977
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 0.5125507869999999,
+            "wall_seconds": 1.1334271150044515
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.577251602,
+            "wall_seconds": 1.2812534080003388
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.5377072539999999,
+            "wall_seconds": 1.204094153996266
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 2.079033463,
+          "wall_seconds": 5.19173480799509
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.0071852909999998715,
+          "wall_seconds": 0.02799345699895639
+        },
+        "construction": {
+          "cpu_seconds": 3.094999999841974e-06,
+          "wall_seconds": 2.9740040190517902e-06,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": false
+        },
+        "input_sha256": {
+          "x": "644a15519a59469d619a8707e726d5265c65c3fdd786fef20fd8c7483e8769a8",
+          "dt": "f0740503e14d4a39a7270a771818ed572a34f0419e589b5ea8e678699a99f637",
+          "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+          "y": "8409c71d3f427e215790b6b032d0539b89a40e6017bfe16a7929e8d6dcb6a78f"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "06078be136f875bb69043c377335c4c94974d6fe0cd70f358ef5e5e516df0a21",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      },
+      "candidate": {
+        "schema": "hcsn.exact-addressed-r2.cold-use.v1",
+        "kind": "integrated",
+        "task": "binding",
+        "batch": 24,
+        "condition": "long_tokens_128",
+        "backward": true,
+        "calls": [
+          {
+            "index": 0,
+            "cpu_seconds": 0.58228597,
+            "wall_seconds": 1.2761880030011525
+          },
+          {
+            "index": 1,
+            "cpu_seconds": 1.003990161,
+            "wall_seconds": 1.4700629630024196
+          },
+          {
+            "index": 2,
+            "cpu_seconds": 0.4456316640000004,
+            "wall_seconds": 0.9416859449993353
+          },
+          {
+            "index": 3,
+            "cpu_seconds": 0.6792850719999999,
+            "wall_seconds": 1.5448520270001609
+          }
+        ],
+        "imports": {
+          "cpu_seconds": 1.9353222579999998,
+          "wall_seconds": 4.885981772997184
+        },
+        "model_data_setup": {
+          "cpu_seconds": 0.010181792000000023,
+          "wall_seconds": 0.01947308699891437
+        },
+        "construction": {
+          "cpu_seconds": 0.011107823999999988,
+          "wall_seconds": 0.02400216000387445,
+          "scripted_cache_empty_before_construction": true,
+          "compiled_here": true
+        },
+        "input_sha256": {
+          "x": "644a15519a59469d619a8707e726d5265c65c3fdd786fef20fd8c7483e8769a8",
+          "dt": "f0740503e14d4a39a7270a771818ed572a34f0419e589b5ea8e678699a99f637",
+          "observed": "f40ae0b5c3ef9b289d6ae6643c8432e77994ad72118031aa7a28aa1357efd88c",
+          "y": "8409c71d3f427e215790b6b032d0539b89a40e6017bfe16a7929e8d6dcb6a78f"
+        },
+        "checkpoint_sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b",
+        "raw_sha256": "06078be136f875bb69043c377335c4c94974d6fe0cd70f358ef5e5e516df0a21",
+        "source_sha256": {
+          "experiments/hcsn_exact_transport_r2_20261101/cold_start.py": "1933b07a82e4130854e0505c419fc63b3fc4e22664eb59f30fbc4fbb3ae3850d",
+          "experiments/hcsn_exact_transport_r2_20261101/adapter.py": "708ae275d38737faabc4ad7b91f57ea1b21dbcd1ba8be96d06979f3d442b1458",
+          "experiments/hcsn_exact_transport_r2_20261101/audit.py": "95feb597894fd2584ebe5dcb03cc0da214d829e0581918b98bdbd08e6b52da65"
+        },
+        "scope": "Four actual first-use calls in a fresh process; no warm-cache or free-compilation assumption"
+      }
+    }
+  ],
+  "cost_note": "Use outer campaign receipt only in non-nested CPU totals; per-worker receipts are nested"
+}
