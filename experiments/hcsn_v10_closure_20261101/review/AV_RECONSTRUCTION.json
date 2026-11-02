@@ -1,0 +1,192 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "a7225f2b367d64b9638bc73b6e44e7b7ef917696f226688f7cd31a5340d1e357",
+  "audit_sources_snapshot": {
+    "av_reconstruction.py": "38dde8e972d2d3285eea34829660b9976395f3a60c19540797b4ff5a2a6ef56d",
+    "frontend_reconstruction.py": "de2e7e66706402b67ae22b464bc0aaa638dc5609c1bd5cf27d033a972c749f08",
+    "independent_audit.py": "a7225f2b367d64b9638bc73b6e44e7b7ef917696f226688f7cd31a5340d1e357",
+    "joint_knot_diagnostic.py": "2636781f87b496981700b9cea51f4d4bed86c74955a003d25d22b274772d313f",
+    "joint_reconstruction.py": "7ff0afaafefa0197122f68911ac7a859738844fef6cf964a243cfafb653eb7be",
+    "renewal_reconstruction.py": "cc36e785fadacfc2d1830575f55b6ec26225f0a37e59260080ef4d1201e74dcc"
+  },
+  "av_analytic": {
+    "runs_recomputed": 3240,
+    "accepted_updates_reconstructed": 15208,
+    "decision_readouts_reconstructed": 5054,
+    "uncovered_direct_decisions": 4,
+    "maximum_hidden_state_error": 7.632783294297951e-16,
+    "effects": {
+      "async_av": {
+        "descriptive_D_minus_B": -0.002499749999999956
+      },
+      "av_binding": {
+        "descriptive_D_minus_B": -0.012623708333333327
+      }
+    },
+    "validation_selection_status": {
+      "async_av": {
+        "direct": {
+          "selected_epoch_zero_count": 5,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "gru": {
+          "selected_epoch_zero_count": 4,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ssm": {
+          "selected_epoch_zero_count": 5,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "history": {
+          "selected_epoch_zero_count": 5,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "renewal": {
+          "selected_epoch_zero_count": 5,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "mean": {
+          "selected_epoch_zero_count": 5,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "single": {
+          "selected_epoch_zero_count": 5,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "av_binding": {
+        "direct": {
+          "selected_epoch_zero_count": 0,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "gru": {
+          "selected_epoch_zero_count": 0,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ssm": {
+          "selected_epoch_zero_count": 0,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "history": {
+          "selected_epoch_zero_count": 0,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "renewal": {
+          "selected_epoch_zero_count": 0,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.039984221469018894,
+            0.03988479518331052,
+            0.04624657561827056,
+            0.04316320420399571,
+            0.0463558568164896
+          ]
+        },
+        "mean": {
+          "selected_epoch_zero_count": 0,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.040008596788998485,
+            0.039878040611632054,
+            0.046242529901348556,
+            0.042912291904449146,
+            0.046229894818802617
+          ]
+        },
+        "single": {
+          "selected_epoch_zero_count": 0,
+          "total_seeds": 5,
+          "reported_selected_physics_parameter_max_changes": [
+            0.03999780507902691,
+            0.03988581178873249,
+            0.04606094650620374,
+            0.042896852307049066,
+            0.046207760865899235
+          ]
+        }
+      }
+    },
+    "scope": "Independent NumPy state/count/reader and accepted-packet cross-family replay; raw media and upstream feature/head extraction not independently recreated here",
+    "checkpoint_loader": "Genuine Torch weights_only loader only; candidate models/interfaces not imported",
+    "fresh_recording_or_identified_media_law_asserted": false
+  },
+  "scientific_adoption_asserted": false
+}

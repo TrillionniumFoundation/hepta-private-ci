@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn-v10-formal-lifecycle-cost-scope.v1",
+  "scope": "Predeclared formal research command lifecycle only; not all historical development or source authoring cost",
+  "historical_cost_cpu_seconds": null,
+  "initial_inspection_source_authoring_and_dependency_discovery_cpu_seconds": null,
+  "unmeasured_pre_formal_frontend_recovery": {
+    "Library_download_zip_extraction_cpu_seconds": null,
+    "manifest_and_remote_tree_comparison_cpu_seconds": null,
+    "v3_source_hash_check_and_843_file_recovery_cpu_seconds": null,
+    "failed_initialization_recovery_attempt_cpu_seconds": null,
+    "rule": "Audio prepare CPU does not cover these earlier recovery steps; no full preparation-cost claim"
+  },
+  "required_phases": {
+    "risk": ["prepare", "validation", "execute", "audit"],
+    "persistent_renewal": ["prepare", "validation", "train", "execute", "audit"],
+    "persistent_renewal_extension": ["prepare", "train", "execute", "audit"],
+    "high_power_confirmation": ["prepare", "execute", "aggregate", "audit"],
+    "joint_retrain": ["validation", "prepare", "data", "train", "execute", "audit"],
+    "av_analytic": ["validation", "prepare", "train", "execute", "audit"],
+    "av_constant": ["prepare", "execute", "audit"],
+    "historical_audio": ["prepare", "train", "execute", "audit"]
+    ,"publication": ["validation"]
+  },
+  "active_output_by_study": {
+    "risk": "experiments/hcsn_v10_closure_20261101/risk/results/closure001",
+    "persistent_renewal": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002",
+    "persistent_renewal_extension": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001",
+    "high_power_confirmation": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+    "joint_retrain": "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001",
+    "av_analytic": "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+    "av_constant": "experiments/hcsn_v10_closure_20261101/av_analytic/results/constant001",
+    "historical_audio": "experiments/hcsn_v10_closure_20261101/frontend/audio001"
+    ,"publication": "/workspace/scratch/8da28d12955f/replay-v10-av-inputs-check"
+  },
+  "phase_scope_notes": {
+    "persistent_renewal.train": "Includes all declared training and validation data generation and all fitted candidates",
+    "joint_retrain.data": "Independent IG train/validation/test generation; test files not opened in train phase",
+    "risk.execute": "Logical and actual service scheduling, head/sink contracts and slow-component probes",
+    "av_constant": "Posthoc fixed 0.5 no-core reference motivated by train/validation diagnostics; no fitting phase, not a new preregistered confirmation"
+  },
+  "required_successful_attempt_counts": {
+    "high_power_confirmation.execute": 8
+  },
+  "rules": [
+    "One outer wait4 CPU total per study/stage/attempt; failed attempts are retained and included",
+    "Inner task and monitoring CPU and model component timers are explanatory nested diagnostics, never additive to outer CPU",
+    "A phase's successful process exit is a metering condition, not scientific qualification",
+    "No exact family memory or energy claim follows from CPU phase coverage"
+  ]
+}

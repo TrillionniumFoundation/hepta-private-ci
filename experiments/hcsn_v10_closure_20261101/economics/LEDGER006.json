@@ -1,0 +1,2818 @@
+{
+  "schema": "hcsn-v10-exclusive-phase-ledger.v1",
+  "records": [
+    {
+      "study": "historical_audio",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.frontend.audit_audio_reference",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/frontend/audio001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/audio_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.192042,
+      "wall_seconds": 0.466316483,
+      "success": true,
+      "boundary_begin_ns": 55135869181605,
+      "boundary_end_ns": 55136335498088,
+      "receipt_sha256": "4044e3e6de6be815126fffa9511aa52ae27a86a21dab3a7e653f402ef976a7be"
+    },
+    {
+      "study": "historical_audio",
+      "stage": "execute",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.frontend.historical_audio_reference",
+        "--stage",
+        "evaluate",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/frontend/audio001",
+        "--v9-evidence",
+        "/workspace/scratch/8da28d12955f/recovery-v10/extracted/experiments/hcsn_v9_followup_20261101"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/audio_evaluate001/PHASE_RECEIPT.json",
+      "cpu_seconds": 2.605727,
+      "wall_seconds": 5.189339247,
+      "success": true,
+      "boundary_begin_ns": 55102499002636,
+      "boundary_end_ns": 55107688341883,
+      "receipt_sha256": "3715a1abd8562584ed6daa48890056609ec613fe541c5df71e493289073f8f40"
+    },
+    {
+      "study": "historical_audio",
+      "stage": "prepare",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.frontend.historical_audio_reference",
+        "--stage",
+        "prepare",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/frontend/audio001",
+        "--v9-evidence",
+        "/workspace/scratch/8da28d12955f/recovery-v10/extracted/experiments/hcsn_v9_followup_20261101"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/audio_prepare001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.186139,
+      "wall_seconds": 0.443017611,
+      "success": true,
+      "boundary_begin_ns": 55068062638953,
+      "boundary_end_ns": 55068505656564,
+      "receipt_sha256": "71c0c7f4b911f0d3cf49b6ba9a1f66c55a1d1c7a6bc4807fcb07192a0580e449"
+    },
+    {
+      "study": "historical_audio",
+      "stage": "train",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.frontend.historical_audio_reference",
+        "--stage",
+        "train",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/frontend/audio001",
+        "--v9-evidence",
+        "/workspace/scratch/8da28d12955f/recovery-v10/extracted/experiments/hcsn_v9_followup_20261101"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/audio_train001/PHASE_RECEIPT.json",
+      "cpu_seconds": 2.4507459999999996,
+      "wall_seconds": 4.772319967,
+      "success": true,
+      "boundary_begin_ns": 55072840689561,
+      "boundary_end_ns": 55077613009528,
+      "receipt_sha256": "1d1fb04b9a4738a22950f4d038ab32edc60a7904b7f3821603ad91e236ce5821"
+    },
+    {
+      "study": "av_analytic",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.audit",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 22.721401999999998,
+      "wall_seconds": 31.568976387,
+      "success": true,
+      "boundary_begin_ns": 55791504262319,
+      "boundary_end_ns": 55823073238706,
+      "receipt_sha256": "8270c688b442b321c58e72cb83692da6fce1ea2a4e73a915d7646562b5aa8dad"
+    },
+    {
+      "study": "av_constant",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "constant",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/constant001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/CONSTANT_RECONSTRUCTION.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_constant_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.8369629999999999,
+      "wall_seconds": 0.907691422,
+      "success": true,
+      "boundary_begin_ns": 55842610590211,
+      "boundary_end_ns": 55843518281633,
+      "receipt_sha256": "593b966f70f2075faea26f0311f5b622e5f74748bd018591d1c3da372ead5082"
+    },
+    {
+      "study": "av_constant",
+      "stage": "execute",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.review.constant_baseline",
+        "execute",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/constant001",
+        "--candidate",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_constant_execute001/PHASE_RECEIPT.json",
+      "cpu_seconds": 3.033451,
+      "wall_seconds": 3.062599607,
+      "success": true,
+      "boundary_begin_ns": 55820329133817,
+      "boundary_end_ns": 55823391733424,
+      "receipt_sha256": "0e2c8e20e37248f18d9709bc8a00fe99a34099fd41c5adcce40a6c1739103247"
+    },
+    {
+      "study": "av_constant",
+      "stage": "prepare",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.review.constant_baseline",
+        "prepare",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/constant001",
+        "--candidate",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_constant_prepare001/PHASE_RECEIPT.json",
+      "cpu_seconds": 2.393174,
+      "wall_seconds": 5.268096748,
+      "success": true,
+      "boundary_begin_ns": 55791656756607,
+      "boundary_end_ns": 55796924853355,
+      "receipt_sha256": "49be27c600c2f11a9dcba5857d95187b24941ddf35ad4a06fa83cc3bdeeb9a59"
+    },
+    {
+      "study": "av_analytic",
+      "stage": "execute",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.campaign",
+        "evaluate",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_evaluate001/PHASE_RECEIPT.json",
+      "cpu_seconds": 92.267417,
+      "wall_seconds": 143.832047057,
+      "success": true,
+      "boundary_begin_ns": 55630310390247,
+      "boundary_end_ns": 55774142437304,
+      "receipt_sha256": "1ce5974027045f4034b94c2148e5bab80a4762b3cbbfeda8769ba7b267175e10"
+    },
+    {
+      "study": "av_analytic",
+      "stage": "audit",
+      "attempt": 2,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "av_analytic",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/AV_RECONSTRUCTION.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_independent_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 13.186933,
+      "wall_seconds": 22.201128505,
+      "success": true,
+      "boundary_begin_ns": 55791631356563,
+      "boundary_end_ns": 55813832485068,
+      "receipt_sha256": "a8f2e182cd772f8903efcb1cf03b7f0fa9d7989de55f4eaf9f2b99fb244fd79e"
+    },
+    {
+      "study": "publication",
+      "stage": "validation",
+      "attempt": 1,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/publication/prepare_av_replay.py",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+        "/workspace/scratch/8da28d12955f/replay-v10-av-inputs-check"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_input_replay_validation001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.118547,
+      "wall_seconds": 0.328836842,
+      "success": true,
+      "boundary_begin_ns": 55984823592532,
+      "boundary_end_ns": 55985152429374,
+      "receipt_sha256": "10a86704f4ffba99e84bf23f62994d3552ef9a41b7ba021a10fc9c41760e8d13"
+    },
+    {
+      "study": "av_interface_supplement",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.close_av_interfaces",
+        "--candidate",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+        "--constant",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/constant001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/AV_INTERFACE_SUPPLEMENT.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_interface_supplement001/PHASE_RECEIPT.json",
+      "cpu_seconds": 5.422386,
+      "wall_seconds": 13.619209932,
+      "success": true,
+      "boundary_begin_ns": 56027392689674,
+      "boundary_end_ns": 56041011899606,
+      "receipt_sha256": "0f05b1ae72e260126cb96ee96348a4a56b11dd8728588caa5254d0040735ff72"
+    },
+    {
+      "study": "av_analytic",
+      "stage": "prepare",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.campaign",
+        "prepare",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+        "--bundle",
+        "/workspace/scratch/8da28d12955f/recovery-v10/extracted"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_prepare001/PHASE_RECEIPT.json",
+      "cpu_seconds": 2.097121,
+      "wall_seconds": 3.48350776,
+      "success": true,
+      "boundary_begin_ns": 55381460719415,
+      "boundary_end_ns": 55384944227175,
+      "receipt_sha256": "e35304b72351be3f12101150ba0820fdb817fc85dea2f28a536344ef151cb229"
+    },
+    {
+      "study": "av_target_diagnostic",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.review.target_diagnostic",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/review/TARGET_SHIFT_DIAGNOSTIC.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_target_diagnostic001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.268563,
+      "wall_seconds": 0.61758294,
+      "success": true,
+      "boundary_begin_ns": 55557509600909,
+      "boundary_end_ns": 55558127183849,
+      "receipt_sha256": "7d1e4a76c5aa6336abb70fb2b1530b4348585d6b60835d6939100319ef0d3717"
+    },
+    {
+      "study": "av_analytic",
+      "stage": "train",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.campaign",
+        "train",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_train001/PHASE_RECEIPT.json",
+      "cpu_seconds": 107.309171,
+      "wall_seconds": 209.835036447,
+      "success": true,
+      "boundary_begin_ns": 55402195586256,
+      "boundary_end_ns": 55612030622703,
+      "receipt_sha256": "242166a8610a8019eaa741c650504f236a8dc2e236d265a8f7a6f1e77e96e8e4"
+    },
+    {
+      "study": "av_analytic",
+      "stage": "validation",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.test_models",
+        "-v"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_validation001/PHASE_RECEIPT.json",
+      "cpu_seconds": 4.693529,
+      "wall_seconds": 9.336714586,
+      "success": false,
+      "boundary_begin_ns": 55247814876413,
+      "boundary_end_ns": 55257151590999,
+      "receipt_sha256": "175e7d541d417930899389f72eaf599207d0cba0329f5a8e6cc51700b9ce42ed"
+    },
+    {
+      "study": "av_analytic",
+      "stage": "validation",
+      "attempt": 2,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.test_models",
+        "-v"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_validation002/PHASE_RECEIPT.json",
+      "cpu_seconds": 4.833699,
+      "wall_seconds": 8.927802194,
+      "success": true,
+      "boundary_begin_ns": 55359663690338,
+      "boundary_end_ns": 55368591492532,
+      "receipt_sha256": "e8a3ea1cbffcbb6e30d35f93d2ceda75eaaba8b77353712594720cad8690c722"
+    },
+    {
+      "study": "hardware",
+      "stage": "capability",
+      "attempt": 1,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/economics/capability_probe.py",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/CAPABILITIES.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/capabilities001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.10536699999999999,
+      "wall_seconds": 0.249264795,
+      "success": true,
+      "boundary_begin_ns": 54941665882577,
+      "boundary_end_ns": 54941915147372,
+      "receipt_sha256": "932fec9b429c92c369aa557828357069397eee83bf67c085209c84dc142821e7"
+    },
+    {
+      "study": "ci_capability",
+      "stage": "capability",
+      "attempt": 1,
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.economics.ci_cgroup",
+        "probe",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/results/ci_local_capability001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/ci_capability_phase001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.17541099999999998,
+      "wall_seconds": 0.640060431,
+      "success": true,
+      "boundary_begin_ns": 56353139842635,
+      "boundary_end_ns": 56353779903066,
+      "receipt_sha256": "142cb975aa795434ed0440c53a6334de42d5e5e0bd52867273771766b2e94041"
+    },
+    {
+      "study": "external_ci_review_41371500148",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "ci",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/economics/ci_runs/41371500148/artifact",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/CI_RECONSTRUCTION_41371500148.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/ci_review_41371500148/PHASE_RECEIPT.json",
+      "cpu_seconds": 9.591850999999998,
+      "wall_seconds": 16.206731921,
+      "success": true,
+      "boundary_begin_ns": 57536297244171,
+      "boundary_end_ns": 57552503976092,
+      "receipt_sha256": "4af403116fdd45830b514e3d93cf0dd3b0b7aaee66c848d16b86a67ef51a5679"
+    },
+    {
+      "study": "external_ci_review_41372584433",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "ci",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/economics/ci_runs/41372584433/artifact",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/CI_RECONSTRUCTION_41372584433.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/ci_review_41372584433/PHASE_RECEIPT.json",
+      "cpu_seconds": 11.304612,
+      "wall_seconds": 24.282545277,
+      "success": true,
+      "boundary_begin_ns": 57536299783272,
+      "boundary_end_ns": 57560582328549,
+      "receipt_sha256": "4240a50352d4540b744e0c27e316e99366ba72d9ce942e039b5317db83ab5cb7"
+    },
+    {
+      "study": "frontend_review",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "frontend",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/frontend",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/FRONTEND_RECONSTRUCTION.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/frontend_independent_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.203673,
+      "wall_seconds": 0.533931431,
+      "success": true,
+      "boundary_begin_ns": 55699214437736,
+      "boundary_end_ns": 55699748369167,
+      "receipt_sha256": "2f8b08a91c6291904a555733ef50990d17c32e81492106e82c53e8b1b55014ac"
+    },
+    {
+      "study": "package_inventory",
+      "stage": "validation",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.frontend.inventory",
+        "--archive",
+        "/workspace/scratch/8da28d12955f/recovery-v10/HCSN_V9_20261101_source_evidence.zip",
+        "--remote-tree",
+        "/workspace/scratch/8da28d12955f/recovery-v10/REMOTE_V9_TREE.json",
+        "--repository",
+        "/workspace/scratch/8da28d12955f/hepta-research",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/frontend"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/frontend_inventory001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.371828,
+      "wall_seconds": 0.556606962,
+      "success": true,
+      "boundary_begin_ns": 55168183618024,
+      "boundary_end_ns": 55168740224986,
+      "receipt_sha256": "999dea5998af56537ce3364ae7c5269906b57a5773391a886f503dbe4e7dc494"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "aggregate",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "aggregate",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_aggregate001/PHASE_RECEIPT.json",
+      "cpu_seconds": 9.270848,
+      "wall_seconds": 12.071348109,
+      "success": true,
+      "boundary_begin_ns": 56632961711009,
+      "boundary_end_ns": 56645033059118,
+      "receipt_sha256": "6cdf2f604150a9ae35625d50cb9520901a639470c4dfd62ea51e6053caf93cd5"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "confirmation",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/CONFIRMATION_RECONSTRUCTION.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 36.388615,
+      "wall_seconds": 40.391515092,
+      "success": true,
+      "boundary_begin_ns": 56677414724940,
+      "boundary_end_ns": 56717806240032,
+      "receipt_sha256": "ebd8d822602ab13f1a83dab8730ef2f0c01e1080a8125951b4c6d7479d330061"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "prepare",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "prepare",
+        "--base",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_prepare001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.8258869999999999,
+      "wall_seconds": 1.677473986,
+      "success": true,
+      "boundary_begin_ns": 55964850857454,
+      "boundary_end_ns": 55966528331440,
+      "receipt_sha256": "02008c5a43bfe01d394a84dc70ae890caeb5f7af4b5c0c5ac39a1e385bea190f"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "shard",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--shard",
+        "0"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard0_001/PHASE_RECEIPT.json",
+      "cpu_seconds": 171.592578,
+      "wall_seconds": 432.357558939,
+      "success": true,
+      "boundary_begin_ns": 55988384838550,
+      "boundary_end_ns": 56420742397489,
+      "receipt_sha256": "4e2c5a8716b1bab6d3a12466dc14b4ab0a769412786ff725a180477b5ced6a8e"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 2,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "shard",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--shard",
+        "1"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard1_001/PHASE_RECEIPT.json",
+      "cpu_seconds": 172.47917,
+      "wall_seconds": 452.460192033,
+      "success": true,
+      "boundary_begin_ns": 55988348202756,
+      "boundary_end_ns": 56440808394789,
+      "receipt_sha256": "68e467405efd681d51acb51847ecd7630474c4fdeb837a738c9c65f5931dd7a4"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 3,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "shard",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--shard",
+        "2"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard2_001/PHASE_RECEIPT.json",
+      "cpu_seconds": 168.64145000000002,
+      "wall_seconds": 437.989926926,
+      "success": true,
+      "boundary_begin_ns": 55988458326413,
+      "boundary_end_ns": 56426448253339,
+      "receipt_sha256": "e5c067c496ecaeaa604792b5c032e535752e63b10d54e3f69746fff5f8476bd9"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 4,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "shard",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--shard",
+        "3"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard3_001/PHASE_RECEIPT.json",
+      "cpu_seconds": 167.730728,
+      "wall_seconds": 439.509016128,
+      "success": true,
+      "boundary_begin_ns": 55988435359216,
+      "boundary_end_ns": 56427944375344,
+      "receipt_sha256": "aeac2d208fb01fe32ea7d04ab95921236f47416e779338caddf53e6a24e1be21"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 5,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "shard",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--shard",
+        "4"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard4_001/PHASE_RECEIPT.json",
+      "cpu_seconds": 159.46979000000002,
+      "wall_seconds": 349.365975957,
+      "success": true,
+      "boundary_begin_ns": 55988635249103,
+      "boundary_end_ns": 56338001225060,
+      "receipt_sha256": "25e6c7a218c593bd8414842ccc7e0645d644fb9fea30cc5be9d4303848bcbf0e"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 6,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "shard",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--shard",
+        "5"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard5_001/PHASE_RECEIPT.json",
+      "cpu_seconds": 172.41759,
+      "wall_seconds": 397.045431749,
+      "success": true,
+      "boundary_begin_ns": 55988558891746,
+      "boundary_end_ns": 56385604323495,
+      "receipt_sha256": "099d00c9408857ae6c65a6293364aedc81a4a505f09c550641203707970be959"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 7,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "shard",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--shard",
+        "6"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard6_001/PHASE_RECEIPT.json",
+      "cpu_seconds": 145.02593900000002,
+      "wall_seconds": 265.440320214,
+      "success": true,
+      "boundary_begin_ns": 56339059354277,
+      "boundary_end_ns": 56604499674491,
+      "receipt_sha256": "ba1332ec1844603e759a1f15710f3606451cf780d3df12dc3fd253725b0db249"
+    },
+    {
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 8,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+        "shard",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+        "--shard",
+        "7"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard7_001/PHASE_RECEIPT.json",
+      "cpu_seconds": 142.950366,
+      "wall_seconds": 233.333658051,
+      "success": true,
+      "boundary_begin_ns": 56386730603098,
+      "boundary_end_ns": 56620064261149,
+      "receipt_sha256": "524fdc173ede219bdf60925ff1e72904f3b4dab683cea54dc185420b24a7dc54"
+    },
+    {
+      "study": "memory_bound",
+      "stage": "validation",
+      "attempt": 2,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/economics/hwm_bound_fixture.py",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/results/hwm_orphan001/fixture",
+        "--orphan"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/hwm_orphan001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.304193,
+      "wall_seconds": 0.818684964,
+      "success": true,
+      "boundary_begin_ns": 54953425429385,
+      "boundary_end_ns": 54954244114349,
+      "receipt_sha256": "1d2225a92dc4f45294f99ba68cb4684765b5106c0ad8f3e4f867eb31f9c0a0ef"
+    },
+    {
+      "study": "memory_bound",
+      "stage": "validation",
+      "attempt": 1,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/economics/hwm_bound_fixture.py",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/results/hwm_shared001/fixture"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/hwm_shared001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.280216,
+      "wall_seconds": 0.723597477,
+      "success": true,
+      "boundary_begin_ns": 54953414756970,
+      "boundary_end_ns": 54954138354447,
+      "receipt_sha256": "c817518734cc0a77cf399e50e658b3c07c76c2e6d9e34d57c670b7719667c080"
+    },
+    {
+      "study": "joint_retrain",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "joint_retrain",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/JOINT_RECONSTRUCTION.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 11.567483,
+      "wall_seconds": 18.290906068,
+      "success": true,
+      "boundary_begin_ns": 55198009140537,
+      "boundary_end_ns": 55216300046605,
+      "receipt_sha256": "5aec66bec5be904497516a55494d15b2e4f6366f3fe6285c597cacef2218770f"
+    },
+    {
+      "study": "joint_retrain",
+      "stage": "data",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.joint_retrain.campaign",
+        "data",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_data001/PHASE_RECEIPT.json",
+      "cpu_seconds": 1.245544,
+      "wall_seconds": 1.896475439,
+      "success": true,
+      "boundary_begin_ns": 55087654093794,
+      "boundary_end_ns": 55089550569233,
+      "receipt_sha256": "042330b97b2c2c81a4a6d84ee61fcd9c2af66a03dd0e267ea04413c11766a5f8"
+    },
+    {
+      "study": "joint_retrain",
+      "stage": "execute",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.joint_retrain.campaign",
+        "evaluate",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_evaluate001/PHASE_RECEIPT.json",
+      "cpu_seconds": 2.205019,
+      "wall_seconds": 3.21673988,
+      "success": true,
+      "boundary_begin_ns": 55155797128452,
+      "boundary_end_ns": 55159013868332,
+      "receipt_sha256": "d5fdbf557936aff0ec8ca5d8c906c4cd317336c096128b4e8afa751a8fcef1bf"
+    },
+    {
+      "study": "joint_retrain",
+      "stage": "audit",
+      "attempt": 2,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.joint_knot_diagnostic",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/JOINT_KNOT_DIAGNOSTIC.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_knot_diagnostic001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.791242,
+      "wall_seconds": 0.799216807,
+      "success": true,
+      "boundary_begin_ns": 55338899890474,
+      "boundary_end_ns": 55339699107281,
+      "receipt_sha256": "8ef7c605d70bff375e1cf6018bdf28f0e3370d51224681d30fad07ed7b02c184"
+    },
+    {
+      "study": "joint_retrain",
+      "stage": "prepare",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.joint_retrain.campaign",
+        "prepare",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_prepare001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.672027,
+      "wall_seconds": 1.359673828,
+      "success": true,
+      "boundary_begin_ns": 55072889973283,
+      "boundary_end_ns": 55074249647111,
+      "receipt_sha256": "957ee8b2c9e0f55bdb5ba105d39585715d209f350c379c1f2386278ced5b9b68"
+    },
+    {
+      "study": "joint_retrain",
+      "stage": "train",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.joint_retrain.campaign",
+        "train",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_train001/PHASE_RECEIPT.json",
+      "cpu_seconds": 19.249147,
+      "wall_seconds": 29.883037073,
+      "success": true,
+      "boundary_begin_ns": 55102442942461,
+      "boundary_end_ns": 55132325979534,
+      "receipt_sha256": "4f9ba06d960e14fcc3cdff358bd56ddf935f0bea53a26a4d5a039ad44217e0bd"
+    },
+    {
+      "study": "joint_retrain",
+      "stage": "validation",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "unittest",
+        "experiments.hcsn_v10_closure_20261101.joint_retrain.test_joint",
+        "-v"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_validation001/PHASE_RECEIPT.json",
+      "cpu_seconds": 1.286827,
+      "wall_seconds": 2.479138822,
+      "success": true,
+      "boundary_begin_ns": 55041223802046,
+      "boundary_end_ns": 55043702940868,
+      "receipt_sha256": "63df35f7bea7e629fc9c64b4faf743285b12b924712056c4b1d986138fcfb103"
+    },
+    {
+      "study": "economics",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/economics/ledger.py",
+        "--results",
+        "experiments/hcsn_v10_closure_20261101/economics/results",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/LEDGER001.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.135186,
+      "wall_seconds": 0.364328451,
+      "success": true,
+      "boundary_begin_ns": 54985858115480,
+      "boundary_end_ns": 54986222443931,
+      "receipt_sha256": "16e6a0770509a81610b819ff1126fd2ff954c67676cdf6a00124ca873c6468f3"
+    },
+    {
+      "study": "economics",
+      "stage": "audit",
+      "attempt": 2,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/economics/ledger.py",
+        "--results",
+        "experiments/hcsn_v10_closure_20261101/economics/results",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/LEDGER002.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit002/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.093261,
+      "wall_seconds": 0.152599484,
+      "success": true,
+      "boundary_begin_ns": 55335517472278,
+      "boundary_end_ns": 55335670071762,
+      "receipt_sha256": "bb7aadf8a76147f910c7e4222c3537145aadad451d38655de6a5b595e23ddfcd"
+    },
+    {
+      "study": "economics",
+      "stage": "audit",
+      "attempt": 3,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/economics/FINAL_LEDGER_SOURCE/ledger.py",
+        "--results",
+        "experiments/hcsn_v10_closure_20261101/economics/results",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/LEDGER003.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit003/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.11154599999999999,
+      "wall_seconds": 0.339380428,
+      "success": true,
+      "boundary_begin_ns": 55861968826162,
+      "boundary_end_ns": 55862308206590,
+      "receipt_sha256": "3fbc5100e1572b408dc91c2a11bbebee9a17c3f82d55e16faf4be4a9875efea0"
+    },
+    {
+      "study": "economics",
+      "stage": "audit",
+      "attempt": 4,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/economics/CONFIRMATION_LEDGER_SOURCE/ledger.py",
+        "--results",
+        "experiments/hcsn_v10_closure_20261101/economics/results",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/LEDGER004.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit004/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.10259199999999999,
+      "wall_seconds": 0.15357639,
+      "success": true,
+      "boundary_begin_ns": 56768318684916,
+      "boundary_end_ns": 56768472261306,
+      "receipt_sha256": "ba6bac6957364a40abbe73256d7f96d6853bec4b113a153b154b17f2baab3c8e"
+    },
+    {
+      "study": "economics",
+      "stage": "audit",
+      "attempt": 5,
+      "command": [
+        "python",
+        "experiments/hcsn_v10_closure_20261101/economics/LOCAL_FINAL_LEDGER_SOURCE/ledger.py",
+        "--results",
+        "experiments/hcsn_v10_closure_20261101/economics/results",
+        "--out",
+        "experiments/hcsn_v10_closure_20261101/economics/LEDGER005.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit005/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.137725,
+      "wall_seconds": 0.19642103,
+      "success": true,
+      "boundary_begin_ns": 56870148407742,
+      "boundary_end_ns": 56870344828772,
+      "receipt_sha256": "55a05b4965d592dda7066b27fbd4e18c3b2722a4040b747406108efd16d74279"
+    },
+    {
+      "study": "persistent_renewal",
+      "stage": "audit",
+      "attempt": 2,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "persistent_renewal",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/RENEWAL_RECONSTRUCTION.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_audit002/PHASE_RECEIPT.json",
+      "cpu_seconds": 5.282818,
+      "wall_seconds": 11.108216182,
+      "success": true,
+      "boundary_begin_ns": 55457018732469,
+      "boundary_end_ns": 55468126948651,
+      "receipt_sha256": "f9bda54dcca93d7f556686287553efcf27ac8a2ea21eb7eb84716e01595c089e"
+    },
+    {
+      "study": "persistent_renewal",
+      "stage": "execute",
+      "attempt": 2,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.campaign",
+        "evaluate",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_evaluate002/PHASE_RECEIPT.json",
+      "cpu_seconds": 120.49176899999999,
+      "wall_seconds": 137.299596495,
+      "success": true,
+      "boundary_begin_ns": 55314884463176,
+      "boundary_end_ns": 55452184059671,
+      "receipt_sha256": "b599f13cc348058676e41df6fb38a28bec92cf34c38930ab417a21f4458ac9c2"
+    },
+    {
+      "study": "persistent_renewal_extension",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "persistent_renewal",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/RENEWAL_EXTENSION_RECONSTRUCTION.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_extension_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 5.24116,
+      "wall_seconds": 9.414942532,
+      "success": true,
+      "boundary_begin_ns": 55791519613937,
+      "boundary_end_ns": 55800934556469,
+      "receipt_sha256": "0b6cba93d87365dfb4dd2208104e0b2beefeaa14e3d942006063dcd2015fa2c7"
+    },
+    {
+      "study": "persistent_renewal_extension",
+      "stage": "execute",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.campaign",
+        "evaluate",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_extension_evaluate001/PHASE_RECEIPT.json",
+      "cpu_seconds": 147.85313,
+      "wall_seconds": 256.600119298,
+      "success": true,
+      "boundary_begin_ns": 55513068116948,
+      "boundary_end_ns": 55769668236246,
+      "receipt_sha256": "cd18aa14c598f7b3f4b631f324ccd0005de7a509dd6fe2656456dc9f2fa977f2"
+    },
+    {
+      "study": "persistent_renewal_extension",
+      "stage": "prepare",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.extend",
+        "prepare",
+        "--base",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_extension_prepare001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.6215419999999999,
+      "wall_seconds": 1.230141192,
+      "success": true,
+      "boundary_begin_ns": 55416410192109,
+      "boundary_end_ns": 55417640333301,
+      "receipt_sha256": "09149a10f4230a4fb9e13a26b2bc2716010538dec134eadc06e1763668cdd4e8"
+    },
+    {
+      "study": "persistent_renewal_extension",
+      "stage": "train",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.extend",
+        "train",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_extension_train001/PHASE_RECEIPT.json",
+      "cpu_seconds": 26.063792,
+      "wall_seconds": 54.500209184,
+      "success": true,
+      "boundary_begin_ns": 55450343150849,
+      "boundary_end_ns": 55504843360033,
+      "receipt_sha256": "2842539f6ed2df8c88084432a490c5584cdc51fcd48093c374e61e0a2b17a2fd"
+    },
+    {
+      "study": "persistent_renewal",
+      "stage": "prepare",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.campaign",
+        "prepare",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_prepare001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.9732689999999999,
+      "wall_seconds": 2.092558044,
+      "success": true,
+      "boundary_begin_ns": 55041250988062,
+      "boundary_end_ns": 55043343546106,
+      "receipt_sha256": "651203777675daf8963e7ffb1afb460ec23737d1964c87f29328018ae8fcb7b8"
+    },
+    {
+      "study": "persistent_renewal",
+      "stage": "prepare",
+      "attempt": 2,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.campaign",
+        "prepare",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_prepare002/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.5619909999999999,
+      "wall_seconds": 0.642938126,
+      "success": true,
+      "boundary_begin_ns": 55146797305725,
+      "boundary_end_ns": 55147440243851,
+      "receipt_sha256": "c1410eef1728942b9b4e77df01b7e6d94038964f14f49edd2d5628d64cbb8d61"
+    },
+    {
+      "study": "persistent_renewal",
+      "stage": "train",
+      "attempt": 2,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.campaign",
+        "train",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_train002/PHASE_RECEIPT.json",
+      "cpu_seconds": 112.99942,
+      "wall_seconds": 143.358807161,
+      "success": true,
+      "boundary_begin_ns": 55168095131321,
+      "boundary_end_ns": 55311453938482,
+      "receipt_sha256": "bc493502cad699d1d4da6805b9a8b0a12a13db17f95b3b46e86dde925cf74d7f"
+    },
+    {
+      "study": "persistent_renewal",
+      "stage": "validation",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.tests",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_validation001/PHASE_RECEIPT.json",
+      "cpu_seconds": 11.97922,
+      "wall_seconds": 16.734774074,
+      "success": true,
+      "boundary_begin_ns": 55068098178176,
+      "boundary_end_ns": 55084832952250,
+      "receipt_sha256": "fd3f5497daab8cdb1fa5b86d223843831fc18ed9cc63c5c888af3c1bb56a03a7"
+    },
+    {
+      "study": "persistent_renewal",
+      "stage": "validation",
+      "attempt": 2,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.persistent_renewal.tests",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/renewal_validation002/PHASE_RECEIPT.json",
+      "cpu_seconds": 3.947788,
+      "wall_seconds": 5.490368542,
+      "success": true,
+      "boundary_begin_ns": 55149954250960,
+      "boundary_end_ns": 55155444619502,
+      "receipt_sha256": "677b3d5902e033c1a5f6612b66410bf5f177e8cec04728dc6dfcbeb149505f4e"
+    },
+    {
+      "study": "review_driver_identity",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.identity_notice"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/review_driver_identity001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.095534,
+      "wall_seconds": 0.156296731,
+      "success": true,
+      "boundary_begin_ns": 56811948162470,
+      "boundary_end_ns": 56812104459201,
+      "receipt_sha256": "838eb6bfa4dc8d8c60be578aa73611c01935a0d571c903a95fd44736686cfeb2"
+    },
+    {
+      "study": "risk",
+      "stage": "audit",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.risk.audit",
+        "experiments/hcsn_v10_closure_20261101/risk/results/closure001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/risk_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.111349,
+      "wall_seconds": 0.247578407,
+      "success": true,
+      "boundary_begin_ns": 55135903536673,
+      "boundary_end_ns": 55136151115080,
+      "receipt_sha256": "ba614b749d9f611f355abc15edfc889d217b20b36855197fcfd8abbb3e94128a"
+    },
+    {
+      "study": "risk",
+      "stage": "execute",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.risk.study",
+        "execute",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/risk/results/closure001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/risk_execute001/PHASE_RECEIPT.json",
+      "cpu_seconds": 15.762415,
+      "wall_seconds": 111.91345708,
+      "success": true,
+      "boundary_begin_ns": 55001022882414,
+      "boundary_end_ns": 55112936339494,
+      "receipt_sha256": "b4032f825bd226698a7fd9041ccb81963fc2c7695457dfb611d1299a0516d713"
+    },
+    {
+      "study": "risk",
+      "stage": "audit",
+      "attempt": 2,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+        "risk",
+        "--input",
+        "experiments/hcsn_v10_closure_20261101/risk/results/closure001",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/review/RISK_RECONSTRUCTION.json"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/risk_independent_audit001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.18441199999999996,
+      "wall_seconds": 0.476737885,
+      "success": true,
+      "boundary_begin_ns": 55161306026200,
+      "boundary_end_ns": 55161782764085,
+      "receipt_sha256": "22f2b79d686cfa4b34ad797cb74dc9b5e9f6e443471d5a3751ab776010984e86"
+    },
+    {
+      "study": "risk",
+      "stage": "prepare",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "experiments.hcsn_v10_closure_20261101.risk.study",
+        "prepare",
+        "--output",
+        "experiments/hcsn_v10_closure_20261101/risk/results/closure001"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/risk_prepare001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.188767,
+      "wall_seconds": 0.494168382,
+      "success": true,
+      "boundary_begin_ns": 54995322195305,
+      "boundary_end_ns": 54995816363687,
+      "receipt_sha256": "3e810f84034a1c892f06d7492cb8232a03c0b48bee0d7d809dab4c0899672491"
+    },
+    {
+      "study": "risk",
+      "stage": "validation",
+      "attempt": 1,
+      "command": [
+        "env",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "python",
+        "-m",
+        "unittest",
+        "experiments.hcsn_v10_closure_20261101.risk.test_study",
+        "-v"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/risk_validation001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.22208999999999998,
+      "wall_seconds": 0.494347676,
+      "success": true,
+      "boundary_begin_ns": 54998203061627,
+      "boundary_end_ns": 54998697409303,
+      "receipt_sha256": "bb3792ab8bd51f4795f9fcdc109cb4f496ba904bc1f5020ce777e40fbde96e7e"
+    },
+    {
+      "study": "meter",
+      "stage": "validation",
+      "attempt": 2,
+      "command": [
+        "python",
+        "-c",
+        "print(1)"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/stage_smoke002/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.08607699999999999,
+      "wall_seconds": 0.155297036,
+      "success": true,
+      "boundary_begin_ns": 54893912987168,
+      "boundary_end_ns": 54894068284204,
+      "receipt_sha256": "6229ea4cfff7dba9681bcf5edb0592441cc66daf656895b487c34ffa1970cdfb"
+    }
+  ],
+  "audit_scope": "Cost-account identity/arithmetic and controlled memory-bound fixtures only; not scientific adoption acceptance",
+  "study_totals": {
+    "historical_audio": {
+      "measured_cpu_seconds": 5.434653999999999,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "train"
+      ]
+    },
+    "av_analytic": {
+      "measured_cpu_seconds": 247.109272,
+      "failed_attempt_cpu_seconds": 4.693529,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ]
+    },
+    "av_constant": {
+      "measured_cpu_seconds": 6.263588,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare"
+      ]
+    },
+    "publication": {
+      "measured_cpu_seconds": 0.118547,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    },
+    "av_interface_supplement": {
+      "measured_cpu_seconds": 5.422386,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "av_target_diagnostic": {
+      "measured_cpu_seconds": 0.268563,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "hardware": {
+      "measured_cpu_seconds": 0.10536699999999999,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "capability"
+      ]
+    },
+    "ci_capability": {
+      "measured_cpu_seconds": 0.17541099999999998,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "capability"
+      ]
+    },
+    "external_ci_review_41371500148": {
+      "measured_cpu_seconds": 9.591850999999998,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "external_ci_review_41372584433": {
+      "measured_cpu_seconds": 11.304612,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "frontend_review": {
+      "measured_cpu_seconds": 0.203673,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "package_inventory": {
+      "measured_cpu_seconds": 0.371828,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    },
+    "high_power_confirmation": {
+      "measured_cpu_seconds": 1346.792961,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "aggregate",
+        "audit",
+        "execute",
+        "prepare"
+      ]
+    },
+    "memory_bound": {
+      "measured_cpu_seconds": 0.584409,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    },
+    "joint_retrain": {
+      "measured_cpu_seconds": 37.017289,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "data",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ]
+    },
+    "economics": {
+      "measured_cpu_seconds": 0.58031,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "persistent_renewal": {
+      "measured_cpu_seconds": 256.236275,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ]
+    },
+    "persistent_renewal_extension": {
+      "measured_cpu_seconds": 179.77962399999998,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "train"
+      ]
+    },
+    "review_driver_identity": {
+      "measured_cpu_seconds": 0.095534,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "risk": {
+      "measured_cpu_seconds": 16.469033,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "validation"
+      ]
+    },
+    "meter": {
+      "measured_cpu_seconds": 0.08607699999999999,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    }
+  },
+  "phase_checks": {
+    "experiments/hcsn_v10_closure_20261101/economics/results/audio_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/audio_evaluate001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/audio_prepare001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/audio_train001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_constant_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_constant_execute001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_constant_prepare001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_evaluate001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_independent_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_input_replay_validation001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_interface_supplement001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_prepare001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_target_diagnostic001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_train001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_validation001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/av_validation002/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/capabilities001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/ci_capability_phase001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/ci_review_41371500148/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/ci_review_41372584433/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/frontend_independent_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/frontend_inventory001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_aggregate001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_prepare001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard0_001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard1_001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard2_001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard3_001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard4_001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard5_001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard6_001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/high_power_shard7_001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/hwm_orphan001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/hwm_shared001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/joint_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/joint_data001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/joint_evaluate001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/joint_knot_diagnostic001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/joint_prepare001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/joint_train001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/joint_validation001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit002/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit003/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit004/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit005/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_audit002/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_evaluate002/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_extension_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_extension_evaluate001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_extension_prepare001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_extension_train001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_prepare001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_prepare002/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_train002/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_validation001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/renewal_validation002/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/review_driver_identity001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/risk_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/risk_execute001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/risk_independent_audit001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/risk_prepare001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/risk_validation001/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/stage_smoke002/PHASE_RECEIPT.json": {
+      "distinct_inner_process_identity": true,
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    }
+  },
+  "memory_bound_fixture_audits": [
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/hwm_orphan001",
+      "checks": {
+        "unique_complete_wait_inventory": true,
+        "bound_recomputed": true,
+        "four_controlled_roles": true,
+        "all_exit_success": true,
+        "observed_rss_sums_bounded": true,
+        "observed_pss_sums_bounded": true,
+        "no_exact_peak_claim": true,
+        "short_task_bound_included": true
+      },
+      "pass": true,
+      "conservative_upper_bound_bytes": 270446592,
+      "observed_nonatomic_fixture_rss_sum_peak_bytes": 116985856,
+      "observed_nonatomic_fixture_pss_sum_peak_bytes": 66717696,
+      "resident_samples_by_role": {
+        "root": 1,
+        "child": 2,
+        "grandchild": 2
+      },
+      "physical_unique_memory_peak_bytes": null,
+      "scope": "Closed fixture family only; no inference of a production-family bound"
+    },
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/hwm_shared001",
+      "checks": {
+        "unique_complete_wait_inventory": true,
+        "bound_recomputed": true,
+        "four_controlled_roles": true,
+        "all_exit_success": true,
+        "observed_rss_sums_bounded": true,
+        "observed_pss_sums_bounded": true,
+        "no_exact_peak_claim": true,
+        "short_task_bound_included": true
+      },
+      "pass": true,
+      "conservative_upper_bound_bytes": 317775872,
+      "observed_nonatomic_fixture_rss_sum_peak_bytes": 161746944,
+      "observed_nonatomic_fixture_pss_sum_peak_bytes": 67793920,
+      "resident_samples_by_role": {
+        "root": 3,
+        "child": 2,
+        "grandchild": 2
+      },
+      "physical_unique_memory_peak_bytes": null,
+      "scope": "Closed fixture family only; no inference of a production-family bound"
+    }
+  ],
+  "all_checks_pass": true,
+  "confirmation_parallel_window": {
+    "shards": 8,
+    "maximum_concurrent_phase_windows": 6,
+    "wall_span_seconds": 631.716058393,
+    "disjoint_cpu_seconds_sum": 1300.3076110000002,
+    "all_shards_success": true,
+    "contract_pass": true,
+    "scope": "One local monotonic span, never the sum of overlapping wall durations"
+  },
+  "formal_lifecycle_coverage": {
+    "risk": {
+      "required": [
+        "prepare",
+        "validation",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "validation"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/risk/results/closure001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "validation": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "validation": 1,
+        "execute": 1,
+        "audit": 2
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "persistent_renewal": {
+      "required": [
+        "prepare",
+        "validation",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "validation": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "validation": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "persistent_renewal_extension": {
+      "required": [
+        "prepare",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "train"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "high_power_confirmation": {
+      "required": [
+        "prepare",
+        "execute",
+        "aggregate",
+        "audit"
+      ],
+      "present_successful": [
+        "aggregate",
+        "audit",
+        "execute",
+        "prepare"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "execute": 8,
+        "aggregate": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "execute": 8,
+        "aggregate": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "joint_retrain": {
+      "required": [
+        "validation",
+        "prepare",
+        "data",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "data",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001",
+      "required_successful_attempt_counts": {
+        "validation": 1,
+        "prepare": 1,
+        "data": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "validation": 1,
+        "prepare": 1,
+        "data": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 2
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "av_analytic": {
+      "required": [
+        "validation",
+        "prepare",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+      "required_successful_attempt_counts": {
+        "validation": 1,
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "validation": 1,
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 2
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "av_constant": {
+      "required": [
+        "prepare",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/av_analytic/results/constant001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "historical_audio": {
+      "required": [
+        "prepare",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "train"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/frontend/audio001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "publication": {
+      "required": [
+        "validation"
+      ],
+      "present_successful": [
+        "validation"
+      ],
+      "active_output": "/workspace/scratch/8da28d12955f/replay-v10-av-inputs-check",
+      "required_successful_attempt_counts": {
+        "validation": 1
+      },
+      "actual_successful_attempt_counts": {
+        "validation": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "external_ci_review_41371500148": {
+      "required": [
+        "audit"
+      ],
+      "present_successful": [
+        "audit"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/economics/ci_runs/41371500148/artifact",
+      "required_successful_attempt_counts": {
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "external_ci_review_41372584433": {
+      "required": [
+        "audit"
+      ],
+      "present_successful": [
+        "audit"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/economics/ci_runs/41372584433/artifact",
+      "required_successful_attempt_counts": {
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    }
+  },
+  "formal_lifecycle_metering_complete": true,
+  "lifecycle_scope_sha256": "5b8f3892f4eb9165647bc801a8004a1a98c01f08c906a6de3957a18c77f3d1cb",
+  "measured_disjoint_total_cpu_seconds": 2124.011264,
+  "total_historical_development_cpu_seconds": null,
+  "unmeasured_source_authoring_and_initial_inspection_cpu_seconds": null,
+  "initial_meter_path_failure_cpu_seconds": null,
+  "no_whole_development_cost_claim": true,
+  "energy_joules": null,
+  "exact_independent_family_memory_peak_bytes": null,
+  "rule": "Only outer phase CPU is added. Studies/stages may overlap in wall time; process subtrees are disjoint. Wall times are never added as a concurrent critical-path latency."
+}

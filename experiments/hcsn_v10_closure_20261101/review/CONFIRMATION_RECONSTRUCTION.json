@@ -1,0 +1,321 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "5c016dba0953ddfe96f626dc16d06b872c403811e7fc97ead9002330ab468131",
+  "audit_sources_snapshot": {
+    "av_reconstruction.py": "38dde8e972d2d3285eea34829660b9976395f3a60c19540797b4ff5a2a6ef56d",
+    "close_av_interfaces.py": "d49885f03f35e6e26968ab124f88430eee7d2b9fb2201a15b2dde766f1909062",
+    "confirmation_reconstruction.py": "272b9f63ffd1749e9ecae1c781ca932e2b153484466c26f269bfd8b5b8ae1374",
+    "constant_reconstruction.py": "913fd719e80dac102f348587f00f7e41dd2c2ada26d07e179aa56daf5b8351f4",
+    "frontend_reconstruction.py": "de2e7e66706402b67ae22b464bc0aaa638dc5609c1bd5cf27d033a972c749f08",
+    "independent_audit.py": "0aa716a6371825f6d4151cfd82589dd9a8726c9e68201fe61195b42940220e41",
+    "joint_knot_diagnostic.py": "2636781f87b496981700b9cea51f4d4bed86c74955a003d25d22b274772d313f",
+    "joint_reconstruction.py": "7ff0afaafefa0197122f68911ac7a859738844fef6cf964a243cfafb653eb7be",
+    "renewal_reconstruction.py": "cc36e785fadacfc2d1830575f55b6ec26225f0a37e59260080ef4d1201e74dcc"
+  },
+  "confirmation": {
+    "worlds": 384,
+    "shards": [
+      {
+        "shard": 0,
+        "raw_files_sha256": {
+          "worlds.jsonl.gz": "3e590d0530175e362076685571d0a64845ec015834d0dbb686d0e131709393a4",
+          "runs.jsonl.gz": "a437b75d85f80d54fee38ccf0cfe3fe82d27ba3d77ed4063b74ed8f1453f80ad"
+        },
+        "runs": 1632
+      },
+      {
+        "shard": 1,
+        "raw_files_sha256": {
+          "worlds.jsonl.gz": "39ad21e488de8285c6ba7366f1c1695d1c40205362e8631e76ed93d569a05dbb",
+          "runs.jsonl.gz": "c5994993b8156b296991600b46457a539ce1f1f17a09a4894827caf5e4ca405e"
+        },
+        "runs": 1632
+      },
+      {
+        "shard": 2,
+        "raw_files_sha256": {
+          "worlds.jsonl.gz": "71a0ad4098d35138b14deac32c1a1440d4252fabd139640973f96b482a1cd0ae",
+          "runs.jsonl.gz": "12c88d281903ebc2c28cf14db2560d84014fb9d03a382614240021bcbd809e8e"
+        },
+        "runs": 1632
+      },
+      {
+        "shard": 3,
+        "raw_files_sha256": {
+          "worlds.jsonl.gz": "c1dd41fa331a0ca3bb935e23f5c111d9efb823221c9834028136003dbbb45094",
+          "runs.jsonl.gz": "473e26405189cc037cd22cca0ced6eb695268dc28be8d0d1e37ae5affddf3411"
+        },
+        "runs": 1632
+      },
+      {
+        "shard": 4,
+        "raw_files_sha256": {
+          "worlds.jsonl.gz": "1b12e58abc1fa88430ffd0e4907e17b518f767487da8306cece4adf067ad86ad",
+          "runs.jsonl.gz": "08758fd63df2c5ad8d6cfb6bfb2905b0ea92bb03529f7e8906c7af2555755580"
+        },
+        "runs": 1632
+      },
+      {
+        "shard": 5,
+        "raw_files_sha256": {
+          "worlds.jsonl.gz": "b908bf6775571bb73602895cf55b4329ae70655dced87e6c1c25e5ec42a843a6",
+          "runs.jsonl.gz": "d590bb857f4e55ae6926b34d6e03c2cbb9a0128cd6806cc2c665d0b059666d52"
+        },
+        "runs": 1632
+      },
+      {
+        "shard": 6,
+        "raw_files_sha256": {
+          "worlds.jsonl.gz": "0b99d997df72c235d408ba84b471d6909c6b279df79e81807e9ba3a90bf98d5a",
+          "runs.jsonl.gz": "68a759c0a796d241413c16da16cd6680c2b167c826c3cc9c020619dfa245d476"
+        },
+        "runs": 1632
+      },
+      {
+        "shard": 7,
+        "raw_files_sha256": {
+          "worlds.jsonl.gz": "daa10492aa8a4a6f4a72544f871bedf68f7fab185f33bf150cb8419c3861446b",
+          "runs.jsonl.gz": "77da94a26f80399166cb08b3cf02e3295e4b41c1b199e90486a58200794918f2"
+        },
+        "runs": 1632
+      }
+    ],
+    "runs_reconstructed": 13056,
+    "tick_states_reconstructed": 274176,
+    "mandatory_outputs_reconstructed": 52224,
+    "maximum_hidden_state_error": 0.0,
+    "frozen_model_selection_and_all_checkpoint_hashes_unchanged": true,
+    "worlds_disjoint_from_prior_sources": true,
+    "all_adjusted_intervals_recomputed": {
+      "matched": {
+        "D-B": {
+          "mean": 0.006093749999999999,
+          "lower": -0.013270963541666665,
+          "upper": 0.024864843750000018,
+          "confidence_level": 0.975
+        },
+        "D-M": {
+          "mean": 0.0017395833333333334,
+          "lower": -0.01647942708333333,
+          "upper": 0.01929205729166669,
+          "confidence_level": 0.975
+        },
+        "B-A": {
+          "mean": 0.04897916666666667,
+          "lower": 0.026468750000000003,
+          "upper": 0.07153177083333334,
+          "confidence_level": 0.95
+        },
+        "D-C": {
+          "mean": 0.03557291666666667,
+          "lower": 0.007604166666666671,
+          "upper": 0.06401171874999999,
+          "confidence_level": 0.95
+        },
+        "C-A": {
+          "mean": 0.0195,
+          "lower": 0.0008742187500000005,
+          "upper": 0.03845833333333334,
+          "confidence_level": 0.95
+        },
+        "interaction": {
+          "mean": -0.013406249999999996,
+          "lower": -0.03835416666666666,
+          "upper": 0.011906510416666667,
+          "confidence_level": 0.95
+        },
+        "D-H": {
+          "mean": 0.0,
+          "lower": 0.0,
+          "upper": 0.0,
+          "confidence_level": 0.95
+        },
+        "B-M": {
+          "mean": -0.004354166666666667,
+          "lower": -0.015729166666666666,
+          "upper": 0.005447916666666666,
+          "confidence_level": 0.95
+        }
+      },
+      "hidden_refractory_mismatch": {
+        "D-B": {
+          "mean": -0.004052083333333335,
+          "lower": -0.019906510416666665,
+          "upper": 0.011104427083333332,
+          "confidence_level": 0.95
+        },
+        "D-M": {
+          "mean": -0.007145833333333336,
+          "lower": -0.023979166666666666,
+          "upper": 0.00871901041666666,
+          "confidence_level": 0.95
+        },
+        "B-A": {
+          "mean": 0.054489583333333334,
+          "lower": 0.032801562500000006,
+          "upper": 0.07655208333333333,
+          "confidence_level": 0.95
+        },
+        "D-C": {
+          "mean": 0.030989583333333338,
+          "lower": 0.005102864583333339,
+          "upper": 0.05744791666666667,
+          "confidence_level": 0.95
+        },
+        "C-A": {
+          "mean": 0.01944791666666667,
+          "lower": 0.002864583333333332,
+          "upper": 0.036427343749999994,
+          "confidence_level": 0.95
+        },
+        "interaction": {
+          "mean": -0.023499999999999997,
+          "lower": -0.04635468749999999,
+          "upper": -0.0006145833333333303,
+          "confidence_level": 0.95
+        },
+        "D-H": {
+          "mean": 0.0,
+          "lower": 0.0,
+          "upper": 0.0,
+          "confidence_level": 0.95
+        },
+        "B-M": {
+          "mean": -0.00309375,
+          "lower": -0.01286484375,
+          "upper": 0.006156249999999999,
+          "confidence_level": 0.95
+        }
+      }
+    },
+    "both_matched_primary_comparisons_positive": false,
+    "descriptive_quality_and_read_fee_decomposition": {
+      "matched": {
+        "arm_metric_means": {
+          "A": {
+            "accuracy": 0.8356770833333333,
+            "reads": 2.89375,
+            "read_fee": 0.11575000000000003,
+            "nll": 0.4538644996745466,
+            "brier": 0.22693828386733486,
+            "net_reward": 0.7199270833333334
+          },
+          "B": {
+            "accuracy": 0.87890625,
+            "reads": 2.75,
+            "read_fee": 0.11000000000000003,
+            "nll": 0.29854708763404514,
+            "brier": 0.15831727751547195,
+            "net_reward": 0.7689062500000001
+          },
+          "C": {
+            "accuracy": 0.85546875,
+            "reads": 2.9010416666666665,
+            "read_fee": 0.1160416666666667,
+            "nll": 0.38988331667403897,
+            "brier": 0.20247972899961772,
+            "net_reward": 0.7394270833333335
+          },
+          "D": {
+            "accuracy": 0.8854166666666666,
+            "reads": 2.7604166666666665,
+            "read_fee": 0.11041666666666669,
+            "nll": 0.28113004444748924,
+            "brier": 0.14993572230942323,
+            "net_reward": 0.7750000000000001
+          },
+          "H": {
+            "accuracy": 0.8854166666666666,
+            "reads": 2.7604166666666665,
+            "read_fee": 0.11041666666666669,
+            "nll": 0.28113004444748924,
+            "brier": 0.14993572230942323,
+            "net_reward": 0.7750000000000001
+          },
+          "M": {
+            "accuracy": 0.88359375,
+            "reads": 2.7583333333333333,
+            "read_fee": 0.11033333333333338,
+            "nll": 0.2834847434397378,
+            "brier": 0.15102031289578738,
+            "net_reward": 0.7732604166666669
+          }
+        },
+        "D_minus_B_decomposition": {
+          "accuracy": 0.00651041666666663,
+          "reads": 0.010416666666666519,
+          "read_fee": 0.0004166666666666624,
+          "nll": -0.017417043186555903,
+          "brier": -0.008381555206048719,
+          "net_reward": 0.006093750000000009
+        },
+        "scope": "Descriptive requested decomposition; READ fee only, CPU not monetized; repeated analytic rows across fits are not new independent samples"
+      },
+      "hidden_refractory_mismatch": {
+        "arm_metric_means": {
+          "A": {
+            "accuracy": 0.8252604166666667,
+            "reads": 2.83125,
+            "read_fee": 0.11325000000000003,
+            "nll": 0.4818464357235256,
+            "brier": 0.24209953146489588,
+            "net_reward": 0.7120104166666669
+          },
+          "B": {
+            "accuracy": 0.875,
+            "reads": 2.7125,
+            "read_fee": 0.10850000000000003,
+            "nll": 0.29573532310258904,
+            "brier": 0.16020306626146638,
+            "net_reward": 0.7665000000000002
+          },
+          "C": {
+            "accuracy": 0.84375,
+            "reads": 2.8072916666666665,
+            "read_fee": 0.1122916666666667,
+            "nll": 0.38511282144685194,
+            "brier": 0.20072230179738232,
+            "net_reward": 0.7314583333333337
+          },
+          "D": {
+            "accuracy": 0.8736979166666666,
+            "reads": 2.78125,
+            "read_fee": 0.11125000000000003,
+            "nll": 0.2633320536225477,
+            "brier": 0.14839171618240923,
+            "net_reward": 0.762447916666667
+          },
+          "H": {
+            "accuracy": 0.8736979166666666,
+            "reads": 2.78125,
+            "read_fee": 0.11125000000000003,
+            "nll": 0.2633320536225477,
+            "brier": 0.14839171618240923,
+            "net_reward": 0.762447916666667
+          },
+          "M": {
+            "accuracy": 0.8783854166666667,
+            "reads": 2.7197916666666666,
+            "read_fee": 0.10879166666666669,
+            "nll": 0.29453391886520824,
+            "brier": 0.15745845860098787,
+            "net_reward": 0.7695937500000002
+          }
+        },
+        "D_minus_B_decomposition": {
+          "accuracy": -0.0013020833333333703,
+          "reads": 0.06875000000000009,
+          "read_fee": 0.0027500000000000024,
+          "nll": -0.03240326948004135,
+          "brier": -0.011811350079057148,
+          "net_reward": -0.0040520833333331785
+        },
+        "scope": "Descriptive requested decomposition; READ fee only, CPU not monetized; repeated analytic rows across fits are not new independent samples"
+      }
+    },
+    "scope": "Fixed posthoc-designed finite synthetic confirmation; bootstrap intervals descriptive, no power guarantee or real AV adoption claim",
+    "planner_scope": "Actual states/access/scores reconstructed; stochastic hypothetical planner not entirely independently rerun"
+  },
+  "scientific_adoption_asserted": false
+}

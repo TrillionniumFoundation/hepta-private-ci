@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-v10-hardware-capabilities.v1",
+  "self_cgroup": "0::/\n",
+  "cgroup_mountinfo": [
+    "766 765 0:24 / /sys/fs/cgroup ro,nosuid,nodev,noexec,relatime - cgroup2 cgroup2 rw,nsdelegate"
+  ],
+  "private_cgroup_test": {
+    "mkdir_succeeded": false,
+    "memory_peak_bytes": null,
+    "error_number": 30,
+    "reason": "[Errno 30] Read-only file system: '/sys/fs/cgroup/hcsn-v10-private-probe-6'"
+  },
+  "visible_devices_and_counter_directories": {
+    "/sys/class/powercap": false,
+    "/sys/class/hwmon": false,
+    "/sys/class/drm": false,
+    "/dev/dri": false,
+    "/dev/nvidia0": false,
+    "/var/run/docker.sock": false
+  },
+  "identity_manifest_configured": false,
+  "energy_joules": null,
+  "attributable_energy_counter_available": false,
+  "external_authorized_runner": null,
+  "external_runner_status": "No external execution capability was exposed in this task's tool registry; no runner inferred from prior sessions",
+  "conclusion": "Exact independent cgroup memory and attributable energy require external capability; sampling cannot close this blocker"
+}

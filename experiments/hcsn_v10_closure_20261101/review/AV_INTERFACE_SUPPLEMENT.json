@@ -1,0 +1,123 @@
+{
+  "schema": "hcsn-v10-AV-interface-gap-supplement.v1",
+  "previous_partial_results_preserved": true,
+  "four_direct_decisions_closed": [
+    {
+      "task": "async_av",
+      "seed": 101003,
+      "index": 6,
+      "levels": [
+        3,
+        0
+      ],
+      "maximum_reader_probability_error": 1.1102230246251565e-16
+    },
+    {
+      "task": "async_av",
+      "seed": 101021,
+      "index": 6,
+      "levels": [
+        3,
+        0
+      ],
+      "maximum_reader_probability_error": 0.0
+    },
+    {
+      "task": "async_av",
+      "seed": 101033,
+      "index": 6,
+      "levels": [
+        3,
+        0
+      ],
+      "maximum_reader_probability_error": 0.0
+    },
+    {
+      "task": "av_binding",
+      "seed": 101033,
+      "index": 10,
+      "levels": [
+        3,
+        1
+      ],
+      "maximum_reader_probability_error": 0.0
+    }
+  ],
+  "six_constant_head_endpoints_closed": [
+    {
+      "task": "av_binding",
+      "index": 1,
+      "levels": [
+        1,
+        0
+      ],
+      "common_head_probabilities_exact": true
+    },
+    {
+      "task": "av_binding",
+      "index": 2,
+      "levels": [
+        1,
+        0
+      ],
+      "common_head_probabilities_exact": true
+    },
+    {
+      "task": "av_binding",
+      "index": 5,
+      "levels": [
+        1,
+        0
+      ],
+      "common_head_probabilities_exact": true
+    },
+    {
+      "task": "av_binding",
+      "index": 13,
+      "levels": [
+        1,
+        0
+      ],
+      "common_head_probabilities_exact": true
+    },
+    {
+      "task": "av_binding",
+      "index": 14,
+      "levels": [
+        1,
+        0
+      ],
+      "common_head_probabilities_exact": true
+    },
+    {
+      "task": "av_binding",
+      "index": 17,
+      "levels": [
+        1,
+        0
+      ],
+      "common_head_probabilities_exact": true
+    }
+  ],
+  "new_model_state_and_reader_math_independent_NumPy": true,
+  "old_V3_prefix_and_head_implementation_reused": true,
+  "upstream_implementation_sha256": {
+    "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v10_closure_20261101/review/av_reconstruction.py": "38dde8e972d2d3285eea34829660b9976395f3a60c19540797b4ff5a2a6ef56d",
+    "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v8_execution_20261101/frontend/__init__.py": "b1ba835e26e080f34adfabab53734560ce38f083e9e361430c0623487f3db700",
+    "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v7_support_20261101/content_interface/content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/hcsn_causal_execution_v3/__init__.py": "4d77d70d4f664e21e538b23f5f0bf845f0c5efa02ac670d37ef13a699c37feaa",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/hcsn_causal_execution_v3/av_probe.py": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+    "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py": "1b5efffde74c64f2e1f0f7ca1ed4e7b4d10f0de80cc23a9294c483d7cc7177c5",
+    "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v8_execution_20261101/frontend/replay.py": "4a813a54eaa0d115c62e3f9538e9db549edb5eb3c1f4a882cc80dc5d0c862518",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/hcsn_mechanism_content_v2/__init__.py": "9d7409cd830465f83202846e2d68976fb1cc33bf619e40115287555f38ead365",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/continuous_spiking_network/data.py": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/hcsn_free_boundary_v1/datasets.py": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/hcsn_task_value_v1/__init__.py": "39d9c6a49be667f172380147c8b8ecf844c0f8d542c8acd72dfd5f6deafa39b6",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/hcsn_task_value_v1/async_av.py": "82650e912388cfe5e7534676024e3133841061324537ee2fbe36cd04fc06788c",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/hcsn_mechanism_content_v2/data.py": "ca866b1dee8977255bedd8655b247bc8212db9c000ab221cd6b84d0c5721277e",
+    "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3/experiments/hcsn_mechanism_content_v2/binding_data.py": "0b496b552a9686da23381640015acf43120eb5737ff895b022c32f3edf20e00c"
+  },
+  "raw_media_or_new_recording_confirmation": false,
+  "scope": "Previously missing accepted-cache interfaces reconstructed from copied feature NPZ and pinned old V3/V8 APIs; this is not a second independent media encoder implementation",
+  "source_sha256": "d49885f03f35e6e26968ab124f88430eee7d2b9fb2201a15b2dde766f1909062"
+}

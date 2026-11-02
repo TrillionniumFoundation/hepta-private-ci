@@ -1,0 +1,169 @@
+{
+  "schema": "hcsn-v10-exclusive-phase-ledger.v1",
+  "records": [
+    {
+      "study": "hardware",
+      "stage": "capability",
+      "attempt": 1,
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/capabilities001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.10536699999999999,
+      "wall_seconds": 0.249264795,
+      "success": true,
+      "receipt_sha256": "932fec9b429c92c369aa557828357069397eee83bf67c085209c84dc142821e7"
+    },
+    {
+      "study": "memory_bound",
+      "stage": "validation",
+      "attempt": 2,
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/hwm_orphan001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.304193,
+      "wall_seconds": 0.818684964,
+      "success": true,
+      "receipt_sha256": "1d2225a92dc4f45294f99ba68cb4684765b5106c0ad8f3e4f867eb31f9c0a0ef"
+    },
+    {
+      "study": "memory_bound",
+      "stage": "validation",
+      "attempt": 1,
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/hwm_shared001/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.280216,
+      "wall_seconds": 0.723597477,
+      "success": true,
+      "receipt_sha256": "c817518734cc0a77cf399e50e658b3c07c76c2e6d9e34d57c670b7719667c080"
+    },
+    {
+      "study": "meter",
+      "stage": "validation",
+      "attempt": 2,
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/stage_smoke002/PHASE_RECEIPT.json",
+      "cpu_seconds": 0.08607699999999999,
+      "wall_seconds": 0.155297036,
+      "success": true,
+      "receipt_sha256": "6229ea4cfff7dba9681bcf5edb0592441cc66daf656895b487c34ffa1970cdfb"
+    }
+  ],
+  "study_totals": {
+    "hardware": {
+      "measured_cpu_seconds": 0.10536699999999999,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "capability"
+      ]
+    },
+    "memory_bound": {
+      "measured_cpu_seconds": 0.584409,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    },
+    "meter": {
+      "measured_cpu_seconds": 0.08607699999999999,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    }
+  },
+  "phase_checks": {
+    "experiments/hcsn_v10_closure_20261101/economics/results/capabilities001/PHASE_RECEIPT.json": {
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/hwm_orphan001/PHASE_RECEIPT.json": {
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/hwm_shared001/PHASE_RECEIPT.json": {
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    },
+    "experiments/hcsn_v10_closure_20261101/economics/results/stage_smoke002/PHASE_RECEIPT.json": {
+      "inner_digest": true,
+      "stage_source_digest": true,
+      "inner_source_digest": true,
+      "outer_covers_inner_cpu": true,
+      "cpu_decomposition": true,
+      "historical_unknown_preserved": true,
+      "energy_unknown_preserved": true,
+      "no_complete_memory_claim": true
+    }
+  },
+  "memory_bound_fixture_audits": [
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/hwm_orphan001",
+      "checks": {
+        "unique_complete_wait_inventory": true,
+        "bound_recomputed": true,
+        "four_controlled_roles": true,
+        "all_exit_success": true,
+        "observed_rss_sums_bounded": true,
+        "observed_pss_sums_bounded": true,
+        "no_exact_peak_claim": true,
+        "short_task_bound_included": true
+      },
+      "pass": true,
+      "conservative_upper_bound_bytes": 270446592,
+      "observed_nonatomic_fixture_rss_sum_peak_bytes": 116985856,
+      "observed_nonatomic_fixture_pss_sum_peak_bytes": 66717696,
+      "resident_samples_by_role": {
+        "root": 1,
+        "child": 2,
+        "grandchild": 2
+      },
+      "physical_unique_memory_peak_bytes": null,
+      "scope": "Closed fixture family only; no inference of a production-family bound"
+    },
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/hwm_shared001",
+      "checks": {
+        "unique_complete_wait_inventory": true,
+        "bound_recomputed": true,
+        "four_controlled_roles": true,
+        "all_exit_success": true,
+        "observed_rss_sums_bounded": true,
+        "observed_pss_sums_bounded": true,
+        "no_exact_peak_claim": true,
+        "short_task_bound_included": true
+      },
+      "pass": true,
+      "conservative_upper_bound_bytes": 317775872,
+      "observed_nonatomic_fixture_rss_sum_peak_bytes": 161746944,
+      "observed_nonatomic_fixture_pss_sum_peak_bytes": 67793920,
+      "resident_samples_by_role": {
+        "root": 3,
+        "child": 2,
+        "grandchild": 2
+      },
+      "physical_unique_memory_peak_bytes": null,
+      "scope": "Closed fixture family only; no inference of a production-family bound"
+    }
+  ],
+  "all_checks_pass": true,
+  "measured_disjoint_total_cpu_seconds": 0.775853,
+  "total_historical_development_cpu_seconds": null,
+  "unmeasured_source_authoring_and_initial_inspection_cpu_seconds": null,
+  "initial_meter_path_failure_cpu_seconds": null,
+  "no_whole_development_cost_claim": true,
+  "energy_joules": null,
+  "exact_independent_family_memory_peak_bytes": null,
+  "rule": "Only outer phase CPU is added. Studies/stages may overlap in wall time; process subtrees are disjoint. Wall times are never added as a concurrent critical-path latency."
+}
