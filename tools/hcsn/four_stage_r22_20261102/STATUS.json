@@ -1,0 +1,301 @@
+{
+  "all_blockers_closed": false,
+  "baseline_commit": "ff611d62793c2829cab85b38d6ab246691b3ba1d",
+  "ci_snapshot": {
+    "architecture_base_merge_passed": true,
+    "architecture_source_head_passed": true,
+    "blob_policy_passed": true,
+    "broad_CI_passed": false,
+    "codespell_passed": true,
+    "failed_or_unresolved_lanes": [
+      "cargo-deny",
+      "Windows native link and runtime tests",
+      "Linux feature-profile integration test",
+      "Other native/runtime/clippy failures",
+      "Test-only Bazel candidate hosted validation"
+    ],
+    "production_library_binary_AST_unchanged_in_candidate": true,
+    "scope": "Root-reported CI snapshot; later workflow outcomes need explicit root readback.",
+    "test_only_Bazel_candidate_base": "94252595fa741ed331b9946d7a910b28c96e44cf",
+    "test_only_Bazel_candidate_head": "ee1dcb1ff42f41f1237d42fd828a14f1db17e551",
+    "test_only_Bazel_candidate_host_validation_passed": null,
+    "test_only_Bazel_candidate_pr": 4661,
+    "test_only_Bazel_candidate_reviewed": true,
+    "test_only_Bazel_candidate_validation_scope": "Static review and actual file remote publication; hosted validation pending.",
+    "triage_or_candidate_validation_complete": false,
+    "verified_fix_head": "94252595fa741ed331b9946d7a910b28c96e44cf",
+    "triage_evidence": "CI_FINAL_TRIAGE.json",
+    "exact_baseline_failed_jobs_in_triage": 9,
+    "complete_retrieved_failure_logs": 11,
+    "cargo_deny_failure_root_cause": "unknown; job step failed, log transport unavailable",
+    "current_failed_checks_at_final_readback": 12,
+    "final_hosted_snapshot": "FINAL_HOSTED_SNAPSHOT.json",
+    "initial_triage_complete_retrieved_logs": 8,
+    "additional_retrieved_logs": 3,
+    "triage_evidence_addendum": "CI_FINAL_TRIAGE_ADDENDUM.json",
+    "windows_latest_failure_is_fanin_only": true,
+    "diagnostic_triage_of_observed_failure_set_complete": true,
+    "all_failure_root_causes_proven": false
+  },
+  "component_results": {
+    "auth": {
+      "Rust_LIVE_wire_cryptographically_qualified": false,
+      "cross_host_witness_rollback_powerloss_or_production_qualified": false,
+      "new_independent_task_worlds": 0,
+      "original_endpoint_writer_changed": false,
+      "retained_R20_worlds": 4,
+      "transport_extra_native_processes": 2,
+      "transport_failed_attempt_preserved": true,
+      "transport_final_exact_role_files": 2,
+      "transport_first_driver_failed_readiness": true,
+      "transport_rehydrated_public_fixture_records": 68,
+      "transport_same_retained_world": 16,
+      "transport_second_driver_prepublished_and_passed": true,
+      "transport_verified_files": 75,
+      "trusted_local_witness_condition_required": true,
+      "v1_counterexample_checker_remote_publication_after_execution_seconds_approx": 11,
+      "v1_first_counterexample_remote_prefreeze": false,
+      "v1_integrity_profile_passed": true,
+      "v1_slow_peer_liveness_passed": false,
+      "v2_bounded_single_slow_peer_frame_profile_passed": true,
+      "v2_independent_network_cases": 5,
+      "v2_integrity_controls": 83,
+      "v2_original_native_processes": 8
+    },
+    "content": {
+      "all_fixed_scientific_controls_calibration_qualified": false,
+      "calibration_worlds": 94208,
+      "confirmation_generator_clusters": 23552,
+      "confirmation_worlds": 94208,
+      "fixed_scientific_control_utility_dominance": false,
+      "formal_policies": 11,
+      "full_bounded_content_contract": false,
+      "full_panel_contract_passed": [
+        "confirm",
+        "lag2"
+      ],
+      "open_domain_real_AV_qualified": false,
+      "paid_utility_vs_frozen_fallback_controls_all_panels": true,
+      "proper_Brier_nondegradation_all_panels": false,
+      "risk_and_meaningful_coverage_passed_panels": 5,
+      "simultaneous_calibration_bounds": 70,
+      "strict_Brier_failed_panels": [
+        "reverse",
+        "relabeled_lag2",
+        "lag2_skip"
+      ],
+      "strict_Brier_passed_panels": 2,
+      "total_panels": 5,
+      "unseen_law_family_confirmation": false,
+      "worlds_per_cluster": 4
+    },
+    "continuous": {
+      "arbitrary_ties_full_neural_or_continuum_gradients_qualified": false,
+      "fixed_mesh_only": true,
+      "old_R20_both_step_gate": {
+        "passed": 30,
+        "qualified": false,
+        "total": 78
+      },
+      "old_R20_individual_steps": {
+        "passed": 71,
+        "total": 156
+      },
+      "v1_retrospective_local_pass": {
+        "passed": 78,
+        "total": 78
+      },
+      "v1_verifier_input_contract_passed": false,
+      "v2_binary_oracle": {
+        "passed": 20,
+        "policy_repairs": 10,
+        "recognized_true_tie_cases": 4,
+        "total": 20
+      },
+      "v2_fresh_signed_directions": {
+        "coordinates": 13,
+        "passed": 156,
+        "profiles": 6,
+        "total": 156
+      },
+      "v2_rejection_controls": {
+        "passed": 8,
+        "total": 8
+      }
+    },
+    "full_parameters": {
+      "bounded_constructor_passed": true,
+      "effective_summary_jacobian_rank_upper_bound": 3,
+      "finite_difference_positions": 21430710,
+      "fresh_uniform_interiors": 64,
+      "jacobian_positions": 10715355,
+      "nine_parameter_identifiability_established": false,
+      "registered_parameter_points": 595,
+      "values": 1190595
+    },
+    "planner": {
+      "actual_uses_per_fit": 32,
+      "additional_software_failed_groups": 134,
+      "additional_software_total_groups": 192,
+      "aggregate_override_used": false,
+      "all_six_real_persistence_charges_retained": true,
+      "cold_query_cuts": 54,
+      "cold_worker_processes": 117,
+      "exact_timed_semantics_and_final_wire": true,
+      "fits": 8,
+      "full_investment_gate": false,
+      "joint_failed_groups": 17,
+      "joint_total_groups": 48,
+      "original_cpu_failed_groups": 27,
+      "original_cpu_total_groups": 48,
+      "separate_memory_probes": 1536,
+      "timed_executions": 12288,
+      "unique_worlds": 256
+    },
+    "value_channels": {
+      "asset_default_Taylor_blend_FP32_qualified": false,
+      "bounded_continuation_profile_passed": true,
+      "debt_scope": "newlyissuedunit d(V,m)",
+      "exclusive_core_gain_established": false,
+      "fresh_parameter_vectors": 64,
+      "ideal_G_nonredundancy_review_passed": true,
+      "independent_tenor_or_aggregate_debt_qualified": false,
+      "jacobian_positions": 9750,
+      "native_constant_Q_byte_witness_run": false,
+      "numeric_points": 195,
+      "registered_parameter_vectors": 65,
+      "runtime_or_training_integration_qualified": false,
+      "state_coordinate": "independent_log_distance",
+      "values": 975
+    }
+  },
+  "delivery": {
+    "all_direct_remote_blob_readback_receipt": "REMOTE_READBACK.json",
+    "content_carrier_local_verification": {
+      "objects": 918,
+      "parts": 229,
+      "passed": true,
+      "payloads": 930
+    },
+    "content_original_artifact_bytes": 103273608,
+    "content_original_artifact_manifest_sha256": "c01ebc722fc06ba29b9aebf1469bdc0f054782acff3bd9f727602a79c1b3bc76",
+    "content_original_artifact_records": 984,
+    "current_original_manifest_records_verified_locally": 3136,
+    "current_scientific_component_manifests": 8,
+    "expected_current_original_manifest_records": 3136,
+    "independent_final_addendum": "INDEPENDENT_FINAL_ADDENDUM.json",
+    "scope": "All six content-carrier batches are committed. Final remote tree identities and self-excluded delivery metadata are verified in the separate REMOTE_READBACK receipt; local audit snapshots remain separately preserved.",
+    "content_carrier_remote_publication_complete": true,
+    "content_carrier_publication_commit": "a7f60abe3e9124a68564c5ab7b545bc62e2ce497"
+  },
+  "evidence": {
+    "auth_transport": {
+      "path": "tools/hcsn/auth_recovery_v2_r22_20261102/TRANSPORT_REPLAY_ACCEPTANCE.json",
+      "sha256": "6335759cd624a511429079355e86bf3f75684037495912aa6bc04b88829df517"
+    },
+    "auth_v1": {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/ACCEPTANCE.json",
+      "sha256": "788bfc21ef53417e1f1da135565dc562a9489e680e8c9760236099b3533e3a87"
+    },
+    "auth_v1_slow_peer_process": {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/INDEPENDENT_SLOW_PEER.process.json",
+      "sha256": "ca7ce9fc72f90c05e4f1dcaa21c1bf586b69e62853acd5623b59fbd19d0db748"
+    },
+    "auth_v2": {
+      "path": "tools/hcsn/auth_recovery_v2_r22_20261102/ACCEPTANCE.json",
+      "sha256": "c9167ef7122854dd1a2b6a6610821ad6ebdcbc8f62b16b033dbf49111cc48e59"
+    },
+    "content": {
+      "path": "experiments/hcsn_unknown_generator_r22_20261102/ACCEPTANCE.json",
+      "sha256": "0095161d535ac9967cb92db81fef43608378367b25b6de71190c5a36ff5d30c2"
+    },
+    "continuous_v1": {
+      "path": "tools/hcsn/continuous_task_r22_20261102/RETROSPECTIVE_STATUS.json",
+      "sha256": "a77a149b406c915081b243bc4a5c0467c6e8b534f249a6bad26eeab46d417182"
+    },
+    "continuous_v2": {
+      "path": "tools/hcsn/continuous_task_v2_r22_20261102/STATUS.json",
+      "sha256": "340cf501a084371179144d6d6a0cc3373b9dcde51480cda259720ea2c6de4e26"
+    },
+    "full_parameters": {
+      "path": "tools/hcsn/full_parameters_r22_20261102/ACCEPTANCE.json",
+      "sha256": "6c072728caa4bf080cbdfb2ade4eeee34172eeb595fe220fa96251aabfa6c3d9"
+    },
+    "planner": {
+      "path": "tools/hcsn/planner_r22_20261102/ACCEPTANCE.json",
+      "sha256": "d90689bc3e970b25c9b1cc59689159f12dd985f69b64ff61d086237b42797ba9"
+    },
+    "value_channels": {
+      "path": "tools/hcsn/native_value_channels_r22_20261102/ACCEPTANCE.json",
+      "sha256": "ae3e09dfb9c75270b41e29342fe2f2cc0637afd0f32fa9a0df06c4f1842c9c3c"
+    }
+  },
+  "formatting_snapshot": {
+    "codex_rs_directory_present": true,
+    "final_just_fmt_receipt": "FINAL_LOCAL_CHECKS.json",
+    "partial_BUILD_only_without_full_Cargo_or_Justfile_checkout": true,
+    "scope": "Required command attempted last after checks; partial checkout has no Justfile. No tests or linters follow this attempt.",
+    "final_just_fmt_exit_code": 1,
+    "full_workspace_format_passed": false
+  },
+  "full_investment_gate": false,
+  "full_model_adoption": false,
+  "hardware_snapshot": {
+    "local_GPU_device_nodes": 0,
+    "matched_quality_latency_throughput_energy_adoption": false,
+    "measured_GPU_or_joules_evidence": false,
+    "probe_status": "queued_at_root_report_snapshot",
+    "trusted_manual_probe_job": 125069498107
+  },
+  "historical_prefreeze_limits": {
+    "auth_v1_first_slow_peer_counterexample_remote_prefrozen": false,
+    "auth_v2_transport_first_replay_failed_then_new_driver_prepublication": true,
+    "continuous_184_input_hashes_committed_before_fresh": true,
+    "continuous_all_old_raw_bytes_remote_before_launch": false,
+    "continuous_complete_fresh_checkout_before_launch": false,
+    "final_delivery_does_not_retroactively_change_history": true
+  },
+  "open_blockers": [
+    "continuous_or_moving_free_boundary",
+    "arbitrary_ties_and_complete_neural_training_gradients",
+    "native_value_channel_runtime_and_training_integration",
+    "matched_information_control_cost_exclusive_core_D_minus_B",
+    "strict_Brier_full_content_contract",
+    "unseen_family_and_open_domain_long_distance_multimodal_binding",
+    "per_group_resource_and_full_investment_gates",
+    "cross_host_version_owner_witness_lifecycle_and_physical_powerloss",
+    "real_GPU_energy_and_production_ownership"
+  ],
+  "production_activation": false,
+  "pull_requests": {
+    "CI": 4649,
+    "CI_test_only_candidate": 4661,
+    "auth_v1": 4653,
+    "auth_v2": 4654,
+    "content": 4662,
+    "continuous_v1": 4659,
+    "continuous_v2": 4660,
+    "full_parameters": 4651,
+    "integration": 4618,
+    "native_channels": 4656,
+    "planner": 4657
+  },
+  "recorded_costs_cpu_seconds": {
+    "auth_v1_integrity_and_OpenSSL_original_floor": 1.18473,
+    "auth_v1_lower_bound": 1.301519,
+    "auth_v1_separate_slow_peer_engineering": 0.116789,
+    "auth_v2_including_transport_lower_bound": 1.678107,
+    "content_separate_self_timed_bodies_lower_bound": 15.636247772,
+    "content_unique_wait4_envelopes": 2971.356015,
+    "continuous_v1_v2_outer_receipts_lower_bound": 346.537482,
+    "full_parameters_lower_bound": 293.335703096,
+    "global_aggregate": null,
+    "native_channels_lower_bound": 300.515858187,
+    "planner_current_R22_lower_bound": 339.517122308,
+    "planner_including_historical_floor": 1280.570126421,
+    "scope": "Different phase/history scopes; no cross-component total, no nested worker/actor double count, unknown phases remain null, no full investment/adoption claim."
+  },
+  "schema": "hcsn.r22.integrated-final-scientific-status.v1",
+  "science_bytes_modified_by_report_task": false,
+  "local_codespell_passed": true
+}

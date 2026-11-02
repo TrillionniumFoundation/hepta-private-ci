@@ -1,0 +1,506 @@
+{
+  "schema": "hcsn.r22.final-ci-triage.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4649,
+  "candidate": "94252595fa741ed331b9946d7a910b28c96e44cf",
+  "workflow_run": 41378736133,
+  "head_binding": "Run detail independently confirms head_sha and PR4649; reused workflows are refs/pull/4649/merge at f2e56a873f49768673f15fb85225406103137dfb.",
+  "workflow_status_snapshot": "queued",
+  "workflow_conclusion_snapshot": null,
+  "scope": "Read-only retrieval/static diagnosis. No scientific run, CI rerun, workflow change, source mutation or bypass.",
+  "all_ci_green": false,
+  "jobs": [
+    {
+      "id": 125069634987,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "Run cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      "logs_retrieved": false,
+      "log_error": "Two purpose-built log calls returned Transport closed; CI root cause unknown."
+    },
+    {
+      "id": 125069635248,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "bazel test shard",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      "logs_retrieved": true,
+      "decoded_characters": 2724526,
+      "line_count": 8576,
+      "diagnostic_messages": [
+        "error: linking with `bazel-out/local_windows_msvc-opt-exec/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __stack_chk_fail",
+        "          rust-lld: error: undefined symbol: ___chkstk_ms",
+        "          rust-lld: error: undefined symbol: __memcpy_chk",
+        "          rust-lld: error: undefined symbol: __memset_chk",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _beginthreadex",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _endthreadex",
+        "          rust-lld: error: undefined symbol: __memmove_chk",
+        "          rust-lld: error: undefined symbol: __stack_chk_guard",
+        "          rust-lld: error: undefined symbol: __mingw_snprintf",
+        "          rust-lld: error: undefined symbol: __mingw_fprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) strerror",
+        "          rust-lld: error: undefined symbol: _vsnprintf",
+        "error: linking with `bazel-out/windows_x86_64_msvc-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: RtlSecureZeroMemory",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _fdopen",
+        "          rust-lld: error: undefined symbol: __mingw_vsnprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isprint",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isdigit",
+        "FAILED: ",
+        "Executed 7 out of 142 tests: 24 tests pass, 79 fail to build, 1 fails locally, and 38 were skipped."
+      ],
+      "observed_failed_targets": [
+        "2026-11-02T03:29:12.5685401Z //codex-rs/app-server:app-server-all-test                       FAILED TO BUILD",
+        "2026-11-02T03:29:12.5686581Z //codex-rs/app-server:app-server-unit-tests                     FAILED TO BUILD",
+        "2026-11-02T03:29:12.5687659Z //codex-rs/app-server:codex-app-server-bin-unit-tests           FAILED TO BUILD",
+        "2026-11-02T03:29:12.5688465Z //codex-rs/apply-patch:apply-patch-all-test                     FAILED TO BUILD",
+        "2026-11-02T03:29:12.5689993Z //codex-rs/cli:cli-execpolicy-test                              FAILED TO BUILD",
+        "2026-11-02T03:29:12.5706317Z //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests              FAILED in 78.5s"
+      ],
+      "log_error": null
+    },
+    {
+      "id": 125069635225,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "bazel test shard",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      "logs_retrieved": true,
+      "decoded_characters": 1693646,
+      "line_count": 6041,
+      "diagnostic_messages": [
+        "error: linking with `bazel-out/windows_x86_64_msvc-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __stack_chk_fail",
+        "          rust-lld: error: undefined symbol: ___chkstk_ms",
+        "          rust-lld: error: undefined symbol: __mingw_fprintf",
+        "          rust-lld: error: undefined symbol: __mingw_snprintf",
+        "          rust-lld: error: undefined symbol: __stack_chk_guard",
+        "          rust-lld: error: undefined symbol: RtlSecureZeroMemory",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) strerror",
+        "          rust-lld: error: undefined symbol: _vsnprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _fdopen",
+        "          rust-lld: error: undefined symbol: __mingw_vsnprintf",
+        "error: linking with `bazel-out/local_windows_msvc-opt-exec/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __memcpy_chk",
+        "          rust-lld: error: undefined symbol: __memset_chk",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _beginthreadex",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _endthreadex",
+        "          rust-lld: error: undefined symbol: __memmove_chk",
+        "FAILED: ",
+        "Executed 6 out of 145 tests: 28 tests pass, 71 fail to build, 1 fails locally, and 45 were skipped."
+      ],
+      "observed_failed_targets": [
+        "2026-11-02T03:22:18.2876059Z //codex-rs/agent-graph-store:agent-graph-store-unit-tests       FAILED TO BUILD",
+        "2026-11-02T03:22:18.2876970Z //codex-rs/analytics:analytics-unit-tests                       FAILED TO BUILD",
+        "2026-11-02T03:22:18.2878163Z //codex-rs/app-server-client:app-server-client-unit-tests       FAILED TO BUILD",
+        "2026-11-02T03:22:18.2879112Z //codex-rs/app-server-daemon:app-server-daemon-unit-tests       FAILED TO BUILD",
+        "2026-11-02T03:22:18.2880057Z //codex-rs/app-server-transport:app-server-transport-unit-tests FAILED TO BUILD",
+        "2026-11-02T03:22:18.2894581Z //codex-rs/v8-poc:v8-poc-unit-tests                                      FAILED in 171.7s"
+      ],
+      "log_error": null
+    },
+    {
+      "id": 125069635224,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "bazel test shard",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      "logs_retrieved": true,
+      "decoded_characters": 2169064,
+      "line_count": 7155,
+      "diagnostic_messages": [
+        "error: linking with `bazel-out/windows_x86_64_msvc-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __stack_chk_fail",
+        "          rust-lld: error: undefined symbol: ___chkstk_ms",
+        "          rust-lld: error: undefined symbol: __mingw_fprintf",
+        "          rust-lld: error: undefined symbol: __mingw_snprintf",
+        "          rust-lld: error: undefined symbol: __stack_chk_guard",
+        "          rust-lld: error: undefined symbol: RtlSecureZeroMemory",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) strerror",
+        "          rust-lld: error: undefined symbol: _vsnprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _fdopen",
+        "          rust-lld: error: undefined symbol: __mingw_vsnprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isprint",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isdigit",
+        "error: linking with `bazel-out/local_windows_msvc-opt-exec/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __memcpy_chk",
+        "          rust-lld: error: undefined symbol: __memset_chk",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _beginthreadex",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _endthreadex",
+        "          rust-lld: error: undefined symbol: __memmove_chk",
+        "FAILED: ",
+        "Executed 8 out of 140 tests: 29 tests pass, 77 fail to build, 2 fail locally, and 32 were skipped."
+      ],
+      "observed_failed_targets": [
+        "2026-11-02T03:25:23.6051863Z //codex-rs/app-server:codex-app-server-test-notify-capture-bin-unit-tests FAILED TO BUILD",
+        "2026-11-02T03:25:23.6052754Z //codex-rs/app-server:exec-server-bin-unit-tests                FAILED TO BUILD",
+        "2026-11-02T03:25:23.6059038Z //codex-rs/app-server:test_notify_capture-bin-unit-tests        FAILED TO BUILD",
+        "2026-11-02T03:25:23.6059717Z //codex-rs/app-server-test-client:app-server-test-client-unit-tests FAILED TO BUILD",
+        "2026-11-02T03:25:23.6060298Z //codex-rs/app-server/tests/common:common-unit-tests            FAILED TO BUILD",
+        "2026-11-02T03:25:23.6069732Z //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     FAILED in 0.2s",
+        "2026-11-02T03:25:23.6071450Z //codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-unit-tests      FAILED in 97.9s"
+      ],
+      "log_error": null
+    },
+    {
+      "id": 125069635177,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "bazel test shard",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      "logs_retrieved": true,
+      "decoded_characters": 2087267,
+      "line_count": 6878,
+      "diagnostic_messages": [
+        "error: linking with `bazel-out/windows_x86_64_msvc-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __stack_chk_fail",
+        "          rust-lld: error: undefined symbol: __stack_chk_guard",
+        "          rust-lld: error: undefined symbol: ___chkstk_ms",
+        "          rust-lld: error: undefined symbol: __mingw_fprintf",
+        "          rust-lld: error: undefined symbol: __mingw_snprintf",
+        "          rust-lld: error: undefined symbol: RtlSecureZeroMemory",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) strerror",
+        "          rust-lld: error: undefined symbol: _vsnprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _fdopen",
+        "          rust-lld: error: undefined symbol: __mingw_vsnprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isprint",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isdigit",
+        "error: linking with `bazel-out/local_windows_msvc-opt-exec/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __memcpy_chk",
+        "          rust-lld: error: undefined symbol: __memset_chk",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _beginthreadex",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _endthreadex",
+        "          rust-lld: error: undefined symbol: __memmove_chk",
+        "FAILED: ",
+        "Executed 4 out of 137 tests: 21 tests pass, 68 fail to build, 1 fails locally, and 47 were skipped."
+      ],
+      "observed_failed_targets": [
+        "2026-11-02T03:20:04.8407669Z //codex-rs/agent-identity:agent-identity-unit-tests             FAILED TO BUILD",
+        "2026-11-02T03:20:04.8408884Z //codex-rs/app-server-protocol:app-server-protocol-unit-tests   FAILED TO BUILD",
+        "2026-11-02T03:20:04.8412907Z //codex-rs/app-server-test-client:codex-app-server-test-client-bin-unit-tests FAILED TO BUILD",
+        "2026-11-02T03:20:04.8414219Z //codex-rs/apply-patch:apply_patch-bin-unit-tests               FAILED TO BUILD",
+        "2026-11-02T03:20:04.8415003Z //codex-rs/arg0:arg0-unit-tests                                 FAILED TO BUILD",
+        "2026-11-02T03:20:04.8444008Z //codex-rs/hepta-fleet:hepta-fleet-unit-tests                            FAILED in 62.9s"
+      ],
+      "log_error": null
+    },
+    {
+      "id": 125069635221,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "bazel build --config=clippy lint targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      "logs_retrieved": true,
+      "decoded_characters": 6932024,
+      "line_count": 17694,
+      "diagnostic_messages": [
+        "error: linking with `bazel-out/windows_x86_64_msvc-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __stack_chk_fail",
+        "          rust-lld: error: undefined symbol: ___chkstk_ms",
+        "          rust-lld: error: undefined symbol: __mingw_fprintf",
+        "          rust-lld: error: undefined symbol: __mingw_snprintf",
+        "          rust-lld: error: undefined symbol: __stack_chk_guard",
+        "          rust-lld: error: undefined symbol: RtlSecureZeroMemory",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) strerror",
+        "          rust-lld: error: undefined symbol: _vsnprintf",
+        "error: linking with `bazel-out/local_windows_msvc-opt-exec/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __memcpy_chk",
+        "          rust-lld: error: undefined symbol: __memset_chk",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _beginthreadex",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _endthreadex",
+        "          rust-lld: error: undefined symbol: __memmove_chk",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _fdopen",
+        "          rust-lld: error: undefined symbol: __mingw_vsnprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isprint",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isdigit",
+        "FAILED: "
+      ],
+      "observed_failed_targets": [],
+      "log_error": null
+    },
+    {
+      "id": 125069635168,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "bazel build --config=clippy lint targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      "logs_retrieved": true,
+      "decoded_characters": 974163,
+      "line_count": 10775,
+      "diagnostic_messages": [
+        "error: used `unwrap()` on a `Result` value",
+        "error: use of a disallowed method `sqlx::pool::PoolOptions::connect`",
+        "error: used `expect()` on a `Result` value",
+        "error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope",
+        "error[E0599]: no method named `append_qualification` found for struct `codex_hepta_learning_ledger::DurableLedger` in the current scope",
+        "FAILED: "
+      ],
+      "observed_failed_targets": [],
+      "log_error": null
+    },
+    {
+      "id": 125069635119,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "bazel build verify-release-build targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      "logs_retrieved": true,
+      "decoded_characters": 732721,
+      "line_count": 7804,
+      "diagnostic_messages": [
+        "error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope",
+        "FAILED: "
+      ],
+      "observed_failed_targets": [],
+      "log_error": null
+    },
+    {
+      "id": 125069635187,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41378736133,
+      "failed_steps": [
+        {
+          "name": "bazel build verify-release-build targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4
+        }
+      ],
+      "clean_worktree_step": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      "logs_retrieved": true,
+      "decoded_characters": 4170108,
+      "line_count": 13413,
+      "diagnostic_messages": [
+        "error: linking with `bazel-out/windows_x86_64_msvc-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __stack_chk_fail",
+        "          rust-lld: error: undefined symbol: __stack_chk_guard",
+        "          rust-lld: error: undefined symbol: ___chkstk_ms",
+        "          rust-lld: error: undefined symbol: __mingw_fprintf",
+        "          rust-lld: error: undefined symbol: __mingw_snprintf",
+        "          rust-lld: error: undefined symbol: RtlSecureZeroMemory",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) strerror",
+        "          rust-lld: error: undefined symbol: _vsnprintf",
+        "error: linking with `bazel-out/local_windows_msvc-opt-exec/bin/external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe` failed: exit code: 1",
+        "          rust-lld: error: undefined symbol: __memcpy_chk",
+        "          rust-lld: error: undefined symbol: __memset_chk",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _beginthreadex",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _endthreadex",
+        "          rust-lld: error: undefined symbol: __memmove_chk",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) _fdopen",
+        "          rust-lld: error: undefined symbol: __mingw_vsnprintf",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isprint",
+        "          rust-lld: error: undefined symbol: __declspec(dllimport) isdigit",
+        "FAILED: "
+      ],
+      "observed_failed_targets": [],
+      "log_error": null
+    }
+  ],
+  "confirmed_findings": [
+    {
+      "kind": "native-link-failures",
+      "jobs": [
+        125069635248,
+        125069635225,
+        125069635224,
+        125069635177,
+        125069635221,
+        125069635187
+      ],
+      "observed": "MSVC-target rust-lld link invocations cannot resolve __stack_chk_fail/__stack_chk_guard, ___chkstk_ms, __mingw_* and related symbols from ring/aws-lc/libsqlite3/zstd native objects.",
+      "inference": "Native object/runtime/toolchain incompatibility is plausible; exact producer, flags, cache or ABI root cause remains unverified. Runtime test failures below are additional."
+    },
+    {
+      "kind": "missing-visible-test-api",
+      "jobs": [
+        125069635119,
+        125069635168
+      ],
+      "observed": "E0599 at hepta-agentd/tests/plasticity_process_e2e.rs:115 calling DurableLedger::append_qualification.",
+      "source_audit": "Separate exact-head source audit found the implementation exists behind qualification-legacy-write; root defs.bzl integration dependency replacement bypass is being documented separately. No no-op API or production feature enablement is justified."
+    },
+    {
+      "kind": "actual-lint-failures",
+      "jobs": [
+        125069635168
+      ],
+      "observed": "clippy unwrap_used/expect_used in hepta-fleet, hepta-memory and hepta-agentd test code; disallowed PoolOptions::connect in hepta-automation/src/migration_convergence_tests.rs:9 and hepta-memory/src/cognitive_schema_tests.rs:10.",
+      "root_cause_scope": "These diagnostics are concrete; the entire lint set is broader than the single feature-profile defect."
+    },
+    {
+      "kind": "runtime-failure-shard1",
+      "job": 125069635177,
+      "observed": "hepta-fleet registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths rejects a Windows workspace path as noncanonical/symlink-traversing; 35 passed/1 failed in that target.",
+      "root_cause": null
+    },
+    {
+      "kind": "runtime-failure-shard2",
+      "job": 125069635248,
+      "observed": "hepta-intelligence tests report Windows PermissionDenied code5 and UnsafeStateDirectory.",
+      "root_cause": null
+    },
+    {
+      "kind": "runtime-failure-shard3",
+      "job": 125069635225,
+      "observed": "v8-poc six-test process terminates with [FATAL:partition_address_space.cc(301)] Check failed: !IsConfigurablePoolInitialized().",
+      "root_cause": null
+    },
+    {
+      "kind": "runtime-failure-shard4",
+      "job": 125069635224,
+      "observed": "hepta-operator-acceptance has 13 runtime failures including missing test key-generation/ssh-keygen path and PermissionDenied; hepta-prompt-optimizer reports UnsafeStateDirectory.",
+      "root_cause": null
+    }
+  ],
+  "cargo_deny": {
+    "failed_step_confirmed": true,
+    "log_availability": "Transport closed on two calls",
+    "advisory_or_policy_root_cause": null
+  },
+  "gpu_probe": {
+    "job_id": 125069498107,
+    "status_reported_by_parent": "queued",
+    "independently_fetched_steps": [],
+    "independently_fetched_log": "404 BlobNotFound",
+    "conclusion": "No observed executed GPU step or numerical/cost evidence; these responses alone do not independently establish queue cause or hardware availability."
+  },
+  "coverage_limitations": [
+    "Workflow job listing wrapper returns first page/latest attempt; no all-pages completeness claim.",
+    "Generic direct /actions/jobs metadata fetch is not supported by this connector (400); purpose-built job/steps/log APIs supplied the usable data.",
+    "Full decoded logs for8 failed jobs are completely archived as deterministic gzip, with2 large compressed streams split into bounded transport parts. Selected JSON excerpts are additional navigation evidence.",
+    "Diagnostic/fix proposal does not establish successful hosted repair."
+  ],
+  "evidence": [
+    "CI_FINAL_TRIAGE_JOB_SNAPSHOT.json.gz",
+    "CI_FINAL_TRIAGE_LOG_EXCERPTS.json.gz",
+    "CI_FINAL_TRIAGE_RAW_LOGS.json"
+  ],
+  "required_followup": [
+    "Hosted test-only Bazel feature-profile validation for plasticity_process_e2e and production cquery, on separate reviewed repair.",
+    "Independent native Windows toolchain/object provenance investigation and the actually failing runtime targets.",
+    "Obtain cargo-deny diagnostics; do not infer advisory/license/policy reason from log transport failure.",
+    "Keep blocking-ci, queued GPU and remaining platform jobs open until actual terminal results."
+  ],
+  "raw_log_archive_scope": "Complete decoded text for8 retrieved failed-job logs; cargo-deny remains unavailable.11 transport parts total3004942 compressed bytes; maximum part400000B. JSON receipt gives concatenation order and both compressed/decoded SHA256."
+}

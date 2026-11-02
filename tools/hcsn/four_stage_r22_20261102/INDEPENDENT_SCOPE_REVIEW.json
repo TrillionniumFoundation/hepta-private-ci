@@ -1,0 +1,649 @@
+{
+  "all_blockers_closed": false,
+  "artifact_review": {
+    "components": [
+      {
+        "component": "full_parameters_r22_20261102",
+        "frozen_input_records_checked": 10,
+        "independent_archive_objects_and_existing_roundtrip_payloads_checked": true,
+        "original_bytes": 13153299,
+        "original_manifest_sha256": "7bfe0c37e019cd0bf056be4ec1f188e53ba2c93cc06fd2a3fc1084c1675f9755",
+        "original_records": 94,
+        "passed": true,
+        "publication_claims_readback": true,
+        "publication_source_commit": "7a319af55c8c99805ad445290af72c674438fd00",
+        "roundtrip_destination": "/workspace/scratch/671a3fc18e7e/r22-full-parameters-roundtrip",
+        "source_freeze_sha256": "01636570b474ba5c402a1fbb9799e3bf0a704feba881303814db2f092323ac23",
+        "transport_archive_sha256": "81b18cd190ab772a9bc8e3a4bbcd16e28476adf60eeac792cb64f8826878f78c",
+        "transport_mapped_files": 59,
+        "transport_parts": 17,
+        "transport_unique_objects": 26
+      },
+      {
+        "component": "native_value_channels_r22_20261102",
+        "frozen_input_records_checked": 13,
+        "independent_archive_objects_and_existing_roundtrip_payloads_checked": true,
+        "original_bytes": 1320019,
+        "original_manifest_sha256": "5fa60e3c2331d3ef4cc05c1b7f0618196f98c283da16f8467e1133dd1eb966ae",
+        "original_records": 91,
+        "passed": true,
+        "publication_claims_readback": true,
+        "publication_source_commit": "a921ff5622e1aee3a22e08d9325d453f2952aa9c",
+        "roundtrip_destination": "/workspace/scratch/671a3fc18e7e/r22-native-value-roundtrip",
+        "source_freeze_sha256": "ba586b70bf238e4bbc4a9fa5a32534bb3a0b0f79487a1a4435ac3fc107d3693d",
+        "transport_archive_sha256": "66209cb079eb9595d614873f63e76e2b922aae1dfff871444df16e363daab105",
+        "transport_mapped_files": 37,
+        "transport_parts": 4,
+        "transport_unique_objects": 22
+      },
+      {
+        "component": "planner_r22_20261102",
+        "frozen_input_records_checked": 61,
+        "independent_archive_objects_and_existing_roundtrip_payloads_checked": true,
+        "original_bytes": 4884123,
+        "original_manifest_sha256": "e7be4e6d875c62522517bd47e4ee6ae80288450e3d1821d437d523251e411402",
+        "original_records": 549,
+        "passed": true,
+        "publication_claims_readback": true,
+        "publication_source_commit": "5a8472045183fa638e77ac8f2ad903f3b00e3d06",
+        "roundtrip_destination": "/workspace/scratch/671a3fc18e7e/r22_cost_transport_roundtrip",
+        "source_freeze_sha256": "cb65df2e75c2226c5441b9f4a293e8fe0ae8305a51cc3f4a5a61b6fdede160d6",
+        "transport_archive_sha256": "65c74b10c4716667e9bc58073b67e7922cae7210bc41e23b1a8aac347f61f423",
+        "transport_mapped_files": 505,
+        "transport_parts": 7,
+        "transport_unique_objects": 327
+      },
+      {
+        "component": "auth_recovery_r22_20261102",
+        "frozen_input_records_checked": 7,
+        "independent_archive_objects_and_existing_roundtrip_payloads_checked": true,
+        "original_bytes": 270743,
+        "original_manifest_sha256": "52609471e0a5fc6e92be21c959957aeecb669a4be5b7d72a5b9335867f16e541",
+        "original_records": 413,
+        "passed": true,
+        "publication_claims_readback": true,
+        "publication_source_commit": "6bf394ba09633a250d0cb4521dd3285515361c1d",
+        "roundtrip_destination": "/workspace/scratch/671a3fc18e7e/r22-auth-roundtrip-final",
+        "source_freeze_sha256": "040093e3b3e340492331f72b27062375f4b308b60cba8185cdcac535485b6ccc",
+        "transport_archive_sha256": "a1d8ed56af74f5bfcd80f5a2874cc6f841c2bcd3e8d636f4f7bf3fed65aaac35",
+        "transport_mapped_files": 384,
+        "transport_parts": 2,
+        "transport_unique_objects": 260
+      },
+      {
+        "component": "auth_recovery_v2_r22_20261102",
+        "frozen_input_records_checked": 9,
+        "independent_archive_objects_and_existing_roundtrip_payloads_checked": true,
+        "original_bytes": 275274,
+        "original_manifest_sha256": "abf5923571a9a4f97faf5a751aee868be96ef5b25fce95ee5ed521244ddfe6af",
+        "original_records": 424,
+        "passed": true,
+        "publication_claims_readback": true,
+        "publication_source_commit": "fa8086417a778e09e2b44fca68dcd760dd9e8e2b",
+        "roundtrip_destination": "/workspace/scratch/671a3fc18e7e/r22-auth-v2-roundtrip-final",
+        "source_freeze_sha256": "35a535a5b78b5d16e6bc27dd3ab72c8346c49594f14876544bd23fc02b21d25a",
+        "transport_archive_sha256": "15cac0bb2ebd3de13fd8266ba1142702cf6de70bf2d6698a22480bca8290ca8f",
+        "transport_mapped_files": 399,
+        "transport_parts": 2,
+        "transport_unique_objects": 269
+      },
+      {
+        "component": "continuous_task_r22_20261102",
+        "frozen_input_records_checked": 17,
+        "independent_archive_objects_and_existing_roundtrip_payloads_checked": true,
+        "original_bytes": 6392497,
+        "original_manifest_sha256": "121ee10ea21619d61306389b491d39476aa25bf0d2a9550083e5ed0a860700b1",
+        "original_records": 158,
+        "passed": true,
+        "publication_claims_readback": true,
+        "publication_source_commit": "a921ff5622e1aee3a22e08d9325d453f2952aa9c",
+        "roundtrip_destination": "/workspace/scratch/671a3fc18e7e/r22-continuous_v1-roundtrip-final",
+        "source_freeze_sha256": "7b7e7afee08f7da2a040970a8a617fb0a9401b73470c7cb7b5c983c7a006694c",
+        "transport_archive_sha256": "083cb08a6b7ec59ef0cb24ee3a5ba23d0f778bb8ed7c350bd3fa8a004aca2411",
+        "transport_mapped_files": 129,
+        "transport_parts": 13,
+        "transport_unique_objects": 108
+      },
+      {
+        "component": "continuous_task_v2_r22_20261102",
+        "frozen_input_records_checked": 17,
+        "independent_archive_objects_and_existing_roundtrip_payloads_checked": true,
+        "original_bytes": 6564330,
+        "original_manifest_sha256": "678ef8787ce9b253439e5c2d4a7b4e8adeb13668a36de112ec3e074a45eab825",
+        "original_records": 244,
+        "passed": true,
+        "publication_claims_readback": true,
+        "publication_source_commit": "c21de56597fc60857b179c8422b0108d5ef7c61b",
+        "roundtrip_destination": "/workspace/scratch/671a3fc18e7e/r22-continuous_v2-roundtrip-final",
+        "source_freeze_sha256": "1265f45f19932c6c5e2a2d8cbb9fc9f386e699a006c60ad5ad3cad47ed061488",
+        "transport_archive_sha256": "71cd12eaaa04ce0181579d0fbe4f71f46c7189338b61cd06ef7ab69645a56f56",
+        "transport_mapped_files": 207,
+        "transport_parts": 13,
+        "transport_unique_objects": 199
+      }
+    ],
+    "failures": [],
+    "scope": "Read-only digest/archive/object/previous-fresh-restoration verification. No scientific execution, no archive extraction writes, no remote publication claimed by this local review.",
+    "total_mapped_roundtrip_payloads": 1720,
+    "total_original_bytes": 32860285,
+    "total_original_records": 1973
+  },
+  "bound_input_review": {
+    "auth_retained_input_checks": [
+      {
+        "component": "auth_recovery_r22_20261102",
+        "retained_inputs_checked": 30
+      },
+      {
+        "component": "auth_recovery_v2_r22_20261102",
+        "retained_inputs_checked": 30
+      }
+    ],
+    "content": {
+      "all_post_read_bindings_checked": 21,
+      "calibration_arms": 7,
+      "calibration_complete_audit_child_cpu": 67.168768,
+      "calibration_complete_child_cpu": 1304.132853,
+      "calibration_strata": {
+        "calibrate": 4096,
+        "calibrate_lag2": 32768,
+        "calibrate_lag2_skip": 16384,
+        "calibrate_relabeled_lag2": 32768,
+        "calibrate_reverse": 8192
+      },
+      "calibration_worlds": 94208,
+      "family_simultaneous_peak_rss_known": false,
+      "formal_outcomes_read_by_this_review": false,
+      "formal_registered_policies": 11,
+      "formal_registered_worlds": 94208,
+      "formal_results_status": "pending; no success or outcome claim",
+      "frozen_primary": "context_robust",
+      "post_commit": "4326c6eddad2cee29538e5f9d8574989584f2e46",
+      "post_producer_bindings_checked": 15,
+      "qualified_arms": [
+        "context_robust"
+      ],
+      "read_only_metadata_and_policy_prebound": true,
+      "simultaneous_bounds": 70,
+      "source_bindings_checked": 75,
+      "source_commit": "b309368b43aa4b120d1d8c04d8e6a8494be8bb88",
+      "source_file_hashes": {
+        "CALIBRATION_AUDIT_PROCESS_RECEIPT.json": "d05193a2dadba108f259c6f6f39277f573b186dad7bd39f5848bbc924f352b92",
+        "CALIBRATION_PROCESS_RECEIPT.json": "0acad5eee5da66d8df17fb8d199bb70f12917dd37d6d80b1db214fb08719b8a2",
+        "CALIBRATION_PUBLICATION.json": "edf3f19bdab35598b41386f859f9987e370fb1d9261ccb8157794c5b25793976",
+        "INDEPENDENT_CALIBRATION_CHECK.json": "cb965b490195c690692278c787f920d794229f6a92f87944524de6d41ae4d4b6",
+        "POSTCALIBRATION_AUDIT_BINDING.json": "20d00b0854cdc569c8d11be386d8156715c8b9b46ffbffd1f5e3995d910b51fa",
+        "POSTCALIBRATION_FREEZE.json": "aa1ce5d118f101858eadfdc43a22c70ad96d3593987ba67174b3b8d11cdea982",
+        "POSTCALIBRATION_POLICIES.json": "81c9197b529057e135582ed29ed9e735df5fc3c53eae488891f4b87650d1e63b",
+        "SOURCE_FREEZE.json": "ccb16aa56f1f09d65efb25385a8b89ee0e911c583731e6c13f018032c613d308",
+        "SOURCE_PUBLICATION.json": "fe5b467aac6c116f4c8f9140a659572f4243f07b6860dfedf72326c1ab985616",
+        "calibration_01/CALIBRATION.json": "f6bbdacbd1737ee5ca2e987fd625f8acc4af7ddf069a65f667771a5ad9ca024e",
+        "protocol.json": "e47a941e87f9dae82034db7ccdc01ae5cfc8ac8ae18e243027b46dce8454cff4"
+      }
+    },
+    "continuous_v2_legacy_input_identity_sha256": "c3271e2e750a59a3cb2148617c51fd7ecf073d2967112e30192c594bd055652c",
+    "continuous_v2_legacy_input_records_checked": 184,
+    "current_legacy_bytes_checked": true,
+    "failures": [],
+    "historical_all_input_remote_bytes_available_before_launch": false,
+    "historical_source_and_identity_map_prebound": true,
+    "passed": true
+  },
+  "ci_hardware_snapshot": {
+    "broad_matrix_all_passed": false,
+    "combined_legacy_status_endpoint_returned_empty": true,
+    "desktop_probe": {
+      "conclusion": null,
+      "hardware_readiness_or_GPU_joule_measurement": false,
+      "job_id": 125069498107,
+      "run_id": 39526325715,
+      "status": "queued"
+    },
+    "empty_legacy_status_is_not_all_checks_success": true,
+    "head_sha": "94252595fa741ed331b9946d7a910b28c96e44cf",
+    "new_observed_failures": [
+      {
+        "cause": null,
+        "conclusion": "failure",
+        "job_id": 125069634987,
+        "log_fetch": "Transport closed",
+        "name": "cargo-deny / cargo-deny"
+      },
+      {
+        "conclusion": "cancelled",
+        "job_id": 125069634925,
+        "name": "repo-checks / build-test"
+      }
+    ],
+    "pr": 4649,
+    "pr_draft": true,
+    "pr_merged": false,
+    "pr_open": true,
+    "queried_jobs": [
+      {
+        "conclusion": "success",
+        "id": 125064625845,
+        "name": "Select blocking CI scope",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 125064626070,
+        "name": "Blob size policy / Blob size policy",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 125064626238,
+        "name": "Codespell / Check for spelling errors",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 125069634895,
+        "name": "rust-ci / Detect changed areas",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 125069634903,
+        "name": "sdk / python-sdk",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "cancelled",
+        "id": 125069634925,
+        "name": "repo-checks / build-test",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "id": 125069634987,
+        "name": "cargo-deny / cargo-deny",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 125069634991,
+        "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635011,
+        "name": "repo-checks / Native Hepta paths on macos-15",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": "success",
+        "id": 125069635020,
+        "name": "repo-checks / Native Hepta paths on windows-latest",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635066,
+        "name": "sdk / sdks",
+        "run_id": 41378736133,
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635119,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "run_id": 41378736133,
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635148,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635159,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635168,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635177,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "run_id": 41378736133,
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635187,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "run_id": 41378736133,
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635189,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635221,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "run_id": 41378736133,
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635224,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "run_id": 41378736133,
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635225,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "run_id": 41378736133,
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635246,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635248,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635250,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635272,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 125069635601,
+        "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": "skipped",
+        "id": 125069635787,
+        "name": "Lightweight prose and derived checks",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "id": 125069635955,
+        "name": "Hepta scoped native checks",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "id": 125069636643,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+        "run_id": 41378736133,
+        "status": "completed"
+      },
+      {
+        "conclusion": null,
+        "id": 125075133377,
+        "name": "rust-ci / cargo shear",
+        "run_id": 41378736133,
+        "status": "queued"
+      },
+      {
+        "conclusion": "success",
+        "id": 125064625800,
+        "name": "metadata",
+        "run_id": 41378736134,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "id": 125068110712,
+        "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+        "run_id": 41378736134,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "id": 125068111136,
+        "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+        "run_id": 41378736134,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 125064625637,
+        "name": "Architecture convergence (base-merge)",
+        "run_id": 41378736098,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 125064625871,
+        "name": "Architecture convergence (source-head)",
+        "run_id": 41378736098,
+        "status": "completed"
+      },
+      {
+        "conclusion": null,
+        "id": 125075907652,
+        "name": "Architecture required",
+        "run_id": 41378736098,
+        "status": "queued"
+      }
+    ],
+    "read_only_independent_github_api_snapshot": true,
+    "source_head_convergence_now_success": true,
+    "verified_targeted_blob_size_success": true,
+    "verified_targeted_codespell_success": true,
+    "workflow_api_first_page_only": true
+  },
+  "classification": "Read-only post-study artifact/count/unit/scope review; not a new scientific acceptance gate or prospective source freeze.",
+  "content_pending": {
+    "calibration_audit_complete_child_cpu_seconds": 67.168768,
+    "calibration_complete_outer_cpu_seconds": 1304.132853,
+    "calibration_worker_cpu_not_added_again": true,
+    "formal_Brier_nondegradation": null,
+    "formal_cost": null,
+    "formal_population_quality": null,
+    "formal_qualification": null,
+    "formal_results_status": "running/pending per root task; outcomes deliberately unread",
+    "formal_utility": null,
+    "raw_chunk_output_budget_bytes": 140000000,
+    "source_and_calibration_bounds_checked": true,
+    "total_component_output_budget_bytes": 150000000,
+    "transport_and_root_final_registry_not_claimed_complete": true
+  },
+  "cost_scope": "This read-only review was not separately process-metered. Do not invent zero cost or add nested component counters into a project total.",
+  "final_root_report_written_or_approved": false,
+  "methods": {
+    "all_remote_scientific_blobs_independently_refetched_by_this_review": false,
+    "archive_extract_writes": 0,
+    "component_files_modified": 0,
+    "existing_fresh_roundtrip_payloads_rechecked": true,
+    "local_source_and_publication_receipt_bindings_rechecked": true,
+    "new_parameter_or_task_draws": 0,
+    "partial_content_formal_outcomes_read": false,
+    "scientific_reruns": 0
+  },
+  "production_activation": false,
+  "qualified_counts_and_units": {
+    "auth_v1": {
+      "bounded_integrity_profile_passed": true,
+      "controls": 80,
+      "final_role_file_byte_comparisons": 8,
+      "native_processes": 8,
+      "new_task_worlds": 0,
+      "openssl_hmac_records": 100,
+      "retained_R20_worlds": 4,
+      "slow_peer_availability_counterexample_retained": true,
+      "synthetic_contexts": 32
+    },
+    "auth_v2": {
+      "complete_api_hard_realtime_limit": false,
+      "controls": 83,
+      "final_role_file_byte_comparisons": 8,
+      "frame_bytes_including_newline": 8192,
+      "independent_network_cases": 5,
+      "native_processes": 8,
+      "new_task_worlds": 0,
+      "openssl_hmac_records": 100,
+      "peer_processes": 4,
+      "request_frame_seconds": 1,
+      "response_frame_seconds": 3,
+      "retained_R20_worlds": 4,
+      "synthetic_contexts": 32
+    },
+    "continuous_v1": {
+      "fresh_profiles_run": false,
+      "initial_left_corruption_admitted": true,
+      "old_both_step_pass": 30,
+      "old_both_step_total": 78,
+      "old_finite_step_gate": false,
+      "old_individual_step_pass": 71,
+      "old_individual_step_total": 156,
+      "retrospective_cases": 78,
+      "retrospective_local_pass": 78,
+      "verifier_input_contract_passed": false
+    },
+    "continuous_v2": {
+      "binary_oracle_cases": 20,
+      "coordinates": 13,
+      "derivative_positions_fresh_and_oracle": 1564944,
+      "fresh_profiles": 6,
+      "fresh_signed_directions": 156,
+      "full_or_arbitrary_tie_gradient_qualified": false,
+      "negative_controls": 8,
+      "old_fixed_engineering_cases": 3,
+      "old_original_finite_step_gate": false,
+      "rounded_policy_repairs": 10,
+      "signs": 2,
+      "true_tie_cases": 4
+    },
+    "full_parameters": {
+      "all_neural_or_continuum_gradients_qualified": false,
+      "decomposition": {
+        "corners": 512,
+        "new_interior": 64,
+        "old_baseline": 1,
+        "single_coordinate_endpoints": 18
+      },
+      "derivative_positions": 10715355,
+      "effective_value_jacobian_rank_upper_bound": 3,
+      "fd_extrapolate_positions": 21430710,
+      "points": 595,
+      "separate_math_points": 9,
+      "value_positions": 1190595,
+      "values_per_point": 2001
+    },
+    "native_values": {
+      "coordinates": 10,
+      "derivative_positions": 9750,
+      "fd_positions": 19500,
+      "ideal_three_summary_nonredundancy_only": true,
+      "native_constant_Q_byte_witness": false,
+      "new_parameter_vectors": 64,
+      "nine_parameter_identifiability": false,
+      "numeric_points": 195,
+      "outputs": 5,
+      "parameter_vectors": 65,
+      "scope": "Continuation-only independent log-distance, five channels including one newly issued debt unit at tau=m. Not aggregate debt or independent tenor; no asset/default/Taylor/FP32/runtime-training adoption.",
+      "separate_math_points": 6,
+      "states_per_vector": 3,
+      "two_reference_positions": 21450,
+      "value_positions": 975
+    },
+    "planner": {
+      "aggregate_shared_cpu_ratio": 0.9071660655835375,
+      "all_six_query_persistence_charges_retained": true,
+      "cold_worker_processes": 117,
+      "cumulative_recorded_cpu_lower_bound_seconds": 1280.5701264210002,
+      "failed_joint_groups": 17,
+      "failed_original_cpu_groups": 27,
+      "failed_shared_software_groups": 134,
+      "fits": 8,
+      "full_investment_gate": false,
+      "full_project_total_cost_known": false,
+      "independent_checks": 634,
+      "lost_reply_cold_cases": 54,
+      "memory_probe_executions": 1536,
+      "ordinary_baseline_shared_cpu_ratio": 0.8115780448076741,
+      "original_adoption_groups": 48,
+      "r20_shared_cpu_ratio": 0.9413511281113034,
+      "scope": "Shared improvement; no pooled override or analytic-exclusive gain. 32 actual uses per fit, no R22 1000-use qualification.",
+      "shared_software_groups": 192,
+      "static_contracts": 23,
+      "timed_actor_executions": 12288,
+      "unique_worlds": 256,
+      "worlds_per_fit": 32
+    }
+  },
+  "retained_limits": [
+    "Financial constructor derivatives are finite-model values at registered points; nine nonzero columns do not imply nine independent mechanisms.",
+    "The G nonredundancy proof uses the same ideal exact boundary and fixed positive log-distance; differing native boundary approximations were not shown to produce equal FP64 boundary or Q bytes.",
+    "HMAC protects checkpoint envelopes and witness request/response/tip binding. The unchanged Rust LIVE owner/provider wire remains a trusted-local contract, not a new cryptographic protocol.",
+    "Same-host separate processes do not provide independent-host failure domains. Full key/witness rollback, authorized stale-state re-signing, concurrent-owner leases, power loss and production security remain open.",
+    "V1 slow-peer discovery completed at 02:30:09Z, about11 seconds before checker publication daf9f9ce... at02:30:20Z; it is engineering discovery, not remotely prefrozen confirmation.",
+    "Continuous V2 source/freeze and184 input hashes were prebound at c21de...; all legacy V1 diagnosis bytes were not remotely available before launch. Historical complete fresh-checkout/all-input-byte-readback remains false. Fresh calculations consume those bytes only for identity checks.",
+    "Continuous V1 initial-left verifier omission remains a real preserved failed contract; V2 is a separate repair and does not retroactively pass the old fixed-step30/78 result.",
+    "All recorded CPU figures have explicit lower-bound/partial/nested scopes. Planner1280.570126 is not the full project total; no component sum is presented as complete investment or joule/GPU measurement.",
+    "Content calibration uses finite known law families and paired policies. Only context_robust qualifies among7 calibration arms; four feasible comparison policies do not inherit the unqualified base arms' risk/coverage status.",
+    "The94208-world,11-policy content confirmation remains pending here; no partial or future outcome is inferred. Root final formal results and later authV2 engineering additions are outside this completed snapshot.",
+    "Current local restoration and identity checks cannot retroactively establish remote byte availability before a historical run."
+  ],
+  "review_cpu_seconds": null,
+  "review_markdown_sha256": "36c45bc02b128d046c22f28428cc9164e50872b03dd19c2c3a40376b6f586c19",
+  "review_wall_seconds": null,
+  "reviewed_at_utc": "2026-11-02T03:22:48.940Z",
+  "reviewer": "/root/cost",
+  "reviewer_disclosure": {
+    "independence": "Cross-component read-only consistency and byte-identity audit, not blind external authorship or reimplementation of every candidate.",
+    "prior_contributions": [
+      "Author of the planner component being summarized.",
+      "Author of the local native-channel nonredundancy review."
+    ]
+  },
+  "schema": "hcsn.r22.independent-cross-component-scope-review.v1",
+  "scope_claims_consistent_with_evidence": true
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "hcsn-r22-ci-api-diagnosis-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "94252595fa741ed331b9946d7a910b28c96e44cf",
+  "reported_failure": {
+    "code": "E0599",
+    "caller": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+    "line": 115,
+    "method": "DurableLedger::append_qualification",
+    "basis": "Parent-provided Ubuntu release-log observation; source independently inspected at exact head"
+  },
+  "finding": "Existing qualification-only API omitted by generated Bazel integration dependency profile; not a stale call or missing implementation.",
+  "primary_evidence": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+      "lines": [
+        161,
+        207,
+        208,
+        210
+      ],
+      "fact": "Raw append is crate-private; public append_qualification delegates to it under feature qualification-legacy-write."
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "lines": [
+        16,
+        17,
+        18
+      ],
+      "fact": "Default features empty; qualification-legacy-write is opt-in."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "lines": [
+        22,
+        101,
+        102
+      ],
+      "fact": "Agentd has an explicit qualification forwarding feature and enables the ledger feature in its dev-dependency."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "lines": [
+        6,
+        10,
+        18
+      ],
+      "fact": "Unit-test replacement map selects ledger qualification variant; macro invocation applies replacements to unit tests only."
+    },
+    {
+      "path": "defs.bzl",
+      "lines": [
+        202,
+        354,
+        372,
+        407,
+        575,
+        615,
+        690
+      ],
+      "fact": "Unit tests use replacement helper; integration tests directly use all_crate_deps and ordinary host library."
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/BUILD.bazel",
+      "lines": [
+        13,
+        14,
+        16
+      ],
+      "fact": "Existing qualification library is testonly and enables qualification-legacy-write."
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "lines": [
+        434,
+        447,
+        464,
+        478,
+        479,
+        491
+      ],
+      "fact": "Release job compiles Bazel targets with debug assertions off; release target script includes all first-party Rust targets."
+    }
+  ],
+  "candidate_directory": "tools/hcsn/ci_qualification_profile_r22_20261102",
+  "patch_paths": [
+    "defs.bzl",
+    "codex-rs/hepta-agentd/BUILD.bazel"
+  ],
+  "candidate_semantics": "Explicit integration-only replacement graph with a private test-only host library; production calls and defaults unchanged.",
+  "static_validation": "STATIC_VALIDATION.json passed; exact baseline Git blobs verified and patch applies. No Starlark/Bazel semantic execution.",
+  "hosted_command": "bazel test //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test --compilation_mode=fastbuild --@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no",
+  "remaining": [
+    "Hosted Bazel analysis and integration execution",
+    "Transitive Rust crate identity closure across ordinary/test-only variants",
+    "Existing full release compile sweep",
+    "Production feature non-admission verification"
+  ],
+  "repository_sources_changed": false,
+  "science_changed": false,
+  "ci_green_claimed": false
+}

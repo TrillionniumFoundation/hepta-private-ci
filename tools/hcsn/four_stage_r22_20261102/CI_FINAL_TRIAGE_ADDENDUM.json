@@ -1,0 +1,336 @@
+{
+  "schema": "hcsn.r22.final-ci-triage-addendum.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "candidate": "94252595fa741ed331b9946d7a910b28c96e44cf",
+  "pr": 4649,
+  "workflow_run": 41378736133,
+  "scope": "Only the three additional checks requested after the original immutable nine-job diagnostic snapshot; read-only fetch, no science/checker rerun, no code or workflow changes.",
+  "old_triage_modified": false,
+  "observed_run_job_count": 36,
+  "reported_total_count": 36,
+  "observed_failed_checks": 12,
+  "all_ci_green": false,
+  "jobs": [
+    {
+      "id": 125078966527,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "head_sha": "94252595fa741ed331b9946d7a910b28c96e44cf",
+      "run_id": 41378736133,
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41378736133/job/125078966527",
+      "started_at": "2026-11-02T03:35:24Z",
+      "completed_at": "2026-11-02T03:35:32Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Confirm Windows Bazel test shards passed",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 2
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        }
+      ],
+      "log_available": true,
+      "decoded_characters": 2643,
+      "decoded_line_count": 42,
+      "unique_error_messages": [
+        "\u001b[36;1m  echo \"Windows Bazel test shards finished with result: failure\" >&2\u001b[0m",
+        "Windows Bazel test shards finished with result: failure"
+      ],
+      "selected_contexts": [
+        {
+          "line": 34,
+          "lines": [
+            "2026-11-02T03:35:25.9990836Z \u001b[36;1m  echo \"Windows Bazel test shards finished with result: failure\" >&2\u001b[0m",
+            "2026-11-02T03:35:25.9991790Z \u001b[36;1m  exit 1\u001b[0m",
+            "2026-11-02T03:35:25.9992356Z \u001b[36;1mfi\u001b[0m",
+            "2026-11-02T03:35:26.0227574Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}",
+            "2026-11-02T03:35:26.0228803Z ##[endgroup]",
+            "2026-11-02T03:35:26.1824773Z Windows Bazel test shards finished with result: failure",
+            "2026-11-02T03:35:26.1845686Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "line": 39,
+          "lines": [
+            "2026-11-02T03:35:26.1824773Z Windows Bazel test shards finished with result: failure",
+            "2026-11-02T03:35:26.1845686Z ##[error]Process completed with exit code 1.",
+            "2026-11-02T03:35:26.2008118Z Cleaning up orphan processes",
+            ""
+          ]
+        }
+      ]
+    },
+    {
+      "id": 125069635246,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "head_sha": "94252595fa741ed331b9946d7a910b28c96e44cf",
+      "run_id": 41378736133,
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41378736133/job/125069635246",
+      "started_at": "2026-11-02T03:31:47Z",
+      "completed_at": "2026-11-02T03:41:18Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "bazel build --config=clippy lint targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4
+        },
+        {
+          "name": "Upload Bazel execution logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Save bazel repository cache",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ],
+      "log_available": true,
+      "decoded_characters": 985163,
+      "decoded_line_count": 10810,
+      "unique_error_messages": [
+        "error: used `unwrap()` on a `Result` value",
+        "error: use of a disallowed method `sqlx::pool::PoolOptions::connect`",
+        "error: used `expect()` on a `Result` value",
+        "error[E0599]: no method named `append_qualification` found for struct `codex_hepta_learning_ledger::DurableLedger` in the current scope",
+        "error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope"
+      ],
+      "selected_contexts": [
+        {
+          "line": 1779,
+          "lines": [
+            "2026-11-02T03:37:24.7177510Z error: used `unwrap()` on a `Result` value",
+            "2026-11-02T03:37:24.7279790Z    --> hepta-fleet/src/authority_port.rs:197:9",
+            "2026-11-02T03:37:24.7381410Z     |",
+            "2026-11-02T03:37:24.7483110Z 197 | /         ledger",
+            "2026-11-02T03:37:24.7588700Z 198 | |             .admit_host(HostObservation {",
+            "2026-11-02T03:37:24.7690250Z 199 | |                 host_id: \"host-one\".into(),",
+            "2026-11-02T03:37:24.7792470Z 200 | |                 failure_domain_id: \"rack-one\".into(),"
+          ]
+        },
+        {
+          "line": 2121,
+          "lines": [
+            "2026-11-02T03:37:38.7855020Z error: use of a disallowed method `sqlx::pool::PoolOptions::connect`",
+            "2026-11-02T03:37:38.7956720Z  --> hepta-automation/src/migration_convergence_tests.rs:9:10",
+            "2026-11-02T03:37:38.8057610Z   |",
+            "2026-11-02T03:37:38.8158540Z 9 |         .connect(\"sqlite::memory:\")",
+            "2026-11-02T03:37:38.8259480Z   |          ^^^^^^^",
+            "2026-11-02T03:37:38.8361150Z   |",
+            "2026-11-02T03:37:38.8464500Z   = note: Create SQLite pools through codex-state's sqlite shim."
+          ]
+        },
+        {
+          "line": 9428,
+          "lines": [
+            "2026-11-02T03:40:13.6219000Z error[E0599]: no method named `append_qualification` found for struct `codex_hepta_learning_ledger::DurableLedger` in the current scope",
+            "2026-11-02T03:40:13.6219710Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12",
+            "2026-11-02T03:40:13.6220040Z     |",
+            "2026-11-02T03:40:13.6220350Z 115 |     ledger.append_qualification(",
+            "2026-11-02T03:40:13.6220830Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `codex_hepta_learning_ledger::DurableLedger`",
+            "2026-11-02T03:40:13.6221210Z ",
+            "2026-11-02T03:40:13.6221350Z error: aborting due to 1 previous error"
+          ]
+        },
+        {
+          "line": 9518,
+          "lines": [
+            "2026-11-02T03:40:16.6740570Z error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope",
+            "2026-11-02T03:40:16.6741110Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12",
+            "2026-11-02T03:40:16.6741540Z     |",
+            "2026-11-02T03:40:16.6741750Z 115 |     ledger.append_qualification(",
+            "2026-11-02T03:40:16.6742190Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`",
+            "2026-11-02T03:40:16.6742510Z ",
+            "2026-11-02T03:40:16.6742680Z error: aborting due to 1 previous error"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 125069635148,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "head_sha": "94252595fa741ed331b9946d7a910b28c96e44cf",
+      "run_id": 41378736133,
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41378736133/job/125069635148",
+      "started_at": "2026-11-02T03:27:48Z",
+      "completed_at": "2026-11-02T03:37:03Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "bazel build verify-release-build targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4
+        },
+        {
+          "name": "Verify Bazel builds bwrap",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Upload Bazel execution logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Save bazel repository cache",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ],
+      "log_available": true,
+      "decoded_characters": 749586,
+      "decoded_line_count": 7903,
+      "unique_error_messages": [
+        "error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope"
+      ],
+      "selected_contexts": [
+        {
+          "line": 7708,
+          "lines": [
+            "2026-11-02T03:36:11.1474700Z error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope",
+            "2026-11-02T03:36:11.1475410Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12",
+            "2026-11-02T03:36:11.1475910Z     |",
+            "2026-11-02T03:36:11.1476280Z 115 |     ledger.append_qualification(",
+            "2026-11-02T03:36:11.1476830Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`",
+            "2026-11-02T03:36:11.1477270Z ",
+            "2026-11-02T03:36:11.1477570Z error: aborting due to 1 previous error"
+          ]
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "job_id": 125078966527,
+      "classification": "upstream-failure fan-in, not another executed test suite",
+      "confirmed": "The only substantive step is Confirm Windows Bazel test shards passed. Its log reports upstream result failure and exits1. This check correctly remains blocked by the previously recorded shard failures.",
+      "new_underlying_root_cause": null
+    },
+    {
+      "job_id": 125069635246,
+      "classification": "actual macOS ARM compilation/lint failures",
+      "confirmed": "Clippy reports the same missing-visible append_qualification E0599 at hepta-agentd/tests/plasticity_process_e2e.rs:115, unwrap/expect usage including hepta-fleet/src/authority_port.rs:197 and hepta-memory/src/production_writer.rs, and disallowed direct SQLx PoolOptions::connect at hepta-automation/src/migration_convergence_tests.rs:9 and hepta-memory/src/cognitive_schema_tests.rs:10.",
+      "qualification": "The separate test-only feature-profile candidate addresses the E0599 hypothesis only; the broader lint set is not repaired or waived."
+    },
+    {
+      "job_id": 125069635148,
+      "classification": "actual macOS ARM compile failure",
+      "confirmed": "E0599 at hepta-agentd/tests/plasticity_process_e2e.rs:115: DurableLedger::append_qualification is not visible in this Bazel integration-test build. No runtime test result can be inferred from this compile failure.",
+      "qualification": "Consistent with the previously documented exact-head feature-gated implementation/integration replacement bypass; hosted repair and full graph validation remain pending."
+    }
+  ],
+  "raw_log_receipt": "CI_FINAL_TRIAGE_ADDENDUM_RAW_LOGS.json",
+  "raw_log_scope": "Three complete decoded GitHub logs, deterministically gzip-compressed; receipts bind compressed and decoded UTF8 bytes. No raw log changes.",
+  "next_steps": [
+    "Keep the original nine-job snapshot immutable and cite this additive twelve-failure-check snapshot separately.",
+    "Validate any reviewed test-only Bazel profile repair through hosted compilation/execution and production graph closure; do not remove the Windows fan-in failure gate.",
+    "Other platform/lint/native-object defects and the cargo-deny log gap remain open."
+  ]
+}
+

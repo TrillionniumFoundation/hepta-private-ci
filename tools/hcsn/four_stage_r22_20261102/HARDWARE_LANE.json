@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn.r22.hardware-lane-discovery.v1",
+  "local_device_probe": "ENVIRONMENT.json",
+  "local_oic_manifest_path_configured": false,
+  "repository_discovery": {
+    "default_branch_index_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "workflow": ".github/workflows/self-hosted-desktop-availability.yml",
+    "runner_group": "trillionnium-android-gpu",
+    "runner_required_name": "desktop",
+    "guard": "workflow_dispatch on refs/heads/main only; permissions{}, no repository checkout; read-only uname/adb/nvidia-smi probe"
+  },
+  "prior_run": {
+    "id": 39526325715,
+    "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "run_attempt": 3,
+    "conclusion": "cancelled",
+    "cancelled_job_id": 124414290944
+  },
+  "next_action": "Use existing GitHub re-run cancelled-job capability for the unchanged trusted read-only manual main workflow, retaining original guards; no branch-push self-hosted workflow introduced.",
+  "rerun_result": {
+    "success": true
+  },
+  "measured_gpu_or_joules_claim": false,
+  "scope": "Runner-group name alone establishes no device readiness. Only actual resulting job logs can supply hardware evidence."
+}

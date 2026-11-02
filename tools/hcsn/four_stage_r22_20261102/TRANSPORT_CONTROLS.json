@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "controls": [
+    {
+      "name": "roundtrip_and_idempotence",
+      "passed": true
+    },
+    {
+      "name": "entry_traversal",
+      "passed": true,
+      "error": "unsafe relative path"
+    },
+    {
+      "name": "tar_traversal",
+      "passed": true,
+      "error": "unsafe relative path"
+    },
+    {
+      "name": "symlink_member",
+      "passed": true,
+      "error": "unexpected or linked archive member"
+    },
+    {
+      "name": "hardlink_member",
+      "passed": true,
+      "error": "unexpected or linked archive member"
+    },
+    {
+      "name": "existing_different",
+      "passed": true,
+      "error": "existing different file"
+    },
+    {
+      "name": "symlink_target",
+      "passed": true,
+      "error": "symlink restore path"
+    },
+    {
+      "name": "symlink_parent",
+      "passed": true,
+      "error": "symlink restore path"
+    },
+    {
+      "name": "tampered_part",
+      "passed": true,
+      "error": "part identity"
+    },
+    {
+      "name": "symlink_part",
+      "passed": true,
+      "error": "symlink part path"
+    },
+    {
+      "name": "symlink_part_parent",
+      "passed": true,
+      "error": "symlink part path"
+    },
+    {
+      "name": "tampered_map",
+      "passed": true,
+      "error": "part identity"
+    },
+    {
+      "name": "wrong_map_raw_hash",
+      "passed": true,
+      "error": "raw identity"
+    },
+    {
+      "name": "oversized_map",
+      "passed": true,
+      "error": "archive capacity"
+    },
+    {
+      "name": "excess_file_count",
+      "passed": true,
+      "error": "file capacity"
+    },
+    {
+      "name": "logical_size_cap",
+      "passed": true,
+      "error": "logical restore capacity"
+    }
+  ],
+  "source_sha256": {
+    "build_transport.py": "4666e30c8785537d9a7165589751c219f6c7d6d503aafd7a91e2679ad272c46a",
+    "restore_evidence.py": "3118b49df86842ee350b32c86d4208be975e361a112cc4a07adefc1bfb6b1b5c",
+    "verify_transport.py": "6e6efde9d46d3f4713d20605e1b2959474513637dc9a9e54a8cb425941db7dfc"
+  }
+}
