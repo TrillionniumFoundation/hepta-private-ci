@@ -1,0 +1,53 @@
+{
+  "earlier_export_internal_cpu_seconds": [
+    0.04864720300000003,
+    0.03299023000000001
+  ],
+  "early_export_interpreter_import_cpu": "unmetered development overhead; not claimed zero",
+  "formal": {
+    "cpu_seconds": 8.673383000000001,
+    "exit_code": 0,
+    "max_rss_linux_kib": 331140,
+    "scope": "Whole worker including imports, compile, all Rust children and Torch/reference/output; export/developer/audit separate",
+    "wall_seconds": 7.792909587995382
+  },
+  "guard_checks_cpu_seconds_including_children": 0.019757204,
+  "initial_guard_construction_failure_cpu": "unmetered development overhead; files retained",
+  "measured_development_worker_cpu_sum": 37.225502999999996,
+  "measured_development_workers": [
+    {
+      "cpu_seconds": 7.254939,
+      "exit_code": 0,
+      "max_rss_linux_kib": 278640,
+      "path": "development_01.process.json",
+      "scope": "Whole worker including imports, compile, all Rust children and Torch/reference/output; export/developer/audit separate",
+      "wall_seconds": 21.39897341500182
+    },
+    {
+      "cpu_seconds": 7.189749,
+      "exit_code": 1,
+      "max_rss_linux_kib": 304524,
+      "path": "development_02.process.json",
+      "scope": "Whole worker including imports, compile, all Rust children and Torch/reference/output; export/developer/audit separate",
+      "wall_seconds": 29.069864436998614
+    },
+    {
+      "cpu_seconds": 14.976548999999999,
+      "exit_code": 0,
+      "max_rss_linux_kib": 282468,
+      "path": "development_03.process.json",
+      "scope": "Whole worker including imports, compile, all Rust children and Torch/reference/output; export/developer/audit separate",
+      "wall_seconds": 67.68009063300269
+    },
+    {
+      "cpu_seconds": 7.804265999999999,
+      "exit_code": 0,
+      "max_rss_linux_kib": 330692,
+      "path": "development_04.process.json",
+      "scope": "Whole worker including imports, compile, all Rust children and Torch/reference/output; export/developer/audit separate",
+      "wall_seconds": 12.41719760200067
+    }
+  ],
+  "native_formal_profiler_scope": "Forward qualification cost, not latency/throughput/energy benchmark; no GPU, no runtime energy measurement",
+  "parent_and_posthoc_packaging": "separate disjoint scope"
+}
