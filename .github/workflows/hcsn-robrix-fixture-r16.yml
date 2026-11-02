@@ -1,0 +1,117 @@
+name: HCSN Robrix fixture regression
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hcsn-robrix-fixture-r16.yml
+      - .github/actions/prepare-bazel-ci/**
+      - .github/actions/setup-bazel-ci/**
+      - .github/actions/setup-ci/**
+      - .github/actions/check-clean-worktree/**
+      - .github/scripts/run-bazel-ci.sh
+      - .github/scripts/run_bazel_with_buildbuddy.py
+      - .github/scripts/compute-bazel-windows-path.ps1
+      - .github/scripts/setup-dev-drive.ps1
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/utils/cargo-bin/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - codex-rs/BUILD.bazel
+      - MODULE.bazel
+      - MODULE.bazel.lock
+      - BUILD.bazel
+      - defs.bzl
+      - bazel/**
+      - .bazelrc
+      - .bazelversion
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
+
+jobs:
+  robrix:
+    name: Robrix fixture on ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    env:
+      SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out the exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Verify the source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_commit="$(git rev-parse HEAD)"
+          if [[ "${actual_commit}" != "${SOURCE_COMMIT}" ]]; then
+            echo "::error::Checkout does not match the requested source head"
+            exit 1
+          fi
+          printf 'Robrix source commit: %s\n' "${actual_commit}"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: bazel-test
+
+      - name: Run the complete Robrix fixture target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel_wrapper_args=(
+            --print-failed-action-summary
+            --print-failed-test-logs
+          )
+          bazel_test_args=(
+            test
+            --nocache_test_results
+            --test_output=all
+            --test_verbose_timeout_warnings
+            "--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}"
+            --build_metadata=TAG_job=robrix-fixture-r16
+          )
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)
+            bazel_test_args+=(--platforms=//:windows_x86_64_msvc)
+          fi
+          ./.github/scripts/run-bazel-ci.sh \
+            "${bazel_wrapper_args[@]}" -- "${bazel_test_args[@]}" -- \
+            //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test
+
+      - name: Upload Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: robrix-fixture-${{ matrix.target }}
+          path: ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: ignore
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

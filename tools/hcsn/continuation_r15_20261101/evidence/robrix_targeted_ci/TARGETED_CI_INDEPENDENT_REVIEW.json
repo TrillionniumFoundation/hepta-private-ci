@@ -1,0 +1,70 @@
+{
+  "schema": "robrix-independent-targeted-ci-review-v1",
+  "result": "no_blocking_defect_in_reviewed_workflow_or_local_wiring_evidence",
+  "reviewer": "math_validation; independent of source_model author",
+  "base_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "workflow": {
+    "path": "/tmp/hcsn-robrix-targeted-ci/candidate/.github/workflows/hcsn-robrix-fixture-r16.yml",
+    "bytes": 4022,
+    "sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491"
+  },
+  "input_receipts": [
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci/SOURCE_IDENTITIES.json",
+      "bytes": 4350,
+      "sha256": "e08dc76eed8788ee8cdddf8b38cdbcdefda4beadefd8f93d895cd811fdaa295b"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci/WIRING_EXECUTION.json",
+      "bytes": 10532,
+      "sha256": "457b4911b39df9c798b5ef7f4990d7e25fc0a2f85e69a679823c0f06aa0b27e0"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci/audit_workflow_wiring.py",
+      "bytes": 7861,
+      "sha256": "fc210c2024dd9ce6ed6d8b4c30f8d00d74f18a61d5dff0063983fac0196320c4"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci/FORMAT_AND_LINT.json",
+      "bytes": 2953,
+      "sha256": "b925ee5163ffc60cc00853b5915d51d44f43396564335e0db4fe2dfc53e176d8"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci/ROBRIX_TARGETED_CI_REVIEW.json",
+      "bytes": 3636,
+      "sha256": "9fd8c82bf474adc72d3253237fd17bfbfba154a0d1d51566ae6ae7dd5a251b83"
+    }
+  ],
+  "independently_recomputed": {
+    "all_15_original_support_files_match_recorded_git_blob_sha256_and_candidate": true,
+    "workflow_identity_matches_all_execution_receipts": true,
+    "both_platforms_run_one_complete_original_target": true,
+    "actual_source_head_checkout_and_mismatch_rejection": true,
+    "test_step_and_cleanliness_failures_fatal": true,
+    "only_log_upload_tolerates_failure": true,
+    "matrix_not_fail_fast": true,
+    "no_result_cache_filter_skip_or_shard_selection": true,
+    "windows_target_and_host_msvc_arguments_present": true,
+    "actual_wrapper_4_controls_and_2_git_head_controls_match_workflow_source": true
+  },
+  "reviewed_actual_owner_results": {
+    "actionlint": "1.7.12 exit 0",
+    "prettier": "3.5.3 check exit 0",
+    "just_fmt": "actual recipe exit 0; YAML outside formatter selection, so no Rust-format claim for YAML",
+    "git_diff_check": "exit 0",
+    "shell_wiring": "actual extracted Bash and unchanged shell wrapper on Linux; lower Python executor explicitly synthetic; exit 37 preserved in both platform branches",
+    "head_controls": "actual local Git equality accepted, deliberate SHA mismatch exit 1"
+  },
+  "scope_limits": [
+    "No Windows host or MSVC compiler ran in this local wiring audit.",
+    "No Bazel test was executed by the synthetic lower executor.",
+    "Native acceptance still requires both new exact-source-head hosted jobs to execute and pass the two original tests.",
+    "The original broad/native and financial workflows and assertions are unchanged.",
+    "The existing BuildBuddy secret reference is confined to the test step; reviewer did not access secret values."
+  ],
+  "new_native_test_runs_by_reviewer": 0,
+  "new_remote_dispatches": 0,
+  "new_financial_calls": 0,
+  "new_training_runs": 0,
+  "source_changes_by_reviewer": 0
+}

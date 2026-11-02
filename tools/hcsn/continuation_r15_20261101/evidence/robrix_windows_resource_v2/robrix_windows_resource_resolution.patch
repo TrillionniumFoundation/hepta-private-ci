@@ -1,0 +1,53 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index dd10ff9..5670e8e 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -4197,6 +4197,7 @@ dependencies = [
+  "codex-hepta-paths",
+  "codex-hepta-types",
+  "codex-uds",
++ "codex-utils-cargo-bin",
+  "constant_time_eq 0.3.1",
+  "ed25519-dalek",
+  "jsonschema",
+diff --git a/codex-rs/hepta-supervisor/Cargo.toml b/codex-rs/hepta-supervisor/Cargo.toml
+index 3ed9643..3a5c9f7 100644
+--- a/codex-rs/hepta-supervisor/Cargo.toml
++++ b/codex-rs/hepta-supervisor/Cargo.toml
+@@ -90,6 +90,7 @@ uuid = { workspace = true, features = ["v4"] }
+ zeroize = { workspace = true }
+ 
+ [dev-dependencies]
++codex-utils-cargo-bin = { workspace = true }
+ jsonschema = { version = "=0.33.0", default-features = false }
+ pretty_assertions = { workspace = true }
+ tempfile = { workspace = true }
+diff --git a/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs b/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs
+index 69343b0..a75c207 100644
+--- a/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs
++++ b/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs
+@@ -349,17 +349,13 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
+ }
+ 
+ fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
+-    let crate_root = if option_env!("BAZEL_PACKAGE").is_some() {
+-        // The Bazel launcher resolves the Rust workspace root from runfiles.
+-        std::path::PathBuf::from(
+-            std::env::var_os("INSTA_WORKSPACE_ROOT")
+-                .context("Bazel launcher did not set INSTA_WORKSPACE_ROOT")?,
+-        )
+-        .join("hepta-supervisor")
+-    } else {
+-        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+-    };
+-    read_artifacts(&crate_root.join("fixtures/robrix-control-v2"))
++    let manifest = std::path::absolute(codex_utils_cargo_bin::find_resource!(
++        "fixtures/robrix-control-v2/manifest.json"
++    )?)?;
++    let root = manifest
++        .parent()
++        .context("fixture manifest has no parent")?;
++    read_artifacts(root)
+ }
+ 
+ fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {
