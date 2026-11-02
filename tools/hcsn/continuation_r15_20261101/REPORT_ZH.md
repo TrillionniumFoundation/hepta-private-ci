@@ -345,6 +345,28 @@ V3 审计/训练、signed-margin V1 审计/训练、独立结果 checker、输�
 9 pending。失败包括 Windows 测试 shard 1/3、Windows Clippy、macOS ARM
 test 和 cargo-deny；不能由科研工作流成功或某个聚合摘要成功推断全仓全绿。
 
+随后读取[该头两项完整原日志](evidence/native_8df6/NATIVE_FAILURE_DIAGNOSIS.json)，
+确认 Windows Clippy 的根问题是显式请求了 157 个不兼容目标：156 个
+GNULLVM-only cross-bin，加一个明确 Unix-only 的 qualification。三行
+修复仅在 Windows/MSVC 分支加入现有 Windows test shards 已用的
+`--skip_incompatible_explicit_targets`；目标名单、目标约束、兼容目标
+的 Clippy 行为和失败传播不变。这不豁免实际支持平台上的失败目标。
+
+官方 Bazel 9.0.0 的小型兼容性图五项真实退出码为 [1,0,1,0,0]：原显式
+不兼容失败、候选成功、兼容 action 的故意失败仍失败，两个不兼容类别
+在各自所属平台仍成功。提取真实 Bash 的六次参数检查也保留全部输入
+标签与 wrapper exit 37；参数捕获替身不冒称全仓构建。三次环境失败尝试、
+完整原日志、23 个精确源文件和独立审阅全部保留。Prettier 与实际
+`just fmt` 通过；原/新 Bazel workflow 的 actionlint 都仍报告相同两条
+继承的 `matrix.runs_on` 诊断，不能写成该 workflow 静态全绿。新头实际
+Windows Clippy 仍为最终回归门。
+
+macOS ARM job 则在 27/198 tests 时由 Bazel 自身抛出
+`OutOfMemoryError: unable to create native thread`，退出 33，调用栈在
+sandbox 清理。日志没有足够的线程数/RSS/系统上限测量，也没有识别到
+单个测试断言失败，因此保留为未关闭的原生线程资源问题，未猜测具体
+资源上限或用未经验证的全局调参代替修复。
+
 较早源码头 889e7ace 的 job `124919123170` 重新计算了 Python 补偿核的 701 个基本
 函数检查、432 行开发回归和 512 行已打开 V1 回归，独立验收、输出归档
 与源码完整性全部通过。R14/R15、R13、Codespell、文件大小策略以及

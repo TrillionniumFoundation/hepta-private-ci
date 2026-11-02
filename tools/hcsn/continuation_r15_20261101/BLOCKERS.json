@@ -265,6 +265,18 @@
       "status": "pending_actual_published_head_execution",
       "detail": "Additive workflow retains all8 prior entries and adds frozen two-layer audit/training/record checker. Local actionlint,format,Bash/CLI/hash negative checks and independent wiring review passed. Prior8df6 green does not qualify new three-step execution.",
       "evidence": "evidence/bp_bptt_two_layer/CI_EXTENSION_INDEPENDENT_REVIEW.json"
+    },
+    {
+      "id": "windows_clippy_incompatible_explicit_targets",
+      "status": "minimal_platform_selection_repair_local_controls_passed_remote_pending",
+      "detail": "Exact8df6 log identifies157 explicitly incompatible targets:156 GNULLVM-only and1 Unix-only. Three added workflow lines apply the same platform-compatibility handling as existing Windows test shards; target list,constraints,compatible Clippy actions and failure propagation unchanged. Actual Bazel9 synthetic exits[1,0,1,0,0],six extracted Bash controls and independent source review pass; all three failed environment probes retained. New exact-head Windows CI required.",
+      "evidence": "evidence/native_8df6/windows_clippy/INDEPENDENT_REVIEW.json"
+    },
+    {
+      "id": "macos_arm_bazel_native_thread_resource",
+      "status": "open_exact_head_resource_crash",
+      "detail": "Exact8df6 macOS ARM test124935497136 reaches27/198 tests then Bazel FATAL native-thread OutOfMemoryError in sandbox deletion,exit33. No failed test assertion identified in full raw log; no measured RSS/thread/process-limit attribution. No unvalidated resource tuning applied.",
+      "evidence": "evidence/native_8df6/NATIVE_FAILURE_DIAGNOSIS.json"
     }
   ],
   "new_confirmation_opened": false,
