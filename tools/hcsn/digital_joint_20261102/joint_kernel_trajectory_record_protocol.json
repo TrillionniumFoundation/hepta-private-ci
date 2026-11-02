@@ -1,0 +1,16 @@
+{
+  "schema": "joint-kernel-old-trajectory-record-v1",
+  "meaning": "Same-seed recording replay of published 2000 truncated_reset trajectories, not new independent samples/fits or new confirmation",
+  "source_relative": "../digital_read_followup_20261101/continuous_renewal.py",
+  "source_sha256": "4b3e5b10e26c17f8e5fa8a9ad31041a30a1bdf8bd3ecd1aff47d9e6a1551d427",
+  "csv_relative": "../digital_read_followup_20261101/continuous_renewal_samples.csv",
+  "csv_sha256": "6452200860d2263b946f3ac7307c14f321a23d2842c6aa7636c9ce49e8803d00",
+  "condition": "truncated_reset",
+  "count": 2000,
+  "seed": 48675,
+  "duration": 2.0,
+  "law": {"boundary":0.8,"diffusion":0.8,"drift":0.0,"recovery_rate":2.0,"reset_minus":-0.2,"reset_plus":0.2,"reset_sd":0.096},
+  "acceptance": "Every existing CSV sample vector and first-hit time matches exactly. Retain all newly recorded complete states, residual refractory time, every event hit/side/refractory/release time, PCG64 boundary states, all failures, and costs",
+  "publication": "Publish new helper/protocol before replay; unchanged archived source/CSV hashes before and after. No older source or validation code modified",
+  "limits": "Full event histories not preserved in original CSV are now exposed by deterministic same-seed replay. They are not additional independent scientific observations"
+}
