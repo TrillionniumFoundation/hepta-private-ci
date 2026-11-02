@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn-addressed-continuation-baseline-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "baseline_tree": "f5ff1cb743fdd1b8712fca24370e9684d008b34b",
+  "baseline_pr": 4548,
+  "user_table_exact_match": true,
+  "separate_v9_excluded": true,
+  "execution_python": "3.12.14",
+  "execution_torch": "2.6.0+cpu",
+  "historical_torch": "2.9.0",
+  "comparability_limit": "New paired arms use common runtime; historical checkpoint comparison is a new runtime reevaluation, not reproduction of historical timing.",
+  "operator_regression": {
+    "checks": 174,
+    "failed": 0
+  },
+  "optional_numeric": {
+    "checks": 202,
+    "failed": 0
+  },
+  "unmeasured": [
+    "GPU",
+    "attributable energy",
+    "production end-to-end latency",
+    "new independent AV population"
+  ],
+  "all_blockers_closed": false,
+  "production_activation": false
+}

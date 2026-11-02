@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn-addressed-followup-source-publications.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "remote_visibility": "public",
+  "publications": [
+    {
+      "lane": "missing_answers",
+      "source_commit": "acbd812fcefd072c8c530c74e1b653bb5bf2316d",
+      "candidate_calibration_commit": "91b6a88740f36e708fa4365cef24b53612d50ede",
+      "readback_calibration_blob": "90dcdbb1cf31c589a9c3672df56c74f022f4c64b"
+    },
+    {
+      "lane": "joint_dynamics",
+      "source_commit": "23fbe04426c0bb7e86109794f5719f76682e2a0d",
+      "candidate_secondary_commit": "6d7e065cfe924ba31d4f1066291f38a3da854fbf",
+      "readback_candidate_blob": "befe8ad45976da4c47d5962d7473469ac3bb93d4"
+    },
+    {
+      "lane": "propagation_performance",
+      "source_commit": "5ed625e9bf1328261be468b19ce859bfe5bb06bc",
+      "readback_audit_blob": "565049e84c41247af782db9682ea2dc643a3a4e0"
+    },
+    {
+      "lane": "video_development",
+      "superseded_source_commit": "2eb006c014b2a1b46940864097c360fb6fe9cab6",
+      "guarded_source_candidate_commit": "a452f4e59dc28bfe5f44bde81037e4f35558e6d8",
+      "readback_candidate_blob": "99ffc57f1468c8c8e4879e044744d3edf79914fd"
+    }
+  ],
+  "scope": "Remote source/candidate hash publication and readback preceded each corresponding confirmation; local pretraining source freezes separately recorded; video evaluation uses previously exposed development actors.",
+  "all_blockers_closed": false,
+  "production_activation": false
+}

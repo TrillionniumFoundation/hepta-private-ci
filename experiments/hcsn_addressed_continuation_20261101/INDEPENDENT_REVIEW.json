@@ -1,0 +1,116 @@
+{
+  "all_available_evidence_checks_passed": true,
+  "all_blockers_closed": false,
+  "created_utc": "2026-11-02T01:07:39.508492+00:00",
+  "findings": [
+    {
+      "detail": "Threshold-selected dev Wilson bound pools four dependent queries per episode; it is not a coverage-adjusted population reliability certificate.",
+      "id": "CAL-01",
+      "severity": "reporting_limit",
+      "status": "communicated_to_owner"
+    },
+    {
+      "detail": "Dynamics bootstrap is conditional on fixed checkpoints; no population-of-seeds inference or simultaneous two-contrast coverage.",
+      "id": "DYN-01",
+      "severity": "reporting_limit",
+      "status": "source_explicit"
+    },
+    {
+      "detail": "Fused adapter omits J/G/b consumed by ContentModel but unused by AddressedModel; context is restricted to addressed calls.",
+      "id": "PERF-01",
+      "severity": "scope_limit",
+      "status": "source_explicit"
+    },
+    {
+      "detail": "Nested encoder train folds improve fitting discipline; six previously exposed validation actors remain development evidence.",
+      "id": "VIDEO-01",
+      "severity": "scope_limit",
+      "status": "source_explicit"
+    }
+  ],
+  "lanes": {
+    "joint_dynamics": {
+      "declared_mechanism_gate": false,
+      "fits": 9,
+      "limits": [
+        "No model reexecution",
+        "Intervals conditional on these three checkpoints and this generator",
+        "Factorization removes association at observed boundaries and retains p(state)",
+        "Two unadjusted contrast intervals do not form a simultaneous 95 percent family"
+      ],
+      "record_checks": 36,
+      "secondary_factorial": {
+        "contrasts": 5,
+        "record_checks": 48,
+        "status": "verified",
+        "summary_sha256": "4aab5430d93eefbdfb68537a4b1b62d425701aa691fce0224f6a27b05a065cb1"
+      },
+      "status": "verified",
+      "summary_sha256": "efe09260e7fc8c4cff1601ca4e7ea61b29388270333ec5d65ad83629b516fedf"
+    },
+    "missing_answers": {
+      "fits": 18,
+      "limits": [
+        "No model reexecution",
+        "Dev Wilson statistic is a threshold-selection heuristic; four within-episode queries and threshold scanning preclude a population reliability certificate",
+        "Historical comparison changes missing-data supervision while preserving equal updates, not equal CPU",
+        "Explicit typed prior and finite generator remain"
+      ],
+      "record_checks": 144,
+      "status": "verified",
+      "strict_gate_summary": {
+        "accepted_correctness_passes": 46,
+        "accepted_known_coverage_passes": 48,
+        "candidate_condition_records": 72,
+        "complete_declared_gate": false,
+        "known_accuracy_passes": 72,
+        "reason": "At least one required selective-correctness or known-coverage condition fails; unavailable-answer accuracy is not a recovery success criterion"
+      },
+      "summary_sha256": "dfb95c37ff97ce496f287a49ed27e2f594a1d46479078d28598711279113b8a9"
+    },
+    "propagation": {
+      "declared_stable_speed_gate": false,
+      "limits": [
+        "Same-weight equivalence and timing only; no retraining",
+        "Restricted to AddressedModel consumed outputs; cannot replace full ContentModel preparation",
+        "Local complete-model median timing gate, not production tails or an ordinary-model speed advantage"
+      ],
+      "record_checks": 20,
+      "status": "verified",
+      "summary_sha256": "4e5eaebd3d4e4a1f1f694e856e26d710dcb024eeb4435c2407adba9b8702894d",
+      "supplementary_checks": {
+        "CONTRACT_CHECKS.json": {
+          "passed": true,
+          "record_checks": 19,
+          "sha256": "7984f2b415cf59f9266509370c8554e5249c327ea6ccc42202affba368e58764"
+        },
+        "INDEPENDENT_GRADIENTS.json": {
+          "passed": true,
+          "record_checks": 10,
+          "sha256": "e577f85af1d34c70de8ed258550a1fd2d98111d5a4b83d3e81875073368240b8"
+        }
+      }
+    },
+    "video": {
+      "actors": 6,
+      "declared_video_gate": false,
+      "limits": [
+        "Six historically exposed validation actors; development only",
+        "No new raw-video acquisition or independent frontend qualification",
+        "Encoder folds are nested by actor; relation heads train on nested out-of-fold train probabilities",
+        "Bootstrap over six development actors is descriptive, not independent population confirmation"
+      ],
+      "optimizer_failed_fits": 0,
+      "record_checks": 6,
+      "restored_input_files": 1444,
+      "result_sha256": "35ce54286d829e5f8624acdf47729f5878613ef5b7d7962f3f21a0bc24d6a049",
+      "status": "verified"
+    }
+  },
+  "production_activation": false,
+  "review_source_sha256": "d2a110371a1b0bbaf336866f36d9c3e6f9a4f1a4da33bfbd73c420aaa345b505",
+  "reviewer": "independent_agent",
+  "schema": "hcsn.addressed-continuation.independent-review.v1",
+  "scientific_advantage_established": false,
+  "scope": "Independent source reading and saved-output reconstruction; not an independent model implementation or rerun"
+}
