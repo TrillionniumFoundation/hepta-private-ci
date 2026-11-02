@@ -29,7 +29,12 @@ def write(path, value):
 
 def load(split):
     root = HERE / 'inputs'
-    with np.load(root/'data'/f'{split}.npz', allow_pickle=False) as arrays:
+    identity = json.loads((HERE/'INPUT_IDENTITY.json').read_text())
+    bound = {r['path']:r['sha256'] for r in identity['files']}
+    def checked(path):
+        assert sha(path) == bound[str(path.relative_to(HERE))], str(path)
+        return path
+    with np.load(checked(root/'data'/f'{split}.npz'), allow_pickle=False) as arrays:
         a = {k: arrays[k] for k in arrays.files}
     features = {('text','baseline'): a['x'][:,:,SLICES['text']].reshape(len(a['y']),-1)}
     for index, modality in enumerate(('audio','video')):
@@ -37,10 +42,10 @@ def load(split):
         mouth = []
         for actor, emotion, sentences in zip(a['actor'],a['emotion'],a['sentence_indices']):
             name = f"{actor}_{('DFA','IOM')[sentences[index]]}_{emotion}_XX.npz"
-            with np.load(root/'av_features'/name, allow_pickle=False) as z:
+            with np.load(checked(root/'av_features'/name), allow_pickle=False) as z:
                 loaded.append(z[modality])
             if modality == 'video':
-                with np.load(root/'av_mouth_features'/name, allow_pickle=False) as z:
+                with np.load(checked(root/'av_mouth_features'/name), allow_pickle=False) as z:
                     mouth.append(z['video'])
         features[modality,'temporal'] = np.asarray(loaded,dtype=np.float64)
         if modality == 'video':
@@ -154,13 +159,15 @@ def prepare(out):
                                  validation_loaded=False))
     checkpoints = {p.name:sha(p) for p in sorted(out.glob('*.npz'))}
     write(out/'CANDIDATE_FREEZE.json',dict(source_sha256=sha(__file__),protocol_sha256=sha(HERE/'PROTOCOL.json'),
-            training_sha256=sha(out/'TRAINING.json'),checkpoints=checkpoints,validation_loaded=False))
+            training_sha256=sha(out/'TRAINING.json'),input_identity_sha256=sha(HERE/'INPUT_IDENTITY.json'),checkpoints=checkpoints,validation_loaded=False))
 
 
 def evaluate(out):
     freeze = json.loads((out/'CANDIDATE_FREEZE.json').read_text())
     assert freeze['source_sha256']==sha(__file__) and freeze['protocol_sha256']==sha(HERE/'PROTOCOL.json')
     assert all(sha(out/k)==v for k,v in freeze['checkpoints'].items())
+    assert freeze['training_sha256'] == sha(out/'TRAINING.json')
+    assert freeze['input_identity_sha256'] == sha(HERE/'INPUT_IDENTITY.json')
     training = json.loads((out/'TRAINING.json').read_text())
     arrays,features = load('validation')
     p = np.column_stack([predict(dict(np.load(out/f'{mod}_encoder.npz')),features[mod,training['selected'][mod]['selected']['feature']]) for mod in ('audio','video','text')])
