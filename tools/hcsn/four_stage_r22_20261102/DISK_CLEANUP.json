@@ -1,0 +1,25 @@
+{
+  "reason": "Disk full; remove only reproducible caches and our verified disposable roundtrip copy, preserve source/raw evidence and all ELF binaries. No compiler process observed in precheck.",
+  "before": {
+    "total": 67586535424,
+    "used": 64502530048,
+    "free": 0
+  },
+  "deleted": [
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/bazel-repo-contents-cache",
+      "kind": "reproducible bazel repository cache",
+      "bytes": 825049386
+    },
+    {
+      "path": "/workspace/scratch/671a3fc18e7e/r20-content-roundtrip-final",
+      "kind": "our already verified disposable evidence roundtrip; original and remote exact archive preserved",
+      "bytes": 44563651
+    }
+  ],
+  "after": {
+    "total": 67586535424,
+    "used": 63422140416,
+    "free": 711647232
+  }
+}

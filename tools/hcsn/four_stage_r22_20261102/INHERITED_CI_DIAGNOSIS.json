@@ -1,0 +1,79 @@
+{
+  "schema": "hcsn.r22.inherited-ci-diagnosis.v1",
+  "commit": "ff611d62793c2829cab85b38d6ab246691b3ba1d",
+  "pr": 4617,
+  "codespell": {
+    "job_id": 125056251912,
+    "raw_errors": 2839,
+    "scientific_text_examples": [
+      "2026-11-02T02:09:40.2959864Z ##[error]./tools/hcsn/task_value_factorial_20261030/RESULTS.md:136: FPT ==> FTP",
+      "2026-11-02T02:09:40.2962296Z ##[error]./tools/hcsn/task_value_factorial_20261030/propagation.py:1: FPT ==> FTP",
+      "2026-11-02T02:09:40.2964764Z ##[error]./tools/hcsn/task_value_factorial_20261030/propagation.py:36: FPT ==> FTP",
+      "2026-11-02T02:09:40.2966976Z ##[error]./tools/hcsn/task_value_factorial_20261030/propagation.py:54: FPT ==> FTP",
+      "2026-11-02T02:09:40.2969051Z ##[error]./tools/hcsn/task_value_factorial_20261030/propagation.py:60: FPT ==> FTP",
+      "2026-11-02T02:09:40.2971192Z ##[error]./tools/hcsn/task_value_factorial_20261030/propagation.py:69: FPT ==> FTP",
+      "2026-11-02T02:09:40.2973308Z ##[error]./tools/hcsn/task_value_factorial_20261030/test_propagation.py:74: ue ==> use, due",
+      "2026-11-02T02:09:40.2976222Z ##[error]./tools/hcsn/task_value_factorial_20261030/test_propagation.py:76: ue ==> use, due",
+      "2026-11-02T02:09:40.2978753Z ##[error]./tools/hcsn/unified_cell_r12_20261031/recurrent.py:29: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.2981398Z ##[error]./tools/hcsn/unified_cell_r12_20261031/recurrent.py:47: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.2983897Z ##[error]./tools/hcsn/unified_cell_r12_20261031/recurrent.py:95: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.2986989Z ##[error]./tools/hcsn/task_aligned_r14_20261101/models.py:170: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.2989473Z ##[error]./tools/hcsn/task_aligned_r14_20261101/models.py:184: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.2991836Z ##[error]./tools/hcsn/task_aligned_r14_20261101/models.py:247: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.2994790Z ##[error]./tools/hcsn/task_aligned_r14_20261101/evidence/model_gradient_audit.json:233: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.2997695Z ##[error]./tools/hcsn/task_aligned_r14_20261101/evidence/model_gradient_audit.json:245: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.3000555Z ##[error]./tools/hcsn/task_aligned_r14_20261101/evidence/model_gradient_audit.json:407: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.3003297Z ##[error]./tools/hcsn/task_aligned_r14_20261101/evidence/model_gradient_audit.json:419: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.3006381Z ##[error]./tools/hcsn/task_aligned_r14_20261101/evidence/model_gradient_audit.json:1064: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.3009121Z ##[error]./tools/hcsn/task_aligned_r14_20261101/evidence/model_gradient_audit.json:1076: bu ==> by, be, but, bug, bun, bud, buy, bum",
+      "2026-11-02T02:09:40.3011655Z ##[error]./tools/hcsn/planner_r19_20261101/ERRATA.json:4: doesnot ==> doesn't, does not",
+      "2026-11-02T02:09:40.3013895Z ##[error]./tools/hcsn/round8_20261031/CI_DIAGNOSIS.json:21: fo ==> of, for, to, do, go",
+      "2026-11-02T02:09:40.3016382Z ##[error]./tools/hcsn/round8_20261031/CI_DIAGNOSIS.json:26: fo ==> of, for, to, do, go",
+      "2026-11-02T02:09:40.3018512Z ##[error]./tools/hcsn/round8_20261031/CI_DIAGNOSIS.json:31: Ot ==> To, Of, Or, Not, It",
+      "2026-11-02T02:09:56.5563320Z ##[error]./experiments/analytic_event_neuron/round7/CONTRACT.md:249: FPT ==> FTP",
+      "2026-11-02T02:09:56.5565944Z ##[error]./experiments/analytic_event_neuron/round7/DEVIATIONS.json:53: FPT ==> FTP",
+      "2026-11-02T02:09:56.5568264Z ##[error]./experiments/analytic_event_neuron/round7/DYNAMICS.md:219: FPT ==> FTP",
+      "2026-11-02T02:09:56.5570453Z ##[error]./experiments/analytic_event_neuron/round7/DYNAMICS.md:267: FPT ==> FTP",
+      "2026-11-02T02:09:56.5572662Z ##[error]./experiments/analytic_event_neuron/round7/PROTOCOL.json:251: FPT ==> FTP",
+      "2026-11-02T02:09:56.5575216Z ##[error]./experiments/analytic_event_neuron/round7/PROTOCOL.json:251: FPT ==> FTP",
+      "2026-11-02T02:09:56.5577899Z ##[error]./experiments/analytic_event_neuron/round7/PROTOCOL.json:326: FPT ==> FTP",
+      "2026-11-02T02:09:56.5580166Z ##[error]./experiments/analytic_event_neuron/round7/PROTOCOL.json:543: FPT ==> FTP",
+      "2026-11-02T02:09:56.5582498Z ##[error]./experiments/analytic_event_neuron/round7/resolution_transfer.py:244: FPT ==> FTP",
+      "2026-11-02T02:09:56.5585042Z ##[error]./experiments/analytic_event_neuron/round7/temperature.py:1: FPT ==> FTP",
+      "2026-11-02T02:09:56.5587746Z ##[error]./experiments/analytic_event_neuron/round7/evidence/checkpoint_resolution_summary.json:194: FPT ==> FTP",
+      "2026-11-02T02:09:56.5590491Z ##[error]./experiments/analytic_event_neuron/round7/evidence/checkpoint_resolution_transfer.json:23567: FPT ==> FTP",
+      "2026-11-02T02:09:56.5593223Z ##[error]./experiments/analytic_event_neuron/round7/evidence/development_resolution_transfer_smoke.json:599: FPT ==> FTP",
+      "2026-11-02T02:09:56.5596247Z ##[error]./experiments/analytic_event_neuron/round7/evidence/temperature_correction_validation.json:15: FPT ==> FTP",
+      "2026-11-02T02:10:03.2289437Z ##[error]./experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py:238: datas ==> data",
+      "2026-11-02T02:10:03.2291783Z ##[error]./experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py:247: datas ==> data",
+      "2026-11-02T02:10:03.2294617Z ##[error]./experiments/analytic_event_neuron/round5/evidence/recovery/bridge_scope.json:71: FPT ==> FTP",
+      "2026-11-02T02:10:03.5985631Z ##[error]./experiments/analytic_event_neuron/round5/evidence/recovery/bridge_scope.json:75: FPT ==> FTP"
+    ],
+    "non_text_binary_errors": 2797,
+    "correction": {
+      "binary_patterns": [
+        "*.part",
+        "*.part[0-9]*",
+        "*.gz",
+        "*.bin"
+      ],
+      "immutable_record_paths": [
+        "./tools/hcsn/planner_r19_20261101/ERRATA.json",
+        "./tools/hcsn/round8_20261031/CI_DIAGNOSIS.json"
+      ],
+      "declared_existing_mathematical_identifiers": [
+        "FPT",
+        "bu",
+        "ue"
+      ]
+    },
+    "scientific_source_or_raw_bytes_changed": false
+  },
+  "blob_size": {
+    "job_id": 125056251885,
+    "checker_ran": false,
+    "failure": "openai/fence v0.10.0 resident setup unsupported_resolver_layout, before checkout; local check-clean-worktree unavailable as secondary effect",
+    "guard_removed_or_weakened": false,
+    "size_identity": "R20 direct delivery registry already verifies all newly delivered blobs <=512000 bytes; this does not replace the failed hosted job."
+  }
+}
