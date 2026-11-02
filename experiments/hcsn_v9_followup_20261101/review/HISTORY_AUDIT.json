@@ -1,0 +1,38 @@
+{
+  "checks": 4433,
+  "all_checks_passed": true,
+  "failed_examples": [],
+  "executions": 144,
+  "accepted_history_appends": 662,
+  "groups": [
+    {
+      "task": "async_av",
+      "policy": "fixed",
+      "accuracy": 0.4166666666666667,
+      "mean_utility": 0.28165666666666667,
+      "mean_requests": 6
+    },
+    {
+      "task": "async_av",
+      "policy": "value",
+      "accuracy": 0.4583333333333333,
+      "mean_utility": 0.34332250000000003,
+      "mean_requests": 5.083333333333333
+    },
+    {
+      "task": "av_binding",
+      "policy": "fixed",
+      "accuracy": 0.5416666666666666,
+      "mean_utility": 0.40665666666666667,
+      "mean_requests": 6
+    },
+    {
+      "task": "av_binding",
+      "policy": "value",
+      "accuracy": 0.5,
+      "mean_utility": 0.447493125,
+      "mean_requests": 2.25
+    }
+  ],
+  "limits": "Stored chronological accepted snapshots and digest arithmetic; no independent neural replay, strongest-family qualification or new recording admission"
+}

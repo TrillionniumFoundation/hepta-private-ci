@@ -1,0 +1,1232 @@
+{
+  "checks": 114577,
+  "status": "passed",
+  "counters": {
+    "read_requests": 5019,
+    "service_successes": 3057,
+    "service_failures": 1962,
+    "mandatory_outputs": 8160,
+    "fixed_records": 216,
+    "same_tick_outcome_conflicts": 0
+  },
+  "conditions": {
+    "matched": {
+      "four_cells": {
+        "risk_aware": {
+          "A": {
+            "mean": 0.6355,
+            "world_cluster_percentile95": [
+              0.5093333333333333,
+              0.7608416666666667
+            ],
+            "per_world": [
+              0.96,
+              0.67,
+              0.6599999999999999,
+              0.9200000000000002,
+              0.42800000000000005,
+              0.21000000000000002,
+              0.53,
+              0.67,
+              0.52,
+              0.43600000000000005,
+              0.96,
+              0.662
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "B": {
+            "mean": 0.5491666666666667,
+            "world_cluster_percentile95": [
+              0.3941666666666666,
+              0.705
+            ],
+            "per_world": [
+              0.96,
+              0.16999999999999998,
+              0.58,
+              0.63,
+              0.38,
+              0.9200000000000002,
+              0.53,
+              0.27999999999999997,
+              0.38,
+              0.16999999999999998,
+              0.96,
+              0.63
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "C": {
+            "mean": 0.6416666666666666,
+            "world_cluster_percentile95": [
+              0.5133333333333333,
+              0.7699999999999999
+            ],
+            "per_world": [
+              0.96,
+              0.67,
+              0.71,
+              0.92,
+              0.42,
+              0.21,
+              0.63,
+              0.67,
+              0.42,
+              0.46,
+              0.96,
+              0.67
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D": {
+            "mean": 0.57,
+            "world_cluster_percentile95": [
+              0.4175,
+              0.7225
+            ],
+            "per_world": [
+              0.96,
+              0.17,
+              0.63,
+              0.63,
+              0.38000000000000006,
+              0.92,
+              0.63,
+              0.38000000000000006,
+              0.38000000000000006,
+              0.17,
+              0.96,
+              0.63
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "B-A": {
+            "mean": -0.08633333333333336,
+            "world_cluster_percentile95": [
+              -0.23517083333333338,
+              0.09166666666666667
+            ],
+            "per_world": [
+              0.0,
+              -0.5,
+              -0.07999999999999996,
+              -0.29000000000000015,
+              -0.04800000000000004,
+              0.7100000000000002,
+              0.0,
+              -0.39000000000000007,
+              -0.14,
+              -0.26600000000000007,
+              0.0,
+              -0.03200000000000003
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D-C": {
+            "mean": -0.07166666666666666,
+            "world_cluster_percentile95": [
+              -0.2141666666666667,
+              0.10166666666666668
+            ],
+            "per_world": [
+              0.0,
+              -0.5,
+              -0.07999999999999996,
+              -0.29000000000000004,
+              -0.039999999999999925,
+              0.7100000000000001,
+              0.0,
+              -0.29,
+              -0.039999999999999925,
+              -0.29000000000000004,
+              0.0,
+              -0.040000000000000036
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "C-A": {
+            "mean": 0.006166666666666647,
+            "world_cluster_percentile95": [
+              -0.018833333333333355,
+              0.029833333333333323
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              0.050000000000000044,
+              -1.1102230246251565e-16,
+              -0.008000000000000063,
+              -2.7755575615628914e-17,
+              0.09999999999999998,
+              0.0,
+              -0.10000000000000003,
+              0.023999999999999966,
+              0.0,
+              0.008000000000000007
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D-B": {
+            "mean": 0.020833333333333353,
+            "world_cluster_percentile95": [
+              1.850371707708594e-17,
+              0.04166666666666671
+            ],
+            "per_world": [
+              0.0,
+              2.7755575615628914e-17,
+              0.050000000000000044,
+              0.0,
+              5.551115123125783e-17,
+              -1.1102230246251565e-16,
+              0.09999999999999998,
+              0.10000000000000009,
+              5.551115123125783e-17,
+              2.7755575615628914e-17,
+              0.0,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "interaction": {
+            "mean": 0.014666666666666694,
+            "world_cluster_percentile95": [
+              -0.003999999999999985,
+              0.03966666666666672
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              0.0,
+              1.1102230246251565e-16,
+              0.008000000000000118,
+              -1.1102230246251565e-16,
+              0.0,
+              0.10000000000000009,
+              0.10000000000000009,
+              -0.023999999999999966,
+              0.0,
+              -0.008000000000000007
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          }
+        },
+        "risk_omitted": {
+          "A": {
+            "mean": 0.6795,
+            "world_cluster_percentile95": [
+              0.5591666666666667,
+              0.7949999999999999
+            ],
+            "per_world": [
+              0.9279999999999999,
+              0.63,
+              0.58,
+              0.9200000000000002,
+              0.38,
+              0.9200000000000002,
+              0.38,
+              0.63,
+              0.8800000000000001,
+              0.38,
+              0.8959999999999999,
+              0.63
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "B": {
+            "mean": 0.5576666666666666,
+            "world_cluster_percentile95": [
+              0.38833333333333336,
+              0.7228375
+            ],
+            "per_world": [
+              0.8800000000000001,
+              0.63,
+              0.6799999999999999,
+              0.8960000000000001,
+              0.13,
+              0.8960000000000001,
+              0.43,
+              0.38,
+              0.13,
+              0.13,
+              0.8800000000000001,
+              0.63
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "C": {
+            "mean": 0.7036111111111111,
+            "world_cluster_percentile95": [
+              0.5916666666666667,
+              0.8111111111111112
+            ],
+            "per_world": [
+              0.9333333333333332,
+              0.63,
+              0.63,
+              0.92,
+              0.38000000000000006,
+              0.92,
+              0.63,
+              0.63,
+              0.88,
+              0.38000000000000006,
+              0.88,
+              0.63
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D": {
+            "mean": 0.5952777777777777,
+            "world_cluster_percentile95": [
+              0.42166666666666663,
+              0.7619444444444445
+            ],
+            "per_world": [
+              0.88,
+              0.63,
+              0.88,
+              0.88,
+              0.13,
+              0.88,
+              0.63,
+              0.38000000000000006,
+              0.13,
+              0.13,
+              0.88,
+              0.7133333333333334
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "B-A": {
+            "mean": -0.12183333333333331,
+            "world_cluster_percentile95": [
+              -0.26,
+              -0.014329166666666723
+            ],
+            "per_world": [
+              -0.04799999999999982,
+              0.0,
+              0.09999999999999998,
+              -0.02400000000000002,
+              -0.25,
+              -0.02400000000000002,
+              0.04999999999999999,
+              -0.25,
+              -0.7500000000000001,
+              -0.25,
+              -0.015999999999999792,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D-C": {
+            "mean": -0.10833333333333332,
+            "world_cluster_percentile95": [
+              -0.25333333333333335,
+              0.013062499999999921
+            ],
+            "per_world": [
+              -0.05333333333333323,
+              0.0,
+              0.25,
+              -0.040000000000000036,
+              -0.25000000000000006,
+              -0.040000000000000036,
+              0.0,
+              -0.24999999999999994,
+              -0.75,
+              -0.25000000000000006,
+              0.0,
+              0.08333333333333337
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "C-A": {
+            "mean": 0.0241111111111111,
+            "world_cluster_percentile95": [
+              -0.0022222222222222365,
+              0.06711111111111112
+            ],
+            "per_world": [
+              0.005333333333333301,
+              0.0,
+              0.050000000000000044,
+              -1.1102230246251565e-16,
+              5.551115123125783e-17,
+              -1.1102230246251565e-16,
+              0.25,
+              0.0,
+              -1.1102230246251565e-16,
+              5.551115123125783e-17,
+              -0.015999999999999903,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D-B": {
+            "mean": 0.03761111111111109,
+            "world_cluster_percentile95": [
+              -0.0013333333333333623,
+              0.08333333333333337
+            ],
+            "per_world": [
+              -1.1102230246251565e-16,
+              0.0,
+              0.20000000000000007,
+              -0.016000000000000125,
+              0.0,
+              -0.016000000000000125,
+              0.2,
+              5.551115123125783e-17,
+              0.0,
+              0.0,
+              -1.1102230246251565e-16,
+              0.08333333333333337
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "interaction": {
+            "mean": 0.013499999999999984,
+            "world_cluster_percentile95": [
+              -0.011058333333333349,
+              0.04472638888888884
+            ],
+            "per_world": [
+              -0.005333333333333412,
+              0.0,
+              0.15000000000000002,
+              -0.016000000000000014,
+              -5.551115123125783e-17,
+              -0.016000000000000014,
+              -0.04999999999999999,
+              5.551115123125783e-17,
+              1.1102230246251565e-16,
+              -5.551115123125783e-17,
+              0.015999999999999792,
+              0.08333333333333337
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          }
+        }
+      },
+      "risk_effects": {
+        "original": {
+          "aware_minus_omitted": {
+            "mean": -0.025277777777777788,
+            "world_cluster_percentile95": [
+              -0.1439444444444444,
+              0.07916666666666666
+            ],
+            "per_world": [
+              0.07999999999999996,
+              -0.46,
+              -0.25,
+              -0.25,
+              0.25,
+              0.040000000000000036,
+              0.0,
+              0.0,
+              0.25,
+              0.03999999999999998,
+              0.07999999999999996,
+              -0.08333333333333333
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "action_changed_world_fit_pairs": 31
+        },
+        "mean_two_point": {
+          "aware_minus_omitted": {
+            "mean": 0.008333333333333326,
+            "world_cluster_percentile95": [
+              -0.14694444444444446,
+              0.15555555555555553
+            ],
+            "per_world": [
+              0.15,
+              -0.3766666666666667,
+              -0.5,
+              0.5,
+              0.3333333333333333,
+              0.040000000000000036,
+              0.0,
+              0.0,
+              0.08333333333333333,
+              0.03999999999999998,
+              0.07999999999999996,
+              -0.25
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "action_changed_world_fit_pairs": 33
+        },
+        "single_transition": {
+          "aware_minus_omitted": {
+            "mean": -0.04166666666666668,
+            "world_cluster_percentile95": [
+              -0.18000000000000002,
+              0.07972916666666655
+            ],
+            "per_world": [
+              0.07999999999999996,
+              -0.46,
+              -0.5,
+              -0.25,
+              0.12333333333333331,
+              0.040000000000000036,
+              0.0,
+              0.0,
+              0.3466666666666667,
+              0.03999999999999998,
+              0.07999999999999996,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "action_changed_world_fit_pairs": 33
+        }
+      },
+      "refitted_shape_minus_refitted_full": {
+        "mean_two_point": {
+          "closed": {
+            "mean": -0.056666666666666664,
+            "world_cluster_percentile95": [
+              -0.13305555555555557,
+              0.018611111111111113
+            ],
+            "per_world": [
+              -0.17999999999999997,
+              0.08333333333333333,
+              -0.25,
+              0.0,
+              0.16666666666666666,
+              0.0,
+              -0.25,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.25
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "fixed": {
+            "mean": -0.0763888888888889,
+            "world_cluster_percentile95": [
+              -0.14583333333333334,
+              -0.006944444444444447
+            ],
+            "per_world": [
+              -0.25,
+              0.0,
+              -0.25,
+              0.0,
+              0.08333333333333333,
+              0.0,
+              -0.25,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.25
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "fixed_output_distribution_changes": 98,
+          "fixed_class_changes": 16
+        },
+        "single_transition": {
+          "closed": {
+            "mean": -0.028055555555555556,
+            "world_cluster_percentile95": [
+              -0.10416666666666667,
+              0.051388888888888894
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              -0.25,
+              0.0,
+              -0.12666666666666668,
+              0.0,
+              0.0,
+              -0.25,
+              0.29000000000000004,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "fixed": {
+            "mean": -0.020833333333333332,
+            "world_cluster_percentile95": [
+              -0.08333333333333333,
+              0.041666666666666664
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              -0.25,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.25,
+              0.25,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "fixed_output_distribution_changes": 98,
+          "fixed_class_changes": 17
+        }
+      }
+    },
+    "hidden_refractory_mismatch": {
+      "four_cells": {
+        "risk_aware": {
+          "A": {
+            "mean": 0.6358333333333334,
+            "world_cluster_percentile95": [
+              0.5218333333333333,
+              0.7578333333333335
+            ],
+            "per_world": [
+              0.42000000000000004,
+              0.8880000000000001,
+              0.4600000000000001,
+              0.96,
+              0.4600000000000001,
+              0.396,
+              0.396,
+              0.71,
+              0.5599999999999999,
+              0.71,
+              0.71,
+              0.96
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "B": {
+            "mean": 0.5675,
+            "world_cluster_percentile95": [
+              0.43032499999999996,
+              0.7005083333333332
+            ],
+            "per_world": [
+              0.43,
+              0.6799999999999999,
+              0.354,
+              0.9200000000000002,
+              0.536,
+              0.8300000000000001,
+              0.58,
+              0.71,
+              0.48,
+              0.08,
+              0.32999999999999996,
+              0.8800000000000001
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "C": {
+            "mean": 0.6391666666666667,
+            "world_cluster_percentile95": [
+              0.5275,
+              0.7591666666666667
+            ],
+            "per_world": [
+              0.5866666666666667,
+              0.88,
+              0.46,
+              0.96,
+              0.46,
+              0.3933333333333333,
+              0.38000000000000006,
+              0.71,
+              0.46,
+              0.71,
+              0.71,
+              0.96
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D": {
+            "mean": 0.5391666666666667,
+            "world_cluster_percentile95": [
+              0.3794444444444445,
+              0.6919444444444444
+            ],
+            "per_world": [
+              0.38000000000000006,
+              0.63,
+              0.17,
+              0.92,
+              0.63,
+              0.7966666666666667,
+              0.38000000000000006,
+              0.71,
+              0.38000000000000006,
+              -0.03666666666666666,
+              0.63,
+              0.88
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "B-A": {
+            "mean": -0.06833333333333334,
+            "world_cluster_percentile95": [
+              -0.2151708333333334,
+              0.07133749999999993
+            ],
+            "per_world": [
+              0.009999999999999953,
+              -0.20800000000000018,
+              -0.1060000000000001,
+              -0.039999999999999813,
+              0.07599999999999996,
+              0.43400000000000005,
+              0.18399999999999994,
+              0.0,
+              -0.07999999999999996,
+              -0.63,
+              -0.38,
+              -0.07999999999999985
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D-C": {
+            "mean": -0.09999999999999998,
+            "world_cluster_percentile95": [
+              -0.2513888888888889,
+              0.04138888888888892
+            ],
+            "per_world": [
+              -0.2066666666666666,
+              -0.25,
+              -0.29000000000000004,
+              -0.039999999999999925,
+              0.16999999999999998,
+              0.40333333333333343,
+              0.0,
+              0.0,
+              -0.07999999999999996,
+              -0.7466666666666666,
+              -0.07999999999999996,
+              -0.07999999999999996
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "C-A": {
+            "mean": 0.003333333333333318,
+            "world_cluster_percentile95": [
+              -0.026333333333333344,
+              0.03944444444444442
+            ],
+            "per_world": [
+              0.16666666666666663,
+              -0.008000000000000118,
+              -5.551115123125783e-17,
+              0.0,
+              -5.551115123125783e-17,
+              -0.002666666666666706,
+              -0.01599999999999996,
+              0.0,
+              -0.09999999999999992,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D-B": {
+            "mean": -0.02833333333333332,
+            "world_cluster_percentile95": [
+              -0.09227777777777775,
+              0.048500000000000015
+            ],
+            "per_world": [
+              -0.04999999999999993,
+              -0.04999999999999993,
+              -0.18399999999999997,
+              -1.1102230246251565e-16,
+              0.09399999999999997,
+              -0.033333333333333326,
+              -0.1999999999999999,
+              0.0,
+              -0.09999999999999992,
+              -0.11666666666666667,
+              0.30000000000000004,
+              -1.1102230246251565e-16
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "interaction": {
+            "mean": -0.03166666666666664,
+            "world_cluster_percentile95": [
+              -0.10249999999999992,
+              0.050337499999999966
+            ],
+            "per_world": [
+              -0.21666666666666656,
+              -0.041999999999999815,
+              -0.18399999999999994,
+              -1.1102230246251565e-16,
+              0.09400000000000003,
+              -0.03066666666666662,
+              -0.18399999999999994,
+              0.0,
+              0.0,
+              -0.11666666666666659,
+              0.30000000000000004,
+              -1.1102230246251565e-16
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          }
+        },
+        "risk_omitted": {
+          "A": {
+            "mean": 0.6144999999999999,
+            "world_cluster_percentile95": [
+              0.5091666666666667,
+              0.7256791666666667
+            ],
+            "per_world": [
+              0.63,
+              0.8800000000000001,
+              0.38,
+              0.9200000000000002,
+              0.38,
+              0.48,
+              0.38,
+              0.688,
+              0.48,
+              0.646,
+              0.63,
+              0.8800000000000001
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "B": {
+            "mean": 0.47700000000000004,
+            "world_cluster_percentile95": [
+              0.30831666666666663,
+              0.6525
+            ],
+            "per_world": [
+              0.53,
+              0.8800000000000001,
+              0.13,
+              0.9200000000000002,
+              0.396,
+              0.38,
+              0.13,
+              0.63,
+              0.038,
+              0.18,
+              0.63,
+              0.8800000000000001
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "C": {
+            "mean": 0.5916666666666667,
+            "world_cluster_percentile95": [
+              0.48416666666666663,
+              0.7133333333333334
+            ],
+            "per_world": [
+              0.63,
+              0.88,
+              0.38000000000000006,
+              0.92,
+              0.38000000000000006,
+              0.38000000000000006,
+              0.38000000000000006,
+              0.63,
+              0.38000000000000006,
+              0.63,
+              0.63,
+              0.88
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D": {
+            "mean": 0.4908333333333333,
+            "world_cluster_percentile95": [
+              0.3208333333333333,
+              0.6608333333333333
+            ],
+            "per_world": [
+              0.63,
+              0.88,
+              0.13,
+              0.92,
+              0.42,
+              0.38000000000000006,
+              0.13,
+              0.63,
+              0.13,
+              0.13,
+              0.63,
+              0.88
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "B-A": {
+            "mean": -0.13749999999999998,
+            "world_cluster_percentile95": [
+              -0.2368333333333333,
+              -0.05016666666666666
+            ],
+            "per_world": [
+              -0.09999999999999998,
+              0.0,
+              -0.25,
+              0.0,
+              0.016000000000000014,
+              -0.09999999999999998,
+              -0.25,
+              -0.05799999999999994,
+              -0.442,
+              -0.466,
+              0.0,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D-C": {
+            "mean": -0.10083333333333334,
+            "world_cluster_percentile95": [
+              -0.20166666666666666,
+              -0.017500000000000012
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              -0.25000000000000006,
+              0.0,
+              0.039999999999999925,
+              0.0,
+              -0.25000000000000006,
+              0.0,
+              -0.25000000000000006,
+              -0.5,
+              0.0,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "C-A": {
+            "mean": -0.02283333333333333,
+            "world_cluster_percentile95": [
+              -0.04566666666666664,
+              -0.0026666666666666874
+            ],
+            "per_world": [
+              0.0,
+              -1.1102230246251565e-16,
+              5.551115123125783e-17,
+              -1.1102230246251565e-16,
+              5.551115123125783e-17,
+              -0.09999999999999992,
+              5.551115123125783e-17,
+              -0.05799999999999994,
+              -0.09999999999999992,
+              -0.016000000000000014,
+              0.0,
+              -1.1102230246251565e-16
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "D-B": {
+            "mean": 0.013833333333333307,
+            "world_cluster_percentile95": [
+              -0.006333333333333381,
+              0.038166666666666633
+            ],
+            "per_world": [
+              0.09999999999999998,
+              -1.1102230246251565e-16,
+              0.0,
+              -1.1102230246251565e-16,
+              0.023999999999999966,
+              5.551115123125783e-17,
+              0.0,
+              0.0,
+              0.092,
+              -0.04999999999999999,
+              0.0,
+              -1.1102230246251565e-16
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "interaction": {
+            "mean": 0.03666666666666664,
+            "world_cluster_percentile95": [
+              0.005333333333333333,
+              0.07416666666666664
+            ],
+            "per_world": [
+              0.09999999999999998,
+              0.0,
+              -5.551115123125783e-17,
+              0.0,
+              0.02399999999999991,
+              0.09999999999999998,
+              -5.551115123125783e-17,
+              0.05799999999999994,
+              0.19199999999999995,
+              -0.033999999999999975,
+              0.0,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          }
+        }
+      },
+      "risk_effects": {
+        "original": {
+          "aware_minus_omitted": {
+            "mean": 0.04833333333333333,
+            "world_cluster_percentile95": [
+              -0.06249999999999999,
+              0.15916666666666668
+            ],
+            "per_world": [
+              -0.25,
+              -0.25,
+              0.03999999999999998,
+              0.0,
+              0.21000000000000005,
+              0.4166666666666667,
+              0.25,
+              0.07999999999999996,
+              0.25,
+              -0.16666666666666666,
+              0.0,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "action_changed_world_fit_pairs": 36
+        },
+        "mean_two_point": {
+          "aware_minus_omitted": {
+            "mean": 0.02833333333333335,
+            "world_cluster_percentile95": [
+              -0.10805555555555556,
+              0.1761111111111111
+            ],
+            "per_world": [
+              -0.08333333333333333,
+              -0.25,
+              0.19333333333333336,
+              0.0,
+              -0.17,
+              0.4166666666666667,
+              0.5833333333333334,
+              0.040000000000000036,
+              0.10999999999999999,
+              -0.25,
+              -0.25,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "action_changed_world_fit_pairs": 36
+        },
+        "single_transition": {
+          "aware_minus_omitted": {
+            "mean": 0.05416666666666667,
+            "world_cluster_percentile95": [
+              -0.005000000000000002,
+              0.11833333333333333
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              0.03999999999999998,
+              0.0,
+              0.21000000000000005,
+              0.25,
+              0.21000000000000005,
+              0.07999999999999996,
+              0.0,
+              0.0,
+              -0.14,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "action_changed_world_fit_pairs": 36
+        }
+      },
+      "refitted_shape_minus_refitted_full": {
+        "mean_two_point": {
+          "closed": {
+            "mean": -0.002499999999999993,
+            "world_cluster_percentile95": [
+              -0.12333333333333335,
+              0.10861805555555544
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              0.15333333333333335,
+              0.0,
+              -0.4200000000000001,
+              0.0,
+              0.3333333333333333,
+              0.21000000000000008,
+              0.026666666666666655,
+              0.16666666666666666,
+              -0.25,
+              -0.25
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "fixed": {
+            "mean": 0.01388888888888889,
+            "world_cluster_percentile95": [
+              -0.020833333333333332,
+              0.0625
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.25,
+              0.0,
+              0.0,
+              0.0,
+              -0.08333333333333333
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "fixed_output_distribution_changes": 105,
+          "fixed_class_changes": 8
+        },
+        "single_transition": {
+          "closed": {
+            "mean": -0.01055555555555556,
+            "world_cluster_percentile95": [
+              -0.09416666666666668,
+              0.06944444444444443
+            ],
+            "per_world": [
+              0.0,
+              0.25,
+              0.0,
+              0.0,
+              0.0,
+              -0.16666666666666666,
+              0.0,
+              0.0,
+              0.0,
+              0.16666666666666666,
+              -0.3766666666666667,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "fixed": {
+            "mean": -0.01388888888888889,
+            "world_cluster_percentile95": [
+              -0.0625,
+              0.020833333333333332
+            ],
+            "per_world": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.08333333333333333,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.25,
+              0.0
+            ],
+            "worlds": 12,
+            "method": "descriptive world-block; fits averaged within world"
+          },
+          "fixed_output_distribution_changes": 105,
+          "fixed_class_changes": 4
+        }
+      }
+    }
+  },
+  "scope": "raw arithmetic/chronology/content-mixture and descriptive statistics; not neural forward replay",
+  "limits": [
+    "12 independent worlds per condition; historical five ordinary fits",
+    "3 one-dimensional analytic calibration fits; no neural analytic retraining",
+    "risk is a declared stochastic service-success process, not financial Put risk",
+    "refitted drift changes core count forecasts; shared planner simulations retain common original estimated physics",
+    "fixed actions cover shape interventions only; fixed risk-omission replay absent",
+    "1e-12 loss floor assigns finite loss to impossible support in simplified count models",
+    "world-cluster intervals do not include population uncertainty of fitted models"
+  ]
+}

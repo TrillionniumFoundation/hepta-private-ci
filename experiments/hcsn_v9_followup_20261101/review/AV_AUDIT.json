@@ -1,0 +1,109 @@
+{
+  "schema": "hcsn-v9-independent-av-review.v1",
+  "checks": 9144,
+  "all_checks_passed": true,
+  "failed_examples": [],
+  "executions": 432,
+  "persistent_updates": 1511,
+  "zero_global_dt_content_updates": 737,
+  "groups": [
+    {
+      "task": "async_av",
+      "family": "direct",
+      "policy": "fixed",
+      "accuracy": 0.4166666666666667,
+      "mean_utility": 0.28165666666666667,
+      "mean_requests": 6
+    },
+    {
+      "task": "async_av",
+      "family": "direct",
+      "policy": "value",
+      "accuracy": 0.4166666666666667,
+      "mean_utility": 0.29644708333333336,
+      "mean_requests": 5.333333333333333
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "policy": "fixed",
+      "accuracy": 0.4166666666666667,
+      "mean_utility": 0.28165666666666667,
+      "mean_requests": 6
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "policy": "value",
+      "accuracy": 0.4166666666666667,
+      "mean_utility": 0.29915583333333334,
+      "mean_requests": 5.208333333333333
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "policy": "fixed",
+      "accuracy": 0.4166666666666667,
+      "mean_utility": 0.28165666666666667,
+      "mean_requests": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "policy": "value",
+      "accuracy": 0.4166666666666667,
+      "mean_utility": 0.2954029166666667,
+      "mean_requests": 5.375
+    },
+    {
+      "task": "av_binding",
+      "family": "direct",
+      "policy": "fixed",
+      "accuracy": 0.5416666666666666,
+      "mean_utility": 0.40665666666666667,
+      "mean_requests": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "direct",
+      "policy": "value",
+      "accuracy": 0.4791666666666667,
+      "mean_utility": 0.39228322916666664,
+      "mean_requests": 3.8125
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "policy": "fixed",
+      "accuracy": 0.5416666666666666,
+      "mean_utility": 0.40665666666666667,
+      "mean_requests": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "policy": "value",
+      "accuracy": 0.5208333333333334,
+      "mean_utility": 0.41978270833333337,
+      "mean_requests": 4.458333333333333
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "policy": "fixed",
+      "accuracy": 0.5416666666666666,
+      "mean_utility": 0.40665666666666667,
+      "mean_requests": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "policy": "value",
+      "accuracy": 0.5,
+      "mean_utility": 0.41519947916666666,
+      "mean_requests": 3.7291666666666665
+    }
+  ],
+  "scientific_confirmation": false,
+  "limits": "Log arithmetic, checkpoint/source identities and state-chain audit; does not independently rerun neural matrices or re-establish strong frontend/new recording admission"
+}

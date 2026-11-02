@@ -1,0 +1,38 @@
+{
+  "controls": [
+    {
+      "name": "promote_registered_to_family",
+      "mutated_record": "results/waited/SUPERVISION.json",
+      "field": "memory.family_sampled_peak_rss_sum_bytes",
+      "replacement": 32489472,
+      "rejected": true,
+      "failed_checks": 1
+    },
+    {
+      "name": "wrong_spawn_edge",
+      "mutated_record": "results/waited_nodes/root.json",
+      "field": "spawned_pid",
+      "replacement": -1,
+      "rejected": true,
+      "failed_checks": 1
+    },
+    {
+      "name": "wrong_adopted_parent",
+      "mutated_record": "results/adopted_nodes/child.json",
+      "field": "parent_after",
+      "replacement": -1,
+      "rejected": true,
+      "failed_checks": 1
+    },
+    {
+      "name": "missing_cpu_coverage",
+      "mutated_record": "results/adopted/SUPERVISION.json",
+      "field": "complete_task_cpu_coverage",
+      "replacement": false,
+      "rejected": true,
+      "failed_checks": 1
+    }
+  ],
+  "all_rejected": true,
+  "original_records_modified": false
+}

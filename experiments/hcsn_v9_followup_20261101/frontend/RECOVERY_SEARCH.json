@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn-v9-frontend-recovery-search.v1",
+  "baseline_repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_pr": 4567,
+  "baseline_head": "059b43a0b20ad07654880c155cc49799e0bb8858",
+  "baseline_directory": "experiments/hcsn_v8_execution_20261101",
+  "github_observations": [
+    {
+      "operation": "GET https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+      "result_http_status": 422,
+      "message": "No commit found for SHA: febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+      "interpretation": "The connected repository did not resolve this commit during this request. This is not a claim about every repository or backup."
+    },
+    {
+      "operation": "GitHub PR searches: 4608; AV; HCSN; febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24; hcsn-v5; confirmation hcsn",
+      "result": "PR 4567 exactly matches the submitted four-priority table. PR 4559 records missing v5/v6 assets. No searched PR supplied the original v6 bytes."
+    },
+    {
+      "operation": "GitHub branch search in target repository: hcsn-v",
+      "returned_names": ["research/hcsn-v7-support-20261101", "research/hcsn-v8-causal-execution-20261101", "research/hcsn-value-boundary-native-20261031"],
+      "interpretation": "No matching v5/v6 branch was returned. Other branch names or detached backups were not exhaustively excluded."
+    }
+  ],
+  "library_observation": {
+    "source": "Parent agent's exact and simplified filename searches in this same request",
+    "queries_targeted": ["hcsn-v5-confirmation-20261101.bundle", "hcsn-v6-confirmation-20261101.bundle"],
+    "result": "No matching original packages; other hits were fuzzy unrelated results.",
+    "search_result_does_not_prove_global_absence": true
+  },
+  "expected_missing_packages_from_pinned_v8_report": [
+    {"filename": "hcsn-v5-confirmation-20261101.bundle", "size_bytes": 629391107, "sha256": "9159be343285855a6d1dccb290213791407f8df742a2df1363c17868beb3f1ac"},
+    {"filename": "hcsn-v6-confirmation-20261101.bundle", "size_bytes": 353859429, "sha256": "4d9bc1ee333a582e8cf0718f029337ed49f08f06525a7eccd169df00d99f687f"}
+  ],
+  "package_bytes_obtained": false,
+  "expected_hashes_verified_on_actual_original_bytes": false,
+  "v6_strong_audio_recovered": false,
+  "v5_v6_complete_recording_exclusions_recovered": false,
+  "fresh_real_av_confirmation_executed": false,
+  "status": "HOLD"
+}

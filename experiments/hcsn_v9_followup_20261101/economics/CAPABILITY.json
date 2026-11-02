@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-v9-memory-capability.v1",
+  "kernel_cgroup_membership": "0::/\n",
+  "base": "/sys/fs/cgroup",
+  "isolated_group_created": false,
+  "complete_process_family_peak_bytes": null,
+  "shared_cgroup_peak_used": false,
+  "energy_joules": null,
+  "measurement_ready": false,
+  "cgroup.controllers": "cpuset cpu io memory hugetlb pids",
+  "cgroup.subtree_control": "",
+  "cgroup_mountinfo": [
+    "262 261 0:24 / /sys/fs/cgroup ro,nosuid,nodev,noexec,relatime - cgroup2 cgroup2 rw,nsdelegate"
+  ],
+  "mkdir_error": {
+    "errno": 30,
+    "errno_name": "EROFS",
+    "message": "[Errno 30] Read-only file system: '/sys/fs/cgroup/hcsn-owned-probe-2-53958107836280'"
+  },
+  "reason": "Cannot create a fresh isolated task cgroup; shared root counters are not attributable.",
+  "probe_wall_seconds": 0.000604123
+}
