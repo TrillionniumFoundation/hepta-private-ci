@@ -1,0 +1,116 @@
+{
+  "schema": "hcsn.native-runtime.cost.r20.v1",
+  "engineering": [
+    {
+      "directory": "development01",
+      "cases": 18,
+      "negative_controls": 0,
+      "native_processes": 56,
+      "child_cpu_seconds": 1.257323,
+      "wall_seconds": 3.225441139002214,
+      "identity_scope": "raw MODEL bytes"
+    },
+    {
+      "directory": "development02",
+      "cases": 18,
+      "negative_controls": 12,
+      "native_processes": 73,
+      "child_cpu_seconds": 1.770413,
+      "wall_seconds": 7.781004357995698,
+      "identity_scope": "raw MODEL bytes"
+    },
+    {
+      "directory": "development03",
+      "cases": 27,
+      "negative_controls": 12,
+      "native_processes": 101,
+      "child_cpu_seconds": 2.362572,
+      "wall_seconds": 11.52708804300346,
+      "identity_scope": "raw MODEL bytes"
+    },
+    {
+      "directory": "development04",
+      "cases": 27,
+      "negative_controls": 12,
+      "native_processes": 101,
+      "child_cpu_seconds": 1.8624359999999998,
+      "wall_seconds": 6.9818527460010955,
+      "identity_scope": "raw MODEL bytes"
+    },
+    {
+      "directory": "development05",
+      "cases": 27,
+      "negative_controls": 14,
+      "native_processes": 109,
+      "child_cpu_seconds": 4.1876549999999995,
+      "wall_seconds": 10.267469279999204,
+      "identity_scope": "ABI+constructed law+exact executable"
+    },
+    {
+      "directory": "development06",
+      "cases": 18,
+      "negative_controls": 15,
+      "native_processes": 83,
+      "child_cpu_seconds": 3.4543150000000002,
+      "wall_seconds": 8.928244385999278,
+      "identity_scope": "ABI+constructed law+exact executable"
+    }
+  ],
+  "formal": {
+    "child_cpu_seconds": 22.986995,
+    "exit_code": 0,
+    "max_rss_kib": 60156,
+    "scope": "Complete worker imports, reference generation, every native child and evidence write; inner native CPU not added.",
+    "wall_seconds": 43.27137148500333
+  },
+  "frozen_build": {
+    "command": [
+      "/tmp/hcsn-r15-runtime-tools/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "--edition=2024",
+      "-D",
+      "warnings",
+      "tools/hcsn/native_runtime_r20_20261101/main.rs",
+      "-o",
+      "/tmp/hcsn-r20-runtime-frozen-d0ac"
+    ],
+    "exit_code": 0,
+    "binary_path": "/tmp/hcsn-r20-runtime-frozen-d0ac",
+    "binary_sha256": "b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798",
+    "binary_bytes": 4952336,
+    "child_cpu_seconds": 0.8557899999999999,
+    "wall_seconds": 1.5235958699995535,
+    "freeze_sha256": "95bd6c53f304cf05c088aee78ca45013df625c242ae950a240d122aabe863118",
+    "source_publication": {
+      "readback_verified": true,
+      "commit_sha": "d0acb8d41a9b7682d22f606998c4e04fe4093e6c",
+      "freeze_sha256": "95bd6c53f304cf05c088aee78ca45013df625c242ae950a240d122aabe863118"
+    },
+    "scope": "Full rustc and waited linker compile; separate from campaign, version-query metadata not included."
+  },
+  "independent_record_audit": {
+    "command": [
+      "python",
+      "-m",
+      "tools.hcsn.native_runtime_r20_20261101.audit_records",
+      "tools/hcsn/native_runtime_r20_20261101/confirmation01",
+      "--output",
+      "tools/hcsn/native_runtime_r20_20261101/INDEPENDENT_RECORD_AUDIT.json"
+    ],
+    "exit_code": 0,
+    "child_cpu_seconds": 0.240085,
+    "wall_seconds": 0.25929860600444954,
+    "scope": "Full independent record checker interpreter; separate from candidate campaign."
+  },
+  "nonoverlapping_recorded_child_cpu_lower_bound": 38.977584,
+  "unknown_or_excluded": [
+    "earlier engineering builds",
+    "supervisor startup/import CPU",
+    "source-authoring and review work",
+    "ELF/evidence transfer",
+    "device energy"
+  ],
+  "nested_native_process_cpu_added_again": false,
+  "cpu_speed_advantage_claimed": false,
+  "device_energy_joules": null,
+  "full_cost_adoption": false
+}
