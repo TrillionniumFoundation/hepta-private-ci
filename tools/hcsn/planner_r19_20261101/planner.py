@@ -18,7 +18,10 @@ class OwnedPlanner(BatchedPlanner):
         if self.projection == "full":
             for p in arrays:
                 validate_rows(p, 40, -1e-13)
-            return arrays
+            # R18 full projection uses p.copy(), hence C-contiguous storage.
+            # A broadcast posterior can be non-C; preserving those strides
+            # changes later BLAS dispatch and exact near-tie action values.
+            return [np.ascontiguousarray(p) for p in arrays]
         expanded = []
         for p in arrays:
             validate_rows(p, 40, 0.)

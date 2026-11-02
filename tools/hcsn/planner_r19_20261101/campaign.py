@@ -67,7 +67,8 @@ def worker(output, diagnostic):
     all_groups, mismatches = [], 0
     # World generation and all three variants are inside the outer wait4 scope.
     # Its costs are shared evaluation overhead, not charged as execution savings.
-    worlds = [make_episode(owner, protocol["namespace"] * 10**9 + index,
+    namespace = protocol["diagnostic_namespace"] if diagnostic else protocol["namespace"]
+    worlds = [make_episode(owner, namespace * 10**9 + index,
                            protocol["domains"][index % 2]) for index in range(n)]
     for model in protocol["models"]:
         for representation in protocol["representations"]:
@@ -92,8 +93,7 @@ def worker(output, diagnostic):
                                        allow_nan=False).encode()).hexdigest(),
                             cpu_seconds=row["cpu_seconds"], wall_seconds=row["wall_seconds"],
                             checkpoint_io_cpu_seconds=row["checkpoint_io_cpu_seconds"],
-                            utility=row["utility"], reward=row["reward"], fee=row["fee"],
-                            queries=row["queries"] if mode == "baseline" else None)
+                            utility=row["utility"], reward=row["reward"], fee=row["fee"], semantic=body)
                     equal = len({row["semantic_sha256"] for row in results.values()}) == 1
                     mismatches += not equal
                     records.append(dict(index=index, seed=episode.seed, world=episode.fingerprint,
@@ -118,7 +118,9 @@ def worker(output, diagnostic):
                          r19_r18_cpu_ratio=costs["r19"] / costs["r18"], memory=memory,
                          r19_r18_peak_ratio=memory["r19"]["maximum"] / memory["r18"]["maximum"],
                          r19_baseline_peak_ratio=memory["r19"]["maximum"] / memory["baseline"]["maximum"])
-            save(output / f"{model}_{representation}.json.gz", dict(group=group, records=records))
+            for offset in range(0, len(records), 100):
+                save(output / f"{model}_{representation}_{offset // 100:02}.json.gz",
+                     dict(group=group, records=records[offset:offset + 100]))
             all_groups.append(group)
     save(output / "SUMMARY.json", dict(groups=all_groups, mismatches=mismatches,
          timed_execution_count=n * len(all_groups) * 3,
