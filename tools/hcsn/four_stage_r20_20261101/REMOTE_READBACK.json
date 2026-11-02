@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn.r20-r21.remote-git-readback.v1",
+  "verified_commit": "4a5a370354415e0643aef4bdca3b888ad9bf0d29",
+  "verified_tree": "60016f29bbdd68d4198621292b00661fbcb02cb3",
+  "method": "GET exact Git trees; every latest published path compared by Git blob SHA, byte size and mode to the locally computed original bytes. Compressed evidence and map/ELF transport parts are ordinary blobs; original logical manifests and roundtrip receipts bind their restored contents. No truncated tree accepted.",
+  "passed": true,
+  "blobs": 506,
+  "bytes": 58883553,
+  "group_trees": [
+    {
+      "group": "experiments/hcsn_unknown_generator_r20_20261101",
+      "tree": "f25759de47e105cfbaa76c176ed7d63d962e08ab",
+      "blobs": 218
+    },
+    {
+      "group": "tools/hcsn/continuous_task_r20_20261101",
+      "tree": "c97977e1c94e9c190bb7a5d22cf1f043cd76ff76",
+      "blobs": 59
+    },
+    {
+      "group": "tools/hcsn/native_runtime_r20_20261101",
+      "tree": "e7734b978e40016354cc72d82f2853100ac8d1dd",
+      "blobs": 54
+    },
+    {
+      "group": "tools/hcsn/planner_r20_20261101",
+      "tree": "0bca431946a64ec6b98fec2666736fef6115d39c",
+      "blobs": 58
+    },
+    {
+      "group": "tools/hcsn/native_financial_r20_20261101",
+      "tree": "fc141e4c528567b330558746127ca5e99109344d",
+      "blobs": 47
+    },
+    {
+      "group": "tools/hcsn/checkpoint_fastpath_r21_20261101",
+      "tree": "1eda111c59ec5377c8923704e6bef14fdbcf8c38",
+      "blobs": 47
+    },
+    {
+      "group": "tools/hcsn/four_stage_r20_20261101",
+      "tree": "f20a342a7c4a310b6352716816a3de0d40b9693b",
+      "blobs": 23
+    }
+  ],
+  "errors": [],
+  "self_excluded": "This receipt is published in a successor commit, then independently checked by its own blob identity; no self-referential commit hash is asserted.",
+  "all_blockers_closed": false,
+  "production_activation": false
+}
