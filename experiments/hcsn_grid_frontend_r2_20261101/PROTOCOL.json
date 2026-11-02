@@ -1,0 +1,52 @@
+{
+  "adoption_scope": "Passingwouldqualifyonlythisregisterednewrecording-group frontendroute. CREMAold90gate, open-domain, analyticcoreD-B, GPU/energy/productionownership remain separate.",
+  "all_blockers_closed": false,
+  "audio_preprocess": "Native-mono waveform croppedonphysicalprefix before16kresample_poly (integergcd); loceil/hi-floor with1e-7 tolerance, accept15998..16000samples andpadonlyfractionaltail; normalizeonlyacceptedprefix asfrozenWav2Vecfrontend requires.",
+  "classifier": "Fixedregularizedlogistic C=.1,train-onlymean/scale,max500L-BFGS updates,allfitsretained. Three sortedactorroundrobin outerfolds (hold2/train4) forA/V/T probabilities; onefulltrainfit permodality. Nohyperparameter/checkpointselectionusingdevelopmentorconfirmation.",
+  "confirmation_stage": "Afterpublishedallcandidatefreeze, acquire/decodeexact4confirmationactors andevaluateonce. Noexceptions/replacements basedonquality; sourcefailure HOLDpreserved.",
+  "cost": "Separatecomplete-childCPU/wall envelopesforacquisition,featureextraction,allfits,evaluationincludingfailures; noCPUtojoulesconversion; GPUandenergyunmeasured. RawMPEGsremainreproducibleexternalinputs,notuploaded.",
+  "development_stage": "Source/protocol/cohortselectionfreezebeforetrain/devpayload. Noheldconfirmationpayloadyet. Fitfixedcandidateheads ontrainonly; anydevelopmentresultsareseparate andcannotupdatecandidateafterconfirmation.",
+  "discovery_excluded_speakers": [
+    2
+  ],
+  "encoders": "ExactfrozenofficialLRWvisualencoder andWav2Vecaudioencoder designatedinCREMApretrainedlanes; ENC0DERS.json mustpincheckpointSHA/source/normalization beforeGRIDfeaturefitting. NocheckpointsubstitutionbasedGRIDoutcomes; noencoderfine-tuning. Frozenframefeatures mean+std overacceptedprefix.",
+  "existing_training_exposure": "32speaker1pilottrainingMPEGs alreadyhashqualified, sourceAVprobeperformed, and1bintrainingframe0.6s inspectedforgeometry. Actor2publicexample swwp2s alignmentseenandexcluded. Allothers newinthisstudy; no globalunseenhistoryclaim.",
+  "max_concurrent_http_requests": 3,
+  "observation": "Fixed1s frommax(audio.start,firstvideoPTS); noend-of-recording normalization orclipdurationfeatures. Offlinewholefiledecodecostexplicit, notonline1slatencyqualification.",
+  "official_source": "https://spandh.dcs.shef.ac.uk/gridcorpus/",
+  "production_activation": false,
+  "raw_byte_cap": 170000000,
+  "registered_quality_gates": "Onregisteredconfirmationgroup: Aaccuracy>=.90,Vaccuracy>=.90,Taccuracy>=.99; AVTaccuracyactorbootstrap95%lower>5/6 andpairedAVT-ATaccuracybootstrap95%lower>0. Allrequired; noisolatedpositivegateascompleteadoption.",
+  "relation_heads": "IndependentlyfitordinarycleanATfeatures[pA,pT,pA*pT] andAVT7nonemptypolynomialproducts withC1 onsharednestedtrainingOOF A/T (andVforAVT). Noanalyticcell orcontroller claim. Allcandidateheads+encoder/classifier identities frozen/readback beforeconfirmpayload.",
+  "relation_task": "For eachactor andordinali0..15, construct8audio/video/textcommandcombinations. Choose correspondingregisteredclipforA/Vatthatordinal; rawtextliteralbin/set. y=1ifallthreecommandsmatch; weight3forpositiveelse1. Explicitconstructedclosedvocabularyconsistencytask, notnaturalopen-domainreasoning. Eachactor128episodes,balancedweightedtarget.",
+  "role": "Separate registered first-command AVT frontend study on historical public GRID recordings; doesnotretroactivelyconfirmCREMA-D or establishopen-domain/analytic-core/GPUadoption",
+  "schema": "hcsn.grid.frontend.r2.v1",
+  "selection": "Perregistered speaker, first16lexicographicallysorted MPEG basenames startingb(bin) and first16startings(set); exactly32perspeaker and384total. Sourceclass-bearing filenamesareknownmetadata; no selectedheldframe/modeloutcomepeek beforecandidatefreeze.",
+  "selection_commitment_before_new_metadata": true,
+  "source_cache": "Reuseverifiedspeaker1pilotbytes withoutduplication; allothers speaker-namespacedcachepaths, CRC/SHAandrolebound; neverreusebasenamesacrossspeakerswithoutnamespace.",
+  "source_identity": "BeforeanynewMPEGpayload, freeze everyofficialarchiveURL/length/centralSHA256 and selectedmembername/CRC32/compressed&rawbytes/localoffset; exactHTTP206 rangesonly, nofull400MBarchives.",
+  "speaker_role_namespace": "GRIDcorpusnumericIDonly; no claim of globalhistoricalhumanidentitydisjointness or newlyrecordedtoday",
+  "speaker_roles": {
+    "confirmation": [
+      10,
+      11,
+      12,
+      13
+    ],
+    "development": [
+      8,
+      9
+    ],
+    "train": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "statistics": "ReportuniqueclipA/V/Taccuracy,weightedAT/AVTaccuracy/Brier,pairedperactorAVT-ATdifferences. Actorclusterbootstrap10000draws(seed20261105development,20261106confirmation); fourconfirmationactors only, descriptiveboundedgroupinference, notbroadpopulationcertainty.100withinactorvideo-scorepermutations diagnostic only.",
+  "text": "Literalcommand string bin/set, lowercase26characterbag normalizedbywordlength; supervisedbinarylogistic trainedonlytrainingactors. SameTprobabilitiesforallcontrols, no relationanswer orhidden targetprovidedat inference.",
+  "video_preprocess": "25lastoriginalframesat/before origin+k/25,k1..25; native96square centered(.50width,.76height), thenofficial88centercrop, grayscale/255 andfixedmean.421,std.165. Training-onlyspeaker1geometry informedcenter; no68landmarkalignment/exactLRWpreprocessclaim. Noheldgeometryinspection/adaptation."
+}
