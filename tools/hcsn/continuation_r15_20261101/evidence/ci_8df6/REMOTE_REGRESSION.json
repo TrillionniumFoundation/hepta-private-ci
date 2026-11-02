@@ -1,0 +1,154 @@
+{
+  "schema": "hcsn.actual-asset-recurrent-remote-regression.v1",
+  "source_head": "8df6e272e3a31a3fae0491dd2d511825e212290c",
+  "source_tree": "9195cb03d814b85e42bf37b0abcf5f583481e5d6",
+  "prospective_merge": "3a00c6d4d0cbbbbde5266a5a4a253afdccd139a4",
+  "merge_tree_verified_identical": true,
+  "job": {
+    "id": 124934898501,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41335687796/job/124934898501",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1
+    },
+    {
+      "name": "Check out exact source candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2
+    },
+    {
+      "name": "Initialize runner-local paths",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3
+    },
+    {
+      "name": "Verify frozen inputs and install the CPU runtime",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4
+    },
+    {
+      "name": "Audit the actual financial autograd interface",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5
+    },
+    {
+      "name": "Train through the actual financial autograd interface",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6
+    },
+    {
+      "name": "Audit the recurrent temporal gradient",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7
+    },
+    {
+      "name": "Train through the recurrent temporal gradient",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8
+    },
+    {
+      "name": "Independently check the recurrent result records",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9
+    },
+    {
+      "name": "Audit gradients at fixed physical potential",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10
+    },
+    {
+      "name": "Train with the fixed physical potential and moving boundary",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11
+    },
+    {
+      "name": "Check fixed-potential records and raw boundary branches",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12
+    },
+    {
+      "name": "Preserve complete BP and BPTT outputs",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13
+    },
+    {
+      "name": "Verify checkout remains unchanged",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14
+    },
+    {
+      "name": "Post Check out exact source candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 28
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 29
+    }
+  ],
+  "artifact_metadata": [
+    {
+      "id": 13095037240,
+      "name": "hcsn-financial-bp-bptt-r16-8df6e272e3a31a3fae0491dd2d511825e212290c",
+      "size_in_bytes": 456817,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13095037240",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13095037240/zip",
+      "expired": false,
+      "created_at": "2026-11-01T18:16:21Z",
+      "expires_at": "2027-01-30T18:15:39Z",
+      "updated_at": "2026-11-01T18:16:21Z",
+      "digest": "sha256:5578b9d10c17210da546fbe6d9027743da0ed9bbf82c1e793de12fc3baff792f",
+      "workflow_run": {
+        "id": 41335687796,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "research/hcsn-continuation-r15-20261101",
+        "head_sha": "8df6e272e3a31a3fae0491dd2d511825e212290c"
+      }
+    }
+  ],
+  "artifact_bytes_downloaded_and_rehashed": false,
+  "logs": [
+    {
+      "file": "BP_BPTT.log.gz",
+      "raw_bytes": 66494,
+      "raw_sha256": "c56017e504673dfa22776ab48be6511cb3015214c72de17664c5c2a285aace3b",
+      "gzip_bytes": 13099,
+      "gzip_sha256": "8a5d482543728d3bdc00d86da4efa00ac130f3908834c7f9f323cab34ed00c8f"
+    }
+  ],
+  "new_scope": "Adds the actual fixed-z audit, twelve updates, independent records, and raw-boundary branch checker to the previously passing V3/signed-V1 lane.",
+  "fixed_z": {
+    "fixtures": 5,
+    "contracts": 15,
+    "temporal_comparisons": 8,
+    "branch_states": 2057,
+    "initial_loss": 0.00047014461597427726,
+    "final_loss": 0.0004700341960415244
+  },
+  "scientific_acceptance_changed": false,
+  "new_efficacy_confirmation": false,
+  "global_native_ci_green": false
+}
