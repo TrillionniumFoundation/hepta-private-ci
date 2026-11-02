@@ -1,0 +1,392 @@
+{
+  "schema": "digital-followup-remote-scope-verification-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+  "observed_at_utc": "2026-11-02T01:00:01.102Z",
+  "method": "Read-only GitHub Git ref heads followed by three non-recursive Git tree levels; compare every child path, mode, type and SHA. No recursive tree endpoint or local worktree inference.",
+  "permitted_namespace": "tools/hcsn/digital_read_followup_20261101",
+  "scope_limit": "Attests only the four observed commit heads. Later edits confined to the same namespace do not alter the outer-tree isolation property; later heads must be separately observed if their identity is claimed.",
+  "branches": [
+    {
+      "branch": "research/digital-control-repair-20261101",
+      "observed_head": "bd8e8a4ff5adf63d7a246d4aaba04491f7ddd39d",
+      "levels": [
+        {
+          "path": "root",
+          "base_tree_sha": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+          "head_tree_sha": "bd8e8a4ff5adf63d7a246d4aaba04491f7ddd39d",
+          "base_entry_count": 53,
+          "head_entry_count": 53,
+          "allowed_child": "tools",
+          "diff": [
+            {
+              "path": "tools",
+              "before": {
+                "sha": "9108db92af375c7a7befd1c6f89eac211c444596",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "after": {
+                "sha": "309ef29057c0f49a70fe4769f22f8410e85f6e26",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "changed"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        },
+        {
+          "path": "tools",
+          "base_tree_sha": "9108db92af375c7a7befd1c6f89eac211c444596",
+          "head_tree_sha": "309ef29057c0f49a70fe4769f22f8410e85f6e26",
+          "base_entry_count": 6,
+          "head_entry_count": 6,
+          "allowed_child": "hcsn",
+          "diff": [
+            {
+              "path": "hcsn",
+              "before": {
+                "sha": "3ebcc9b2e8a249274b77fa7b2660ce8a3eb142d1",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "after": {
+                "sha": "3b6effa0f3139225c356568b5523fe3631d2a445",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "changed"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        },
+        {
+          "path": "tools/hcsn",
+          "base_tree_sha": "3ebcc9b2e8a249274b77fa7b2660ce8a3eb142d1",
+          "head_tree_sha": "3b6effa0f3139225c356568b5523fe3631d2a445",
+          "base_entry_count": 30,
+          "head_entry_count": 31,
+          "allowed_child": "digital_read_followup_20261101",
+          "diff": [
+            {
+              "path": "digital_read_followup_20261101",
+              "before": null,
+              "after": {
+                "sha": "5f83cc5689e88df04f7d2abfcf49c0f3af743885",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "added"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        }
+      ],
+      "old_namespace": {
+        "path": "tools/hcsn/digital_read_before_20261031",
+        "base": {
+          "sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+          "type": "tree",
+          "mode": "040000"
+        },
+        "head": {
+          "sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+          "type": "tree",
+          "mode": "040000"
+        },
+        "pass": true
+      },
+      "pass": true
+    },
+    {
+      "branch": "research/digital-continuous-renewal-20261101",
+      "observed_head": "e389a41529eadb8e4d1a635be4d48d4c82d80a7e",
+      "levels": [
+        {
+          "path": "root",
+          "base_tree_sha": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+          "head_tree_sha": "e389a41529eadb8e4d1a635be4d48d4c82d80a7e",
+          "base_entry_count": 53,
+          "head_entry_count": 53,
+          "allowed_child": "tools",
+          "diff": [
+            {
+              "path": "tools",
+              "before": {
+                "sha": "9108db92af375c7a7befd1c6f89eac211c444596",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "after": {
+                "sha": "3381901cbc1213cf23853e70399171a89d59a182",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "changed"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        },
+        {
+          "path": "tools",
+          "base_tree_sha": "9108db92af375c7a7befd1c6f89eac211c444596",
+          "head_tree_sha": "3381901cbc1213cf23853e70399171a89d59a182",
+          "base_entry_count": 6,
+          "head_entry_count": 6,
+          "allowed_child": "hcsn",
+          "diff": [
+            {
+              "path": "hcsn",
+              "before": {
+                "sha": "3ebcc9b2e8a249274b77fa7b2660ce8a3eb142d1",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "after": {
+                "sha": "185408abad8969586b1c9e55053dbd08833754fd",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "changed"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        },
+        {
+          "path": "tools/hcsn",
+          "base_tree_sha": "3ebcc9b2e8a249274b77fa7b2660ce8a3eb142d1",
+          "head_tree_sha": "185408abad8969586b1c9e55053dbd08833754fd",
+          "base_entry_count": 30,
+          "head_entry_count": 31,
+          "allowed_child": "digital_read_followup_20261101",
+          "diff": [
+            {
+              "path": "digital_read_followup_20261101",
+              "before": null,
+              "after": {
+                "sha": "8eb9677e51e25c1924654aa1a82dcc6e25bc3f37",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "added"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        }
+      ],
+      "old_namespace": {
+        "path": "tools/hcsn/digital_read_before_20261031",
+        "base": {
+          "sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+          "type": "tree",
+          "mode": "040000"
+        },
+        "head": {
+          "sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+          "type": "tree",
+          "mode": "040000"
+        },
+        "pass": true
+      },
+      "pass": true
+    },
+    {
+      "branch": "research/digital-native-repair-20261101",
+      "observed_head": "db7bcace4870e6d1b7fde58625d22fd9f927407b",
+      "levels": [
+        {
+          "path": "root",
+          "base_tree_sha": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+          "head_tree_sha": "db7bcace4870e6d1b7fde58625d22fd9f927407b",
+          "base_entry_count": 53,
+          "head_entry_count": 53,
+          "allowed_child": "tools",
+          "diff": [
+            {
+              "path": "tools",
+              "before": {
+                "sha": "9108db92af375c7a7befd1c6f89eac211c444596",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "after": {
+                "sha": "2fe1ff816b4d6259ead01ffd3513f673ee3971bb",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "changed"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        },
+        {
+          "path": "tools",
+          "base_tree_sha": "9108db92af375c7a7befd1c6f89eac211c444596",
+          "head_tree_sha": "2fe1ff816b4d6259ead01ffd3513f673ee3971bb",
+          "base_entry_count": 6,
+          "head_entry_count": 6,
+          "allowed_child": "hcsn",
+          "diff": [
+            {
+              "path": "hcsn",
+              "before": {
+                "sha": "3ebcc9b2e8a249274b77fa7b2660ce8a3eb142d1",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "after": {
+                "sha": "5f5bae612018c0a56cd602a00e7b90f021486552",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "changed"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        },
+        {
+          "path": "tools/hcsn",
+          "base_tree_sha": "3ebcc9b2e8a249274b77fa7b2660ce8a3eb142d1",
+          "head_tree_sha": "5f5bae612018c0a56cd602a00e7b90f021486552",
+          "base_entry_count": 30,
+          "head_entry_count": 31,
+          "allowed_child": "digital_read_followup_20261101",
+          "diff": [
+            {
+              "path": "digital_read_followup_20261101",
+              "before": null,
+              "after": {
+                "sha": "5ba0797bfa76d70c831b4c7674ed03b9cc744e26",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "added"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        }
+      ],
+      "old_namespace": {
+        "path": "tools/hcsn/digital_read_before_20261031",
+        "base": {
+          "sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+          "type": "tree",
+          "mode": "040000"
+        },
+        "head": {
+          "sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+          "type": "tree",
+          "mode": "040000"
+        },
+        "pass": true
+      },
+      "pass": true
+    },
+    {
+      "branch": "research/digital-continuous-cold-replay-20261101",
+      "observed_head": "866ecf9872c968db55bc12ccf63826b7651c5918",
+      "levels": [
+        {
+          "path": "root",
+          "base_tree_sha": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+          "head_tree_sha": "866ecf9872c968db55bc12ccf63826b7651c5918",
+          "base_entry_count": 53,
+          "head_entry_count": 53,
+          "allowed_child": "tools",
+          "diff": [
+            {
+              "path": "tools",
+              "before": {
+                "sha": "9108db92af375c7a7befd1c6f89eac211c444596",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "after": {
+                "sha": "cb04c8aa3fb6f5bc2dddb6d6f66d4d42108e1ac8",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "changed"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        },
+        {
+          "path": "tools",
+          "base_tree_sha": "9108db92af375c7a7befd1c6f89eac211c444596",
+          "head_tree_sha": "cb04c8aa3fb6f5bc2dddb6d6f66d4d42108e1ac8",
+          "base_entry_count": 6,
+          "head_entry_count": 6,
+          "allowed_child": "hcsn",
+          "diff": [
+            {
+              "path": "hcsn",
+              "before": {
+                "sha": "3ebcc9b2e8a249274b77fa7b2660ce8a3eb142d1",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "after": {
+                "sha": "955c9b86e53ff8ee11bde6a95e12ba39822be0b5",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "changed"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        },
+        {
+          "path": "tools/hcsn",
+          "base_tree_sha": "3ebcc9b2e8a249274b77fa7b2660ce8a3eb142d1",
+          "head_tree_sha": "955c9b86e53ff8ee11bde6a95e12ba39822be0b5",
+          "base_entry_count": 30,
+          "head_entry_count": 31,
+          "allowed_child": "digital_read_followup_20261101",
+          "diff": [
+            {
+              "path": "digital_read_followup_20261101",
+              "before": null,
+              "after": {
+                "sha": "7ac5f88dc8f9c4c76b9ebf032bee5a795fe4b96d",
+                "type": "tree",
+                "mode": "040000"
+              },
+              "change": "added"
+            }
+          ],
+          "unexpected_diff": [],
+          "pass": true
+        }
+      ],
+      "old_namespace": {
+        "path": "tools/hcsn/digital_read_before_20261031",
+        "base": {
+          "sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+          "type": "tree",
+          "mode": "040000"
+        },
+        "head": {
+          "sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+          "type": "tree",
+          "mode": "040000"
+        },
+        "pass": true
+      },
+      "pass": true
+    }
+  ],
+  "pass": true
+}
