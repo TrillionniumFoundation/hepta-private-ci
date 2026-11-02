@@ -1,0 +1,70 @@
+name: HCSN joint distribution CPU fixtures
+
+"on":
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - tools/hcsn/digital_joint_20261102/**
+      - tools/hcsn/digital_read_before_20261031/task.py
+      - tools/hcsn/task_value_factorial_20261030/**
+      - tools/hcsn/third/memory/**
+      - tools/hcsn/benchmarks/data.py
+      - tools/hcsn/next/full_kernel/baseline_table.npz
+      - .github/workflows/hcsn-joint-distribution.yml
+  push:
+    paths:
+      - tools/hcsn/digital_joint_20261102/**
+      - .github/workflows/hcsn-joint-distribution.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-joint-cpu-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpu-fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      SOURCE_FREEZE_FILE: tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, node24
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tools/hcsn/digital_joint_20261102/*.py
+            /tools/hcsn/digital_joint_20261102/joint_protocol.json
+            /tools/hcsn/digital_joint_20261102/joint_kernel_protocol.json
+            /tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json
+            /tools/hcsn/digital_joint_20261102/joint_ci_PRIMARY_SOURCES.json
+            /tools/hcsn/digital_read_before_20261031/task.py
+            /tools/hcsn/task_value_factorial_20261030/task.py
+            /tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json
+            /tools/hcsn/benchmarks/data.py
+            /tools/hcsn/third/memory/reference.py
+            /tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz
+            /tools/hcsn/next/full_kernel/baseline_table.npz
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0, node24
+        with:
+          python-version: '3.12'
+      - name: Install official CPU dependency versions
+        run: |
+          python -m pip install numpy==2.3.5 scipy==1.17.0
+          python -m pip install torch==2.9.1 --index-url https://download.pytorch.org/whl/cpu
+          python -c "import numpy, scipy, torch; assert numpy.__version__ == '2.3.5' and scipy.__version__ == '1.17.0'; assert torch.__version__.split('+')[0] == '2.9.1' and torch.version.cuda is None"
+      - name: Run mathematical and semantic fixtures
+        run: python -m tools.hcsn.digital_joint_20261102.joint_ci --source-freeze "$SOURCE_FREEZE_FILE" --out "${{ runner.temp }}/hcsn-joint-cpu"
+      - name: Preserve every fixture result
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2, node24
+        with:
+          name: hcsn-joint-cpu-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-joint-cpu
+          if-no-files-found: error
+          retention-days: 14

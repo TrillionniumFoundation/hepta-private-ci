@@ -1,0 +1,481 @@
+{
+  "all48_gate_passes": 0,
+  "archival_process_receipt": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/scratch/9d953b0104b2/joint-package-archive-process/ARCHIVE_DRIVER.py"
+    ],
+    "complete_cpu_seconds": 5.221779,
+    "maximum_resident_kib": 41724,
+    "returncode": 0,
+    "schema": "joint-complete-process-receipt-v1",
+    "scope": "Evidence indexing/compression/readback complete child; separate from derivation and measured request benchmark; not included in request-frame endpoints",
+    "system_cpu_seconds": 0.164789,
+    "user_cpu_seconds": 5.05699,
+    "wall_seconds": 5.228290912004013
+  },
+  "archive": {
+    "all_members_readback_verified": true,
+    "bytes": 24095392,
+    "members": 3130,
+    "path": "joint_package_EVIDENCE.tar.gz",
+    "sha256": "ba94cf476f1c627ba6f4e408c77e203544ababaa58b578abfcc8da54eb4e77ca"
+  },
+  "complete_measured_process_cpu_total_including_archival_seconds": 83.2005,
+  "complete_measured_process_cpu_total_seconds": 77.97872100000001,
+  "complete_process_receipts": {
+    "joint-package-benchmark-process": {
+      "complete_cpu_seconds": 76.432984,
+      "identity": {
+        "adapter_sha256": "57c9e351ce3c15381f1b923819b6f562ec0c90e739702fbed0105d48ee649643",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-u",
+          "-m",
+          "tools.hcsn.digital_joint_20261102.joint_package_registered_v2",
+          "benchmark",
+          "--root",
+          "/workspace/scratch/9d953b0104b2/joint-formal_attempt2",
+          "--packages",
+          "/workspace/scratch/9d953b0104b2/joint-inference-packages_attempt2",
+          "--confirmation",
+          "/workspace/scratch/9d953b0104b2/joint-confirmation",
+          "--out",
+          "/workspace/scratch/9d953b0104b2/joint-package-benchmark"
+        ],
+        "published_adapter_commit": "52dcec27117a286a2c83d406837af9dee2eba410",
+        "published_model_commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+        "wall_started_unix": 1793585686.9464428
+      },
+      "maximum_resident_kib": 104624,
+      "returncode": 0,
+      "schema": "joint-complete-process-receipt-v1",
+      "scope": "Complete benchmark child exec/import/integrity checks/full request replays/teacher audits/archive writes/summary/adapter receipt/exit; derive process and supervisor CPU separate; CPU request-frame endpoints are nested within this complete cost",
+      "system_cpu_seconds": 0.930808,
+      "user_cpu_seconds": 75.502176,
+      "wait_status": 0,
+      "wall_seconds": 81.03862342600041
+    },
+    "joint-package-derive-process": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "tools.hcsn.digital_joint_20261102.joint_inference_package",
+        "--root",
+        "/workspace/scratch/9d953b0104b2/joint-formal_attempt2",
+        "--out",
+        "/workspace/scratch/9d953b0104b2/joint-inference-packages",
+        "--published-model-commit",
+        "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc"
+      ],
+      "complete_cpu_seconds": 0.157527,
+      "maximum_resident_kib": 25124,
+      "returncode": 1,
+      "schema": "joint-complete-process-receipt-v1",
+      "scope": "child complete exec/import/derive/validation/manifest/output/exit; includes no benchmark and no supervisor CPU",
+      "system_cpu_seconds": 0.016013,
+      "user_cpu_seconds": 0.141514,
+      "wait_status": 256,
+      "wall_seconds": 0.15785169499577023
+    },
+    "joint-package-derive-process_attempt2": {
+      "complete_cpu_seconds": 1.38821,
+      "identity": {
+        "adapter_sha256": "57c9e351ce3c15381f1b923819b6f562ec0c90e739702fbed0105d48ee649643",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "tools.hcsn.digital_joint_20261102.joint_package_registered_v2",
+          "derive",
+          "--root",
+          "/workspace/scratch/9d953b0104b2/joint-formal_attempt2",
+          "--out",
+          "/workspace/scratch/9d953b0104b2/joint-inference-packages_attempt2",
+          "--published-model-commit",
+          "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc"
+        ],
+        "published_adapter_commit": "52dcec27117a286a2c83d406837af9dee2eba410",
+        "published_model_commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+        "wall_started_unix": 1793585676.5997884
+      },
+      "maximum_resident_kib": 26692,
+      "returncode": 0,
+      "schema": "joint-complete-process-receipt-v1",
+      "scope": "Complete child exec/import/derive/validation/manifest/output/exit; no benchmark or supervisor CPU; prior failed derive separate and retained",
+      "system_cpu_seconds": 0.044811,
+      "user_cpu_seconds": 1.343399,
+      "wait_status": 0,
+      "wall_seconds": 1.566061429999536
+    }
+  },
+  "cost_ledger_limit": "Named child receipts only. Supervisor CPU, independent arithmetic-check process CPU, publication/network costs and other study stages are not included in this sum; do not treat as end-to-end lifecycle accounting.",
+  "failure_preserved": "Original published fixture dt1.0 absent from formal table support: exit1/.157527CPU with partial output and exact source snapshot retained. Versioned published adapter repaired only engineering fixture to registered dt.75 after main confirmation started, before package benchmark, without inspecting main results.",
+  "independent_raw_check": {
+    "all48_gate_passes": 0,
+    "all_numeric_and_terminal_recomputations_passed": true,
+    "computed": {
+      "raw/iid/affine_markov": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -1.074736700227759,
+          "mean": -0.04959044515046187,
+          "upper": 0.9755558099268353
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.9295164658318618,
+          "mean": 0.02057340471727652,
+          "upper": 0.9706632752664148
+        },
+        "log_wall_p95_ratio": {
+          "lower": -1.1179191706176703,
+          "mean": 0.07088413454063086,
+          "upper": 1.259687439698932
+        },
+        "quality": {
+          "lower": -0.5935311262123231,
+          "mean": -0.025618750000000003,
+          "upper": 0.542293626212323
+        }
+      },
+      "raw/iid/full_markov": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -0.4813849730135315,
+          "mean": -0.005164854459004794,
+          "upper": 0.47105526409552195
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.5187666809217691,
+          "mean": -0.025817234996409328,
+          "upper": 0.46713221092895046
+        },
+        "log_wall_p95_ratio": {
+          "lower": -0.7805065331800835,
+          "mean": 0.04443269877714382,
+          "upper": 0.8693719307343711
+        },
+        "quality": {
+          "lower": -0.3571100070790457,
+          "mean": 0.09638749999999999,
+          "upper": 0.5498850070790456
+        }
+      },
+      "raw/iid/gru": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -1.4429449470720703,
+          "mean": -0.2641217934469775,
+          "upper": 0.9147013601781153
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.90449508384501,
+          "mean": 0.24445666546283207,
+          "upper": 1.3934084147706742
+        },
+        "log_wall_p95_ratio": {
+          "lower": -1.5115406792655135,
+          "mean": -0.18201639112568144,
+          "upper": 1.1475078970141508
+        },
+        "quality": {
+          "lower": -0.6632691776688716,
+          "mean": -0.012337500000000003,
+          "upper": 0.6385941776688716
+        }
+      },
+      "raw/ood/affine_markov": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -0.9032610932989174,
+          "mean": -0.1877733108735959,
+          "upper": 0.5277144715517257
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.6715184782595385,
+          "mean": 0.1777727743231034,
+          "upper": 1.0270640269057454
+        },
+        "log_wall_p95_ratio": {
+          "lower": -1.8138880093433003,
+          "mean": -0.19464010365912598,
+          "upper": 1.424607802025048
+        },
+        "quality": {
+          "lower": -0.3434207286982225,
+          "mean": -0.014500000000000004,
+          "upper": 0.31442072869822246
+        }
+      },
+      "raw/ood/full_markov": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -0.4129739642220803,
+          "mean": -0.2004652046622182,
+          "upper": 0.012043554897643916
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.1494468763272229,
+          "mean": 0.17604371793876913,
+          "upper": 0.5015343122047612
+        },
+        "log_wall_p95_ratio": {
+          "lower": -0.7479272153869676,
+          "mean": -0.21721102604881887,
+          "upper": 0.3135051632893298
+        },
+        "quality": {
+          "lower": -0.28855520705438636,
+          "mean": -0.022599999999999995,
+          "upper": 0.24335520705438635
+        }
+      },
+      "raw/ood/gru": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -1.122439281409422,
+          "mean": -0.332462007293513,
+          "upper": 0.457515266822396
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.42518179770455855,
+          "mean": 0.3092995275666288,
+          "upper": 1.0437808528378163
+        },
+        "log_wall_p95_ratio": {
+          "lower": -1.0874755786205794,
+          "mean": -0.10607425612030524,
+          "upper": 0.875327066379969
+        },
+        "quality": {
+          "lower": -0.24994963704291595,
+          "mean": -0.10345,
+          "upper": 0.043049637042915936
+        }
+      },
+      "slim/iid/affine_markov": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -1.3137771218349885,
+          "mean": -0.013015579750355461,
+          "upper": 1.2877459623342775
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -1.263937742919429,
+          "mean": 0.043508230823401224,
+          "upper": 1.3509542045662313
+        },
+        "log_wall_p95_ratio": {
+          "lower": -2.118586164680964,
+          "mean": -0.02733637459527245,
+          "upper": 2.063913415490419
+        },
+        "quality": {
+          "lower": -0.5935311262123231,
+          "mean": -0.025618750000000003,
+          "upper": 0.542293626212323
+        }
+      },
+      "slim/iid/full_markov": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -0.5625591738027264,
+          "mean": -0.07635134621631334,
+          "upper": 0.40985648137009967
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.44740738392623247,
+          "mean": 0.0912285925047711,
+          "upper": 0.6298645689357747
+        },
+        "log_wall_p95_ratio": {
+          "lower": -0.746506282714072,
+          "mean": -0.05360910654840818,
+          "upper": 0.6392880696172556
+        },
+        "quality": {
+          "lower": -0.3571100070790457,
+          "mean": 0.09638749999999999,
+          "upper": 0.5498850070790456
+        }
+      },
+      "slim/iid/gru": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -1.7858602958360321,
+          "mean": -0.3265684790450658,
+          "upper": 1.1327233377459005
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -1.1398093912052585,
+          "mean": 0.3404194906291863,
+          "upper": 1.8206483724636309
+        },
+        "log_wall_p95_ratio": {
+          "lower": -2.0355124583968913,
+          "mean": -0.2765842063972425,
+          "upper": 1.4823440456024064
+        },
+        "quality": {
+          "lower": -0.6632691776688716,
+          "mean": -0.012337500000000003,
+          "upper": 0.6385941776688716
+        }
+      },
+      "slim/ood/affine_markov": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -0.8160703086754177,
+          "mean": -0.1053999616898657,
+          "upper": 0.6052703852956864
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.6589971139704798,
+          "mean": 0.0918695069635401,
+          "upper": 0.84273612789756
+        },
+        "log_wall_p95_ratio": {
+          "lower": -1.456688866757716,
+          "mean": -0.12198344823250112,
+          "upper": 1.212721970292714
+        },
+        "quality": {
+          "lower": -0.3434207286982225,
+          "mean": -0.014500000000000004,
+          "upper": 0.31442072869822246
+        }
+      },
+      "slim/ood/full_markov": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -0.39084629002682736,
+          "mean": -0.1229374989834289,
+          "upper": 0.1449712920599696
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.12640797866522877,
+          "mean": 0.13052366885668673,
+          "upper": 0.3874553163786022
+        },
+        "log_wall_p95_ratio": {
+          "lower": -1.0824668935593147,
+          "mean": -0.14961504319477098,
+          "upper": 0.7832368071697726
+        },
+        "quality": {
+          "lower": -0.28855520705438636,
+          "mean": -0.022599999999999995,
+          "upper": 0.24335520705438635
+        }
+      },
+      "slim/ood/gru": {
+        "gates": {
+          "cpu_saving": false,
+          "quality_noninferior": false,
+          "throughput_not_degraded": false,
+          "wall_latency_not_degraded": false
+        },
+        "log_cpu_ratio": {
+          "lower": -1.2076765239895848,
+          "mean": -0.3921809591854257,
+          "upper": 0.42331460561873346
+        },
+        "log_serial_service_throughput_ratio": {
+          "lower": -0.368531490542688,
+          "mean": 0.41425354288833965,
+          "upper": 1.1970385763193674
+        },
+        "log_wall_p95_ratio": {
+          "lower": -1.079979372090699,
+          "mean": -0.1983970350847348,
+          "upper": 0.6831853019212294
+        },
+        "quality": {
+          "lower": -0.24994963704291595,
+          "mean": -0.10345,
+          "upper": 0.043049637042915936
+        }
+      }
+    },
+    "due_read_attempts": 2838,
+    "episode_files": 80,
+    "intervals": 48,
+    "maximum_interval_absolute_error": 3.1086244689504383e-15,
+    "requests": 3200,
+    "schema": "joint-package-independent-check-v1",
+    "scope": "Post-run independent arithmetic and archived raw/slim equality; reads only benchmark raw plus fixed world evaluator labels, never main confirmation result files; no new fits/worlds/replay/tuning",
+    "semantic_pairs": 1600,
+    "successful_content_decodes": 2526
+  },
+  "index": {
+    "path": "joint_package_EVIDENCE_INDEX.json",
+    "sha256": "e07de6c571c4cec16dfd5ed733d955cb230f11fa956e658ce95ee4c8d64c1d94"
+  },
+  "initial_public_prediction_exact_rows": 280,
+  "models": 20,
+  "new_fits": 0,
+  "new_worlds": 0,
+  "published_model_commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+  "published_registered_adapter_commit": "52dcec27117a286a2c83d406837af9dee2eba410",
+  "requests": 3200,
+  "robust_comparisons_passed": 0,
+  "robust_comparisons_total": 6,
+  "schema": "joint-package-evidence-v1",
+  "scope": "CPU request-frame robustness only. All48 endpoints failed. Original primary14/secondary24 unchanged. No task-lossless saving, lifecycle advantage, GPU, energy, native or network-service qualification asserted.",
+  "semantic_exact_pairs": 1600,
+  "worlds": 400
+}

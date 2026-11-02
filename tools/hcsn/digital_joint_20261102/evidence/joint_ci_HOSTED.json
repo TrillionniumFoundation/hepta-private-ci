@@ -1,0 +1,140 @@
+{
+  "run_id": 41374974573,
+  "head_sha": "dd290b2ba7c42cbbf0e633577e6816586f6de660",
+  "status": "completed",
+  "conclusion": "success",
+  "canonical_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41374974573",
+  "jobs": {
+    "total_count": 1,
+    "jobs": [
+      {
+        "id": 125053121554,
+        "run_id": 41374974573,
+        "workflow_name": "HCSN joint distribution CPU fixtures",
+        "head_branch": "research/digital-joint-verification-20261102",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41374974573",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAdHb80Eg",
+        "head_sha": "dd290b2ba7c42cbbf0e633577e6816586f6de660",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/125053121554",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41374974573/job/125053121554",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-02T01:55:30Z",
+        "started_at": "2026-11-02T01:55:33Z",
+        "completed_at": "2026-11-02T01:56:18Z",
+        "name": "cpu-fixtures",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-02T01:55:34Z",
+            "completed_at": "2026-11-02T01:55:35Z"
+          },
+          {
+            "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-02T01:55:35Z",
+            "completed_at": "2026-11-02T01:55:37Z"
+          },
+          {
+            "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-02T01:55:37Z",
+            "completed_at": "2026-11-02T01:55:37Z"
+          },
+          {
+            "name": "Install official CPU dependency versions",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-02T01:55:37Z",
+            "completed_at": "2026-11-02T01:56:00Z"
+          },
+          {
+            "name": "Run mathematical and semantic fixtures",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-02T01:56:00Z",
+            "completed_at": "2026-11-02T01:56:14Z"
+          },
+          {
+            "name": "Preserve every fixture result",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-02T01:56:14Z",
+            "completed_at": "2026-11-02T01:56:15Z"
+          },
+          {
+            "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-02T01:56:15Z",
+            "completed_at": "2026-11-02T01:56:15Z"
+          },
+          {
+            "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12,
+            "started_at": "2026-11-02T01:56:15Z",
+            "completed_at": "2026-11-02T01:56:16Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13,
+            "started_at": "2026-11-02T01:56:16Z",
+            "completed_at": "2026-11-02T01:56:16Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/125053121554",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000317149,
+        "runner_name": "GitHub Actions 1000317149",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  },
+  "artifacts": {
+    "total_count": 1,
+    "artifacts": [
+      {
+        "id": 13110702620,
+        "node_id": "MDg6QXJ0aWZhY3QxMzExMDcwMjYyMA==",
+        "name": "hcsn-joint-cpu-41374974573-1",
+        "size_in_bytes": 1435551,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13110702620",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13110702620/zip",
+        "expired": false,
+        "digest": "sha256:dd85264edd1e73c63ff762ea67957173757822031cb55d065d8597234361579f",
+        "created_at": "2026-11-02T01:56:15Z",
+        "updated_at": "2026-11-02T01:56:15Z",
+        "expires_at": "2026-11-16T01:56:14Z",
+        "workflow_run": {
+          "id": 41374974573,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "research/digital-joint-verification-20261102",
+          "head_sha": "dd290b2ba7c42cbbf0e633577e6816586f6de660"
+        }
+      }
+    ]
+  },
+  "scope": "Six CPU source/semantics/budget/gradient fixtures; no formal fit, confirmation, native gate or GPU/energy test",
+  "local_training_torch": "2.15.0+cpu",
+  "hosted_torch": "2.9.1+cpu"
+}

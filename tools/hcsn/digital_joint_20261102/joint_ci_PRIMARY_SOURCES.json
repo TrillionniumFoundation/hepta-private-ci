@@ -1,0 +1,67 @@
+{
+  "pytorch": {
+    "url": "https://github.com/pytorch/pytorch/releases/tag/v2.9.1",
+    "tag": "v2.9.1",
+    "published_at": "2025-11-12T19:27:19Z",
+    "release_id": 261869057,
+    "prerelease": false,
+    "draft": false
+  },
+  "numpy": {
+    "name": "numpy",
+    "url": "https://api.github.com/repos/numpy/numpy/releases/tags/v2.3.5",
+    "tag": "v2.3.5",
+    "published_at": "2025-11-16T23:15:13Z",
+    "html_url": "https://github.com/numpy/numpy/releases/tag/v2.3.5"
+  },
+  "scipy": {
+    "name": "scipy",
+    "url": "https://api.github.com/repos/scipy/scipy/releases/tags/v1.17.0",
+    "tag": "v1.17.0",
+    "published_at": "2026-01-10T22:02:59Z",
+    "html_url": "https://github.com/scipy/scipy/releases/tag/v1.17.0"
+  },
+  "actions": {
+    "checkout": {
+      "name": "checkout",
+      "repository": "actions/checkout",
+      "tag": "v7.0.1",
+      "published_at": "2026-07-20T15:10:05Z",
+      "url": "https://github.com/actions/checkout/releases/tag/v7.0.1",
+      "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "type": "commit",
+      "action_runtime": "node24",
+      "source_url": "https://github.com/actions/checkout/blob/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml"
+    },
+    "setup_python": {
+      "name": "setup_python",
+      "repository": "actions/setup-python",
+      "tag": "v7.1.0",
+      "published_at": "2026-10-22T02:56:04Z",
+      "url": "https://github.com/actions/setup-python/releases/tag/v7.1.0",
+      "sha": "6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+      "type": "commit",
+      "action_runtime": "node24",
+      "source_url": "https://github.com/actions/setup-python/blob/6d4fd22b20465ccc0f7354476588e8df7c9ca0e0/action.yml"
+    },
+    "upload_artifact": {
+      "name": "upload_artifact",
+      "repository": "actions/upload-artifact",
+      "tag": "v7.0.2",
+      "published_at": "2026-10-07T10:08:14Z",
+      "url": "https://github.com/actions/upload-artifact/releases/tag/v7.0.2",
+      "sha": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+      "type": "commit",
+      "action_runtime": "node24",
+      "source_url": "https://github.com/actions/upload-artifact/blob/cf430e030ddbb5b0abf93d22962f4752f3646cd9/action.yml"
+    }
+  },
+  "expected_ci_runtime": {
+    "python": "3.12",
+    "torch": "2.9.1+cpu",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "training_runtime_declared": "2.15.0+cpu",
+  "scope": "Official release/version and current pinned action commit identities; CPU mathematical/semantic replay is not bit-identical training weight regeneration."
+}

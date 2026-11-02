@@ -1,0 +1,614 @@
+{
+  "audit_cpu_seconds": 85.436983701,
+  "audit_source_sha256": "bc73c5561ca3ad26580e5838bda3a5cdd2e9936255a3c6eb603f0c590f39c80e",
+  "audit_wall_seconds": 85.83182324300287,
+  "compiled_argmax_numerical_ties": 325,
+  "compiled_states": 310626,
+  "complete_process_cpu_seconds": 166.47012900000001,
+  "complete_process_peak_resident_kib": 119800,
+  "complete_process_receipt_sha256": "eaa77dbb2eb8de04c458190d010be4689578c5882be87901031bca60f98e69e9",
+  "complete_process_wall_seconds": 167.05815139200422,
+  "complete_request_cpu_seconds": 130.48639715000354,
+  "decisions": 23558,
+  "due_read_attempts": 7016,
+  "episodes": 4800,
+  "failed_content_reads": 854,
+  "inference_frame_model_load_cpu_fraction": {
+    "iid/affine_markov/fixed": 0.22927852034713517,
+    "iid/affine_markov/value": 0.41412865856154346,
+    "iid/full_markov/fixed": 0.2324049097665524,
+    "iid/full_markov/value": 0.40780244459976644,
+    "iid/gru/fixed": 0.28252480897805693,
+    "iid/gru/value": 0.4500527834470276,
+    "iid/reference_deadline_read": 0.05082690836142446,
+    "iid/reference_known_environment": 0.8902676250121007,
+    "iid/reference_no_read": 0.7897314336614988,
+    "iid/reference_nominal": 0.8970153783590931,
+    "iid/renewal/fixed": 0.23318287437230226,
+    "iid/renewal/value": 0.40801465348756655,
+    "ood/affine_markov/fixed": 0.2427860260810104,
+    "ood/affine_markov/value": 0.5537181574217036,
+    "ood/full_markov/fixed": 0.25393144676996415,
+    "ood/full_markov/value": 0.5289774113903037,
+    "ood/gru/fixed": 0.30241084641478005,
+    "ood/gru/value": 0.5785391688990267,
+    "ood/reference_deadline_read": 0.08322548407941605,
+    "ood/reference_known_environment": 0.9385516851021449,
+    "ood/reference_no_read": 0.7910956165150403,
+    "ood/reference_nominal": 0.9402006913387356,
+    "ood/renewal/fixed": 0.23986614212805835,
+    "ood/renewal/value": 0.6040569144057254
+  },
+  "input_manifest_sha256": "85b0d306325b1e7be680ffb2773d87be88934660230a60a8768102fc59c87bc0",
+  "max_compiled_stored_action_oracle_gap": 1.1102230246251565e-16,
+  "model_freeze_sha256": "982ccd42b472072aa860e6c0d203fab72a740bd8bef120bc6e01197b1befa29c",
+  "passed": true,
+  "postexecution_audit_cpu_seconds": 17.723042515000422,
+  "primary": {
+    "iid/affine_markov:value-fixed": {
+      "fit_differences": [
+        0.15637500000000004,
+        0.19381249999999994,
+        0.15575,
+        0.08725,
+        0.19806249999999992
+      ],
+      "lower": 0.03625507040915213,
+      "mean": 0.15824999999999997,
+      "passed": true,
+      "upper": 0.2802449295908478
+    },
+    "iid/full_markov:value-fixed": {
+      "fit_differences": [
+        -0.046187500000000076,
+        0.010937499999999961,
+        0.05203124999999996,
+        0.13403124999999994,
+        -0.12274999999999997
+      ],
+      "lower": -0.26135555400901517,
+      "mean": 0.005612499999999965,
+      "passed": false,
+      "upper": 0.2725805540090151
+    },
+    "iid/gru:value-fixed": {
+      "fit_differences": [
+        -0.06462500000000002,
+        0.16065625,
+        0.26446875,
+        0.20749999999999996,
+        0.0027500000000000024
+      ],
+      "lower": -0.2687850873981082,
+      "mean": 0.11414999999999997,
+      "passed": false,
+      "upper": 0.49708508739810814
+    },
+    "iid/renewal-minus-affine_markov": {
+      "fit_differences": [
+        -0.06428125000000007,
+        -0.09096875,
+        -0.16725,
+        0.22543749999999996,
+        -0.031031249999999844
+      ],
+      "lower": -0.4348086769614147,
+      "mean": -0.02561874999999999,
+      "passed": false,
+      "upper": 0.38357117696141474
+    },
+    "iid/renewal-minus-full_markov": {
+      "fit_differences": [
+        0.03512499999999999,
+        0.09190625,
+        -0.06353124999999998,
+        0.17865625000000002,
+        0.23978125000000006
+      ],
+      "lower": -0.2303646884916299,
+      "mean": 0.09638750000000001,
+      "passed": false,
+      "upper": 0.4231396884916299
+    },
+    "iid/renewal-minus-gru": {
+      "fit_differences": [
+        0.0056562500000000016,
+        -0.057812500000000044,
+        -0.27703125,
+        0.10518749999999999,
+        0.16231250000000008
+      ],
+      "lower": -0.48134415806694075,
+      "mean": -0.012337500000000001,
+      "passed": false,
+      "upper": 0.45666915806694075
+    },
+    "iid/renewal:value-fixed": {
+      "fit_differences": [
+        -0.007906250000000059,
+        0.10178124999999996,
+        -0.011500000000000024,
+        0.31268749999999995,
+        0.06703125000000004
+      ],
+      "lower": -0.271010013432584,
+      "mean": 0.09241874999999997,
+      "passed": false,
+      "upper": 0.4558475134325839
+    },
+    "ood/affine_markov:value-fixed": {
+      "fit_differences": [
+        0.31075,
+        0.13375000000000004,
+        0.21725000000000008,
+        0.25375,
+        0.17750000000000002
+      ],
+      "lower": 0.03132589910622424,
+      "mean": 0.21860000000000004,
+      "passed": true,
+      "upper": 0.40587410089377585
+    },
+    "ood/full_markov:value-fixed": {
+      "fit_differences": [
+        0.33375,
+        0.09375000000000001,
+        0.15225000000000002,
+        0.25225,
+        0.1345
+      ],
+      "lower": -0.07514382435373773,
+      "mean": 0.19329999999999997,
+      "passed": false,
+      "upper": 0.4617438243537377
+    },
+    "ood/gru:value-fixed": {
+      "fit_differences": [
+        0.31750000000000006,
+        0.38625000000000004,
+        0.29575,
+        0.28175000000000006,
+        0.28
+      ],
+      "lower": 0.19145277511544195,
+      "mean": 0.31225,
+      "passed": true,
+      "upper": 0.4330472248845581
+    },
+    "ood/renewal-minus-affine_markov": {
+      "fit_differences": [
+        -0.10099999999999996,
+        -0.10200000000000008,
+        0.083,
+        0.05725,
+        -0.009750000000000009
+      ],
+      "lower": -0.25149263229615193,
+      "mean": -0.014500000000000008,
+      "passed": false,
+      "upper": 0.22249263229615193
+    },
+    "ood/renewal-minus-full_markov": {
+      "fit_differences": [
+        -0.12399999999999993,
+        -0.06200000000000004,
+        0.048,
+        0.002250000000000002,
+        0.02275000000000002
+      ],
+      "lower": -0.21422496946343333,
+      "mean": -0.022599999999999988,
+      "passed": false,
+      "upper": 0.16902496946343337
+    },
+    "ood/renewal-minus-gru": {
+      "fit_differences": [
+        -0.11499999999999998,
+        -0.15975000000000006,
+        -0.10699999999999996,
+        -0.07275000000000001,
+        -0.06275000000000003
+      ],
+      "lower": -0.20900532559665982,
+      "mean": -0.10345,
+      "passed": false,
+      "upper": 0.002105325596659824
+    },
+    "ood/renewal:value-fixed": {
+      "fit_differences": [
+        0.1665000000000001,
+        0.13174999999999995,
+        0.20025000000000004,
+        0.30575,
+        0.16275
+      ],
+      "lower": 0.0085787375054244,
+      "mean": 0.19340000000000002,
+      "passed": false,
+      "upper": 0.37822126249457566
+    }
+  },
+  "primary_passes": 3,
+  "published_adapter_commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+  "published_model_commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+  "scope": "All raw episodes, regenerated inputs, supplied-law Q, actual FullHX redecode, costs arithmetic and separate14/24 CI families; not independent hardware timing, continuous-law optimum, lifecycle adoption or optimizer rerun",
+  "secondary": {
+    "iid/renewal-minus-affine_markov": {
+      "family": "secondary adoption24intervals alpha.05, separate from primary14interval alpha.05",
+      "gates": {
+        "cpu_saving": false,
+        "quality_noninferior": false,
+        "throughput_not_degraded": false,
+        "wall_latency_not_degraded": false
+      },
+      "log_cpu_ratio": {
+        "fit_values": [
+          -0.19456471150432383,
+          0.26906966515078834,
+          -0.3962145330201817,
+          0.07888150205272926,
+          -0.10688705499059369
+        ],
+        "lower": -0.8796354664317569,
+        "mean": -0.06994302646231634,
+        "upper": 0.7397494135071243
+      },
+      "log_serial_service_throughput_ratio": {
+        "fit_values": [
+          0.1945637337684484,
+          -0.2690378163181676,
+          0.396234251919691,
+          -0.07735796693430882,
+          0.08690507210352132
+        ],
+        "lower": -0.7409320053092426,
+        "mean": 0.06626145490783687,
+        "upper": 0.8734549151249164
+      },
+      "log_wall_p95_ratio": {
+        "fit_values": [
+          -0.338018568525579,
+          0.35296239267116347,
+          -0.2635737483048313,
+          -0.06700846265322236,
+          0.0861197112225034
+        ],
+        "lower": -0.9288505424054492,
+        "mean": -0.04590373511799316,
+        "upper": 0.8370430721694628
+      },
+      "passed": false,
+      "quality": {
+        "fit_values": [
+          -0.06428125000000007,
+          -0.09096875,
+          -0.16725,
+          0.22543749999999996,
+          -0.031031249999999844
+        ],
+        "lower": -0.4986473706803826,
+        "mean": -0.02561874999999999,
+        "upper": 0.4474098706803827
+      }
+    },
+    "iid/renewal-minus-full_markov": {
+      "family": "secondary adoption24intervals alpha.05, separate from primary14interval alpha.05",
+      "gates": {
+        "cpu_saving": false,
+        "quality_noninferior": false,
+        "throughput_not_degraded": false,
+        "wall_latency_not_degraded": false
+      },
+      "log_cpu_ratio": {
+        "fit_values": [
+          -0.1582388909851859,
+          0.05135839400922217,
+          0.09782713240645544,
+          -0.304682407015187,
+          0.05508265855096534
+        ],
+        "lower": -0.6007445060370722,
+        "mean": -0.05173062260674599,
+        "upper": 0.4972832608235802
+      },
+      "log_serial_service_throughput_ratio": {
+        "fit_values": [
+          0.15839861438696004,
+          -0.0513067583123656,
+          -0.09773232916681568,
+          0.305165499161474,
+          -0.07421524270638713
+        ],
+        "lower": -0.5114565706254788,
+        "mean": 0.048061956672573125,
+        "upper": 0.6075804839706249
+      },
+      "log_wall_p95_ratio": {
+        "fit_values": [
+          -0.4965282524569409,
+          0.009834848419178597,
+          0.006117270044035934,
+          -0.4196628359975911,
+          0.12109169500788114
+        ],
+        "lower": -1.0477959206376952,
+        "mean": -0.15582945499668727,
+        "upper": 0.7361370106443206
+      },
+      "passed": false,
+      "quality": {
+        "fit_values": [
+          0.03512499999999999,
+          0.09190625,
+          -0.06353124999999998,
+          0.17865625000000002,
+          0.23978125000000006
+        ],
+        "lower": -0.28134207456273574,
+        "mean": 0.09638750000000001,
+        "upper": 0.4741170745627358
+      }
+    },
+    "iid/renewal-minus-gru": {
+      "family": "secondary adoption24intervals alpha.05, separate from primary14interval alpha.05",
+      "gates": {
+        "cpu_saving": false,
+        "quality_noninferior": false,
+        "throughput_not_degraded": false,
+        "wall_latency_not_degraded": false
+      },
+      "log_cpu_ratio": {
+        "fit_values": [
+          -0.1595510269625124,
+          0.1675243791047378,
+          -0.6648703874795253,
+          -0.3850128560246783,
+          -0.23610902827612906
+        ],
+        "lower": -1.2244776847126289,
+        "mean": -0.25560378392762145,
+        "upper": 0.7132701168573861
+      },
+      "log_serial_service_throughput_ratio": {
+        "fit_values": [
+          0.15957576944837654,
+          -0.16752305229288098,
+          0.6648443227905894,
+          0.38496077927704286,
+          0.22237833232754026
+        ],
+        "lower": -0.7168645246761463,
+        "mean": 0.2528472303101336,
+        "upper": 1.2225589852964136
+      },
+      "log_wall_p95_ratio": {
+        "fit_values": [
+          -0.2679424075084283,
+          0.3543422624632232,
+          -0.5803517931157729,
+          -0.42977526170998936,
+          -0.1071074407918772
+        ],
+        "lower": -1.3478992967595749,
+        "mean": -0.20616692813256893,
+        "upper": 0.9355654404944371
+      },
+      "passed": false,
+      "quality": {
+        "fit_values": [
+          0.0056562500000000016,
+          -0.057812500000000044,
+          -0.27703125,
+          0.10518749999999999,
+          0.16231250000000008
+        ],
+        "lower": -0.5545150022732681,
+        "mean": -0.012337500000000001,
+        "upper": 0.5298400022732681
+      }
+    },
+    "ood/renewal-minus-affine_markov": {
+      "family": "secondary adoption24intervals alpha.05, separate from primary14interval alpha.05",
+      "gates": {
+        "cpu_saving": false,
+        "quality_noninferior": false,
+        "throughput_not_degraded": false,
+        "wall_latency_not_degraded": false
+      },
+      "log_cpu_ratio": {
+        "fit_values": [
+          -0.2971195616005348,
+          0.14614087228055145,
+          -0.34665721064857424,
+          0.2098537238359345,
+          -0.18902844192406926
+        ],
+        "lower": -0.9107586418943411,
+        "mean": -0.09536212361133847,
+        "upper": 0.7200343946716642
+      },
+      "log_serial_service_throughput_ratio": {
+        "fit_values": [
+          0.29699063038227724,
+          -0.1462196625305153,
+          0.3515737168289272,
+          -0.20588832747504227,
+          0.21172197590900152
+        ],
+        "lower": -0.7209011620464995,
+        "mean": 0.1016356666229297,
+        "upper": 0.9241724952923588
+      },
+      "log_wall_p95_ratio": {
+        "fit_values": [
+          -0.505035173156019,
+          0.21210207206536272,
+          -0.4585626050506505,
+          0.5335321988681033,
+          -0.2774752576831181
+        ],
+        "lower": -1.5383723651361725,
+        "mean": -0.09908775299126431,
+        "upper": 1.3401968591536437
+      },
+      "passed": false,
+      "quality": {
+        "fit_values": [
+          -0.10099999999999996,
+          -0.10200000000000008,
+          0.083,
+          0.05725,
+          -0.009750000000000009
+        ],
+        "lower": -0.28846641652186356,
+        "mean": -0.014500000000000008,
+        "upper": 0.25946641652186353
+      }
+    },
+    "ood/renewal-minus-full_markov": {
+      "family": "secondary adoption24intervals alpha.05, separate from primary14interval alpha.05",
+      "gates": {
+        "cpu_saving": false,
+        "quality_noninferior": false,
+        "throughput_not_degraded": false,
+        "wall_latency_not_degraded": false
+      },
+      "log_cpu_ratio": {
+        "fit_values": [
+          -0.23133811638199236,
+          -0.24647623043416994,
+          -0.20367974888028942,
+          0.04128387325703884,
+          -0.044919257145032525
+        ],
+        "lower": -0.5433871321824155,
+        "mean": -0.13702589591688907,
+        "upper": 0.2693353403486373
+      },
+      "log_serial_service_throughput_ratio": {
+        "fit_values": [
+          0.23438973023096085,
+          0.2464626906407338,
+          0.20352910596620233,
+          -0.03258139646742614,
+          0.05312424056779248
+        ],
+        "lower": -0.2528286872882135,
+        "mean": 0.14098487418765265,
+        "upper": 0.5347984356635188
+      },
+      "log_wall_p95_ratio": {
+        "fit_values": [
+          -0.21799579796119056,
+          -0.3303100820776231,
+          -0.20839224335436032,
+          0.4083130487693821,
+          0.15134308092532328
+        ],
+        "lower": -1.019935597502515,
+        "mean": -0.03940839873969372,
+        "upper": 0.9411188000231275
+      },
+      "passed": false,
+      "quality": {
+        "fit_values": [
+          -0.12399999999999993,
+          -0.06200000000000004,
+          0.048,
+          0.002250000000000002,
+          0.02275000000000002
+        ],
+        "lower": -0.24412083670856288,
+        "mean": -0.022599999999999988,
+        "upper": 0.19892083670856292
+      }
+    },
+    "ood/renewal-minus-gru": {
+      "family": "secondary adoption24intervals alpha.05, separate from primary14interval alpha.05",
+      "gates": {
+        "cpu_saving": false,
+        "quality_noninferior": false,
+        "throughput_not_degraded": false,
+        "wall_latency_not_degraded": false
+      },
+      "log_cpu_ratio": {
+        "fit_values": [
+          -0.42356007868945866,
+          -0.05826749287521715,
+          -0.6229600330993992,
+          -0.16845010864909263,
+          -0.4133742596527719
+        ],
+        "lower": -1.0490114477078882,
+        "mean": -0.3373223945931879,
+        "upper": 0.3743666585215123
+      },
+      "log_serial_service_throughput_ratio": {
+        "fit_values": [
+          0.42349746267032873,
+          0.05845789587814897,
+          0.6321745839962368,
+          0.1420897838263709,
+          0.41315110349282413
+        ],
+        "lower": -0.40341761755744876,
+        "mean": 0.33387416597278186,
+        "upper": 1.0711659495030124
+      },
+      "log_wall_p95_ratio": {
+        "fit_values": [
+          -0.33421399115166167,
+          -0.011355766210256584,
+          -0.5592986594443923,
+          0.15356673468828771,
+          -0.13779826646075727
+        ],
+        "lower": -1.0599584085266072,
+        "mean": -0.17781998971575602,
+        "upper": 0.704318429095095
+      },
+      "passed": false,
+      "quality": {
+        "fit_values": [
+          -0.11499999999999998,
+          -0.15975000000000006,
+          -0.10699999999999996,
+          -0.07275000000000001,
+          -0.06275000000000003
+        ],
+        "lower": -0.22547326299485126,
+        "mean": -0.10345,
+        "upper": 0.018573262994851264
+      }
+    }
+  },
+  "secondary_comparison_passes": 0,
+  "source_sha256": {
+    "tools/hcsn/benchmarks/data.py": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+    "tools/hcsn/digital_joint_20261102/joint_budget.py": "4c901817936db0c0afa5336fbf10185a4faf98cf4a905dc7796b9d089d85cab6",
+    "tools/hcsn/digital_joint_20261102/joint_campaign.py": "5a2b07e299aeed7a5dba8ac670012c1bae6bbae19ef227e144924e43fc742e48",
+    "tools/hcsn/digital_joint_20261102/joint_compiled_dp.py": "a371d745f6340350d393ea055ac5c9b045c9bf3a052f26655eabd6e7dffbceb6",
+    "tools/hcsn/digital_joint_20261102/joint_data.py": "53292842debef33b6c54992b7b0dba80262ba2ee836bfc6fba14ca5c9b5e6e68",
+    "tools/hcsn/digital_joint_20261102/joint_deadline_reference.py": "7f01e5fa345b6a8c9b120dbd03ea89faa331ed84bac496e365f69283e64b9d11",
+    "tools/hcsn/digital_joint_20261102/joint_deploy.py": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+    "tools/hcsn/digital_joint_20261102/joint_kernel.py": "0439cf12f4519c29b1b079adb2ebc66eb86a252c59a2754770acc58ed5cff0e9",
+    "tools/hcsn/digital_joint_20261102/joint_launch.py": "01ab57424fde023b981b38613e4cb00b1b46207056b33389d5ddf596c072aee5",
+    "tools/hcsn/digital_joint_20261102/joint_law.py": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65",
+    "tools/hcsn/digital_joint_20261102/joint_model.py": "250ec083ce30e11ea55c0347ed2fbc549be02a514e97c6da472699820afd3284",
+    "tools/hcsn/digital_joint_20261102/joint_protocol.json": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606",
+    "tools/hcsn/digital_joint_20261102/joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+    "tools/hcsn/digital_joint_20261102/joint_train.py": "d39ee3de7b459c72aa7263ed804b391b2487f1a7685a373ca478f2404a59f3f4",
+    "tools/hcsn/digital_read_before_20261031/task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "tools/hcsn/next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+    "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+    "tools/hcsn/task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc",
+    "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+    "tools/hcsn/third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e"
+  },
+  "successful_content_decodes": 6162,
+  "training_calibration_packets_regenerated_and_redecoded": 320,
+  "unique_packets_independently_redecoded": 1346,
+  "verified_absent_packets": 297,
+  "verified_input_files": 2903,
+  "wire_bytes": 42010511
+}

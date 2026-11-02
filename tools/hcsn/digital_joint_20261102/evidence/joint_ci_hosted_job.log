@@ -1,0 +1,334 @@
+﻿2026-11-02T01:55:34.0712397Z Current runner version: '2.338.2'
+2026-11-02T01:55:34.0729703Z ##[group]Runner Image Provisioner
+2026-11-02T01:55:34.0730257Z Hosted Compute Agent
+2026-11-02T01:55:34.0730647Z Version: 20261021.618
+2026-11-02T01:55:34.0731100Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-02T01:55:34.0731566Z Build Date: 2026-10-21T00:45:21Z
+2026-11-02T01:55:34.0731991Z Worker ID: {9050c91d-5751-4c5e-bc9a-2a7c928bc6fc}
+2026-11-02T01:55:34.0732419Z Region: westus3
+2026-11-02T01:55:34.0732759Z Cloud: Azure
+2026-11-02T01:55:34.0733125Z ##[endgroup]
+2026-11-02T01:55:34.0733925Z ##[group]Operating System
+2026-11-02T01:55:34.0734278Z Ubuntu
+2026-11-02T01:55:34.0734645Z 24.04.5
+2026-11-02T01:55:34.0734959Z LTS
+2026-11-02T01:55:34.0735360Z ##[endgroup]
+2026-11-02T01:55:34.0735733Z ##[group]Runner Image
+2026-11-02T01:55:34.0736078Z Image: ubuntu-24.04
+2026-11-02T01:55:34.0736463Z Version: 20261025.353.1
+2026-11-02T01:55:34.0737214Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-02T01:55:34.0738385Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-02T01:55:34.0738964Z ##[endgroup]
+2026-11-02T01:55:34.0739664Z ##[group]GITHUB_TOKEN Permissions
+2026-11-02T01:55:34.0740953Z Contents: read
+2026-11-02T01:55:34.0741399Z Metadata: read
+2026-11-02T01:55:34.0741736Z ##[endgroup]
+2026-11-02T01:55:34.0743102Z Secret source: Actions
+2026-11-02T01:55:34.0743674Z Cache mode: write
+2026-11-02T01:55:34.0744128Z Prepare workflow directory
+2026-11-02T01:55:34.0975554Z Prepare all required actions
+2026-11-02T01:55:34.1005303Z Getting action download info
+2026-11-02T01:55:34.3805704Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-02T01:55:34.4705880Z Download action repository 'actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0' (SHA:6d4fd22b20465ccc0f7354476588e8df7c9ca0e0)
+2026-11-02T01:55:35.1533288Z Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-11-02T01:55:35.3097943Z Complete job name: cpu-fixtures
+2026-11-02T01:55:35.3699950Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-02T01:55:35.3700906Z with:
+2026-11-02T01:55:35.3701400Z   persist-credentials: false
+2026-11-02T01:55:35.3702008Z   sparse-checkout-cone-mode: false
+2026-11-02T01:55:35.3706479Z   sparse-checkout: /tools/hcsn/digital_joint_20261102/*.py
+/tools/hcsn/digital_joint_20261102/joint_protocol.json
+/tools/hcsn/digital_joint_20261102/joint_kernel_protocol.json
+/tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json
+/tools/hcsn/digital_joint_20261102/joint_ci_PRIMARY_SOURCES.json
+/tools/hcsn/digital_read_before_20261031/task.py
+/tools/hcsn/task_value_factorial_20261030/task.py
+/tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json
+/tools/hcsn/benchmarks/data.py
+/tools/hcsn/third/memory/reference.py
+/tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz
+/tools/hcsn/next/full_kernel/baseline_table.npz
+
+2026-11-02T01:55:35.3711171Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-02T01:55:35.3716152Z   token: ***
+2026-11-02T01:55:35.3716647Z   ssh-strict: true
+2026-11-02T01:55:35.3717154Z   ssh-user: git
+2026-11-02T01:55:35.3717641Z   clean: true
+2026-11-02T01:55:35.3718186Z   fetch-depth: 1
+2026-11-02T01:55:35.3718686Z   fetch-tags: false
+2026-11-02T01:55:35.3719216Z   show-progress: true
+2026-11-02T01:55:35.3719747Z   lfs: false
+2026-11-02T01:55:35.3720236Z   submodules: false
+2026-11-02T01:55:35.3720762Z   set-safe-directory: true
+2026-11-02T01:55:35.3721355Z   allow-unsafe-pr-checkout: false
+2026-11-02T01:55:35.3722033Z env:
+2026-11-02T01:55:35.3722490Z   OMP_NUM_THREADS: 1
+2026-11-02T01:55:35.3723017Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T01:55:35.3723563Z   MKL_NUM_THREADS: 1
+2026-11-02T01:55:35.3724386Z   SOURCE_FREEZE_FILE: tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json
+2026-11-02T01:55:35.3725506Z ##[endgroup]
+2026-11-02T01:55:35.5900819Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-02T01:55:35.5902889Z ##[group]Getting Git version info
+2026-11-02T01:55:35.5904402Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-02T01:55:35.5906397Z [command]/usr/bin/git version
+2026-11-02T01:55:35.5967257Z git version 2.56.0
+2026-11-02T01:55:35.5980078Z ##[endgroup]
+2026-11-02T01:55:35.5987153Z Temporarily overriding HOME='/home/runner/work/_temp/75645fdd-ae91-4848-b40e-bbcd8015fea6' before making global git config changes
+2026-11-02T01:55:35.5990013Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-02T01:55:35.5992477Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-02T01:55:35.6035877Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-02T01:55:35.6037982Z ##[group]Determining repository object format
+2026-11-02T01:55:35.6050274Z ##[endgroup]
+2026-11-02T01:55:35.6051677Z ##[group]Initializing the repository
+2026-11-02T01:55:35.6054133Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-02T01:55:35.6139801Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-02T01:55:35.6141663Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-02T01:55:35.6143401Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-02T01:55:35.6144359Z hint: call:
+2026-11-02T01:55:35.6144913Z hint:
+2026-11-02T01:55:35.6145792Z hint: 	git config --global init.defaultBranch <name>
+2026-11-02T01:55:35.6146668Z hint:
+2026-11-02T01:55:35.6147465Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-02T01:55:35.6149114Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-02T01:55:35.6150512Z hint:
+2026-11-02T01:55:35.6151433Z hint: 	git branch -m <name>
+2026-11-02T01:55:35.6152247Z hint:
+2026-11-02T01:55:35.6153111Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-02T01:55:35.6155393Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-02T01:55:35.6161824Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-02T01:55:35.6205681Z ##[endgroup]
+2026-11-02T01:55:35.6207460Z ##[group]Disabling automatic garbage collection
+2026-11-02T01:55:35.6209098Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-02T01:55:35.6243734Z ##[endgroup]
+2026-11-02T01:55:35.6245373Z ##[group]Setting up auth
+2026-11-02T01:55:35.6246724Z Removing SSH command configuration
+2026-11-02T01:55:35.6247882Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-02T01:55:35.6282305Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-02T01:55:35.6598871Z Removing HTTP extra header
+2026-11-02T01:55:35.6603642Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-02T01:55:35.6645590Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-02T01:55:35.6830232Z Removing includeIf entries pointing to credentials config files
+2026-11-02T01:55:35.6833668Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-02T01:55:35.6873649Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-02T01:55:35.7062717Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-02T01:55:35.7104142Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config
+2026-11-02T01:55:35.7141116Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config
+2026-11-02T01:55:35.7176397Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config
+2026-11-02T01:55:35.7211776Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config
+2026-11-02T01:55:35.7246748Z ##[endgroup]
+2026-11-02T01:55:35.7247758Z ##[group]Fetching the repository
+2026-11-02T01:55:35.7251207Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +0af3852ab895e4adbefe3ada4bcc8aefd948efae:refs/remotes/pull/4604/merge
+2026-11-02T01:55:36.3899284Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-02T01:55:36.3900562Z  * [new ref]         0af3852ab895e4adbefe3ada4bcc8aefd948efae -> pull/4604/merge
+2026-11-02T01:55:36.3908795Z ##[endgroup]
+2026-11-02T01:55:36.3910470Z ##[group]Determining the checkout info
+2026-11-02T01:55:36.3911954Z ##[endgroup]
+2026-11-02T01:55:36.3913290Z ##[group]Setting up sparse checkout
+2026-11-02T01:55:36.3919081Z [command]/usr/bin/git config core.sparseCheckout true
+2026-11-02T01:55:36.3953014Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+2026-11-02T01:55:36.3982907Z .git/info/sparse-checkout
+2026-11-02T01:55:36.3988878Z ##[endgroup]
+2026-11-02T01:55:36.3989980Z ##[group]Checking out the ref
+2026-11-02T01:55:36.3991873Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/4604/merge
+2026-11-02T01:55:37.3489816Z Note: switching to 'refs/remotes/pull/4604/merge'.
+2026-11-02T01:55:37.3491180Z 
+2026-11-02T01:55:37.3491571Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-02T01:55:37.3492165Z changes and commit them, and you can discard any commits you make in this
+2026-11-02T01:55:37.3492686Z state without impacting any branches by switching back to a branch.
+2026-11-02T01:55:37.3493031Z 
+2026-11-02T01:55:37.3493287Z If you want to create a new branch to retain commits you create, you may
+2026-11-02T01:55:37.3493814Z do so (now or later) by using -c with the switch command. Example:
+2026-11-02T01:55:37.3494101Z 
+2026-11-02T01:55:37.3494232Z   git switch -c <new-branch-name>
+2026-11-02T01:55:37.3494558Z 
+2026-11-02T01:55:37.3494749Z Or undo this operation with:
+2026-11-02T01:55:37.3494937Z 
+2026-11-02T01:55:37.3495102Z   git switch -
+2026-11-02T01:55:37.3495257Z 
+2026-11-02T01:55:37.3495594Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-02T01:55:37.3495803Z 
+2026-11-02T01:55:37.3496108Z HEAD is now at 0af3852 Merge dd290b2ba7c42cbbf0e633577e6816586f6de660 into 36e9ddd099e09688593bccf2c32d1dfabc39ac99
+2026-11-02T01:55:37.3552241Z ##[endgroup]
+2026-11-02T01:55:37.3555258Z [command]/usr/bin/git log -1 --format=%H
+2026-11-02T01:55:37.3586771Z 0af3852ab895e4adbefe3ada4bcc8aefd948efae
+2026-11-02T01:55:37.3594115Z ##[group]Removing auth
+2026-11-02T01:55:37.3594320Z Removing SSH command configuration
+2026-11-02T01:55:37.3597115Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-02T01:55:37.3634440Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-02T01:55:37.3840428Z Removing HTTP extra header
+2026-11-02T01:55:37.3843525Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-02T01:55:37.3879544Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-02T01:55:37.4078239Z Removing includeIf entries pointing to credentials config files
+2026-11-02T01:55:37.4081146Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-02T01:55:37.4166514Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-02T01:55:37.4167235Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-02T01:55:37.4167735Z includeif.gitdir:/github/workspace/.git.path
+2026-11-02T01:55:37.4168266Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-02T01:55:37.4172761Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-02T01:55:37.4202383Z /home/runner/work/_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config
+2026-11-02T01:55:37.4214754Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-8302493d\-9cbe\-4452\-a2e8\-1601a1335279\.config
+2026-11-02T01:55:37.4254803Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-02T01:55:37.4284149Z /home/runner/work/_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config
+2026-11-02T01:55:37.4290780Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-8302493d\-9cbe\-4452\-a2e8\-1601a1335279\.config
+2026-11-02T01:55:37.4328441Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-02T01:55:37.4359283Z /github/runner_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config
+2026-11-02T01:55:37.4376283Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-8302493d\-9cbe\-4452\-a2e8\-1601a1335279\.config
+2026-11-02T01:55:37.4418041Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-02T01:55:37.4448414Z /github/runner_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config
+2026-11-02T01:55:37.4453831Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-8302493d\-9cbe\-4452\-a2e8\-1601a1335279\.config
+2026-11-02T01:55:37.4534667Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-02T01:55:37.4731873Z Removing credentials config '/home/runner/work/_temp/git-credentials-8302493d-9cbe-4452-a2e8-1601a1335279.config'
+2026-11-02T01:55:37.4740172Z ##[endgroup]
+2026-11-02T01:55:37.4933207Z ##[group]Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+2026-11-02T01:55:37.4933452Z with:
+2026-11-02T01:55:37.4933598Z   python-version: 3.12
+2026-11-02T01:55:37.4933755Z   check-latest: false
+2026-11-02T01:55:37.4935281Z   token: ***
+2026-11-02T01:55:37.4935488Z   mirror: https://raw.githubusercontent.com/actions/python-versions/main
+2026-11-02T01:55:37.4935741Z   update-environment: true
+2026-11-02T01:55:37.4935907Z   allow-prereleases: false
+2026-11-02T01:55:37.4936061Z   freethreaded: false
+2026-11-02T01:55:37.4936205Z env:
+2026-11-02T01:55:37.4936335Z   OMP_NUM_THREADS: 1
+2026-11-02T01:55:37.4936481Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T01:55:37.4936631Z   MKL_NUM_THREADS: 1
+2026-11-02T01:55:37.4936857Z   SOURCE_FREEZE_FILE: tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json
+2026-11-02T01:55:37.4937108Z ##[endgroup]
+2026-11-02T01:55:37.5673743Z ##[group]Installed versions
+2026-11-02T01:55:37.5728790Z Successfully set up CPython (3.12.15)
+2026-11-02T01:55:37.5729300Z ##[endgroup]
+2026-11-02T01:55:37.5850948Z ##[group]Run python -m pip install numpy==2.3.5 scipy==1.17.0
+2026-11-02T01:55:37.5851275Z [36;1mpython -m pip install numpy==2.3.5 scipy==1.17.0[0m
+2026-11-02T01:55:37.5851607Z [36;1mpython -m pip install torch==2.9.1 --index-url https://download.pytorch.org/whl/cpu[0m
+2026-11-02T01:55:37.5852127Z [36;1mpython -c "import numpy, scipy, torch; assert numpy.__version__ == '2.3.5' and scipy.__version__ == '1.17.0'; assert torch.__version__.split('+')[0] == '2.9.1' and torch.version.cuda is None"[0m
+2026-11-02T01:55:37.5885217Z shell: /usr/bin/bash -e {0}
+2026-11-02T01:55:37.5885517Z env:
+2026-11-02T01:55:37.5885741Z   OMP_NUM_THREADS: 1
+2026-11-02T01:55:37.5885982Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T01:55:37.5886222Z   MKL_NUM_THREADS: 1
+2026-11-02T01:55:37.5886589Z   SOURCE_FREEZE_FILE: tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json
+2026-11-02T01:55:37.5887088Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:55:37.5887546Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T01:55:37.5887960Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:55:37.5889226Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:55:37.5889468Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:55:37.5889710Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T01:55:37.5889915Z ##[endgroup]
+2026-11-02T01:55:38.4270672Z Collecting numpy==2.3.5
+2026-11-02T01:55:38.5037751Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-02T01:55:38.5935499Z Collecting scipy==1.17.0
+2026-11-02T01:55:38.6035234Z   Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-02T01:55:38.6280526Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-11-02T01:55:39.1234850Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 34.8 MB/s  0:00:00
+2026-11-02T01:55:39.1335023Z Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.0 MB)
+2026-11-02T01:55:39.5413019Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.0/35.0 MB 85.7 MB/s  0:00:00
+2026-11-02T01:55:39.6313771Z Installing collected packages: numpy, scipy
+2026-11-02T01:55:43.6224375Z 
+2026-11-02T01:55:43.6232158Z Successfully installed numpy-2.3.5 scipy-1.17.0
+2026-11-02T01:55:43.8770838Z Looking in indexes: https://download.pytorch.org/whl/cpu
+2026-11-02T01:55:44.2496007Z Collecting torch==2.9.1
+2026-11-02T01:55:44.3363155Z   Downloading torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (29 kB)
+2026-11-02T01:55:44.5793451Z Collecting filelock (from torch==2.9.1)
+2026-11-02T01:55:44.6335030Z   Downloading filelock-4.2.4-py3-none-any.whl.metadata (2.0 kB)
+2026-11-02T01:55:44.6452787Z Collecting typing-extensions>=4.10.0 (from torch==2.9.1)
+2026-11-02T01:55:44.6552118Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-02T01:55:44.6631046Z Collecting setuptools (from torch==2.9.1)
+2026-11-02T01:55:44.6668226Z   Downloading setuptools-78.1.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-02T01:55:44.6803141Z Collecting sympy>=1.13.3 (from torch==2.9.1)
+2026-11-02T01:55:44.6899220Z   Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+2026-11-02T01:55:44.7075852Z Collecting networkx>=2.5.1 (from torch==2.9.1)
+2026-11-02T01:55:44.7173944Z   Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+2026-11-02T01:55:44.7280275Z Collecting jinja2 (from torch==2.9.1)
+2026-11-02T01:55:44.7311378Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-11-02T01:55:44.7610191Z Collecting fsspec>=0.8.5 (from torch==2.9.1)
+2026-11-02T01:55:44.7724112Z   Downloading fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+2026-11-02T01:55:44.9159463Z Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.9.1)
+2026-11-02T01:55:44.9259168Z   Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+2026-11-02T01:55:44.9413711Z Collecting MarkupSafe>=2.0 (from jinja2->torch==2.9.1)
+2026-11-02T01:55:44.9448316Z   Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-11-02T01:55:44.9772135Z Downloading torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (184.4 MB)
+2026-11-02T01:55:47.0854744Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 184.4/184.4 MB 88.1 MB/s  0:00:02
+2026-11-02T01:55:47.0963980Z Downloading fsspec-2026.9.0-py3-none-any.whl (221 kB)
+2026-11-02T01:55:47.1282370Z Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+2026-11-02T01:55:47.1617739Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 75.4 MB/s  0:00:00
+2026-11-02T01:55:47.1730628Z Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+2026-11-02T01:55:47.2430668Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 89.2 MB/s  0:00:00
+2026-11-02T01:55:47.2542107Z Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+2026-11-02T01:55:47.2580389Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 128.9 MB/s  0:00:00
+2026-11-02T01:55:47.2681257Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-02T01:55:47.2794600Z Downloading filelock-4.2.4-py3-none-any.whl (162 kB)
+2026-11-02T01:55:47.2845109Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-11-02T01:55:47.2892010Z Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-11-02T01:55:47.2940457Z Downloading setuptools-78.1.0-py3-none-any.whl (1.3 MB)
+2026-11-02T01:55:47.2994994Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 245.2 MB/s  0:00:00
+2026-11-02T01:55:47.5311075Z Installing collected packages: mpmath, typing-extensions, sympy, setuptools, networkx, MarkupSafe, fsspec, filelock, jinja2, torch
+2026-11-02T01:55:59.6003039Z 
+2026-11-02T01:55:59.6014645Z Successfully installed MarkupSafe-3.0.3 filelock-4.2.4 fsspec-2026.9.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.7 setuptools-78.1.0 sympy-1.14.0 torch-2.9.1+cpu typing-extensions-4.16.0
+2026-11-02T01:56:00.7950918Z ##[group]Run python -m tools.hcsn.digital_joint_20261102.joint_ci --source-freeze "$SOURCE_FREEZE_FILE" --out "/home/runner/work/_temp/hcsn-joint-cpu"
+2026-11-02T01:56:00.7951451Z [36;1mpython -m tools.hcsn.digital_joint_20261102.joint_ci --source-freeze "$SOURCE_FREEZE_FILE" --out "/home/runner/work/_temp/hcsn-joint-cpu"[0m
+2026-11-02T01:56:00.7967128Z shell: /usr/bin/bash -e {0}
+2026-11-02T01:56:00.7967262Z env:
+2026-11-02T01:56:00.7967366Z   OMP_NUM_THREADS: 1
+2026-11-02T01:56:00.7967484Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T01:56:00.7967604Z   MKL_NUM_THREADS: 1
+2026-11-02T01:56:00.7967801Z   SOURCE_FREEZE_FILE: tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json
+2026-11-02T01:56:00.7968057Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:56:00.7968389Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T01:56:00.7968810Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:56:00.7969063Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:56:00.7969267Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:56:00.7969467Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T01:56:00.7969635Z ##[endgroup]
+2026-11-02T01:56:13.9296045Z {"passed": true, "cases": {"task_semantics": 0, "budget": 0, "kernel_math": 0, "actual_loss_fd": 0, "compiled_dp": 0, "packed_export": 0}, "environment": {"python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]", "torch": "2.9.1+cpu", "numpy": "2.3.5", "scipy": "1.17.0", "torch_git_version": "5811a8d7da873dd699ff6687092c225caffcf1bb", "torch_cuda_build": null, "expected_ci_torch": "2.9.1+cpu", "declared_training_torch": "2.15.0+cpu", "weight_bit_reproduction": false}}
+2026-11-02T01:56:14.1070965Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+2026-11-02T01:56:14.1071183Z with:
+2026-11-02T01:56:14.1071305Z   name: hcsn-joint-cpu-41374974573-1
+2026-11-02T01:56:14.1071465Z   path: /home/runner/work/_temp/hcsn-joint-cpu
+2026-11-02T01:56:14.1071623Z   if-no-files-found: error
+2026-11-02T01:56:14.1071747Z   retention-days: 14
+2026-11-02T01:56:14.1071863Z   compression-level: 6
+2026-11-02T01:56:14.1071977Z   overwrite: false
+2026-11-02T01:56:14.1072091Z   include-hidden-files: false
+2026-11-02T01:56:14.1072215Z   archive: true
+2026-11-02T01:56:14.1072319Z env:
+2026-11-02T01:56:14.1072417Z   OMP_NUM_THREADS: 1
+2026-11-02T01:56:14.1072531Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T01:56:14.1072651Z   MKL_NUM_THREADS: 1
+2026-11-02T01:56:14.1072845Z   SOURCE_FREEZE_FILE: tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json
+2026-11-02T01:56:14.1073101Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:56:14.1073345Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T01:56:14.1073574Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:56:14.1073771Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:56:14.1073970Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T01:56:14.1074168Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T01:56:14.1074333Z ##[endgroup]
+2026-11-02T01:56:14.2237213Z With the provided path, there will be 138 files uploaded
+2026-11-02T01:56:14.2240191Z Artifact name is valid!
+2026-11-02T01:56:14.2240404Z Root directory input is valid!
+2026-11-02T01:56:14.5747250Z Uploading artifact: hcsn-joint-cpu-41374974573-1.zip
+2026-11-02T01:56:14.5769996Z Beginning upload of artifact content to blob storage
+2026-11-02T01:56:15.2272917Z Uploaded bytes 1435551
+2026-11-02T01:56:15.2882161Z Finished uploading artifact content to blob storage!
+2026-11-02T01:56:15.2882723Z SHA256 digest of uploaded artifact is dd85264edd1e73c63ff762ea67957173757822031cb55d065d8597234361579f
+2026-11-02T01:56:15.2883148Z Finalizing artifact upload
+2026-11-02T01:56:15.8884494Z Artifact hcsn-joint-cpu-41374974573-1 successfully finalized. Artifact ID 13110702620
+2026-11-02T01:56:15.8885132Z Artifact hcsn-joint-cpu-41374974573-1 has been successfully uploaded! Final size is 1435551 bytes. Artifact ID is 13110702620
+2026-11-02T01:56:15.8887649Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41374974573/artifacts/13110702620
+2026-11-02T01:56:15.9059178Z Post job cleanup.
+2026-11-02T01:56:15.9913561Z Post job cleanup.
+2026-11-02T01:56:16.0514252Z [command]/usr/bin/git version
+2026-11-02T01:56:16.0548350Z git version 2.56.0
+2026-11-02T01:56:16.0569095Z Temporarily overriding HOME='/home/runner/work/_temp/9332db64-7917-46a1-859d-3269a780c25f' before making global git config changes
+2026-11-02T01:56:16.0569915Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-02T01:56:16.0572639Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-02T01:56:16.0602296Z Removing SSH command configuration
+2026-11-02T01:56:16.0606794Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-02T01:56:16.0638317Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-02T01:56:16.0866367Z Removing HTTP extra header
+2026-11-02T01:56:16.0871066Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-02T01:56:16.0911558Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-02T01:56:16.1168606Z Removing includeIf entries pointing to credentials config files
+2026-11-02T01:56:16.1178844Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-02T01:56:16.1211506Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-02T01:56:16.1563317Z Cleaning up orphan processes
+
