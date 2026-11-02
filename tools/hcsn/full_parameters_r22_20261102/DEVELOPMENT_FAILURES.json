@@ -1,0 +1,42 @@
+{
+  "failures": [
+    {
+      "stage": "dependency_identity_preparation",
+      "cause": "mpmath absent from default Python path",
+      "new_cases_opened": 0,
+      "resolution": "Use provided PYTHONPATH=/tmp/hcsn-mpmath for dependency identity and numerical commands",
+      "cost_cpu_seconds": null
+    },
+    {
+      "stage": "development_01",
+      "cause": "Retained R20 knot control copied maturity but initially omitted its sigma=.15/liquidity=.002 coordinates; mismatched input legitimately admitted",
+      "actual_exit_code": 1,
+      "scientific_reference_and_full_array_derivative_gates_passed": true,
+      "new_confirmation_cases_opened": 0,
+      "resolution": "Correct complete retained old control tuple before prospective freeze; preserve executed source and failure",
+      "cost_receipt": "development_01/SUMMARY.json",
+      "outer_cpu_seconds": null
+    },
+    {
+      "stage": "development_03_build",
+      "cause": "Mechanical stdout conversion also changed eprintln into invalid ewriteln macro",
+      "new_cases_opened": 0,
+      "preserved": "development_03/build.stderr and executed_sources",
+      "resolution": "Restore the explicit stderr error macro before sourcefreeze",
+      "outer_cpu_seconds": null
+    }
+  ],
+  "unmetered_smoke_compile_cpu_seconds": null,
+  "unmetered_prior_corner_smoke_cpu_seconds": null,
+  "pre_freeze_hardening": [
+    {
+      "change": "Use bounded stdin.take(1048577) before read_to_string; original capacity check occurred after unbounded input read",
+      "prior_positive_and_negative_outputs_preserved": true,
+      "new_confirmation_cases_opened": 0
+    },
+    {
+      "change": "Use explicit bounded per-process BufWriter for fallible stdout; math unchanged",
+      "qualification": "Verification transport efficiency only; no model runtime advantage claimed"
+    }
+  ]
+}

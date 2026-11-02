@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "tools/hcsn/full_parameters_r22_20261102/independent_check.py",
+    "tools/hcsn/full_parameters_r22_20261102/confirmation_01",
+    "--output",
+    "tools/hcsn/full_parameters_r22_20261102/INDEPENDENT_CHECK.json"
+  ],
+  "cost_scope": "Full invoked child process and waited descendants, including interpreter imports/build/native calls/final serialization. Excludes this small wrapper and transport; nested inner timing must not be added.",
+  "exit_code": 0,
+  "family_simultaneous_peak_rss_kib": null,
+  "full_child_family_cpu_seconds": 9.13264,
+  "max_single_process_rss_kib": 45052,
+  "pid": 5,
+  "system_cpu_seconds": 0.096204,
+  "user_cpu_seconds": 9.036436,
+  "wall_seconds": 9.823441951004497
+}
