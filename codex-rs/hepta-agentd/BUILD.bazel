@@ -16,6 +16,7 @@ codex_rust_crate(
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+    integration_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
 
 # Compile the local writer qualification separately from the default product

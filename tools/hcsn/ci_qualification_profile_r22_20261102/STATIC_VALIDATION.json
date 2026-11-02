@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn-r22-ci-profile-static-check-v1",
+  "passed": true,
+  "baseline_git_blobs": {
+    "defs.bzl": "3b1f8f54c975404fcfc596d5fcac15546ad703aa",
+    "codex-rs/hepta-agentd/BUILD.bazel": "9492a351a24c98a5195b4aa493b4e950839231e1"
+  },
+  "patch_applies_to_exact_baseline": true,
+  "production_library_and_binary_calls_unchanged": true,
+  "integration_rule_sites_rewired": 3,
+  "static_profile_models": [
+    {
+      "library": true,
+      "mapped": false,
+      "integration_dependencies": [
+        "ordinary-ledger",
+        "dev-only",
+        "sample-build-script",
+        "sample",
+        "extra"
+      ],
+      "testonly_library_declarations": 0
+    },
+    {
+      "library": true,
+      "mapped": true,
+      "integration_dependencies": [
+        "qualified-ledger",
+        "dev-only",
+        "sample-build-script",
+        "sample-integration-test-lib",
+        "extra"
+      ],
+      "testonly_library_declarations": 1
+    },
+    {
+      "library": false,
+      "mapped": true,
+      "integration_dependencies": [
+        "qualified-ledger",
+        "dev-only",
+        "sample-build-script",
+        "extra"
+      ],
+      "testonly_library_declarations": 0
+    }
+  ],
+  "git_apply_check": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "limitations": [
+    "AST syntax/model checks do not execute Starlark or resolve generated workspace dependencies",
+    "Bazel/buildifier/Rust tools unavailable locally; no compile, test or CI pass claim",
+    "Hosted integration test and transitive Rust crate identity verification remain required"
+  ]
+}
