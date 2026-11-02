@@ -28,7 +28,7 @@ fn execute() -> Result<()> {
     let a: Vec<String> = std::env::args().collect();
     ensure(
         a.len() == 7,
-        "usage: owner|provider|relay JOB STATE ENDPOINT STOP MARKER",
+        "usage: owner|provider|relay|allocate JOB STATE ENDPOINT STOP MARKER",
     )?;
     let job = Job::open(Path::new(&a[2]))?;
     match a[1].as_str() {
@@ -47,6 +47,7 @@ fn execute() -> Result<()> {
             Path::new(&a[6]),
         ),
         "relay" => transport::serve(Path::new(&a[3]), Path::new(&a[4]), &a[5], Path::new(&a[6])),
+        "allocate" => transport::allocate_for_fault(Path::new(&a[4]), &a[5], Path::new(&a[6])),
         _ => Err("unknown role".into()),
     }
 }

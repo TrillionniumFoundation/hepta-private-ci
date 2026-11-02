@@ -22,9 +22,8 @@ fn unhex(text: &str) -> Result<String> {
     Ok(String::from_utf8(bytes?)?)
 }
 
-fn mailbox_rpc(mailbox: &Path, request: &str) -> Result<String> {
-    ensure(request.len() <= MAX_WIRE, "request capacity")?;
-    let _allocation_lock = lock(&mailbox.join("client-sequence.lock"))?;
+fn allocate(mailbox: &Path) -> Result<(String, std::fs::File)> {
+    let allocation_lock = lock(&mailbox.join("client-sequence.lock"))?;
     let sequence = mailbox.join("client-sequence");
     let prior: u64 = if sequence.exists() {
         unseal(&read(&sequence)?)?.trim_end().parse()?
@@ -42,11 +41,26 @@ fn mailbox_rpc(mailbox: &Path, request: &str) -> Result<String> {
         !request_path.exists() && !response_path.exists(),
         "request allocation conflict",
     )?;
+    Ok((id, allocation_lock))
+}
+
+pub fn allocate_for_fault(mailbox: &Path, stop: &str, marker: &Path) -> Result<()> {
+    let (id, _allocation_lock) = allocate(mailbox)?;
+    fault("allocated_before_publish", stop, marker)?;
+    println!("ALLOCATED\t{id}");
+    Ok(())
+}
+
+fn mailbox_rpc(mailbox: &Path, request: &str) -> Result<String> {
+    ensure(request.len() <= MAX_WIRE, "request capacity")?;
+    let (id, allocation_lock) = allocate(mailbox)?;
+    let request_path = mailbox.join(format!("{id}.req"));
+    let response_path = mailbox.join(format!("{id}.resp"));
     atomic(
         &request_path,
         &seal(&format!("REQ\t{id}\t{}\n", hex(request))),
     )?;
-    drop(_allocation_lock);
+    drop(allocation_lock);
     let deadline = Instant::now() + Duration::from_secs(3);
     while !response_path.exists() {
         ensure(Instant::now() < deadline, "provider response timeout")?;
