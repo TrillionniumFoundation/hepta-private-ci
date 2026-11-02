@@ -1,0 +1,55 @@
+{
+  "excluded": [
+    "unmetered review reasoning/source inspection",
+    "source retrieval and connector publication",
+    "parent/import startup outside each recorded timer",
+    "result metadata writing after each timer"
+  ],
+  "nonoverlapping_phases": [
+    {
+      "cpu_seconds": 0.209420304,
+      "input_sha256": "ef7387faab6caae5d7c0a64618f6da78bfb21cd77d83f7c0dcff0eb89485957b",
+      "measurement": "review_cpu_seconds_after_imports",
+      "path": "INDEPENDENT_RECOVERY_REVIEW.json"
+    },
+    {
+      "cpu_seconds": 0.042834315000000005,
+      "input_sha256": "96879adc3a590e007a01766a822d9647544f2b9679ed4056d746645d831d3a0f",
+      "measurement": "measured_body_cpu_seconds",
+      "path": "INDEPENDENT_ALL_STATE_REVIEW.json"
+    },
+    {
+      "cpu_seconds": 1.516453429,
+      "input_sha256": "974137c953ec69cc80384b15f3da89a1a63ed602ff0b61e927ea7986171aeba8",
+      "measurement": "measured_body_cpu_seconds",
+      "path": "INDEPENDENT_NUMERIC_REVIEW.json.gz"
+    },
+    {
+      "cpu_seconds": 0.281286699,
+      "input_sha256": "d0bd4b5ea9172ca5d289ecc0d238e194afa67e3f523d0113719f9faf3b574b0b",
+      "measurement": "measured_body_cpu_seconds",
+      "path": "INDEPENDENT_THRESHOLD_REVIEW.json"
+    },
+    {
+      "cpu_seconds": 1.542438149,
+      "input_sha256": "4ea0470db426d40f7bfd5ae4cdea29800d91a26c761e9f302d4dfd8a934f889d",
+      "measurement": "review_cpu_seconds_after_imports",
+      "path": "INDEPENDENT_RESOURCES_REVIEW.json"
+    },
+    {
+      "cpu_seconds": 0.675814409,
+      "input_sha256": "65f2df36a60f4f78431868779e7a86b002a66b226fff82393b068477316953b4",
+      "measurement": "measured_body_cpu_seconds",
+      "path": "INDEPENDENT_PER_FIT_STATISTICS.json"
+    },
+    {
+      "cpu_seconds": 0.07774787,
+      "input_sha256": "8b828e87315e317dc75e51472f8ebc63157d4cc269b1b6cfa3e74e9738975f1a",
+      "measurement": "measured_body_cpu_seconds",
+      "path": "INDEPENDENT_SCRIPTED_REVIEW.json"
+    }
+  ],
+  "recorded_cpu_lower_bound": 4.345995175,
+  "schema": "hcsn-r20-independent-review-costs-v1",
+  "scope": "Distinct reviewer processes; recorded after-import or body CPU only. No campaign child receipts or nested actor costs added."
+}
