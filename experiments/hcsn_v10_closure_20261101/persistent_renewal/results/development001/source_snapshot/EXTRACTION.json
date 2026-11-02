@@ -1,0 +1,84 @@
+{
+  "baseline_commit": "059b43a0b20ad07654880c155cc49799e0bb8858",
+  "method": "Exact AST source segments and explicit NumPy/SciPy imports; no torch shim",
+  "source_sha256": {
+    "experiments/hcsn_mechanism_content_v2/renewal.py": "aa6bedde8d15d473d0b8beef36805955447fa88cc906846ee48be927ecab0cb6",
+    "experiments/hcsn_mechanism_content_v2/mechanism.py": "65754d240a34c5acf5eaac68a4aa3be1acbcfb96e07d735c5fcf6d4ca24e7fc0"
+  },
+  "selected_definitions": {
+    "experiments/hcsn_mechanism_content_v2/renewal.py": {
+      "Physics": {
+        "start_line": 19,
+        "end_line": 28,
+        "sha256": "d1027de86641afd53eaa46ca0199da42a5702ff91d843988f3bd84195f0ce7fa"
+      },
+      "first_passage_cdf": {
+        "start_line": 31,
+        "end_line": 45,
+        "sha256": "5d8cb7e3a268d21951aa4de84b6b44b7c13c5ea524bfe72e4ebaec439fa70973"
+      },
+      "integrated_cdf": {
+        "start_line": 48,
+        "end_line": 65,
+        "sha256": "ba8294116bfea197264d236465d0df47ec2370cc29a7df960273fe94759bf5b5"
+      },
+      "renewal_counts": {
+        "start_line": 68,
+        "end_line": 108,
+        "sha256": "c5e1eb674d1b35a1ae5da39b61cffd3984631506e119460bd2e71079c9d3adb6"
+      },
+      "content_from_counts": {
+        "start_line": 111,
+        "end_line": 120,
+        "sha256": "4138a25d0f0dfc86de7e128b99d9ddd68e3998c8e7f3bed9d3eb5d188f64b86b"
+      },
+      "shared_calibration": {
+        "start_line": 161,
+        "end_line": 168,
+        "sha256": "2f1c95ee8422e397226bdbc0daf9dd84135ffa150944235b6cdb51a70fc76e7e"
+      }
+    },
+    "experiments/hcsn_mechanism_content_v2/mechanism.py": {
+      "Observation": {
+        "start_line": 24,
+        "end_line": 30,
+        "sha256": "49574c8ca671cfe170132fdb6b2a9e938904f6c121b4865a237f8e5cb941988f"
+      },
+      "Config": {
+        "start_line": 33,
+        "end_line": 43,
+        "sha256": "ad69a6b6b0a5c08befd8cdd050355949cedcc9cf4fe623c54411e4f062abe29b"
+      },
+      "transition_matrix": {
+        "start_line": 46,
+        "end_line": 52,
+        "sha256": "d40b47278dcf72656f0cf7a7b117e6338eb2b4d04cafb39f0b6347f834ffa3f3"
+      },
+      "generate_path": {
+        "start_line": 55,
+        "end_line": 88,
+        "sha256": "0a9b6d9e85618a35bf21b745ecd8c43c57f2048d9a8912cdfaee117b9ce9b962"
+      },
+      "predict": {
+        "start_line": 91,
+        "end_line": 99,
+        "sha256": "302c99799b81b4f479e4dacfe5f59519a262a97edb9a166891ff5c4fb774b52e"
+      },
+      "policy_prediction": {
+        "start_line": 102,
+        "end_line": 105,
+        "sha256": "4d8a7ee62ebf98996ec156b5e557ac8a446513c484cde25ad3f2a8a0094d2bba"
+      },
+      "choose_action": {
+        "start_line": 108,
+        "end_line": 147,
+        "sha256": "5fcab7b920bd7553055dddcdd17ec6166b1465b7bfb36fb75d011afccb780b7b"
+      },
+      "make_episode": {
+        "start_line": 225,
+        "end_line": 243,
+        "sha256": "01591658cbe1f429cc952336d33abe7b3fadc62549ca2a49cdfb37c35b4e4f38"
+      }
+    }
+  }
+}
