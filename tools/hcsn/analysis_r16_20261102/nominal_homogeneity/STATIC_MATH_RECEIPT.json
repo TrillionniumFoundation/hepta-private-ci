@@ -1,0 +1,87 @@
+{
+  "schema": "hcsn.hx-nominal-homogeneity-static-review.v1",
+  "created_at_utc": "2026-11-02T00:47:42.835503+00:00",
+  "method": "Read-only frozen-source inspection and symbolic algebra. No model execution or numerical sampling.",
+  "conclusion": "Conditional real-arithmetic nominal homogeneity and invertible shape/boundary reparameterization; independent mathematical review to be recorded separately.",
+  "financial_protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+  "current_two_layer_protocol_sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7",
+  "source_identities": [
+    {
+      "local_path": "/tmp/hcsn-compiled-recovery/kernel.cpp",
+      "sha256": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd",
+      "matches_frozen_protocol": true
+    },
+    {
+      "local_path": "/tmp/hcsn-compiled-recovery/frozen_input/frozen_reference.py",
+      "sha256": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+      "matches_frozen_protocol": true
+    },
+    {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_model.py",
+      "sha256": "7e14756e5b98023092ce44f57eeef3933816a62d1a7dd4b126e8443448dfb2f5",
+      "matches_frozen_protocol": true
+    }
+  ],
+  "lemma": {
+    "path": "HX_NOMINAL_HOMOGENEITY_LEMMA_ZH.md",
+    "bytes": 6143,
+    "sha256": "041ae8c0ce776919763d5a9085c54a3fa5ffec46353409debe5f5d3ffa922ff3"
+  },
+  "homogeneity_degrees": {
+    "boundary": 1,
+    "equity": 1,
+    "debt_value": 1,
+    "F": 0,
+    "G": 0,
+    "equity_over_boundary": 0,
+    "R": 0,
+    "log_margin": 0
+  },
+  "parameterization": {
+    "shape_dimensions": 8,
+    "boundary_location_dimensions": 1,
+    "original_financial_dimensions": 9,
+    "state_dimensions_separate": 1,
+    "fixed_shape_derivatives": [
+      "Q_rho = -Q_z",
+      "R_rho = -R_z",
+      "x_rho = -1"
+    ],
+    "jacobian_determinant_C_P_wrt_kappa_rho": "P^2 > 0",
+    "beta_conditions": [
+      "finite and strictly positive",
+      "same economically admissible financial branch",
+      "C1 on the chosen open shape region for differential claims",
+      "local stopping sign is necessary for the recorded source guard, not a replacement for global optimality"
+    ]
+  },
+  "reference_anchor": {
+    "P_equals_one_is_api_eligible": false,
+    "reason": "Frozen C API principal hard range is [20,100].",
+    "conditional_real_formula": "For an admissible reference P_*, C_*=kappa P_*, use beta=b_*/P_*; then P=B/beta,C=kappa B/beta.",
+    "principal_coupon_box_reference_condition": "[20,100] intersect [0.5/kappa,10/kappa] is nonempty; other financial conditions also apply.",
+    "target_boundary_box": "[20 beta,100 beta] intersect [0.5 beta/kappa,10 beta/kappa]",
+    "anchor_evaluated_in_this_task": false
+  },
+  "default_convention": {
+    "raw_values": "E=0,F=G=1,d=alpha*b/m when V<=b",
+    "Q_R_x": "Q=0,R=1,x=z-rho",
+    "boundary_derivatives": "Q/R cross-boundary derivatives require the stated ideal C1 and bounded one-sided F derivative conditions; original F/G not promoted to C1."
+  },
+  "implementation_limits": [
+    "Proof concerns ideal real financial formulas; no bitwise scaling claim for FP32 inputs or stabilized implementation.",
+    "Fixed numerical input bounds and max(1,scale) rejection floor are not invariant under arbitrary nominal scaling.",
+    "An admissible anchor avoids a P=1 API call but does not qualify all target or shape parameters.",
+    "Current eighteen-parameter two-layer candidate retains its original tanh parameterization.",
+    "No new interface, gradient engineering qualification, causal task benefit, generalization or spiking gate is closed."
+  ],
+  "executions_in_this_task": {
+    "financial_kernel_calls": 0,
+    "financial_reference_evaluations": 0,
+    "finite_difference_evaluations": 0,
+    "network_rollouts": 0,
+    "optimizer_updates": 0,
+    "new_numeric_samples": 0
+  },
+  "unchanged_scientific_artifacts": true
+}

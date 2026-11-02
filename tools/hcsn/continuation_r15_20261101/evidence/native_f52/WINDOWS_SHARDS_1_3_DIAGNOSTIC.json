@@ -1,0 +1,629 @@
+{
+  "schema": "hcsn.current-head-windows-test-failures.v1",
+  "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "tree_sha": "1437e365efb2e45e887d4a7835706bdd01b4b3a9",
+  "executed_merge_sha": "0758e6c2efd3009bcceb13536f60075581467d39",
+  "recorded_at_utc": "2026-11-02T00:39:02.388Z",
+  "scope": "Observation of exact current-head runtime failures only. No native rebuild, rerun, source mutation, skipped assertion, relaxed fence, or new repair candidate.",
+  "attribution": "These logs establish current symptoms and failing targets. They do not by themselves prove whether each failure predates all R15 changes. The separate Windows/MSVC Clippy job passed.",
+  "jobs": [
+    {
+      "job_id": 125028471660,
+      "shard": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471660",
+      "conclusion": "failure",
+      "failed_step": [
+        {
+          "name": "bazel test shard",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        }
+      ],
+      "source_cleanliness": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Test BuildBuddy Bazel wrapper",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Smoke test the native MSVC header parser",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "bazel test shard",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        },
+        {
+          "name": "Upload Bazel execution logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ],
+      "top_level_failed_target_count": 4,
+      "top_level_failed_targets": [
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests",
+        "//codex-rs/git-utils:git-utils-unit-tests",
+        "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+        "//codex-rs/app-server-protocol:app-server-protocol-unit-tests"
+      ],
+      "summary_lines": [
+        {
+          "line": 3780,
+          "text": "2026-11-02T00:35:40.6542571Z //codex-rs/app-server-protocol:app-server-protocol-unit-tests           TIMEOUT in 300.5s"
+        },
+        {
+          "line": 3782,
+          "text": "2026-11-02T00:35:40.6548209Z //codex-rs/ext/hepta-memory:hepta-memory-unit-tests                      FAILED in 49.8s"
+        },
+        {
+          "line": 3784,
+          "text": "2026-11-02T00:35:40.6552194Z //codex-rs/git-utils:git-utils-unit-tests                                FAILED in 152.2s"
+        },
+        {
+          "line": 3786,
+          "text": "2026-11-02T00:35:40.6555304Z //codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 111.8s"
+        },
+        {
+          "line": 3798,
+          "text": "2026-11-02T00:35:40.7051153Z Executed 37 out of 137 tests: 86 tests pass, 4 fail locally, and 47 were skipped."
+        },
+        {
+          "line": 4098,
+          "text": "2026-11-02T00:35:56.8963329Z ##[error]Process completed with exit code 3."
+        }
+      ],
+      "merge_log_matches": [
+        {
+          "line": 33,
+          "text": "2026-11-02T00:22:15.5166546Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/4550/merge (0758e6c2efd3009bcceb13536f60075581467d39)"
+        }
+      ],
+      "rust_compiler_error_lines": [],
+      "groups": [
+        {
+          "target": "//codex-rs/hepta-automation:hepta-automation-unit-tests",
+          "kind": "migration fixture/store open",
+          "statement": "Four migration convergence reopen cases fail with real open: Invalid at migration_convergence_tests.rs:157.",
+          "examples": [
+            {
+              "line": 2933,
+              "text": "2026-11-02T00:33:12.9453035Z test store::migration_convergence_tests::canonical_cut_after_rebind_reopens ... FAILED"
+            },
+            {
+              "line": 2935,
+              "text": "2026-11-02T00:33:12.9548191Z test store::migration_convergence_tests::displaced_cut_after_rebind_reopens ... FAILED"
+            },
+            {
+              "line": 2936,
+              "text": "2026-11-02T00:33:12.9680826Z test store::migration_convergence_tests::canonical_cut_before_rebind_reopens ... FAILED"
+            },
+            {
+              "line": 2937,
+              "text": "2026-11-02T00:33:12.9734509Z test store::migration_convergence_tests::displaced_cut_before_rebind_reopens ... FAILED"
+            },
+            {
+              "line": 2947,
+              "text": "2026-11-02T00:33:13.0338280Z thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens' (2272) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:"
+            },
+            {
+              "line": 2948,
+              "text": "2026-11-02T00:33:13.0583155Z real open: Invalid"
+            },
+            {
+              "line": 2953,
+              "text": "2026-11-02T00:33:13.1623920Z thread 'store::migration_convergence_tests::displaced_cut_after_rebind_reopens' (1268) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:"
+            },
+            {
+              "line": 2954,
+              "text": "2026-11-02T00:33:13.1958525Z real open: Invalid"
+            },
+            {
+              "line": 2958,
+              "text": "2026-11-02T00:33:13.3589660Z thread 'store::migration_convergence_tests::canonical_cut_before_rebind_reopens' (9548) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:"
+            },
+            {
+              "line": 2959,
+              "text": "2026-11-02T00:33:13.3591163Z real open: Invalid"
+            },
+            {
+              "line": 2963,
+              "text": "2026-11-02T00:33:13.5259678Z thread 'store::migration_convergence_tests::displaced_cut_before_rebind_reopens' (2124) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:"
+            },
+            {
+              "line": 2964,
+              "text": "2026-11-02T00:33:13.5719829Z real open: Invalid"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/git-utils:git-utils-unit-tests",
+          "kind": "child readiness timeout",
+          "statement": "Two git wrapper process tests time out waiting for child readiness; this log alone does not determine why readiness was not reached.",
+          "examples": [
+            {
+              "line": 3076,
+              "text": "2026-11-02T00:34:08.5734301Z wait for Git wrapper child readiness: Elapsed(())"
+            },
+            {
+              "line": 3082,
+              "text": "2026-11-02T00:34:08.5962190Z wait for Git wrapper child readiness: Elapsed(())"
+            },
+            {
+              "line": 4018,
+              "text": "2026-11-02T00:35:56.7700554Z wait for Git wrapper child readiness: Elapsed(())"
+            },
+            {
+              "line": 4024,
+              "text": "2026-11-02T00:35:56.7703756Z wait for Git wrapper child readiness: Elapsed(())"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+          "kind": "federated contributor assertion",
+          "statement": "The prepared federated context test fails the is_active assertion at cognitive/federation.rs:1309.",
+          "examples": [
+            {
+              "line": 3199,
+              "text": "2026-11-02T00:35:07.3938644Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (5112) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:"
+            },
+            {
+              "line": 3200,
+              "text": "2026-11-02T00:35:07.4157785Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,"
+            },
+            {
+              "line": 3894,
+              "text": "2026-11-02T00:35:56.6857661Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (5112) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:"
+            },
+            {
+              "line": 3895,
+              "text": "2026-11-02T00:35:56.6858529Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/app-server-protocol:app-server-protocol-unit-tests",
+          "kind": "top-level timeout",
+          "statement": "Bazel reports TIMEOUT in 300.5s. Inner schema fixture failure lines are retained in the primary log but not counted as extra top-level targets.",
+          "examples": [
+            {
+              "line": 3242,
+              "text": "2026-11-02T00:35:09.7488019Z TIMEOUT: //codex-rs/app-server-protocol:app-server-protocol-unit-tests (Summary)"
+            },
+            {
+              "line": 3780,
+              "text": "2026-11-02T00:35:40.6542571Z //codex-rs/app-server-protocol:app-server-protocol-unit-tests           TIMEOUT in 300.5s"
+            }
+          ]
+        }
+      ],
+      "log_identity": {
+        "job_id": 125028471660,
+        "decoded_utf8_sha256": "e2495bb4811c62e61a4bed40d889c4c123f6485bfacd4133a3eb6fe8191cd365",
+        "decoded_utf8_bytes": 478003,
+        "gzip_sha256": "5c19ca2a71b8c776244596622aeba7b5879ef72ffa57590eb9f3fe68e812c69d",
+        "gzip_bytes": 68967
+      }
+    },
+    {
+      "job_id": 125028471795,
+      "shard": 3,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471795",
+      "conclusion": "failure",
+      "failed_step": [
+        {
+          "name": "bazel test shard",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        }
+      ],
+      "source_cleanliness": {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Test BuildBuddy Bazel wrapper",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Smoke test the native MSVC header parser",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "bazel test shard",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        },
+        {
+          "name": "Upload Bazel execution logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ],
+      "top_level_failed_target_count": 6,
+      "top_level_failed_targets": [
+        "//codex-rs/code-mode-host:code-mode-host-unit-tests",
+        "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests",
+        "//codex-rs/ext/queue:queue-queue_service-test",
+        "//codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+        "//codex-rs/tui:tui-unit-tests"
+      ],
+      "summary_lines": [
+        {
+          "line": 15092,
+          "text": "2026-11-02T00:35:42.1069714Z //codex-rs/code-mode-host:code-mode-host-unit-tests                      FAILED in 71.9s"
+        },
+        {
+          "line": 15094,
+          "text": "2026-11-02T00:35:42.1071742Z //codex-rs/ext/queue:queue-queue_service-test                            FAILED in 53.8s"
+        },
+        {
+          "line": 15096,
+          "text": "2026-11-02T00:35:42.1073432Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 96.9s"
+        },
+        {
+          "line": 15098,
+          "text": "2026-11-02T00:35:42.1075155Z //codex-rs/hepta-matrixd:hepta-matrixd-unit-tests                        FAILED in 74.3s"
+        },
+        {
+          "line": 15100,
+          "text": "2026-11-02T00:35:42.1076922Z //codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test FAILED in 0.3s"
+        },
+        {
+          "line": 15102,
+          "text": "2026-11-02T00:35:42.1078997Z //codex-rs/tui:tui-unit-tests                                            FAILED in 21 out of 22 in 93.3s"
+        },
+        {
+          "line": 15127,
+          "text": "2026-11-02T00:35:42.1103338Z Executed 45 out of 145 tests: 94 tests pass, 6 fail locally, and 45 were skipped."
+        },
+        {
+          "line": 15790,
+          "text": "2026-11-02T00:35:57.0336008Z ##[error]Process completed with exit code 3."
+        }
+      ],
+      "merge_log_matches": [
+        {
+          "line": 33,
+          "text": "2026-11-02T00:22:15.8934590Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/4550/merge (0758e6c2efd3009bcceb13536f60075581467d39)"
+        }
+      ],
+      "rust_compiler_error_lines": [],
+      "groups": [
+        {
+          "target": "//codex-rs/code-mode-host:code-mode-host-unit-tests",
+          "kind": "native allocator initialization fatal",
+          "statement": "PartitionAlloc aborts on !IsConfigurablePoolInitialized(); the log is not sufficient to assign a specific Rust caller or prove a new regression.",
+          "examples": [
+            {
+              "line": 2877,
+              "text": "2026-11-02T00:32:02.7749314Z [FATAL:partition_address_space.cc(301)] Check failed: !IsConfigurablePoolInitialized(). "
+            },
+            {
+              "line": 15146,
+              "text": "2026-11-02T00:35:56.6552102Z [FATAL:partition_address_space.cc(301)] Check failed: !IsConfigurablePoolInitialized(). "
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests",
+          "kind": "control socket state",
+          "statement": "The health/owner control identity test returns AlreadyExists because the Matrix control socket path is not stale.",
+          "examples": [
+            {
+              "line": 3001,
+              "text": "2026-11-02T00:33:20.3012898Z Error: Io(Custom { kind: AlreadyExists, error: \"matrixd control socket path is not stale: \\\\\\\\?\\\\D:\\\\tmp\\\\hmx-control-wORRD7\\\\fleet\\\\run\\\\aaghu64s7r56mdd2v36p3hkrmci.mx\" })"
+            },
+            {
+              "line": 15556,
+              "text": "2026-11-02T00:35:56.8386121Z Error: Io(Custom { kind: AlreadyExists, error: \"matrixd control socket path is not stale: \\\\\\\\?\\\\D:\\\\tmp\\\\hmx-control-wORRD7\\\\fleet\\\\run\\\\aaghu64s7r56mdd2v36p3hkrmci.mx\" })"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "kind": "readiness/timeouts and request count",
+          "statement": "Five queue tests fail: blocking-hook readiness or deadline expiration and a mock request count mismatch.",
+          "examples": [
+            {
+              "line": 3056,
+              "text": "2026-11-02T00:33:25.4844589Z Error: timed out waiting for `D:\\tmp\\.tmpzqz2we\\queue_blocking_prompt_hook.entered`"
+            },
+            {
+              "line": 3062,
+              "text": "2026-11-02T00:33:25.5300064Z Error: timed out waiting for `D:\\tmp\\.tmpuLmwqf\\queue_blocking_prompt_hook.entered`"
+            },
+            {
+              "line": 3068,
+              "text": "2026-11-02T00:33:25.5820949Z Error: deadline has elapsed"
+            },
+            {
+              "line": 3075,
+              "text": "2026-11-02T00:33:25.5994839Z \tExpected range of matching incoming requests: == 3"
+            },
+            {
+              "line": 3076,
+              "text": "2026-11-02T00:33:25.6000650Z \tNumber of matched incoming requests: 1"
+            },
+            {
+              "line": 3099,
+              "text": "2026-11-02T00:33:25.6780287Z Error: deadline has elapsed"
+            },
+            {
+              "line": 15258,
+              "text": "2026-11-02T00:35:56.7156004Z Error: timed out waiting for `D:\\tmp\\.tmpzqz2we\\queue_blocking_prompt_hook.entered`"
+            },
+            {
+              "line": 15264,
+              "text": "2026-11-02T00:35:56.7157153Z Error: timed out waiting for `D:\\tmp\\.tmpuLmwqf\\queue_blocking_prompt_hook.entered`"
+            },
+            {
+              "line": 15270,
+              "text": "2026-11-02T00:35:56.7158658Z Error: deadline has elapsed"
+            },
+            {
+              "line": 15277,
+              "text": "2026-11-02T00:35:56.7161743Z \tExpected range of matching incoming requests: == 3"
+            },
+            {
+              "line": 15278,
+              "text": "2026-11-02T00:35:56.7162106Z \tNumber of matched incoming requests: 1"
+            },
+            {
+              "line": 15301,
+              "text": "2026-11-02T00:35:56.7435742Z Error: deadline has elapsed"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test",
+          "kind": "signed intent assertion",
+          "statement": "The exact-digest Abort test fails its first expected SignedIntentRecoveryRequired assertion at line162. No safe Abort implementation or fence relaxation is proposed.",
+          "examples": [
+            {
+              "line": 3128,
+              "text": "2026-11-02T00:33:43.8262881Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (7620) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:"
+            },
+            {
+              "line": 3129,
+              "text": "2026-11-02T00:33:43.8265590Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))"
+            },
+            {
+              "line": 15576,
+              "text": "2026-11-02T00:35:56.8999077Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (7620) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:"
+            },
+            {
+              "line": 15577,
+              "text": "2026-11-02T00:35:56.9000352Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "kind": "multiple runtime/storage failures",
+          "statement": "Actual failures include UnsafeStateDirectory/RegistryOpen and five cognitive retrieval learning directory PermissionDenied failures; these are distinct observed symptoms.",
+          "examples": [
+            {
+              "line": 3236,
+              "text": "2026-11-02T00:34:03.7798275Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+            },
+            {
+              "line": 3242,
+              "text": "2026-11-02T00:34:03.8074770Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+            },
+            {
+              "line": 3247,
+              "text": "2026-11-02T00:34:03.8182151Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+            },
+            {
+              "line": 3252,
+              "text": "2026-11-02T00:34:03.8292866Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+            },
+            {
+              "line": 3257,
+              "text": "2026-11-02T00:34:03.8454569Z authority: UnsafeStateDirectory"
+            },
+            {
+              "line": 3262,
+              "text": "2026-11-02T00:34:03.8588722Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+            },
+            {
+              "line": 3267,
+              "text": "2026-11-02T00:34:03.8699691Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+            },
+            {
+              "line": 3272,
+              "text": "2026-11-02T00:34:03.9051470Z authority: UnsafeStateDirectory"
+            },
+            {
+              "line": 3277,
+              "text": "2026-11-02T00:34:03.9229668Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+            },
+            {
+              "line": 3282,
+              "text": "2026-11-02T00:34:03.9350983Z authority: UnsafeStateDirectory"
+            },
+            {
+              "line": 3287,
+              "text": "2026-11-02T00:34:03.9584570Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }"
+            },
+            {
+              "line": 3292,
+              "text": "2026-11-02T00:34:03.9921752Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "kind": "request-count assertions",
+          "statement": "Safety buffering tests fail expected Responses API request counts across internal shards/attempts. No timeout increase or test suppression is proposed.",
+          "examples": [
+            {
+              "line": 3706,
+              "text": "2026-11-02T00:35:15.6781789Z thread 'app::tests::safety_buffering::safety_retry_replays_older_interruption_notices' (2772) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:"
+            },
+            {
+              "line": 3707,
+              "text": "2026-11-02T00:35:15.6786177Z expected 4 Responses API requests"
+            },
+            {
+              "line": 4228,
+              "text": "2026-11-02T00:35:17.2857538Z thread 'app::tests::safety_buffering::safety_retry_replays_older_interruption_notices' (1188) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:"
+            },
+            {
+              "line": 4229,
+              "text": "2026-11-02T00:35:17.2858383Z expected 4 Responses API requests"
+            },
+            {
+              "line": 4751,
+              "text": "2026-11-02T00:35:17.5330091Z thread 'app::tests::safety_buffering::safety_retry_replays_older_interruption_notices' (2076) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:"
+            },
+            {
+              "line": 4752,
+              "text": "2026-11-02T00:35:17.5330889Z expected 4 Responses API requests"
+            },
+            {
+              "line": 5284,
+              "text": "2026-11-02T00:35:21.4669748Z thread 'app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time' (9716) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:"
+            },
+            {
+              "line": 5285,
+              "text": "2026-11-02T00:35:21.4672048Z expected 4 Responses API requests"
+            },
+            {
+              "line": 5803,
+              "text": "2026-11-02T00:35:21.7167593Z thread 'app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time' (5516) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:"
+            },
+            {
+              "line": 5804,
+              "text": "2026-11-02T00:35:21.7168432Z expected 4 Responses API requests"
+            },
+            {
+              "line": 6322,
+              "text": "2026-11-02T00:35:21.9481354Z thread 'app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time' (6500) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:"
+            },
+            {
+              "line": 6323,
+              "text": "2026-11-02T00:35:21.9482372Z expected 4 Responses API requests"
+            }
+          ]
+        }
+      ],
+      "log_identity": {
+        "job_id": 125028471795,
+        "decoded_utf8_sha256": "8bd3533c5b130e1fc634ce653328d2655b1ce3d35c414023cfe3a4995b176242",
+        "decoded_utf8_bytes": 2007325,
+        "gzip_sha256": "7fe427531016bddeafb32f76978f53c0150bab2a689d76f99d7ba76f1deea5d7",
+        "gzip_bytes": 402060
+      }
+    }
+  ]
+}

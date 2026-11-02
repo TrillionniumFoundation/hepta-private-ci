@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn.hx-nominal-homogeneity-independent-static-review.v1",
+  "reviewed_at_utc": "2026-11-02T00:51:55.797766+00:00",
+  "reviewer": "architecture_comparison",
+  "decision": "No blocking mathematical issue found in the conditional real-formula lemma. Accepted as an additive static derivation only.",
+  "lemma": {
+    "path": "/tmp/hcsn-homogeneity-static-20261102/HX_NOMINAL_HOMOGENEITY_LEMMA_ZH.md",
+    "bytes": 6143,
+    "sha256": "041ae8c0ce776919763d5a9085c54a3fa5ffec46353409debe5f5d3ffa922ff3"
+  },
+  "author_receipt": {
+    "path": "/tmp/hcsn-homogeneity-static-20261102/STATIC_MATH_RECEIPT.json",
+    "bytes": 3960,
+    "sha256": "23c9f240042326ca75171640c4d6502d20dcfc88890be0b96e03e06894148b34"
+  },
+  "independently_verified_source_identities": [
+    {
+      "local_path": "/tmp/hcsn-compiled-recovery/kernel.cpp",
+      "sha256": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd",
+      "matches_frozen_protocol": true
+    },
+    {
+      "local_path": "/tmp/hcsn-compiled-recovery/frozen_input/frozen_reference.py",
+      "sha256": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+      "matches_frozen_protocol": true
+    },
+    {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_model.py",
+      "sha256": "7e14756e5b98023092ce44f57eeef3933816a62d1a7dd4b126e8443448dfb2f5",
+      "matches_frozen_protocol": true
+    }
+  ],
+  "method": "Read complete frozen kernel and literal reference as text, verify hashes, and derive the identities symbolically. No importing or evaluating financial, network, differentiation or sampling routines.",
+  "reviewed_proofs": [
+    "For fixed psi, c,p,q,cost are linear in C,P. The boundary numerator is linear while its denominator and B kernels depend only on psi. Thus positive simultaneous nominal scaling gives b, equity and debt degree one. F/G depend only on psi and log(V/b), so F/G and Q,R,x have degree zero.",
+    "The default test is preserved because V<=u*b iff V/u<=b. Its E=0,F=G=1,debt=alpha*b/m assignment has the same degrees; value matching and the zero equity asset derivative remain consistent.",
+    "Writing kappa=C/P and beta=b(psi,kappa,1) gives b=P*beta. P=exp(rho)/beta and C=kappa*P make b=exp(rho) exactly in the ideal real formula. Dividing equity by b removes the nominal amplitude, so Q/R depend on z-rho and the eight shape parameters.",
+    "At fixed shape, Q_rho=-Q_z, R_rho=-R_z and x_rho=-1. Across default, these are statements about the selected C1 Q/R/x observables under the stated joint regularity and bounded continuation first-derivative assumptions, not about raw F/G becoming C1.",
+    "At fixed psi, P_kappa=-P*beta_kappa/beta, P_rho=P, C_kappa=P+kappa*P_kappa and C_rho=kappa*P. Their 2x2 determinant is P^2. Adding the unchanged seven-dimensional psi identity block preserves local invertibility on an open valid domain; eight shape plus one boundary coordinate retains nine financial parameters.",
+    "The P_* anchor identity follows from the same homogeneity. The anchor interval [20,100] intersect [0.5/kappa,10/kappa] and target B interval [20 beta,100 beta] intersect [0.5 beta/kappa,10 beta/kappa] are correct coupon/principal box restrictions, additional to the remaining financial conditions."
+  ],
+  "clarifications": [
+    "The normalized ideal stopping sign H=delta*beta-(1-tax)*kappa+(alpha*beta-1)/m<0 is not the complete finite-epsilon acceptance test. With S=abs(delta*beta)+abs((1-tax)*kappa)+(abs(alpha*beta)+1)/m, the real-expression form of the actual numerical margin is H < -64*epsilon*max(1/P,S). This agrees with the note warning that max(1,scale) breaks arbitrary nominal-scale acceptance invariance.",
+    "Closed API box endpoints do not themselves provide a two-sided feasible numerical neighborhood. The ideal local differential change of variables is not a proof that the entire constrained implementation domain is globally trainable.",
+    "The same valid financial branch, finite positive beta, open-region C1 assumptions and current hard-domain restrictions remain prerequisites. Global stopping optimality is not established by the local source guard."
+  ],
+  "not_claimed": [
+    "Exact FP32 or stabilized implementation scaling and derivative identity",
+    "An implemented or validated new shape/boundary parameter interface",
+    "Replacement of the current frozen eighteen-parameter tanh candidate",
+    "Causal task benefit, unseen generalization, autonomous spiking or efficiency improvement"
+  ],
+  "activity_counts": {
+    "financial_kernel_calls": 0,
+    "financial_reference_evaluations": 0,
+    "finite_difference_evaluations": 0,
+    "network_rollouts": 0,
+    "optimizer_updates": 0,
+    "new_numeric_samples": 0
+  },
+  "frozen_source_changes": 0,
+  "blocking_findings": []
+}

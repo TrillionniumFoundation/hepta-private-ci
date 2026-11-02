@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn.current-head-automation-baseline-review.v1",
+  "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "base_sha": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "job_id": 125028471660,
+  "log_current_symptom": "Four migration reopen cases fail at AutomationStore::open_root with Invalid.",
+  "sources": [
+    {
+      "ref": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "git_blob": "9e40c297d1ec8c2bbc5dd2f205474a0d4184aaac",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f52dc359344cd0eb9b5dba84d4af3d5815aeb629/codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "bytes": 8217,
+      "sha256": "b06480154f08e0b9620e7b670074e12330d786739384e16391587e26f3ea3d18"
+    },
+    {
+      "ref": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "git_blob": "176b5c7200bea7d07d6642440d1f03c37209cef3",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f52dc359344cd0eb9b5dba84d4af3d5815aeb629/codex-rs/hepta-automation/src/store.rs",
+      "bytes": 56467,
+      "sha256": "dd23c4b0fdd40f2a3f053bf92424bda755bb2c431b69a969052966a8efec07f9"
+    },
+    {
+      "ref": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "git_blob": "b2a68028afd8cc636b7b6a5a324f17ebf92d6bcc",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ad32ceac6972e811ce74802ab5c44dc63b40bd4b/codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "bytes": 7697,
+      "sha256": "4897cf6645ec4cb49f383c4f3d577ccb3db7d67f5f410387294b012822af067a"
+    },
+    {
+      "ref": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "git_blob": "176b5c7200bea7d07d6642440d1f03c37209cef3",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ad32ceac6972e811ce74802ab5c44dc63b40bd4b/codex-rs/hepta-automation/src/store.rs",
+      "bytes": 56467,
+      "sha256": "dd23c4b0fdd40f2a3f053bf92424bda755bb2c431b69a969052966a8efec07f9"
+    }
+  ],
+  "verified_source_facts": {
+    "production_store_entire_file_byte_identical": true,
+    "production_store_git_blob": "176b5c7200bea7d07d6642440d1f03c37209cef3",
+    "unchanged_root_setup_and_reopen_statements": [
+      "let root = temp.path().join(\"owner\");",
+      "std::fs::create_dir(&root).expect(\"owner directory\");",
+      "sqlx::query(\"VACUUM INTO ?\")",
+      ".bind(root.join(AUTOMATION_DB_FILENAME).to_str().expect(\"path\"))",
+      "AutomationStore::open_root(root.clone(), owner.clone())"
+    ],
+    "open_root_entry": "create_private_directory(&root)? executes before opening the SQL pool.",
+    "existing_canonical_path_gate": "create_private_directory rejects path.canonicalize() != path with AutomationError::Invalid."
+  },
+  "inference": "A Windows canonical path representation mismatch is a plausible pre-existing explanation. This was not executed on Windows and is not a proven root cause or a repair result.",
+  "limits": "The R15 historical_pool helper changed from in-memory SQLx setup to the approved durable SQLite helper. The production open_root file and destination root construction did not change. No safe-store checks, tests or production code were modified in this review.",
+  "context_zip": {
+    "sha256": "23e8ff12f906e6ba42c88187e1beb81ac8ff600958f2c2de279fa5315d7bfe07",
+    "bytes": 25480,
+    "members": 4
+  }
+}
