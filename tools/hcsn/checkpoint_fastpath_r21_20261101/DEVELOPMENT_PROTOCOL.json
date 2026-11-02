@@ -1,0 +1,29 @@
+{
+  "base_source_commit": "86e9128aa7498343bddc4a2435435af72d39de85",
+  "expected_checkpoint_exports_new": 12,
+  "expected_checkpoint_exports_old": 18,
+  "expected_directory_fsyncs": 6,
+  "expected_file_fsyncs": 6,
+  "fit": 151101,
+  "memory_worlds": 2,
+  "models": [
+    "free",
+    "hmm_same_matrix",
+    "hx"
+  ],
+  "namespace": 2100001,
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "schema": "checkpoint-r21-fixed-development-v1",
+  "scope": "Engineeringfixturesonly; includesoriginalworstfit151101andallfourbaselinevariants. Fresh8worlds,2domains. Noformal/resource/qualityqualification, fullcostsretained; futureconfirmationrosterwillbedeclaredbeforefreeze.",
+  "timing_worlds": 8,
+  "training_archive": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151101.json.gz",
+  "variants": [
+    "baseline",
+    "r18",
+    "r19",
+    "r20"
+  ]
+}
