@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v10_followup_20261101/frontend/fit_frontend.py", line 188, in <module>
+    main()
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v10_followup_20261101/frontend/fit_frontend.py", line 129, in main
+    data = {s: legacy_data("async_av", s) for s in ("train", "val")}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/frontend/replay.py", line 22, in legacy_data
+    from experiments.hcsn_mechanism_content_v2.data import load_data
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_mechanism_content_v2/data.py", line 12, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'

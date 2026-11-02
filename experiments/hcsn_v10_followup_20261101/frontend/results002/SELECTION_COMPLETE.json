@@ -1,0 +1,62 @@
+{
+  "audio": {
+    "id": "moments-linear-a1",
+    "features": 64,
+    "checkpoint_sha256": "b7ad4f6a68f57cefe82929a26b5e51d870432fc2d96361ccf944a749de89353d",
+    "train": {
+      "n": 24,
+      "correct": 22,
+      "accuracy": 0.9166666666666666,
+      "nll": 1.5588928742295671,
+      "brier": 0.7472626239222349
+    },
+    "validation": {
+      "n": 12,
+      "correct": 4,
+      "accuracy": 0.3333333333333333,
+      "nll": 1.6714612499134673,
+      "brier": 0.7912566237062357
+    },
+    "selected_sha256": "b7ad4f6a68f57cefe82929a26b5e51d870432fc2d96361ccf944a749de89353d"
+  },
+  "video": {
+    "id": "temporal-rbf1-a0.001",
+    "features": 448,
+    "checkpoint_sha256": "1d160769c455206e2774364c4fb5079b15d7a0782bcddba0ce21a19c0e6a66b4",
+    "train": {
+      "n": 24,
+      "correct": 24,
+      "accuracy": 1.0,
+      "nll": 1.0480541081986996,
+      "brier": 0.5060325301433898
+    },
+    "validation": {
+      "n": 12,
+      "correct": 2,
+      "accuracy": 0.16666666666666666,
+      "nll": 1.778902648491908,
+      "brier": 0.8284794187598202
+    },
+    "selected_sha256": "1d160769c455206e2774364c4fb5079b15d7a0782bcddba0ce21a19c0e6a66b4"
+  },
+  "av": {
+    "id": "temporal-linear-a0.1",
+    "features": 896,
+    "checkpoint_sha256": "dc4be1b76dc45467735f1b79495597721e89b51052672f3a139cffcce806d317",
+    "train": {
+      "n": 24,
+      "correct": 24,
+      "accuracy": 1.0,
+      "nll": 1.2180007313186263,
+      "brier": 0.5945564297470449
+    },
+    "validation": {
+      "n": 12,
+      "correct": 3,
+      "accuracy": 0.25,
+      "nll": 1.659437401251597,
+      "brier": 0.7915539914963722
+    },
+    "selected_sha256": "dc4be1b76dc45467735f1b79495597721e89b51052672f3a139cffcce806d317"
+  }
+}

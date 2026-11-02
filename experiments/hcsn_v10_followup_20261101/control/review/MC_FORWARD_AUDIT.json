@@ -1,0 +1,110 @@
+{
+  "status": "passed",
+  "replayed_decisions": 6,
+  "rows": [
+    {
+      "condition": "matched",
+      "family": "gru",
+      "fit_seed": "81101",
+      "checks": {
+        "action_equal": true,
+        "base_correct_equal": true,
+        "read_correct_equal": true,
+        "selected_schedule_equal": true,
+        "candidate_schedules_equal": true,
+        "all_scores_within_tolerance": true,
+        "selected_score_within_tolerance": true
+      },
+      "maximum_score_error": 0.0,
+      "candidates": 1351,
+      "packet_evaluations": 3200
+    },
+    {
+      "condition": "matched",
+      "family": "ssm",
+      "fit_seed": "81101",
+      "checks": {
+        "action_equal": true,
+        "base_correct_equal": true,
+        "read_correct_equal": true,
+        "selected_schedule_equal": true,
+        "candidate_schedules_equal": true,
+        "all_scores_within_tolerance": true,
+        "selected_score_within_tolerance": true
+      },
+      "maximum_score_error": 0.0,
+      "candidates": 1351,
+      "packet_evaluations": 3200
+    },
+    {
+      "condition": "matched",
+      "family": "analytic",
+      "fit_seed": "91103",
+      "checks": {
+        "action_equal": true,
+        "base_correct_equal": true,
+        "read_correct_equal": true,
+        "selected_schedule_equal": true,
+        "candidate_schedules_equal": true,
+        "all_scores_within_tolerance": true,
+        "selected_score_within_tolerance": true
+      },
+      "maximum_score_error": 0.0,
+      "candidates": 1351,
+      "packet_evaluations": 3200
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "gru",
+      "fit_seed": "81101",
+      "checks": {
+        "action_equal": true,
+        "base_correct_equal": true,
+        "read_correct_equal": true,
+        "selected_schedule_equal": true,
+        "candidate_schedules_equal": true,
+        "all_scores_within_tolerance": true,
+        "selected_score_within_tolerance": true
+      },
+      "maximum_score_error": 0.0,
+      "candidates": 1351,
+      "packet_evaluations": 3200
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "ssm",
+      "fit_seed": "81101",
+      "checks": {
+        "action_equal": true,
+        "base_correct_equal": true,
+        "read_correct_equal": true,
+        "selected_schedule_equal": true,
+        "candidate_schedules_equal": true,
+        "all_scores_within_tolerance": true,
+        "selected_score_within_tolerance": true
+      },
+      "maximum_score_error": 0.0,
+      "candidates": 1351,
+      "packet_evaluations": 3200
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "analytic",
+      "fit_seed": "91103",
+      "checks": {
+        "action_equal": true,
+        "base_correct_equal": true,
+        "read_correct_equal": true,
+        "selected_schedule_equal": true,
+        "candidate_schedules_equal": true,
+        "all_scores_within_tolerance": true,
+        "selected_score_within_tolerance": true
+      },
+      "maximum_score_error": 0.0,
+      "candidates": 1351,
+      "packet_evaluations": 3200
+    }
+  ],
+  "tolerance": 1e-12,
+  "scope": "same implementation six-decision MC-forward replay, not independent planner or entire-run neural replay"
+}

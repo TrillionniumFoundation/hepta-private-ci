@@ -1,0 +1,30 @@
+{
+  "workers": [
+    {
+      "receipt": "receipts/common001/RECEIPT.json",
+      "task_success": true,
+      "cpu_seconds": 1.0174809999999999
+    },
+    {
+      "receipt": "receipts/forward001/RECEIPT.json",
+      "task_success": true,
+      "cpu_seconds": 4.264847
+    },
+    {
+      "receipt": "receipts/numerics001/RECEIPT.json",
+      "task_success": true,
+      "cpu_seconds": 3.3931479999999996
+    },
+    {
+      "receipt": "receipts/raw001/RECEIPT.json",
+      "task_success": true,
+      "cpu_seconds": 18.179706
+    }
+  ],
+  "measured_disjoint_cpu_seconds_lower_bound": 26.855182,
+  "unknown_additional_costs": [
+    "review development",
+    "report writing"
+  ],
+  "full_project_cost": null
+}

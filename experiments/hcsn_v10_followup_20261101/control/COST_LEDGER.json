@@ -1,0 +1,51 @@
+{
+  "measured_disjoint_worker_cpu_seconds_lower_bound": 125.45706999999999,
+  "workers": [
+    {
+      "path": "receipts/campaign001/RECEIPT.json",
+      "cpu_seconds": 90.60770099999999,
+      "task_success": true
+    },
+    {
+      "path": "receipts/common_actions001/RECEIPT.json",
+      "cpu_seconds": 4.918667,
+      "task_success": true
+    },
+    {
+      "path": "receipts/prepare001/RECEIPT.json",
+      "cpu_seconds": 3.07552,
+      "task_success": true
+    },
+    {
+      "path": "review/receipts/common001/RECEIPT.json",
+      "cpu_seconds": 1.0174809999999999,
+      "task_success": true
+    },
+    {
+      "path": "review/receipts/forward001/RECEIPT.json",
+      "cpu_seconds": 4.264847,
+      "task_success": true
+    },
+    {
+      "path": "review/receipts/numerics001/RECEIPT.json",
+      "cpu_seconds": 3.3931479999999996,
+      "task_success": true
+    },
+    {
+      "path": "review/receipts/raw001/RECEIPT.json",
+      "cpu_seconds": 18.179706,
+      "task_success": true
+    }
+  ],
+  "nested_rule": "Per-run/core/child timers included in outer workers; do not add twice",
+  "unknown_additional_cost": [
+    "initial 8-path development smoke",
+    "source development and report writing",
+    "historical preparation/pretraining"
+  ],
+  "complete_process_family_peak_memory_bytes": null,
+  "attributable_energy_joules": null,
+  "complete_project_cost": null,
+  "architecture_acceptance": false,
+  "production_activation": false
+}

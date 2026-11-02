@@ -1,0 +1,415 @@
+{
+  "source": "pinned V3 recovered historical data",
+  "features": "16 log-mel audio bins and 16 low-frequency grayscale DCT coefficients; original-rate arrays and V3 0.1-second compressed windows",
+  "raw_waveform_present": false,
+  "raw_video_present": false,
+  "splits": {
+    "train": {
+      "archive_sha256": "cc53d3185720157590fa47fd7b93103fe92b0186b587ec4ea763c61ee7de6da1",
+      "arrays": {
+        "x": {
+          "shape": [
+            6913,
+            40
+          ],
+          "dtype": "float32"
+        },
+        "dt": {
+          "shape": [
+            6913
+          ],
+          "dtype": "float32"
+        },
+        "base": {
+          "shape": [
+            6913,
+            16
+          ],
+          "dtype": "float32"
+        },
+        "times": {
+          "shape": [
+            6913
+          ],
+          "dtype": "float64"
+        },
+        "modality": {
+          "shape": [
+            6913
+          ],
+          "dtype": "uint8"
+        },
+        "offsets": {
+          "shape": [
+            25
+          ],
+          "dtype": "int64"
+        },
+        "labels": {
+          "shape": [
+            24
+          ],
+          "dtype": "int64"
+        },
+        "origins": {
+          "shape": [
+            24
+          ],
+          "dtype": "float64"
+        },
+        "clip_ids": {
+          "shape": [
+            24
+          ],
+          "dtype": "<U15"
+        },
+        "actors": {
+          "shape": [
+            24
+          ],
+          "dtype": "<U4"
+        },
+        "normalization_mean": {
+          "shape": [
+            2,
+            32
+          ],
+          "dtype": "float64"
+        },
+        "normalization_scale": {
+          "shape": [
+            2,
+            32
+          ],
+          "dtype": "float64"
+        }
+      },
+      "recordings": [
+        "1051_DFA_ANG_XX",
+        "1051_DFA_DIS_XX",
+        "1051_DFA_FEA_XX",
+        "1051_DFA_HAP_XX",
+        "1051_DFA_NEU_XX",
+        "1051_DFA_SAD_XX",
+        "1043_DFA_ANG_XX",
+        "1043_DFA_DIS_XX",
+        "1043_DFA_FEA_XX",
+        "1043_DFA_HAP_XX",
+        "1043_DFA_NEU_XX",
+        "1043_DFA_SAD_XX",
+        "1016_DFA_ANG_XX",
+        "1016_DFA_DIS_XX",
+        "1016_DFA_FEA_XX",
+        "1016_DFA_HAP_XX",
+        "1016_DFA_NEU_XX",
+        "1016_DFA_SAD_XX",
+        "1050_DFA_ANG_XX",
+        "1050_DFA_DIS_XX",
+        "1050_DFA_FEA_XX",
+        "1050_DFA_HAP_XX",
+        "1050_DFA_NEU_XX",
+        "1050_DFA_SAD_XX"
+      ],
+      "actors": [
+        "1051",
+        "1051",
+        "1051",
+        "1051",
+        "1051",
+        "1051",
+        "1043",
+        "1043",
+        "1043",
+        "1043",
+        "1043",
+        "1043",
+        "1016",
+        "1016",
+        "1016",
+        "1016",
+        "1016",
+        "1016",
+        "1050",
+        "1050",
+        "1050",
+        "1050",
+        "1050",
+        "1050"
+      ],
+      "labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "validation": {
+      "archive_sha256": "e3c74e378df33592b0d40014deeb213e3639395ff0e0ecf3956dff57e7f39b2f",
+      "arrays": {
+        "x": {
+          "shape": [
+            3497,
+            40
+          ],
+          "dtype": "float32"
+        },
+        "dt": {
+          "shape": [
+            3497
+          ],
+          "dtype": "float32"
+        },
+        "base": {
+          "shape": [
+            3497,
+            16
+          ],
+          "dtype": "float32"
+        },
+        "times": {
+          "shape": [
+            3497
+          ],
+          "dtype": "float64"
+        },
+        "modality": {
+          "shape": [
+            3497
+          ],
+          "dtype": "uint8"
+        },
+        "offsets": {
+          "shape": [
+            13
+          ],
+          "dtype": "int64"
+        },
+        "labels": {
+          "shape": [
+            12
+          ],
+          "dtype": "int64"
+        },
+        "origins": {
+          "shape": [
+            12
+          ],
+          "dtype": "float64"
+        },
+        "clip_ids": {
+          "shape": [
+            12
+          ],
+          "dtype": "<U15"
+        },
+        "actors": {
+          "shape": [
+            12
+          ],
+          "dtype": "<U4"
+        },
+        "normalization_mean": {
+          "shape": [
+            2,
+            32
+          ],
+          "dtype": "float64"
+        },
+        "normalization_scale": {
+          "shape": [
+            2,
+            32
+          ],
+          "dtype": "float64"
+        }
+      },
+      "recordings": [
+        "1011_DFA_ANG_XX",
+        "1011_DFA_DIS_XX",
+        "1011_DFA_FEA_XX",
+        "1011_DFA_HAP_XX",
+        "1011_DFA_NEU_XX",
+        "1011_DFA_SAD_XX",
+        "1082_DFA_ANG_XX",
+        "1082_DFA_DIS_XX",
+        "1082_DFA_FEA_XX",
+        "1082_DFA_HAP_XX",
+        "1082_DFA_NEU_XX",
+        "1082_DFA_SAD_XX"
+      ],
+      "actors": [
+        "1011",
+        "1011",
+        "1011",
+        "1011",
+        "1011",
+        "1011",
+        "1082",
+        "1082",
+        "1082",
+        "1082",
+        "1082",
+        "1082"
+      ],
+      "labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "test": {
+      "archive_sha256": "5400fc44408c4ecfd54483af4d0b0778af88b7cf74314e6475af8280b6141705",
+      "arrays": {
+        "x": {
+          "shape": [
+            3313,
+            40
+          ],
+          "dtype": "float32"
+        },
+        "dt": {
+          "shape": [
+            3313
+          ],
+          "dtype": "float32"
+        },
+        "base": {
+          "shape": [
+            3313,
+            16
+          ],
+          "dtype": "float32"
+        },
+        "times": {
+          "shape": [
+            3313
+          ],
+          "dtype": "float64"
+        },
+        "modality": {
+          "shape": [
+            3313
+          ],
+          "dtype": "uint8"
+        },
+        "offsets": {
+          "shape": [
+            13
+          ],
+          "dtype": "int64"
+        },
+        "labels": {
+          "shape": [
+            12
+          ],
+          "dtype": "int64"
+        },
+        "origins": {
+          "shape": [
+            12
+          ],
+          "dtype": "float64"
+        },
+        "clip_ids": {
+          "shape": [
+            12
+          ],
+          "dtype": "<U15"
+        },
+        "actors": {
+          "shape": [
+            12
+          ],
+          "dtype": "<U4"
+        },
+        "normalization_mean": {
+          "shape": [
+            2,
+            32
+          ],
+          "dtype": "float64"
+        },
+        "normalization_scale": {
+          "shape": [
+            2,
+            32
+          ],
+          "dtype": "float64"
+        }
+      },
+      "recordings": [
+        "1040_DFA_ANG_XX",
+        "1040_DFA_DIS_XX",
+        "1040_DFA_FEA_XX",
+        "1040_DFA_HAP_XX",
+        "1040_DFA_NEU_XX",
+        "1040_DFA_SAD_XX",
+        "1023_DFA_ANG_XX",
+        "1023_DFA_DIS_XX",
+        "1023_DFA_FEA_XX",
+        "1023_DFA_HAP_XX",
+        "1023_DFA_NEU_XX",
+        "1023_DFA_SAD_XX"
+      ],
+      "actors": [
+        "1040",
+        "1040",
+        "1040",
+        "1040",
+        "1040",
+        "1040",
+        "1023",
+        "1023",
+        "1023",
+        "1023",
+        "1023",
+        "1023"
+      ],
+      "labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  },
+  "fresh_recordings": false,
+  "v5_v6_complete_exclusion_ledger_available": false
+}

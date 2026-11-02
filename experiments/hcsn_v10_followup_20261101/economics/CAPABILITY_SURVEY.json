@@ -1,0 +1,46 @@
+{
+  "schema": "hcsn-v10-cost-path-survey.v1",
+  "executables": {
+    "docker": null,
+    "podman": null,
+    "systemd-run": "/usr/bin/systemd-run",
+    "unshare": "/usr/bin/unshare",
+    "perf": null,
+    "bpftrace": null,
+    "accton": null,
+    "lastcomm": null
+  },
+  "sockets": {
+    "/var/run/docker.sock": false,
+    "/run/podman/podman.sock": false
+  },
+  "kernel_privilege_metadata": {
+    "CapPrm": "0000000000000000",
+    "CapEff": "0000000000000000",
+    "CapBnd": "0000000000000000",
+    "NoNewPrivs": "1",
+    "Seccomp": "2"
+  },
+  "systemd_user_scope_attempt": {
+    "argv": [
+      "systemd-run",
+      "--user",
+      "--scope",
+      "--quiet",
+      "true"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Failed to connect to bus: No medium found\n"
+  },
+  "inherited_cgroup_probe": {
+    "path": "experiments/hcsn_v9_followup_20261101/economics/CAPABILITY.json",
+    "sha256": "103d4be49e9cb90d4f4d2a3471f037e751df8a92a7702baec7f912c144fd8ad1",
+    "reexecuted": false
+  },
+  "alternative_complete_family_peak_available": false,
+  "whole_family_rss_peak_bytes": null,
+  "attributable_energy_joules": null,
+  "cloud_or_outer_runner_tool_exposed": false,
+  "comment": "Exposed tool metadata inspected: no cloud_environment/environment_status or outer container/runner execution tool. No previous runtime credential/state was reused."
+}

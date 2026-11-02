@@ -1,0 +1,71 @@
+{
+  "schema": "hcsn-v10-acceptance.v1",
+  "v9_pr": 4581,
+  "v9_remote_head": "03f338eb44bf585bfe9d4f87e4f5ef7af98884ad",
+  "local_source_baseline": "ad2a79d0699979108543d3052b76942b14e0e8a6",
+  "source_tree_mapping_verified": true,
+  "original_gates_unchanged": true,
+  "frontend": {
+    "status": "HOLD",
+    "fitted_candidates": 504,
+    "same_window_candidates": 216,
+    "native_rate_candidates": 288,
+    "old_test_audio_correct": 3,
+    "old_test_AV_correct": 2,
+    "old_test_n": 12,
+    "v6_assets_and_exclusion_ledger_recovered": false,
+    "new_independent_recordings_qualified": false,
+    "strong_audio_qualified": false
+  },
+  "persistent_AV": {
+    "status": "HOLD",
+    "reader_fits": 16,
+    "executions": 720,
+    "same_law_pairs": 144,
+    "same_law_actions_outputs_utility_exact": true,
+    "finite_path_filter_minus_history_utility": {
+      "emotion": 0.0443797916666668,
+      "binding": -0.0137510416666666
+    },
+    "financial_HX_model": false,
+    "joint_content_head_training": false,
+    "stable_exclusive_analytic_gain_established": false,
+    "prospective_independent_confirmation": false
+  },
+  "control": {
+    "status": "HOLD",
+    "new_worlds": 12,
+    "main_runs": 396,
+    "fixed_same_core_runs": 132,
+    "common_D_action_runs": 120,
+    "MPC_samples_frozen": 64,
+    "MPC_minus_light_positive_point_estimate_any_core_condition": false,
+    "strict_positive_D_minus_B_established": false,
+    "exact_belief_DP_implemented": false
+  },
+  "economics": {
+    "status": "HOLD",
+    "delegated_cgroup_implementation_available": true,
+    "actual_successful_kernel_campaigns": 0,
+    "real_gate_controls_passed": 7,
+    "complete_family_RSS_peak_bytes": null,
+    "device_joules": null
+  },
+  "independent_validation": {
+    "path_precheck": 2948,
+    "path_records_final": 37601,
+    "preselected_neural_forward_checks": 765,
+    "neural_forward_episodes": 16,
+    "MPC_numerics": 5529,
+    "MPC_raw": 665587,
+    "MPC_common_actions": 3366,
+    "MPC_forward_replays": 6,
+    "frontend_assertion_groups": [
+      4752,
+      6192
+    ]
+  },
+  "all_blockers_closed": false,
+  "production_activation": false,
+  "repository_wide_CI_passed": false
+}

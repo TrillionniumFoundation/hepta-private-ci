@@ -1,0 +1,156 @@
+{
+  "schema": "hcsn-v10-preselected-neural-forward-replay.v1",
+  "checks": 765,
+  "all_checks_passed": true,
+  "failed_examples": [],
+  "cases": [
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "history",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 15,
+      "checkpoint_sha256": "9e1b52a1ff1f43681eb595186cd915c83ce086e0f1dc25601dc2bfe65bee8f19"
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "gru",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 12,
+      "checkpoint_sha256": "b91b995a5cfbd73d607d2b4c5259d7821863aaf3c172113574028dd78d7d175f"
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "ssm",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 20,
+      "checkpoint_sha256": "5bc299575b6b247b29634a7c36f05b5918555efc145db6b54dcfd4e78612497c"
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "filter",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 16,
+      "checkpoint_sha256": "1f9dba81a085614ac251b4f92c0993facd4aa1e14fcb93baeb91c6116c0f09b3"
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "history",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 16,
+      "checkpoint_sha256": "d885af5e67020e366c5a15a3199bd089411d5b276091e4e53eaf4dd1e525568b"
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "gru",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 11,
+      "checkpoint_sha256": "60bbdd0378916731d111433593814b4b032e5ba8d8fe96490458d214f0cc11ef"
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "ssm",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 15,
+      "checkpoint_sha256": "5fc06d832c3ca034ae28aee0575efa6e8cad596fce4ab771642d10f7eead7df0"
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "filter",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 16,
+      "checkpoint_sha256": "3ff498228c350007435aa21ab9ae9900371068d42c26423709d9430b9677eda0"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "history",
+      "index": 0,
+      "hidden_steps": 1,
+      "candidate_values": 6,
+      "checkpoint_sha256": "db6cfdebe41bedab68a0c31d3cdfc7454d4c558275fe5d52a713792779c4a245"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "gru",
+      "index": 0,
+      "hidden_steps": 1,
+      "candidate_values": 6,
+      "checkpoint_sha256": "251f529c4d4c53170a4d7acaba0669db32cf11a98f7cd972c9c49221dc5586b1"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "ssm",
+      "index": 0,
+      "hidden_steps": 6,
+      "candidate_values": 12,
+      "checkpoint_sha256": "0712dc714db614c8878611a578de1f72cf5cc7d7ed18761f4e3eb6d586adcbaa"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "filter",
+      "index": 0,
+      "hidden_steps": 1,
+      "candidate_values": 6,
+      "checkpoint_sha256": "99a0fe555cb874a934d53095ce0216f6758f3bbc2129103413d7471dc5022eac"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "history",
+      "index": 0,
+      "hidden_steps": 1,
+      "candidate_values": 6,
+      "checkpoint_sha256": "c6962657bdd8b49fd1ab485e5efe103f1404cca3abaae36c71530e89c41ebff7"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "gru",
+      "index": 0,
+      "hidden_steps": 1,
+      "candidate_values": 6,
+      "checkpoint_sha256": "f4945c8eb294730942d0c47baec1b888cb9e1650d77d78ff6622c55ab94fabbc"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "ssm",
+      "index": 0,
+      "hidden_steps": 1,
+      "candidate_values": 6,
+      "checkpoint_sha256": "952ad8e373486add71e33ad1e342621cefe1a0372312783c7b7cc39af3148141"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "filter",
+      "index": 0,
+      "hidden_steps": 1,
+      "candidate_values": 6,
+      "checkpoint_sha256": "d8f717ea95b7236ee87339fb78045187f22ef98df304ac153c6656d0c6482fc8"
+    }
+  ],
+  "hidden_steps": 61,
+  "candidate_forecasts": 175,
+  "scope": "Uses producer Model/common-head implementation, not an independent architecture or training implementation",
+  "source_unchanged": true
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn-v10-historical-frontend.v1",
+  "source_sha256": "14b823d3aa6c1cfb458a28de6a545bbf93afb18e2da69e2a510f9e0dd7cfb5e4",
+  "train_sha256": "cc53d3185720157590fa47fd7b93103fe92b0186b587ec4ea763c61ee7de6da1",
+  "validation_sha256": "e3c74e378df33592b0d40014deeb213e3639395ff0e0ecf3956dff57e7f39b2f",
+  "task": "six-class historical V3 emotion; not v6 five-class emotion or semantic statement binding",
+  "modalities": [
+    "audio",
+    "video",
+    "av"
+  ],
+  "families": [
+    "moments",
+    "temporal",
+    "cepstral",
+    "spectral_shape"
+  ],
+  "kernels": [
+    "linear",
+    "rbf0.1",
+    "rbf1",
+    "rbf10"
+  ],
+  "alphas": [
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0
+  ],
+  "classes": 6,
+  "selection": "minimum validation NLL; fixed declared enumeration order breaks ties",
+  "input_policy": "native",
+  "prior_attempt": "results002 ordinary cache heads did not improve accuracy; this version adds spectral-shape and native-rate development diagnoses",
+  "input": "Native original-rate16D when native selected; extra information relative to same causal 0.1-second accepted V3 payloads; only first16 content coordinates and causal source time for physical bin membership",
+  "state": "Temporal features computed from complete accepted cache; no 32-scalar memory claim",
+  "prefix_seconds": 3.0,
+  "future_input_forbidden": true,
+  "test": "Previously exposed old test is diagnostic only, opened after all three selections; no independent validation or prospective freeze claim",
+  "calibration": "No correctness calibrator fitted; fixed score softmax is not empirical correctness",
+  "freeze_utc": "2026-11-02T00:46:56Z",
+  "fresh_confirmation": false,
+  "original_v6_assets_restored": false,
+  "all_blockers_closed": false,
+  "production_activation": false
+}
