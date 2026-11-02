@@ -1,0 +1,55 @@
+{
+  "schema": "joint-native-real-nextest-gate-v1",
+  "results": [
+    {
+      "stage": "before",
+      "command": [
+        "just",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "hepta-digital-read-before-native",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-types"
+      ],
+      "cwd": "/workspace/scratch/9d953b0104b2/native-build",
+      "returncode": 101,
+      "wall_seconds": 0.571707998002239,
+      "log_sha256": "fdbbb402b58670aa02158efe2208a1d8b212abab9612be2be564531b197a862b",
+      "log": "before.log"
+    },
+    {
+      "stage": "after",
+      "command": [
+        "just",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "hepta-digital-read-before-native",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-types"
+      ],
+      "cwd": "/workspace/scratch/9d953b0104b2/native-build",
+      "returncode": 0,
+      "wall_seconds": 18.599713920993963,
+      "log_sha256": "1a1fe28f01dac9e50bc78861ed8052c3ea5f2bc420921478fd532b3c41bd1ce0",
+      "log": "after.log"
+    }
+  ],
+  "nextest_sha256": "7e43165f5360b31ac559113848e56e1cf0dc97014d34fbbdfa62741754740435",
+  "nextest_version": "cargo-nextest 0.9.150 (d225b1daf 2026-10-26)\nrelease: 0.9.150\ncommit-hash: d225b1daf362c1ca8e5e048132618c1a81c57a28\ncommit-date: 2026-10-26\nhost: x86_64-unknown-linux-gnu\n",
+  "original_gate_before_failed": true,
+  "original_gate_after_passed": true,
+  "repository_helpers_modified": false,
+  "direct_test_fallback": false
+}

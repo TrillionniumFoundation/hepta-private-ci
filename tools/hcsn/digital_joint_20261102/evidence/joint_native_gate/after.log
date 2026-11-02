@@ -1,0 +1,205 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+warning: method `read` is never used
+   --> digital-read-before-native/src/content.rs:222:12
+    |
+136 | impl Model {
+    | ---------- method in this implementation
+...
+222 |     pub fn read(&self, request: &Request) -> Result<Output, String> {
+    |            ^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-digital-read-before-native` (bin "hepta-digital-read-before-native" test) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.29s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 322d0b21-0850-4c85-bccf-66c469142a1e with nextest profile: local
+    Starting 178 tests across 4 binaries (1 test skipped)
+        PASS [   0.059s] (  1/178) codex-hepta-infer-core durable_control::native::tests::historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success
+        PASS [   0.072s] (  2/178) codex-hepta-infer-core durable_control::native::tests::cancellation_intent_and_terminal_failure_do_not_invent_zero_usage
+        PASS [   0.085s] (  3/178) codex-hepta-infer-core durable_control::native::tests::completed_owner_ready_without_codex_witness_is_not_success
+        PASS [   0.086s] (  4/178) codex-hepta-infer-core durable_control::native::tests::explicit_dispatch_rejection_releases_without_claiming_provider_terminal
+        PASS [   0.096s] (  5/178) codex-hepta-infer-core durable_control::native::tests::duplicate_reopen_preserves_exact_binding_and_reserves_only_once
+        PASS [   0.051s] (  6/178) codex-hepta-infer-core durable_control::native::tests::late_completed_releases_slot_without_erasing_authority_loss
+        PASS [   0.127s] (  7/178) codex-hepta-infer-core durable_control::native::tests::generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven
+        PASS [   0.054s] (  8/178) codex-hepta-infer-core durable_control::native::tests::missing_terminal_usage_can_be_completed_without_changing_the_outcome
+        PASS [   0.144s] (  9/178) codex-hepta-infer-core durable_control::native::tests::codex_bound_terminal_requires_adapter_correlation_witness
+        PASS [   0.072s] ( 10/178) codex-hepta-infer-core durable_control::native::tests::legacy_journal_completion_without_authority_cannot_be_replayed_as_success
+        PASS [   0.067s] ( 11/178) codex-hepta-infer-core durable_control::native::tests::one_shot_pre_effect_abort_releases_only_the_live_write_ahead
+        PASS [   0.094s] ( 12/178) codex-hepta-infer-core durable_control::native::tests::lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen
+        PASS [   0.055s] ( 13/178) codex-hepta-infer-core durable_control::native::tests::post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
+        PASS [   0.053s] ( 14/178) codex-hepta-infer-core durable_control::tests::cancellation_after_assignment_waits_for_observation_and_accounts_usage
+        PASS [   0.057s] ( 15/178) codex-hepta-infer-core durable_control::native::tests::pre_dispatch_stop_releases_without_claiming_provider_terminal
+        PASS [   0.121s] ( 16/178) codex-hepta-infer-core durable_control::native::tests::oversized_and_incomplete_lines_are_rejected_without_truncation
+        PASS [   0.059s] ( 17/178) codex-hepta-infer-core durable_control::tests::missing_terminal_observation_becomes_indeterminate
+        PASS [   0.094s] ( 18/178) codex-hepta-infer-core durable_control::native::tests::unknown_execution_holds_slot_and_late_terminal_settles_real_usage
+        PASS [   0.053s] ( 19/178) codex-hepta-infer-core neuron_feature::tests::non_success_status_cannot_smuggle_numerical_output
+        PASS [   0.053s] ( 20/178) codex-hepta-infer-core durable_control::tests::reopens_exact_committed_state
+        PASS [   0.099s] ( 21/178) codex-hepta-infer-core durable_control::tests::invalid_event_is_rejected_before_append
+        PASS [   0.080s] ( 22/178) codex-hepta-infer-core durable_control::tests::one_writer_is_held_until_owner_drop
+        PASS [   0.036s] ( 23/178) codex-hepta-infer-core neuron_feature::tests::runtime_tuple_or_output_identity_drift_is_rejected
+        PASS [   0.052s] ( 24/178) codex-hepta-infer-core neuron_feature::tests::successful_receipt_binds_request_runtime_output_and_denies_authority
+        PASS [   0.059s] ( 25/178) codex-hepta-infer-core tests::completion_requires_reservation
+        PASS [   0.064s] ( 26/178) codex-hepta-neuron deletion::tests::deletion_rebuild_is_fresh_generation_and_never_reuses_state
+        PASS [   0.081s] ( 27/178) codex-hepta-infer-core tests::conflicting_identity_is_rejected
+        PASS [   0.080s] ( 28/178) codex-hepta-infer-core tests::request_lifecycle_is_fenced_and_authority_free
+        PASS [   0.084s] ( 29/178) codex-hepta-infer-core tests::stale_digest_cannot_reserve
+        PASS [   0.080s] ( 30/178) codex-hepta-neuron deletion::tests::deletion_rebuild_rejects_skipped_generation_and_missing_deletion
+        PASS [   0.063s] ( 31/178) codex-hepta-neuron inference_control::tests::inference_control_receipt_maps_to_exact_local_runtime_evidence
+        PASS [   0.083s] ( 32/178) codex-hepta-neuron inference_control::tests::corrupted_or_indeterminate_control_receipt_fails_closed
+        PASS [   0.057s] ( 33/178) codex-hepta-neuron journal::anchor_tests::anchored_reopen_preserves_the_exact_receipt_and_all_bytes
+        PASS [   0.063s] ( 34/178) codex-hepta-neuron journal::anchor_tests::empty_replacement_is_not_initialized_when_history_was_acknowledged
+        PASS [   0.074s] ( 35/178) codex-hepta-neuron journal::anchor_tests::earlier_anchor_accepts_later_complete_frames_and_repairs_only_the_tail
+        PASS [   0.071s] ( 36/178) codex-hepta-neuron journal::anchor_tests::malformed_anchor_rejects_before_file_mutation
+        PASS [   0.046s] ( 37/178) codex-hepta-neuron journal::anchor_tests::wrong_anchor_does_not_truncate_an_unacknowledged_tail
+        PASS [   0.106s] ( 38/178) codex-hepta-neuron journal::anchor_tests::fully_rehashed_alternate_history_cannot_satisfy_the_trusted_anchor
+        PASS [   0.084s] ( 39/178) codex-hepta-neuron journal::anchor_tests::matching_anchor_does_not_hide_corruption_in_a_later_full_frame
+        PASS [   0.117s] ( 40/178) codex-hepta-neuron journal::anchor_tests::lost_complete_acknowledged_frame_is_rejected_without_repair
+        PASS [   0.063s] ( 41/178) codex-hepta-neuron journal::segment_tests::missing_acknowledged_successor_frame_is_rejected_without_repair
+        PASS [   0.052s] ( 42/178) codex-hepta-neuron journal::segment_tests::successor_reopen_requires_exact_predecessor_seed_and_acknowledged_suffix
+        PASS [   0.075s] ( 43/178) codex-hepta-neuron journal::segment_tests::successor_segment_preserves_state_and_allows_exact_retry
+        PASS [   0.059s] ( 44/178) codex-hepta-neuron journal::tests::child_process_commit_and_exit
+        PASS [   0.078s] ( 45/178) codex-hepta-neuron journal::tests::changed_retry_and_stale_compare_and_swap_do_not_mutate_file
+        PASS [   0.125s] ( 46/178) codex-hepta-neuron journal::segment_tests::plasticity_anchor_queries_preserve_global_sequence_across_rollover
+        PASS [   0.091s] ( 47/178) codex-hepta-neuron journal::tests::committed_checkpoint_and_receipt_survive_reopen
+        PASS [   0.047s] ( 48/178) codex-hepta-neuron journal::tests::equal_retry_after_later_commit_does_not_append
+        PASS [   0.052s] ( 49/178) codex-hepta-neuron journal::tests::complete_unacknowledged_frame_is_reconciled_on_reopen
+        PASS [   0.093s] ( 50/178) codex-hepta-neuron journal::tests::complete_corruption_is_rejected_without_truncation
+        PASS [   0.082s] ( 51/178) codex-hepta-neuron journal::tests::failed_recovery_releases_acquired_lock_before_journal_exists
+        PASS [   0.077s] ( 52/178) codex-hepta-neuron journal::tests::independent_writer_is_fenced_and_lock_releases_on_drop
+        PASS [   0.075s] ( 53/178) codex-hepta-neuron journal::tests::invalid_tick_and_record_cap_do_not_append
+        PASS [   0.086s] ( 54/178) codex-hepta-neuron journal::tests::incomplete_header_and_excess_file_size_are_not_repaired
+        PASS [   0.104s] ( 55/178) codex-hepta-neuron journal::tests::owner_drop_releases_lock_with_a_transient_duplicate_alive
+        PASS [   0.038s] ( 56/178) codex-hepta-neuron journal::tests::write_error_requires_reopen_and_reconciliation
+        PASS [   0.043s] ( 57/178) codex-hepta-neuron journal::tests::valid_frame_checksum_cannot_hide_invalid_checkpoint_chain
+        PASS [   0.081s] ( 58/178) codex-hepta-neuron journal::tests::wrong_generation_and_scope_do_not_reinitialize_journal
+        PASS [   0.097s] ( 59/178) codex-hepta-neuron journal::tests::process_exit_without_destructors_releases_lock_and_keeps_committed_frame
+        PASS [   0.061s] ( 60/178) codex-hepta-neuron plasticity::tests::global_l1_trust_region_projects_without_changing_inputs
+        PASS [   0.064s] ( 61/178) codex-hepta-neuron plasticity::tests::implicit_broadcast_and_overweight_rows_are_rejected
+        PASS [   0.076s] ( 62/178) codex-hepta-neuron plasticity::tests::explicit_group_mapping_applies_positive_and_negative_modulation
+        PASS [   0.061s] ( 63/178) codex-hepta-neuron population_v2::tests::every_activation_requires_a_registered_temporal_projection
+        PASS [   0.076s] ( 64/178) codex-hepta-neuron plasticity::tests::zero_modulator_produces_zero_candidate_delta
+        PASS [   0.074s] ( 65/178) codex-hepta-neuron population_v2::tests::distinct_temporal_and_activation_dimensions_use_population_then_global_competition
+        PASS [   0.060s] ( 66/178) codex-hepta-neuron population_v2::tests::population_partition_must_be_complete_and_non_overlapping
+        PASS [   0.063s] ( 67/178) codex-hepta-neuron population_v2::tests::population_profile_is_deterministic_and_supports_recurrent_successors
+        PASS [   0.043s] ( 68/178) codex-hepta-neuron protocol::tests::canonical_signal_roundtrip_rejects_unknown_fields
+        PASS [   0.045s] ( 69/178) codex-hepta-neuron protocol::tests::canonical_runtime_config_roundtrip_rejects_unknown_fields
+        PASS [   0.036s] ( 70/178) codex-hepta-neuron protocol::tests::checkpoint_is_derived_from_committed_state_and_roundtrips
+        PASS [   0.061s] ( 71/178) codex-hepta-neuron protocol::tests::canonical_tick_input_roundtrip_rejects_unknown_fields
+        PASS [   0.057s] ( 72/178) codex-hepta-neuron protocol::tests::canonical_tick_receipt_projects_only_registered_resource_fields
+        PASS [   0.033s] ( 73/178) codex-hepta-neuron qualification::tests::config_ablations_remove_only_the_named_mechanism
+        PASS [   0.554s] ( 74/178) codex-hepta-neuron journal::anchor_tests::every_partial_acknowledged_frame_is_preserved_as_failure_evidence
+        PASS [   0.035s] ( 75/178) codex-hepta-neuron protocol::tests::checkpoint_publication_rejects_forged_owner_summary
+        PASS [   0.059s] ( 76/178) codex-hepta-neuron qualification::tests::eligibility_and_modulator_ablations_are_explicit_and_deterministic
+        PASS [   0.056s] ( 77/178) codex-hepta-neuron qualification::tests::resource_summary_rejects_mixed_host_profiles
+        PASS [   0.074s] ( 78/178) codex-hepta-neuron qualification::tests::supplied_resource_samples_have_deterministic_percentiles_without_claiming_authority
+        PASS [   0.069s] ( 79/178) codex-hepta-neuron runtime::tests::canonical_runtime_commits_model_bound_calibrated_signal_and_recovers
+        PASS [   0.076s] ( 80/178) codex-hepta-neuron runtime::tests::deletion_rebuild_starts_fresh_successor_generation_without_old_state
+        PASS [   0.077s] ( 81/178) codex-hepta-neuron runtime::tests::collapse_or_ood_forces_abstention_without_granting_authority
+        PASS [   0.067s] ( 82/178) codex-hepta-neuron runtime::tests::model_identity_drift_rejects_before_checkpoint_mutation
+        PASS [   0.095s] ( 83/178) codex-hepta-neuron runtime::tests::expired_calibration_advances_state_but_forces_fail_closed_abstention
+        PASS [   0.058s] ( 84/178) codex-hepta-neuron sparse::body_scope_tests::successor_rejects_body_scope_drift
+        PASS [   0.075s] ( 85/178) codex-hepta-neuron sparse::body_scope_tests::reopened_checkpoint_retains_body_scope_and_rejects_before_write
+        PASS [   0.098s] ( 86/178) codex-hepta-neuron runtime::tests::witness_failure_after_commit_reconciles_without_reinvoking_model
+        PASS [   0.048s] ( 87/178) codex-hepta-neuron sparse::tests::changed_config_is_rejected
+        PASS [   0.051s] ( 88/178) codex-hepta-neuron sparse::tests::changed_scope_or_objective_is_rejected
+        PASS [   0.042s] ( 89/178) codex-hepta-neuron sparse::tests::damaged_checkpoint_is_rejected
+        PASS [   0.139s] ( 90/178) codex-hepta-neuron runtime::tests::runtime_rollover_and_chain_recovery_preserve_latest_witness
+        PASS [   0.083s] ( 91/178) codex-hepta-neuron sparse::tests::clock_regression_is_rejected
+        PASS [   0.063s] ( 92/178) codex-hepta-neuron sparse::tests::duplicate_edges_and_row_norm_overflow_are_rejected
+        PASS [   0.071s] ( 93/178) codex-hepta-neuron sparse::tests::edge_order_does_not_change_config_or_output
+        PASS [   0.064s] ( 94/178) codex-hepta-neuron sparse::tests::invalid_dimensions_and_extreme_top_k_fail_without_overflow
+        PASS [   0.053s] ( 95/178) codex-hepta-neuron sparse::tests::invalid_inhibition_is_rejected
+        PASS [   0.071s] ( 96/178) codex-hepta-neuron sparse::tests::lateral_inhibition_changes_winner
+        PASS [   0.062s] ( 97/178) codex-hepta-neuron sparse::tests::missing_digest_invalid_width_and_unbounded_input_are_rejected
+        PASS [   0.056s] ( 98/178) codex-hepta-neuron sparse::tests::saturation_and_eligibility_l1_projection_are_counted
+        PASS [   0.062s] ( 99/178) codex-hepta-neuron sparse::tests::replay_or_skipped_sequence_is_rejected
+        PASS [   0.076s] (100/178) codex-hepta-neuron sparse::tests::signed_multiply_rounds_half_to_even
+        PASS [   0.063s] (101/178) codex-hepta-neuron sparse::tests::silent_input_has_zero_activation_with_nonnegative_thresholds
+        PASS [   0.063s] (102/178) codex-hepta-neuron sparse::tests::tick_is_replay_deterministic_and_inputs_are_immutable
+        PASS [   0.074s] (103/178) codex-hepta-neuron sparse::tests::supplied_numeric_values_are_bound_not_just_caller_digest
+        PASS [   0.055s] (104/178) codex-hepta-neuron sparse::tests::tie_uses_canonical_unit_and_homeostasis_is_exact
+        PASS [   0.082s] (105/178) codex-hepta-neuron sparse::tests::ticks_advance_sequence_without_changing_artifact_generation
+        PASS [   0.059s] (106/178) codex-hepta-neuron tests::generation_must_advance
+        PASS [   0.044s] (107/178) codex-hepta-neuron tests::model_drift_is_rejected
+        PASS [   0.063s] (108/178) codex-hepta-neuron tests::step_is_deterministic_and_authority_free
+        PASS [   0.051s] (109/178) codex-hepta-neuron tests::width_drift_is_rejected
+        PASS [   0.067s] (110/178) codex-hepta-neuron witness::tests::witness_capacity_and_independent_writer_are_bounded
+        PASS [   0.067s] (111/178) codex-hepta-neuron witness::tests::wrong_scope_generation_and_corruption_never_reinitialize_history
+        PASS [   0.061s] (112/178) codex-hepta-types bounded::tests::empty_nul_and_zero_maximum_fail_closed
+        PASS [   0.064s] (113/178) codex-hepta-types bounded::tests::borrowed_constructors_validate_before_copy_and_count_utf8_bytes
+        PASS [   0.102s] (114/178) codex-hepta-neuron witness::tests::witness_history_survives_reopen_and_fences_stale_cas
+        PASS [   0.080s] (115/178) codex-hepta-types bounded::tests::text_and_bytes_enforce_exact_bound
+        PASS [   0.079s] (116/178) codex-hepta-types canonical_digest::tests::canonical_byte_validator_accepts_frozen_bytes_and_returns_same_digest
+        PASS [   0.054s] (117/178) codex-hepta-types canonical_digest::tests::canonical_container_depth_is_exactly_bounded
+        PASS [   0.074s] (118/178) codex-hepta-types canonical_digest::tests::canonical_byte_validator_rejects_invalid_bool_and_unknown_tag
+        PASS [   0.074s] (119/178) codex-hepta-types canonical_digest::tests::canonical_byte_validator_rejects_truncation_and_trailing_bytes
+        PASS [   0.061s] (120/178) codex-hepta-types canonical_digest::tests::canonical_v1_does_not_apply_unicode_normalization
+        PASS [   0.974s] (121/178) codex-hepta-neuron journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor
+        PASS [   0.080s] (122/178) codex-hepta-types canonical_digest::tests::field_and_map_order_are_canonical_but_array_order_is_semantic
+        PASS [   0.100s] (123/178) codex-hepta-types canonical_digest::tests::frozen_cross_language_vector_matches_exact_bytes_and_digest
+        PASS [   0.089s] (124/178) codex-hepta-types canonical_digest::tests::integer_boundaries_unicode_and_empty_containers_are_frozen
+        PASS [   0.090s] (125/178) codex-hepta-types canonical_digest::tests::malformed_canonical_inputs_fail_closed
+        PASS [   0.111s] (126/178) codex-hepta-types digest::stream_tests::stream_error_never_returns_a_partial_digest
+        PASS [   0.074s] (127/178) codex-hepta-types digest::tests::sha256_round_trip_is_canonical
+        PASS [   0.105s] (128/178) codex-hepta-types digest::stream_tests::unbounded_reader_stops_after_one_overflow_byte
+        PASS [   0.098s] (129/178) codex-hepta-types digest::tests::digest_parser_deterministic_fuzz_corpus_is_total_and_strict
+        PASS [   0.098s] (130/178) codex-hepta-types digest::tests::multipart_hash_matches_exact_concatenation
+        PASS [   0.178s] (131/178) codex-hepta-types digest::stream_tests::bounded_stream_digest_matches_bytes_at_buffer_boundaries
+        PASS [   0.046s] (132/178) codex-hepta-types fixed::tests::arithmetic_boundaries_reject_overflow_and_division_by_zero
+        PASS [   0.060s] (133/178) codex-hepta-types digest::tests::uppercase_and_wrong_length_fail_closed
+        PASS [   0.061s] (134/178) codex-hepta-types fixed::tests::checked_arithmetic_rejects_overflow_and_zero_division
+        PASS [   0.068s] (135/178) codex-hepta-types fixed::tests::multiplication_and_division_are_deterministic
+        PASS [   0.076s] (136/178) codex-hepta-types fixed::tests::explicit_toward_zero_methods_match_legacy_compatibility_methods
+        PASS [   0.063s] (137/178) codex-hepta-types fixed::tests::probability_and_clamp_fail_closed
+        PASS [   0.076s] (138/178) codex-hepta-types identity::tests::authority_flags_round_trip_only_as_untrusted_wire_bits
+        PASS [   0.075s] (139/178) codex-hepta-types identity::tests::authority_posture_rejects_grants_at_raw_wire_ingress
+        PASS [   0.052s] (140/178) codex-hepta-types identity::tests::identity_bounds_and_monotonic_overflow_fail_closed
+        PASS [   0.057s] (141/178) codex-hepta-types identity::tests::non_authorizing_posture_is_structurally_deny_only
+        PASS [   0.096s] (142/178) codex-hepta-types identity::tests::id_profiles_and_namespaces_are_explicit_and_canonical
+        PASS [   0.065s] (143/178) codex-hepta-types identity::tests::stable_id_and_generation_are_strict
+        PASS [   0.063s] (144/178) codex-hepta-types numeric_conversion::tests::checked_scaling_rejects_overflow_without_mutating_input
+        PASS [   0.072s] (145/178) codex-hepta-types identity::tests::stable_profile_exhaustively_matches_the_v1_ascii_alphabet
+        PASS [   0.069s] (146/178) codex-hepta-types numeric_conversion::tests::digest_binds_numerical_profile_shape_range_units_and_normalization
+        PASS [   0.080s] (147/178) codex-hepta-types numeric_conversion::tests::incompatible_units_normalization_shape_and_ranges_reject
+        PASS [   0.086s] (148/178) codex-hepta-types numeric_conversion::tests::malformed_shape_and_unknown_profile_cannot_enter_conversion
+        PASS [   0.057s] (149/178) codex-hepta-types numeric_conversion::tests::q24_to_q32_is_exact_and_legacy_multiply_keeps_toward_zero
+        PASS [   0.075s] (150/178) codex-hepta-types numeric_conversion::tests::ppm_q24_roundtrip_reports_exact_error_instead_of_byte_equality
+        PASS [   0.070s] (151/178) codex-hepta-types numeric_conversion::tests::registered_conversion_requires_normalization_and_both_profile_definitions
+        PASS [   0.052s] (152/178) codex-hepta-types numeric_conversion::tests::signed_half_ties_round_to_even_target_bins
+        PASS [   0.174s] (153/178) codex-hepta-types identity::tests::stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation
+        PASS [   0.032s] (154/178) codex-hepta-types prompt_delivery::tests::delivered_and_rejected_are_mutually_exclusive
+        PASS [   0.042s] (155/178) codex-hepta-types prompt_delivery::tests::semantic_digest_is_deterministic_and_field_complete
+        PASS [   0.084s] (156/178) codex-hepta-types numeric_profile::tests::profile_definition_binds_identity_version_scale_and_rounding
+        PASS [   0.050s] (157/178) codex-hepta-types prompt_delivery::tests::rejection_reason_is_open_but_bounded
+        PASS [   0.076s] (158/178) codex-hepta-types numeric_profile::tests::q32_raw_scale_compatibility_does_not_imply_arithmetic_compatibility
+        PASS [   0.052s] (159/178) codex-hepta-types prompt_delivery::tests::token_positions_are_optional_bounded_and_canonical
+        PASS [   0.088s] (160/178) codex-hepta-types registry::tests::definition_kind_is_bound_to_identifier_namespace
+        PASS [   0.073s] (161/178) codex-hepta-types registry::tests::immutable_registry_resolves_exact_definition_and_numeric_profile
+        PASS [   0.074s] (162/178) codex-hepta-types registry::tests::registry_digest_is_insertion_order_independent_and_definition_sensitive
+        PASS [   0.068s] (163/178) codex-hepta-types topology::tests::related_module_bounds_are_checked_before_digest_allocation
+        PASS [   0.079s] (164/178) codex-hepta-types topology::tests::selected_digest_cannot_hide_substituted_delta_content
+        PASS [   0.120s] (165/178) codex-hepta-types registry::tests::registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_bytes
+        PASS [   0.080s] (166/178) codex-hepta-types topology::tests::split_requires_individually_bound_add_participants
+        PASS [   0.060s] (167/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native tests::deadline_masks_all_advancing_actions_and_raw_history_has_no_hidden_target
+        PASS [   0.074s] (168/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native structured_tests::learned_belief_controls_polarity_and_neutral_submission
+        PASS [   0.077s] (169/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native structured_tests::structured_terminal_values_replace_only_terminal_coordinates
+        PASS [   0.080s] (170/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native tests::content_paths_cannot_use_subdirectories_or_escape_basename
+        PASS [   0.075s] (171/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native tests::delay_two_requires_another_advancing_action_and_retains_source_reliability
+        PASS [   0.039s] (172/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native tests::splitmix64_known_vector_and_exact_hard_event_transition
+        PASS [   0.053s] (173/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native tests::illegal_actions_and_unsolicited_completion_are_rejected
+        PASS [   0.063s] (174/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native tests::failed_read_preserves_cost_and_repair_is_explicit
+        PASS [   0.073s] (175/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native tests::fixed_and_value_controllers_use_learned_scores_and_first_tie
+        PASS [   0.057s] (176/178) hepta-digital-read-before-native::bin/hepta-digital-read-before-native tests::terminal_actions_cancel_pending_without_completion_time_or_refund
+        PASS [   1.311s] (177/178) codex-hepta-neuron sparse::tests::long_replay_remains_bounded_and_immutable
+        PASS [  17.259s] (178/178) codex-hepta-infer-core durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes
+────────────
+     Summary [  17.281s] 178 tests run: 178 passed, 1 skipped

@@ -1,0 +1,8 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+error: no such command: `nextest`
+
+help: a command with a similar name exists: `test`
+
+help: view all installed commands with `cargo --list`
+help: find a package to install `nextest` with `cargo search cargo-nextest`
+error: recipe `test` failed on line 89 with exit code 101
