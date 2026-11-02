@@ -1,0 +1,19 @@
+{
+  "schema": "hcsn.r22.fence-compatibility-update.v1",
+  "failing_prior_job": 125056251885,
+  "failure": "unsupported_resolver_layout before checkout",
+  "old_pin": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+  "new_pin": "f9751ca5d767dc0199e88733c2b286bd4800a008",
+  "version": "v0.12.5",
+  "release_published": "2026-10-27T00:20:34Z",
+  "reviewed_source_commit": "424c1ac6cc2f844986f38defc6d43150796f35f5",
+  "primary_sources": [
+    "https://github.com/openai/fence/releases/tag/v0.12.5",
+    "https://github.com/openai/fence/blob/f9751ca5d767dc0199e88733c2b286bd4800a008/README.md"
+  ],
+  "reason": "The current verified upstream release documents compatibility with Ubuntu24.04/latest and regular-file resolver layouts. Update the pinned Action; do not mutate runner DNS or remove the guard.",
+  "original_mode": "audit",
+  "new_mode": "audit",
+  "other_workflow_steps_and_permissions_changed": false,
+  "hosted_success_claim": false
+}
