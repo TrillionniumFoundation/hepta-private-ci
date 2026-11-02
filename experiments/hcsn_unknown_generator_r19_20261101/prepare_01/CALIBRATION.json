@@ -1,0 +1,99 @@
+{
+  "grid": {
+    "full_transition": {
+      "0.65": {
+        "accepted": 1967,
+        "errors": 57,
+        "fractional": 481,
+        "fractional_errors": 57,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.04091954191004597,
+        "upper_fractional_error": 0.16411270719405774
+      },
+      "0.75": {
+        "accepted": 1936,
+        "errors": 42,
+        "fractional": 432,
+        "fractional_errors": 42,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.032409766420865134,
+        "upper_fractional_error": 0.14244765864280157
+      },
+      "0.85": {
+        "accepted": 1870,
+        "errors": 26,
+        "fractional": 348,
+        "fractional_errors": 26,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.023082490359865034,
+        "upper_fractional_error": 0.12149969935211719
+      },
+      "0.95": {
+        "accepted": 1788,
+        "errors": 4,
+        "fractional": 186,
+        "fractional_errors": 4,
+        "invalid": 0,
+        "passed": true,
+        "upper_error": 0.0073908371934603865,
+        "upper_fractional_error": 0.06948073007576847
+      }
+    },
+    "restricted_markov": {
+      "0.65": {
+        "accepted": 1947,
+        "errors": 64,
+        "fractional": 467,
+        "fractional_errors": 64,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.04551895215182631,
+        "upper_fractional_error": 0.18577549153466705
+      },
+      "0.75": {
+        "accepted": 1941,
+        "errors": 59,
+        "fractional": 458,
+        "fractional_errors": 59,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.04266654340841492,
+        "upper_fractional_error": 0.17705800275306585
+      },
+      "0.85": {
+        "accepted": 1845,
+        "errors": 23,
+        "fractional": 312,
+        "fractional_errors": 23,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.021341509507410664,
+        "upper_fractional_error": 0.1234071122672294
+      },
+      "0.95": {
+        "accepted": 1773,
+        "errors": 3,
+        "fractional": 164,
+        "fractional_errors": 3,
+        "invalid": 0,
+        "passed": true,
+        "upper_error": 0.006524794680996241,
+        "upper_fractional_error": 0.06888168850399073
+      }
+    }
+  },
+  "selected": {
+    "full_transition": {
+      "calibration_gate_passed": true,
+      "threshold": 0.95
+    },
+    "restricted_markov": {
+      "calibration_gate_passed": true,
+      "threshold": 0.95
+    }
+  },
+  "simultaneous_delta": 0.003125
+}
