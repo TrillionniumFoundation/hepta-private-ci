@@ -1,0 +1,206 @@
+{
+  "candidate": "secondary",
+  "energy_joules": null,
+  "failed_development_attempts_included": true,
+  "family_known_complete_child_cpu_lower_bound": 479.628925,
+  "family_outer_receipt_count": 16,
+  "family_receipts": {
+    "hcsn_grid_frontend_r2_20261101": [
+      {
+        "complete_child_cpu_seconds": 2.228903,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/acquire_confirmation.receipt.json",
+        "peak_rss_bytes": 91635712,
+        "returncode": 0,
+        "sha256": "d29589377826e3ef8ae5a431fe02f0a9014a435bfada2caed3d26983cca61937",
+        "wall_seconds": 352.3710643049999
+      },
+      {
+        "complete_child_cpu_seconds": 1.602841,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/acquire_development.receipt.json",
+        "peak_rss_bytes": 92045312,
+        "returncode": 0,
+        "sha256": "37b41669c95a1059241decfe64fda8bf2d412521e9944711a2ce3b19bbfe1e16",
+        "wall_seconds": 204.79057468899555
+      },
+      {
+        "complete_child_cpu_seconds": 2.279274,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/acquire_train.receipt.json",
+        "peak_rss_bytes": 92745728,
+        "returncode": 0,
+        "sha256": "81a3c8e6da5c1df5e734355c2a85ceb1333fa38565b0c989b132ef59cf4593d9",
+        "wall_seconds": 426.2041627560029
+      },
+      {
+        "complete_child_cpu_seconds": 2.4106989999999997,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/evaluate_confirmation.receipt.json",
+        "peak_rss_bytes": 262283264,
+        "returncode": 0,
+        "sha256": "1d28dd86ec55781a034277b71dc617f93eb73b443ee084e00c2fd361116412eb",
+        "wall_seconds": 2.417344540997874
+      },
+      {
+        "complete_child_cpu_seconds": 87.665478,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/features_confirmation.receipt.json",
+        "peak_rss_bytes": 1053548544,
+        "returncode": 0,
+        "sha256": "d8f7f85efc21124d7412df5f1a788c0923d0961aeeb57197a312bab03fc5d7c1",
+        "wall_seconds": 87.95736961599323
+      },
+      {
+        "complete_child_cpu_seconds": 14.530441,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/features_development.receipt.json",
+        "peak_rss_bytes": 1053655040,
+        "returncode": 1,
+        "sha256": "b1fc5b601cf767552b962418eeba0b5f9b7b09b35e1956bbcc8976c96771a67d",
+        "wall_seconds": 14.547364597994601
+      },
+      {
+        "complete_child_cpu_seconds": 134.20462799999999,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/features_train.receipt.json",
+        "peak_rss_bytes": 1053380608,
+        "returncode": 0,
+        "sha256": "b35b374bb30ffccc683f704220c1d01621defc93f1572a23e123eed2963af706",
+        "wall_seconds": 135.21967509500246
+      },
+      {
+        "complete_child_cpu_seconds": 0.562307,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/metadata_collect.receipt.json",
+        "peak_rss_bytes": 26738688,
+        "returncode": 0,
+        "sha256": "0443c1ef2713bb5a4eca01387b732993aa2bb2b74b0046231dc977bcf78bebcb",
+        "wall_seconds": 33.617177512001945
+      },
+      {
+        "complete_child_cpu_seconds": 31.165381,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/source_qa_confirmation.receipt.json",
+        "peak_rss_bytes": 90165248,
+        "returncode": 0,
+        "sha256": "b77b3e8a8764dd493519e9636b9d1e525c60676a96f10424c30a675370a47c95",
+        "wall_seconds": 31.443885007000063
+      },
+      {
+        "complete_child_cpu_seconds": 14.225522000000002,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/source_qa_development.receipt.json",
+        "peak_rss_bytes": 90779648,
+        "returncode": 0,
+        "sha256": "f0d4567b88335a46f5f84b153c5064881effd1400428df0586c414d42c9be38a",
+        "wall_seconds": 14.075120556000911
+      },
+      {
+        "complete_child_cpu_seconds": 2.897316,
+        "path": "experiments/hcsn_grid_frontend_r2_20261101/train_heads.receipt.json",
+        "peak_rss_bytes": 266829824,
+        "returncode": 0,
+        "sha256": "3fcfc198501302329e523848045d4106e51f779aa37aba5af05622fcd9f4cb76",
+        "wall_seconds": 4.300845817000663
+      }
+    ],
+    "hcsn_grid_temporal_r2_20261101": [
+      {
+        "complete_child_cpu_seconds": 2.5362859999999996,
+        "path": "experiments/hcsn_grid_temporal_r2_20261101/evaluate_confirmation.receipt.json",
+        "peak_rss_bytes": 266592256,
+        "returncode": 0,
+        "sha256": "dc52879addfea10ab51b8c193431ffee7bcd2baa26b77c04c4091a55894b3c8c",
+        "wall_seconds": 2.550986214002478
+      },
+      {
+        "complete_child_cpu_seconds": 69.63332,
+        "path": "experiments/hcsn_grid_temporal_r2_20261101/features_confirmation.receipt.json",
+        "peak_rss_bytes": 575070208,
+        "returncode": 0,
+        "sha256": "6345b1f10dd98b2a1fdbbea3d0710dfe781fd78fa9c44a8f662a6e156137fd94",
+        "wall_seconds": 69.98340195600031
+      },
+      {
+        "complete_child_cpu_seconds": 11.14852,
+        "path": "experiments/hcsn_grid_temporal_r2_20261101/features_development.receipt.json",
+        "peak_rss_bytes": 574988288,
+        "returncode": 1,
+        "sha256": "622003a582611a9ef8007ccfb045f527507c1339b3a6c878c4591bc9b051ba58",
+        "wall_seconds": 11.19843692699942
+      },
+      {
+        "complete_child_cpu_seconds": 100.302716,
+        "path": "experiments/hcsn_grid_temporal_r2_20261101/features_train.receipt.json",
+        "peak_rss_bytes": 575250432,
+        "returncode": 0,
+        "sha256": "e06cf2312653bdda106a9004cc4cbb8c9bba580e302d69fbf2203fe386e44232",
+        "wall_seconds": 102.0262939000022
+      },
+      {
+        "complete_child_cpu_seconds": 2.235293,
+        "path": "experiments/hcsn_grid_temporal_r2_20261101/train_heads.receipt.json",
+        "peak_rss_bytes": 276496384,
+        "returncode": 0,
+        "sha256": "3bffd3fe2ce9943cc893bad4e4e1159ffb42e67f471b03504f771ee1cfe7f8a1",
+        "wall_seconds": 2.2368893189996015
+      }
+    ]
+  },
+  "gpu_measurements": null,
+  "independent_provenance_cost_inventory": {
+    "checks": 147,
+    "numerical_quality_audit": false,
+    "passed": true,
+    "path": "experiments/hcsn_grid_frontend_r2_20261101/integration/provenance_inventory/COST_INVENTORY.json",
+    "sha256": "57f68b51e7d7eb52b8457066db01aa12e5c418a3d58ffe3ce40a80578922c605"
+  },
+  "inner_timers_not_added": true,
+  "interpretation": "Known complete-child resource-use lower bound, not total energy, pipeline elapsed time, or a matched deployment-speed comparison.",
+  "isolated_AT_vs_AVT_deployment_timing": null,
+  "own_known_complete_child_cpu_seconds": 185.856135,
+  "own_outer_receipts": [
+    {
+      "complete_child_cpu_seconds": 2.5362859999999996,
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/evaluate_confirmation.receipt.json",
+      "peak_rss_bytes": 266592256,
+      "returncode": 0,
+      "sha256": "dc52879addfea10ab51b8c193431ffee7bcd2baa26b77c04c4091a55894b3c8c",
+      "wall_seconds": 2.550986214002478
+    },
+    {
+      "complete_child_cpu_seconds": 69.63332,
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_confirmation.receipt.json",
+      "peak_rss_bytes": 575070208,
+      "returncode": 0,
+      "sha256": "6345b1f10dd98b2a1fdbbea3d0710dfe781fd78fa9c44a8f662a6e156137fd94",
+      "wall_seconds": 69.98340195600031
+    },
+    {
+      "complete_child_cpu_seconds": 11.14852,
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_development.receipt.json",
+      "peak_rss_bytes": 574988288,
+      "returncode": 1,
+      "sha256": "622003a582611a9ef8007ccfb045f527507c1339b3a6c878c4591bc9b051ba58",
+      "wall_seconds": 11.19843692699942
+    },
+    {
+      "complete_child_cpu_seconds": 100.302716,
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/features_train.receipt.json",
+      "peak_rss_bytes": 575250432,
+      "returncode": 0,
+      "sha256": "e06cf2312653bdda106a9004cc4cbb8c9bba580e302d69fbf2203fe386e44232",
+      "wall_seconds": 102.0262939000022
+    },
+    {
+      "complete_child_cpu_seconds": 2.235293,
+      "path": "experiments/hcsn_grid_temporal_r2_20261101/train_heads.receipt.json",
+      "peak_rss_bytes": 276496384,
+      "returncode": 0,
+      "sha256": "3bffd3fe2ce9943cc893bad4e4e1159ffb42e67f471b03504f771ee1cfe7f8a1",
+      "wall_seconds": 2.2368893189996015
+    }
+  ],
+  "parallel_wall_seconds_not_summed": true,
+  "schema": "hcsn.grid.cost.v1",
+  "shared_acquisition_and_primary_AT_training_counted_once": true,
+  "simultaneous_process_tree_peak_memory_bytes": null,
+  "total_all_activity_cpu_seconds": null,
+  "unknown_or_external_costs": [
+    "Pretrained checkpoint acquisition and pretraining are external dependencies, not free or included in this GRID sum.",
+    "The 32 verified speaker1 pilot files were acquired in the earlier raw-video lane; do not count them twice or hide the external cost.",
+    "The initial first-failure ffprobe diagnosis was not wrapped in the meter; CPU unknown.",
+    "Independent audit, editing, publication, packaging and inventory work is not fully included; separate audit receipts remain under the integration audit directory."
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_grid_frontend_r2_20261101.integration.source_qa",
+    "development",
+    "--out",
+    "experiments/hcsn_grid_frontend_r2_20261101/DEVELOPMENT_SOURCE_QA.json"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T02:31:47.978012+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_grid_frontend_r2_20261101/source_qa_development.stdout.log",
+  "stderr_path": "experiments/hcsn_grid_frontend_r2_20261101/source_qa_development.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-02T02:32:02.053363+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 14.075120556000911,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 9.998079,
+  "system_cpu_seconds": 4.227443,
+  "total_cpu_seconds": 14.225522000000002,
+  "peak_rss_bytes": 90779648,
+  "peak_rss_native_units": 88652,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/source_qa_development.stdout.log",
+      "is_file": true,
+      "bytes": 715,
+      "sha256": "8f5361dde44165f043d9c00e405adc6a0121b700222d1d9fe9399e3df9eb082f"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/source_qa_development.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/DEVELOPMENT_SOURCE_QA.json",
+      "is_file": true,
+      "bytes": 73299,
+      "sha256": "b1c7acbb8e99bd03daf11577ab4dd132256a0d32b8533d91a05fd5fb11d90f20"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.000866473999999999,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}
