@@ -1,0 +1,62 @@
+{
+  "schema": "hcsn.r15.publication.codespell-shard-remote-readback.v1",
+  "parent_commit": "21edbe56f861989a4616c7d22e3eecc2d7cf6399",
+  "commit": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/hcsn-distribution-content-r15-20261101",
+  "verified_file_count": 12,
+  "files": [
+    {
+      "path": ".codespellrc",
+      "sha": "68844f940db074aadd26a9f5f7496cee3618a196"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+      "sha": "d80a825ecc59dae37fac3dcb8d40ca9a10667340"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/CODESPELL_R15_ARCHIVES.patch",
+      "sha": "8846ab088c384ed92190b6c9f7f27cfaf2a27c2e"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/CODESPELL_R15_ARCHIVES_SCOPE_CHECK.json",
+      "sha": "e485a66292949c70ffc27cee8afc6a42d530f96f"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/CODESPELL_R15_ARCHIVES_PROPOSAL.json",
+      "sha": "c7efad62f9d901647c1f7200e8fbdcd1ff411d6d"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/CODESPELL_R15_ARCHIVES_APPLICATION.json",
+      "sha": "677a7d72e6bfea6187b6f20888501b4138dd3a36"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/AGENTS.head21ed.md",
+      "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespell_workflow.head21ed.yml",
+      "sha": "f6940899da3ac0e5d7cc47e9240643732abe31da"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespellignore.original",
+      "sha": "0da447f000de188776a33e770c2d2d77b37f97ee"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespellrc.candidate",
+      "sha": "68844f940db074aadd26a9f5f7496cee3618a196"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespellrc.original",
+      "sha": "32ad02b993236edd9c54dbaba1664b8f2d650c00"
+    },
+    {
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/contributing.head21ed.md",
+      "sha": "67b10a1c9b855bc32082929129b5abbe3c1d7b35"
+    }
+  ],
+  "verification": "Read the three parent directories through GitHub at the exact new commit and require each returned path/blob SHA to equal the local file Git blob SHA.",
+  "source_commit_for_running_scientific_pipeline": "10e8b6e11a259bf6db14f93c1eae5f1ad7b2eff1",
+  "ci_scope": "Narrow binary-shard text-scan fix only; no claim that the new head CI has passed.",
+  "forced_ref_update": false
+}

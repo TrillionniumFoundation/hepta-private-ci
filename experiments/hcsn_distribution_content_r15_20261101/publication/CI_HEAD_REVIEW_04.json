@@ -1,0 +1,986 @@
+{
+  "schema": "hcsn_r15_read_only_ci_head_review_v1",
+  "review_id": "CI_HEAD_REVIEW_04",
+  "recorded_at_utc": "2026-11-02 01:14:48 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4563,
+  "requested_head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+  "observed_pr_head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+  "observed_head_branch": "research/hcsn-distribution-content-r15-20261101",
+  "pr_base_sha": "c0949e9cde89a54609a5133c0fb7f9c65bc80f4a",
+  "pr_merge_commit_sha": "9dc29ebefaf0f8a0283758fed1162ef165f5fc6a",
+  "overall_status": "in_progress_with_completed_failed_jobs",
+  "all_workflows_terminal": false,
+  "workflows": [
+    {
+      "id": 41369494154,
+      "name": "blocking-ci",
+      "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+      "event": "pull_request",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154",
+      "created_at": "2026-11-02T00:52:39Z",
+      "updated_at": "2026-11-02T01:04:39Z",
+      "query_time_utc": "2026-11-02 01:11:47 UTC",
+      "jobs_query": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/jobs?per_page=100",
+        "query_time_utc": "2026-11-02 01:11:51 UTC",
+        "total_count": 36,
+        "returned_count": 36,
+        "complete_snapshot": true
+      },
+      "job_status_counts": {
+        "success": 10,
+        "failure": 10,
+        "in_progress": 7,
+        "skipped": 9
+      },
+      "jobs": [
+        {
+          "id": 125037018947,
+          "name": "Select blocking CI scope",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125037018947",
+          "started_at": "2026-11-02T00:53:56Z",
+          "completed_at": "2026-11-02T00:58:18Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125037019136,
+          "name": "Blob size policy / Blob size policy",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125037019136",
+          "started_at": "2026-11-02T00:53:55Z",
+          "completed_at": "2026-11-02T00:56:07Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125037019157,
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125037019157",
+          "started_at": "2026-11-02T00:53:55Z",
+          "completed_at": "2026-11-02T00:55:43Z",
+          "failed_steps": [
+            {
+              "number": 5,
+              "name": "Codespell"
+            }
+          ]
+        },
+        {
+          "id": 125038160843,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038160843",
+          "started_at": "2026-11-02T00:58:21Z",
+          "completed_at": "2026-11-02T01:01:37Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038160989,
+          "name": "repo-checks / build-test",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038160989",
+          "started_at": "2026-11-02T00:58:21Z",
+          "completed_at": "2026-11-02T01:01:07Z",
+          "failed_steps": [
+            {
+              "number": 19,
+              "name": "Check formatting (run `just fmt` to fix)"
+            }
+          ]
+        },
+        {
+          "id": 125038161041,
+          "name": "rust-ci / Detect changed areas",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161041",
+          "started_at": "2026-11-02T00:58:21Z",
+          "completed_at": "2026-11-02T00:58:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038161055,
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161055",
+          "started_at": "2026-11-02T00:58:21Z",
+          "completed_at": "2026-11-02T01:00:34Z",
+          "failed_steps": [
+            {
+              "number": 6,
+              "name": "Run cargo-deny"
+            }
+          ]
+        },
+        {
+          "id": 125038161071,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161071",
+          "started_at": "2026-11-02T00:59:39Z",
+          "completed_at": "2026-11-02T01:01:43Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038161079,
+          "name": "sdk / sdks",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161079",
+          "started_at": "2026-11-02T01:00:46Z",
+          "completed_at": "2026-11-02T01:07:15Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038161098,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161098",
+          "started_at": "2026-11-02T00:58:59Z",
+          "completed_at": "2026-11-02T01:00:10Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038161100,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161100",
+          "started_at": "2026-11-02T00:58:29Z",
+          "completed_at": "2026-11-02T01:01:46Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038161272,
+          "name": "sdk / python-sdk",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161272",
+          "started_at": "2026-11-02T01:02:08Z",
+          "completed_at": "2026-11-02T01:03:54Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038161301,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161301",
+          "started_at": "2026-11-02T00:58:23Z",
+          "completed_at": "2026-11-02T01:05:41Z",
+          "failed_steps": [
+            {
+              "number": 4,
+              "name": "bazel build verify-release-build targets"
+            }
+          ]
+        },
+        {
+          "id": 125038161311,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161311",
+          "started_at": "2026-11-02T00:58:57Z",
+          "completed_at": "2026-11-02T01:11:22Z",
+          "failed_steps": [
+            {
+              "number": 4,
+              "name": "bazel build verify-release-build targets"
+            }
+          ]
+        },
+        {
+          "id": 125038161319,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161319",
+          "started_at": "2026-11-02T00:58:59Z",
+          "completed_at": "2026-11-02T01:11:47Z",
+          "failed_steps": [
+            {
+              "number": 4,
+              "name": "bazel build --config=clippy lint targets"
+            }
+          ]
+        },
+        {
+          "id": 125038161330,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161330",
+          "started_at": "2026-11-02T01:01:49Z",
+          "completed_at": "2026-11-02T01:06:05Z",
+          "failed_steps": [
+            {
+              "number": 4,
+              "name": "bazel build verify-release-build targets"
+            }
+          ]
+        },
+        {
+          "id": 125038161339,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161339",
+          "started_at": "2026-11-02T00:58:42Z",
+          "completed_at": "2026-11-02T01:02:43Z",
+          "failed_steps": [
+            {
+              "number": 4,
+              "name": "bazel build --config=clippy lint targets"
+            }
+          ]
+        },
+        {
+          "id": 125038161341,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161341",
+          "started_at": "2026-11-02T01:04:00Z",
+          "completed_at": "2026-11-02T01:09:21Z",
+          "failed_steps": [
+            {
+              "number": 4,
+              "name": "bazel build --config=clippy lint targets"
+            }
+          ]
+        },
+        {
+          "id": 125038161391,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161391",
+          "started_at": "2026-11-02T01:02:33Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 125038161392,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161392",
+          "started_at": "2026-11-02T01:04:38Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 125038161428,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161428",
+          "started_at": "2026-11-02T01:01:21Z",
+          "completed_at": "2026-11-02T01:11:46Z",
+          "failed_steps": [
+            {
+              "number": 6,
+              "name": "bazel test shard"
+            }
+          ]
+        },
+        {
+          "id": 125038161429,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161429",
+          "started_at": "2026-11-02T00:58:26Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 125038161477,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161477",
+          "started_at": "2026-11-02T01:02:48Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 125038161492,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161492",
+          "started_at": "2026-11-02T01:01:22Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 125038161537,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161537",
+          "started_at": "2026-11-02T01:02:48Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 125038161538,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161538",
+          "started_at": "2026-11-02T01:04:38Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 125038162186,
+          "name": "NDU v6 neural rollout smoke",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038162186",
+          "started_at": "2026-11-02T00:58:19Z",
+          "completed_at": "2026-11-02T00:58:18Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038162315,
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038162315",
+          "started_at": "2026-11-02T00:58:19Z",
+          "completed_at": "2026-11-02T00:58:18Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038162504,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038162504",
+          "started_at": "2026-11-02T00:58:19Z",
+          "completed_at": "2026-11-02T00:58:19Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038162535,
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038162535",
+          "started_at": "2026-11-02T00:58:19Z",
+          "completed_at": "2026-11-02T00:58:18Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038322984,
+          "name": "rust-ci / CI results (required)",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038322984",
+          "started_at": "2026-11-02T01:02:27Z",
+          "completed_at": "2026-11-02T01:02:30Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038323409,
+          "name": "rust-ci / Cargo manifest preflight",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038323409",
+          "started_at": "2026-11-02T00:58:57Z",
+          "completed_at": "2026-11-02T00:58:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038323619,
+          "name": "rust-ci / Rust format",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038323619",
+          "started_at": "2026-11-02T00:58:57Z",
+          "completed_at": "2026-11-02T00:58:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038323718,
+          "name": "rust-ci / Argument comment lint package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038323718",
+          "started_at": "2026-11-02T00:58:57Z",
+          "completed_at": "2026-11-02T00:58:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038323863,
+          "name": "rust-ci / cargo shear",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038323863",
+          "started_at": "2026-11-02T00:58:57Z",
+          "completed_at": "2026-11-02T00:58:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125038324457,
+          "name": "rust-ci / Rust benchmark smoke",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038324457",
+          "started_at": "2026-11-02T00:58:58Z",
+          "completed_at": "2026-11-02T00:58:57Z",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "id": 41369493987,
+      "name": "Hepta architecture convergence",
+      "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+      "event": "pull_request",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369493987",
+      "created_at": "2026-11-02T00:52:39Z",
+      "updated_at": "2026-11-02T00:53:16Z",
+      "query_time_utc": "2026-11-02 01:11:47 UTC",
+      "jobs_query": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41369493987/jobs?per_page=100",
+        "query_time_utc": "2026-11-02 01:11:50 UTC",
+        "total_count": 2,
+        "returned_count": 2,
+        "complete_snapshot": true
+      },
+      "job_status_counts": {
+        "in_progress": 1,
+        "success": 1
+      },
+      "jobs": [
+        {
+          "id": 125036793600,
+          "name": "Architecture convergence (source-head)",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369493987/job/125036793600",
+          "started_at": "2026-11-02T00:53:07Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 125036793824,
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369493987/job/125036793824",
+          "started_at": "2026-11-02T00:53:07Z",
+          "completed_at": "2026-11-02T00:54:17Z",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "id": 41369494042,
+      "name": "v8-canary",
+      "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042",
+      "created_at": "2026-11-02T00:52:39Z",
+      "updated_at": "2026-11-02T00:54:06Z",
+      "query_time_utc": "2026-11-02 01:11:47 UTC",
+      "jobs_query": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042/jobs?per_page=100",
+        "query_time_utc": "2026-11-02 01:11:50 UTC",
+        "total_count": 3,
+        "returned_count": 3,
+        "complete_snapshot": true
+      },
+      "job_status_counts": {
+        "success": 1,
+        "skipped": 2
+      },
+      "jobs": [
+        {
+          "id": 125036696805,
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042/job/125036696805",
+          "started_at": "2026-11-02T00:52:43Z",
+          "completed_at": "2026-11-02T00:54:05Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125037080436,
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042/job/125037080436",
+          "started_at": "2026-11-02T00:54:06Z",
+          "completed_at": "2026-11-02T00:54:05Z",
+          "failed_steps": []
+        },
+        {
+          "id": 125037080465,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042/job/125037080465",
+          "started_at": "2026-11-02T00:54:06Z",
+          "completed_at": "2026-11-02T00:54:05Z",
+          "failed_steps": []
+        }
+      ]
+    }
+  ],
+  "completed_failed_job_count": 10,
+  "codespell": {
+    "job_id": 125037019157,
+    "run_id": 41369494154,
+    "status": "completed",
+    "conclusion": "failure",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125037019157",
+    "log_retrieved_at_utc": "2026-11-02 01:12:03 UTC",
+    "returned_log_characters": 596490,
+    "returned_log_lines": 3722,
+    "returned_log_has_job_cleanup_tail": true,
+    "log_scope": "Every returned line was parsed. File annotations require the actual GitHub error marker plus ./path:line; echoed shell examples were not counted.",
+    "actual_checked_merge_sha": "9dc29ebefaf0f8a0283758fed1162ef165f5fc6a",
+    "actual_checked_merge_evidence": "The retrieved job log records git log -1 --format=%H followed by this SHA at 2026-11-02T00:54:55.1637212Z.",
+    "installed_codespell_version": "2.4.3",
+    "total_file_error_annotations": 3338,
+    "distinct_annotated_paths": 255,
+    "r15_annotations": 14,
+    "r15_distinct_annotated_paths": [
+      "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json"
+    ],
+    "current_r15_archive_shard_annotations": 0,
+    "old_binary_shard_comparison": [
+      {
+        "path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134/results.tar.xz.part000021",
+        "previous_annotations": 4,
+        "current_annotations": 0
+      },
+      {
+        "path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.part000007",
+        "previous_annotations": 4,
+        "current_annotations": 0
+      },
+      {
+        "path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/results.tar.xz.part000015",
+        "previous_annotations": 3,
+        "current_annotations": 0
+      },
+      {
+        "path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_training_final7/results.tar.xz.part000004",
+        "previous_annotations": 3,
+        "current_annotations": 0
+      }
+    ],
+    "narrow_binary_exclusion_effect_observed": true,
+    "config_identity": {
+      "head_ref": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+      "checked_merge_ref": "9dc29ebefaf0f8a0283758fed1162ef165f5fc6a",
+      "head_git_blob_sha1": "68844f940db074aadd26a9f5f7496cee3618a196",
+      "merge_git_blob_sha1": "68844f940db074aadd26a9f5f7496cee3618a196",
+      "head_merge_contents_identical": true,
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1/.codespellrc",
+      "merge_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9dc29ebefaf0f8a0283758fed1162ef165f5fc6a/.codespellrc"
+    },
+    "historical_diagnostic_data_annotations": {
+      "count": 14,
+      "classification": "All current R15 annotations flag verbatim diagnostic-message data retained in the historical review. They are not newly authored source or report prose.",
+      "historical_record_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+      "historical_record_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1/experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+      "historical_record_git_blob_sha1": "d80a825ecc59dae37fac3dcb8d40ca9a10667340",
+      "historical_record_bytes": 15423,
+      "historical_record_sha256": "28c0d4c3bf088cf9877b63074735b9c14e7d1a020b1789a13bba09963f342658",
+      "raw_message_location": "/codespell/r15_annotations/<index>/message",
+      "message_hash_definition": "SHA256 over the complete decoded original message string encoded as UTF-8, with no added newline.",
+      "all_messages_equal_original_entries_and_remote_source_lines": true,
+      "raw_message_literals_repeated_in_this_record": false,
+      "annotations": [
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 122,
+          "current_log_line": 293,
+          "historical_index": 0,
+          "historical_message_pointer": "/codespell/r15_annotations/0/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134/results.tar.xz.part000021",
+          "historical_source_line": 19,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "fbe5cd030174226a63fd98ef914dc377c88755bbcfba9a1c17ce394915fa1b79"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 127,
+          "current_log_line": 294,
+          "historical_index": 1,
+          "historical_message_pointer": "/codespell/r15_annotations/1/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134/results.tar.xz.part000021",
+          "historical_source_line": 88,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "23f158d5ea40ea7ad30a6deb8fe448669f8b4cc00bf8bd6a341bbe556e0a64f3"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 132,
+          "current_log_line": 295,
+          "historical_index": 2,
+          "historical_message_pointer": "/codespell/r15_annotations/2/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134/results.tar.xz.part000021",
+          "historical_source_line": 133,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "3fdbe374ec13f7fa4d0c5e492492aba5337ab2b5e74abae983030a72dd674762"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 137,
+          "current_log_line": 296,
+          "historical_index": 3,
+          "historical_message_pointer": "/codespell/r15_annotations/3/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134/results.tar.xz.part000021",
+          "historical_source_line": 185,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "5e25e56f34cee33c35bfe0bd6a7f277dbd5a597d4a71c8dc6929ebb9ef2d6cc4"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 142,
+          "current_log_line": 297,
+          "historical_index": 4,
+          "historical_message_pointer": "/codespell/r15_annotations/4/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.part000007",
+          "historical_source_line": 6,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "328d2b3f5c6a2bc2d69b33f1729e3968b7c9088c2cd53dcf1d890b1d005413d6"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 147,
+          "current_log_line": 298,
+          "historical_index": 5,
+          "historical_message_pointer": "/codespell/r15_annotations/5/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.part000007",
+          "historical_source_line": 60,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "d946baa36dcd7b2929adc42a2cd90de7918a17fbbdba45560ba3964377b75e37"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 152,
+          "current_log_line": 299,
+          "historical_index": 6,
+          "historical_message_pointer": "/codespell/r15_annotations/6/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.part000007",
+          "historical_source_line": 102,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "3fdbe374ec13f7fa4d0c5e492492aba5337ab2b5e74abae983030a72dd674762"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 157,
+          "current_log_line": 300,
+          "historical_index": 7,
+          "historical_message_pointer": "/codespell/r15_annotations/7/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.part000007",
+          "historical_source_line": 141,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "51b8bb3ac7d789cdf2e54bfb2dda6cc8cc2aa31262310797045c26c9f6415f92"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 162,
+          "current_log_line": 301,
+          "historical_index": 8,
+          "historical_message_pointer": "/codespell/r15_annotations/8/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/results.tar.xz.part000015",
+          "historical_source_line": 32,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "d946baa36dcd7b2929adc42a2cd90de7918a17fbbdba45560ba3964377b75e37"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 167,
+          "current_log_line": 302,
+          "historical_index": 9,
+          "historical_message_pointer": "/codespell/r15_annotations/9/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/results.tar.xz.part000015",
+          "historical_source_line": 130,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "3d2352d965c2291b118989efbdd476288d4bf3ca0f7dd38faf8e656dafee6f2e"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 172,
+          "current_log_line": 303,
+          "historical_index": 10,
+          "historical_message_pointer": "/codespell/r15_annotations/10/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/results.tar.xz.part000015",
+          "historical_source_line": 263,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "3fdbe374ec13f7fa4d0c5e492492aba5337ab2b5e74abae983030a72dd674762"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 177,
+          "current_log_line": 304,
+          "historical_index": 11,
+          "historical_message_pointer": "/codespell/r15_annotations/11/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_training_final7/results.tar.xz.part000004",
+          "historical_source_line": 87,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "57f598d0138efa8e0cb7330b0eaa4537eb907b8802e195b9dd202d366bd055ff"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 182,
+          "current_log_line": 305,
+          "historical_index": 12,
+          "historical_message_pointer": "/codespell/r15_annotations/12/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_training_final7/results.tar.xz.part000004",
+          "historical_source_line": 202,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "c73b4a9e7b15f7d9eef602f243eab264de3bde3ffeab7b1fefdd06686ecb1adc"
+        },
+        {
+          "current_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+          "current_line": 187,
+          "current_log_line": 306,
+          "historical_index": 13,
+          "historical_message_pointer": "/codespell/r15_annotations/13/message",
+          "historical_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_training_final7/results.tar.xz.part000004",
+          "historical_source_line": 203,
+          "message_matches_historical_entry": true,
+          "message_matches_current_remote_source_line": true,
+          "message_utf8_sha256": "117388810874dcd79b395f995ca4bf6ac61f0af370a3b3b2e8cd4396ebc55ac9"
+        }
+      ]
+    },
+    "other_r15_source_or_prose_annotations_observed": 0,
+    "outside_r15_file_error_annotations": 3324,
+    "base_only_comparison_performed": false,
+    "limitation": "The absence statement is scoped to the returned Codespell annotations. This is not a pass for Codespell, other CI jobs, scientific validation, or any unqueried head."
+  },
+  "formatter": {
+    "job_id": 125038160989,
+    "status": "completed",
+    "conclusion": "failure",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038160989",
+    "log_retrieved_at_utc": "2026-11-02 01:12:03 UTC",
+    "returned_log_characters": 123761,
+    "returned_log_lines": 1605,
+    "returned_log_has_job_cleanup_tail": true,
+    "explicitly_reported_reformat_paths": [
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "r15_explicit_reformat_paths": [],
+    "base_only_comparison_performed": false,
+    "attribution": "The retrieved formatter output names these two paths. No claim is made that their failures predate this PR."
+  },
+  "cargo_deny": {
+    "job_id": 125038161055,
+    "status": "completed",
+    "conclusion": "failure",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161055",
+    "failed_step": "Run cargo-deny",
+    "log_fetch_attempts_this_review": 1,
+    "log_fetch_success": false,
+    "log_fetch_error": "Transport closed",
+    "cause": null,
+    "r15_error_annotation_count": null,
+    "r15_error_paths": null
+  },
+  "other_failed_jobs": [
+    {
+      "job_id": 125038161301,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161301",
+      "failed_steps": [
+        "bazel build verify-release-build targets"
+      ],
+      "logs_fetched": false,
+      "cause": null,
+      "r15_involvement": null,
+      "note": "Job status and failed step are observed; logs were not fetched in this bounded Codespell follow-up. No unrelatedness claim."
+    },
+    {
+      "job_id": 125038161311,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161311",
+      "failed_steps": [
+        "bazel build verify-release-build targets"
+      ],
+      "logs_fetched": false,
+      "cause": null,
+      "r15_involvement": null,
+      "note": "Job status and failed step are observed; logs were not fetched in this bounded Codespell follow-up. No unrelatedness claim."
+    },
+    {
+      "job_id": 125038161319,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161319",
+      "failed_steps": [
+        "bazel build --config=clippy lint targets"
+      ],
+      "logs_fetched": false,
+      "cause": null,
+      "r15_involvement": null,
+      "note": "Job status and failed step are observed; logs were not fetched in this bounded Codespell follow-up. No unrelatedness claim."
+    },
+    {
+      "job_id": 125038161330,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161330",
+      "failed_steps": [
+        "bazel build verify-release-build targets"
+      ],
+      "logs_fetched": false,
+      "cause": null,
+      "r15_involvement": null,
+      "note": "Job status and failed step are observed; logs were not fetched in this bounded Codespell follow-up. No unrelatedness claim."
+    },
+    {
+      "job_id": 125038161339,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161339",
+      "failed_steps": [
+        "bazel build --config=clippy lint targets"
+      ],
+      "logs_fetched": false,
+      "cause": null,
+      "r15_involvement": null,
+      "note": "Job status and failed step are observed; logs were not fetched in this bounded Codespell follow-up. No unrelatedness claim."
+    },
+    {
+      "job_id": 125038161341,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161341",
+      "failed_steps": [
+        "bazel build --config=clippy lint targets"
+      ],
+      "logs_fetched": false,
+      "cause": null,
+      "r15_involvement": null,
+      "note": "Job status and failed step are observed; logs were not fetched in this bounded Codespell follow-up. No unrelatedness claim."
+    },
+    {
+      "job_id": 125038161428,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125038161428",
+      "failed_steps": [
+        "bazel test shard"
+      ],
+      "logs_fetched": false,
+      "cause": null,
+      "r15_involvement": null,
+      "note": "Job status and failed step are observed; logs were not fetched in this bounded Codespell follow-up. No unrelatedness claim."
+    }
+  ],
+  "proposed_minimal_followup": {
+    "target": ".codespellrc",
+    "base_head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+    "base_git_blob_sha1": "68844f940db074aadd26a9f5f7496cee3618a196",
+    "action": "Append one exact path to the existing skip list.",
+    "additional_skip": "./experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+    "reason": "This single immutable historical evidence file deliberately retains the original error-message strings as data. Preserve its original bytes.",
+    "wildcards_added": false,
+    "source_report_and_other_ci_record_checks_retained": true,
+    "literal_path_scope_check": {
+      "positive_cases": 1,
+      "negative_cases": 8,
+      "all_passed": true,
+      "method": "Python standard-library fnmatch; exact literal pattern without wildcards."
+    },
+    "full_codespell_cli_executed": false,
+    "config_modified_by_this_review": false,
+    "remote_write_performed": false
+  },
+  "evidence_queries": [
+    {
+      "kind": "workflow_runs",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1&per_page=100",
+      "queried_at_utc": "2026-11-02 01:11:47 UTC",
+      "total_count": 3,
+      "returned_count": 3
+    },
+    {
+      "kind": "pull_request",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4563",
+      "queried_at_utc": "2026-11-02 01:11:47 UTC"
+    },
+    {
+      "kind": "legacy_status",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1/status",
+      "queried_at_utc": "2026-11-02 01:11:47 UTC"
+    },
+    {
+      "kind": "historical_record_at_current_head",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1/experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+      "queried_at_utc": "2026-11-02 01:12:35 UTC"
+    },
+    {
+      "kind": "codespell_config_at_head",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1/.codespellrc",
+      "queried_at_utc": "2026-11-02 01:13:37 UTC"
+    },
+    {
+      "kind": "codespell_config_at_checked_merge",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9dc29ebefaf0f8a0283758fed1162ef165f5fc6a/.codespellrc",
+      "queried_at_utc": "2026-11-02 01:12:35 UTC"
+    }
+  ],
+  "legacy_status": {
+    "state": "pending",
+    "total_count": 0,
+    "statuses": [],
+    "note": "An empty legacy status collection is separate from the Actions results."
+  },
+  "actions": {
+    "workflow_run_poll_rounds": 1,
+    "jobs_listing_rounds_per_run": 1,
+    "workflow_dispatches": 0,
+    "workflow_reruns": 0,
+    "remote_writes": 0,
+    "previous_records_modified": false,
+    "science_sources_modified": false,
+    "global_ignore_list_modified": false,
+    "scientific_confirmation_or_test_reads": false,
+    "further_poll_scheduled": false,
+    "full_archive_started": false
+  }
+}

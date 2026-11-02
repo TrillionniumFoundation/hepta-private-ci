@@ -1,0 +1,179 @@
+{
+  "adapter": {
+    "bytes": 2343,
+    "path": "experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_adapter.py",
+    "scope": "repository",
+    "sha256": "fc0f764b8eb1bf7d2ed50352d5717347ece9cf93029fe2c2067abe6ca9c905d1"
+  },
+  "artificial_fixture_receipt": {
+    "bytes": 7098,
+    "path": "experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_fixture_01/SELFCHECK.json",
+    "scope": "repository",
+    "sha256": "df204e5b6eede36a047dd14771c5337ed696d606b25ef5297eeae062cc1fe188"
+  },
+  "artificial_fixture_source": {
+    "bytes": 11031,
+    "path": "experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_adapter_selfcheck.py",
+    "scope": "repository",
+    "sha256": "3be6411c89ff382a14b69a9696b0e9cc2038481b3dd1e51679daebb527967e31"
+  },
+  "boundary": {
+    "conversion": "json.dump default handles only numpy.floating, numpy.integer, numpy.bool_ using .item(); result must be native float/int/bool, otherwise TypeError",
+    "delegation": "adapter.install().main() is the original frozen main; its group branch calls frozen execute_group, launch calls frozen launch with explicit adapter child module, index calls frozen combine.",
+    "in_memory_changes": [
+      "train_execution_cross.write",
+      "train_execution_cross.MODULE"
+    ],
+    "module": "experiments.hcsn_distribution_content_r15_20261101.publication.cross_serialization_adapter",
+    "unchanged": [
+      "all registered scientific file bytes",
+      "SOURCE and STAGE",
+      "registered source snapshots and protocol",
+      "dataset and all raw arrays",
+      "selected checkpoints and controller weights",
+      "executed object and condition matrix",
+      "batch_size=32 and maximum_workers=2",
+      "actual executor",
+      "all scientific function objects",
+      "all contrasts, confidence intervals, selection and acceptance rules",
+      "parent mkdir(exist_ok=True), exclusive open(x), indent=2, sort_keys=True, allow_nan=False, trailing newline"
+    ],
+    "unsupported_values": "No ndarray conversion, complex conversion, string coercion, filtering, missing-field repair, NaN replacement, or precision-lowering conversion."
+  },
+  "commands_after_preservation_and_publication": [
+    [
+      "python",
+      "-m",
+      "experiments.hcsn_distribution_content_r15_20261101.publication.cross_serialization_adapter",
+      "launch",
+      "--output",
+      "experiments/hcsn_distribution_content_r15_20261101/results/formal_03",
+      "--workers",
+      "2"
+    ],
+    [
+      "python",
+      "-m",
+      "experiments.hcsn_distribution_content_r15_20261101.publication.cross_serialization_adapter",
+      "index",
+      "--output",
+      "experiments/hcsn_distribution_content_r15_20261101/results/formal_03"
+    ]
+  ],
+  "confirmation_data_accessed_by_adapter_selfcheck": false,
+  "cost_accounting": {
+    "ledger": "New runtime_ledger_v4.py accounts the preserved failure and canonical retry; old V1-V3 files and reports are retained.",
+    "nested_actor_group_timers_additive": false,
+    "new_retry_cpu": "new canonical 16-worker wait4 receipts, counted separately from the original failed process attempts",
+    "not_measured": [
+      "GPU",
+      "physical joules",
+      "provider billing"
+    ],
+    "original_failed_worker_cpu_basis": "sum of 16 preserved complete-process wait4 user+system receipts, independently checked; original TOTAL is cross-check only",
+    "original_failed_worker_cpu_seconds": 99.098883,
+    "partial_npz_is_successful_registered_condition": false,
+    "wall": "Guard/launcher/actor walls can include low-space pauses; none is an isolated latency measurement."
+  },
+  "created_utc": "2026-11-02T01:55:02.319542+00:00",
+  "failed_npz_comparison": {
+    "expected_array_keys": [
+      "prediction",
+      "read_count",
+      "fee",
+      "utility",
+      "elapsed",
+      "labels",
+      "ids",
+      "group",
+      "context_ids",
+      "partition_ids",
+      "dt"
+    ],
+    "expected_pairs": 16,
+    "method": [
+      "Read one archived/current pair at a time with numpy.load(allow_pickle=False)",
+      "Verify archive manifest bytes/SHA and completed retry record NPZ SHA first",
+      "Record whole NPZ hashes separately; ZIP container hashes can differ without array changes",
+      "Require exact key-set, dtype including byte order, and shape equality",
+      "For every array record exact element equality, differing-element count, and C-order byte equality/hash; no tolerance suppresses differences",
+      "Reject/report nonfinite real-valued arrays; do not treat matching NaNs as acceptable",
+      "Record all mismatches and array/path identities in a new exclusive comparison report",
+      "Never delete, overwrite, choose a better result, adjust a threshold, select checkpoints, or selectively repeat a case because of a difference"
+    ],
+    "scope_limit": "These 16 pairs directly compare the successful raw output of the failed first condition. The other 224 LV conditions had no original outcome; they remain the unchanged registered confirmation matrix.",
+    "source": "Archive only the original first ordinary_distribution/iid/LV NPZ per task/seed; compare to the same key in the completed canonical retry.",
+    "source_identity": "Preserved frozen scientific files/registrations and current selected checkpoint identities remain the authority; truncated original JSON is retained as bytes and is not fabricated into a complete metadata record.",
+    "timing": "After all 16 retry workers complete and before final scientific interpretation; no retry is launched by the comparison."
+  },
+  "formal_output_directories_moved_by_this_plan": false,
+  "formal_retry_started_by_this_plan": false,
+  "frozen_sources": [
+    {
+      "bytes": 29446,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/train_execution_cross.py",
+      "scope": "repository",
+      "sha256": "59e21b69b977aee186f7e35d38fb3ff07dfce89274c22b2dcec103534ed6061a"
+    },
+    {
+      "bytes": 31628,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/online_confirm.py",
+      "scope": "repository",
+      "sha256": "c33fe176592042f408c305d477817c81823be43534c0a950bd26cbe70b91265e"
+    }
+  ],
+  "full_online_or_primary_rerun_needed": false,
+  "ownership": "Root will execute preservation and a new guarded continuation; this plan performs neither.",
+  "post_confirmation_operational_repair": true,
+  "preservation": {
+    "all_manifest_data_paths_relative_to": "formal_03",
+    "attempt_id": "train_execution_cross_01_serialization",
+    "attempt_root": "attempts/train_execution_cross_01_serialization",
+    "expected_failed_file_inventory_from_independent_review": {
+      "bytes": 631391,
+      "files": 81,
+      "group_indexes": 0,
+      "group_npz": 16,
+      "receipt_log_total_files": 49,
+      "truncated_group_json": 16
+    },
+    "manifest_fields": {
+      "complete": "true only after successful byte preservation",
+      "files": "[{original_path,archive_path,bytes,sha256}]",
+      "launcher_total": "{original_path,archive_path,bytes,sha256,jobs,failed,process_cpu_seconds,counted_separately:false}",
+      "process_attempts": "16 rows: process_attempt_id=attempt_id/name, name, task, seed, train_mode=light, command, exit_code, receipt_original_path, receipt_archive_path, receipt_sha256, cpu_user_seconds, cpu_system_seconds, cpu_seconds, measurement_status=complete_process_lifetime_wait4",
+      "scientific_sources_registration_files_operational_evidence": "lists of descriptors {scope:run|repository,path,bytes,sha256}",
+      "source_fix": "adapter descriptor {scope:repository,path,bytes,sha256}"
+    },
+    "moves": [
+      {
+        "archive_path": "attempts/train_execution_cross_01_serialization/groups",
+        "original_path": "train_execution_cross/groups"
+      },
+      {
+        "archive_path": "attempts/train_execution_cross_01_serialization/receipts",
+        "original_path": "receipts/train_execution_cross"
+      }
+    ],
+    "requirements": [
+      "Exclusive new attempt directory; no existing archive may be replaced",
+      "Hash and size every source file before move and every archived file after; mismatch blocks retry",
+      "Preserve all complete NPZ files and truncated JSON bytes; do not repair or reinterpret truncated JSON",
+      "Preserve all 16 wait4 receipts, stdout/stderr, and TOTAL bytes",
+      "Do not move or rewrite SELF_REGISTRATION, source_snapshot, primary/full-online/recovery results, or old guarded addendum evidence",
+      "Write a complete preservation manifest only after all required archives and source pointers verify",
+      "Old guarded addendum remains a failed historical attempt; retry uses a new operational directory"
+    ],
+    "schema": "hcsn.r15.cross-serialization-failure-preservation.v1"
+  },
+  "prospective_scientific_registration": false,
+  "runtime_environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONPATH": "/tmp/hcsn-torch-runtime:$PWD"
+  },
+  "schema": "hcsn.r15.cross-serialization-adapter.operational-plan.v1",
+  "scientific_selection_changed": false,
+  "status": "implementation_and_artificial_validation_complete; await root review/publication before preservation or formal retry"
+}

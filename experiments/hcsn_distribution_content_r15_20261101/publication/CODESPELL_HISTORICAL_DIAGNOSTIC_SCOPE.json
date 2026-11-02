@@ -1,0 +1,20 @@
+{
+  "schema": "hcsn.r15.publication.historical-diagnostic-spelling-scope.v1",
+  "utc": "2026-11-02T01:15:56.487642+00:00",
+  "based_on_remote_commit": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+  "path": ".codespellrc",
+  "preimage_git_blob": "68844f940db074aadd26a9f5f7496cee3618a196",
+  "postimage_git_blob": "74fb95963eed5e6df3fcc68f949a379e4126f5e8",
+  "postimage_sha256": "f2eec109897616c28530fd4f616f3b7790826a6929ea413cf767c47e7ddc4f04",
+  "exact_added_path": "./experiments/hcsn_distribution_content_r15_20261101/publication/CI_HEAD_REVIEW_02.json",
+  "contains_wildcard": false,
+  "other_config_options_and_skip_entries_unchanged": true,
+  "reason": "The exact immutable historical CI evidence file contains the original fourteen diagnostic messages as data. Preserve those bytes while continuing to spell-check scientific source, reports and all other CI records.",
+  "historical_record_sha256": "28c0d4c3bf088cf9877b63074735b9c14e7d1a020b1789a13bba09963f342658",
+  "terminal_ci_evidence_sha256": "332d70c383ca3b4cf82bf36119bbc74224c808cdaae6461b3a9437669311c57f",
+  "scope_matching_evidence": "CI_HEAD_REVIEW_04.json records one exact positive and eight negative path checks.",
+  "full_codespell_cli_run": false,
+  "entire_repository_ci_pass_claim": false,
+  "scientific_source_changed": false,
+  "publication_status": "Local one-path change; to be published with final evidence. Prior remote CI does not certify this later edit."
+}

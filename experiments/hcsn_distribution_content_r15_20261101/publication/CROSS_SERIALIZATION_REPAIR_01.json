@@ -1,0 +1,71 @@
+{
+  "adapter_scope": [
+    "Only cross.write uses a NumPy scalar .item() JSON default",
+    "Only cross.MODULE routes frozen launch children through the same adapter"
+  ],
+  "chronology": "This repair is made after confirmation access and after a recorded operational failure. It is not a prospective scientific registration and adds no hypothesis, domain selection, threshold or favorable-result stopping rule.",
+  "completed_scientific_outputs_sha256": {
+    "EVALUATION_INDEX.json": "88fc3324b27e7bd6fdacd865df2edc0aec29d249cb48c04681237502884ca63b",
+    "FULL_ONLINE_CONFIRMATION_INDEX.json": "bd3fe2ca7e50c4529e96a7de007a5fa141b43bc7d1a0d2a7e58ffaf4fd9bb838",
+    "FULL_ONLINE_CONFIRMATION_SUMMARY.json": "7c63af8d448d10cbd45084e4a8de875df62e5a45550f7815ba30b6c8e7290e54",
+    "INDEPENDENT_AUDIT.json": "88b3443cc8488708c9cbe036b9a9fcca4c0dcc14dbbe7bdc53bad3e7b9553e4b",
+    "SUMMARY.json": "ce5ea6ad8c1a1138d4282a2828d4da272120e2a814091a6b5c2dea761094dc9b",
+    "TRAINING_INDEX.json": "392427ee74803e050bac6b454e93fd79c55ceb0f8da93fa9efa9cb4260883c57",
+    "recovery/ACTUAL_EXECUTION_INDEX.json": "0bb39991a6b8508acd12326dcc54185652de21e2ac93ce6326fdcfe0400082a3",
+    "recovery/CONFIRMATION_INDEX.json": "b03b2380b4d8b7c9d94c6215e0716597478341ed6c547ebceebd47c9c2b5b11c",
+    "recovery/POLICY_FREEZE.json": "ca9fc4ab5cb0f44cf5fbfc7c36bd3bc51bf02e57aa71f5540420468370e40c6c"
+  },
+  "confirmation_results_already_available": true,
+  "created_utc": "2026-11-02T02:01:59.776811+00:00",
+  "old_failure": {
+    "additional_cpu_accounting": "Preserved failed wait4 processes must be added separately to canonical successful retry receipts; TOTAL and nested timers are crosschecks only",
+    "failed": 16,
+    "incomplete_json": 16,
+    "launcher_total_sha256": "20450ec3d33bf3ff981ab7e3427da4c382428fbf64ae2aef57dd2082e22dc658",
+    "partial_npz": 16,
+    "worker_cpu_seconds": 99.098883,
+    "workers": 16
+  },
+  "original_report_source_commit": "10e8b6e11a259bf6db14f93c1eae5f1ad7b2eff1",
+  "original_scientific_source_commit": "af3a7c779095e96210b9ef44e8ae44446c842f8c",
+  "parent_remote_head": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+  "post_confirmation_operational_repair": true,
+  "post_retry_required": [
+    "Complete all registered cross conditions and original cross summary",
+    "Independent actual cross audit using explicitly mapped repaired completion gate",
+    "Compare every array in 16 original partial NPZ files to retry with dtype/shape/exact-value checks; retain any differences",
+    "V4 cost ledger and operational report retain all failed CPU and preexisting unknown costs"
+  ],
+  "preservation_path": "attempts/train_execution_cross_01_serialization/PRESERVATION.json",
+  "preservation_sha256": "d90223d355b34aa6fe44e97d273f22d8be2486b409cfa37d227b5133b59d883a",
+  "primary_complete_sha256": "22a32984be3826991b505e4f3c3a9b85ab1b7ac979c63fe5c88175611d10be5e",
+  "retry_status_at_record": "not started",
+  "schema": "hcsn.r15.cross-serialization-repair.v1",
+  "scientific_changes": false,
+  "source_files_sha256": {
+    "experiments/hcsn_distribution_content_r15_20261101/publication/continue_cross_repair_01.py": "bace0f09fd4a06ebd05f76d5f98f0df8d18218d61f10e51753fff68541982b80",
+    "experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_adapter.py": "fc0f764b8eb1bf7d2ed50352d5717347ece9cf93029fe2c2067abe6ca9c905d1",
+    "experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_adapter_selfcheck.py": "3be6411c89ff382a14b69a9696b0e9cc2038481b3dd1e51679daebb527967e31",
+    "experiments/hcsn_distribution_content_r15_20261101/publication/guarded_continuation.py": "764ce586c8cbc679ee4e47cb7cbe8ea025e27ca412c13746c526be05ef8775df",
+    "experiments/hcsn_distribution_content_r15_20261101/publication/preserve_cross_serialization_failure.py": "37e8f3d122c4a8abc5633620d7d163c57ea66797d4b1cf90d44f436b30aa9ddc"
+  },
+  "unchanged": [
+    "All 38 frozen scientific source files and all registration/snapshot identities",
+    "All models, selected checkpoints, data, actions, fee rules, execution routines, statistical formulas and acceptance gates",
+    "Original batch32, two workers, 240 conditions and 122880 LV actual object executions",
+    "LL/VL/VV reuse original completed actual arrays; no rerun of original primary stages"
+  ],
+  "validation": {
+    "adapter_checks": 13,
+    "adapter_checks_passed": true,
+    "adapter_selfcheck_path": "cross_serialization_fixture_01/SELFCHECK.json",
+    "adapter_selfcheck_sha256": "df204e5b6eede36a047dd14771c5337ed696d606b25ef5297eeae062cc1fe188",
+    "independent_source_reviews": [
+      "locate_baseline: adapter and continuation reviewed without scientific changes",
+      "independent_audit: preservation helper and immutable scientific identity reviewed"
+    ],
+    "preservation_checks_passed": true,
+    "preservation_selfcheck_path": "cross_preservation_fixture_01/SELFCHECK.json",
+    "preservation_selfcheck_sha256": "1366f96cc872052efb6eb6816cb30c83a9fd185d2ef9218d521651cf48376c64"
+  }
+}
