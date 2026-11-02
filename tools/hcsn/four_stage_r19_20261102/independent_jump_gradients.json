@@ -1,0 +1,173 @@
+{
+  "all_checks_passed": true,
+  "coverage": {
+    "jump": {
+      "amplitude_share_logit_0": 6,
+      "amplitude_share_logit_1": 6,
+      "base_logit_0": 6,
+      "base_logit_1": 6,
+      "log_fee_0": 6,
+      "log_fee_1": 6,
+      "log_recovery_cost": 6,
+      "log_reward_slope": 6,
+      "log_sigma": 5,
+      "log_wait_cost": 6,
+      "mode_logit_00": 6,
+      "mode_logit_01": 6,
+      "mode_logit_10": 6,
+      "mode_logit_11": 6,
+      "reset_x": 5
+    },
+    "positive": {
+      "amplitude_share_logit_0": 6,
+      "amplitude_share_logit_1": 6,
+      "base_logit_0": 6,
+      "base_logit_1": 6,
+      "log_fee_0": 6,
+      "log_fee_1": 6,
+      "log_recovery_cost": 6,
+      "log_reward_slope": 6,
+      "log_sigma": 6,
+      "log_wait_cost": 6,
+      "mode_logit_00": 6,
+      "mode_logit_01": 6,
+      "mode_logit_10": 6,
+      "mode_logit_11": 6,
+      "reset_x": 6
+    }
+  },
+  "critical_cone_directional_maximum_error": 1.6864821703361287e-07,
+  "fixed_target_training": {
+    "accepted_steps": 20,
+    "changed_python_grid_action_cells": 100,
+    "data_sha256": "4e0c0eccd42f271d1fe623ca094a588d279e61e63cee78747df6dff9eb89d5a0",
+    "relative_loss_reduction": 0.766476489793593
+  },
+  "followup_maximum_fd_error": 5.313076216636638e-09,
+  "followup_status": "All90coordinate profiles attempted at separately frozen smaller steps; all4local-neighbourhood gates pass without tolerance change",
+  "identified_original_crossings": [
+    {
+      "coordinate": "log_sigma",
+      "count": 0,
+      "first_locations": [],
+      "step": -1e-05
+    },
+    {
+      "coordinate": "log_sigma",
+      "count": 1,
+      "first_locations": [
+        {
+          "mode": 0,
+          "stage": "left_LCP",
+          "state": -0.625,
+          "time": 1.06
+        }
+      ],
+      "step": 1e-05
+    },
+    {
+      "coordinate": "reset_x",
+      "count": 1,
+      "first_locations": [
+        {
+          "mode": 0,
+          "stage": "left_LCP",
+          "state": -0.625,
+          "time": 1.06
+        }
+      ],
+      "step": -1e-05
+    },
+    {
+      "coordinate": "reset_x",
+      "count": 0,
+      "first_locations": [],
+      "step": 1e-05
+    }
+  ],
+  "independent_all_time_sparse_maximum_error": 2.9046237267692617e-16,
+  "independent_heat_tangent_ode_maximum_error": 4.984148393009626e-14,
+  "input_sha256": {
+    "NEIGHBOURHOOD_PROTOCOL.json": "de827edcd5fbdb5f7c05d985622393b4a18e0b3755a031919e4a67c7eee53d23",
+    "PROTOCOL.json": "afb17ed1bce10261f5e5f27e07ee0e5160b40b26e7667468b4e7d6a66c1fb81b",
+    "run_01/RESULTS.json": "797af23986615cda6734b957cb75847229c08ce0402e251c120c58d13bc52eeb",
+    "run_02/RESULTS.json": "121c91b0ddd9c9a1e65f0b441d0c1f36255f76caf997d014a59b6ece1e60e3d1"
+  },
+  "limits": [
+    "15declared trainable coordinates only; physical domain/grid/horizon/recovery delay remain fixed",
+    "No continuum free-boundary or whole financial-model gradient theorem",
+    "Teacher-value fitting is calibration smoke, not neural capability or held-out learning gain",
+    "Grid action cells are Python canonical solver labels, not Rust production actions"
+  ],
+  "main_bad_large_step_rows": [
+    {
+      "coordinate": "log_sigma",
+      "dx": 0.0625,
+      "jump_left_error": 1.143817817755348e-05,
+      "jump_right_error": 0.00035610427629619116,
+      "positive_error": 5.39832072795861e-10,
+      "sigma": 1.3,
+      "smooth_jump": false,
+      "smooth_positive": true,
+      "step": 1e-05
+    },
+    {
+      "coordinate": "reset_x",
+      "dx": 0.0625,
+      "jump_left_error": 1.7704995878016488e-06,
+      "jump_right_error": 5.194406750006957e-05,
+      "positive_error": 6.368722722447939e-11,
+      "sigma": 1.3,
+      "smooth_jump": false,
+      "smooth_positive": true,
+      "step": 1e-05
+    }
+  ],
+  "main_gate_status": "9/10 passed; registered finite-difference gate remains failed",
+  "process_receipts": {
+    "PROCESS_01.json": {
+      "command": [
+        "python",
+        "-m",
+        "tools.hcsn.jump_gradients_r19_20261102.checks",
+        "--output",
+        "tools/hcsn/jump_gradients_r19_20261102/run_01"
+      ],
+      "cpu_seconds": 29.243757000000002,
+      "cpu_system_seconds": 0.26325899999999997,
+      "cpu_user_seconds": 28.980498,
+      "max_rss_kib": 85044,
+      "returncode": 0,
+      "schema": "hcsn-r17-gradient-outer-process-v1",
+      "scope": "One complete child process, includes Python startup/import and final output. No GPU/energy/service cost.",
+      "wall_seconds": 48.517739144997904
+    },
+    "PROCESS_02.json": {
+      "command": [
+        "python",
+        "-m",
+        "tools.hcsn.jump_gradients_r19_20261102.neighbourhood",
+        "--output",
+        "tools/hcsn/jump_gradients_r19_20261102/run_02"
+      ],
+      "cpu_seconds": 23.458146,
+      "cpu_system_seconds": 0.329071,
+      "cpu_user_seconds": 23.129075,
+      "max_rss_kib": 74636,
+      "returncode": 0,
+      "schema": "hcsn-r17-gradient-outer-process-v1",
+      "scope": "One complete child process, includes Python startup/import and final output. No GPU/energy/service cost.",
+      "wall_seconds": 43.21041313299793
+    }
+  },
+  "schema": "hcsn-r19-independent-jump-gradient-review-v1",
+  "scope": "Source mathematics and saved qualification/training records audited; no third full primal/PDE solve",
+  "source_review": [
+    "Derivative engines use analytic chart/payoff/kernel/active-branch linear equations; finite differences do not construct the Jacobian",
+    "Independent global sparse reference assembles delayed left/right causal system and coordinate RHS without tangent engine imports",
+    "Critical-cone LCP handles registered one-sided min/max corners; ordinary state/time/lattice derivatives are rejected where undefined",
+    "Canonical solver capture binds code object and actual returned arrays and restores profiler",
+    "Public raw chart is checked against captured primal physical fields and actual quadrature nodes"
+  ],
+  "stable_main_fd_maximum": 1.059714252368042e-09
+}

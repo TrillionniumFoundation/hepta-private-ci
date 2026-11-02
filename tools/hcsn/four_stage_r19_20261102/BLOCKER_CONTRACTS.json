@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn-r19-project-closure-contracts-v1",
+  "baseline_commit": "b25601c9bae257ffb651c8f9354fc380d8333f38",
+  "all_project_blockers_closed": false,
+  "production_activation": false,
+  "rules": [
+    "Every PASS retains its exact task, model, representation, numerical and recovery scope.",
+    "A completed negative experiment does not pass its positive acceptance gate.",
+    "A source publication after outcomes cannot retroactively qualify those outcomes.",
+    "No threshold, amortization count, strong comparator or statistical unit is relaxed after results.",
+    "Shared parent/child CPU is counted once; missing historical costs remain unknown.",
+    "GPU, energy, real-media or production evidence requires actual execution and attributable measurements."
+  ],
+  "original_core_gate": {
+    "domains": [
+      "iid",
+      "ood"
+    ],
+    "unit": "eight independently trained fit seeds, conditional on fixed test pools",
+    "requirements": [
+      "D-B mean >= 0.01",
+      "paired-fit Student-t 95% lower > 0",
+      "two-sided exact signflip with Holm across two domains < 0.05"
+    ],
+    "strong_ordinary_pool": [
+      "same-Q HMM",
+      "trained GRU",
+      "trained SSM",
+      "typed cache"
+    ],
+    "r19_result": "FAIL: both domain mean differences and both 95% interval upper bounds are negative"
+  },
+  "original_cost_gate": {
+    "uses_per_fit_per_domain": 1000,
+    "online_anchored_over_D_limit": 0.9,
+    "complete_investment_plus_use_ratio_limit": 0.9,
+    "quality_noninferiority_margin": -0.01,
+    "r19_result": "FAIL despite quality noninferiority and bounded cached/workspace arrays"
+  },
+  "content_reliability": {
+    "risk_limit": 0.1,
+    "fractional_answers": "Registered runtime definition: max final posterior probability < 1-1e-9. Certain-answer totals cannot mask fractional selective errors.",
+    "r19_result": "Original conditional calibration FAIL; repaired R19b trained-family calibration PASS; five-family confirmation FAIL.",
+    "unknown_law_limit": "A local observational ambiguity theorem is not a substitute for marginal accepted-risk or empirical held-out-family gates."
+  },
+  "continuum_limit": "Slab value comparison and an ideal aligned-scheme theorem do not imply fixed floating-point convergence, general free-boundary regularity, full-finance gradients or a single global smooth solution.",
+  "production_limit": "Finite native Q qualification, actual trained-model forward parity and private-owner pending recovery are separately checked. Production dispatch, native parameter-to-Q, network/host restart, real media and hardware adoption cannot be inferred by concatenating reports."
+}

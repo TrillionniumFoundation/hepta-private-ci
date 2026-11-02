@@ -1,0 +1,24 @@
+{
+  "all_checks_passed": true,
+  "definition_sha256": "ebadf8b1c2308ec0c4aed3e3211797f3d66ca4eaf7f868aa63d243982768b0f3",
+  "distinct_targets": [
+    0,
+    1
+  ],
+  "legal_six_write_completions": true,
+  "limits": [
+    "Does not forbid safe unambiguous answers or calibrated restricted-family fractional inference",
+    "Does not show observed switching-rotor mistakes were inevitable or implementation/guard optimal",
+    "Risk is pointwise Pr(error|answer,H=h); this does not lower-bound marginal accepted error averaged over random histories or READ policies"
+  ],
+  "query_address": 3,
+  "same_public_prefix_and_realized_read": true,
+  "schema": "hcsn-r19-independent-ambiguity-review-v2",
+  "source_review": [
+    "Conditional output distribution at identical full visible transcript is the same under two admissible concentrated laws; q0+q1<=1 gives worst selective error>=1/2",
+    "General m-target bound1-1/m holds under explicitly admissible concentrated completion laws, positive answering probability, and owner-independent controller randomness",
+    "Registered5parametricfamilies are not asserted to contain the concentrated laws; actualR19b finitefamily failure remains empirical",
+    "Witness has a different READ that resolves finalWRITE; it proves no universal oneREAD-budget lower bound"
+  ],
+  "witness_sha256": "60be9f5f9699574b0c9fc289a7c20b9a0f7f190df43584a719090f99919bb894"
+}

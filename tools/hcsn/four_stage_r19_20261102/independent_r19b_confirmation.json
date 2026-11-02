@@ -1,0 +1,316 @@
+{
+  "actual_read_decisions": 2416,
+  "all_checks_passed": true,
+  "archives": 80,
+  "bootstrap_replicates": 4096,
+  "decisions": 10240,
+  "generators_per_family": 256,
+  "key_negative": "Switching-rotor18errors/47fractionalaccepted=38.30%, upper57.85%; same18errors/854allaccepted=2.11% does not certify uncertain answers.",
+  "limits": [
+    "Approximate generator-bootstrap bounds, not exact simultaneous coverage theorem",
+    "All4dependentworlds retained per generator, including zero-answer clusters; zero bootstrap denominator maps to risk1",
+    "Three trained-family calibration passes did not transfer to all5families; no postconfirmation repair or pooled rescue"
+  ],
+  "maximum_summary_error": 0.0,
+  "one_sided_delta": 0.0025,
+  "original_all_five_family_gate_passed": false,
+  "primary_simultaneous_quantities": 20,
+  "results": {
+    "iid": {
+      "comparison": {
+        "actual_selective_payoff_gain": -0.0066601562499999985,
+        "before_read_brier_gain": 0.002761263581314178,
+        "independent_generator_units": 256,
+        "simultaneous_brier_gain_interval": [
+          -0.000227488825749984,
+          0.006388261058053276
+        ],
+        "simultaneous_payoff_gain_interval": [
+          -0.02001953125,
+          0.006245361328125008
+        ]
+      },
+      "family_gate": false,
+      "models": {
+        "best_static": {
+          "accepted": 869,
+          "accepted_errors": 5,
+          "actual_reads": 269,
+          "admitted": 1022,
+          "after_brier": 0.08073689296047913,
+          "after_log_loss": 0.16130445701346433,
+          "before_brier": 0.12140043802270029,
+          "before_log_loss": 0.24840766043695978,
+          "fractional_accepted": 90,
+          "fractional_error": 0.05555555555555555,
+          "fractional_errors": 5,
+          "mean_read_net_effect": 0.103125,
+          "overall_error": 0.005753739930955121,
+          "read_then_refused": 97,
+          "selective_payoff": 0.7925781249999999,
+          "simultaneous_upper_fractional_error": 0.1371911093204406,
+          "simultaneous_upper_overall_error": 0.013986013986013986,
+          "support_failures": 0
+        },
+        "class_mixture": {
+          "accepted": 861,
+          "accepted_errors": 4,
+          "actual_reads": 268,
+          "admitted": 1012,
+          "after_brier": 0.07644091002274685,
+          "after_log_loss": 0.15313503412176493,
+          "before_brier": 0.11863917444138612,
+          "before_log_loss": 0.23974708566899727,
+          "fractional_accepted": 88,
+          "fractional_error": 0.045454545454545456,
+          "fractional_errors": 4,
+          "mean_read_net_effect": 0.10427734375,
+          "overall_error": 0.004645760743321719,
+          "read_then_refused": 96,
+          "selective_payoff": 0.78591796875,
+          "simultaneous_upper_fractional_error": 0.11764705882352941,
+          "simultaneous_upper_overall_error": 0.011750881316098707,
+          "support_failures": 0
+        }
+      }
+    },
+    "pair_renewal": {
+      "comparison": {
+        "actual_selective_payoff_gain": -0.0057226562499999994,
+        "before_read_brier_gain": -0.0013048985595119312,
+        "independent_generator_units": 256,
+        "simultaneous_brier_gain_interval": [
+          -0.0037607935009731533,
+          0.0011987318135706284
+        ],
+        "simultaneous_payoff_gain_interval": [
+          -0.018101806640625002,
+          0.005637207031250054
+        ]
+      },
+      "family_gate": false,
+      "models": {
+        "best_static": {
+          "accepted": 873,
+          "accepted_errors": 1,
+          "actual_reads": 225,
+          "admitted": 1024,
+          "after_brier": 0.06149647597006602,
+          "after_log_loss": 0.11049985003183993,
+          "before_brier": 0.09340519492627233,
+          "before_log_loss": 0.1759374316102613,
+          "fractional_accepted": 121,
+          "fractional_error": 0.008264462809917356,
+          "fractional_errors": 1,
+          "mean_read_net_effect": 0.08677734375000001,
+          "overall_error": 0.001145475372279496,
+          "read_then_refused": 79,
+          "selective_payoff": 0.8094335937499999,
+          "simultaneous_upper_fractional_error": 0.039125261755187615,
+          "simultaneous_upper_overall_error": 0.005729275884665799,
+          "support_failures": 0
+        },
+        "class_mixture": {
+          "accepted": 867,
+          "accepted_errors": 2,
+          "actual_reads": 220,
+          "admitted": 1023,
+          "after_brier": 0.06600692076034459,
+          "after_log_loss": 0.1205129640060176,
+          "before_brier": 0.09471009348578426,
+          "before_log_loss": 0.1782303175259854,
+          "fractional_accepted": 115,
+          "fractional_error": 0.017391304347826087,
+          "fractional_errors": 2,
+          "mean_read_net_effect": 0.0849609375,
+          "overall_error": 0.002306805074971165,
+          "read_then_refused": 79,
+          "selective_payoff": 0.8037109375,
+          "simultaneous_upper_fractional_error": 0.06101557002111213,
+          "simultaneous_upper_overall_error": 0.008067205584059189,
+          "support_failures": 0
+        }
+      }
+    },
+    "rotor": {
+      "comparison": {
+        "actual_selective_payoff_gain": -0.01673828125,
+        "before_read_brier_gain": -0.0023621966616318305,
+        "independent_generator_units": 256,
+        "simultaneous_brier_gain_interval": [
+          -0.005664497432465986,
+          0.0007395648268801227
+        ],
+        "simultaneous_payoff_gain_interval": [
+          -0.029508056640625002,
+          -0.005506835937499978
+        ]
+      },
+      "family_gate": false,
+      "models": {
+        "best_static": {
+          "accepted": 904,
+          "accepted_errors": 1,
+          "actual_reads": 276,
+          "admitted": 1022,
+          "after_brier": 0.06267697321744768,
+          "after_log_loss": 0.11321655674306726,
+          "before_brier": 0.12468508648448073,
+          "before_log_loss": 0.2245026743053511,
+          "fractional_accepted": 64,
+          "fractional_error": 0.015625,
+          "fractional_errors": 1,
+          "mean_read_net_effect": 0.13796875000000003,
+          "overall_error": 0.0011061946902654867,
+          "read_then_refused": 63,
+          "selective_payoff": 0.8244921875,
+          "simultaneous_upper_fractional_error": 0.07142857142857142,
+          "simultaneous_upper_overall_error": 0.00516898532685763,
+          "support_failures": 0
+        },
+        "class_mixture": {
+          "accepted": 884,
+          "accepted_errors": 1,
+          "actual_reads": 269,
+          "admitted": 1010,
+          "after_brier": 0.06753129761187568,
+          "after_log_loss": 0.12351026749802244,
+          "before_brier": 0.12704728314611258,
+          "before_log_loss": 0.23254926738390153,
+          "fractional_accepted": 53,
+          "fractional_error": 0.018867924528301886,
+          "fractional_errors": 1,
+          "mean_read_net_effect": 0.13783203125000001,
+          "overall_error": 0.0011312217194570137,
+          "read_then_refused": 62,
+          "selective_payoff": 0.8077539062499999,
+          "simultaneous_upper_fractional_error": 0.0851063829787234,
+          "simultaneous_upper_overall_error": 0.00526548608046926,
+          "support_failures": 0
+        }
+      }
+    },
+    "sticky": {
+      "comparison": {
+        "actual_selective_payoff_gain": -0.0016992187499999998,
+        "before_read_brier_gain": -0.000811796747867529,
+        "independent_generator_units": 256,
+        "simultaneous_brier_gain_interval": [
+          -0.0023751956519281817,
+          0.00043634720323359116
+        ],
+        "simultaneous_payoff_gain_interval": [
+          -0.010776611328125,
+          0.0070703125
+        ]
+      },
+      "family_gate": false,
+      "models": {
+        "best_static": {
+          "accepted": 941,
+          "accepted_errors": 3,
+          "actual_reads": 184,
+          "admitted": 1024,
+          "after_brier": 0.019091139385334584,
+          "after_log_loss": 0.04630722513142865,
+          "before_brier": 0.03293044379348359,
+          "before_log_loss": 0.0781028017407133,
+          "fractional_accepted": 189,
+          "fractional_error": 0.015873015873015872,
+          "fractional_errors": 3,
+          "mean_read_net_effect": 0.0696484375,
+          "overall_error": 0.003188097768331562,
+          "read_then_refused": 46,
+          "selective_payoff": 0.8841015624999999,
+          "simultaneous_upper_fractional_error": 0.04472347421309301,
+          "simultaneous_upper_overall_error": 0.009488924050632917,
+          "support_failures": 0
+        },
+        "class_mixture": {
+          "accepted": 936,
+          "accepted_errors": 3,
+          "actual_reads": 170,
+          "admitted": 1022,
+          "after_brier": 0.017823065583110132,
+          "after_log_loss": 0.044551529108187625,
+          "before_brier": 0.03374224054135112,
+          "before_log_loss": 0.07824704659501903,
+          "fractional_accepted": 191,
+          "fractional_error": 0.015706806282722512,
+          "fractional_errors": 3,
+          "mean_read_net_effect": 0.06599609375,
+          "overall_error": 0.003205128205128205,
+          "read_then_refused": 46,
+          "selective_payoff": 0.8824023437499999,
+          "simultaneous_upper_fractional_error": 0.043943312784776214,
+          "simultaneous_upper_overall_error": 0.009564832762351256,
+          "support_failures": 0
+        }
+      }
+    },
+    "switching_rotor": {
+      "comparison": {
+        "actual_selective_payoff_gain": -0.0190625,
+        "before_read_brier_gain": 0.003616393918336521,
+        "independent_generator_units": 256,
+        "simultaneous_brier_gain_interval": [
+          0.00017922981789907623,
+          0.007512821868472382
+        ],
+        "simultaneous_payoff_gain_interval": [
+          -0.037028564453125,
+          -0.0014042968749999579
+        ]
+      },
+      "family_gate": false,
+      "models": {
+        "best_static": {
+          "accepted": 883,
+          "accepted_errors": 22,
+          "actual_reads": 271,
+          "admitted": 1016,
+          "after_brier": 0.12111787229026307,
+          "after_log_loss": 0.2895289120677423,
+          "before_brier": 0.19449345383330027,
+          "before_log_loss": 0.4296695807377399,
+          "fractional_accepted": 61,
+          "fractional_error": 0.36065573770491804,
+          "fractional_errors": 22,
+          "mean_read_net_effect": 0.11205078125000001,
+          "overall_error": 0.02491506228765572,
+          "read_then_refused": 79,
+          "selective_payoff": 0.77220703125,
+          "simultaneous_upper_fractional_error": 0.5372477888336098,
+          "simultaneous_upper_overall_error": 0.0410379269771924,
+          "support_failures": 0
+        },
+        "class_mixture": {
+          "accepted": 854,
+          "accepted_errors": 18,
+          "actual_reads": 264,
+          "admitted": 994,
+          "after_brier": 0.12053800451539068,
+          "after_log_loss": 0.26774290425267616,
+          "before_brier": 0.19087705991496373,
+          "before_log_loss": 0.4075492933835323,
+          "fractional_accepted": 47,
+          "fractional_error": 0.3829787234042553,
+          "fractional_errors": 18,
+          "mean_read_net_effect": 0.11544921875,
+          "overall_error": 0.02107728337236534,
+          "read_then_refused": 83,
+          "selective_payoff": 0.75314453125,
+          "simultaneous_upper_fractional_error": 0.578466599190284,
+          "simultaneous_upper_overall_error": 0.035264636921591645,
+          "support_failures": 0
+        }
+      }
+    }
+  },
+  "schema": "hcsn-r19b-independent-confirmation-v1",
+  "scope": "All80raw archives, generator identities, fees/scores and20primary cluster bounds reconstructed without campaign/statistics/world/model imports",
+  "source_postcalibration_sha256": "0ac18783653b6fd18eb7e8472b06863790dab4fcd09f1ca1a0b2d2037d5816ab",
+  "trained_family_gate_passed": false,
+  "worlds": 5120,
+  "worlds_per_generator": 4
+}

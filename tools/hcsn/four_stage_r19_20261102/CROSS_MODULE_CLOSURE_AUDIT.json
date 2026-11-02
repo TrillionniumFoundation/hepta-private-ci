@@ -1,0 +1,360 @@
+{
+  "actual_core_gain": {
+    "iid": {
+      "fits": [
+        -0.020176106770833035,
+        -0.018487467447916517,
+        -0.020041015624999936,
+        -0.0160143229166666,
+        -0.019129557291666544,
+        -0.01958512369791654,
+        -0.019575032552083038,
+        -0.014677734374999862
+      ],
+      "holm_p": 0.015625,
+      "lower": -0.020153306404640785,
+      "mean": -0.01846079508463526,
+      "signflip_p": 0.0078125,
+      "upper": -0.016768283764629733
+    },
+    "long": {
+      "fits": [
+        -0.04164038085937494,
+        -0.04171679687499996,
+        -0.043411458333333375,
+        -0.04169352213541666,
+        -0.04576513671874993,
+        -0.04755932617187497,
+        -0.04724918619791674,
+        -0.043435139973958314
+      ],
+      "lower": -0.046132857659110404,
+      "mean": -0.04405886840820311,
+      "signflip_p": 0.0078125,
+      "upper": -0.04198487915729582
+    },
+    "ood": {
+      "fits": [
+        -0.015978873697916618,
+        -0.02078372395833339,
+        -0.02260507812500001,
+        -0.024285579427083426,
+        -0.020062239583333308,
+        -0.023847102864583358,
+        -0.019563476562499904,
+        -0.022871842447916735
+      ],
+      "holm_p": 0.015625,
+      "lower": -0.02354327746178548,
+      "mean": -0.021249739583333344,
+      "signflip_p": 0.0078125,
+      "upper": -0.018956201704881208
+    }
+  },
+  "all_blockers_closed": false,
+  "all_scientific_blockers_closed": false,
+  "conditional_nonidentifiability": {
+    "assumptions": [
+      "identicalfullvisiblehistoryandrealizedREADtranscript",
+      "differenttargetlegalcompletions",
+      "unknownlawclassadmitsconcentrationoncompletions",
+      "positiveanswerprobability",
+      "ownerrandomnessindependentofcontroller"
+    ],
+    "m_target_lower": "1-1/m",
+    "not_a_general_one_READ_budget_lower_bound": true,
+    "not_a_marginal_over_histories_lower_bound": true,
+    "not_a_proof_R19b_errors_inevitable": true,
+    "risk": "Pr(error|answer,H=h)",
+    "two_target_worst_conditional_lower": 0.5
+  },
+  "continuous_exact_certificates": {
+    "coarse_reset_boundary_bracket": [
+      -0.25,
+      1.25
+    ],
+    "first_admission_mode1_sigma_at_most": 1.3,
+    "general_boundary_location_error_certificate": false,
+    "mode1_all_reset_all_sigma_positive": true,
+    "mode1_all_reset_t_ge": 0.6,
+    "strict_first_admission_jump_lower": 0.11175714285714286
+  },
+  "cost_accounts": {
+    "GPU": "NO_ACCESSIBLE_LOCAL_MEASUREMENT_INTERFACE",
+    "R19b_calibration_cpu": 166.146381,
+    "R19b_confirmation_cpu": 24.238712,
+    "R19b_fit_cpu": 11.052758,
+    "R19b_total_fit_calibration_confirmation_cpu": 201.437851,
+    "complete_project_lifecycle_CPU": "UNKNOWN_NOT_AGGREGATED",
+    "gradient_main_followup_cpu": 52.701903,
+    "joules": "UNMEASURED",
+    "original_R19_failed_prepare_calibration_inclusive_cpu": 102.95633,
+    "original_R19_unseen_confirmation_opened": false,
+    "physical_native_excluded_run01_interrupted_outer_cpu": "UNKNOWN",
+    "physical_native_excluded_run01_measured_child_cpu": 22.981258,
+    "physical_native_run02_inclusive_cpu": 46.08045,
+    "physical_native_run02_nested_cpu_already_included": 34.534088,
+    "planner_current_inclusive_cpu_lower_bound": 1202.451002,
+    "planner_included_worker_cpu": 1200.583782,
+    "planner_known_preuse_cpu_lower_bound": 642.903506,
+    "root_postresult_transport_V1_packaging_cpu": "UNKNOWN",
+    "root_postresult_transport_V2_packaging_cpu": 31.406742,
+    "root_postresult_transport_exact_restore_cpu": 23.063303,
+    "torch_offline_common_READs": 3072,
+    "torch_offline_common_logical_fee": 419.66625000000005,
+    "torch_prepare_confirm_cpu": 158.574751,
+    "trained_native_forward_inclusive_worker_cpu": 8.673383000000001
+  },
+  "date": "2026-11-02",
+  "evidence_sha256": {
+    "independent_ambiguity_review.json": "de37ceab724cfd40955af47828385d23930fa84dcbde9d7dbeb319ff0c428197",
+    "independent_ambiguity_review_v2.json": "f591096f2eb33f9ddaa35da35999c84259f9a68520c061f400b2b0c180d7e842",
+    "independent_cross_family_calibration.json": "fcb44eb227cd86ca0c1ad8375c1af20511ccd0ba92db5f45127e04e4f8c78009",
+    "independent_cross_family_mechanisms.json": "054a0ba889dfc4e4682ea16e9f5176df44f80cfefd1861dddbcb7a67450605d7",
+    "independent_cross_family_r19b_mechanisms.json": "bd50b8721ba491791d5a7e91a7c81a658fdd69c9ec65206a26ed0ed87fc82328",
+    "independent_jump_gradients.json": "b1eedd31d8b9586c78ebed5122cb16570b48bf1f7cae931539d035b91b792afa",
+    "independent_learned_core.json": "4c7416b0c356d2bf3518f02928e4cab6399174a68cfab91baf894161a8b29d36",
+    "independent_learned_native.json": "aef60b1c54226114bd6f7158f48e4166368f62ad222becf8738f3b4b3bf77ada",
+    "independent_native_numeric.json": "4db486aca984c5fec13a64bee7d5d86734b1a2476f92fc9e5ce02e94d82c4451",
+    "independent_planner_adoption.json": "8be4a35f71cc11bf6b0591fee9049e6b9f91cddac78ddae04438053cfb5278b3",
+    "independent_r19b_calibration.json": "ebd4ca2549d2990da83dab2afeb59f68e5f7f0cc759aa188ef2aa1116a3a2382",
+    "independent_r19b_confirmation.json": "ddb7c9690f220ca28b6935bdd9187fdfd3027708a90f3002398563c22a60214d",
+    "independent_r19b_public_fit.json": "8a588e968a3621f30e118395f810ed827fe73e71ea358d33b39fd3ae66fbc3ec"
+  },
+  "invalid_joins": [
+    "physicaldeterministicWRITE/fixedemission/marginalargmax vs learnedcolumnW/rowW/neuralhead",
+    "packed4x8states vs nativeexpanded4x40arrays",
+    "publicqualitydiffusion vs hidden40statecontent",
+    "static6WRITEfullprefix vs realmultimodallongdistancebinding",
+    "researchmailbox/checkpoint vs actualproductionModelPort/auth/release"
+  ],
+  "joinable_chains": [
+    {
+      "actual_queries": 480,
+      "name": "physical_finite_model",
+      "parts": [
+        "frozen public Q/prior/emissions/WRITE",
+        "actualRust operators/filter/original3slotcontroller",
+        "causalprivateprovider",
+        "same_model_state/fencing/fee/16coldrecovery"
+      ],
+      "registered_cases": 80
+    },
+    {
+      "causal_learned_owner": "PENDING_SOURCE_AND_RAW_QUALIFICATION",
+      "model_queries": 3072,
+      "name": "actual_trained_model",
+      "parts": [
+        "16originalanalyticTorchcheckpointsfrom80jobs",
+        "samegammaQ/rawW/foldedFP32interventionandemission/actualhead",
+        "independentRustforward"
+      ],
+      "saved_pairs": 48
+    },
+    {
+      "continuum_derivative_convergence": false,
+      "ideal_continuum_value_convergence": true,
+      "name": "continuous_synthetic_task",
+      "parts": [
+        "exactpublicBrownianmode/resetDPP",
+        "causalleft/rightadmission",
+        "actualcapturedjumpsolverprimal",
+        "finite_map15coordinateanalyticJacobian"
+      ]
+    }
+  ],
+  "learned_owner": {
+    "can_override_other_failed_gates": false,
+    "evidence_chain_must_bind_original_trained_profiles": true,
+    "status": "PENDING"
+  },
+  "limits": [
+    "AllnumericalPASSlabelsareprofileandtaskscoped",
+    "No successinone moduleoverridesanothermoduleoriginalfailedgate",
+    "Unknowncostsarenotzero; noCPUtojoulereplacement",
+    "Additionallearnedownerqualificationmayonlyextenditsactualsame-modelchain"
+  ],
+  "ordinary_selection": "SSM_ALL16",
+  "original_N1000": {
+    "actual_worlds": 16000,
+    "array_cap_bytes": 2097152,
+    "attempts": 96000,
+    "canonical_exact_pairs": 48000,
+    "conservative_owned_array_bound_bytes": 1964064,
+    "cost_gate": false,
+    "fee_checks": 576000,
+    "groups": {
+      "iid": {
+        "actual_allocated_cpu": {
+          "B": 94.66084662700045,
+          "B_ref": 92.05360354099982,
+          "D": 94.54860685699983,
+          "D_ref": 92.29109291799978,
+          "anchored": 110.39167855999995,
+          "anchored_ref": 104.02817849700018
+        },
+        "quality": {
+          "reward": {
+            "lower": -0.0026206274152826355,
+            "mean": -0.0009791666666666698,
+            "passes": true
+          },
+          "utility": {
+            "lower": -0.002016854696260362,
+            "mean": -0.0012886822916669816,
+            "passes": true
+          }
+        },
+        "ratios": {
+          "online": 1.225327351103258,
+          "strict": 1.0081669396691328,
+          "strict_zero_candidate_floor": 0.9512611706569843,
+          "with_preuse": 1.0214835260849977
+        },
+        "shared_optimizer_ratios": {
+          "B": 1.0283230963885015,
+          "D": 1.0244607997112554,
+          "anchored": 1.061170926521445
+        }
+      },
+      "ood": {
+        "actual_allocated_cpu": {
+          "B": 97.87867616633307,
+          "B_ref": 95.4943040723334,
+          "D": 97.63768626233372,
+          "D_ref": 95.36610319933335,
+          "anchored": 119.21304524033339,
+          "anchored_ref": 108.88718005933305
+        },
+        "quality": {
+          "reward": {
+            "lower": -0.002650427936971669,
+            "mean": -0.00018749999999984057,
+            "passes": true
+          },
+          "utility": {
+            "lower": -0.0026451920699596876,
+            "mean": -0.0008958916666660238,
+            "passes": true
+          }
+        },
+        "ratios": {
+          "online": 1.2898317435247983,
+          "strict": 1.0111041923079835,
+          "strict_zero_candidate_floor": 0.9497488015903212,
+          "with_preuse": 1.0291345831986571
+        },
+        "shared_optimizer_ratios": {
+          "B": 1.0249687362734596,
+          "D": 1.0238196066190555,
+          "anchored": 1.0948308623234961
+        }
+      }
+    },
+    "quality_gate": true,
+    "sampled_owned_array_max_bytes": 1355584,
+    "total_RSS_cap": false
+  },
+  "production_activation": false,
+  "retained_failures": [
+    "R17/R18earlierfailedattempts",
+    "gradientmainlargeFDbranchcrossings",
+    "plannerbitandtiecandidatefailuresandactualN1000costregression",
+    "physicalnativebeforepublicationrun01excludedwithpartialcostretained",
+    "originalR19IIDcalibrationfailure",
+    "R19bfreshfivefamilyfailure",
+    "actualTorchDminusBnegative",
+    "learnednativerawsoftmaxdevelopmentprecisionfailurebeforeexplicitconstantfold"
+  ],
+  "same_Q_equivalence": "SameQ/prior/emissions/interventions/rewardcost/horizon/commoncontrollerandfixedties implysamefiltering/values/actions; parametrizationnamecannotcreateexclusiveutilitygain. Hypothesisclass/fitting/finite_sample/optimizationbudgetdifferencesremainseparateempiricalquestions.",
+  "same_trained_family_equal_pairs": 48,
+  "schema": "hcsn-r19-cross-module-closure-audit-v1",
+  "scientific_gate_status": {
+    "R19b_five_family_confirmation": "FAIL",
+    "R19b_three_trained_family_calibration": "PASS_TAU0.95",
+    "complete_financial_parameter_to_Q_gradients": "OPEN",
+    "cross_family_original_R19_calibration": "FAIL_STOPPED_BEFORE_UNSEEN_HOLDOUT",
+    "exact_continuous_synthetic_value_problem": "REVIEWED_PROOF_ARGUMENT",
+    "finite_15_raw_coordinate_gradient_local_followup": "PASS_ALL90_SEPARATELY_FROZEN",
+    "finite_15_raw_coordinate_gradient_main": "9_OF_10_ORIGINAL_GATE_RETAINED_FAILED",
+    "finite_declared_operator_native_profile": "PASS",
+    "full_He_Xiong_continuous_free_boundary": "OPEN",
+    "general_STOP_graph_smooth_fit_narrow_boundary_error": "OPEN",
+    "ideal_aligned_implicit_fd_value_convergence": "REVIEWED_UNDER_EXACT_OR_VANISHING_SCALED_RESIDUAL_ASSUMPTIONS",
+    "original_actual_N1000_cost": "FAIL",
+    "original_actual_N1000_quality_noninferiority": "PASS",
+    "production_dispatch_authentication_release_authority": "OPEN",
+    "real_neural_content_core_gain": "FAIL",
+    "same_condition_GPU_energy_and_full_modality_adoption": "UNMEASURED_NOT_QUALIFIED"
+  },
+  "transport_cost_scope": "Disjointpost-resulttransportreceipts, separatefromscientifictraining/confirmation; nofull-lifecycletotalclaimed",
+  "unknown_confirmation": {
+    "all_five_family_gate": false,
+    "calibration_cp_bounds": 48,
+    "calibration_decision_records": 196608,
+    "calibration_independent_worlds": 24576,
+    "generators_per_family": 256,
+    "primary_one_sided_quantities": 20,
+    "switching_rotor": {
+      "comparison": {
+        "actual_selective_payoff_gain": -0.0190625,
+        "before_read_brier_gain": 0.003616393918336521,
+        "independent_generator_units": 256,
+        "simultaneous_brier_gain_interval": [
+          0.00017922981789907623,
+          0.007512821868472382
+        ],
+        "simultaneous_payoff_gain_interval": [
+          -0.037028564453125,
+          -0.0014042968749999579
+        ]
+      },
+      "family_gate": false,
+      "models": {
+        "best_static": {
+          "accepted": 883,
+          "accepted_errors": 22,
+          "actual_reads": 271,
+          "admitted": 1016,
+          "after_brier": 0.12111787229026307,
+          "after_log_loss": 0.2895289120677423,
+          "before_brier": 0.19449345383330027,
+          "before_log_loss": 0.4296695807377399,
+          "fractional_accepted": 61,
+          "fractional_error": 0.36065573770491804,
+          "fractional_errors": 22,
+          "mean_read_net_effect": 0.11205078125000001,
+          "overall_error": 0.02491506228765572,
+          "read_then_refused": 79,
+          "selective_payoff": 0.77220703125,
+          "simultaneous_upper_fractional_error": 0.5372477888336098,
+          "simultaneous_upper_overall_error": 0.0410379269771924,
+          "support_failures": 0
+        },
+        "class_mixture": {
+          "accepted": 854,
+          "accepted_errors": 18,
+          "actual_reads": 264,
+          "admitted": 994,
+          "after_brier": 0.12053800451539068,
+          "after_log_loss": 0.26774290425267616,
+          "before_brier": 0.19087705991496373,
+          "before_log_loss": 0.4075492933835323,
+          "fractional_accepted": 47,
+          "fractional_error": 0.3829787234042553,
+          "fractional_errors": 18,
+          "mean_read_net_effect": 0.11544921875,
+          "overall_error": 0.02107728337236534,
+          "read_then_refused": 83,
+          "selective_payoff": 0.75314453125,
+          "simultaneous_upper_fractional_error": 0.578466599190284,
+          "simultaneous_upper_overall_error": 0.035264636921591645,
+          "support_failures": 0
+        }
+      }
+    },
+    "trained_family_gate": false,
+    "worlds": 5120,
+    "worlds_per_generator": 4
+  }
+}

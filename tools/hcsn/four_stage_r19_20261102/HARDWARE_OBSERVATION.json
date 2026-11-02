@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-r19-local-hardware-observation-v1",
+  "machine": "x86_64",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "cpu_count": 9,
+  "nvidia_device_paths": [],
+  "dri_device_paths": [],
+  "powercap_energy_paths": [],
+  "cpu_model_names": [
+    "AMD EPYC 9V74 80-Core Processor"
+  ],
+  "qualification": {
+    "gpu_measurement_available": false,
+    "energy_measurement_available": false,
+    "same_condition_gpu_adoption_qualified": false
+  },
+  "claim_limit": "Observed local machine only; no claim about external hardware availability; no energy estimates substituted for measurements."
+}

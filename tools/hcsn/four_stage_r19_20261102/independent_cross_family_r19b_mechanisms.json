@@ -1,0 +1,102 @@
+{
+  "all_checks_passed": true,
+  "betas": [
+    0.5,
+    0.65,
+    0.8,
+    1.0
+  ],
+  "complete_sequences": 4096,
+  "equal_world_pre_and_each_actual_read_views": 40,
+  "gradient_components_checked": 72,
+  "guarded_read_choices": 384,
+  "indexed_replay_checks": 28,
+  "limits": [
+    "Finite six-WRITE/four-value model only; no calibration or unknown-family efficacy claim",
+    "Optimizer checks verify analytic conditional-loss gradient and finite convergence, not global nonconvex optimum"
+  ],
+  "maximum_conditional_cache_loss_error": 4.440892098500626e-16,
+  "maximum_key_mass_drift": 1.1518563880486e-15,
+  "maximum_optimizer_gradient_fd_error": 8.693471637011285e-11,
+  "maximum_posterior_read_reprior_error": 4.218847493575595e-15,
+  "maximum_raw_sequence_error": 1.0408340855860843e-17,
+  "maximum_temperature_error": 8.673617379884035e-18,
+  "optimizer_attempts": [
+    {
+      "beta": 0.5,
+      "success": true,
+      "value": 0.7355041202159958
+    },
+    {
+      "beta": 0.5,
+      "success": true,
+      "value": 0.7354979086386843
+    },
+    {
+      "beta": 0.5,
+      "success": true,
+      "value": 0.7355028549114548
+    },
+    {
+      "beta": 0.65,
+      "success": true,
+      "value": 0.7124342434009707
+    },
+    {
+      "beta": 0.65,
+      "success": true,
+      "value": 0.7124279192863083
+    },
+    {
+      "beta": 0.65,
+      "success": true,
+      "value": 0.7124372244371404
+    },
+    {
+      "beta": 0.8,
+      "success": true,
+      "value": 0.696313620358366
+    },
+    {
+      "beta": 0.8,
+      "success": true,
+      "value": 0.6963097433890532
+    },
+    {
+      "beta": 0.8,
+      "success": true,
+      "value": 0.6963160754874942
+    },
+    {
+      "beta": 1.0,
+      "success": true,
+      "value": 0.681821560420667
+    },
+    {
+      "beta": 1.0,
+      "success": true,
+      "value": 0.6818257500788005
+    },
+    {
+      "beta": 1.0,
+      "success": true,
+      "value": 0.6818225977691363
+    }
+  ],
+  "schema": "hcsn-r19b-independent-mechanisms-v1",
+  "scope": "Manual finite fixtures only; no world/owner/campaign imports or formal data opened",
+  "source_review": [
+    "Temperature normalizes each entire sequence conditional on class/repeat category and retains original key mass",
+    "Public supervision derives target from complete observed final WRITE; class learning receives no owner/family field",
+    "Conditional cache common normalization cancels in (a@prior)/(b@prior); weights average views within worlds then worlds",
+    "Strong static searches all12class/beta options on same proper validation loss; independent beta triggers fresh runtime inference",
+    "Ordinary reprior is reused only for equal beta, with common key marginal, before actual READ"
+  ],
+  "source_sha256": {
+    "classes.py": "11f0fe5529006bd219a0138842dd92975ad4adff1c610c01f048cfbe5406948e",
+    "masked_fit.py": "9e5c24ad4f80133af00d2c1a5a07e5b4c291dd2bf524824556d3f2de3dcdd567",
+    "posterior.py": "9124d1ecebdb0416410c49e6baa149b690f9ad4af944906f5dd53aa2c6c9f4a1",
+    "protocol.json": "cc69fd4a6f8cd7f0de569b0487fe60b2d2fd7818e124719aaba3223e44c83321"
+  },
+  "zero_key_mass_preserved": true
+}

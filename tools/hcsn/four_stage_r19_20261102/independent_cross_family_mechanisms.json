@@ -1,0 +1,26 @@
+{
+  "all_checks_passed": true,
+  "class_joint_normalization": [
+    0.9999999999999809,
+    1.0000000000000158,
+    1.000000000000004
+  ],
+  "complete_event_rows_enumerated": 1088,
+  "complete_value_sequences": 4096,
+  "guarded_read_choice_checks": 144,
+  "limits": [
+    "Finite four-value/six-WRITE profile only",
+    "No calibration or cross-family efficacy result",
+    "Surprise reprior identity uses the fitted common key marginal"
+  ],
+  "mask_cases": 3,
+  "maximum_posterior_read_reprior_error": 4.107825191113079e-15,
+  "maximum_sequence_probability_error": 1.0408340855860843e-17,
+  "schema": "hcsn-r19-independent-class-mechanism-audit-v1",
+  "scope": "Hand-defined models, Polya-urn sequence likelihoods and complete raw-token enumeration; no registered owner-world imports or outcomes",
+  "sequence_entries_checked": 24576,
+  "source_sha256": {
+    "classes.py": "2eab6bb2a5385347cc55375ad2d3b0526fedd80a0101b7592dae16df11241725",
+    "posterior.py": "9124d1ecebdb0416410c49e6baa149b690f9ad4af944906f5dd53aa2c6c9f4a1"
+  }
+}

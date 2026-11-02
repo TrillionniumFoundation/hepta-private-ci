@@ -1,0 +1,399 @@
+{
+  "all_checks_passed": true,
+  "archives": 192,
+  "bounds": {
+    "best_static": {
+      "0.8": {
+        "iid": {
+          "fractional_count": 848,
+          "fractional_upper": 0.14373302392709014,
+          "overall_upper": 0.032456456789223646,
+          "passed": false
+        },
+        "rotor": {
+          "fractional_count": 566,
+          "fractional_upper": 0.12882283498188807,
+          "overall_upper": 0.019812957604665508,
+          "passed": false
+        },
+        "sticky": {
+          "fractional_count": 1136,
+          "fractional_upper": 0.04667734272385863,
+          "overall_upper": 0.013310742177455663,
+          "passed": true
+        }
+      },
+      "0.9": {
+        "iid": {
+          "fractional_count": 541,
+          "fractional_upper": 0.13245953515372227,
+          "overall_upper": 0.0201868133664245,
+          "passed": false
+        },
+        "rotor": {
+          "fractional_count": 365,
+          "fractional_upper": 0.07610915587780698,
+          "overall_upper": 0.00775949965916725,
+          "passed": true
+        },
+        "sticky": {
+          "fractional_count": 961,
+          "fractional_upper": 0.03498093294034696,
+          "overall_upper": 0.008692786336333455,
+          "passed": true
+        }
+      },
+      "0.95": {
+        "iid": {
+          "fractional_count": 335,
+          "fractional_upper": 0.12910365196654025,
+          "overall_upper": 0.012667186367063947,
+          "passed": false
+        },
+        "rotor": {
+          "fractional_count": 221,
+          "fractional_upper": 0.07230755738286891,
+          "overall_upper": 0.004564208015858809,
+          "passed": true
+        },
+        "sticky": {
+          "fractional_count": 772,
+          "fractional_upper": 0.030891673014577695,
+          "overall_upper": 0.006410952336389147,
+          "passed": true
+        }
+      },
+      "0.975": {
+        "iid": {
+          "fractional_count": 204,
+          "fractional_upper": 0.12734113159212035,
+          "overall_upper": 0.00778728333251122,
+          "passed": false
+        },
+        "rotor": {
+          "fractional_count": 135,
+          "fractional_upper": 0.09286957194876626,
+          "overall_upper": 0.0036525663935378953,
+          "passed": true
+        },
+        "sticky": {
+          "fractional_count": 512,
+          "fractional_upper": 0.031672381164597516,
+          "overall_upper": 0.004532667278233233,
+          "passed": true
+        }
+      }
+    },
+    "class_mixture": {
+      "0.8": {
+        "iid": {
+          "fractional_count": 850,
+          "fractional_upper": 0.13676997180428616,
+          "overall_upper": 0.031145972630480547,
+          "passed": false
+        },
+        "rotor": {
+          "fractional_count": 562,
+          "fractional_upper": 0.12552943577042328,
+          "overall_upper": 0.01928925387531321,
+          "passed": false
+        },
+        "sticky": {
+          "fractional_count": 1133,
+          "fractional_upper": 0.04569528256290656,
+          "overall_upper": 0.013044122011321553,
+          "passed": true
+        }
+      },
+      "0.9": {
+        "iid": {
+          "fractional_count": 531,
+          "fractional_upper": 0.12376982240571148,
+          "overall_upper": 0.018715310811271747,
+          "passed": false
+        },
+        "rotor": {
+          "fractional_count": 354,
+          "fractional_upper": 0.07454680287009541,
+          "overall_upper": 0.007428877346722143,
+          "passed": true
+        },
+        "sticky": {
+          "fractional_count": 960,
+          "fractional_upper": 0.03219435461700549,
+          "overall_upper": 0.008014344774082735,
+          "passed": true
+        }
+      },
+      "0.95": {
+        "iid": {
+          "fractional_count": 336,
+          "fractional_upper": 0.1250212228314982,
+          "overall_upper": 0.012413277811397946,
+          "passed": false
+        },
+        "rotor": {
+          "fractional_count": 209,
+          "fractional_upper": 0.07634582005924147,
+          "overall_upper": 0.00460134966840779,
+          "passed": true
+        },
+        "sticky": {
+          "fractional_count": 773,
+          "fractional_upper": 0.0289704824968023,
+          "overall_upper": 0.006039396082473052,
+          "passed": true
+        }
+      },
+      "0.975": {
+        "iid": {
+          "fractional_count": 208,
+          "fractional_upper": 0.13142055285058568,
+          "overall_upper": 0.008282732343741384,
+          "passed": false
+        },
+        "rotor": {
+          "fractional_count": 126,
+          "fractional_upper": 0.09924048884577195,
+          "overall_upper": 0.0036794234087189287,
+          "passed": true
+        },
+        "sticky": {
+          "fractional_count": 533,
+          "fractional_upper": 0.03043785844691319,
+          "overall_upper": 0.004540197233234096,
+          "passed": true
+        }
+      }
+    }
+  },
+  "decision_rows_checked": 98304,
+  "families": [
+    "iid",
+    "sticky",
+    "rotor"
+  ],
+  "generators_per_family": 4096,
+  "global_calibration_gate_passed": false,
+  "limits": [
+    "Finite trained family risk calibration, not arbitrary-family guarantee",
+    "Concentrated-only fallback is not useful fractional-risk qualification",
+    "This audit checks raw decisions and inference, not a reimplementation of the fitted posterior"
+  ],
+  "one_sided_delta": 0.0010416666666666667,
+  "raw_archives_sha256": {
+    "calibration_01/risk_000.json.gz": "68cf3902fbc2862c405745a49c8d4b3911faa38069e7c47d7f1fcc584dd32416",
+    "calibration_01/risk_001.json.gz": "1da300d6db7ba84ff2bc430b5e006410bace0ad5466616a73ff24c500655776b",
+    "calibration_01/risk_002.json.gz": "a03aab523065f0c869fbca6f02fc997f12e4570ba7333d504b97131e77f28f8b",
+    "calibration_01/risk_003.json.gz": "efc8b230cd5c8acc2b95e1733d447aa14e1cad54131e8f6504bb2c72fd6ac663",
+    "calibration_01/risk_004.json.gz": "43d5147f322e93c8d94d410a670a6a867a7a291a5a1e6b06c2d2aba3dbb51f3b",
+    "calibration_01/risk_005.json.gz": "42f28d6e8bb1b282bd9cca58d53543ce4197634385814f03c7a1b51c1701e206",
+    "calibration_01/risk_006.json.gz": "53df951efffe41fd5fe4802a5d0d307435a313ee140acd5c1c954f9917d50fe9",
+    "calibration_01/risk_007.json.gz": "4e0bed211846678dc6c5506aa334cfb90c3b38663d75ca7279b5dac1baf33140",
+    "calibration_01/risk_008.json.gz": "7443afe09d905e4283dc7e5eee0cf3d581ecfa18a1c55bd4eeb323ecba623792",
+    "calibration_01/risk_009.json.gz": "5d86067230832cc3c2ec54e1c09fc1c7bce944755892816eb18992bc3ad93edd",
+    "calibration_01/risk_010.json.gz": "a8db0ce2dce7f8aebb27567dfe0a2f17b37ec899a5db9f7a9dc07dff5f273fcc",
+    "calibration_01/risk_011.json.gz": "45fad164e4dd5801ab9d72009bc983065df3bb11e16b719ff001e75ae428be22",
+    "calibration_01/risk_012.json.gz": "b3604547047e02c6cd820fb25c9614f452e68658a0d0e9458bddd97c57228643",
+    "calibration_01/risk_013.json.gz": "c8148679cde1a613ada9bb31f57397aacca5a9a97dd0917f7678442f78586b28",
+    "calibration_01/risk_014.json.gz": "d8f59811a150d33122fdcdd1181e12bbe3062e7f622fd57005fb9dc7947cfea6",
+    "calibration_01/risk_015.json.gz": "0fd2426309265d369c397a7bb8a7e6e5d0156b97f05bf273633d1d50f1ccc5fc",
+    "calibration_01/risk_016.json.gz": "3a1130e8e026f3c0b928bb085dc3f77f8555b7463b74272538285fb17116ceb9",
+    "calibration_01/risk_017.json.gz": "3e7af257cd971ad4c9e9a14dab085e52192242f777c1f21a4c0b88ffc38b2160",
+    "calibration_01/risk_018.json.gz": "7707c4192fdb3b875f0f18741caa65c329e54fc8affc3334efaf506d2eb778e7",
+    "calibration_01/risk_019.json.gz": "63f1975f2565ab05aac24cb899775746b0bd6ae0ebcf23725aa24aaeaf97bcf9",
+    "calibration_01/risk_020.json.gz": "8e2eed14e5ee439666620c12ab87136379be960e6b246219dd29a32a672918fc",
+    "calibration_01/risk_021.json.gz": "620003311aa5c18138cbe1156c8b432310afad49eceb35beda9cf36e5dc30668",
+    "calibration_01/risk_022.json.gz": "919ec6859dc7da3d4fce24377137a8627403a899821ceb3bff33313997908213",
+    "calibration_01/risk_023.json.gz": "17518df173bf2af080e0a08213956cd2e50f98f159780856e855234bbc2a4348",
+    "calibration_01/risk_024.json.gz": "3ac0e8bf2b52ef5d349b372a5b6316cb6d4c00eea2ca644a585a375321656c17",
+    "calibration_01/risk_025.json.gz": "e841f6a482e7228808348116b2d880c69204af4b595eb0577d294fb94f0f4e83",
+    "calibration_01/risk_026.json.gz": "2f9ad85acc0daad4b8cb0b4bab596310fcaf0d941af82018e52da2955b4ce568",
+    "calibration_01/risk_027.json.gz": "b8c074d35a09b06ccc08432bf7fa38298feed39f82972e938a6886befdf19652",
+    "calibration_01/risk_028.json.gz": "38ec3ebb59ddaa42c9e0b2e7959bcd0b10ecd1a12508e324a57ae2b5e1fa9884",
+    "calibration_01/risk_029.json.gz": "01bbe73424411881728b179ecd8916ef827139156b85c38c849cf9eec1047f59",
+    "calibration_01/risk_030.json.gz": "89179332af62204019977452aeda3fe3f14b7d6194eee6fd68fc75817b888bcf",
+    "calibration_01/risk_031.json.gz": "408a054eb2f4623477277ff41809c391014dd3e3d13fdd547e199cca5ca2780d",
+    "calibration_01/risk_032.json.gz": "e8a356475910f1a618db97597f2bcb7f676a9d6bcf0e23166760be34aa9d5046",
+    "calibration_01/risk_033.json.gz": "96e62fa9cc0759125015a5cf8560db250acd6d3bfa0b3d5907e17db383c0f469",
+    "calibration_01/risk_034.json.gz": "cf68cb9be826b05c9892ff1074dc5ef2280648e13edd4c4b658c8aa6014d7a85",
+    "calibration_01/risk_035.json.gz": "0d794d21deb072b2c5c35298a2e5d4acce6c9d5c7159f0763dfa0a5bd726abf2",
+    "calibration_01/risk_036.json.gz": "1ab1ff921c75eebb96c3bd75117969f34c67b41c530654f0770a3b2f49899550",
+    "calibration_01/risk_037.json.gz": "f53070867f5f66309d73186bb67bd1fae93d9791d3a9972d5ef82945f8558202",
+    "calibration_01/risk_038.json.gz": "44e235e6278d9761d353ebd6e5af3ca1ba2e96a0c6afaba9d986a3c39c841c7c",
+    "calibration_01/risk_039.json.gz": "63a6baf0d174c3a9cac03dbf5125a8ecf93557da329e37abc5d470eeaea41bf1",
+    "calibration_01/risk_040.json.gz": "bf745276944901a3a55a2eb700d505eed9715d7a3e8fc518c41bf84e492eae1a",
+    "calibration_01/risk_041.json.gz": "00179029be3a3dd0c96bfe6e76337a406debd2c63b7d64ff779882a0f694cef4",
+    "calibration_01/risk_042.json.gz": "f8f05bba39bdb6e1d848110225cb512571576db76783e3cc2c690aa560ea1c39",
+    "calibration_01/risk_043.json.gz": "b9679f9c72e0d0403b91be45a86769f57dda1f108b0905d7e69d5fa56f63642a",
+    "calibration_01/risk_044.json.gz": "76bc823a982e6dae7edce90397b030e8386c3c1f6c30d914a987c7c93131cc15",
+    "calibration_01/risk_045.json.gz": "c64069447c1acf29e12ea6dd40c06db0f2ace8081b8e1650ae8f593cf7abf668",
+    "calibration_01/risk_046.json.gz": "c9fb0fc8d8f1e4364a7edf60364768ccde864a78420c46d42d07f38bd31edd15",
+    "calibration_01/risk_047.json.gz": "c819e4ea2c71576484e234cd48b229734aea149be8e98165dd78f81032f912e2",
+    "calibration_01/risk_048.json.gz": "abb3d6fb56852747726e3efebe1da06c4369490fbefd11fd9cbe8461c24ac886",
+    "calibration_01/risk_049.json.gz": "15019b1b0c819569b40b28823ad13ad5ba5c664d382aef9d67a2da8f1ff846c4",
+    "calibration_01/risk_050.json.gz": "63c8e0970c7cb09f1997dc406908ed6f17fda704d18d4d5e6fcdd0d3ee6afae9",
+    "calibration_01/risk_051.json.gz": "2deaa31f7115d35804fe39885d9f7ff1dfccf2bc74956f15d1551b66952c0df8",
+    "calibration_01/risk_052.json.gz": "40afa6fa2130522c420529d3c3d81db9117a39de14e04da1e04b110ec6f3c6ff",
+    "calibration_01/risk_053.json.gz": "b51fa326581f97d22a73e32208b3c7f41bf1571a218bdf12bb79ff46b49a31d0",
+    "calibration_01/risk_054.json.gz": "4b320e7a1ba69ba1554ca0082c4d6f2ece0ebc522b3762271383fa01bd16a25c",
+    "calibration_01/risk_055.json.gz": "bac716c50dec91ea92b49cefb6ca7bbdff01700983f8e9b4cc550b77a238b720",
+    "calibration_01/risk_056.json.gz": "1f3bb758109b778c02ca141ce09877d86c85839d12f5efea351507c94c232fb6",
+    "calibration_01/risk_057.json.gz": "707dbeade97019a72f339143d4b8a984988004cc2673f20b2827e4aa7ec21652",
+    "calibration_01/risk_058.json.gz": "f858b469502f3c8510dea43fb4219703452c8831f09c3124c853b06db1d43f2e",
+    "calibration_01/risk_059.json.gz": "43d81384d2a8a1a04359e3806d6ecc0bc218b005ee3b351f6717de2e61460162",
+    "calibration_01/risk_060.json.gz": "ff08f07f7b46df520e3493005521fa4e780cb3862995e7ecfbfe5ab41aebdfb2",
+    "calibration_01/risk_061.json.gz": "abc177d60f1801395473064fc3530769e13c17b5674afaebe41f6b09fc8460d5",
+    "calibration_01/risk_062.json.gz": "393d0f888078aea772b269f6fed334848557e3fddd9cba96f43b1eb4f091e8c1",
+    "calibration_01/risk_063.json.gz": "8f9adbeb455417476f3806efe4829c5bbaa96bc7e6ee3bd279d047e81edddca2",
+    "calibration_01/risk_064.json.gz": "d71f7fa6c0aaf704c0f72408b2e7eaea73ca9aa2b695213f94c43af9bd083003",
+    "calibration_01/risk_065.json.gz": "2e1d7e29769143c7c85ad4d2829eba90ca15bd18222768a0379233605fc6f005",
+    "calibration_01/risk_066.json.gz": "f7f7a5bcefa2722d641c3c66bd71f8f8ffc4778ecff9eea6145da387f0d09998",
+    "calibration_01/risk_067.json.gz": "57c183c3d19cf72069ba7c33b8d5fbfd4ef5b7d29dfb933ab7f1c4b2491cd5df",
+    "calibration_01/risk_068.json.gz": "42e17bde06c3ef5738038ca0afce62fa14d0fe4e53f949065af8dc5d1d035dea",
+    "calibration_01/risk_069.json.gz": "4e8da7324bd4556397e268b1df8e1c7e05094a31c199b62d11a02f5bb7871409",
+    "calibration_01/risk_070.json.gz": "4f5530ba21958a1751d78c9b467ed0bbdddf51076d5ecfba43add60ca2a769f6",
+    "calibration_01/risk_071.json.gz": "8b2157dfc552f5700401b8f7c27ac94d2b00ce01134f95205d6c35987d4b12b3",
+    "calibration_01/risk_072.json.gz": "bb014945c40f3e498f216292daf53bc582e1d5ce12a3dbfc5c4751a8c5d4d592",
+    "calibration_01/risk_073.json.gz": "0e827038e15c16d3098938bda7e9696d002817b0bd3050ae020d35e45112b1b2",
+    "calibration_01/risk_074.json.gz": "f9d825712d796cfdad559ea77b12853bce49275edc4e9fee67e557539b32ba52",
+    "calibration_01/risk_075.json.gz": "cda7ea79cac4168a503d7586d6bc9a62dfbb5f2a55fab9725f547701b917727f",
+    "calibration_01/risk_076.json.gz": "1b46562806c762008ffacbeb5f1bcd53a3bf3842d4746c5c19b2df2281f03906",
+    "calibration_01/risk_077.json.gz": "d2d0458c7c15dafa9cca878dd7942150383bf172d830a0f424e2b7bc63377f0f",
+    "calibration_01/risk_078.json.gz": "096845c8e8d8738141b7d5bacce38576208779fe513e5831d95136e4d4711358",
+    "calibration_01/risk_079.json.gz": "ba645a74e14d0dc41816ee71fa046c5f2c3e20d96ea6e93bee8cf849e2ddfc99",
+    "calibration_01/risk_080.json.gz": "daa3d4c3a32c399a0d14ceba84f7c5f1dd48bbb81c07113ba15e2ba582da4a7e",
+    "calibration_01/risk_081.json.gz": "6d7bdb2cb87c9d8d32c8a04e04222ef318dfa482fbfda2f9a1cbb79dd486ef39",
+    "calibration_01/risk_082.json.gz": "031ceb979025bb5771f2ce287a5507d133d17f8c34a5dea1c9335f4afcb0c34d",
+    "calibration_01/risk_083.json.gz": "47e6630ceaebe923b1e6d8a5141386745115c4e0ad5bd55c15c6e680207091af",
+    "calibration_01/risk_084.json.gz": "cc78d63d5d7c18ba68cf265a113fa1785cadf05a813e7d71ad906d35e8306e9a",
+    "calibration_01/risk_085.json.gz": "f39322056065dcdcc4275f03df5798e095c5f162111ba0b2b965648d4d19eeee",
+    "calibration_01/risk_086.json.gz": "1f2289bb99e895d250108bf7e66f0f81c85829da4ceb95e8887d217277b54cc3",
+    "calibration_01/risk_087.json.gz": "f037dc85623317b1dad65b6b4844fa7329cd0b160aed06e3e5421b6767b69353",
+    "calibration_01/risk_088.json.gz": "da042e039b1cba8705ce9079d7a4bac25c5fec657ce5ca7c47c4f91a3eac24e3",
+    "calibration_01/risk_089.json.gz": "ebb10b7e6e4a70e54a6fbabac8eb80f98060074015a000723600b736e4c9f0ee",
+    "calibration_01/risk_090.json.gz": "682ca729c58f7e22c2695d7cc441d0923780675f55fe39f1c41e5f9eef644fe1",
+    "calibration_01/risk_091.json.gz": "3f662c06eeb73f02c06b317608a3e628f9b053dddeb888cd7eb0c1e5bc897f0d",
+    "calibration_01/risk_092.json.gz": "706fd7ae39893b9918410453e01d79c31a385f97a1fa982b9af9bbcab2327002",
+    "calibration_01/risk_093.json.gz": "bb818e49070ed81e3c4cba7af6518048ffdaa1d0fa40005c1d73e199b7ed0fda",
+    "calibration_01/risk_094.json.gz": "eee68c3ed02b8ed75c377386d1bfd3606c6d9abb5d94c18e07714b10e5c58582",
+    "calibration_01/risk_095.json.gz": "9e35579a17b7ca2b938d2783674db8be972d84e79fef31dd3887302be36aa4f3",
+    "calibration_01/risk_096.json.gz": "150b7c34c542615b1608d7724b34e87d4820a95f331c83c4038109014fcda40e",
+    "calibration_01/risk_097.json.gz": "78183908668bb09d2c1f2afb8d10774081561d786039a6c492f848a5c75e2470",
+    "calibration_01/risk_098.json.gz": "05c87cb479564a70c35a3dcc0fbb313771a42726e398fdbe9d29b5a0ba16969f",
+    "calibration_01/risk_099.json.gz": "1aee4d096605f8e6782efd9d685c589910348d87443006c5416b18e8a01f5840",
+    "calibration_01/risk_100.json.gz": "5489eb897fa018f04bc964fcbc069942a8d66a834c67229afe7c039399a377ff",
+    "calibration_01/risk_101.json.gz": "d6ff1b5df9594e36e9bea3f696247de6ee2e71cbfab9a54aa681b806b7e1313b",
+    "calibration_01/risk_102.json.gz": "0a1fc1cd06e74fbcaba4724b83f10c3d0f505e040069f610b0a60c1af0780147",
+    "calibration_01/risk_103.json.gz": "587e85cd4764059121e497126cb103482f2f75549843c6854bc22e82fa61c210",
+    "calibration_01/risk_104.json.gz": "b8e698e41fe0bc74561827b731b31f3544bd0a500867cd369e9d509bb160ebaa",
+    "calibration_01/risk_105.json.gz": "94947f61b007c3e6d7c4fa836f692f8258fc9388299412323992e8565063301d",
+    "calibration_01/risk_106.json.gz": "899602a7e95ec096e5c3ac87c7237405e334a6beafbdca4e88cb8b2eb7bc3c38",
+    "calibration_01/risk_107.json.gz": "c64f89c261ecc5f7311fd737ced9b45b54c412c067b940688b14222f8737f9c1",
+    "calibration_01/risk_108.json.gz": "2bf35c79bbe4653e014f565a6becde057caa7ee3e56727713e0545263b57aab1",
+    "calibration_01/risk_109.json.gz": "1e6827cb762cd025dd01de5e0fd306369c6f304beb2072799be8992fe132e41a",
+    "calibration_01/risk_110.json.gz": "9be6d1df965027813f17ebbe6541264663cf228707c374215556c6b6b8777704",
+    "calibration_01/risk_111.json.gz": "8bd273951ed53c86d33cd7e25ef22b899440769e54b78e4caa684195ff1aac52",
+    "calibration_01/risk_112.json.gz": "40bfaec10f043eab8f76a5c7da8d50ec6284c2f888b8c6dc6242223104d65cd3",
+    "calibration_01/risk_113.json.gz": "0dbce249688a80e31c7d1eac5d575fb0d8b94a39387050e816e6836d0cf4a34f",
+    "calibration_01/risk_114.json.gz": "9b4c56d4b1a8c4041bff2bd9b0d76e12b034fffbaef88d2fe663d5b9844a00de",
+    "calibration_01/risk_115.json.gz": "4692eed2a06bb944085a256ec7fe22e11f2ba14aaf67933ebb2f94d7af33514d",
+    "calibration_01/risk_116.json.gz": "4ccd0c32f5b9fbc4c24372d03d0d62bf55568dbfee55c4c1ec8859fabc3f7485",
+    "calibration_01/risk_117.json.gz": "730e12462bf8d9e46cb0f33122003846e13574f9d5069a48faa860f36facf22e",
+    "calibration_01/risk_118.json.gz": "4643ba3392daac7c201f017a40d581fa9086b287a6f90d8cdbcea7efb15055cc",
+    "calibration_01/risk_119.json.gz": "2bcbc14400dce3b3236a5266e3cecc1f1528936ceea457cef2a869b09eb863e1",
+    "calibration_01/risk_120.json.gz": "37d842a5263ad7da314d6596e9a36e28d4cc77dababc343c84e206fbd8415d80",
+    "calibration_01/risk_121.json.gz": "b407515d7a87100a6cf8713523fc71694932627278f83d8c7e8c6a4377e0df58",
+    "calibration_01/risk_122.json.gz": "9dbfb817d39edebf87fbaac2ca39c5120d32de4f4dd83a07c552dd405dc5e6c6",
+    "calibration_01/risk_123.json.gz": "3e61652283e7b8ffa1db26d0c6190a370e94a1039fbc73a984446a4f289b6219",
+    "calibration_01/risk_124.json.gz": "ca2edde09b862f6fb1a119f211aa3a56cd4e68486ea139df8bf0d55f658cd6cb",
+    "calibration_01/risk_125.json.gz": "3e8d20509056872579cd1985912640baa4255bb093d34c175252be3321620ae2",
+    "calibration_01/risk_126.json.gz": "aed7f0de2bc0ead52c05e19468cd6bdae9a6391c2dd1137d99fafb8139e31774",
+    "calibration_01/risk_127.json.gz": "a50784dcfd5558175a99cf974e13b35231ef3ce4c06b1a5024cdf3e734af5cfb",
+    "calibration_01/risk_128.json.gz": "3cbb665866ef3d514764626168a588bfb114cf4cb643fe62c7041b8ee122109b",
+    "calibration_01/risk_129.json.gz": "db331f80ce23f85db4d7135bfd46b2f8bc572085d45428c9b6fbde7a405360a4",
+    "calibration_01/risk_130.json.gz": "5bb3740c2dc352cc8e4559882f7f72044786f05905217d60d72f4cf134419b3a",
+    "calibration_01/risk_131.json.gz": "fede935e6cf85ee3a931b4103ac085c8e40536a392926c82cabb446145ad088e",
+    "calibration_01/risk_132.json.gz": "9c23c869ffcfd0a88de9962ca70f355fb47cd1cf3bfc2418ec3d96603972f800",
+    "calibration_01/risk_133.json.gz": "6439a4804888ce8e44e5b127156e40abbf61c54134450f85a3b71c8d75dec6c5",
+    "calibration_01/risk_134.json.gz": "3f5d84068f67244cbff6a0796ca34c65fcfee9ed00c58878a12ad2e7ee260f7d",
+    "calibration_01/risk_135.json.gz": "14223aaef105def480ee2e1fa9852fa0e0ab2c88b8edcf1004bcda5f9a10d3c5",
+    "calibration_01/risk_136.json.gz": "17f590ffaeadb528033cb63d9260807cd223e64a66ecb182e2a59f1295f751b1",
+    "calibration_01/risk_137.json.gz": "aaa7a9c49d67cb5ae60a03746dc97975f9a45f285bf9893a5c29457eaaac44d2",
+    "calibration_01/risk_138.json.gz": "c9f8e9df38bb4c2fde1ae22b05ad3c25aa3be6a4ac0ed77c884f4587138a7935",
+    "calibration_01/risk_139.json.gz": "32ca0568a1d907bb354b83bb6f1d22e6e4a10d56c0b717a53f0f347d0e5932d5",
+    "calibration_01/risk_140.json.gz": "032b40187e6a8c6cc3ca6b0cbc30602e79ee6a5a9c6f0dcebd82301fd187f8d1",
+    "calibration_01/risk_141.json.gz": "ec5f6e3c7c578d97609122437fe64ceb257aca36409f5bba0ff6d6f8d768b34b",
+    "calibration_01/risk_142.json.gz": "66157ad0c1e4c8946fb8ac8760ce910e081aa7c60e954e2389139e96cf5dd252",
+    "calibration_01/risk_143.json.gz": "986d361e0ebf2776d100cc3f85766aef25a1d6943b299c4c2c5a305089a6e170",
+    "calibration_01/risk_144.json.gz": "c02d5f32544df1cca70d22947f5d5e7ab1f3f6914f1927abcba3fe0ec83fc136",
+    "calibration_01/risk_145.json.gz": "fa13e7f979c6343694aa2d155ad42008e4012611f7a5242f2cf69795fd1e57dc",
+    "calibration_01/risk_146.json.gz": "71006240935b6201e4220747d71ed1d14818880011feb2d738005c6747f73015",
+    "calibration_01/risk_147.json.gz": "3dc3439c0ad53433a1ecc2681c68811e6bd6078495123ab838ddda0cf143108b",
+    "calibration_01/risk_148.json.gz": "6f72b6fa20ba2fce3cf315cfcf298234648c12d50dc49d14e566c3f430d5945f",
+    "calibration_01/risk_149.json.gz": "c603593ca1a9efe9440dc14d6b224ede2d3681300f3b948c8a04c8fd3e30c135",
+    "calibration_01/risk_150.json.gz": "662cc2c88248d783b2f6d11af3999672e3c4e1c4f6379d4f87541b17daa5c6e7",
+    "calibration_01/risk_151.json.gz": "2b70c0effd3c1473a4e76854bc879b5e9cb2ea0080f3da6b58075e6e1bc76fae",
+    "calibration_01/risk_152.json.gz": "01e1b82891635a454da0facc1c6e7587273ed3d07317f7c0ee8df9178c0485f8",
+    "calibration_01/risk_153.json.gz": "432bbcd578a76c146ea7560c0c8ec38890def15b4c397cf364bc4551063801a8",
+    "calibration_01/risk_154.json.gz": "db16016f9dfe6b8e7d6562ff13e98afe58ccb62db4d3056bc58a3bdf75831f62",
+    "calibration_01/risk_155.json.gz": "531f87e6f4f867d0d622ddeab7bf7ef48f425bf131f13ef4c5fa390bab73ce24",
+    "calibration_01/risk_156.json.gz": "fe66d46abf80e5dd9e6aa7d74dc6c981656796cbf2176f2b7856d337bf1f9df2",
+    "calibration_01/risk_157.json.gz": "9d683048ccf1cb24b7db7aafda47afac3c484e1113083dadfd1fb5403f09bf8f",
+    "calibration_01/risk_158.json.gz": "da7ccccb354f33897648b51f95d1cadb487355b04c7646ecfa4125e5215824c3",
+    "calibration_01/risk_159.json.gz": "ce0344488b273a9be92e88420b4bd89ec9c24df9c0332d49c8afc0c352e48dbd",
+    "calibration_01/risk_160.json.gz": "bc400dfb8aca03f5c6ab098c26d4f07734a86140d8c2f0616ca2ac394e3ee70f",
+    "calibration_01/risk_161.json.gz": "a145b40bf773abf6fc7b8f0e6949883bfbf7cdcc5624e8c10b1a79f4da289f54",
+    "calibration_01/risk_162.json.gz": "248297a45f29cdddb46a7da120184314e8cbcf1537058dce13e34523b02484b6",
+    "calibration_01/risk_163.json.gz": "b6cf980562f6dcbfa324654a4ba9f1398511d035435cf82efce2e5c98f7af5b7",
+    "calibration_01/risk_164.json.gz": "900503f85c9416e710b9c8399d6943777d8cecadd67dd32a66a87557a446834b",
+    "calibration_01/risk_165.json.gz": "c78e39ec083c523903f011d0c7ade158fbcf0d2e2807b7c6a204e86bfc07aea8",
+    "calibration_01/risk_166.json.gz": "e9c7f46504ec77e55738d86dffc55fc32202b69398d78f2512b1234540af2ef9",
+    "calibration_01/risk_167.json.gz": "6d3fd944bdd737df87c4e9ab7d143ec2cf01a4f095d6ffb3af000325e4acc579",
+    "calibration_01/risk_168.json.gz": "94437408e2d78b07753658df7184fea420b3114f7bedf11914924409f122e18c",
+    "calibration_01/risk_169.json.gz": "39f09a7c86f8da655d52ef9f89424ec492d88d15ef1699417b7d9e959f759ca3",
+    "calibration_01/risk_170.json.gz": "233af70f6fe726280533c7fb69ea198dde42671258de08c4a36f1530aced0dba",
+    "calibration_01/risk_171.json.gz": "9bdf10ebd6ce17c022584038e450dd1927c8a8de0c1dfa35c81350dfcb520998",
+    "calibration_01/risk_172.json.gz": "2c7b80f46d563baaad17f7e982cb8c72db536f1dc2576cd2b664fe5611286a49",
+    "calibration_01/risk_173.json.gz": "fb5f231958158008b1129b4f45e5cd038fa99b46714f2f22e8694cea71df05ea",
+    "calibration_01/risk_174.json.gz": "9e8fc03031e320e9833a20aeaf8f0dbf545d5e2f0703bee8a9be20178a8a8d60",
+    "calibration_01/risk_175.json.gz": "25fdc4c4ef02b52e3d7c2a4cd2c3ce41e07dc610692b166718da8697c171ddf8",
+    "calibration_01/risk_176.json.gz": "3321c71632f9971d4f892c135f63709ad5546732d9176ec1889659f3fb11d00e",
+    "calibration_01/risk_177.json.gz": "b849ca25656027fd81e0a665c067d1410af66693ed0d2244fd7b9fd95070dc94",
+    "calibration_01/risk_178.json.gz": "b28125316a77201b850165b217f6a9f6c3b5afad34b73c86bd4f20690b3db5a9",
+    "calibration_01/risk_179.json.gz": "2af0e6ca1575c5a424a6c53e73d62383a2d30f9f3b631f690b42c9beaaeec958",
+    "calibration_01/risk_180.json.gz": "cf4cc811f547e00f365625ac574efecca01a68b8bfa203091dea6de71d10187e",
+    "calibration_01/risk_181.json.gz": "307d3ceaa137cb3467e1bd69fb766b301d88f11cb2d2763d0476a3844ad00c0a",
+    "calibration_01/risk_182.json.gz": "83b994e7fbe3833d9632a48a030dea13f2d76eb597149d772d9244537a1e593e",
+    "calibration_01/risk_183.json.gz": "8f34a2eea1b5815e417f00a90d2498269e7dfbdb61de8eb8627f2f6df0a4b670",
+    "calibration_01/risk_184.json.gz": "3721af6fc37db701d404c6aeaba18c3ba6e10e82cfca2eed5e186d01ad15ad90",
+    "calibration_01/risk_185.json.gz": "afb52f90b4a559c8acffdbcd6ae59de4d8053548ea545408c1813d34e03594c3",
+    "calibration_01/risk_186.json.gz": "3ae9c92e5c5f41ae8bbd74310d5e85a117dbce79c4cf483d1702897d54e3d50f",
+    "calibration_01/risk_187.json.gz": "bea077f2ddc41534746ab41644c9a483f1b4b0d60f9e898804b2b191c96010b3",
+    "calibration_01/risk_188.json.gz": "ae1bff2f5cd65e2b924cb16ce1d43916bba513cb68d8c36c220276905ff1aa04",
+    "calibration_01/risk_189.json.gz": "c3ad92e8e979f1aab6ff7ce4552414e1ce6af1109e0223e2bf5bc3818ff8d34f",
+    "calibration_01/risk_190.json.gz": "d74997a78c87d78532e4f1ca8f4da6ab963f29e6f86c8dd4cc4e3fdb2f8edc17",
+    "calibration_01/risk_191.json.gz": "f5a90eb45adfc1c87c7e5298dce97af4a12dd276d64f7b03d650b9efb607f92f"
+  },
+  "reason": "IID fails every threshold for both model alternatives; sticky/rotor success cannot replace required per-family success",
+  "risk_limit": 0.1,
+  "risk_worlds": 12288,
+  "schema": "hcsn-r19-independent-cross-family-calibration-v1",
+  "scope": "Recompute saved calibration decisions, guards, fees, each-family counts and48exact CP upper bounds; no model/owner/control imports and no held-out confirmation worlds opened",
+  "selected": {
+    "best_static": {
+      "calibration_gate_passed": false,
+      "threshold": 0.999999999999
+    },
+    "class_mixture": {
+      "calibration_gate_passed": false,
+      "threshold": 0.999999999999
+    }
+  },
+  "source_sha256": {
+    "POSTCALIBRATION_FREEZE.json": "3a8832313ccc8e54aee4892d16711ec58ee523aa990c106dd901c0fbcb8c2492",
+    "calibration_01/CALIBRATION.json": "a3b50226502cd64855ee171e5cda0d85a922d8a10575754c2c0f552bc8004042",
+    "calibration_01/GUARDS.json": "de1a3a80bf73994e97ab07dd38b5359de4063e8cf6dc3c1524433c28474dbb60",
+    "protocol.json": "46cf487c793a111c0aafb7151abbb4abc145446c50417d4aecd349713efc3895"
+  }
+}

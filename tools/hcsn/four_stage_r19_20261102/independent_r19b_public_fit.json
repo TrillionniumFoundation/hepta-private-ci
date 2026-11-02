@@ -1,0 +1,121 @@
+{
+  "all_checks_passed": true,
+  "candidate_freeze_sha256": "57223fbda5cd7346e6da08cbc0a0ee11e226ec889b07ed59227042333e8393cf",
+  "limits": [
+    "No owner target/family/parameters in public fitter inputs",
+    "Validation NLL does not establish fresh risk or unknown-family success",
+    "All12ordinary staticclass/beta options retained"
+  ],
+  "maximum_reported_nll_discrepancy": 8.326672684688674e-17,
+  "primary_validation_nll": 0.137591868915809,
+  "rebuilt_public_inputs": {
+    "calibration": {
+      "views": 1525,
+      "worlds": 384
+    },
+    "fitting": {
+      "views": 1518,
+      "worlds": 384
+    }
+  },
+  "recomputed_losses": {
+    "calibration": [
+      {
+        "beta": 0.5,
+        "mixture": 0.15857172184039603,
+        "static": [
+          0.15827677417867791,
+          0.17505949379318242,
+          0.17123867039964463
+        ]
+      },
+      {
+        "beta": 0.65,
+        "mixture": 0.14957971223195032,
+        "static": [
+          0.14932671233270176,
+          0.1683770061789917,
+          0.16562273940381156
+        ]
+      },
+      {
+        "beta": 0.8,
+        "mixture": 0.14287705885792618,
+        "static": [
+          0.14387237141579623,
+          0.16431167455721898,
+          0.16282377108174845
+        ]
+      },
+      {
+        "beta": 1.0,
+        "mixture": 0.137591868915809,
+        "static": [
+          0.14095109053348198,
+          0.16236560214455462,
+          0.16235206373391306
+        ]
+      }
+    ],
+    "fitting": [
+      {
+        "beta": 0.5,
+        "mixture": 0.11595229864729924,
+        "static": [
+          0.11572969169793136,
+          0.12877162782335014,
+          0.12407162842873874
+        ]
+      },
+      {
+        "beta": 0.65,
+        "mixture": 0.10480436170139777,
+        "static": [
+          0.10468664669049485,
+          0.1191914927352456,
+          0.11468033938742646
+        ]
+      },
+      {
+        "beta": 0.8,
+        "mixture": 0.09679907442110323,
+        "static": [
+          0.0971801368652461,
+          0.1122482671882187,
+          0.107982842670901
+        ]
+      },
+      {
+        "beta": 1.0,
+        "mixture": 0.08980273490414485,
+        "static": [
+          0.09166113643058697,
+          0.10640277620580986,
+          0.1022272519305062
+        ]
+      }
+    ]
+  },
+  "schema": "hcsn-r19b-independent-public-fit-v1",
+  "scope": "All768 complete-public worlds independently remasked/alias-routed/target-derived. Direct pre/actualREAD-view probabilities use the separately manual-fixture-verified inference implementation; campaign and cached-loss wrappers not imported.",
+  "selected": {
+    "best_static": {
+      "beta": 1.0,
+      "prior": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "selected_class": "transition_particles"
+    },
+    "class_mixture": {
+      "beta": 1.0,
+      "prior": [
+        0.4923384771982691,
+        0.40632928524210393,
+        0.10133223755962709
+      ]
+    }
+  },
+  "static_validation_nll": 0.14095109053348198
+}

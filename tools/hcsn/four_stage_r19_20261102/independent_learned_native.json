@@ -1,0 +1,564 @@
+{
+  "actual_checkpoint_profiles": 16,
+  "actual_fresh_worlds": 20,
+  "actual_model_queries": 3072,
+  "all_checks_passed": true,
+  "complete_worker_receipt": {
+    "cpu_seconds": 8.673383000000001,
+    "exit_code": 0,
+    "max_rss_linux_kib": 331140,
+    "scope": "Whole worker including imports, compile, all Rust children and Torch/reference/output; export/developer/audit separate",
+    "wall_seconds": 7.792909587995382
+  },
+  "exact_actions_answers": true,
+  "exact_checkpoint_fields_and_constant_folds": true,
+  "limits": [
+    "Native head/kernel/intervention is now the actual trained model, but forward parity alone does not establish causal private-owner recovery",
+    "Tapes contain all potential tokens; code chooses before using purchasedtoken, ownership/API isolation requires separateproviderqualification",
+    "Constant folding of Wsoftmax is explicit after retained raw-softmax development mismatch; no afterstate/actionoracle",
+    "No native learning/financial-parameter-to-Q/GPU/energy/production or positive core-gain claim"
+  ],
+  "maximum_errors": {
+    "logits": 5.963005982323466e-07,
+    "probabilities": 2.384086914553052e-07,
+    "read_value": 2.3846206054223273e-07,
+    "state": 1.1074474670635936e-14
+  },
+  "minimum_action_gap": 9.769201279e-05,
+  "minimum_all5_head_gap": 0.0002420544624,
+  "per_pair": [
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.5802789311034644e-07,
+        "probabilities": 1.1925775145193995e-07,
+        "read_value": 5.965233762506017e-08,
+        "state": 1.4710455076283324e-15
+      },
+      "name": "191101_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.5801403819313293e-07,
+        "probabilities": 1.1924968867926822e-07,
+        "read_value": 1.1921731568609317e-07,
+        "state": 1.3322676295501878e-15
+      },
+      "name": "191101_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.579298095690575e-07,
+        "probabilities": 1.192568787056203e-07,
+        "read_value": 1.1922992548818456e-07,
+        "state": 1.2212453270876722e-15
+      },
+      "name": "191103_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.5795947272987405e-07,
+        "probabilities": 1.192577758768465e-07,
+        "read_value": 1.1922470699587961e-07,
+        "state": 2.831068712794149e-15
+      },
+      "name": "191103_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.57582885746055e-07,
+        "probabilities": 1.7885640257730984e-07,
+        "read_value": 1.7882959590931335e-07,
+        "state": 8.326672684688674e-16
+      },
+      "name": "191107_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.578558960271039e-07,
+        "probabilities": 1.1925089726805282e-07,
+        "read_value": 5.96190125046192e-08,
+        "state": 7.494005416219807e-16
+      },
+      "name": "191107_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 4.771864623442923e-07,
+        "probabilities": 1.1925579834759503e-07,
+        "read_value": 1.7877594604698288e-07,
+        "state": 1.0547118733938987e-15
+      },
+      "name": "191109_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.5783319085602727e-07,
+        "probabilities": 1.1924232790061495e-07,
+        "read_value": 1.1923336795671702e-07,
+        "state": 4.496403249731884e-15
+      },
+      "name": "191109_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.5716497803761627e-07,
+        "probabilities": 1.1922683412768365e-07,
+        "read_value": 1.1925507814591896e-07,
+        "state": 2.4702462297909733e-15
+      },
+      "name": "191113_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.580263672198214e-07,
+        "probabilities": 1.7878558344897044e-07,
+        "read_value": 1.1921456910535255e-07,
+        "state": 1.7208456881689926e-15
+      },
+      "name": "191113_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.579987792878825e-07,
+        "probabilities": 1.7882649538947248e-07,
+        "read_value": 1.1921859133234847e-07,
+        "state": 5.245803791353865e-15
+      },
+      "name": "191117_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.575932006061322e-07,
+        "probabilities": 1.7879536129417062e-07,
+        "read_value": 1.7882706293548267e-07,
+        "state": 5.551115123125783e-16
+      },
+      "name": "191117_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.5791033936583005e-07,
+        "probabilities": 1.788086059217875e-07,
+        "read_value": 2.3837774043578008e-07,
+        "state": 4.551914400963142e-15
+      },
+      "name": "191119_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.5803131104295005e-07,
+        "probabilities": 1.7883171388177743e-07,
+        "read_value": 1.1924800413787295e-07,
+        "state": 1.27675647831893e-15
+      },
+      "name": "191119_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 3.5781951912561283e-07,
+        "probabilities": 1.787856445112368e-07,
+        "read_value": 1.7879077762739115e-07,
+        "state": 1.9012569296705806e-15
+      },
+      "name": "191123_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "iid",
+      "errors": {
+        "logits": 4.772390136409399e-07,
+        "probabilities": 1.788557922877132e-07,
+        "read_value": 1.1920745845994674e-07,
+        "state": 1.582067810090848e-15
+      },
+      "name": "191123_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.5805981446479507e-07,
+        "probabilities": 1.7886018677248927e-07,
+        "read_value": 1.192551696282962e-07,
+        "state": 1.582067810090848e-15
+      },
+      "name": "191101_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 4.7659619140105747e-07,
+        "probabilities": 2.384086914553052e-07,
+        "read_value": 1.7879739988568844e-07,
+        "state": 6.38378239159465e-15
+      },
+      "name": "191101_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.579298095690575e-07,
+        "probabilities": 1.1922767939598344e-07,
+        "read_value": 1.1919368281265719e-07,
+        "state": 5.329070518200751e-15
+      },
+      "name": "191103_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.5806060783016846e-07,
+        "probabilities": 1.788328979346332e-07,
+        "read_value": 1.7884513547894443e-07,
+        "state": 1.609823385706477e-15
+      },
+      "name": "191103_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.57421264585156e-07,
+        "probabilities": 1.7883098757387472e-07,
+        "read_value": 1.1925490717157317e-07,
+        "state": 4.649058915617843e-15
+      },
+      "name": "191107_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 5.958160400609813e-07,
+        "probabilities": 1.1924521481354589e-07,
+        "read_value": 1.192406433592197e-07,
+        "state": 2.0539125955565396e-15
+      },
+      "name": "191107_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.58027648861281e-07,
+        "probabilities": 1.1924477538727274e-07,
+        "read_value": 1.1925045162453074e-07,
+        "state": 4.884981308350689e-15
+      },
+      "name": "191109_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.579285279275979e-07,
+        "probabilities": 1.1923319698237123e-07,
+        "read_value": 1.1923901366284184e-07,
+        "state": 3.885780586188048e-15
+      },
+      "name": "191109_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 4.770534056675046e-07,
+        "probabilities": 1.7885702519038205e-07,
+        "read_value": 1.7877788693887453e-07,
+        "state": 1.2490009027033011e-15
+      },
+      "name": "191113_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 4.7677148429237093e-07,
+        "probabilities": 1.1925812992696905e-07,
+        "read_value": 1.1924083864744972e-07,
+        "state": 4.9404924595819466e-15
+      },
+      "name": "191113_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.580718994644627e-07,
+        "probabilities": 1.7882619629538965e-07,
+        "read_value": 1.1921770626255324e-07,
+        "state": 4.3021142204224816e-15
+      },
+      "name": "191117_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.5787243657381396e-07,
+        "probabilities": 1.1925604859186478e-07,
+        "read_value": 1.7885005487716654e-07,
+        "state": 5.162537064506978e-15
+      },
+      "name": "191117_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.57878967349734e-07,
+        "probabilities": 1.7880257563440694e-07,
+        "read_value": 1.1924610598956775e-07,
+        "state": 3.552713678800501e-15
+      },
+      "name": "191119_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 5.963005982323466e-07,
+        "probabilities": 1.7876995239696214e-07,
+        "read_value": 1.192393677129644e-07,
+        "state": 4.773959005888173e-15
+      },
+      "name": "191119_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.576602782828786e-07,
+        "probabilities": 1.7881893921156689e-07,
+        "read_value": 1.788459411677934e-07,
+        "state": 5.329070518200751e-15
+      },
+      "name": "191123_light_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "ood",
+      "errors": {
+        "logits": 3.5793054209420916e-07,
+        "probabilities": 1.1925861820305528e-07,
+        "read_value": 1.1924192500067932e-07,
+        "state": 1.6653345369377348e-15
+      },
+      "name": "191123_value_analytic",
+      "queries": 48
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 3.580828857874252e-07,
+        "probabilities": 1.7881715086431882e-07,
+        "read_value": 1.1925147702651628e-07,
+        "state": 1.734723475976807e-15
+      },
+      "name": "191101_light_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.771538086867366e-07,
+        "probabilities": 1.1925377196853049e-07,
+        "read_value": 1.1924857790113208e-07,
+        "state": 2.2898349882893854e-15
+      },
+      "name": "191101_value_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 3.580296630278923e-07,
+        "probabilities": 1.7886204228823033e-07,
+        "read_value": 1.7884744873963854e-07,
+        "state": 1.887379141862766e-15
+      },
+      "name": "191103_light_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.768894041884408e-07,
+        "probabilities": 1.7876895141988314e-07,
+        "read_value": 1.7878916014346657e-07,
+        "state": 5.6343818499726694e-15
+      },
+      "name": "191103_value_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 3.580591430019098e-07,
+        "probabilities": 1.7883098757387472e-07,
+        "read_value": 1.7882959590931335e-07,
+        "state": 1.7208456881689926e-15
+      },
+      "name": "191107_light_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 5.960901490187354e-07,
+        "probabilities": 1.788604675478922e-07,
+        "read_value": 1.7881702274458178e-07,
+        "state": 1.3322676295501878e-15
+      },
+      "name": "191107_value_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.770277099996889e-07,
+        "probabilities": 2.3839862672847545e-07,
+        "read_value": 2.3846206054223273e-07,
+        "state": 2.3869795029440866e-15
+      },
+      "name": "191109_light_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.768781127761912e-07,
+        "probabilities": 1.7879581293289704e-07,
+        "read_value": 1.1925401000034697e-07,
+        "state": 8.770761894538737e-15
+      },
+      "name": "191109_value_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 3.5764715566877214e-07,
+        "probabilities": 1.1924532472562532e-07,
+        "read_value": 1.7882581782036056e-07,
+        "state": 5.7870375158586285e-15
+      },
+      "name": "191113_light_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.7659320068227373e-07,
+        "probabilities": 1.788522400181236e-07,
+        "read_value": 1.1925105591892304e-07,
+        "state": 2.706168622523819e-15
+      },
+      "name": "191113_value_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.764289551761891e-07,
+        "probabilities": 1.7882649538947248e-07,
+        "read_value": 1.7886258540933397e-07,
+        "state": 1.1074474670635936e-14
+      },
+      "name": "191117_light_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.768610228911285e-07,
+        "probabilities": 1.7876713864772853e-07,
+        "read_value": 1.7882706293548267e-07,
+        "state": 6.106226635438361e-16
+      },
+      "name": "191117_value_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.771637573952603e-07,
+        "probabilities": 1.788086059217875e-07,
+        "read_value": 2.3837774043578008e-07,
+        "state": 1.0255685189974884e-14
+      },
+      "name": "191119_light_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 4.771698607353159e-07,
+        "probabilities": 1.7886151126855765e-07,
+        "read_value": 1.7879575808787962e-07,
+        "state": 1.8596235662471372e-15
+      },
+      "name": "191119_value_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 3.579989014124152e-07,
+        "probabilities": 1.192248779702254e-07,
+        "read_value": 1.192560852292246e-07,
+        "state": 2.942091015256665e-15
+      },
+      "name": "191123_light_analytic",
+      "queries": 96
+    },
+    {
+      "domain": "long",
+      "errors": {
+        "logits": 3.578436889029035e-07,
+        "probabilities": 1.788557922877132e-07,
+        "read_value": 1.7877467650695422e-07,
+        "state": 2.8449465006019636e-15
+      },
+      "name": "191123_value_analytic",
+      "queries": 96
+    }
+  ],
+  "saved_native_torch_pairs": 48,
+  "schema": "hcsn-r19-independent-learned-native-v1",
+  "scope": "Original checkpoint fields/FP32 folded immutable learned channels verified exactly; all saved nativeTSV/Torch pairs/decision rules/headargmax/margins recomputed without model/driver/executor imports",
+  "source_commit": "760c886950c56b63569c9d7fd15ab1155348e949",
+  "source_freeze_sha256": "f94f4597c46cce23d98863794f4ba6ad93d85b01cf93f25ae23f3129a4b79648"
+}
