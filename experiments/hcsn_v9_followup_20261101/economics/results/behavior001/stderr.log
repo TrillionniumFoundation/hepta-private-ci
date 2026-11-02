@@ -1,0 +1,18 @@
+E...............
+======================================================================
+ERROR: test_content_interface (unittest.loader._FailedTest.test_content_interface)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_content_interface
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v7_support_20261101/content_interface/test_content_interface.py", line 4, in <module>
+    from content_interface import (
+ModuleNotFoundError: No module named 'content_interface'
+
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.005s
+
+FAILED (errors=1)
