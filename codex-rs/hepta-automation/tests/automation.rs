@@ -971,6 +971,24 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // The current schema's drain trigger references the post-v1 dispatch table.
+    // Assert that the fixture exercises that real dependency, then remove it
+    // before dropping the table: SQLite revalidates triggers on later ALTER TABLE.
+    let drain_trigger_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'trigger' \
+         AND name = 'automation_timer_lifecycle_drain'",
+    )
+    .fetch_one(&mut *rewind)
+    .await
+    .expect("inspect post-v1 drain trigger");
+    assert_eq!(
+        drain_trigger_count, 1,
+        "the fresh schema must contain the real post-v1 drain trigger"
+    );
+    sqlx::query("DROP TRIGGER automation_timer_lifecycle_drain")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop post-v1 drain trigger before dispatch table");
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
