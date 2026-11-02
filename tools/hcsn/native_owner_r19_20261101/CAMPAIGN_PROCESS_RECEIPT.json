@@ -1,0 +1,19 @@
+{
+  "freeze_commit": "d9bfd93d86a985dc603cce8b0c4ade6102cb7696",
+  "command": [
+    "python",
+    "-B",
+    "repo/tools/hcsn/native_owner_r19_20261101/check.py",
+    "--binary",
+    "/tmp/hcsn-r19-candidate",
+    "--baseline",
+    "/tmp/hcsn-r19-baseline",
+    "--output",
+    "repo/tools/hcsn/native_owner_r19_20261101/results/run01"
+  ],
+  "exit_code": 0,
+  "outer_process_and_waited_descendant_cpu_seconds": 0.179,
+  "wall_seconds": 0.6295892959969933,
+  "max_rss_kib": 17408,
+  "accounting": "outer wait4 includes reaped descendants; do not add inner child totals"
+}

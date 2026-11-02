@@ -1,0 +1,20 @@
+{
+  "production_activation": false,
+  "all_blockers_closed": false,
+  "bounded_passed": [
+    "historical PID alias regression and durable request ID correction",
+    "trusted IPv4 loopback malformed-frame handling",
+    "relay death after committed billing effect with owner recovery and operation dedup",
+    "corrupt/exhausted allocator rejection",
+    "actual allocator SIGKILL after fsynced allocation while holding lock and before request publication; fresh owner skips allocated ID1 and uses2..9"
+  ],
+  "open": [
+    "allocator-state deletion, partial restore and filesystem rollback while provider cache survives",
+    "cross-host authenticated transport and adversarial service",
+    "power-loss and hostile filesystem rollback",
+    "native numerical-state update during owner execution",
+    "full production model lifecycle",
+    "analytic-core exclusive D-B contribution",
+    "GPU/energy and full investment cost adoption"
+  ]
+}
