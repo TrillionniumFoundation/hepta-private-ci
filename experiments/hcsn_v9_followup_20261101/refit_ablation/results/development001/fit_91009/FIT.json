@@ -1,0 +1,197 @@
+{
+  "seed": 91009,
+  "modes": {
+    "original": {
+      "selected": {
+        "l2": 0.001,
+        "validation": {
+          "nll": 1.023163844679368,
+          "accuracy": 0.541015625,
+          "brier": 0.5336007969659776
+        },
+        "optimizer_success": false,
+        "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "iterations": 120,
+        "evaluations": 130,
+        "gradient_max_abs": 0.000244878429963946,
+        "final_regularized_training_loss": 1.0299554900462333,
+        "cpu_seconds": 0.10996150500000024,
+        "wall_seconds": 0.12457881400041515
+      },
+      "all_candidates": [
+        {
+          "l2": 0.001,
+          "validation": {
+            "nll": 1.023163844679368,
+            "accuracy": 0.541015625,
+            "brier": 0.5336007969659776
+          },
+          "optimizer_success": false,
+          "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "iterations": 120,
+          "evaluations": 130,
+          "gradient_max_abs": 0.000244878429963946,
+          "final_regularized_training_loss": 1.0299554900462333,
+          "cpu_seconds": 0.10996150500000024,
+          "wall_seconds": 0.12457881400041515
+        },
+        {
+          "l2": 0.01,
+          "validation": {
+            "nll": 1.0244899976580077,
+            "accuracy": 0.546875,
+            "brier": 0.5340925690527589
+          },
+          "optimizer_success": true,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "iterations": 100,
+          "evaluations": 109,
+          "gradient_max_abs": 5.854366567755657e-06,
+          "final_regularized_training_loss": 1.044580906160997,
+          "cpu_seconds": 0.07551966399999976,
+          "wall_seconds": 0.08840023299853783
+        }
+      ]
+    },
+    "mean_two_point": {
+      "selected": {
+        "l2": 0.01,
+        "validation": {
+          "nll": 1.0678762668643933,
+          "accuracy": 0.548828125,
+          "brier": 0.5386135102986697
+        },
+        "optimizer_success": false,
+        "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "iterations": 120,
+        "evaluations": 127,
+        "gradient_max_abs": 0.0007036638558179209,
+        "final_regularized_training_loss": 1.070791327665389,
+        "cpu_seconds": 0.07144729899999991,
+        "wall_seconds": 0.08516714299912564
+      },
+      "all_candidates": [
+        {
+          "l2": 0.001,
+          "validation": {
+            "nll": 1.0713881547761779,
+            "accuracy": 0.546875,
+            "brier": 0.5380993606663361
+          },
+          "optimizer_success": false,
+          "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "iterations": 120,
+          "evaluations": 130,
+          "gradient_max_abs": 0.005629365457857231,
+          "final_regularized_training_loss": 1.064613829216445,
+          "cpu_seconds": 0.09205568600000014,
+          "wall_seconds": 0.10361081700102659
+        },
+        {
+          "l2": 0.01,
+          "validation": {
+            "nll": 1.0678762668643933,
+            "accuracy": 0.548828125,
+            "brier": 0.5386135102986697
+          },
+          "optimizer_success": false,
+          "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "iterations": 120,
+          "evaluations": 127,
+          "gradient_max_abs": 0.0007036638558179209,
+          "final_regularized_training_loss": 1.070791327665389,
+          "cpu_seconds": 0.07144729899999991,
+          "wall_seconds": 0.08516714299912564
+        }
+      ]
+    },
+    "single_transition": {
+      "selected": {
+        "l2": 0.01,
+        "validation": {
+          "nll": 1.2389798767927493,
+          "accuracy": 0.5546875,
+          "brier": 0.6210878532104009
+        },
+        "optimizer_success": false,
+        "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "iterations": 120,
+        "evaluations": 135,
+        "gradient_max_abs": 9.35268017875242e-05,
+        "final_regularized_training_loss": 1.263405407193876,
+        "cpu_seconds": 0.11142017799999948,
+        "wall_seconds": 0.14861142299923813
+      },
+      "all_candidates": [
+        {
+          "l2": 0.001,
+          "validation": {
+            "nll": 1.2395691657095549,
+            "accuracy": 0.5546875,
+            "brier": 0.6211368110748715
+          },
+          "optimizer_success": false,
+          "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "iterations": 120,
+          "evaluations": 130,
+          "gradient_max_abs": 0.0008046440770139555,
+          "final_regularized_training_loss": 1.2629731833295645,
+          "cpu_seconds": 0.07235186800000015,
+          "wall_seconds": 0.12081744099850766
+        },
+        {
+          "l2": 0.01,
+          "validation": {
+            "nll": 1.2389798767927493,
+            "accuracy": 0.5546875,
+            "brier": 0.6210878532104009
+          },
+          "optimizer_success": false,
+          "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "iterations": 120,
+          "evaluations": 135,
+          "gradient_max_abs": 9.35268017875242e-05,
+          "final_regularized_training_loss": 1.263405407193876,
+          "cpu_seconds": 0.11142017799999948,
+          "wall_seconds": 0.14861142299923813
+        }
+      ]
+    }
+  },
+  "test": {
+    "refit_original": {
+      "nll": 1.0570185063438222,
+      "accuracy": 0.5322265625,
+      "brier": 0.5578375160713863
+    },
+    "unfitted_analytic": {
+      "nll": 1.0394415953153548,
+      "accuracy": 0.5244140625,
+      "brier": 0.5504566294317457
+    },
+    "same_weight_mean_two_point": {
+      "nll": 1.1780922489729941,
+      "accuracy": 0.50390625,
+      "brier": 0.5791105370315908
+    },
+    "refit_mean_two_point": {
+      "nll": 1.1136611627762485,
+      "accuracy": 0.51171875,
+      "brier": 0.5641325919951039
+    },
+    "same_weight_single_transition": {
+      "nll": 2.189068371725286,
+      "accuracy": 0.51171875,
+      "brier": 0.6148240424232977
+    },
+    "refit_single_transition": {
+      "nll": 1.2447919595152557,
+      "accuracy": 0.5087890625,
+      "brier": 0.6285973062820682
+    }
+  },
+  "data_sha256": "4bea85d6db3ea37310c54cb16f9c8890a0b22367e7c4851cbdbe51dcf89f6944",
+  "weights_sha256": "591a2602e9fd9c762b99544b20a50afac5f7b88516df84dce932da547db18a65",
+  "cpu_seconds_inclusive": 2.998474335,
+  "wall_seconds_inclusive": 3.8910077330001513
+}

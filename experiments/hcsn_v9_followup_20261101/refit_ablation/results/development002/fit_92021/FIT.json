@@ -1,0 +1,197 @@
+{
+  "seed": 92021,
+  "modes": {
+    "original": {
+      "selected": {
+        "l2": 0.001,
+        "validation": {
+          "nll": 1.0161192031330986,
+          "accuracy": 0.533203125,
+          "brier": 0.5445007352341269
+        },
+        "optimizer_success": true,
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "iterations": 156,
+        "evaluations": 169,
+        "gradient_max_abs": 1.847931520392005e-05,
+        "final_regularized_training_loss": 1.0475705638540687,
+        "cpu_seconds": 0.10786966000000042,
+        "wall_seconds": 0.10788017899903934
+      },
+      "all_candidates": [
+        {
+          "l2": 0.001,
+          "validation": {
+            "nll": 1.0161192031330986,
+            "accuracy": 0.533203125,
+            "brier": 0.5445007352341269
+          },
+          "optimizer_success": true,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "iterations": 156,
+          "evaluations": 169,
+          "gradient_max_abs": 1.847931520392005e-05,
+          "final_regularized_training_loss": 1.0475705638540687,
+          "cpu_seconds": 0.10786966000000042,
+          "wall_seconds": 0.10788017899903934
+        },
+        {
+          "l2": 0.01,
+          "validation": {
+            "nll": 1.0195196606237757,
+            "accuracy": 0.5390625,
+            "brier": 0.5449830446849333
+          },
+          "optimizer_success": true,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "iterations": 83,
+          "evaluations": 89,
+          "gradient_max_abs": 1.4709350106338354e-05,
+          "final_regularized_training_loss": 1.0612010085941106,
+          "cpu_seconds": 0.06128969999999967,
+          "wall_seconds": 0.06129125400184421
+        }
+      ]
+    },
+    "mean_two_point": {
+      "selected": {
+        "l2": 0.001,
+        "validation": {
+          "nll": 1.038220474405728,
+          "accuracy": 0.541015625,
+          "brier": 0.5469991446427875
+        },
+        "optimizer_success": true,
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "iterations": 208,
+        "evaluations": 219,
+        "gradient_max_abs": 2.3729055283720177e-05,
+        "final_regularized_training_loss": 1.1002865407231512,
+        "cpu_seconds": 0.14798025300000006,
+        "wall_seconds": 0.15166655700159026
+      },
+      "all_candidates": [
+        {
+          "l2": 0.001,
+          "validation": {
+            "nll": 1.038220474405728,
+            "accuracy": 0.541015625,
+            "brier": 0.5469991446427875
+          },
+          "optimizer_success": true,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "iterations": 208,
+          "evaluations": 219,
+          "gradient_max_abs": 2.3729055283720177e-05,
+          "final_regularized_training_loss": 1.1002865407231512,
+          "cpu_seconds": 0.14798025300000006,
+          "wall_seconds": 0.15166655700159026
+        },
+        {
+          "l2": 0.01,
+          "validation": {
+            "nll": 1.040363984973499,
+            "accuracy": 0.541015625,
+            "brier": 0.5481893917262728
+          },
+          "optimizer_success": true,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "iterations": 127,
+          "evaluations": 136,
+          "gradient_max_abs": 2.657951421187099e-05,
+          "final_regularized_training_loss": 1.105327482696574,
+          "cpu_seconds": 0.08139557400000008,
+          "wall_seconds": 0.08139646399649791
+        }
+      ]
+    },
+    "single_transition": {
+      "selected": {
+        "l2": 0.001,
+        "validation": {
+          "nll": 1.2494354729553052,
+          "accuracy": 0.509765625,
+          "brier": 0.6318995672173535
+        },
+        "optimizer_success": true,
+        "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "iterations": 209,
+        "evaluations": 226,
+        "gradient_max_abs": 0.00026016123226862,
+        "final_regularized_training_loss": 1.2580182498838148,
+        "cpu_seconds": 0.11516267600000063,
+        "wall_seconds": 0.11516337600187398
+      },
+      "all_candidates": [
+        {
+          "l2": 0.001,
+          "validation": {
+            "nll": 1.2494354729553052,
+            "accuracy": 0.509765625,
+            "brier": 0.6318995672173535
+          },
+          "optimizer_success": true,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "iterations": 209,
+          "evaluations": 226,
+          "gradient_max_abs": 0.00026016123226862,
+          "final_regularized_training_loss": 1.2580182498838148,
+          "cpu_seconds": 0.11516267600000063,
+          "wall_seconds": 0.11516337600187398
+        },
+        {
+          "l2": 0.01,
+          "validation": {
+            "nll": 1.2494497410589822,
+            "accuracy": 0.509765625,
+            "brier": 0.6320494826402192
+          },
+          "optimizer_success": true,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "iterations": 178,
+          "evaluations": 189,
+          "gradient_max_abs": 4.3240456326564805e-05,
+          "final_regularized_training_loss": 1.2585330608760188,
+          "cpu_seconds": 0.10490414999999942,
+          "wall_seconds": 0.10504252000100678
+        }
+      ]
+    }
+  },
+  "test": {
+    "refit_original": {
+      "nll": 1.0570404509954694,
+      "accuracy": 0.5576171875,
+      "brier": 0.5440173245328749
+    },
+    "unfitted_analytic": {
+      "nll": 1.0467916335278589,
+      "accuracy": 0.541015625,
+      "brier": 0.5397478080184969
+    },
+    "same_weight_mean_two_point": {
+      "nll": 1.155012183009089,
+      "accuracy": 0.5283203125,
+      "brier": 0.5593384698084738
+    },
+    "refit_mean_two_point": {
+      "nll": 1.1035112051956708,
+      "accuracy": 0.5244140625,
+      "brier": 0.5513870946450964
+    },
+    "same_weight_single_transition": {
+      "nll": 2.321658314156412,
+      "accuracy": 0.5400390625,
+      "brier": 0.5854968820356976
+    },
+    "refit_single_transition": {
+      "nll": 1.2931529839533553,
+      "accuracy": 0.5302734375,
+      "brier": 0.6347076792894919
+    }
+  },
+  "data_sha256": "65cff9787b39c469e966794c9d0e3cddcc6f863bc007419f3264850bbd3dd5a5",
+  "weights_sha256": "051794d1a82e077a3d4269fe254b4ab5576b6d057e6d5ce2b760adea754df8d3",
+  "cpu_seconds_inclusive": 2.369635034,
+  "wall_seconds_inclusive": 2.6013780040011625
+}

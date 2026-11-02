@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn-v9-renewal-content-readout-refit.v1",
+  "evidence_role": "synthetic_fixed_horizon_content_only",
+  "fit_scope": "30-parameter multinomial readout; analytic physical kernel remains frozen",
+  "not_full_analytic_network_retraining": true,
+  "real_AV_confirmation": false,
+  "source_sha256": {
+    "campaign.py": "df942b16236e1ef7b5f3e5468632ec39181f42516e70b1855f2b9d285467bbbc",
+    "renewal_numpy.py": "c9ab2308fbdf8baf295383310bae4b731141b4539c324867a409a55ec5689052",
+    "test_refit.py": "77f6d90f9e78c929e657e174da3965842a189474281d60f0e513b7ec9c57e4d2",
+    "transforms.py": "b2f07f04f632a3ddd07f9fdfecee577cacaca6c8b2b7c9bcbcef8fcffb412382"
+  },
+  "fit_seeds": [
+    91003,
+    91009,
+    91019,
+    91021,
+    91033
+  ],
+  "train_size": 2048,
+  "validation_size": 512,
+  "test_size": 1024,
+  "test_seed": 20261101941,
+  "modes": [
+    "original",
+    "mean_two_point",
+    "single_transition"
+  ],
+  "l2_candidates": [
+    0.001,
+    0.01
+  ],
+  "optimizer": "L-BFGS-B analytic gradient, maxiter=120, ftol=1e-10, gtol=1e-7",
+  "selection": "lowest validation NLL then lowest L2; never test score",
+  "features": "log clipped predicted five-class distribution plus intercept",
+  "labels": "independent inverse-Gaussian event simulation then public Markov transitions",
+  "information": "identical initial revealed class, gap, horizon, drift, volatility, reset and refractory packet",
+  "physics": "known shared synthetic law; no learned physical parameter or content-network state",
+  "actions": "fixed reveal of initial content followed by one mandatory output; no READ control or decision benefit",
+  "reference": "unfitted full analytic distribution; uses known task law",
+  "primary": "refitted ablation minus refitted original test NLL, paired worlds and fits",
+  "secondary": "same-original-weight execution ablation vs independently refitted ablation",
+  "bootstrap": {
+    "replicates": 2000,
+    "seed": 91941,
+    "unit": "crossed fit and test world resampling"
+  },
+  "adoption_acceptance": false,
+  "timestamp_unix": 1793579651.1885278
+}

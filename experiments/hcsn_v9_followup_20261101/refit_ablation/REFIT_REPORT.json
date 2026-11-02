@@ -1,0 +1,128 @@
+{
+  "scope": "frozen analytic renewal kernel with independently refitted 30-parameter content head",
+  "development001_preserved": "5/30 candidate optimizer_success; 25/30 reached iteration budget; all 15 validation-selected models hit the budget",
+  "holdout_worlds": 1024,
+  "fit_seeds": 5,
+  "prediction_rows_per_round": 30720,
+  "metric_means": {
+    "refit_original": {
+      "nll": 1.0536328760900666,
+      "accuracy": 0.549609375,
+      "brier": 0.5425542336083554
+    },
+    "unfitted_analytic": {
+      "nll": 1.0467916335278589,
+      "accuracy": 0.541015625,
+      "brier": 0.5397478080184969
+    },
+    "same_weight_mean_two_point": {
+      "nll": 1.159123838121383,
+      "accuracy": 0.515625,
+      "brier": 0.5629117693742322
+    },
+    "refit_mean_two_point": {
+      "nll": 1.1009067379432347,
+      "accuracy": 0.5251953125,
+      "brier": 0.5515879154817377
+    },
+    "same_weight_single_transition": {
+      "nll": 2.3663170775512596,
+      "accuracy": 0.5259765625,
+      "brier": 0.600605689864198
+    },
+    "refit_single_transition": {
+      "nll": 1.2891412769976927,
+      "accuracy": 0.5263671875,
+      "brier": 0.6291954874590912
+    }
+  },
+  "contrasts": {
+    "mean_two_point_refit_minus_original": {
+      "nll_difference": 0.04727386185316816,
+      "lower95": 0.01839240975220272,
+      "upper95": 0.07946424432280824,
+      "per_fit": [
+        0.03498443423075369,
+        0.042574328563151256,
+        0.05885282343347456,
+        0.046470754200201456,
+        0.053486968838259846
+      ],
+      "direction": "lower NLL is better"
+    },
+    "mean_two_point_refit_minus_same_weight": {
+      "nll_difference": -0.058217100178148296,
+      "lower95": -0.096377568406835,
+      "upper95": -0.02658463596684454,
+      "per_fit": [
+        -0.09294834709943908,
+        -0.04846131255483911,
+        -0.03307036810989987,
+        -0.051500977813418156,
+        -0.0651044953131452
+      ],
+      "direction": "lower NLL is better"
+    },
+    "single_transition_refit_minus_original": {
+      "nll_difference": 0.23550840090762618,
+      "lower95": 0.19684873303015019,
+      "upper95": 0.27297172825395266,
+      "per_fit": [
+        0.22582735043453261,
+        0.24228324115073924,
+        0.2362766053645495,
+        0.23611253295788592,
+        0.2370422746304236
+      ],
+      "direction": "lower NLL is better"
+    },
+    "single_transition_refit_minus_same_weight": {
+      "nll_difference": -1.0771758005535674,
+      "lower95": -1.30132381352469,
+      "upper95": -0.8633669764202642,
+      "per_fit": [
+        -1.2553233444206395,
+        -0.9525085894178897,
+        -0.9961127700165462,
+        -1.028505330203057,
+        -1.1534289687097037
+      ],
+      "direction": "lower NLL is better"
+    }
+  },
+  "unfitted_analytic_NLL_better_than_fitted_original": true,
+  "single_transition_refit_Brier_worse_than_same_weights": true,
+  "necessary_or_net_control_advantage_proven": false,
+  "full_analytic_network_retraining": false,
+  "task_CPU_across_both_rounds": 30.172437,
+  "observer_CPU_across_both_rounds": 4.175654,
+  "execution_receipts": [
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute001/RECEIPT.json",
+      "task_cpu_seconds": 15.808897,
+      "observer_cpu_seconds": 2.4487060000000005,
+      "elapsed_seconds": 20.61812736,
+      "memory_status": "sampled_partial"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute002/RECEIPT.json",
+      "task_cpu_seconds": 14.363539999999999,
+      "observer_cpu_seconds": 1.7269479999999997,
+      "elapsed_seconds": 16.434904475,
+      "memory_status": "sampled_partial"
+    }
+  ],
+  "prepare_and_unmetered_analysis_CPU": null,
+  "energy_joules": null,
+  "limitations": [
+    "known finite renewal law and content transition matrix",
+    "fixed perfect initial observation",
+    "only readout refit; dynamics frozen",
+    "test metrics disagree for one ablation",
+    "no real AV or learned core/control comparison"
+  ],
+  "development002_candidate_optimizer_success": 30,
+  "development002_candidate_total": 30,
+  "optimizer_success_does_not_prove_all_gtol_met": true,
+  "development001_summary_correction": "Earlier message incorrectly generalized all selected failures to all candidates; raw FIT states unchanged"
+}
