@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "profile": "Real NumPy model inference in sparse reconstructed source/bundle; no kernel cgroup test",
+  "source_files_copied": [
+    "experiments/hcsn_causal_execution_v3/av_probe.py",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/export_validate.py",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/local_check.py",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/numpy_runtime.py",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/verify_runtime.py",
+    "experiments/hcsn_v7_support_20261101/content_interface/content_interface.py",
+    "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py",
+    "experiments/hcsn_v8_execution_20261101/scheduler/execution.py",
+    "experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py",
+    "experiments/hcsn_v8_execution_20261101/scheduler/planning.py"
+  ],
+  "bundle_ci_manifest_sha256": "95b6a2300e584014ed5333394d8c6361e50bf80532694759ad529b749570afbc",
+  "executions": 24,
+  "torch_imported": false,
+  "verification": "passed",
+  "cpu_seconds_lower_bound": 1.237109,
+  "wall_seconds": 2.8119927890002145,
+  "cost_scope": "Sparse copy through completed worker+verifier+evidence copy and temporary cleanup; launcher imports and final receipt serialization excluded. No candidate hardware economic claim."
+}

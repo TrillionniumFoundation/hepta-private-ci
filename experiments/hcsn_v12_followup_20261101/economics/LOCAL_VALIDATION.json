@@ -1,0 +1,58 @@
+{
+  "checks": [
+    {
+      "name": "actionlint",
+      "argv": [
+        "/tmp/hcsn-bp-ci-tools/actionlint",
+        ".github/workflows/hcsn-v12-model-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "prettier",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hcsn-bp-ci-tools/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hcsn-v12-model-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "scoped_diff_check",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        ".github/workflows/hcsn-v12-model-economics.yml",
+        "experiments/hcsn_v12_followup_20261101/economics"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "fail_closed_controls": {
+    "passed": 5,
+    "log": "FAIL_CLOSED_CONTROLS.log"
+  },
+  "real_sparse_smoke": "sparse_smoke001/RESULT.json",
+  "hardware_cgroup_campaign_executed_locally": false,
+  "source_sha256": {
+    "audit.py": "eef92b98b4fbf7212a111b8d8e1a0fbe9d8f09c46922b5059b59591f604bf117",
+    "test_fail_closed.py": "b43f32ec56fa77c4e258e2c4ae2b3bc340aa2daac224533a541cebb4350038fc",
+    "identity.py": "8f4b16f8aa71423ceab3a83959738ff725b93b7a1b9e6fa74e96909002ed1672",
+    "campaign.py": "7b5e00efc0215b514579dda1a75e63d177de864c239c96cacb9ad41e4128ed2d",
+    "profile.py": "d433a9e52fbbbc1a63f047c99d44cba4c43cb00676f4c9137b0379e7d32e751e"
+  },
+  "workflow_sha256": "44da92e9c6edd0ecd97ef3fb807cc76792d803a7497d5f53411f288b62ba8c2c"
+}

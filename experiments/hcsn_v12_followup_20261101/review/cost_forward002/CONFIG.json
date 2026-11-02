@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.review.replay_exported_forwards",
+    "--source",
+    "experiments/hcsn_v10_followup_20261101/persistent_av/results001",
+    "--bundle",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/export002",
+    "--validation",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/validation001",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/review/forward002"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/review/cost_forward002",
+  "timeout": 1800.0,
+  "sample_interval": 0.2
+}

@@ -1,0 +1,139 @@
+{
+  "unix": 1793580598.1149774,
+  "models": [
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "history",
+      "sha256": "9e1b52a1ff1f43681eb595186cd915c83ce086e0f1dc25601dc2bfe65bee8f19",
+      "path": "async_av/history-91101-selected.pt"
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "gru",
+      "sha256": "b91b995a5cfbd73d607d2b4c5259d7821863aaf3c172113574028dd78d7d175f",
+      "path": "async_av/gru-91101-selected.pt"
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "ssm",
+      "sha256": "5bc299575b6b247b29634a7c36f05b5918555efc145db6b54dcfd4e78612497c",
+      "path": "async_av/ssm-91101-selected.pt"
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "filter",
+      "sha256": "1f9dba81a085614ac251b4f92c0993facd4aa1e14fcb93baeb91c6116c0f09b3",
+      "path": "async_av/filter-91101-selected.pt"
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "history",
+      "sha256": "d885af5e67020e366c5a15a3199bd089411d5b276091e4e53eaf4dd1e525568b",
+      "path": "async_av/history-91103-selected.pt"
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "gru",
+      "sha256": "60bbdd0378916731d111433593814b4b032e5ba8d8fe96490458d214f0cc11ef",
+      "path": "async_av/gru-91103-selected.pt"
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "ssm",
+      "sha256": "5fc06d832c3ca034ae28aee0575efa6e8cad596fce4ab771642d10f7eead7df0",
+      "path": "async_av/ssm-91103-selected.pt"
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "filter",
+      "sha256": "3ff498228c350007435aa21ab9ae9900371068d42c26423709d9430b9677eda0",
+      "path": "async_av/filter-91103-selected.pt"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "history",
+      "sha256": "db6cfdebe41bedab68a0c31d3cdfc7454d4c558275fe5d52a713792779c4a245",
+      "path": "av_binding/history-91101-selected.pt"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "gru",
+      "sha256": "251f529c4d4c53170a4d7acaba0669db32cf11a98f7cd972c9c49221dc5586b1",
+      "path": "av_binding/gru-91101-selected.pt"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "ssm",
+      "sha256": "0712dc714db614c8878611a578de1f72cf5cc7d7ed18761f4e3eb6d586adcbaa",
+      "path": "av_binding/ssm-91101-selected.pt"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "filter",
+      "sha256": "99a0fe555cb874a934d53095ce0216f6758f3bbc2129103413d7471dc5022eac",
+      "path": "av_binding/filter-91101-selected.pt"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "history",
+      "sha256": "c6962657bdd8b49fd1ab485e5efe103f1404cca3abaae36c71530e89c41ebff7",
+      "path": "av_binding/history-91103-selected.pt"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "gru",
+      "sha256": "f4945c8eb294730942d0c47baec1b888cb9e1650d77d78ff6622c55ab94fabbc",
+      "path": "av_binding/gru-91103-selected.pt"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "ssm",
+      "sha256": "952ad8e373486add71e33ad1e342621cefe1a0372312783c7b7cc39af3148141",
+      "path": "av_binding/ssm-91103-selected.pt"
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "filter",
+      "sha256": "d8f717ea95b7236ee87339fb78045187f22ef98df304ac153c6656d0c6482fc8",
+      "path": "av_binding/filter-91103-selected.pt"
+    }
+  ],
+  "sources": {
+    "/workspace/scratch/3511158fb83b/hepta/experiments/continuous_spiking_network/__init__.py": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/continuous_spiking_network/data.py": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_causal_execution_v3/__init__.py": "4d77d70d4f664e21e538b23f5f0bf845f0c5efa02ac670d37ef13a699c37feaa",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_causal_execution_v3/av_probe.py": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_mechanism_content_v2/__init__.py": "9d7409cd830465f83202846e2d68976fb1cc33bf619e40115287555f38ead365",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_mechanism_content_v2/binding_data.py": "0b496b552a9686da23381640015acf43120eb5737ff895b022c32f3edf20e00c",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_mechanism_content_v2/data.py": "ca866b1dee8977255bedd8655b247bc8212db9c000ab221cd6b84d0c5721277e",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_task_value_v1/__init__.py": "39d9c6a49be667f172380147c8b8ecf844c0f8d542c8acd72dfd5f6deafa39b6",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_task_value_v1/async_av.py": "82650e912388cfe5e7534676024e3133841061324537ee2fbe36cd04fc06788c",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/content_interface/content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/frontend/__init__.py": "b1ba835e26e080f34adfabab53734560ce38f083e9e361430c0623487f3db700",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py": "1b5efffde74c64f2e1f0f7ca1ed4e7b4d10f0de80cc23a9294c483d7cc7177c5",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/frontend/replay.py": "4a813a54eaa0d115c62e3f9538e9db549edb5eb3c1f4a882cc80dc5d0c862518",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/scheduler/execution.py": "f38d0ea01ba71d7c128da9ddd86597e41b83b79cbba428eaade0f33e4177243b",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/scheduler/historical_probe.py": "75dc935d4ff5ba68d5d3736880ab68b34dde5653df4ff2df337f1a54ace1080c",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py": "82af46b00edabd63a19cbe6e169b4a321502b600e5212753d67060ebfacb0eb9",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/scheduler/planning.py": "3b616986599fb242d715c5a8b92fb73a68be01858723c6c6cc3111cda773ed61",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v9_followup_20261101/persistent_av/candidate.py": "64167009cc7d867425c26d07f27012b6542af92f29fe8e10a8e381408eff537b",
+    "/workspace/scratch/3511158fb83b/hepta/recovered/v3/experiments/hcsn_free_boundary_v1/datasets.py": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v10_followup_20261101/persistent_av/candidate.py": "720fc71ef0269ed18e23ebe8bc0a2b2c89c2fcd6f7b000d357d8aa2614b29924"
+  }
+}

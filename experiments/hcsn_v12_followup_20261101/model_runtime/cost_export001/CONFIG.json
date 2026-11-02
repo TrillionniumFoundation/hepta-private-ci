@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.model_runtime.export_validate",
+    "export",
+    "--source",
+    "experiments/hcsn_v10_followup_20261101/persistent_av/results001",
+    "--output",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/export001"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/model_runtime/cost_export001",
+  "timeout": 1800.0,
+  "sample_interval": 0.2
+}

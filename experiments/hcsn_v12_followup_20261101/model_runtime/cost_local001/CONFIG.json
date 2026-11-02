@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.model_runtime.local_check",
+    "--bundle",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/export002",
+    "--output",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/local001"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/model_runtime/cost_local001",
+  "timeout": 1800.0,
+  "sample_interval": 0.2
+}

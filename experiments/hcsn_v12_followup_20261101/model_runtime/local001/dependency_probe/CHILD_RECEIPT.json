@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-c",
+    "import importlib.util,numpy,scipy,json; print(json.dumps({'numpy':numpy.__version__,'scipy':scipy.__version__,'torch_available':importlib.util.find_spec('torch') is not None})); assert importlib.util.find_spec('torch') is None"
+  ],
+  "returncode": 0,
+  "complete_direct_child_cpu_seconds": 0.14304699999999998,
+  "wall_seconds": 0.38840999199601356,
+  "cpu_scope": "Nested in enclosing local campaign CPU"
+}

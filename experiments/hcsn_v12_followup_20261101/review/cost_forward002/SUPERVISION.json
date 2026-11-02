@@ -1,0 +1,327 @@
+{
+  "schema": "hcsn-v8-task-supervision.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.review.replay_exported_forwards",
+    "--source",
+    "experiments/hcsn_v10_followup_20261101/persistent_av/results001",
+    "--bundle",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/export002",
+    "--validation",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/validation001",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/review/forward002"
+  ],
+  "boundary_begin_monotonic_ns": 57623211167845,
+  "boundary_end_monotonic_ns": 57633080231683,
+  "command_to_collection_seconds": 9.869063838,
+  "first_stdout_receive_monotonic_ns": 57623330162654,
+  "root_exit_code": 0,
+  "timed_out": false,
+  "all_waitable_children_collected": true,
+  "subreaper": {
+    "enabled": true,
+    "scope": "Dedicated supervisor and its ordinary spawned descendants"
+  },
+  "disjoint_wait4_subtrees": [
+    {
+      "pid_in_supervisor_namespace": 6,
+      "is_direct_worker": true,
+      "exit_code": 0,
+      "wait4": {
+        "cpu_seconds": 3.774436,
+        "user_cpu_seconds": 3.425012,
+        "system_cpu_seconds": 0.34942399999999996,
+        "largest_single_process_highwater_bytes": 260390912
+      }
+    }
+  ],
+  "observed_task_subtree_cpu_seconds": 3.774436,
+  "complete_task_cpu_coverage": true,
+  "task_success": true,
+  "episode_outputs": [],
+  "protocol_errors": [],
+  "owned_identity_error": null,
+  "memory": {
+    "family_sampled_peak_rss_sum_bytes": null,
+    "all_family_samples_available": false,
+    "successful_family_samples": 0,
+    "family_errors": [
+      "Direct live child has not completed identity handshake",
+      "Cannot read required owned-process metadata: /proc/705099/task/705099/children: [Errno 2] No such file or directory: '/proc/705099/task/705099/children'",
+      "Cannot read required owned-process metadata: /proc/705099/task/705099/children: [Errno 2] No such file or directory: '/proc/705099/task/705099/children'"
+    ],
+    "registered_subset_peak_rss_sum_bytes": 274178048,
+    "successful_registered_samples": 49,
+    "retained_raw_sample_limit_per_kind": 2048,
+    "raw_samples_truncated": false,
+    "registered_subset_samples": [
+      {
+        "at_ns": 57623222115972,
+        "rss_bytes": 13246464,
+        "known_processes": 1
+      },
+      {
+        "at_ns": 57623426836745,
+        "rss_bytes": 28995584,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57623628695879,
+        "rss_bytes": 36958208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57623831721639,
+        "rss_bytes": 60391424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57624030719279,
+        "rss_bytes": 100884480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57624232871091,
+        "rss_bytes": 116367360,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57624437594463,
+        "rss_bytes": 141484032,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57624642049668,
+        "rss_bytes": 163856384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57624846326063,
+        "rss_bytes": 168951808,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57625047473474,
+        "rss_bytes": 174895104,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57625248705009,
+        "rss_bytes": 178180096,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57625451912774,
+        "rss_bytes": 180891648,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57625654828521,
+        "rss_bytes": 187121664,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57625864499537,
+        "rss_bytes": 188223488,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57626063511659,
+        "rss_bytes": 189448192,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57626265022228,
+        "rss_bytes": 194527232,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57626481042092,
+        "rss_bytes": 198406144,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57626687759138,
+        "rss_bytes": 202870784,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57626887860051,
+        "rss_bytes": 206336000,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57627091199986,
+        "rss_bytes": 209506304,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57627291714631,
+        "rss_bytes": 213467136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57627492556469,
+        "rss_bytes": 217337856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57627698336294,
+        "rss_bytes": 220643328,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57627900441743,
+        "rss_bytes": 221388800,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57628103686697,
+        "rss_bytes": 224952320,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57628308333920,
+        "rss_bytes": 230232064,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57628512098443,
+        "rss_bytes": 234508288,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57628711898882,
+        "rss_bytes": 242057216,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57628913098655,
+        "rss_bytes": 253734912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57629115086239,
+        "rss_bytes": 258482176,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57629318795671,
+        "rss_bytes": 259362816,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57629522273890,
+        "rss_bytes": 262205440,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57629727426381,
+        "rss_bytes": 265035776,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57629928662745,
+        "rss_bytes": 265596928,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57630133880250,
+        "rss_bytes": 265916416,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57630337374427,
+        "rss_bytes": 266153984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57630537723810,
+        "rss_bytes": 266240000,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57630742552112,
+        "rss_bytes": 266244096,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57630943996390,
+        "rss_bytes": 273174528,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57631145358832,
+        "rss_bytes": 274108416,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57631345350607,
+        "rss_bytes": 274132992,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57631549203905,
+        "rss_bytes": 274141184,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57631754163827,
+        "rss_bytes": 274145280,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57631955132015,
+        "rss_bytes": 274145280,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57632157760191,
+        "rss_bytes": 274165760,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57632361577496,
+        "rss_bytes": 274165760,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57632562945992,
+        "rss_bytes": 274178048,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57632766214671,
+        "rss_bytes": 272478208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 57632981043752,
+        "rss_bytes": 273309696,
+        "known_processes": 2
+      }
+    ],
+    "family_samples": [],
+    "continuous_peak_proved": false,
+    "physical_unique_memory": false,
+    "scope": "Includes supervisor. Registered subset can omit descendants; RSS sums double-count shared pages."
+  },
+  "energy": {
+    "joules": null,
+    "attributable_to_task": false,
+    "visible_counter_directories": {
+      "/sys/class/powercap": false,
+      "/sys/class/hwmon": false,
+      "/sys/class/drm": false
+    },
+    "reason": "No configured directly observed, attributable device-energy counter"
+  },
+  "accounting": "Inner waited subtrees are disjoint diagnostics. Outer supervisor wait4 includes these once; never add inner waits again.",
+  "limits": [
+    "Dedicated Linux supervisor, ordinary fork/exec children; arbitrary malicious clone/reparent behavior is not qualified.",
+    "Timeout cleanup kills only an unreaped direct task. Uncollected descendants make coverage fail; no whole-tree fault recovery claim.",
+    "Sampled family RSS is not an atomic or continuous peak even where enumeration is available."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "selection": "index=0, policy=value, implementation=expm for every task x seed x family",
+  "expected_cases": 16,
+  "rtol": 1e-10,
+  "atol": 1e-12,
+  "torch": "2.15.0+cpu",
+  "source_sha256": "143cec7ca461c324473277a9adea2103b81f6827d3d763c63408d4d53c8bd9ee",
+  "bundle_manifest_sha256": "65dc110d8dae3fca4b18fdfb71faa5627a81bc9891edadc474c8a00e04995b60",
+  "scope": "Independent functional Torch gate/affine equations vs real NumPy inference, not retraining or Rust production"
+}
