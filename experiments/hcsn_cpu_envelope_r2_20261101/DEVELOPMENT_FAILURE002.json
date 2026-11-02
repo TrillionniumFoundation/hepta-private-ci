@@ -1,0 +1,10 @@
+{
+  "phase": "Unmetered engineering probe; no formal resource campaign opened",
+  "exit_code": 1,
+  "failure": "The executor procfs exposes task directories but omits the children files, even with actual task directory identity",
+  "source_preserved": "development_source_v3/",
+  "repair": "Keep unsupported child-list observations null; require kernel creation restrictions plus a separately traced bootstrap rather than fabricate an empty list",
+  "retired_before_execution_protocol": "results/run002/PROTOCOL.json",
+  "cost_cpu_seconds": null,
+  "scientific_model_or_checkpoint_changed": false
+}
