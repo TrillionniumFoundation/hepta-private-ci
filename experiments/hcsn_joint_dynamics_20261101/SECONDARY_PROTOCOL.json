@@ -1,0 +1,43 @@
+{
+  "bootstrap": {
+    "draws": 2000,
+    "scope": "Conditional on these checkpoints; not uncertainty over training seeds or generators",
+    "seed": 925117,
+    "unit": "paired episode, averaging the same three frozen training seeds"
+  },
+  "cells": {
+    "A": "full-trained/full-execution",
+    "B": "full-trained/factorized-execution",
+    "C": "factorized-trained/full-execution",
+    "D": "factorized-trained/factorized-execution"
+  },
+  "conditions": [
+    "base",
+    "irregular",
+    "missing",
+    "resample"
+  ],
+  "confirmation_seed": 124731,
+  "contrasts": [
+    "A-B",
+    "C-D",
+    "A-C",
+    "B-D",
+    "(A-B)-(C-D)"
+  ],
+  "episodes": 512,
+  "frozen_utc": "2026-11-02T01:01:42.397408+00:00",
+  "metric": "First post-jump query accuracy, original index9",
+  "primary_protocol_sha256": "643bbd584b0cd899141eb736cb2aaa6f5a0c82abc31d351358cada1f3e49977c",
+  "schema": "hcsn-joint-secondary-factorial.v1",
+  "scope": "Prospective secondary diagnostic, no new train or model selection; conditional intervals do not establish necessity or generator generality; original primary gate unchanged",
+  "seeds": [
+    67,
+    83,
+    101
+  ],
+  "source_hashes": {
+    "campaign.py": "9b853cdb13127942c0489de3ad7340a42c3ff7bb6a44c142c9607e56aab6c6a0",
+    "factorial.py": "cd70fe91ac462fed02cf2852a210f744152ffcf2aecafb885c5422f29f0613bc"
+  }
+}
