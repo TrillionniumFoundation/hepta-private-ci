@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn.r22.auth-v2-independent-network-contract.v1",
+  "classification": "New deterministic engineering checks; source/protocol must be remotely published before first execution.",
+  "checker": "independent_v2_network.py",
+  "source_frozen_inputs": "All SOURCE_FREEZE.source hashes are verified before any peer starts.",
+  "candidate_imports": "Only actual Client under test; independent reference frame/HMAC construction uses stdlib. Actual witness and three fake reply peers are separate processes.",
+  "cases": [
+    "Unauthenticated ingress sends brace plus blanks every0.1s; valid authenticated request begins0.1s later and must complete within1.8s, after serial server evicts the slow ingress at its1s absolute frame deadline.",
+    "Authenticated request padded to8192 bytes including newline accepted,8193 rejected, next valid request succeeds.",
+    "Fake authenticated endpoint sends incomplete response every0.1s; actual Client must time out within3.8s from its3s absolute frame deadline.",
+    "Correct authenticated response padded to8192 bytes including newline accepted.",
+    "Otherwise correct authenticated response padded to8193 bytes including newline refused."
+  ],
+  "real_peer_processes": 4,
+  "public_test_key_only": true,
+  "gate": "All five cases and fake peer normal exits must pass with no candidate edits or threshold repairs after opening.",
+  "limitations": "Sequential finite peers with explicit scheduling margins, not hard realtime or unlimited-flood/global availability, cross-host, concurrent-owner, key compromise or power-loss qualification."
+}
