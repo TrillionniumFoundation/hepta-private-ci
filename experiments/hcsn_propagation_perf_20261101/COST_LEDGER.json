@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn.addressed-preparation.cost.v1",
+  "independent_non_nested_outer_receipts": [
+    {
+      "path": "experiments/hcsn_propagation_perf_20261101/development001.receipt.json",
+      "sha256": "b481be85bf6a61cbca01abde3d93bf0754e654c304c165b3e1585d7723bad06a",
+      "cpu_seconds": 99.16708100000001,
+      "wall_seconds": 182.99593448299856,
+      "returncode": 0
+    },
+    {
+      "path": "experiments/hcsn_propagation_perf_20261101/contracts001.receipt.json",
+      "sha256": "a8df0c4e9bf359470fca3d4b1f8493a4071f72a44c5b6bb0d244cdea4c959b4c",
+      "cpu_seconds": 3.87318,
+      "wall_seconds": 15.942330177997064,
+      "returncode": 0
+    },
+    {
+      "path": "experiments/hcsn_propagation_perf_20261101/confirmation001.receipt.json",
+      "sha256": "ba74c40652cab8e2cf6c93176d3f26f2f7e84d8414206948ddbf4068fcbc3973",
+      "cpu_seconds": 94.987544,
+      "wall_seconds": 153.09035575699818,
+      "returncode": 0
+    },
+    {
+      "path": "experiments/hcsn_propagation_perf_20261101/independent_gradients001.receipt.json",
+      "sha256": "406b703a844893f032eb3e9e638237122ef66f66f7eeb6c3d90f6e91cc570ed4",
+      "cpu_seconds": 2.8143759999999998,
+      "wall_seconds": 2.9058795829987503,
+      "returncode": 0
+    }
+  ],
+  "total_observed_child_cpu_seconds": 200.842181,
+  "wall_seconds_not_summed": true,
+  "development_body_cpu_seconds": 96.459581763,
+  "confirmation_body_cpu_seconds": 92.053476314,
+  "inner_times_nested_do_not_add": true,
+  "unmeasured_preparation_cost": [
+    "package installation and runtime recovery",
+    "source development",
+    "freeze command",
+    "publication",
+    "historical training"
+  ],
+  "complete_lifecycle_cost_seconds": null,
+  "energy_joules": null,
+  "gpu": null,
+  "rss_scope": "Outer wait4 RSS is a direct-child highwater, not a complete process-family attributable memory total"
+}
