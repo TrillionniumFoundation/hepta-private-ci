@@ -53,15 +53,19 @@ class HostedMacosBazelResourceCapsTests(unittest.TestCase):
 
     def test_caps_outside_guard_are_rejected(self) -> None:
         with self.assertRaises(AssertionError):
-            validate_policy(self.source.replace(CAPS, "", 1).replace(
-                "post_config_bazel_args=()", "post_config_bazel_args=()\n" + CAPS, 1
-            ))
+            validate_policy(
+                self.source.replace(CAPS, "", 1).replace(
+                    "post_config_bazel_args=()", "post_config_bazel_args=()\n" + CAPS, 1
+                )
+            )
 
     def test_attempted_test_exclusion_is_rejected(self) -> None:
         with self.assertRaises(AssertionError):
-            validate_policy(self.source.replace(
-                CAPS, CAPS + "\n  post_config_bazel_args+=(--test_tag_filters=-native)", 1
-            ))
+            validate_policy(
+                self.source.replace(
+                    CAPS, CAPS + "\n  post_config_bazel_args+=(--test_tag_filters=-native)", 1
+                )
+            )
 
 
 if __name__ == "__main__":
