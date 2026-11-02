@@ -1,0 +1,70 @@
+"""Fit only the existing complete public R20 streams; never opens a new world."""
+
+import argparse
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+from .model import fit
+
+ROOT = Path(__file__).parent
+INPUT = ROOT.parent / "hcsn_unknown_generator_r20_20261101/prepare_01/training.json.gz"
+INPUT_SHA = "c503195241bea9c6ceeab18d51bf0354f578a1b5b7093f2f9caec20c36a765c3"
+
+
+def write(path, value):
+    with path.open("x") as stream:
+        json.dump(value, stream, sort_keys=True, indent=2, allow_nan=False)
+        stream.write("\n")
+
+
+def archive(path, value):
+    data = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    with path.open("xb") as stream:
+        stream.write(gzip.compress(data, mtime=0))
+    return dict(sha256=hashlib.sha256(path.read_bytes()).hexdigest(), raw_sha256=hashlib.sha256(data).hexdigest(), raw_bytes=len(data))
+
+
+def child():
+    source = INPUT.read_bytes()
+    if hashlib.sha256(source).hexdigest() != INPUT_SHA:
+        raise ValueError("R20 public training archive changed")
+    output = ROOT / "development_fit"
+    output.mkdir(exist_ok=False)
+    models, diagnostics = fit(json.loads(gzip.decompress(source)))
+    files = {"MODELS.json.gz":archive(output / "MODELS.json.gz", models),
+             "DIAGNOSTICS.json.gz":archive(output / "DIAGNOSTICS.json.gz", diagnostics)}
+    write(output / "FIT_IDENTITY.json", dict(schema="hcsn.r22.development.fit.v1", input_path=str(INPUT.relative_to(ROOT.parent)),
+        input_sha256=INPUT_SHA, input_scope="Existing R20 complete public training streams only, 48 groups x128streams",
+        source_files={name:hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in ("model.py", "fit_development.py")},
+        files=files, orientation_orbit_weight=diagnostics["orientation_orbit_weight"],
+        new_calibration_worlds_opened=0, new_confirmation_worlds_opened=0, production_activation=False))
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--child", action="store_true")
+    args = parser.parse_args()
+    if args.child:
+        child()
+        return
+    start = time.perf_counter()
+    process = subprocess.Popen([sys.executable, "-m", __spec__.name, "--child"])
+    _, status, usage = os.wait4(process.pid, 0)
+    process.returncode = os.waitstatus_to_exitcode(status)
+    receipt = dict(exit_code=process.returncode, child_cpu_seconds=usage.ru_utime + usage.ru_stime,
+        wall_seconds=time.perf_counter() - start, max_process_rss_kib=usage.ru_maxrss,
+        scope="Complete fitting child/imports/publicCV/compiledmodels/output. Development evaluation and audits separate.",
+        new_world_generator_called=False)
+    print(json.dumps(receipt, sort_keys=True), flush=True)
+    write(ROOT / "DEVELOPMENT_FIT_PROCESS_RECEIPT.json", receipt)
+    raise SystemExit(process.returncode)
+
+
+if __name__ == "__main__":
+    main()
