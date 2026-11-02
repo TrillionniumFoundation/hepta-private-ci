@@ -1,0 +1,19 @@
+{
+  "acceptance": "All 505 worker executions must finish successfully and exactly match archived uninterrupted suffix rows/final checkpoint in every non-timing field; all source/model/world/input hashes must remain unchanged at end",
+  "adapter_source_commit": "2b4345b80c1c2773e961915522df32c77675685e",
+  "concurrency": 4,
+  "cost": "Retain each subprocess wall, entry-to-result worker CPU/wall and fresh FullHX setup; Linux RUSAGE_CHILDREN user+system total includes interpreter startup. Parent CPU and total wall separately reported",
+  "environment": "Same Linux host, inherited identity/proxy settings; per-worker BLAS/OMP/MKL/NUMEXPR thread count fixed at one; no new training or world generation",
+  "failure_rule": "Retain stdout/stderr/returncode/timeout/error and full request/results for every worker; failed/mismatched workers block qualification, none dropped or replaced",
+  "input": "continuous_task_prepared_final2/qualification/RAW.json.gz",
+  "input_sha256": "42d69f15af7806d74adecaf561941c6ee4971a832b6b43e69ac5ec60a79dc866",
+  "limits": "Fresh-process action-boundary restoration only. No interrupted in-flight action, OS power loss, durable exactly-once I/O, Rust ACK, adversarial snapshot corruption, task-benefit or production qualification. Existing worlds reused only for engineering replay; no new independent scientific confirmations",
+  "publication_order": "Publish new source/protocol/SOURCE_FREEZE before any worker execution. Do not modify frozen adapter or renewal source",
+  "revision_of_source_commit": "56fb94039bea79b72b059c639b61d1f7bbb0b2be",
+  "revision_reason": "First full cold run retained strict mismatch: absolute Owner.folder changed missing-file error strings from archived relative paths. Preserve original relative folder spelling under same ROOT cwd; retain exact non-timing comparator and repeat all 505 boundaries.",
+  "schema": "continuous-cold-protocol-v2",
+  "stage": "Independent stacked engineering qualification; existing 40 worlds, 80 episodes, every one of 505 stored action boundaries",
+  "worker": "subprocess.run fresh sys.executable -m continuous_cold_replay_v2 worker per boundary; same ROOT cwd, preserve archived relative Owner.folder spelling; reload model/ContentAdapter; restore Owner and continuous/PCG64; actual suffix",
+  "worker_information": "Own boundary checkpoint, public schedule, explicit opt-in artifact and world directory. Expected suffix/outcomes are retained only by parent comparator, not sent to workers",
+  "worker_timeout_seconds": 45
+}

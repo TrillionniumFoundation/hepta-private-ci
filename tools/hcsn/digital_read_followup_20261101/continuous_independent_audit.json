@@ -1,0 +1,16 @@
+{
+  "checks": {
+    "checkpoint_roundtrip": true,
+    "flux_derivative_cases": 100,
+    "invalid_input_rng_atomicity_cases": 3,
+    "max_flux_derivative_absolute_error": 2.5906018663590658e-08,
+    "max_survival_exit_mass_error": 6.661338147750939e-16,
+    "passed": true,
+    "scope": "Numerical identities and local restore; not autodiff, production, or process-crash qualification"
+  },
+  "schema": "continuous-independent-audit-v1",
+  "source_sha256": {
+    "continuous_independent_audit.py": "e4c06b2d723a3f2d133f9eda98e8b1b1e15beacf5c798fd93f8d99eb5373d4d1",
+    "continuous_renewal.py": "4b3e5b10e26c17f8e5fa8a9ad31041a30a1bdf8bd3ecd1aff47d9e6a1551d427"
+  }
+}

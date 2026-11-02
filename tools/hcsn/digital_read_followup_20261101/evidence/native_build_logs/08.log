@@ -1,0 +1,35 @@
+
+running 30 tests
+test durable_control::history_tests::bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_curve ... ignored, explicit bounded real-filesystem history measurement
+test durable_control::native::tests::cancellation_intent_and_terminal_failure_do_not_invent_zero_usage ... ok
+test durable_control::native::tests::codex_bound_terminal_requires_adapter_correlation_witness ... ok
+test durable_control::native::tests::completed_owner_ready_without_codex_witness_is_not_success ... ok
+test durable_control::native::tests::duplicate_reopen_preserves_exact_binding_and_reserves_only_once ... ok
+test durable_control::native::tests::explicit_dispatch_rejection_releases_without_claiming_provider_terminal ... ok
+test durable_control::native::tests::generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven ... ok
+test durable_control::native::tests::historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success ... ok
+test durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes ... ok
+test durable_control::native::tests::late_completed_releases_slot_without_erasing_authority_loss ... ok
+test durable_control::native::tests::legacy_journal_completion_without_authority_cannot_be_replayed_as_success ... ok
+test durable_control::native::tests::lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen ... ok
+test durable_control::native::tests::missing_terminal_usage_can_be_completed_without_changing_the_outcome ... ok
+test durable_control::native::tests::one_shot_pre_effect_abort_releases_only_the_live_write_ahead ... ok
+test durable_control::native::tests::oversized_and_incomplete_lines_are_rejected_without_truncation ... ok
+test durable_control::native::tests::post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal ... ok
+test durable_control::native::tests::pre_dispatch_stop_releases_without_claiming_provider_terminal ... ok
+test durable_control::native::tests::unknown_execution_holds_slot_and_late_terminal_settles_real_usage ... ok
+test durable_control::tests::cancellation_after_assignment_waits_for_observation_and_accounts_usage ... ok
+test durable_control::tests::invalid_event_is_rejected_before_append ... ok
+test durable_control::tests::missing_terminal_observation_becomes_indeterminate ... ok
+test durable_control::tests::one_writer_is_held_until_owner_drop ... ok
+test durable_control::tests::reopens_exact_committed_state ... ok
+test neuron_feature::tests::non_success_status_cannot_smuggle_numerical_output ... ok
+test neuron_feature::tests::runtime_tuple_or_output_identity_drift_is_rejected ... ok
+test neuron_feature::tests::successful_receipt_binds_request_runtime_output_and_denies_authority ... ok
+test tests::completion_requires_reservation ... ok
+test tests::conflicting_identity_is_rejected ... ok
+test tests::request_lifecycle_is_fenced_and_authority_free ... ok
+test tests::stale_digest_cannot_reserve ... ok
+
+test result: ok. 29 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 5.03s
+
