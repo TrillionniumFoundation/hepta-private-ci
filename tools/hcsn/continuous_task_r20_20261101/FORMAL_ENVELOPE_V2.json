@@ -1,0 +1,87 @@
+{
+  "schema": "hcsn-r20-v2-formal-envelope-v1",
+  "classification": "Post-outcome same-roster solver repair revalidation; no retroactive V1 pass",
+  "started_utc": "2026-11-02T01:17:29.109718+00:00",
+  "completed_utc": "2026-11-02T01:18:00.102629+00:00",
+  "commands": [
+    {
+      "name": "EXACT_V2",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "tools.hcsn.continuous_task_r20_20261101.campaign",
+        "--output",
+        "tools/hcsn/continuous_task_r20_20261101/exact_run_v2"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 9.169214416004252,
+      "child_user_cpu_seconds": 4.850524,
+      "child_system_cpu_seconds": 0.055888,
+      "cumulative_child_maximum_rss_linux_kib": 52212
+    },
+    {
+      "name": "EXACT_V2_REPLAY",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "tools.hcsn.continuous_task_r20_20261101.record_check",
+        "--run",
+        "tools/hcsn/continuous_task_r20_20261101/exact_run_v2",
+        "--out",
+        "tools/hcsn/continuous_task_r20_20261101/EXACT_V2_RAW_REPLAY.json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.47226220299489796,
+      "child_user_cpu_seconds": 0.2382919999999995,
+      "child_system_cpu_seconds": 0.027484,
+      "cumulative_child_maximum_rss_linux_kib": 52212
+    },
+    {
+      "name": "GENERIC_V2",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "tools.hcsn.continuous_task_r20_20261101.generic",
+        "--output",
+        "tools/hcsn/continuous_task_r20_20261101/generic_run_v2"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 20.298247933998937,
+      "child_user_cpu_seconds": 11.193738000000002,
+      "child_system_cpu_seconds": 0.13836099999999998,
+      "cumulative_child_maximum_rss_linux_kib": 52212
+    },
+    {
+      "name": "GENERIC_V2_REPLAY",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "tools.hcsn.continuous_task_r20_20261101.generic_record_check",
+        "--run",
+        "tools/hcsn/continuous_task_r20_20261101/generic_run_v2",
+        "--out",
+        "tools/hcsn/continuous_task_r20_20261101/GENERIC_V2_RAW_REPLAY.json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.0528601170008187,
+      "child_user_cpu_seconds": 0.8959860000000006,
+      "child_system_cpu_seconds": 0.01156299999999999,
+      "cumulative_child_maximum_rss_linux_kib": 52212
+    }
+  ],
+  "wall_seconds": 30.992909209999198,
+  "wrapper_cpu_seconds": 0.0029475490000000007,
+  "complete_child_cpu_seconds": 17.411836,
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "blas_threads": 1,
+  "includes": "Allfour interpreters/sourcechecking/numericalattempts/rawserialization/rawreplay. InnerCPU nested, notadded.",
+  "excludes": "Development/diagnostics, compilation, rootintegration andfullprojectlifecycle.",
+  "energy_joules": null
+}
