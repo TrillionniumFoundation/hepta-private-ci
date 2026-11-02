@@ -1,0 +1,14 @@
+{
+  "correction": "In the four preserved REVIEW_CREMA_* reports, model_inference_performed:false means no neural AV encoder was executed. The logistic classifier/relation heads WERE independently recomputed from cached features/probabilities. The earlier field name was imprecise; it must not be read as no classifier evaluation.",
+  "fit_performed": false,
+  "frozen_classifier_and_relation_head_predictions_recomputed": true,
+  "neural_encoder_inference_performed": false,
+  "schema": "hcsn.audit-terminology-addendum.v1",
+  "scientific_metrics_changed": false,
+  "sources": {
+    "REVIEW_CREMA_AUDIO.json": "80500141a5024781baba77c39b6f6b227797e69bdd3ee9ef40d9ac495b666453",
+    "REVIEW_CREMA_JOINT.json": "6a8c6268d29546ac410f72e09e1ec6f9e133c9112575a21c6ab48f4b3004e1c6",
+    "REVIEW_CREMA_RAW.json": "c1403333398a55d417e104cea32fc494eed06119c5e94cc5fd8bb4b2c9455c1c",
+    "REVIEW_CREMA_VISUAL.json": "8681e93c2131ad299261acc3405a7893a44856a7b8364cb7be45a288f0d96e66"
+  }
+}

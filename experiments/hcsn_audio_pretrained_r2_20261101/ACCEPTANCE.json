@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn.pretrained-frontend.acceptance.v1",
+  "component": "hcsn_audio_pretrained_r2_20261101",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "source_published_before_target_fit": true,
+  "all_heads_published_before_development_extraction": true,
+  "source_and_dependencies_unchanged": true,
+  "candidate_changed_after_development": false,
+  "source_commit": "6c3eabfcab18dd9feda400a7b470f4c646230084",
+  "candidate_commit": "21663ea761d1f8deefc99f3a3872c1984527df46",
+  "source_freeze_sha256": "07453104ced290352374f6e009d5f9f9e5086b8881e63ee7c12cf841bc4bcefb",
+  "candidate_freeze_sha256": "48b874ce106be48d907095203acd258a9ff54fd0b17aeffd2a541571bcaa0ee2",
+  "result": {
+    "path": "experiments/hcsn_audio_pretrained_r2_20261101/results/run001/RESULT.json",
+    "bytes": 1526,
+    "sha256": "ccb222ace7ef2b9c3577dcb0e33664d9e6a2da92e3815d7f6d9dcfa52c8a12a6"
+  },
+  "development": {
+    "scope": "Original historically exposed six actors only",
+    "clips": 72,
+    "actors": 6,
+    "relation_episodes": 288,
+    "new_independent_population": false
+  },
+  "independent_candidate_and_result_audits_pass": true,
+  "primary_video_attribution_replaced": false,
+  "analytic_core_contribution_tested": false,
+  "live_causal_compressed_media_decode_qualified": false,
+  "external_pretraining_cost_known": false,
+  "production_activation": false,
+  "all_blockers_closed": false,
+  "sentence_correct": 69,
+  "sentence_total": 72,
+  "sentence_accuracy": 0.9583333333333334,
+  "predeclared_audio_gate": true,
+  "threshold": 0.9,
+  "audio_gate_scope": "Historical original six-actor development only",
+  "relation_accuracy_increment_over_clean_AT": 0.0,
+  "independent_population_or_full_multimodal_adoption_gate": false
+}
