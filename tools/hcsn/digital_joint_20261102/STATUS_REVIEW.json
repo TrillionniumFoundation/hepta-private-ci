@@ -1,0 +1,90 @@
+{
+  "adoption": {
+    "aux_interval_passed": 0,
+    "aux_raw_slim_intervals": 48,
+    "aux_robust_comparisons": 6,
+    "aux_robust_passed": 0,
+    "main_comparisons": 6,
+    "main_intervals": 24,
+    "main_passed": 0
+  },
+  "boundaries_checked": [
+    "33-state finite CTMC is not exact continuum/free-boundary dynamics",
+    "eight active raw coordinates do not imply eight identifiable directions",
+    "rooted due-current observation and fixed deadline6 target are explicit",
+    "known-environment reference uses fitted decoder and is not unknown-law optimum",
+    "primary14 and secondary24 multiplicity families are separate",
+    "raw/slim replay reuses existing400worlds and does not add independent samples",
+    "all CTMC deployment uses same dense33 propagation, avoiding intrinsic speedup misattribution",
+    "named phase costs are nested or separately bounded; no fictitious lifecycle total",
+    "RSS is not concurrent memory sum; no GPU or energy adoption proof"
+  ],
+  "cost_review": {
+    "max_within_fit_cpu_gap": 0.42575399999999775,
+    "package_named_child_cpu_seconds": 77.97872100000001,
+    "physical_shared_once_plus_worker_cpu_seconds": 1101.808371,
+    "scope": "read-only accounting-boundary review and selected sums from independent receipts; no test rerun or exhaustive remeasurement",
+    "standalone_max_cpu_seconds": 59.387372000000006,
+    "standalone_min_cpu_seconds": 58.882757
+  },
+  "evidence_sha256": {
+    "KERNEL_STATUS.md": "bd75256896d6bd00cb48e3f245cb7bbf3a3c0a12c71e3c5952a0058dcab06ff4",
+    "NATIVE_STATUS.md": "88f10b5b3e3577159e97fdd7494160e72ac1738ccf35e57e5d5e273490779a28",
+    "evidence/joint_independent_audit_task_completeness_full_q_final.json": "bca11919f355ec25fd0bf5f6ff77bbefe2a5a4d9788a707ac780d4df96dcdccd",
+    "joint_independent_audit_admission_attempt2_rerun.json": "f44c769e9fca4f9cb8cb8d07af5eb7e12bb7f3ad223126fe13aa66aa7f00ef98",
+    "joint_independent_audit_confirmation_attempt2.json": "cf4014c3a629cb90d94226767d9eea325e04c3111a7585aa9b83e094fa2e0d3e",
+    "joint_package_STATUS.json": "46e1fa60268144d2fc3c52cbd88a733bbe8c2c6e13917190acba61769cc67488"
+  },
+  "full_q_supplement": {
+    "compiled_rows": 310626,
+    "compiled_tables": 800,
+    "differing_argmax_within_loss_tolerance": 325,
+    "independent_legal_q_entries": 1170050,
+    "max_abs_legal_q_error": 3.3306690738754696e-16,
+    "max_selected_action_loss": 1.1102230246251565e-16
+  },
+  "material_scientific_errors": [],
+  "primary": {
+    "comparisons": 14,
+    "pass_names": [
+      "iid/affine_markov:value-fixed",
+      "ood/affine_markov:value-fixed",
+      "ood/gru:value-fixed"
+    ],
+    "passed": 3,
+    "renewal_ood_gate_passed": false,
+    "renewal_ood_value_minus_fixed_lower": 0.0085787375054244
+  },
+  "publication_notes": {
+    "local_native_review_stage_had_one_extra_terminal_LF_at_first_check": "root notified to restore exact bytes before publication hashing; semantic JSON was equal",
+    "native_review_stages_verified_remote_commit": "88255fbe6ebed26e280bbe3ea6864c9a963ff185",
+    "publication_index_pending_final_root_assembly": true,
+    "remote_native_review_stages_blob_sha": "ccc9a45ba98b3b251b283af93655d7c2d7f693ef"
+  },
+  "raw_confirmation": {
+    "decisions": 23558,
+    "due_read_attempts": 7016,
+    "failed_content_reads": 854,
+    "successful_content_decodes": 6162,
+    "training_calibration_packets_regenerated_and_redecoded": 320,
+    "unique_packets_independently_redecoded": 1346,
+    "verified_absent_packets": 297,
+    "verified_input_files": 2903
+  },
+  "review_limits": "No scientific data, source, model, protocol, statistic, timing or STATUS text changed; no tests or worlds rerun. Publication links are checked at the stated snapshot and final assembly remains root responsibility.",
+  "samples": {
+    "episodes_per_group": 40,
+    "fits": 5,
+    "groups": 120,
+    "independent_inference_unit": "five fitted models per family, not episode count",
+    "learned_episodes": 3200,
+    "model_families": 4,
+    "models": 20,
+    "new_worlds": 400,
+    "reference_episodes": 1600,
+    "total_episodes": 4800
+  },
+  "schema": "joint-status-readonly-review-v1",
+  "scientific_text_passed": true,
+  "status_sha256": "07536a0a42f243b872eae1595162c00f0cb584c9e56965d1f92aa9407e48c8e0"
+}

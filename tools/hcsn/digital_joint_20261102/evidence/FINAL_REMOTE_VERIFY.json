@@ -1,0 +1,2122 @@
+{
+  "schema": "joint-final-read-only-remote-verification-v1",
+  "passed": true,
+  "verified_commit": "b9e4126afe3a7deb07685be75e46a74e01efaef4",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parents": [
+    "88255fbe6ebed26e280bbe3ea6864c9a963ff185",
+    "1a2dc98ac916139005f58c5e4936c583ad0fbf04",
+    "306df6f9ff7a388e6487c4c5ca06446028820fd5",
+    "6a06268b0395c5cc68faa2f308c5a96fafa5b8e7",
+    "e0d2bec473025a2504bbc0f10cc4d9d7dfe56790"
+  ],
+  "native_base_commit": "88255fbe6ebed26e280bbe3ea6864c9a963ff185",
+  "root_tree_sha": "ed8a63d5fbc0ccecd54a58181cba486f163302c4",
+  "namespace_tree_sha": "65496977f4c0d031de590edd51404caab4aaff14",
+  "namespace_tree_untruncated": true,
+  "namespace_blob_count": 240,
+  "core_identity_counts": {
+    "frozen20": {
+      "records": 20,
+      "all_matched": true
+    },
+    "native75 direct": {
+      "records": 67,
+      "all_matched": true
+    },
+    "native75 archive": {
+      "records": 13,
+      "all_matched": true
+    },
+    "package31": {
+      "records": 31,
+      "all_matched": true
+    }
+  },
+  "native_logical_artifacts": 75,
+  "native_archives": 8,
+  "native_archive_layout": "5 direct archives plus3 split archives =13 blob paths; original bytes/totals preserved",
+  "independent_audit": {
+    "path": "tools/hcsn/digital_joint_20261102/evidence/joint_independent_audit_EVIDENCE.tar.gz",
+    "bytes": 1155312,
+    "git_blob_sha": "2c7db247644ac923cc7354498dbc3425129e9525",
+    "passed": true,
+    "canonical_alias_declared_by": "evidence/JOINT_AUDIT_ARCHIVE.json"
+  },
+  "main_raw": {
+    "parts": 19,
+    "bytes": 25993644,
+    "dual_remote_and_local_manifests_consistent": true,
+    "no_gaps_or_overlap": true
+  },
+  "CI_source_override": {
+    "excluded_old_CI_version": {
+      "bytes": 11683,
+      "git_blob_sha": "0b00ea88e9ace2d9849b79db84f07fd96f1ae316",
+      "sha256": "15a5e56d986f08a798fdcb7857c3c1bf0a3dee1fd963d9804c0a65ed3a014ab8"
+    },
+    "keep_bytes": 11982,
+    "keep_git_blob_sha": "902694f82b817e753bf19f979a516e0ee59fe648",
+    "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_admission.py",
+    "rule": "Keep latest local training52 source, as instructed by root; explicitly exclude the old CI dd helper/snapshot version from overwrite.",
+    "training52_designation_provenance": "Supplied by parent task; current local source SHA256 is separately evidenced by its retained rerun metadata."
+  },
+  "CI_current_source_paths": 37,
+  "CI_current_source_bytes_match_local": true,
+  "CI_runtime_output_excluded_from_source_override": [
+    {
+      "hosted_snapshot": {
+        "bytes": 1148,
+        "sha256": "38c7d125a64c1db4569ad7690ff91bf26c4be2eb19137c2adb698f6445ec2821"
+      },
+      "local": {
+        "bytes": 1147,
+        "git_blob_sha": "6e4f622c2645dcf561d46ac6f51ee2fd3e0e545c",
+        "sha256": "dc58b5c66d667cf8ad2bb28a08c1eb81ea73775cb00e3fb9cef6ec3cde77bbe0"
+      },
+      "path": "tools/hcsn/digital_joint_20261102/evidence/joint_task_prefit_audit.json",
+      "reason": "Fixture evidence output, not CI source; local 1147 bytes differs from 1148-byte hosted isolated copy, so do not use this copied runtime output as a source overwrite."
+    }
+  ],
+  "old_namespace": {
+    "path": "tools/hcsn/digital_read_before_20261031",
+    "expected_and_actual_tree_sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+    "unchanged": true
+  },
+  "status_document": {
+    "path": "tools/hcsn/digital_joint_20261102/STATUS.md",
+    "bytes": 9254,
+    "git_blob_sha": "58b277f352b6cd5871877336238a94fa86a9a6cf",
+    "exists": true
+  },
+  "repository_boundary_differences": {
+    "": [
+      {
+        "path": ".github",
+        "before": "2976449824fdf812c788064a142d93e8afed281b",
+        "after": "120341e51eb938974ee4bd9dee70a7d3a483f1da"
+      },
+      {
+        "path": "tools",
+        "before": "6b063615baf161b65c9c84d714f9f4f6e23240b8",
+        "after": "ae2de08ae8bc7c1d54d8e526df4ccd24ec421b55"
+      }
+    ],
+    "tools": [
+      {
+        "path": "hcsn",
+        "before": "5b698a8a92f9b95abbc37adbe73e37b05b569f8e",
+        "after": "15bb7e5681489e6bb84ce7e5ed98604972ec9527"
+      }
+    ],
+    "tools/hcsn": [
+      {
+        "path": "digital_joint_20261102",
+        "before": "ed4215b6172b5e5079d16e16c10c3e93a434fb06",
+        "after": "65496977f4c0d031de590edd51404caab4aaff14"
+      }
+    ],
+    ".github": [
+      {
+        "path": "workflows",
+        "before": "2f361c2fe164362c248879614d42aa9e1e2cdfe8",
+        "after": "c7604f844f5787374785ed41a9862448fea85f30"
+      }
+    ],
+    ".github/workflows": [
+      {
+        "path": "hcsn-joint-distribution.yml",
+        "before": null,
+        "after": "30d363396ae273dd5b476285ee02c4210ae912ca"
+      }
+    ]
+  },
+  "permitted_changes_outside_new_namespace": [
+    ".github/workflows/hcsn-joint-distribution.yml"
+  ],
+  "unpermitted_changes_outside_new_namespace": 0,
+  "archive_reference_checks": [
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_native_crash_development_failed.tar.gz",
+      "bytes": 45320,
+      "parts": 1,
+      "reference_bytes_total": 45320,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_native_crash_final.tar.gz",
+      "bytes": 225385,
+      "parts": 1,
+      "reference_bytes_total": 225385,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_raw.tar.gz",
+      "bytes": 5427813,
+      "parts": 4,
+      "reference_bytes_total": 5427813,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_generated_sources.tar.gz",
+      "bytes": 159110,
+      "parts": 1,
+      "reference_bytes_total": 159110,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_owner_development_before_extra_checks.tar.gz",
+      "bytes": 1975139,
+      "parts": 2,
+      "reference_bytes_total": 1975139,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_owner_qualification_final.tar.gz",
+      "bytes": 1983162,
+      "parts": 2,
+      "reference_bytes_total": 1983162,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_native_independent_audit_raw.tar.gz",
+      "bytes": 152146,
+      "parts": 1,
+      "reference_bytes_total": 152146,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_native_task_fixture.tar.gz",
+      "bytes": 72566,
+      "parts": 1,
+      "reference_bytes_total": 72566,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz",
+      "bytes": 24095392,
+      "parts": 17,
+      "reference_bytes_total": 24095392,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_package_first_derive_failure.tar.gz",
+      "bytes": 171447,
+      "parts": 1,
+      "reference_bytes_total": 171447,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz",
+      "bytes": 25993644,
+      "parts": 19,
+      "reference_bytes_total": 25993644,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz",
+      "bytes": 14316376,
+      "parts": 10,
+      "reference_bytes_total": 14316376,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/joint_kernel_EVIDENCE.tar.gz",
+      "bytes": 492844,
+      "parts": 1,
+      "reference_bytes_total": 492844,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_budget_EVIDENCE.tar.gz",
+      "bytes": 36995,
+      "parts": 1,
+      "reference_bytes_total": 36995,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_budget_EVIDENCE_v2.tar.gz",
+      "bytes": 52855,
+      "parts": 1,
+      "reference_bytes_total": 52855,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_budget_EVIDENCE_v3.tar.gz",
+      "bytes": 86245,
+      "parts": 1,
+      "reference_bytes_total": 86245,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_compiled_dp_EVIDENCE.tar.gz",
+      "bytes": 27165,
+      "parts": 1,
+      "reference_bytes_total": 27165,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt1_failed.tar.gz",
+      "bytes": 4010582,
+      "parts": 3,
+      "reference_bytes_total": 4010582,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_ci_LOCAL_EVIDENCE.tar.gz",
+      "bytes": 2479878,
+      "parts": 2,
+      "reference_bytes_total": 2479878,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_ci_hosted_41374974573.zip",
+      "bytes": 1435551,
+      "parts": 1,
+      "reference_bytes_total": 1435551,
+      "all_git_blob_sha_and_sizes_match": true
+    },
+    {
+      "archive": "tools/hcsn/digital_joint_20261102/evidence/joint_independent_audit_EVIDENCE.tar.gz",
+      "bytes": 1155312,
+      "parts": 1,
+      "reference_bytes_total": 1155312,
+      "all_git_blob_sha_and_sizes_match": true
+    }
+  ],
+  "archive_reference_summary": {
+    "logical_archives": 21,
+    "physical_blob_paths": 72,
+    "missing_core_references": 0,
+    "duplicate_reference_paths": 0,
+    "remote_tar_zip_blob_path_set_exact": true
+  },
+  "verified_blob_rows_columns": [
+    "path",
+    "bytes",
+    "git_blob_sha",
+    "categories"
+  ],
+  "verified_blob_rows": [
+    [
+      "tools/hcsn/benchmarks/data.py",
+      2841,
+      "5aa80974b2722fdfa66609922bb191410e8812d0",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_budget.py",
+      16174,
+      "6ce65d5d2b7fdd9148a0ce2fcd43c523a1b40778",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_campaign.py",
+      21578,
+      "dffdde4a41f048eb8df18369957c06c82240397f",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_compiled_dp.py",
+      7459,
+      "fb72ee7bd0c299a45ca2b6e76436a0ad8230f07e",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_data.py",
+      7199,
+      "0d3fd09c30665ff43765bbd7e4fc7d9609766dc2",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_deadline_reference.py",
+      3100,
+      "a81d0f648b6a5ba340d66d724177cf3b05fce7e2",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_deploy.py",
+      4445,
+      "2932f1207d7a4a70e5eaddc976f23d088daa0de6",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel.py",
+      10539,
+      "c387cb9bbe524b5391bd9eec7ea9d3b68bfcc820",
+      [
+        "frozen20",
+        "CI source or workflow/documentation",
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_launch.py",
+      5233,
+      "3307ab2ce69b34d0f9874c5ed41d227d812f9953",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_law.py",
+      4396,
+      "df4670f7027f6ab8fc7c08ab3794571c5920cfe0",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_model.py",
+      10575,
+      "a510c0655da759107607e16b79ff9c47aaa6ae8e",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_protocol.json",
+      12063,
+      "e6bc91af1eb5cafe007c687931f2370bb57fddcb",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_task.py",
+      12845,
+      "0a9797e183420035d18cc027e4bb32f43a9c2db4",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_train.py",
+      12375,
+      "8d6b7ff4bed6616d6e1ddb779aa470fc2be1ef60",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_read_before_20261031/task.py",
+      12163,
+      "af897f81d3088fa4eb7316766b4e4a01015dcdbd",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/next/full_kernel/baseline_table.npz",
+      253216,
+      "0a7028fdf245107cfdd68f5099a4792c19f55916",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json",
+      954,
+      "431dfa88c8b29c0e05b11ea6ffe8248b6f1f36b0",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/task_value_factorial_20261030/task.py",
+      17537,
+      "de786cff82802432e7f2630c684046c8b919191c",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz",
+      27574,
+      "68fdf2c66856da1de974e9a1b8c00f6ff059d97a",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/third/memory/reference.py",
+      5648,
+      "7b9ba8ff2ba5e44651b291c8c6fe47b9d159581d",
+      [
+        "frozen20",
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/NATIVE_STATUS.md",
+      3634,
+      "d69257811991209202b64c2f472e38fbf19ec0b3",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_build.json",
+      17188,
+      "7156a3eb1e6fcebc4ac95665a808d7593482f782",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_build_logs/00.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_build_logs/01.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_build_logs/02.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_build_logs/03.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_build_logs/04.log",
+      1007,
+      "078ab7671d9aa84e31a884a5542eea05afee28bc",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_build_logs/05.log",
+      26035,
+      "9c0dd82c485e485572e4eb38b7a18b10f5810616",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_cancel_audit_development_failed/FAILURE.json",
+      544,
+      "7d91bc0459bf15f8d9bf02f9016053f8ae3462d2",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_cancel_audit_development_failed/joint_native_cancel_audit.py",
+      5827,
+      "5dffad6c7c2ddcd0247bf481e781b437cb412f03",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_cancel_independent_audit.json",
+      8040,
+      "1ca92b04b79cbc58163ffce8fb1b59d9247e3d7f",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_crash_development_failed.tar.gz",
+      45320,
+      "2b554a885cbcdfc774ad712ca58606f359b8b39c",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_crash_final.tar.gz",
+      225385,
+      "238fc5b9c496a94002af79e1400918211107ff56",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_crash_qualification.json",
+      10023,
+      "7208215d36676c5798cadfe25cf2e8d31875777a",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_DELIVERY.json",
+      828,
+      "1b0dbc70daeb6c46255ff169316fd85c5558a111",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_generator_audit.json",
+      26544,
+      "4f30ff8939ccc30df69178780b414a23db37c461",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_generator_audit_process.json",
+      884,
+      "1eb3b42b1c6f6cd452b4758d9826710f42a6f1e5",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_outer_process.json",
+      1054,
+      "82de0cbe0cfdaf8f20e37974beb1618cfd4aa3ab",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_qualification.json",
+      26902,
+      "da628499ded2d38fbd9e608481778214b79d1daa",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_raw.tar.gz.part-000",
+      1440000,
+      "294999069a32cb5f98569f2043d252ef47335db1",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_raw.tar.gz.part-001",
+      1440000,
+      "e7119036f7a8572e82a727d247343543b78c7225",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_raw.tar.gz.part-002",
+      1440000,
+      "40cc3bb8481d67fef45a8dcacc9eebe3ab39003a",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_raw.tar.gz.part-003",
+      1107813,
+      "5acfebccf45471ab7623eef10b74d3772859304a",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_Cargo.lock",
+      6125,
+      "2df3e063514bcc678f0759924784b8e3bce8b63b",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_artifact_audit.json",
+      5523,
+      "3728e2d18ed52c915e5beff36c4deb615d147192",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_build.json",
+      18952,
+      "370d8c58c244f9e5e44a79f50ffc348c4914e1a9",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_build_logs/00.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_build_logs/01.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_build_logs/02.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_build_logs/03.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_build_logs/04.log",
+      1983,
+      "256982038ae118938b54c54b93972ce212e407e7",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_build_logs/05.log",
+      27494,
+      "f09edfb112f23f532118fe97e2c6e26adc7da618",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_failed_build_001/00.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_failed_build_001/01.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_failed_build_001/02.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_failed_build_001/03.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_failed_build_001/04.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_failed_build_001/05.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_failed_build_001/06.log",
+      0,
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_failed_build_001/07.log",
+      1704,
+      "87e87fc365e7703e8c77b281e912c6ca52a5a743",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_generated_sources.tar.gz",
+      159110,
+      "ae1a2d616c0937d8b3697b9f9a27686e7ac8b562",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_owner_development_before_extra_checks.tar.gz.part-000",
+      1440000,
+      "d04bc3912817bebb844e31ef40b66316a680b998",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_owner_development_before_extra_checks.tar.gz.part-001",
+      535139,
+      "9a17bbd55d6b810a5045074793a11e7a3bd021b7",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_owner_qualification.json",
+      17569,
+      "1422f16afa1c83dc201610824f60504481bfee4c",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_owner_qualification_final.tar.gz.part-000",
+      1440000,
+      "0fd2a88ab50182b0278e874bc7e080601022dca1",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_owner_qualification_final.tar.gz.part-001",
+      543162,
+      "db1da2ad4c25562731f1ad192b144d8f5a4d9dde",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_gate/SUMMARY.json",
+      1651,
+      "a4af7baf36a692ed696b8217ad581fd5052802cd",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_gate/after.log",
+      25545,
+      "a7c54b8a208d7eda87056558c460ed642570b92b",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_gate/before.log",
+      359,
+      "44be2f2387706a4d913ec479a2cbd69b0a1272e5",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_independent_audit_raw.tar.gz",
+      152146,
+      "e74882582b2d2c3392ec8595f140b139fc1226a4",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_independent_audit_raw_manifest.json",
+      102809,
+      "add66a321ba0a34b43e59f99c8d5851779bbdb1b",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_nextest_official_artifact.json",
+      1415,
+      "63c637295fd70e9a3150b839e4dcf9debda974cd",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_owner_independent_audit.json",
+      2597,
+      "cc731f4536196c160d8b4a22589c2a9bd3cdf756",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_policy_full_markov_raw.json",
+      6831,
+      "c82899da18fdff20eacca07c46d338a3b6f4301d",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_policy_gru_raw.json",
+      6785,
+      "15de9c9c11453e152cede2eafcd89630031c0514",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_policy_pairing.json",
+      6820,
+      "c43af3b903b2d70bc3ad02f333cab78ee1ef7b04",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_policy_renewal_raw.json",
+      6827,
+      "4d714d2a9561fdb139b72175035ea622c88bb16e",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_task_fixture.tar.gz",
+      72566,
+      "d3d4bf6dfe848e15980a2bd13a6a3930f61259ce",
+      [
+        "native75 archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_task_fixture_manifest.json",
+      2817,
+      "be2eaa6a15761ea7d6f60ea1a6faffb2ca03b06a",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_task_pairing.json",
+      1393,
+      "d33c2822c51d6746e4ebb201b2ce218abbf4d391",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_README.md",
+      6719,
+      "fc8b31e7a9901d3d8cd59ac871f642b66f1c7170",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_artifact_audit.py",
+      2017,
+      "76f84dc4183934bc0a94764487815ac5a905a7df",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_build.py",
+      3338,
+      "39b1a2a485d04e7ca9eda2038c5ae5c8c7a858c5",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_cancel_audit.py",
+      6495,
+      "9e97332e6ad94752819a0e923e7c59fde4352236",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_cell.rs",
+      1261,
+      "3050545146d0fd5ae2353592dc67afd52bee55f8",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_fault.rs",
+      1280,
+      "cf85b674ae407d188ba87f4b081f3906d539f22a",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_frozen_weights_qualify.py",
+      9151,
+      "53b23b49710aabf2a525abc4a9df5d1429b2fef9",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_full_build.py",
+      8133,
+      "7cfa82e734dd96c329ffa1f4231ca7b9e8e281ee",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_full_qualify.py",
+      13414,
+      "72ec79805ad918a680bafab0b2dd33ab7630e168",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_full_tests.rs",
+      1837,
+      "fed6b863a7f0efca8e40cb28309b57250f35886c",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_gate.py",
+      2962,
+      "ba2903a055dad2ac4c1644759d1f31718422b86f",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_owner.py",
+      10623,
+      "eb59fbb6731f106cb04793d5415bce7eb670eb9a",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_owner_audit.py",
+      10583,
+      "46235146ce8f87be30eba7df2c4540d03352a3cb",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_policy.rs",
+      16990,
+      "e528f353efa2ddefd6d00d4c29c8126ced946c7a",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_policy_probe.rs",
+      1017,
+      "7cf34787463450ce9e0eea788e2009696d4299b8",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_port.rs",
+      5037,
+      "46e16244743f9a5434c67f835d293ca1ed2d1b7e",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_qualify.py",
+      10777,
+      "0c2933e8c21949790f2aa9dd005e86762ed98bc3",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_task.rs",
+      12761,
+      "1c12a35246c58c9a8f3e73a7392a60fba09ae60f",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_task_check.py",
+      6876,
+      "a5819bf160cd58e60029fa45e7a1b9e7a6ca7064",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_task_fixture.rs",
+      2285,
+      "43e6dc6b74eb2ef4a147434cb11850701d57e359",
+      [
+        "native75 direct"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_native_PUBLICATION_MANIFEST.json",
+      62730,
+      "9977053be6a6608d7fdd72c088bc6b0a59776749",
+      [
+        "native manifest"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_native_PUBLISHED_PARTS.json",
+      8080,
+      "c86f127ccdd2c1fde14e2ada6b809e8ea96ff4a6",
+      [
+        "native manifest"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_inference_package.py",
+      7099,
+      "ffe807050e13924b0d97f39e776f4c97dd99cc8b",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_package_benchmark.py",
+      9445,
+      "b3e126dfe578171f983c02051d0830c880dabc6c",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_package_benchmark_protocol.json",
+      4493,
+      "44cea1cfc4aec2499f63bea7ed8ae426d5ccd8a8",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_package_registered_v2.py",
+      5035,
+      "1a9fbe2ad3ee50357e757e6265ee09f1ad1d8593",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_package_STATUS.json",
+      4843,
+      "4500595b796ba4bf4cc71d600137e3e5f453fa1b",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE_ARCHIVE.json",
+      17356,
+      "c93dd75d06fcccdcac84cd2c9629ef56da6e9d08",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE_INDEX.json",
+      507118,
+      "3f1ba93f9267cd33271972403e825940336a5161",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_engineering_fixture.json",
+      2684,
+      "ca9ad3b34549c9df0b65e2448a39410713465bb7",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_environment_POSTSCRIPT.json",
+      1982,
+      "474ad413fbfe5790ef9174d2c9a6e18a9b31efa3",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_first_derive_failure_ARCHIVE.json",
+      2398,
+      "e3e7d4e59340a7376448f49e61d394ac15e2424f",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_interval_fixture.json",
+      270,
+      "f412d19e69f283f316b5740dd8c7dbd5cdd5d138",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_registered_v2_fixture.json",
+      1128,
+      "14a7f13e92cedebf45a858fa461376994e725477",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_first_derive_failure.tar.gz",
+      171447,
+      "1bf417d93b09c68408c81a83f7624999fcfcecf9",
+      [
+        "package31",
+        "package FIRSTFAIL"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE_PARTS.json",
+      7297,
+      "9c077d8b762d5a3193aa32e73209ff2e3fe010f9",
+      [
+        "package31"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-000",
+      1440000,
+      "d814cd2138ffa3f6e16ccc64d8cb8cf0f9f9cb9f",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-001",
+      1440000,
+      "005ea75cce462cba7e942a57c7107bda450fe503",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-002",
+      1440000,
+      "f1816e5e36c9e33e120ac6f07588804c9943700a",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-003",
+      1440000,
+      "c20ca8a73829bc3085f3e1e7ee933c8683398b24",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-004",
+      1440000,
+      "23a88992f425fcc0c8559e1c3966533fe68b94c1",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-005",
+      1440000,
+      "af34cbda49ac935d8f9233f626ab28df4add3267",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-006",
+      1440000,
+      "513ee7e923f86f9f2acafa7f6c4e6dc71c293855",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-007",
+      1440000,
+      "0a8514afe942a5aeb19bfccc77388495976c1c3f",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-008",
+      1440000,
+      "2c70a19dabd8130ee00581c1e75601e524beab7f",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-009",
+      1440000,
+      "a28166ffe672ae6770b9e8c1c5b3f8b808550b99",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-010",
+      1440000,
+      "4f86fe2209fe606708086bde16e2bb99442f52ff",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-011",
+      1440000,
+      "7966ec49812280a88079b8b36c3f170e3bb842d2",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-012",
+      1440000,
+      "929070cb19032baf288febd7976a5bb592946e12",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-013",
+      1440000,
+      "a80cf294b585ec74e7f70052d10009e380a201fa",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-014",
+      1440000,
+      "6b41e6ca36cce21a42b5e02cc078972f0b44f84c",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-015",
+      1440000,
+      "ecfe1e1e7365a947c605ff366385ecf83a3a6c76",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz.part-016",
+      1055392,
+      "34de039122f16b24d1f16aebefee9956a7e03fea",
+      [
+        "package31",
+        "package17parts"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json",
+      3464,
+      "2f6c5bd19744468f2b1668a89bf3f39b97732bff",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_budget_profile.py",
+      6841,
+      "d80aadd786e6f0cb7f5f32e0434151ea0b488334",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_ci.py",
+      6455,
+      "442a5a333ab1eab1655fbb9ed7d58a5f54f0cbf2",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_ci_PRIMARY_SOURCES.json",
+      2528,
+      "9af1cca4304d21e250704fda32be8df85df05032",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_compiled_dp_validate.py",
+      6121,
+      "cd5bf23e2598e018758f3b8d0b5f8e39307474e2",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_independent_audit.py",
+      9731,
+      "8b6dc29fecf6eb101b52688d5a683eb8e7579a38",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_independent_audit_admission.py",
+      11982,
+      "902694f82b817e753bf19f979a516e0ee59fe648",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_independent_audit_training.py",
+      11175,
+      "b23f453ea716fcd5d2a0483d064297263285ef9b",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_protocol.json",
+      2990,
+      "17c9bab0c0d6aee3c0c4d5c0ffc7c4acf97b9c4e",
+      [
+        "CI source or workflow/documentation",
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity.py",
+      7811,
+      "ece507fbc5955829bbcb60484da924ab7e75ece0",
+      [
+        "CI source or workflow/documentation",
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep.py",
+      3883,
+      "1711dde5cd6ae2a4a03959373114e3039d7fcb8b",
+      [
+        "CI source or workflow/documentation",
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record.py",
+      4255,
+      "3baac02de8fc085074fa98da074a241dbad5a45e",
+      [
+        "CI source or workflow/documentation",
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_validate.py",
+      12678,
+      "4322d8162a0d1da347e7f46cc051abbede50b988",
+      [
+        "CI source or workflow/documentation",
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_pilot.py",
+      4355,
+      "06aa01a8c592790a4c244ad56698e1bec224eb08",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_task_audit.py",
+      7292,
+      "06c6d0645aebc58babe090f3f5b5109dfd867c75",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      ".github/workflows/hcsn-joint-distribution.yml",
+      3061,
+      "30d363396ae273dd5b476285ee02c4210ae912ca",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_ci_README.md",
+      2842,
+      "61970f450fbe6eb411d6f660ef7f15c0cb2a00cd",
+      [
+        "CI source or workflow/documentation"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-000",
+      1440000,
+      "5d2b489d1f4ef3f62ef324c66983310bbe45d025",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-001",
+      1440000,
+      "5d5573de4e3627a3684d87c337fe70e2288c9e9b",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-002",
+      1440000,
+      "6b88cdc55ae03a7901465f34abf514756b5ce2db",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-003",
+      1440000,
+      "2f65311d95c32fee3ff210a16cdbf86c87c0184b",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-004",
+      1440000,
+      "ce03bb4fb45718e2a2685cba246496aef808614b",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-005",
+      1440000,
+      "dd84111a924c63f5b7fbab94000dd6a8b21a05c8",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-006",
+      1440000,
+      "06766a64864855815b895f56e84ffaa6fee2c098",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-007",
+      1440000,
+      "8a816b2b43662c4e665db34c46f11444067280c7",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-008",
+      1440000,
+      "7906054cb566cd2ce9d10c7b9be0fc2e81003ace",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-009",
+      1440000,
+      "16a2cffa4b85ea0800aa159a3ed8412075862f82",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-010",
+      1440000,
+      "3b14b28e981254202992d127a06bf8e3213c688e",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-011",
+      1440000,
+      "a084323d3a9b16dadb23932c58533fe31687fbde",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-012",
+      1440000,
+      "718eac7905265d03369bf10cf27b46ce6759b69a",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-013",
+      1440000,
+      "09a3cc31049fd3f62a77d51d665ba7a447dc70f0",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-014",
+      1440000,
+      "21f730a204fa475423df7892d9cd49722d3fb724",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-015",
+      1440000,
+      "c5fc173940181b93e2d661836e5bf368f01964f9",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-016",
+      1440000,
+      "0a9037ae94e457039ec6e8b0c77b636b6dcf2828",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-017",
+      1440000,
+      "fa6b6fd1fe7f27bc91d65fdab26e62db9a1da1ad",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_confirmation_RAW.tar.gz.part-018",
+      73644,
+      "c54e012c8801f3345addb1bbe9df2cc838a09b6b",
+      [
+        "main raw archive part",
+        "main raw19"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/JOINT_CONFIRMATION_RAW_BLOBS_MANIFEST.json",
+      11750,
+      "ab37a73a7ebaf812def49d80c31bf92284daf60e",
+      [
+        "main raw parts manifest"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_independent_audit_EVIDENCE.tar.gz",
+      1155312,
+      "2c7db247644ac923cc7354498dbc3425129e9525",
+      [
+        "independent audit archive",
+        "independent audit1155312"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_independent_audit_EVIDENCE_INDEX.json",
+      8920,
+      "4642638222b2f9801f2cb034213ff0db342ab1a9",
+      [
+        "independent audit archive index"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_ci_ARCHIVE.json",
+      662,
+      "c148c95d013264c0656b97628c769a43e9e094f2",
+      [
+        "CI evidence metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_ci_HOSTED.json",
+      5468,
+      "2175e4c2e49e71fd5848e2ec4b1c80024ac8c0df",
+      [
+        "CI evidence metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_ci_HOSTED_MANIFEST.json",
+      25518,
+      "1050330071bf02ccfb75005037ffa18d2b920da9",
+      [
+        "CI evidence metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_ci_PUBLISHED_PARTS.json",
+      1295,
+      "8c253baf93a2e14492858155de24961015babe82",
+      [
+        "CI evidence metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_ci_LOCAL_EVIDENCE.tar.gz.part-000",
+      1440000,
+      "e9225dc094096155818981d8b8154d227ab7f62d",
+      [
+        "CI evidence archive part or hosted archive",
+        "CI archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_ci_LOCAL_EVIDENCE.tar.gz.part-001",
+      1039878,
+      "694d0483bdf5bbd05863ad78d9ecc4b5475a0785",
+      [
+        "CI evidence archive part or hosted archive",
+        "CI archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_ci_hosted_41374974573.zip",
+      1435551,
+      "0e9c4b1459fb9d52014c9564faf98ba383ed313b",
+      [
+        "CI evidence archive part or hosted archive",
+        "CI archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-000",
+      1440000,
+      "cc844fe0147698de01123bb512d5467884f7e247",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-001",
+      1440000,
+      "9bb24ef46e72f1e1c959974eba5e6e3775d65fde",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-002",
+      1440000,
+      "8124afa4cdf8045cf030795ba77df3b4b6dc865a",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-003",
+      1440000,
+      "b0c846335136855a8d5287b03b50b11d3031f44a",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-004",
+      1440000,
+      "8414d55ce067afdfd37c8749fee3cfca80f33a80",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-005",
+      1440000,
+      "da39d84253aa60e60485f0737080b86b7cd5a496",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-006",
+      1440000,
+      "73a8d1d898a14e277bf5a55cf6d85b7a6b9edbd3",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-007",
+      1440000,
+      "568eed7519173f9ea538d368482346e4db4495c5",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-008",
+      1440000,
+      "2ad1d39c6639be4b1cc4367cc3ea6381f702941f",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt2_training.tar.gz.part-009",
+      1356376,
+      "d079b154f673f7484b3fd402ae61fb04b7103aed",
+      [
+        "training final20 raw"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_EVIDENCE.tar.gz",
+      492844,
+      "c2252e4ab5b15fb6715753b98380e089409d1c21",
+      [
+        "support archive",
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_budget_EVIDENCE.tar.gz",
+      36995,
+      "5f6e4c69db77630fc6a50a5cbdaf948f33cec683",
+      [
+        "support archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_budget_EVIDENCE_v2.tar.gz",
+      52855,
+      "85abd679acf23085ec99f6534c6d4d7324dcc47d",
+      [
+        "support archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_budget_EVIDENCE_v3.tar.gz",
+      86245,
+      "efab37d235a2411828948e3dbf513f33eec99477",
+      [
+        "support archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_compiled_dp_EVIDENCE.tar.gz",
+      27165,
+      "7125aa1ec5187ef78a581f9ff578a1b462b6aabc",
+      [
+        "support archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt1_failed.tar.gz.part-000",
+      1440000,
+      "29450e3a79d6240de329a08bb74d4840e05ccccd",
+      [
+        "support archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt1_failed.tar.gz.part-001",
+      1440000,
+      "a1e4f1ea9802ffd4f4a0d2955e302cb9d212af27",
+      [
+        "support archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/joint_formal_attempt1_failed.tar.gz.part-002",
+      1130582,
+      "afbfd420d845da8079dbe60f63faab149f9c8f52",
+      [
+        "support archive"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_EVIDENCE_MANIFEST.json",
+      4420,
+      "8982cd99a22eb140dd9ff963c8ba21ed74145d2a",
+      [
+        "kernel inventory",
+        "kernel current metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_README.md",
+      7177,
+      "37be25cf10acb3c35dfcbcae2ad3b376c93c975a",
+      [
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_REFERENCE_MANIFEST.json",
+      1162,
+      "8325b32b8af05d5cb536c8fad33676b929826c00",
+      [
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_RESULT.md",
+      3914,
+      "6b81193bdedc024a9984374b6073b2b34f71d998",
+      [
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_protocol.json",
+      1151,
+      "e2bd31283bc1a99b034dbfaec12832111b287f65",
+      [
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_protocol.json",
+      2551,
+      "dd44e212221edf7974ebd4b9805de3cd2946f5e4",
+      [
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_protocol.json",
+      1341,
+      "635c1d7eb252c146eabac73f1d5e9ebf23e84116",
+      [
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001.json",
+      659,
+      "8a5d913ce69d2d7b81f801a2e18b54cf2b4a7c86",
+      [
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002.json",
+      44673,
+      "7820a70ebd3752b17c6570342586b332efab7d26",
+      [
+        "kernel inventory"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/KERNEL_PUBLICATION_MANIFEST.json",
+      25310,
+      "de9240c1ab06523c652ff9b190f07141eeb0794f",
+      [
+        "kernel current metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/KERNEL_STATUS.md",
+      12335,
+      "47269ffbd790ab6d2d3c99bd5550e59a2bd984c3",
+      [
+        "kernel current metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/joint_independent_audit_kernel.json",
+      4029,
+      "0cdee86258fb376dbcaf7ed32a6dde0c211a2fdc",
+      [
+        "kernel independent support"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/JOINT_SUPPORT_ARCHIVES.json",
+      3381,
+      "532b245083602aa61fa0d47d3dc54c658cc3e4fc",
+      [
+        "training/support metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/JOINT_TRAINING_PARTS.json",
+      2753,
+      "ed6ee2ac4268104aab3b86fb9d83d1c00de427dd",
+      [
+        "training/support metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/JOINT_TRAINING_ARCHIVE.json",
+      632529,
+      "d7ab03cebc57c4b5d3bfcda4efd45454e91c39c9",
+      [
+        "training/support metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/evidence/JOINT_MODEL_FREEZE.json",
+      92488,
+      "a79808b7954ea1ffc6c93d5706679413c51b167a",
+      [
+        "training/support metadata"
+      ]
+    ],
+    [
+      "tools/hcsn/digital_joint_20261102/STATUS.md",
+      9254,
+      "58b277f352b6cd5871877336238a94fa86a9a6cf",
+      [
+        "status document"
+      ]
+    ]
+  ],
+  "not_checked": {
+    "kernel_archive_member_rehash": {
+      "count": 13,
+      "paths": [
+        "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_RESULT.md",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001.json",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_recovered_sources.json.gz",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_sources.json.gz",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_002.json",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_002_sources.json.gz",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_attempt_001.json",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_attempt_001_sources.json.gz",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001.json",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001_RAW.json.gz",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001_sources.json.gz",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001_sources.json.gz",
+        "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002_sources.json.gz"
+      ],
+      "reason": "Manifest explicitly marks these as members of the published kernel archive, not direct tree paths. Archive blob identity verified; no further member rehash or scientific rerun in this final pass."
+    },
+    "independent_sensitivity_member_rehash": {
+      "paths": [
+        "tools/hcsn/digital_joint_20261102/joint_independent_audit_sensitivity.json"
+      ],
+      "reason": "Resolved metadata coordinate audit/joint_independent_audit_sensitivity.json in the verified independent audit archive; member not rehashed in this final pass."
+    },
+    "integrated_hosted_CI_success": "Not asserted or borrowed from the earlier isolated hosted success.",
+    "optional_noncore_inventory": "No further inventory expansion or repeated validation was performed."
+  },
+  "optional_unpublished_metadata": [
+    {
+      "path": "tools/hcsn/digital_joint_20261102/evidence/joint_ci_workflow_static.json",
+      "bytes": 641,
+      "classification": "Local auxiliary static-check JSON; not executable source, raw payload, or a core archive reference. Root plans metadata-only addition."
+    }
+  ],
+  "scope": "Read-only publication source/blob identity, core archive reference completeness and immutable subtree check. No new experiment, performance measurement, source change or raw mutation.",
+  "github_mutations_performed": 0,
+  "scientific_reruns_or_new_performance_measurements": 0
+}

@@ -1,0 +1,125 @@
+{
+  "schema": "joint-integrated-cpu-fixture-complete-v1",
+  "run_id": 41378071269,
+  "head_sha": "b9e4126afe3a7deb07685be75e46a74e01efaef4",
+  "status": "completed",
+  "conclusion": "success",
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41378071269",
+  "started_at": "2026-11-02T02:30:12Z",
+  "completed_updated_at": "2026-11-02T02:40:08Z",
+  "jobs": [
+    {
+      "id": 125062619448,
+      "name": "cpu-fixtures",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-02T02:39:07Z",
+          "completed_at": "2026-11-02T02:39:08Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-02T02:39:08Z",
+          "completed_at": "2026-11-02T02:39:10Z"
+        },
+        {
+          "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-02T02:39:10Z",
+          "completed_at": "2026-11-02T02:39:10Z"
+        },
+        {
+          "name": "Install official CPU dependency versions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-02T02:39:10Z",
+          "completed_at": "2026-11-02T02:39:45Z"
+        },
+        {
+          "name": "Run mathematical and semantic fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-02T02:39:45Z",
+          "completed_at": "2026-11-02T02:40:05Z"
+        },
+        {
+          "name": "Preserve every fixture result",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-02T02:40:05Z",
+          "completed_at": "2026-11-02T02:40:06Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-02T02:40:06Z",
+          "completed_at": "2026-11-02T02:40:06Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-02T02:40:06Z",
+          "completed_at": "2026-11-02T02:40:06Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-02T02:40:06Z",
+          "completed_at": "2026-11-02T02:40:06Z"
+        }
+      ]
+    }
+  ],
+  "artifact": {
+    "id": 13112660539,
+    "name": "hcsn-joint-cpu-41378071269-1",
+    "bytes": 1494391,
+    "digest": "sha256:f522344cfabc011286a59c677c84d349b0449f9aef2f839bb5f6c69b62eb3df2",
+    "canonical_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13112660539",
+    "parts": [
+      {
+        "path": "tools/hcsn/digital_joint_20261102/evidence/joint_ci_integrated_41378071269.zip.part-000",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ddf155ea7c63c2c84e08a65c9f4174ca5900827",
+        "bytes": 1440000
+      },
+      {
+        "path": "tools/hcsn/digital_joint_20261102/evidence/joint_ci_integrated_41378071269.zip.part-001",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "10a890779d2e1a92b7bbff0f06bda5c58cc04d04",
+        "bytes": 54391
+      }
+    ]
+  },
+  "source_scope": "All20 frozen source identities checked before/after; six CPU fixtures passed on integrated evidence source b9e4126. Later changes only append evidence/metadata, with no executable-source or frozen-model changes.",
+  "excluded_claims": [
+    "formal retraining",
+    "bit-identical weight regeneration",
+    "new confirmation samples",
+    "native CI",
+    "GPU",
+    "actual energy",
+    "production"
+  ]
+}
