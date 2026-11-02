@@ -1,0 +1,102 @@
+{
+  "schema": "hcsn.publication-files.v1",
+  "evidence_head_sha": "8df6e272e3a31a3fae0491dd2d511825e212290c",
+  "publication_preconditions": [
+    "Require .github/workflows/bazel.yml parent Git blob 8d8123c81dabc3cd38c2ef9847c1633e3ff1080c (or manually reconcile before applying).",
+    "Publish the exact diagnostic bundle alongside or before this focused patch.",
+    "This preserves all target labels/constraints/lint gates; full new-head Windows Clippy remains a required remote validation."
+  ],
+  "files": [
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/candidate/.github/workflows/bazel.yml",
+      "destination": ".github/workflows/bazel.yml",
+      "bytes": 20713,
+      "sha256": "4bf5b7b9211d0943eda0df95dc966a3ab7371f0ffa5215db4e7c462eba8a5053",
+      "git_blob": "78a041f4324c7bb2c7b11cf71a85f25059a771e5"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/WINDOWS_CLIPPY_PLATFORM_SELECTION.patch",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/WINDOWS_CLIPPY_PLATFORM_SELECTION.patch",
+      "bytes": 750,
+      "sha256": "5206d22815fcd30430c05ce549d180cde314b9e5ed5d82e19b071e5f453f58dd",
+      "git_blob": "66355ea82e664085982ceef3a6258642699ed11a"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/WINDOWS_CLIPPY_CANDIDATE_REVIEW.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/WINDOWS_CLIPPY_CANDIDATE_REVIEW.json",
+      "bytes": 3319,
+      "sha256": "dec80ce4818b630514517d3e66ba13ce04ddc7d38f333f067caff171c5dec15a",
+      "git_blob": "c87cb73d5b3093bdfebc1b874b9b046e4541096e"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/FORMAT_AND_STATIC_CHECK.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/FORMAT_AND_STATIC_CHECK.json",
+      "bytes": 2976,
+      "sha256": "ba9c2ab2ddc8771733d471f4733fb0a749dc1935ef9d3c8d6f159ae4433ac775",
+      "git_blob": "ef09fd4ea9396932cf4c6b5d6b86d0297b0dabd8"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/check_clippy_workflow_wiring.py",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/check_clippy_workflow_wiring.py",
+      "bytes": 5436,
+      "sha256": "ac21210968dd148e2519438af03de0b7dd4bb9dba8c557d236ea68e7a1e9f618",
+      "git_blob": "21a40856762a475b1364d67beb621d0514c3512b"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/WORKFLOW_WIRING_CHECK.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/WORKFLOW_WIRING_CHECK.json",
+      "bytes": 85561,
+      "sha256": "697974027f043f048cce642ced0cded5062136f52bfb08836eb334a417d3ad5d",
+      "git_blob": "9fe0d0474f59dd0f63b070c39ba2421bf8e65d8a"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/probe_platform_selection.py",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/probe_platform_selection.py",
+      "bytes": 6355,
+      "sha256": "90c75b0cdb365cc43a2dd95742962cf4ecfa320ac00ebd2fec6c2b01fc379f88",
+      "git_blob": "1f116bf6ac91e55dc438909e7a03a1f6948a8905"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/probe_platform_selection_attempts01_03.py",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/probe_platform_selection_attempts01_03.py",
+      "bytes": 5889,
+      "sha256": "b932a2c4d875088572a6d495fe1e9a579033e483dcb04fc533127c86c7a1f8ce",
+      "git_blob": "206df9f98d6fd0bd1c2546cc56f7f04bf63ec3cb"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/BAZEL_PLATFORM_PROBE_ATTEMPT01.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/BAZEL_PLATFORM_PROBE_ATTEMPT01.json",
+      "bytes": 3721,
+      "sha256": "ed772a50d74d42316f3af797b301f87f08199118e892ee61090b3afcacf6e65b",
+      "git_blob": "2d5689f8f354381fe76cad78a113a963b09da921"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/BAZEL_PLATFORM_PROBE_ATTEMPT02.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/BAZEL_PLATFORM_PROBE_ATTEMPT02.json",
+      "bytes": 3463,
+      "sha256": "f1423c823d79787d7ec0639afc9f4786285411564eafe2bc97c81370185a21c8",
+      "git_blob": "c3fc5b7800291f98a54c2ac20b0ddad7e20760c4"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/BAZEL_PLATFORM_PROBE_ATTEMPT03.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/BAZEL_PLATFORM_PROBE_ATTEMPT03.json",
+      "bytes": 3519,
+      "sha256": "7eddfd5346a0a350d1f085fb6ca4323d70932594772d6c07cd1a7f2baa8e102d",
+      "git_blob": "f941ade4ce65fb3248363f68e8be2d8ff2bd2f8e"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/BAZEL_PLATFORM_PROBE_ATTEMPT04.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/BAZEL_PLATFORM_PROBE_ATTEMPT04.json",
+      "bytes": 12278,
+      "sha256": "1e01e4ff916290a8bcb7c1dcd1aeaf3e370e29ac4442be3ad636c8eff0c563bb",
+      "git_blob": "a6e3d596df762f06163fce4ce8cc60508c7b09d4"
+    },
+    {
+      "source": "/tmp/hcsn-windows-clippy-independent-review.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/windows_clippy/INDEPENDENT_REVIEW.json",
+      "bytes": 4196,
+      "sha256": "6600e96697040c790c930150476429a5a5a80d8893df56c9b82673f9d70ee7fb",
+      "git_blob": "f03869ee4ea5255d17c318266aa67b33d597646c"
+    }
+  ]
+}
