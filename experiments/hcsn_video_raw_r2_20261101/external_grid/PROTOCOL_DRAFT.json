@@ -1,0 +1,41 @@
+{
+  "schema": "hcsn.grid.external.protocol-draft.v1",
+  "status": "source-qualified range-feasible; separate experiment not executed",
+  "official_source": "https://spandh.dcs.shef.ac.uk/gridcorpus/",
+  "source_archive_example": "https://spandh.dcs.shef.ac.uk/gridcorpus/s1/video/s1.mpg_vcd.zip",
+  "mirror_doi": "10.5281/zenodo.3625687",
+  "scope": "Different source corpus and recording process from CREMA-D. Does not confirm DFA/IOM pretrained classifier; requires separately trained registered binary command task.",
+  "proposed_train_speakers": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+  ],
+  "proposed_dev_speakers": [
+    "7",
+    "8"
+  ],
+  "proposed_confirmation_speakers": [
+    "9",
+    "10",
+    "11",
+    "12"
+  ],
+  "proposed_labels": "First command bin vs set, chosen prospectively; model receives raw pixels/audio only, filenames are supervision/source identifiers only.",
+  "proposed_selection": "Per speaker/class, first 16 lexicographically sorted source basenames; all selected identities and raw SHA256 frozen before model fitting. No switching based on outcomes.",
+  "exposure": "Official example transcript swwp2s (actor2) viewed during source discovery; exclude that exact example from all qualification. No GRID recording used for training or evaluation in this task.",
+  "source_freeze": "Before any selected recording decoding, pin official archive byte size plus full central-directory SHA256 and selected member names/CRC/sizes/offsets; raw extracted payload SHA256 frozen on acquisition.",
+  "range_policy": "Fetch archive EOCD/central-directory and selected member ranges only; require 206 exact Content-Range/length; refuse unexpected200 whole archive. No full400MB blind archives.",
+  "rights": "Official page permits research use; this record does not establish broader redistribution permission. Raw media will remain reproducible external inputs, not included in source/evidence uploads.",
+  "pending": [
+    "independent historical-exposure ledger beyond this exact HCSN line",
+    "separate task/interface and information/cost matching protocol",
+    "raw modality availability/audio synchronization validation",
+    "actor/sample sufficiency and inference gates",
+    "source and protocol remote freeze before selected recording access"
+  ],
+  "new_independent_confirmation": false,
+  "all_blockers_closed": false
+}

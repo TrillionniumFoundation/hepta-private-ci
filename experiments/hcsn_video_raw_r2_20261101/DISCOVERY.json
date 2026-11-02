@@ -1,0 +1,23 @@
+{
+  "inspected_train_clips": [
+    {
+      "clip": "1007_DFA_NEU_XX",
+      "split": "train",
+      "actor": "1007",
+      "bytes": 352868,
+      "sha256": "ad3ac375cd41cc8e5faf6edb8ed435010a13e6e405f0897a7ae64f0ceaf720a1"
+    },
+    {
+      "clip": "1007_IOM_NEU_XX",
+      "split": "train",
+      "actor": "1007",
+      "bytes": 420126,
+      "sha256": "94210b079f449ad36ca873348aebf491e2a8a818668429ce7ab63549c75b4db1"
+    }
+  ],
+  "inspection_scope": "Two training neutral-expression clips fetched and one original480x360frame visually checked before protocol. Geometry inspection only; no classifier fitting/scoring or development raw inspection.",
+  "finding": "Prior64x48mouthcrop includes visiblemouth; no coordinatebug established. Newfrontend retains higherresolution nativecrop pixelspacetime and learns temporalfilters.",
+  "first_discovery_cpu_seconds": null,
+  "first_discovery_wall_seconds": null,
+  "raw_frame_preview_delivered": false
+}

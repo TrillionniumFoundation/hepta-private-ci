@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_video_raw_r2_20261101.external_grid.acquire_members",
+    "--out",
+    "experiments/hcsn_video_raw_r2_20261101/external_grid/PILOT_ACQUISITION.json"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T01:33:43.043856+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_video_raw_r2_20261101/external_grid/acquire_pilot.stdout.log",
+  "stderr_path": "experiments/hcsn_video_raw_r2_20261101/external_grid/acquire_pilot.stderr.log",
+  "pid": 6,
+  "finished_utc": "2026-11-02T01:35:12.141071+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 89.09698776399455,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 1.539583,
+  "system_cpu_seconds": 0.926206,
+  "total_cpu_seconds": 2.465789,
+  "peak_rss_bytes": 32882688,
+  "peak_rss_native_units": 32112,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_video_raw_r2_20261101/external_grid/acquire_pilot.stdout.log",
+      "is_file": true,
+      "bytes": 589,
+      "sha256": "187fb01f99e29568a5d1f826a7a7336c851f0dd7876810afa2002d9745507acb"
+    },
+    {
+      "path": "experiments/hcsn_video_raw_r2_20261101/external_grid/acquire_pilot.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_video_raw_r2_20261101/external_grid/PILOT_ACQUISITION.json",
+      "is_file": true,
+      "bytes": 133494,
+      "sha256": "0668ad3747303af91612d4097d06f8ddb28b19e724d6312d8db8d5c2b53cb78e"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0010493370000000043,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}
