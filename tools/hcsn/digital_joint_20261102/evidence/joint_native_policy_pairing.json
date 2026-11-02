@@ -1,0 +1,239 @@
+{
+  "schema": "joint-native-policy-pairing-v1",
+  "scope": "pure Rust inference only; not runtime/content/owner qualification",
+  "predictions": 21,
+  "results": [
+    {
+      "family": "renewal",
+      "rows": [
+        {
+          "state_index": 0,
+          "maximum_errors": {
+            "q": 2.7755575615628914e-17,
+            "belief": 0.0,
+            "mass": 0.0,
+            "bank": 2.220446049250313e-16,
+            "logit": 2.7755575615628914e-17
+          }
+        },
+        {
+          "state_index": 1,
+          "maximum_errors": {
+            "q": 4.5102810375396984e-17,
+            "belief": 0.0,
+            "mass": 0.0,
+            "bank": 2.220446049250313e-16,
+            "logit": 1.249000902703301e-16
+          }
+        },
+        {
+          "state_index": 2,
+          "maximum_errors": {
+            "q": 1.1102230246251565e-16,
+            "belief": 5.551115123125783e-17,
+            "mass": 1.3877787807814457e-17,
+            "bank": 2.220446049250313e-16,
+            "logit": 2.7755575615628914e-17
+          }
+        },
+        {
+          "state_index": 3,
+          "maximum_errors": {
+            "q": 5.551115123125783e-17,
+            "belief": 0.0,
+            "mass": 4.163336342344337e-17,
+            "bank": 1.6653345369377348e-16,
+            "logit": 1.1796119636642288e-16
+          }
+        },
+        {
+          "state_index": 4,
+          "maximum_errors": {
+            "q": 2.220446049250313e-16,
+            "belief": 1.1102230246251565e-16,
+            "mass": 2.7755575615628914e-17,
+            "bank": 1.1102230246251565e-16,
+            "logit": 4.163336342344337e-17
+          }
+        },
+        {
+          "state_index": 5,
+          "maximum_errors": {
+            "q": 4.163336342344337e-17,
+            "belief": 0.0,
+            "mass": 2.7755575615628914e-17,
+            "bank": 1.1102230246251565e-16,
+            "logit": 2.0816681711721685e-17
+          }
+        },
+        {
+          "state_index": 6,
+          "maximum_errors": {
+            "q": 1.249000902703301e-16,
+            "belief": 0.0,
+            "mass": 4.163336342344337e-17,
+            "bank": 1.1102230246251565e-16,
+            "logit": 1.249000902703301e-16
+          }
+        }
+      ]
+    },
+    {
+      "family": "full_markov",
+      "rows": [
+        {
+          "state_index": 0,
+          "maximum_errors": {
+            "q": 2.7755575615628914e-17,
+            "belief": 0.0,
+            "mass": 0.0,
+            "bank": 2.220446049250313e-16,
+            "logit": 2.7755575615628914e-17
+          }
+        },
+        {
+          "state_index": 1,
+          "maximum_errors": {
+            "q": 4.5102810375396984e-17,
+            "belief": 0.0,
+            "mass": 0.0,
+            "bank": 2.220446049250313e-16,
+            "logit": 1.249000902703301e-16
+          }
+        },
+        {
+          "state_index": 2,
+          "maximum_errors": {
+            "q": 1.1102230246251565e-16,
+            "belief": 5.551115123125783e-17,
+            "mass": 1.3877787807814457e-17,
+            "bank": 2.220446049250313e-16,
+            "logit": 2.7755575615628914e-17
+          }
+        },
+        {
+          "state_index": 3,
+          "maximum_errors": {
+            "q": 5.551115123125783e-17,
+            "belief": 0.0,
+            "mass": 4.163336342344337e-17,
+            "bank": 1.6653345369377348e-16,
+            "logit": 1.1796119636642288e-16
+          }
+        },
+        {
+          "state_index": 4,
+          "maximum_errors": {
+            "q": 2.220446049250313e-16,
+            "belief": 1.1102230246251565e-16,
+            "mass": 2.7755575615628914e-17,
+            "bank": 1.1102230246251565e-16,
+            "logit": 4.163336342344337e-17
+          }
+        },
+        {
+          "state_index": 5,
+          "maximum_errors": {
+            "q": 4.163336342344337e-17,
+            "belief": 0.0,
+            "mass": 2.7755575615628914e-17,
+            "bank": 1.1102230246251565e-16,
+            "logit": 2.0816681711721685e-17
+          }
+        },
+        {
+          "state_index": 6,
+          "maximum_errors": {
+            "q": 1.249000902703301e-16,
+            "belief": 0.0,
+            "mass": 4.163336342344337e-17,
+            "bank": 1.1102230246251565e-16,
+            "logit": 1.249000902703301e-16
+          }
+        }
+      ]
+    },
+    {
+      "family": "gru",
+      "rows": [
+        {
+          "state_index": 0,
+          "maximum_errors": {
+            "q": 6.938893903907228e-17,
+            "belief": 0.0,
+            "mass": 0.0,
+            "bank": 1.1102230246251565e-16,
+            "logit": 1.3877787807814457e-17
+          }
+        },
+        {
+          "state_index": 1,
+          "maximum_errors": {
+            "q": 1.1102230246251565e-16,
+            "belief": 5.551115123125783e-17,
+            "mass": 6.938893903907228e-18,
+            "bank": 1.1102230246251565e-16,
+            "logit": 1.6653345369377348e-16
+          }
+        },
+        {
+          "state_index": 2,
+          "maximum_errors": {
+            "q": 1.3877787807814457e-17,
+            "belief": 0.0,
+            "mass": 6.938893903907228e-18,
+            "bank": 2.7755575615628914e-17,
+            "logit": 5.551115123125783e-17
+          }
+        },
+        {
+          "state_index": 3,
+          "maximum_errors": {
+            "q": 5.551115123125783e-17,
+            "belief": 0.0,
+            "mass": 1.3877787807814457e-17,
+            "bank": 0.0,
+            "logit": 8.326672684688674e-17
+          }
+        },
+        {
+          "state_index": 4,
+          "maximum_errors": {
+            "q": 1.1102230246251565e-16,
+            "belief": 0.0,
+            "mass": 6.938893903907228e-18,
+            "bank": 2.220446049250313e-16,
+            "logit": 0.0
+          }
+        },
+        {
+          "state_index": 5,
+          "maximum_errors": {
+            "q": 5.551115123125783e-17,
+            "belief": 0.0,
+            "mass": 6.938893903907228e-18,
+            "bank": 1.1102230246251565e-16,
+            "logit": 0.0
+          }
+        },
+        {
+          "state_index": 6,
+          "maximum_errors": {
+            "q": 8.326672684688674e-17,
+            "belief": 0.0,
+            "mass": 1.0408340855860843e-17,
+            "bank": 1.1102230246251565e-16,
+            "logit": 1.0408340855860843e-16
+          }
+        }
+      ]
+    }
+  ],
+  "maximum_error": 2.220446049250313e-16,
+  "binary_sha256": "1fd75aeb50aa8a7138afe91b2d9a7eb109fe4c89c3089bf3d64cecbf5171ca31",
+  "sources": {
+    "joint_native_policy.rs": "799cd04bfc14a0f309134a876d48479e64f086a944d2d0a62c4c28111b03495b",
+    "joint_native_policy_probe.rs": "c3fe87d462bf2ec3993e064d5ead7842686e3bd0c9172538692546e45d27a9ff",
+    "joint_native_task.rs": "2238312aa19dbac426b5a752eee3c322806950c0162e5ede8f8a887846046263"
+  }
+}
