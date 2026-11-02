@@ -1,0 +1,733 @@
+{
+  "actual_actor_cpu_savings": 16.358607397000156,
+  "actual_actor_cpu_with_preparation": {
+    "baseline": 72.9743453610001,
+    "r18": 57.71873345999802,
+    "r19": 58.98333940000007,
+    "r20": 56.61573796399995
+  },
+  "checks": 449472,
+  "fitted_seeds": 8,
+  "groups": [
+    {
+      "fit": 151101,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.8201213687365198,
+        "peak": 0.6841324494136866,
+        "r18": 0.9826438864322556,
+        "r19": 0.9606069115355633
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151101,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7448017486371791,
+        "peak": 0.8550833216636325,
+        "r18": 0.9858888841613561,
+        "r19": 0.9714621853202214
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151101,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.798779728471612,
+        "peak": 0.6833657264480878,
+        "r18": 1.0342647714626363,
+        "r19": 0.9809153670161425
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151101,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7582652266389662,
+        "peak": 0.8555225133820803,
+        "r18": 0.9919003592013805,
+        "r19": 0.9611656019458145
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151101,
+      "model": "hx",
+      "ratios": {
+        "baseline": 1.0504614570598165,
+        "peak": 0.6822753284831624,
+        "r18": 1.2711326775679557,
+        "r19": 1.216068227360846
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151101,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.7276400711791781,
+        "peak": 0.8541143293002946,
+        "r18": 0.9921962190374181,
+        "r19": 0.9501064291040543
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151103,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.8294159663344569,
+        "peak": 0.6840570925517022,
+        "r18": 0.9982672106411601,
+        "r19": 0.9654926767806228
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151103,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.6950237661389127,
+        "peak": 0.8552956052170146,
+        "r18": 0.9703762592739517,
+        "r19": 0.9774306610426239
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151103,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.8302736705507395,
+        "peak": 0.6838879437581415,
+        "r18": 0.9989508085909133,
+        "r19": 0.9288925926211202
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151103,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7182158867282955,
+        "peak": 0.8563269951093161,
+        "r18": 0.9477277198649133,
+        "r19": 0.9547739091277256
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151103,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8023369664060234,
+        "peak": 0.684726958761547,
+        "r18": 0.9673437218545451,
+        "r19": 0.9420843440507671
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151103,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.74906130650371,
+        "peak": 0.8551601299200223,
+        "r18": 1.0000391031218938,
+        "r19": 0.9539829797866296
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151107,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7903238296028317,
+        "peak": 0.6847996778739682,
+        "r18": 0.8384542268839495,
+        "r19": 0.9705442853039413
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151107,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7214386210097706,
+        "peak": 0.8554374625639025,
+        "r18": 0.9677370582521261,
+        "r19": 0.9560941682355959
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151107,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.8009343455550653,
+        "peak": 0.6853744630373945,
+        "r18": 1.002729928940022,
+        "r19": 0.977942872690498
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151107,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7400452525382345,
+        "peak": 0.8557597774322431,
+        "r18": 1.0180100691202019,
+        "r19": 0.956341173731979
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151107,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8124321546881879,
+        "peak": 0.6834614543655132,
+        "r18": 1.018299028247778,
+        "r19": 0.9757792842930332
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151107,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.7168620183776993,
+        "peak": 0.8552141510781591,
+        "r18": 0.9561229912109437,
+        "r19": 0.9268746712223199
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151109,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.824363566610906,
+        "peak": 0.6832560089031493,
+        "r18": 1.0354298958995867,
+        "r19": 0.9568536549197351
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151109,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7374451843589817,
+        "peak": 0.8555623976600003,
+        "r18": 0.9766879337598939,
+        "r19": 0.9413634057535757
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151109,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7965758261547015,
+        "peak": 0.6838808109295176,
+        "r18": 0.9330864156535994,
+        "r19": 0.9138539667538766
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151109,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7138246221012987,
+        "peak": 0.8557605122478058,
+        "r18": 0.970239457676516,
+        "r19": 0.959394886183786
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151109,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8141645956975593,
+        "peak": 0.6846837476452982,
+        "r18": 0.8944806662903229,
+        "r19": 0.9286054849374136
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151109,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.7508484952876564,
+        "peak": 0.8551421660768603,
+        "r18": 0.9783605995832098,
+        "r19": 0.9483536799840544
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151113,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.8230286849223125,
+        "peak": 0.6858533315765051,
+        "r18": 0.9599980784123934,
+        "r19": 0.9717124223850815
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151113,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7275813973209646,
+        "peak": 0.8563573501437121,
+        "r18": 0.9263547891621756,
+        "r19": 0.9183612272625231
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151113,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7908656878003785,
+        "peak": 0.6845912652691556,
+        "r18": 0.9690298171289501,
+        "r19": 0.959931756101899
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151113,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7491189746483946,
+        "peak": 0.8557638927441292,
+        "r18": 1.0015808546048421,
+        "r19": 0.9949910054710256
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151113,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8154719733744714,
+        "peak": 0.6853758228519798,
+        "r18": 0.9853388564940563,
+        "r19": 0.9718051560387017
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151113,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.7357612763780967,
+        "peak": 0.8567703637952316,
+        "r18": 0.9883795903544702,
+        "r19": 0.9762655292154127
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151117,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.8023056268139392,
+        "peak": 0.6861437638917531,
+        "r18": 0.9594736419501685,
+        "r19": 0.9320890104752111
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151117,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7391322293631133,
+        "peak": 0.856686539522011,
+        "r18": 0.9906079477267562,
+        "r19": 0.948146899807103
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151117,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7884636811514025,
+        "peak": 0.6866228673637864,
+        "r18": 0.9759933609901671,
+        "r19": 0.9428433586488658
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151117,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7733388357146667,
+        "peak": 0.8581059278663498,
+        "r18": 0.9973228440953756,
+        "r19": 0.947043148997477
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151117,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8067775337828293,
+        "peak": 0.686915244909191,
+        "r18": 0.9513113377747026,
+        "r19": 0.9623431460221216
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151117,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.7456057913021815,
+        "peak": 0.8564634793557854,
+        "r18": 0.9636106614888289,
+        "r19": 0.9409461364301335
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151119,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.8101262460511761,
+        "peak": 0.6841708506567306,
+        "r18": 0.9491427119561041,
+        "r19": 0.9621528719593607
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151119,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7605663536748175,
+        "peak": 0.8554278967879444,
+        "r18": 1.0035610631137262,
+        "r19": 0.9676199626691996
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151119,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.8304493986726457,
+        "peak": 0.6849334388716989,
+        "r18": 0.9578368759507639,
+        "r19": 0.9648357936717257
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151119,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7472737618725341,
+        "peak": 0.8554097686876744,
+        "r18": 0.9998709746785367,
+        "r19": 0.9892668582581461
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151119,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8202736115821245,
+        "peak": 0.6855580498474645,
+        "r18": 0.9830604637072943,
+        "r19": 0.9428405984243189
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151119,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.7203381411062686,
+        "peak": 0.8563689982361594,
+        "r18": 0.9547983453197751,
+        "r19": 0.9203406257713926
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151123,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7777707983901919,
+        "peak": 0.684747536910397,
+        "r18": 0.9536466779447261,
+        "r19": 0.9490262016741428
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151123,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.739881045156842,
+        "peak": 0.8561110802014076,
+        "r18": 0.9781038988709958,
+        "r19": 0.9313157975954269
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151123,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7887376062798621,
+        "peak": 0.6850114738918636,
+        "r18": 0.94632817976335,
+        "r19": 0.9115387304570108
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151123,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7341267159291957,
+        "peak": 0.8572019838757922,
+        "r18": 0.9959675301622918,
+        "r19": 0.9516694922328238
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151123,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8361658119801975,
+        "peak": 0.6856536688016742,
+        "r18": 1.021970586606947,
+        "r19": 0.9749581335758066
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151123,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.7163889654571962,
+        "peak": 0.8542128891805464,
+        "r18": 0.9873415449520887,
+        "r19": 0.9446733779639571
+      },
+      "representation": "full"
+    }
+  ],
+  "historical_investment_floor": 384.99147125499996,
+  "joint_cpu_memory_gate": false,
+  "joint_failures": [
+    {
+      "fit": 151101,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.798779728471612,
+        "peak": 0.6833657264480878,
+        "r18": 1.0342647714626363,
+        "r19": 0.9809153670161425
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151101,
+      "model": "hx",
+      "ratios": {
+        "baseline": 1.0504614570598165,
+        "peak": 0.6822753284831624,
+        "r18": 1.2711326775679557,
+        "r19": 1.216068227360846
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151103,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.74906130650371,
+        "peak": 0.8551601299200223,
+        "r18": 1.0000391031218938,
+        "r19": 0.9539829797866296
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151107,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.8009343455550653,
+        "peak": 0.6853744630373945,
+        "r18": 1.002729928940022,
+        "r19": 0.977942872690498
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151107,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7400452525382345,
+        "peak": 0.8557597774322431,
+        "r18": 1.0180100691202019,
+        "r19": 0.956341173731979
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151107,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8124321546881879,
+        "peak": 0.6834614543655132,
+        "r18": 1.018299028247778,
+        "r19": 0.9757792842930332
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151109,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.824363566610906,
+        "peak": 0.6832560089031493,
+        "r18": 1.0354298958995867,
+        "r19": 0.9568536549197351
+      },
+      "representation": "anchored"
+    },
+    {
+      "fit": 151113,
+      "model": "hmm_same_matrix",
+      "ratios": {
+        "baseline": 0.7491189746483946,
+        "peak": 0.8557638927441292,
+        "r18": 1.0015808546048421,
+        "r19": 0.9949910054710256
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151119,
+      "model": "free",
+      "ratios": {
+        "baseline": 0.7605663536748175,
+        "peak": 0.8554278967879444,
+        "r18": 1.0035610631137262,
+        "r19": 0.9676199626691996
+      },
+      "representation": "full"
+    },
+    {
+      "fit": 151123,
+      "model": "hx",
+      "ratios": {
+        "baseline": 0.8361658119801975,
+        "peak": 0.6856536688016742,
+        "r18": 1.021970586606947,
+        "r19": 0.9749581335758066
+      },
+      "representation": "anchored"
+    }
+  ],
+  "original_cpu_failures": [
+    {
+      "fit": 151101,
+      "model": "hx",
+      "ratios": {
+        "baseline": 1.0504614570598165,
+        "peak": 0.6822753284831624,
+        "r18": 1.2711326775679557,
+        "r19": 1.216068227360846
+      },
+      "representation": "anchored"
+    }
+  ],
+  "original_cpu_gate": false,
+  "passed": true,
+  "raw_sha256": {
+    "151101_free_anchored.json.gz": "8cc34e09a995b6ff457aa833aec45d0ce55f86517208d4c04162cb2dec6698f9",
+    "151101_free_full.json.gz": "2a3aaccf5c1a7d92686b853921303d11bb5dcf04276567a88efee0d2c5ec56aa",
+    "151101_hmm_same_matrix_anchored.json.gz": "08143d22f05fb937a64c5911da0d2935a4e38972299ad8fcf5f196c46d69485c",
+    "151101_hmm_same_matrix_full.json.gz": "f90004587baf2dc2570661f4dc880af716ebc827a07055d031612aa20007d474",
+    "151101_hx_anchored.json.gz": "a4cdf41d8775b4b47b7bad7cc7a429f0c5b8343337bd6adcffb9a80c6164e1e3",
+    "151101_hx_full.json.gz": "6ef4993060c6942dbf1a51540a1cf2513dca290b1285335ce8186f85649f6cae",
+    "151103_free_anchored.json.gz": "3f2159e213ad04b83cbda0fddeaf6b91c8ad9fb824dfea968b497bb62d1a6add",
+    "151103_free_full.json.gz": "b219224420cc74e2916be80f6e590f2416e0223bd024997687e070fca61a8d0e",
+    "151103_hmm_same_matrix_anchored.json.gz": "74c33f009d9d0fbf83d773aea2cb4a524e0756d56397814e2c30cacb3585307c",
+    "151103_hmm_same_matrix_full.json.gz": "9bd1e4fe5263f9e2ca484546f14f0998b6073c4692068da6f1454c93b7b23c08",
+    "151103_hx_anchored.json.gz": "55f88cbd3444d25ff810bb5afbba4832e3909a8196233c3295d0734f84d3a9ad",
+    "151103_hx_full.json.gz": "7c8a35c0d4b88dbc340106c9eb762422b613504735d310b7d8f4c9e43dc87b68",
+    "151107_free_anchored.json.gz": "c4d00cb2dcfc929ec885cf1f9cceb1f610d4acdded4c574b823f7aa0bb6109a9",
+    "151107_free_full.json.gz": "722eeaacb83ade13e0620f1b962f9611b29e41a9d391c196304127761af61061",
+    "151107_hmm_same_matrix_anchored.json.gz": "181f84dcbdc12aff8a85249a96acd097c52e629a94a126a77a83d61a2d82826c",
+    "151107_hmm_same_matrix_full.json.gz": "a100c7e41ce3321fd341f33ff0c6ba2ccd72a8a5e7bd28538d2ded81a5919cfe",
+    "151107_hx_anchored.json.gz": "9fc8bc3047da276d1e79f0276e9fb361469ce9b1666b954f28b5b67a73c030eb",
+    "151107_hx_full.json.gz": "153fa8cd7c049cf63d719c60c9b55fb41b7043fedcf0e8f68ea3685a8404589b",
+    "151109_free_anchored.json.gz": "444f7c2cb2a9ebead0f686d33cd7c6d7c2f7386b3b246151054aba12b429c660",
+    "151109_free_full.json.gz": "665b5c6340b1983ac4d6fff72ae1c61a1c4a60a0a5cd93dade00e81e01bc5c80",
+    "151109_hmm_same_matrix_anchored.json.gz": "8e1647a12647a16e486c5cd22c32496c3460e926574d1f421c61d11e83aad3b2",
+    "151109_hmm_same_matrix_full.json.gz": "588200551c101b10f373f5445baedfca29a2e2de65aa2703b1937a70995f74ca",
+    "151109_hx_anchored.json.gz": "a24241259c47bf208aca17fbbe53a3bef41e2a64ffa9b35b3ae641b40970d4c8",
+    "151109_hx_full.json.gz": "c3af3b4c66cc92df401af411419f9a36f821bf39d78105399114cca109ac9ba9",
+    "151113_free_anchored.json.gz": "09b5006ea6c0df56bd98cb07f331d062e24936f84cb03812f86673d0cd349a94",
+    "151113_free_full.json.gz": "3e2b79195782b1704a0b6c637b502bc325daa8ed89f66a145ea4a12af9760170",
+    "151113_hmm_same_matrix_anchored.json.gz": "74bc727c3fa74485a9858f5b41850b59607d3186541f1af0596bd9448fb18db6",
+    "151113_hmm_same_matrix_full.json.gz": "7f287a962e7418996ab881b64eac08e93a6d199df7b77b6b910e8396d780888c",
+    "151113_hx_anchored.json.gz": "ea2669717b1dd0550ecebb06d0ee275f9d0b3c43097dbc7d9b00dc1209794fbf",
+    "151113_hx_full.json.gz": "9a83509a963bf907c2170b58f1d88c9fbe95c66a60f951a21869bb1af3f63e0c",
+    "151117_free_anchored.json.gz": "f4d581da94796efc254ea75933915ced23b97c84555ccdcdb4995c1f8ae7fcff",
+    "151117_free_full.json.gz": "c9c2e39c982f4c62c17d457608458c02638d3e7ef535511399d1a180b37ba163",
+    "151117_hmm_same_matrix_anchored.json.gz": "20149d2a6c47d61caf8e7efddd456d56e58bfd847c682afbef8b06e295073b1d",
+    "151117_hmm_same_matrix_full.json.gz": "9dfbbf4f44355f9a8d2d900205817f9b8d00557a931a13a6d62ac8f94d3da5ac",
+    "151117_hx_anchored.json.gz": "cd63b0171f120d826527b2a0d522b8953754cb04cdc3643103bc683454e7a476",
+    "151117_hx_full.json.gz": "4e361218734ec7fa01231f504a367b02aa0ea9c2d851d21f9eda8b5142f51e33",
+    "151119_free_anchored.json.gz": "b9a1468649e802bcbb7ea21d705e559b220283d836b9bf2b1135ee5a7d2f2dd4",
+    "151119_free_full.json.gz": "8e18f05a1d09998823286aab61e2ae14d7853c8f95623d1fe59a8efd8b11d8d5",
+    "151119_hmm_same_matrix_anchored.json.gz": "e57bef62edba7792c6ab3a39f5b382104047d3dba777ba66a29f9a97bf886fa6",
+    "151119_hmm_same_matrix_full.json.gz": "ac283231e73835e1ea82e2739c92708f47f2b6dfefea862e62fb0671fd90ba82",
+    "151119_hx_anchored.json.gz": "73b7fd4a3d45fa6f41d64af9f74b13f73aff527de15b8be782d834e7f90de187",
+    "151119_hx_full.json.gz": "11b8723ad2a70788d3e878e50e1d8c49a3cb8016f93d056f4925203ac7c6891e",
+    "151123_free_anchored.json.gz": "e47f1fd402a0307ea0c885110850292e40cc13bc0e253b9b47d75e1e253a513d",
+    "151123_free_full.json.gz": "64d058d65a5283fc3dae2ad8fe0801467d14a84123cbef949cbd63e98717d2e9",
+    "151123_hmm_same_matrix_anchored.json.gz": "de09edbd747d0d8a3f9d3613b7c24e82e7122836a477691c14d5f083725f78df",
+    "151123_hmm_same_matrix_full.json.gz": "08c42d19a9df651fc91d7aefb6fe8b8e74960d151a018e44379e9ef738e96617",
+    "151123_hx_anchored.json.gz": "13d5d1fd0e44d41d3017cfdb2909d652faf4fd78b6e94e09ba9a102f42ac6202",
+    "151123_hx_full.json.gz": "3814c95fee3e6d9da3d8f4eaf4420a8b090fd015cd6e05c231349e9363170e17"
+  },
+  "review_cpu_seconds_after_imports": 1.542438149,
+  "reviewer_source_sha256": "e0a31ab293d26f031902e25f95c09b17b068fa1406b381dda6d6135a545bf7f6",
+  "savings_minus_floor": -368.63286385799984,
+  "scope": "Independent standard-library record reconstruction. Every fit/group gate retained; no pooled override. Memory peaks use eight warmed calls/variant/group. No hidden-world resimulation or unmeasured 1000-use, GPU, energy or production claim.",
+  "source": {
+    "exact_training_archives": 8,
+    "frozen_source_files": 35,
+    "manifest_sha256": "a5bfa4585170b2650e7cf56c15c587d8bc3ae94a0df26b0def7993b6b42f69a2",
+    "passed": true,
+    "remote_blobs": 10
+  },
+  "unique_worlds": 512,
+  "uses_per_fit_group": 64
+}

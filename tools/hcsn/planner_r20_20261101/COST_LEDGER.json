@@ -1,0 +1,89 @@
+{
+  "actual_actor_cpu_with_preparation": {
+    "baseline": 72.9743453610001,
+    "r18": 57.71873345999802,
+    "r19": 58.98333940000007,
+    "r20": 56.61573796399995
+  },
+  "actual_actor_savings_vs_r16": 16.358607397000156,
+  "all_recorded_cpu_lower_bound": 877.5941482999999,
+  "full_investment_gate": false,
+  "historical_cpu_floor": 384.99147125499996,
+  "historical_r18_cpu": 141.098189,
+  "historical_r19_recorded_cpu": 243.89328225499997,
+  "nested_timers_added_again": false,
+  "r20_nonoverlapping_phases": [
+    {
+      "cpu_seconds": 16.597314,
+      "name": "development_01",
+      "receipt_sha256": "b6a6d5871c10abc01babee17b26f96213d4f0cb3d73524a1eb3179eaedc753ed",
+      "scope": "Complete child imports, allpreparation/worlds/executions/all-query commits/memory/archives; nested costs not added, supervisorstartup excluded"
+    },
+    {
+      "cpu_seconds": 49.573252,
+      "name": "recovery_development_01",
+      "receipt_sha256": "cbad2f2315878d5ff552c0410b2b62a0a9f1daaf7c89fad45849f319ea484d77",
+      "scope": "Wait4outercontrollerandreapeddescendants; nestedcontrollerbodyandchildprobeclocksarenotaddedagain. No superparentstartup cost."
+    },
+    {
+      "cpu_seconds": 344.30145699999997,
+      "name": "confirmation_01",
+      "receipt_sha256": "7eb1696acbb09e138625183c34919a8ddf345c8a3b16eb22f1c31560cb629dc4",
+      "scope": "Complete child imports, allpreparation/worlds/executions/all-query commits/memory/archives; nested costs not added, supervisorstartup excluded"
+    },
+    {
+      "cpu_seconds": 40.672646,
+      "name": "recovery_confirmation_01",
+      "receipt_sha256": "fedea45a8fd2f04dcbd6de380a66069b6557b2b50e38d505ec302023ab020440",
+      "scope": "Wait4outercontrollerandreapeddescendants; nestedcontrollerbodyandchildprobeclocksarenotaddedagain. No superparentstartup cost."
+    },
+    {
+      "cpu_seconds": 20.7595,
+      "name": "scripted_confirmation_01",
+      "receipt_sha256": "e39fe8b7d37f7801ef11dcc8a873a011c51e4d37580ba346bf05739471369b93",
+      "scope": "Independentcontrolcampaignonly; completecontroller+reapedchildren; notpooledwithresource/qualityobservations"
+    },
+    {
+      "cpu_seconds": 1.215198726,
+      "name": "initial_smoke_loops_only",
+      "scope": "PartialloopCPUonly; unmeteredstartup"
+    },
+    {
+      "cpu_seconds": 13.105227011,
+      "name": "numerical_checks_body",
+      "scope": "Separateprocessbody; startupnotmetered"
+    },
+    {
+      "cpu_seconds": 2.032087133,
+      "name": "formal_stdlib_raw_audit_body",
+      "scope": "Separateprocessbody; startupnotmetered"
+    },
+    {
+      "cpu_seconds": 4.345995175,
+      "name": "all_independent_review_partial_phases",
+      "scope": "Distinctreviewerprocesses; see INDEPENDENT_REVIEW_COSTS.json"
+    }
+  ],
+  "r20_recorded_cpu_lower_bound": 492.60267704499995,
+  "savings_minus_historical_floor": -368.63286385799984,
+  "schema": "hcsn-r20-cost-ledger-v1",
+  "scope": "RecordedCPUlowerboundonly. Historicalinvestmentaloneexceedsactualsavings. Currentpairedvalidationenvelopeisresearchcostandisnotaddedagaintoitscontaineddeploymentactorcost. No1000-useextrapolation.",
+  "unknown_or_excluded": [
+    {
+      "cpu_seconds": null,
+      "phase": "parentstartup/importsoutsidewait4orbodytimers"
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "sourceconnector/publication/bookkeeping/reasoning"
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "reportedENOSPCpublicationreceiptwriteonly"
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "GPU/joules/network/machinepowerloss/productionlifecycle"
+    }
+  ]
+}

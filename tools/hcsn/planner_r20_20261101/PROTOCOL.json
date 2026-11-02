@@ -1,0 +1,43 @@
+{
+  "base_commit": "ede941c81edaf246486c88725a8a921bf70279ec",
+  "diagnostic_fits": [
+    151101
+  ],
+  "diagnostic_namespace": 20000101,
+  "diagnostic_uses": 8,
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "historical_r18_investment_cpu_seconds": 141.098189,
+  "historical_r19_investment_cpu_seconds": 243.893282255,
+  "joint_resource_r20_over_r18_cpu_maximum": 1.0,
+  "joint_resource_r20_over_r18_peak_maximum": 0.9,
+  "memory_uses": 8,
+  "models": [
+    "free",
+    "hmm_same_matrix",
+    "hx"
+  ],
+  "namespace": 20001101,
+  "original_cpu_ratio_maximum": 0.9,
+  "production_activation": false,
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "require_each_fit_group": true,
+  "schema": "hcsn-r20-all-query-resource-protocol-v1",
+  "scope": "Trusted single-writer Linux. Everyquery0through5 commits complete memory+publicfee/actionhistory: tempfilefsync,atomicreplace,directoryfsync,checksumreadback,memoryrestore. Identicalstoragework foreachvariant. Eightfrozenfits,64actualuses/group,not1000uses. NoGPU/energy/power-lossorproductionadoptionqualification.",
+  "uses_per_fit_group": 64
+}

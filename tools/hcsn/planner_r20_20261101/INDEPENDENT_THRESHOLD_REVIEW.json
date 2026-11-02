@@ -1,0 +1,96 @@
+{
+  "cases": [
+    {
+      "actual_row_error": 1.9999779610202495e-11,
+      "expected": true,
+      "frames": 1,
+      "outcomes": [
+        true,
+        true
+      ],
+      "projection": "full",
+      "row_sum": 1.0000000000199998
+    },
+    {
+      "actual_row_error": 2.0000223699412345e-11,
+      "expected": false,
+      "frames": 1,
+      "outcomes": [
+        false,
+        false
+      ],
+      "projection": "full",
+      "row_sum": 1.0000000000200002
+    },
+    {
+      "actual_row_error": 1.9999779610202495e-11,
+      "expected": true,
+      "frames": 3,
+      "outcomes": [
+        true,
+        true
+      ],
+      "projection": "full",
+      "row_sum": 1.0000000000199998
+    },
+    {
+      "actual_row_error": 2.0000223699412345e-11,
+      "expected": false,
+      "frames": 3,
+      "outcomes": [
+        false,
+        false
+      ],
+      "projection": "full",
+      "row_sum": 1.0000000000200002
+    },
+    {
+      "actual_row_error": 1.9999779610202495e-11,
+      "expected": true,
+      "frames": 1,
+      "outcomes": [
+        true,
+        true
+      ],
+      "projection": "block",
+      "row_sum": 1.0000000000199998
+    },
+    {
+      "actual_row_error": 2.0000223699412345e-11,
+      "expected": false,
+      "frames": 1,
+      "outcomes": [
+        false,
+        false
+      ],
+      "projection": "block",
+      "row_sum": 1.0000000000200002
+    },
+    {
+      "actual_row_error": 1.9999779610202495e-11,
+      "expected": true,
+      "frames": 3,
+      "outcomes": [
+        true,
+        true
+      ],
+      "projection": "block",
+      "row_sum": 1.0000000000199998
+    },
+    {
+      "actual_row_error": 2.0000223699412345e-11,
+      "expected": false,
+      "frames": 3,
+      "outcomes": [
+        false,
+        false
+      ],
+      "projection": "block",
+      "row_sum": 1.0000000000200002
+    }
+  ],
+  "measured_body_cpu_seconds": 0.281286699,
+  "note": "Supplement: nominal nextafter(2e-11) deltas in INDEPENDENT_NUMERIC_REVIEW round to the same row-sum side after addition to0.025. These cases instead nextafter the complete1+2e-11 mass and verify actual computed errors straddle the threshold. Original cases remain preserved.",
+  "passed": true,
+  "reviewer_source_sha256": "e8476348e9d8b8603d69e79fa9852273f88a0bf4b9173154466c6d2886f7cea8"
+}
