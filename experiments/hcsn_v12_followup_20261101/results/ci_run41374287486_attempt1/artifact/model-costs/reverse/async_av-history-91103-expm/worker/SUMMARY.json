@@ -1,0 +1,744 @@
+{
+  "model": {
+    "task": "async_av",
+    "seed": 91103,
+    "family": "history",
+    "numpy_path": "async_av/history-91103.npz",
+    "source_pt_sha256": "d885af5e67020e366c5a15a3199bd089411d5b276091e4e53eaf4dd1e525568b",
+    "source_pt_path": "async_av/history-91103-selected.pt",
+    "shapes": {
+      "reader.0.weight": [
+        108,
+        354
+      ],
+      "reader.0.bias": [
+        108
+      ],
+      "reader.2.weight": [
+        16,
+        108
+      ],
+      "reader.2.bias": [
+        16
+      ]
+    },
+    "parameters": 40084
+  },
+  "rows": [
+    {
+      "index": 0,
+      "policy": "fixed",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-0-91103-history-expm-fixed",
+        "predicted_class": 5,
+        "probabilities": [
+          0.1638730380730225,
+          0.011129306764417844,
+          0.2789215611639256,
+          0.11633583947735861,
+          0.017712173547998727,
+          0.4120280809732766
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "9a2aaa5a7677e4f1f6b2a4652b34176be9e84c528fc3415bd8b55cefc0a14a06",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 0,
+      "policy": "value",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-0-91103-history-expm-value",
+        "predicted_class": 5,
+        "probabilities": [
+          0.1638730380730225,
+          0.011129306764417844,
+          0.2789215611639256,
+          0.11633583947735861,
+          0.017712173547998727,
+          0.4120280809732766
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "1fcfd955eefaa603434971cb8563d081ce6033f2713b8b08165bddcefa431b48",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 1,
+      "policy": "fixed",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-1-91103-history-expm-fixed",
+        "predicted_class": 5,
+        "probabilities": [
+          0.006675945681626067,
+          0.01615119052562903,
+          0.06954327516033273,
+          0.02452499121591047,
+          0.0040324844113749795,
+          0.8790721130051267
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "9acde2a3b48ca70f156104794bf89a475f7dec7e980a9bf060c7548d57e7ca5d",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 1,
+      "policy": "value",
+      "correct": false,
+      "requests": 2,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-1-91103-history-expm-value",
+        "predicted_class": 5,
+        "probabilities": [
+          0.008594635307513497,
+          0.019978098872925395,
+          0.10727935339104176,
+          0.024042878698084885,
+          0.03885525008856396,
+          0.8012497836418706
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "b303e70df636b8cfbb44a774eb0fe39fe85d83bd370e8fcb71b1dd5dd1b648b1",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 2,
+      "policy": "fixed",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-2-91103-history-expm-fixed",
+        "predicted_class": 5,
+        "probabilities": [
+          0.024102486738624498,
+          0.016242947324554682,
+          0.15837978734278937,
+          0.08447754950306124,
+          0.01849028857997484,
+          0.6983069405109954
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "bf246809a27806ca1b78803bd4296dc58b386d09879a2219e94f996e883d106e",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 2,
+      "policy": "value",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-2-91103-history-expm-value",
+        "predicted_class": 5,
+        "probabilities": [
+          0.024102486738624498,
+          0.016242947324554682,
+          0.15837978734278937,
+          0.08447754950306124,
+          0.01849028857997484,
+          0.6983069405109954
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "92b64bfb509769671d312dd6aba7ac1c911f8d2a5a1f6e2e3b69df483ac7a830",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 3,
+      "policy": "fixed",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-3-91103-history-expm-fixed",
+        "predicted_class": 5,
+        "probabilities": [
+          0.05991209175662434,
+          0.09794353176710177,
+          0.20704444108909512,
+          0.049693487368397786,
+          0.0693568451071393,
+          0.5160496029116417
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "b246ba560dd93512d4500940fc4bcb72e8ba862f304a89cf74d0658e0849b222",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 3,
+      "policy": "value",
+      "correct": false,
+      "requests": 1,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-3-91103-history-expm-value",
+        "predicted_class": 0,
+        "probabilities": [
+          0.8196280933117611,
+          0.0008457574599842408,
+          0.10971084676627894,
+          0.00641624847508613,
+          0.05523200176929912,
+          0.008167052217590384
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "f6bc98f4539fd85565e776efebb84c915b7ad573d7fc37fdf9913093ad018425",
+        "accepted_event_ids": [
+          "prepared-1"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 4,
+      "policy": "fixed",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-4-91103-history-expm-fixed",
+        "predicted_class": 5,
+        "probabilities": [
+          0.09646329795915598,
+          0.040113513057483764,
+          0.1752465662278291,
+          0.0608682852658769,
+          0.09199097204101792,
+          0.5353173654486363
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "6d5497ec7897783b3a48a65db36432030d18547ef144c43a970b7e4b0eec724a",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 4,
+      "policy": "value",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-4-91103-history-expm-value",
+        "predicted_class": 5,
+        "probabilities": [
+          0.09646329795915598,
+          0.040113513057483764,
+          0.1752465662278291,
+          0.0608682852658769,
+          0.09199097204101792,
+          0.5353173654486363
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "1df19ce72e1c014f204c35d86068434e9951b9a58ce1910dd4f558e9bc5a3efd",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 5,
+      "policy": "fixed",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-5-91103-history-expm-fixed",
+        "predicted_class": 5,
+        "probabilities": [
+          0.027735931303564356,
+          0.011002569876471743,
+          0.2020500647499428,
+          0.021235832840096204,
+          0.025174066049230743,
+          0.7128015351806942
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "ede9db95b0b6193edeef6ab097e9353f6a9b1fd40806a845380f22c64fabaed0",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 5,
+      "policy": "value",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-5-91103-history-expm-value",
+        "predicted_class": 5,
+        "probabilities": [
+          0.027735931303564356,
+          0.011002569876471743,
+          0.2020500647499428,
+          0.021235832840096204,
+          0.025174066049230743,
+          0.7128015351806942
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "ba3bafd654a3b5096c7a49fa9898cf30c64cb5aebafb2e6280fe1db8055b9324",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 6,
+      "policy": "fixed",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-6-91103-history-expm-fixed",
+        "predicted_class": 2,
+        "probabilities": [
+          0.043913961498872875,
+          0.05829171310281956,
+          0.7261549174445203,
+          0.1558254654251869,
+          0.01275565912763147,
+          0.0030582834009687493
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "a31f39bd1cd6625d8b816249e710a28c0e1794ebf710f156dfcd12e441ab74e8",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 6,
+      "policy": "value",
+      "correct": false,
+      "requests": 3,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-6-91103-history-expm-value",
+        "predicted_class": 2,
+        "probabilities": [
+          0.09941236207842073,
+          0.0010458957392434761,
+          0.8788663044566732,
+          0.005476301093698888,
+          0.013614609528466404,
+          0.0015845271034972649
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "99bead9eac97fa1a74341e4b12e01d5aabf0ee24e8c67154f2ad854139f908e7",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 7,
+      "policy": "fixed",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-7-91103-history-expm-fixed",
+        "predicted_class": 3,
+        "probabilities": [
+          0.04414244094232414,
+          0.1411040632053002,
+          0.10813940690432963,
+          0.5672050401651972,
+          0.10850134578441774,
+          0.030907702998430955
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "b4be0d709ca125f90959dfc76b5d127d805ee3558472d826690c84721dfdd922",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 7,
+      "policy": "value",
+      "correct": false,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-7-91103-history-expm-value",
+        "predicted_class": 3,
+        "probabilities": [
+          0.04414244094232414,
+          0.1411040632053002,
+          0.10813940690432963,
+          0.5672050401651972,
+          0.10850134578441774,
+          0.030907702998430955
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "a514324d6d6fae6430ad926398d656a59a7f960886db6e06d9ad338a552c383b",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 8,
+      "policy": "fixed",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-8-91103-history-expm-fixed",
+        "predicted_class": 2,
+        "probabilities": [
+          0.04763574957179682,
+          0.13996469809920561,
+          0.4242360860938724,
+          0.27262974296806947,
+          0.09807698779300203,
+          0.01745673547405371
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "4d11254a23d40762b4561264c89b3ed9510870d84dceab50d1602888f5dc7e07",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 8,
+      "policy": "value",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-8-91103-history-expm-value",
+        "predicted_class": 2,
+        "probabilities": [
+          0.04763574957179682,
+          0.13996469809920561,
+          0.4242360860938724,
+          0.27262974296806947,
+          0.09807698779300203,
+          0.01745673547405371
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "cd8e61400161434d0062b226e191613b4814e858870b0a75733688d5592b309d",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 9,
+      "policy": "fixed",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-9-91103-history-expm-fixed",
+        "predicted_class": 3,
+        "probabilities": [
+          0.10596559654766724,
+          0.23081456048485272,
+          0.07963328139994295,
+          0.23539223123935352,
+          0.14723200816365642,
+          0.20096232216452717
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "eab81162216452c3647460c2f9a5f55c6c1599df845c9dd82e1c90f152be5cb9",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 9,
+      "policy": "value",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-9-91103-history-expm-value",
+        "predicted_class": 3,
+        "probabilities": [
+          0.10596559654766724,
+          0.23081456048485272,
+          0.07963328139994295,
+          0.23539223123935352,
+          0.14723200816365642,
+          0.20096232216452717
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "3f586a7b19276dcfc527d8bcf42cdea1a833b9ba884f4cadb970f36dd861d983",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 10,
+      "policy": "fixed",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-10-91103-history-expm-fixed",
+        "predicted_class": 4,
+        "probabilities": [
+          0.03926183521462189,
+          0.035438501910554976,
+          0.29980876638812354,
+          0.06735697021080732,
+          0.49844870986246403,
+          0.0596852164134282
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "ab8793779de225926f2d50a86f5ea93763e53623c8d3e01489858b6836f70d43",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 10,
+      "policy": "value",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-10-91103-history-expm-value",
+        "predicted_class": 4,
+        "probabilities": [
+          0.03926183521462189,
+          0.035438501910554976,
+          0.29980876638812354,
+          0.06735697021080732,
+          0.49844870986246403,
+          0.0596852164134282
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "63bbf3826978da6957bbe88a8a3d94f0de4b9218690884c4e4b6aa39514bb1c0",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 11,
+      "policy": "fixed",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-11-91103-history-expm-fixed",
+        "predicted_class": 5,
+        "probabilities": [
+          0.009747483956052013,
+          0.08018555749222739,
+          0.07906568804247947,
+          0.23348166167271245,
+          0.20822130096793723,
+          0.38929830786859143
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "ee1566d59f8207fca523b2ca14467a5a593d742128b114ad767ffa5382b86a88",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    },
+    {
+      "index": 11,
+      "policy": "value",
+      "correct": true,
+      "requests": 6,
+      "output": {
+        "kind": "episode_prediction",
+        "episode_id": "v10-async_av-11-91103-history-expm-value",
+        "predicted_class": 5,
+        "probabilities": [
+          0.009747483956052013,
+          0.08018555749222739,
+          0.07906568804247947,
+          0.23348166167271245,
+          0.20822130096793723,
+          0.38929830786859143
+        ],
+        "head_id": "legacy-v3-async_av-2f390a2dda86eef5",
+        "content_fingerprint": "7154fdb06077205e4ecaf3a33186bb990a8fc2d579145c573daefad60e97c59a",
+        "accepted_event_ids": [
+          "prepared-1",
+          "prepared-2",
+          "prepared-3",
+          "prepared-4",
+          "prepared-5",
+          "prepared-6"
+        ],
+        "scientific_confirmation": false
+      }
+    }
+  ],
+  "executions": 24,
+  "implementation": "expm",
+  "runtime": "NumPy/SciPy real frozen-model inference",
+  "torch_imported": false,
+  "numpy": "2.3.5",
+  "scientific_admission": false,
+  "energy_joules": null
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-v12-official-strong-audio-candidate.v1",
+  "repository": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim",
+  "revision": "6eba34a2485ea31cb03600241787c3a5edab8626",
+  "safetensors_sha256_from_official_pointer": "efa5ac1a13b2d2f42182738e44794b1eb4c0cdd221a8b4ae11304c3a5f5fae95",
+  "weight_size_label_from_official_pointer": "661 MB; exact integer bytes not yet recovered",
+  "expected_config_sha256": null,
+  "expected_preprocessor_sha256": null,
+  "license": "CC-BY-NC-SA-4.0; research use; does not grant production commercial license",
+  "license_source": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/blob/6eba34a2485ea31cb03600241787c3a5edab8626/README.md",
+  "weight_pointer_source": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/blob/6eba34a2485ea31cb03600241787c3a5edab8626/model.safetensors",
+  "config_source": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/blob/6eba34a2485ea31cb03600241787c3a5edab8626/config.json",
+  "publisher_output": "1024 pooled hidden features and three continuous arousal/dominance/valence regression outputs; no five/six-class CREMA-D or binding head",
+  "model_weight_bytes_recovered": false,
+  "model_weight_hash_verified_on_local_bytes": false,
+  "config_bytes_downloaded": false,
+  "preprocessor_bytes_downloaded": false,
+  "pretrained_inference_executed": false,
+  "strong_audio_reference_qualified": false,
+  "available_dependencies_in_reused_torch_import_path": {
+    "torch": true,
+    "transformers": false,
+    "safetensors": false,
+    "torchaudio": false
+  },
+  "scope": "Primary-source metadata lookup succeeded separately from local transfer availability; no model source/weights were executed or reconstructed from search text."
+}

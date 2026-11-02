@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "model": {
+    "task": "av_binding",
+    "seed": 91103,
+    "family": "history",
+    "numpy_path": "av_binding/history-91103.npz",
+    "source_pt_sha256": "c6962657bdd8b49fd1ab485e5efe103f1404cca3abaae36c71530e89c41ebff7",
+    "source_pt_path": "av_binding/history-91103-selected.pt",
+    "shapes": {
+      "reader.0.weight": [
+        108,
+        354
+      ],
+      "reader.0.bias": [
+        108
+      ],
+      "reader.2.weight": [
+        16,
+        108
+      ],
+      "reader.2.bias": [
+        16
+      ]
+    },
+    "parameters": 40084
+  },
+  "implementation": "expm",
+  "executions": 48,
+  "checks": 940,
+  "maximum_numeric_difference": 2.220446049250313e-16,
+  "rtol": 1e-10,
+  "atol": 1e-12,
+  "actions_classes_requests_fees_exact": true,
+  "bundle_manifest_sha256": "65dc110d8dae3fca4b18fdfb71faa5627a81bc9891edadc474c8a00e04995b60",
+  "reference_sha256": "add5b9201f97c90ed5c354131f9845675d962d9aa5e54661b37210591b2e4fd4",
+  "ci_manifest_sha256": "95b6a2300e584014ed5333394d8c6361e50bf80532694759ad529b749570afbc",
+  "verifier_source_sha256": "b1d94f08be151204d96fd7c19db386992a0806cd60a0ff09dfb837bbbaddca7e",
+  "worker_trace_sha256": "cbc4611fcd04ffa2ef4fa5e1469cddd26b762ab06aacbd15847481aa02e98eb5",
+  "scope": "Post-exit standard-library correctness audit, outside measured model worker"
+}

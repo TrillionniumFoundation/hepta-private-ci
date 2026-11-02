@@ -1,0 +1,37 @@
+{
+  "created": true,
+  "cleanup_verified": true,
+  "path": "/sys/fs/cgroup/hcsn-v12-72161913e39d4e5cbf31234860f9a834",
+  "inode": 6880,
+  "cgroup_mountinfo": [
+    "37 31 0:31 / /sys/fs/cgroup rw,nosuid,nodev,noexec,relatime shared:8 - cgroup2 cgroup2 rw,nsdelegate,memory_recursiveprot"
+  ],
+  "enabled_controllers": [
+    "cpu",
+    "memory",
+    "pids"
+  ],
+  "initial": {
+    "pids_max": 1,
+    "pids_current": 0,
+    "pids_peak": 0,
+    "pids_events": {
+      "max": 0
+    },
+    "swap_max": 0,
+    "swap_current": 0,
+    "inode": 6880
+  },
+  "scope": "Trusted gated task, no external admission/migration, one TID maximum; parent meter excluded.",
+  "final": {
+    "pids_max": 1,
+    "pids_current": 0,
+    "pids_peak": 1,
+    "pids_events": {
+      "max": 0
+    },
+    "swap_max": 0,
+    "swap_current": 0,
+    "inode": 6880
+  }
+}

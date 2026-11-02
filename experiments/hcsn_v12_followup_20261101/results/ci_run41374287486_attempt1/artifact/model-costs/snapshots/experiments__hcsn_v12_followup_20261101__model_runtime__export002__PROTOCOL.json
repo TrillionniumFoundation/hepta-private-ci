@@ -1,0 +1,16 @@
+{
+  "schema": "hcsn-v12-frozen-model-numpy-port.v1",
+  "rtol": 1e-10,
+  "atol": 1e-12,
+  "semantic_gate": "Class labels, selected actions/plans, request count and fees exact; numeric forwards fixed rtol/atol",
+  "local_stricter_gate": "Same-platform Torch/NumPy common-head output dictionary and serialized hash also exact",
+  "cross_host_rule": "Actual probabilities fixed rtol/atol; record actual serialized hash, do not demand identical BLAS last bits",
+  "near_ties": "No margin/tolerance relaxation or action replacement; actual differences reject",
+  "scope": "Inference-only export of all 16 frozen V10 models; old AV packets, original head and scheduler",
+  "torch_reference_version": "2.15.0+cpu",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "source_v10_freeze_sha256": "24f729ffd9871e00f36ec8156670c415f050e14d27b57b0da9c518f52c4d7b8b",
+  "same_law_model": "Finite fitted CTMC path filter, not HX free boundary or new training",
+  "costs": "Each export/reference/runtime stage is externally metered; nested forwards not added twice"
+}

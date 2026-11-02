@@ -1,0 +1,185 @@
+{
+  "schema": "hcsn-v12-recorded-cost-scope.v1",
+  "source_local_commit": "47843d8e",
+  "source_remote_commit": "87d0a3325b9e57b5736b9c93e1e6d35e057e91ff",
+  "source_pull_request": 4603,
+  "scope_state": "PRE_CI_AND_PENDING_CONTROL_AUDITS",
+  "recorded_disjoint_cpu_lower_bound_seconds": 643.119984,
+  "subtotals_cpu_seconds": {
+    "runtime": 68.452922,
+    "review": 8.795378,
+    "frontend": 5.70194,
+    "control": 558.932635,
+    "economics": 1.237109
+  },
+  "recorded_components": [
+    {
+      "name": "runtime_export_retired",
+      "cpu_seconds": 2.854926,
+      "cpu_decimal": "2.854926",
+      "receipt": "experiments/hcsn_v12_followup_20261101/model_runtime/cost_export001/RECEIPT.json",
+      "receipt_sha256": "3535b65385fe9683799840f5b49bed0fbcd91a327c1c9b1e84c8a8c86f03cfb8",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "runtime_export_sealed",
+      "cpu_seconds": 3.099154,
+      "cpu_decimal": "3.099154",
+      "receipt": "experiments/hcsn_v12_followup_20261101/model_runtime/cost_export002/RECEIPT.json",
+      "receipt_sha256": "924e4613964446066d393e7f3889b50ba052bd4950962ec40c440d828658184d",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "runtime_fresh_torch_numpy",
+      "cpu_seconds": 34.849161,
+      "cpu_decimal": "34.849161",
+      "receipt": "experiments/hcsn_v12_followup_20261101/model_runtime/cost_validate001/RECEIPT.json",
+      "receipt_sha256": "dde8cb5b5226c449f3d1aef74cdc6de38a0ad69792e03c146ff3f8ce993416ca",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "runtime_twenty_numpy_workers_and_audits",
+      "cpu_seconds": 27.649681,
+      "cpu_decimal": "27.649681",
+      "receipt": "experiments/hcsn_v12_followup_20261101/model_runtime/cost_local001/RECEIPT.json",
+      "receipt_sha256": "b1bc229d6726780367e8342531b1135b3f2900c9c4dc505e866ba14e9a130cc0",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "review_no_torch",
+      "cpu_seconds": 0.992886,
+      "cpu_decimal": "0.992886",
+      "receipt": "experiments/hcsn_v12_followup_20261101/review/cost_no_torch001/RECEIPT.json",
+      "receipt_sha256": "331b1923d032d40de5225a9d3a73902cc3c4457c49fb56c1b6c5f3671e243f9c",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "review_raw_records",
+      "cpu_seconds": 0.826568,
+      "cpu_decimal": "0.826568",
+      "receipt": "experiments/hcsn_v12_followup_20261101/review/cost_raw001/RECEIPT.json",
+      "receipt_sha256": "73e42051e8c17cc356ae25c2ab4cd36b50f1713be4b0d1e7f75a195c5d1b484e",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "review_failed_functional_start",
+      "cpu_seconds": 2.957398,
+      "cpu_decimal": "2.957398",
+      "receipt": "experiments/hcsn_v12_followup_20261101/review/cost_forward001/RECEIPT.json",
+      "receipt_sha256": "07f8dd7a00e72e04a04ea159a159aabdb8af1b6538121b70447c6281f7a9bce5",
+      "task_success": false,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "review_successful_functional_forward",
+      "cpu_seconds": 4.018526,
+      "cpu_decimal": "4.018526",
+      "receipt": "experiments/hcsn_v12_followup_20261101/review/cost_forward002/RECEIPT.json",
+      "receipt_sha256": "c70e6e7f27f59ed6c7adba84f7d994c8362093e16d58c1812018c256437d502b",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "frontend_audio_implementation",
+      "cpu_seconds": 5.70194,
+      "cpu_decimal": "5.701940",
+      "receipt": "experiments/hcsn_v12_followup_20261101/frontend/cost001/RECEIPT.json",
+      "receipt_sha256": "0883dbdb129b27c61ad5e1f25390515e876dfbfaca39f159db0a31d65ba487ff",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "control_formal_264_plus_132",
+      "cpu_seconds": 554.426242,
+      "cpu_decimal": "554.426242",
+      "receipt": "experiments/hcsn_v12_followup_20261101/control/receipts/campaign001/RECEIPT.json",
+      "receipt_sha256": "be29f1cb17ad65921026e48d22c2e8c7a2bc1c2d154a7912aa6e801e2a2272e4",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "control_common_actions_120",
+      "cpu_seconds": 4.506393,
+      "cpu_decimal": "4.506393",
+      "receipt": "experiments/hcsn_v12_followup_20261101/control/receipts/common_actions001/RECEIPT.json",
+      "receipt_sha256": "c848a0493f0315f0bdeac0a9aeae49e461ef5695318b9604b82a58bf65a342e2",
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "cost_scope": "Independent outer supervisor wait4, including its waited descendants. Nested child/component times are included, not additional.",
+      "excluded_scope": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "name": "economics_sparse_one_gru_smoke",
+      "cpu_seconds": 1.237109,
+      "cpu_decimal": "1.237109",
+      "receipt": "experiments/hcsn_v12_followup_20261101/economics/sparse_smoke001/RESULT.json",
+      "receipt_sha256": "17c95d70d1bdd3e44dfb4d5e8bf86fa722e825dc871396bd69702e63d2302069",
+      "cost_scope": "Sparse copy through completed worker+verifier+evidence copy and temporary cleanup; launcher imports and final receipt serialization excluded. No candidate hardware economic claim.",
+      "complete_local_economics_cost": false
+    }
+  ],
+  "nested_costs_excluded_from_addition": [
+    "runtime local001 model_cpu 23.809988 and audit_cpu 2.323068 are already in cost_local001 27.649681",
+    "All inner fits/cases/step clocks under outer control supervisor receipts",
+    "Frontend ffprobe/ffmpeg and internal implementation timers already in frontend outer5.701940"
+  ],
+  "economics_1_237109_scope": {
+    "covers_all_local_economics_tests": false,
+    "covers": "Sparse source/bundle copy, one actual GRU task24episodes, post-exit verifier, local evidence copy and temp cleanup",
+    "excludes": [
+      "Five fail-closed unit/control test execution and unittest startup",
+      "actionlint, Prettier, git diff and source inspection checks",
+      "Final just fmt",
+      "Read-only economics-review agent work",
+      "Code writing, reporting, orchestration and external tool/API costs",
+      "Initial sparse probe Python imports and final receipt serialization"
+    ]
+  },
+  "ci": {
+    "run_id": 41374287486,
+    "state": "AWAITING_DOWNLOADED_ARTIFACT",
+    "enclosing_driver_cpu_seconds_lower_bound": null,
+    "model_worker_cpu_seconds": null,
+    "external_verifier_cpu_seconds": null,
+    "setup_cpu_seconds": null,
+    "network_cost": null
+  },
+  "pending_control_audits_cpu_seconds": null,
+  "unmetered_current_development_and_checks_cpu_seconds": null,
+  "complete_historical_preparation_cpu_seconds": null,
+  "device_energy_joules": null,
+  "complete_project_cost": null,
+  "elapsed_wall_time_total": null,
+  "limits": [
+    "CPU scopes are distinct process envelopes; overlapping wall intervals are not summed into elapsed time.",
+    "Retired and failed measured attempts remain in the sum; success is not required for consumed CPU to count.",
+    "This is a lower bound over known local scopes, not all v12 cost, deployment cost, money, energy or full historical preparation.",
+    "Later remote CI and control audit scopes must be added only once, preserving this pre-CI checkpoint."
+  ]
+}

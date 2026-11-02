@@ -1,0 +1,601 @@
+{
+  "schema": "hcsn-v12-numpy-bundle.v1",
+  "models": [
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "history",
+      "numpy_path": "async_av/history-91101.npz",
+      "source_pt_sha256": "9e1b52a1ff1f43681eb595186cd915c83ce086e0f1dc25601dc2bfe65bee8f19",
+      "source_pt_path": "async_av/history-91101-selected.pt",
+      "shapes": {
+        "reader.0.weight": [
+          108,
+          354
+        ],
+        "reader.0.bias": [
+          108
+        ],
+        "reader.2.weight": [
+          16,
+          108
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40084
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "gru",
+      "numpy_path": "async_av/gru-91101.npz",
+      "source_pt_sha256": "b91b995a5cfbd73d607d2b4c5259d7821863aaf3c172113574028dd78d7d175f",
+      "source_pt_path": "async_av/gru-91101-selected.pt",
+      "shapes": {
+        "update.weight_ih": [
+          192,
+          58
+        ],
+        "update.weight_hh": [
+          192,
+          64
+        ],
+        "update.bias_ih": [
+          192
+        ],
+        "update.bias_hh": [
+          192
+        ],
+        "reader.0.weight": [
+          38,
+          418
+        ],
+        "reader.0.bias": [
+          38
+        ],
+        "reader.2.weight": [
+          16,
+          38
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40354
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "ssm",
+      "numpy_path": "async_av/ssm-91101.npz",
+      "source_pt_sha256": "5bc299575b6b247b29634a7c36f05b5918555efc145db6b54dcfd4e78612497c",
+      "source_pt_path": "async_av/ssm-91101-selected.pt",
+      "shapes": {
+        "rate.weight": [
+          64,
+          58
+        ],
+        "rate.bias": [
+          64
+        ],
+        "gain.weight": [
+          64,
+          58
+        ],
+        "gain.bias": [
+          64
+        ],
+        "drive.weight": [
+          64,
+          58
+        ],
+        "drive.bias": [
+          64
+        ],
+        "reader.0.weight": [
+          66,
+          418
+        ],
+        "reader.0.bias": [
+          66
+        ],
+        "reader.2.weight": [
+          16,
+          66
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40054
+    },
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "family": "filter",
+      "numpy_path": "async_av/filter-91101.npz",
+      "source_pt_sha256": "1f9dba81a085614ac251b4f92c0993facd4aa1e14fcb93baeb91c6116c0f09b3",
+      "source_pt_path": "async_av/filter-91101-selected.pt",
+      "shapes": {
+        "reader.0.weight": [
+          64,
+          610
+        ],
+        "reader.0.bias": [
+          64
+        ],
+        "reader.2.weight": [
+          16,
+          64
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40144
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "history",
+      "numpy_path": "async_av/history-91103.npz",
+      "source_pt_sha256": "d885af5e67020e366c5a15a3199bd089411d5b276091e4e53eaf4dd1e525568b",
+      "source_pt_path": "async_av/history-91103-selected.pt",
+      "shapes": {
+        "reader.0.weight": [
+          108,
+          354
+        ],
+        "reader.0.bias": [
+          108
+        ],
+        "reader.2.weight": [
+          16,
+          108
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40084
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "gru",
+      "numpy_path": "async_av/gru-91103.npz",
+      "source_pt_sha256": "60bbdd0378916731d111433593814b4b032e5ba8d8fe96490458d214f0cc11ef",
+      "source_pt_path": "async_av/gru-91103-selected.pt",
+      "shapes": {
+        "update.weight_ih": [
+          192,
+          58
+        ],
+        "update.weight_hh": [
+          192,
+          64
+        ],
+        "update.bias_ih": [
+          192
+        ],
+        "update.bias_hh": [
+          192
+        ],
+        "reader.0.weight": [
+          38,
+          418
+        ],
+        "reader.0.bias": [
+          38
+        ],
+        "reader.2.weight": [
+          16,
+          38
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40354
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "ssm",
+      "numpy_path": "async_av/ssm-91103.npz",
+      "source_pt_sha256": "5fc06d832c3ca034ae28aee0575efa6e8cad596fce4ab771642d10f7eead7df0",
+      "source_pt_path": "async_av/ssm-91103-selected.pt",
+      "shapes": {
+        "rate.weight": [
+          64,
+          58
+        ],
+        "rate.bias": [
+          64
+        ],
+        "gain.weight": [
+          64,
+          58
+        ],
+        "gain.bias": [
+          64
+        ],
+        "drive.weight": [
+          64,
+          58
+        ],
+        "drive.bias": [
+          64
+        ],
+        "reader.0.weight": [
+          66,
+          418
+        ],
+        "reader.0.bias": [
+          66
+        ],
+        "reader.2.weight": [
+          16,
+          66
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40054
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "family": "filter",
+      "numpy_path": "async_av/filter-91103.npz",
+      "source_pt_sha256": "3ff498228c350007435aa21ab9ae9900371068d42c26423709d9430b9677eda0",
+      "source_pt_path": "async_av/filter-91103-selected.pt",
+      "shapes": {
+        "reader.0.weight": [
+          64,
+          610
+        ],
+        "reader.0.bias": [
+          64
+        ],
+        "reader.2.weight": [
+          16,
+          64
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40144
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "history",
+      "numpy_path": "av_binding/history-91101.npz",
+      "source_pt_sha256": "db6cfdebe41bedab68a0c31d3cdfc7454d4c558275fe5d52a713792779c4a245",
+      "source_pt_path": "av_binding/history-91101-selected.pt",
+      "shapes": {
+        "reader.0.weight": [
+          108,
+          354
+        ],
+        "reader.0.bias": [
+          108
+        ],
+        "reader.2.weight": [
+          16,
+          108
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40084
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "gru",
+      "numpy_path": "av_binding/gru-91101.npz",
+      "source_pt_sha256": "251f529c4d4c53170a4d7acaba0669db32cf11a98f7cd972c9c49221dc5586b1",
+      "source_pt_path": "av_binding/gru-91101-selected.pt",
+      "shapes": {
+        "update.weight_ih": [
+          192,
+          58
+        ],
+        "update.weight_hh": [
+          192,
+          64
+        ],
+        "update.bias_ih": [
+          192
+        ],
+        "update.bias_hh": [
+          192
+        ],
+        "reader.0.weight": [
+          38,
+          418
+        ],
+        "reader.0.bias": [
+          38
+        ],
+        "reader.2.weight": [
+          16,
+          38
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40354
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "ssm",
+      "numpy_path": "av_binding/ssm-91101.npz",
+      "source_pt_sha256": "0712dc714db614c8878611a578de1f72cf5cc7d7ed18761f4e3eb6d586adcbaa",
+      "source_pt_path": "av_binding/ssm-91101-selected.pt",
+      "shapes": {
+        "rate.weight": [
+          64,
+          58
+        ],
+        "rate.bias": [
+          64
+        ],
+        "gain.weight": [
+          64,
+          58
+        ],
+        "gain.bias": [
+          64
+        ],
+        "drive.weight": [
+          64,
+          58
+        ],
+        "drive.bias": [
+          64
+        ],
+        "reader.0.weight": [
+          66,
+          418
+        ],
+        "reader.0.bias": [
+          66
+        ],
+        "reader.2.weight": [
+          16,
+          66
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40054
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "family": "filter",
+      "numpy_path": "av_binding/filter-91101.npz",
+      "source_pt_sha256": "99a0fe555cb874a934d53095ce0216f6758f3bbc2129103413d7471dc5022eac",
+      "source_pt_path": "av_binding/filter-91101-selected.pt",
+      "shapes": {
+        "reader.0.weight": [
+          64,
+          610
+        ],
+        "reader.0.bias": [
+          64
+        ],
+        "reader.2.weight": [
+          16,
+          64
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40144
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "history",
+      "numpy_path": "av_binding/history-91103.npz",
+      "source_pt_sha256": "c6962657bdd8b49fd1ab485e5efe103f1404cca3abaae36c71530e89c41ebff7",
+      "source_pt_path": "av_binding/history-91103-selected.pt",
+      "shapes": {
+        "reader.0.weight": [
+          108,
+          354
+        ],
+        "reader.0.bias": [
+          108
+        ],
+        "reader.2.weight": [
+          16,
+          108
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40084
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "gru",
+      "numpy_path": "av_binding/gru-91103.npz",
+      "source_pt_sha256": "f4945c8eb294730942d0c47baec1b888cb9e1650d77d78ff6622c55ab94fabbc",
+      "source_pt_path": "av_binding/gru-91103-selected.pt",
+      "shapes": {
+        "update.weight_ih": [
+          192,
+          58
+        ],
+        "update.weight_hh": [
+          192,
+          64
+        ],
+        "update.bias_ih": [
+          192
+        ],
+        "update.bias_hh": [
+          192
+        ],
+        "reader.0.weight": [
+          38,
+          418
+        ],
+        "reader.0.bias": [
+          38
+        ],
+        "reader.2.weight": [
+          16,
+          38
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40354
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "ssm",
+      "numpy_path": "av_binding/ssm-91103.npz",
+      "source_pt_sha256": "952ad8e373486add71e33ad1e342621cefe1a0372312783c7b7cc39af3148141",
+      "source_pt_path": "av_binding/ssm-91103-selected.pt",
+      "shapes": {
+        "rate.weight": [
+          64,
+          58
+        ],
+        "rate.bias": [
+          64
+        ],
+        "gain.weight": [
+          64,
+          58
+        ],
+        "gain.bias": [
+          64
+        ],
+        "drive.weight": [
+          64,
+          58
+        ],
+        "drive.bias": [
+          64
+        ],
+        "reader.0.weight": [
+          66,
+          418
+        ],
+        "reader.0.bias": [
+          66
+        ],
+        "reader.2.weight": [
+          16,
+          66
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40054
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "family": "filter",
+      "numpy_path": "av_binding/filter-91103.npz",
+      "source_pt_sha256": "d8f717ea95b7236ee87339fb78045187f22ef98df304ac153c6656d0c6482fc8",
+      "source_pt_path": "av_binding/filter-91103-selected.pt",
+      "shapes": {
+        "reader.0.weight": [
+          64,
+          610
+        ],
+        "reader.0.bias": [
+          64
+        ],
+        "reader.2.weight": [
+          16,
+          64
+        ],
+        "reader.2.bias": [
+          16
+        ]
+      },
+      "parameters": 40144
+    }
+  ],
+  "source_sha256": {
+    "experiments/hcsn_v12_followup_20261101/model_runtime/numpy_runtime.py": "2037846f9cf4665b9ea15782b97401028e0609f20d9d1c0079e4cfd4bcdd4924",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/export_validate.py": "d5fda041500313781f1586666010de15550dc1bc7400b7f700d8af87839d580e",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/verify_runtime.py": "b1d94f08be151204d96fd7c19db386992a0806cd60a0ff09dfb837bbbaddca7e",
+    "experiments/hcsn_v7_support_20261101/content_interface/content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+    "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py": "1b5efffde74c64f2e1f0f7ca1ed4e7b4d10f0de80cc23a9294c483d7cc7177c5",
+    "experiments/hcsn_v8_execution_20261101/scheduler/execution.py": "f38d0ea01ba71d7c128da9ddd86597e41b83b79cbba428eaade0f33e4177243b",
+    "experiments/hcsn_v8_execution_20261101/scheduler/planning.py": "3b616986599fb242d715c5a8b92fb73a68be01858723c6c6cc3111cda773ed61",
+    "experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py": "82af46b00edabd63a19cbe6e169b4a321502b600e5212753d67060ebfacb0eb9",
+    "experiments/hcsn_causal_execution_v3/av_probe.py": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127"
+  },
+  "artifact_sha256": {
+    "FROZEN_REFERENCE.json.gz": "add5b9201f97c90ed5c354131f9845675d962d9aa5e54661b37210591b2e4fd4",
+    "SOURCE_V10_FROZEN.json": "24f729ffd9871e00f36ec8156670c415f050e14d27b57b0da9c518f52c4d7b8b",
+    "VALIDATION.json": "942a993f61fe89d6b18199167edd83ecca6d8648d2db2c9ed7311fc8efe0a6ae",
+    "PROTOCOL.json": "13e6d032f864ed893474f1179cc0da2342504c1ed1b2106ca4c7e9cbdc2b02cf",
+    "MANIFEST.json": "65dc110d8dae3fca4b18fdfb71faa5627a81bc9891edadc474c8a00e04995b60",
+    "async_av/gru-91101.npz": "cf728ebbe1c26011696249756897864b962fe90abd894e98137d1f43efd0f532",
+    "async_av/INPUT_IDENTITY.json": "61d563b773c1279ebdd468986799e37d66adbe0c0ca57b2740b569e8f32d410e",
+    "async_av/filter-91101.npz": "9a065e6db6c70d1bd4027b61d1e30b1f60aafa0cb8898160911b88a2566cc13d",
+    "async_av/law-91103.json": "52e8e525f2f7ebde04199bca2c2d3b38c421585c9453cc833f2c477081531388",
+    "async_av/history-91103.npz": "2f44c1894fe8619b3f0cb924fb76ff3db562df07fceefca64e6cdbf576df44c7",
+    "async_av/gru-91103.npz": "01baabb38644377d4bfbd302154a45dd0e9aa60c4767796c66944b1b432edeef",
+    "async_av/head.json": "2f6d12ae14ff71af01e33a9d3572f36425fd3a977cebe638ad252c9a84b44ab1",
+    "async_av/ssm-91103.npz": "4e49b6675d20ebbeffdc3495856efb7ab4f068f07e45a8f9b360283093c803f0",
+    "async_av/law-91101.json": "95ebb9ea708240155f6ee01f0661691b2fbe07b5cb5b044df119e3ab5ef724b1",
+    "async_av/head.npz": "2f390a2dda86eef5eb808bad1092e86dbe9cc3fd904bf378890d87deccb7768b",
+    "async_av/history-91101.npz": "16a9538eea951e1f5bc0e8bd847de7b4c67776766f80317d8d098ff4f7061426",
+    "async_av/filter-91103.npz": "d5e33de80d97fee59d9069a6f6b2d66981b815b45849cd989d1ee7f85e61a707",
+    "async_av/test-packets.npz": "f3599b9f30e0d68409ad82062bb94b1b753faf10550c78864d009ed8c76c3187",
+    "async_av/ssm-91101.npz": "f1f98f9a3283c820f20e6ed93ac2088d5216db6133c4fc672bac59549c6a1926",
+    "av_binding/gru-91101.npz": "36bd409d13f18e0df0b1460b1190af495c39526d9485e6995f28986a1a9022db",
+    "av_binding/INPUT_IDENTITY.json": "3e4ee0dee6629d03098c1cb315f0f7bfdff0ee0a45af2e48d045c6103796f955",
+    "av_binding/filter-91101.npz": "7815f808078f71c358d30d0b6f7fd79a05b4d318fafb275c6627c966750e396b",
+    "av_binding/law-91103.json": "1677c8cf0ef721a5cf5e8dc6a08851075bdeff3dc9b1b38bf07bf8aaf2d9503a",
+    "av_binding/history-91103.npz": "886c71d0664240d76e331ac402685ae658fc79f707fd888d2af843fc41c246ee",
+    "av_binding/gru-91103.npz": "502762dd1cd3a77694943fcaca15cd674cbe83cbf9090f7003feb466833bdcd5",
+    "av_binding/head.json": "f92395aa0c7aefd0990630a76291f9d1d5a572048e7e264eea7cef011b7c6379",
+    "av_binding/ssm-91103.npz": "d3b6abd45cdcca8ba9ef6c062eb79753834aad3e77e45c4df5daa6d8f6eb88ba",
+    "av_binding/law-91101.json": "eb77e76b6105fef2375f7c912941a8031826ea39b21960d6ecd65b639c2d365a",
+    "av_binding/head.npz": "8caeeeb6ebc663c348bd02da7ed77dde26363b42978c42f711e90d0584894fc4",
+    "av_binding/history-91101.npz": "205a0c45fbaaae18f9459d1212655745f9dff29862b90406464be4ad3d7f3bb7",
+    "av_binding/filter-91103.npz": "5e1ddeb8c7807d3311ad05166459a7327826f0525faf3342d268024a8cf66a4d",
+    "av_binding/test-packets.npz": "edf3ae59f1e5059fb9902a607f6c9ead90716486a65142b60d9abf660a00456e",
+    "av_binding/ssm-91101.npz": "e212ce6df355e1007f2e020a251bc369df22f93d4caf3d988c4dc81a4e41ad46"
+  },
+  "CI_dependencies": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "torch_required_by_runtime": false,
+  "scientific_admission": false,
+  "base_manifest_sha256": "65dc110d8dae3fca4b18fdfb71faa5627a81bc9891edadc474c8a00e04995b60",
+  "reference_path": "FROZEN_REFERENCE.json.gz",
+  "reference_sha256": "add5b9201f97c90ed5c354131f9845675d962d9aa5e54661b37210591b2e4fd4",
+  "scope": "Final non-circular seal over runtime manifest, frozen model/data and fresh Torch reference"
+}

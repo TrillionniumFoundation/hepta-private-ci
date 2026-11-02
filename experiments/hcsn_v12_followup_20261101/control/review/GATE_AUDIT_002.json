@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "checks": 1696,
+  "target_sha256": "9778838d5d464958898455ef102f0fbab9ddfa7a67cadf06b721dce8d6b434f8",
+  "gate_cases": [
+    {
+      "case": "pass",
+      "action": "READ",
+      "fallback": false,
+      "used_seeds": [
+        11,
+        13
+      ],
+      "lcb": 0.22916693109196348,
+      "radius": 0.23083306890803654
+    },
+    {
+      "case": "fallback",
+      "action": "WAIT",
+      "fallback": true,
+      "used_seeds": [
+        11,
+        13
+      ],
+      "lcb": -0.27083306890803654,
+      "radius": 0.23083306890803654
+    },
+    {
+      "case": "selection_keeps",
+      "action": "WAIT",
+      "fallback": true,
+      "used_seeds": [
+        11,
+        11,
+        13
+      ],
+      "lcb": null,
+      "radius": null
+    }
+  ],
+  "global_max_tests": 2640,
+  "global_delta": 0.05,
+  "per_test_alpha": 1.893939393939394e-05,
+  "uniform_bound": 1.12,
+  "first_prefix_radius": 0.23083306890803654,
+  "scope": "independent bounded-reward enumeration and isolated gate fixtures; not a statistical coverage experiment",
+  "limits": [
+    "requires independent model futures conditional on fixed prefix and pool1-selected action",
+    "familywise bound covers declared model-local tests, not true-world model error or total task superiority"
+  ]
+}

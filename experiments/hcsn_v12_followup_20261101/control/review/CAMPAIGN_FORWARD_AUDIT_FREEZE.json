@@ -1,0 +1,53 @@
+{
+  "created_unix": 1793584093.3511467,
+  "source_sha256": "8b53392e4d820b19639356b0e62a12405ed0e421392396ac510e25879985ba00",
+  "target_sha256": "9778838d5d464958898455ef102f0fbab9ddfa7a67cadf06b721dce8d6b434f8",
+  "raw_sha256": "1e740fe1828c5d1b732b896dfb7f5d22af092791286ed91034ba968043728b9f",
+  "worlds_sha256": "2e2fae954870648800d6951fcbb006fbaffaeca22f99a4705f61100fc9771b10",
+  "selection_rule": "world0 each condition; analytic91103/GRU81101/SSM81101; first validation decision else tick0; no reward/LCB selection",
+  "cases": [
+    {
+      "condition": "matched",
+      "family": "gru",
+      "fit_seed": "81101",
+      "tick": 3,
+      "enters_validation": true
+    },
+    {
+      "condition": "matched",
+      "family": "ssm",
+      "fit_seed": "81101",
+      "tick": 3,
+      "enters_validation": true
+    },
+    {
+      "condition": "matched",
+      "family": "analytic",
+      "fit_seed": "91103",
+      "tick": 3,
+      "enters_validation": true
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "gru",
+      "fit_seed": "81101",
+      "tick": 7,
+      "enters_validation": true
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "ssm",
+      "fit_seed": "81101",
+      "tick": 0,
+      "enters_validation": true
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "analytic",
+      "fit_seed": "91103",
+      "tick": 7,
+      "enters_validation": true
+    }
+  ],
+  "scope": "same-implementation frozen-prefix forward replay, not second independent planner"
+}

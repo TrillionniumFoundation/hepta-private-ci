@@ -1,0 +1,412 @@
+{
+  "schema": "hcsn-v12-independent-ci-singleton-review.v1",
+  "checks": 992,
+  "all_checks_passed": true,
+  "failed_examples": [],
+  "checkout_sha": "87d0a3325b9e57b5736b9c93e1e6d35e057e91ff",
+  "workers": 40,
+  "episodes": 1440,
+  "rows": [
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "filter",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 77852672,
+      "worker_cpu_seconds": 1.0977629999999998,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "filter",
+      "seed": 91101,
+      "implementation": "uniformization",
+      "rss_peak_bytes": 73904128,
+      "worker_cpu_seconds": 1.003757,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "filter",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 75796480,
+      "worker_cpu_seconds": 0.9734079999999999,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "filter",
+      "seed": 91103,
+      "implementation": "uniformization",
+      "rss_peak_bytes": 74080256,
+      "worker_cpu_seconds": 0.9797539999999999,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "gru",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74240000,
+      "worker_cpu_seconds": 1.0081179999999998,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "gru",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74190848,
+      "worker_cpu_seconds": 0.990363,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "history",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 73932800,
+      "worker_cpu_seconds": 0.973961,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "history",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74137600,
+      "worker_cpu_seconds": 0.982906,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74289152,
+      "worker_cpu_seconds": 1.031726,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74121216,
+      "worker_cpu_seconds": 0.9998339999999999,
+      "episodes": 24
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "filter",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 75612160,
+      "worker_cpu_seconds": 1.2089979999999998,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "filter",
+      "seed": 91101,
+      "implementation": "uniformization",
+      "rss_peak_bytes": 74334208,
+      "worker_cpu_seconds": 1.220695,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "filter",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 75395072,
+      "worker_cpu_seconds": 1.19526,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "filter",
+      "seed": 91103,
+      "implementation": "uniformization",
+      "rss_peak_bytes": 74235904,
+      "worker_cpu_seconds": 1.191136,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74366976,
+      "worker_cpu_seconds": 1.2896379999999998,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74428416,
+      "worker_cpu_seconds": 1.375321,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "history",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74326016,
+      "worker_cpu_seconds": 1.094323,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "history",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74121216,
+      "worker_cpu_seconds": 1.096533,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74375168,
+      "worker_cpu_seconds": 1.3545260000000001,
+      "episodes": 48
+    },
+    {
+      "round": "forward",
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74293248,
+      "worker_cpu_seconds": 1.328834,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74231808,
+      "worker_cpu_seconds": 1.3531719999999998,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74563584,
+      "worker_cpu_seconds": 1.373703,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "history",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 73957376,
+      "worker_cpu_seconds": 1.0640150000000002,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "history",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74055680,
+      "worker_cpu_seconds": 1.0678050000000001,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74432512,
+      "worker_cpu_seconds": 1.2912640000000002,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74473472,
+      "worker_cpu_seconds": 1.2450809999999999,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "filter",
+      "seed": 91103,
+      "implementation": "uniformization",
+      "rss_peak_bytes": 73998336,
+      "worker_cpu_seconds": 1.167325,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "filter",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 75431936,
+      "worker_cpu_seconds": 1.155702,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "filter",
+      "seed": 91101,
+      "implementation": "uniformization",
+      "rss_peak_bytes": 74444800,
+      "worker_cpu_seconds": 1.1875049999999998,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "av_binding",
+      "family": "filter",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 75743232,
+      "worker_cpu_seconds": 1.1795909999999998,
+      "episodes": 48
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74117120,
+      "worker_cpu_seconds": 0.9860289999999999,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 74211328,
+      "worker_cpu_seconds": 1.010371,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "history",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74379264,
+      "worker_cpu_seconds": 0.972701,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "history",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 73965568,
+      "worker_cpu_seconds": 0.9592939999999999,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "gru",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 74252288,
+      "worker_cpu_seconds": 0.984906,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "gru",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 73949184,
+      "worker_cpu_seconds": 1.00477,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "filter",
+      "seed": 91103,
+      "implementation": "uniformization",
+      "rss_peak_bytes": 74125312,
+      "worker_cpu_seconds": 1.015137,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "filter",
+      "seed": 91103,
+      "implementation": "expm",
+      "rss_peak_bytes": 75341824,
+      "worker_cpu_seconds": 0.990628,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "filter",
+      "seed": 91101,
+      "implementation": "uniformization",
+      "rss_peak_bytes": 74162176,
+      "worker_cpu_seconds": 1.003369,
+      "episodes": 24
+    },
+    {
+      "round": "reverse",
+      "task": "async_av",
+      "family": "filter",
+      "seed": 91101,
+      "implementation": "expm",
+      "rss_peak_bytes": 75206656,
+      "worker_cpu_seconds": 1.0238559999999999,
+      "episodes": 24
+    }
+  ],
+  "limits": "Trusted singleton profile only; shared/warmed host and pre-read artifacts; no arbitrary family, production, cold-memory superiority, energy or scientific admission"
+}

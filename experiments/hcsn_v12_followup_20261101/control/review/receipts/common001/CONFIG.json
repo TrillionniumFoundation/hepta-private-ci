@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.control.review.audit_common_actions",
+    "--run",
+    "experiments/hcsn_v12_followup_20261101/control/results/development001",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/control/review/COMMON_ACTIONS_AUDIT.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/control/review/receipts/common001",
+  "timeout": 120.0,
+  "sample_interval": 0.5
+}

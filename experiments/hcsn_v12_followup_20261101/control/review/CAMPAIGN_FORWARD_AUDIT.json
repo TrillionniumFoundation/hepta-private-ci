@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "decisions": 6,
+  "cases": [
+    {
+      "condition": "matched",
+      "family": "gru",
+      "fit_seed": "81101",
+      "tick": 3,
+      "validation_exercised": true,
+      "action_equal": true,
+      "all_detail_fields_equal": true
+    },
+    {
+      "condition": "matched",
+      "family": "ssm",
+      "fit_seed": "81101",
+      "tick": 3,
+      "validation_exercised": true,
+      "action_equal": true,
+      "all_detail_fields_equal": true
+    },
+    {
+      "condition": "matched",
+      "family": "analytic",
+      "fit_seed": "91103",
+      "tick": 3,
+      "validation_exercised": true,
+      "action_equal": true,
+      "all_detail_fields_equal": true
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "gru",
+      "fit_seed": "81101",
+      "tick": 7,
+      "validation_exercised": true,
+      "action_equal": true,
+      "all_detail_fields_equal": true
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "ssm",
+      "fit_seed": "81101",
+      "tick": 0,
+      "validation_exercised": true,
+      "action_equal": true,
+      "all_detail_fields_equal": true
+    },
+    {
+      "condition": "hidden_refractory_mismatch",
+      "family": "analytic",
+      "fit_seed": "91103",
+      "tick": 7,
+      "validation_exercised": true,
+      "action_equal": true,
+      "all_detail_fields_equal": true
+    }
+  ],
+  "scope": "same-implementation frozen-prefix forward replay, not second independent planner",
+  "exact_detail_comparison": true
+}
