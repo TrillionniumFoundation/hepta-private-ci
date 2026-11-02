@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.frontend.cache_contract",
+    "run",
+    "--plan",
+    "experiments/hcsn_v13_followup_20261102/frontend/CACHE_PLAN.json",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/frontend/cache_contract001"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/cost_cache001",
+  "timeout": 180.0,
+  "sample_interval": 0.5
+}

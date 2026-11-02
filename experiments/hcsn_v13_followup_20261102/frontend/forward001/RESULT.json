@@ -1,0 +1,45 @@
+{
+  "schema": "hcsn-v13-real-pretrained-audio-forward.v1",
+  "status": "PASS",
+  "plan_sha256": "9c3cde14fef7faf2fb54ad74eb7a80842e29cbbb7135a4ef7a739d874539efd5",
+  "recording": "1002_DFA_ANG_XX",
+  "original_media_sha256": "a52ffd181bdba96805956fb627960fe47cade90988cdb1688d1f86be1e71e366",
+  "checkpoint_sha256": "488fd4f16de84438ffc945334278c1b9fb9b7159a806c1080b16111a958c945d",
+  "sample_npz_sha256": "ddd22a6f1e1d5a9fc62689cf32250a7b44aba2f1fc6206a73d3813dd07f88c96",
+  "accepted_waveform_sha256": "1a3748434085bfb29f7b86fb4fd7930997c27a47edb5373f47228763603d61f7",
+  "output_sha256": "175e5728b512c42ea2258b3ed12e42a3b3b249c06b0785f11c3d7c6f6598ff2d",
+  "actual_pretrained_forwards": 3,
+  "network_requests": 0,
+  "local_checkpoint_loads": 1,
+  "torch": "2.6.0+cpu",
+  "torchaudio": "2.6.0+cpu",
+  "controls": [
+    {
+      "name": "future_NaN",
+      "actual_pretrained_forward": true,
+      "bitwise_equal": true
+    },
+    {
+      "name": "future_finite",
+      "actual_pretrained_forward": true,
+      "bitwise_equal": true
+    },
+    {
+      "name": "inside_NaN",
+      "rejected_before_forward": true
+    },
+    {
+      "name": "short",
+      "rejected_before_forward": true
+    },
+    {
+      "name": "wrong_checkpoint",
+      "rejected_before_loading": true
+    }
+  ],
+  "process_body_cpu_seconds": 2.743631924,
+  "scope": "Historical training waveform; actual pretrained ASR forward only. No emotion/binding fit, v6 recovery or independent confirmation.",
+  "strong_audio_reference_qualified": false,
+  "device_energy_joules": null,
+  "complete_process_family_memory_bytes": null
+}

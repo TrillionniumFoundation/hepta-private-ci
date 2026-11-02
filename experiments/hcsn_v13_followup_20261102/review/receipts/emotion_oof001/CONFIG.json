@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.review.audit_emotion_oof",
+    "--frontend",
+    "experiments/hcsn_v13_followup_20261102/frontend",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/frontend/readout001",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/review/EMOTION_OOF_AUDIT.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/review/receipts/emotion_oof001",
+  "timeout": 180.0,
+  "sample_interval": 0.2
+}

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/control/value_fit.py", line 262, in <module>
+    if args.command == "prepare": prepare(args.run, args.models, args.publication)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/control/value_fit.py", line 92, in prepare
+    receipt, content_plan = content_publication_gate(models, publication, protocol)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/control/value_fit.py", line 86, in content_publication_gate
+    raise RuntimeError("Required content/source bytes are absent from verified published tree")
+RuntimeError: Required content/source bytes are absent from verified published tree

@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-v13-readonly-exploration-cost.v1",
+  "retention": "Transcribed from earlier tool stdout; no new execution or complete supervisor receipt is claimed.",
+  "self_cpu_seconds_lower_bound": 0.379491,
+  "complete_worker_cpu_seconds": null,
+  "source": "experiments/hcsn_hx_unified_v3/hx.py",
+  "source_sha256": "f7089527461983ebfd53ce82d95a124314a797fc57ed40386ad2e8d4b75e1d19",
+  "exploration": "Default HX parameters at log(V/VB) .0001,.001,.005,.02,.05,.1,.25,.5,1,2; compare A7, Green resolvent, finite differences and F/G.",
+  "near_boundary_stencil_witness": {
+    "log_margin": 0.0001,
+    "stencil_step": 0.0002,
+    "central_stencil_crosses_default_branch": true,
+    "ode_residual": -0.8511090962354757,
+    "used_as_passing_interior_check": false
+  },
+  "outer_bootstrap_and_final_print_cpu": null,
+  "added_to_reference001_complete_envelope": false
+}

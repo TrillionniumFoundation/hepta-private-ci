@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-v13-control-preflight-costs.v1",
+  "disjoint_outer_worker_cpu_seconds": "16.009592",
+  "workers": [
+    {
+      "path": "cost_check001/RECEIPT.json",
+      "sha256": "2d48bf028d97dbf494339e5cd8f6b114e0970b880b3e1d0caa867d6b784d0278",
+      "cpu_seconds": "3.789439",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "cost_check002/RECEIPT.json",
+      "sha256": "613fc6d19ea536aa749e1ba5734eb8797554e6122ad2888767874a4079983a84",
+      "cpu_seconds": "4.179930",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "cost_targets001/RECEIPT.json",
+      "sha256": "deb15023f31bf0187f3673174bd833127fee2772c4869783909ce8862f8b7842",
+      "cpu_seconds": "4.202415",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "cost_targets002/RECEIPT.json",
+      "sha256": "4954e9275d9bd687dcc355328b5311dcadecfe5e8121eb63668ee36726dd0ec5",
+      "cpu_seconds": "3.837808",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    }
+  ],
+  "effective_final_checks": 118,
+  "retired_draft_checks_not_added_to_coverage": 38,
+  "final_execution_checks": 49,
+  "final_future_target_checks": 69,
+  "future_target_control_model_steps": {
+    "initial_tree": 34,
+    "two_label_variants_tree": 68,
+    "direct_schedule_prefixes": 60,
+    "total": 162
+  },
+  "formal_reader_fits_executed": 0,
+  "historical_test_executed": false,
+  "unknown_additional_cost": [
+    "source development and read-only review",
+    "orchestration, one wrong-working-directory bookkeeping command, and formatter",
+    "historical media/pretraining/preparation"
+  ],
+  "complete_project_cost": null,
+  "energy_joules": null,
+  "nested_rule": "All fixture forwards, data load, target generation, reader-gradient check, gate rejection and artifact writes are within these outer envelopes; never add inner timings again.",
+  "earlier_source_target_check_repeat_not_added_to_coverage": 69
+}

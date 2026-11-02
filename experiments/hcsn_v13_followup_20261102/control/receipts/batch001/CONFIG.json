@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3",
+    "experiments/hcsn_v13_followup_20261102/control/orchestration/fit_batch.py",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/control/results/run001",
+    "--receipts",
+    "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/control/results/run001/BATCH.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/control/receipts/batch001",
+  "timeout": 3600.0,
+  "sample_interval": 0.5
+}

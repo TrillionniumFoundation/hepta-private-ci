@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn-v13-train-speech-cache-contract.v1",
+  "status": "PASS",
+  "plan_sha256": "db59ca10aa6e1e845c0fc0137cc7f9ed6484b017bd219a1d6e94250a4fddb896",
+  "raw_train_records_verified": 288,
+  "actors": 24,
+  "raw_train_bytes": 89552339,
+  "unique_full_feature_byte_hashes": 288,
+  "original_cache_sha256": "caa50b4db7e189492adea93be0ecd8bad4a4a4bc9ceab3d7961ef28eba6ff4bc",
+  "actual_replayed_clip": "1002_DFA_ANG_XX",
+  "actual_prefix": {
+    "origin": 0.027,
+    "accepted_end": 1.027,
+    "audio_start": 0.0,
+    "native_sample_rate": 44100,
+    "native_lo": 1191,
+    "native_hi": 45290,
+    "native_samples": 44099,
+    "resampled_before_padding": 16000,
+    "padded_samples": 0,
+    "accepted_samples": 16000,
+    "waveform_sha256": "6cbf87f61dbfa0d5c239ef71f5af2f85ff7b3d3e882a3d7fdaa3270506767249",
+    "full_recording_normalization": false,
+    "future_pcm_used": false
+  },
+  "actual_pretrained_forwards": 1,
+  "descriptor_bitwise_equal": true,
+  "descriptor_max_absolute_difference": 0.0,
+  "output_sha256": "18c1b2e76e664296e6a7fd2e827f03c89cee85a2ec5da0f72a66d5f467d752c3",
+  "emotions": [
+    "ANG",
+    "DIS",
+    "FEA",
+    "HAP",
+    "NEU",
+    "SAD"
+  ],
+  "target_contract": "Emotion target comes from checked TRAIN metadata, not existing binary sentence labels. No labels enter encoder inference.",
+  "validation_or_test_loaded": false,
+  "quality_evaluated": false,
+  "independent_confirmation": false,
+  "strong_audio_reference_qualified": false
+}

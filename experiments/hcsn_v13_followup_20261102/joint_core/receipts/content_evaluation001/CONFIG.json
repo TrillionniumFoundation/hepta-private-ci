@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.joint_core.operations.evaluate_content",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/joint_core/results/content_evaluation001",
+    "--source-remote-head",
+    "4c2fa0d86b9b09d5b26849b4738458fabc7b2945",
+    "--candidate-remote-head",
+    "af2aa1fa806c8e3ee28945ab72bf263a714e387f",
+    "--publication",
+    "/workspace/scratch/3511158fb83b/v13_candidate_publication_result.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/receipts/content_evaluation001",
+  "timeout": 600.0,
+  "sample_interval": 0.5
+}

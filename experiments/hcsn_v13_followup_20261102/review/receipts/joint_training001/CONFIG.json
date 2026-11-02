@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.review.audit_joint_training",
+    "--root",
+    ".",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/review/JOINT_TRAINING_AUDIT.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/review/receipts/joint_training001",
+  "timeout": 180.0,
+  "sample_interval": 0.2
+}

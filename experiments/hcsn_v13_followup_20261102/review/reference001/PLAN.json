@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn-v13-hx-reference-audit.v1",
+  "primary_doi": "10.1111/j.1540-6261.2012.01721.x",
+  "primary_url": "https://www.princeton.edu/~wxiong/papers/rollover.pdf",
+  "primary_equations": [
+    "1",
+    "8",
+    "9",
+    "11",
+    "12",
+    "A7"
+  ],
+  "reference_source": "experiments/hcsn_hx_unified_v3/hx.py",
+  "reference_sha256": "f7089527461983ebfd53ce82d95a124314a797fc57ed40386ad2e8d4b75e1d19",
+  "auditor_sha256": "7d77a026a5486394b17fc044467b67cfe49c36583c249fdea935b931205fc0c4",
+  "git_head_at_start": "03c0c30c86129f63d3fe3cbc35c104973701a72c",
+  "fixed_financial_parameters": {
+    "rate": 0.05,
+    "payout": 0.03,
+    "volatility": 0.25,
+    "maturity": 2.0,
+    "principal": 60.0,
+    "coupon": 4.0,
+    "tax_shield": 0.25,
+    "recovery": 0.6,
+    "shock_intensity": 1.0,
+    "sale_fraction": 0.015
+  },
+  "interior_log_asset_over_boundary": [
+    0.02,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "hitting_probability_times": [
+    0.05,
+    0.5,
+    2.0
+  ],
+  "hitting_quadrature_atol": 1e-09,
+  "equity_resolvent_atol": 2e-08,
+  "interior_ode_absolute_tolerance": 2e-05,
+  "smooth_pasting_log_derivative_absolute_tolerance": 3e-05,
+  "scope": "Fixed financial-law value/probability and numerical reference admission; no trained neural or reset claim."
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "hcsn-v13-known-history-crosscheck.v1",
+  "new_development_records": 288,
+  "new_development_actors": 24,
+  "source": "Metadata comparison only; historical heldout media/features not loaded",
+  "comparisons": [
+    {
+      "manifest": "experiments/hcsn_task_value_v1/data/async_manifest.json",
+      "sha256": "cad552f54212064d5d7620369f98f50f37c8f5b040c5b3bd49b3b216cb5447be",
+      "groups": [
+        {
+          "historical_split": "test",
+          "recordings": 12,
+          "actors": 2,
+          "recording_id_overlap": [],
+          "actor_overlap": [],
+          "raw_byte_sha256_overlap": []
+        },
+        {
+          "historical_split": "train",
+          "recordings": 24,
+          "actors": 4,
+          "recording_id_overlap": [],
+          "actor_overlap": [],
+          "raw_byte_sha256_overlap": []
+        },
+        {
+          "historical_split": "validation",
+          "recordings": 12,
+          "actors": 2,
+          "recording_id_overlap": [],
+          "actor_overlap": [],
+          "raw_byte_sha256_overlap": []
+        }
+      ]
+    },
+    {
+      "manifest": "experiments/hcsn_real_av_v1/data/MANIFEST.json",
+      "sha256": "982367fca163d49022c02deadbaa2ccd07c9f1ec4203320a1302e89771add0b8",
+      "groups": [
+        {
+          "historical_split": "test",
+          "recordings": 120,
+          "actors": 5,
+          "recording_id_overlap": [],
+          "actor_overlap": [],
+          "raw_byte_sha256_overlap": []
+        },
+        {
+          "historical_split": "train",
+          "recordings": 480,
+          "actors": 20,
+          "recording_id_overlap": [],
+          "actor_overlap": [],
+          "raw_byte_sha256_overlap": []
+        },
+        {
+          "historical_split": "validation",
+          "recordings": 120,
+          "actors": 5,
+          "recording_id_overlap": [],
+          "actor_overlap": [],
+          "raw_byte_sha256_overlap": []
+        }
+      ]
+    }
+  ],
+  "complete_v5_v6_exclusion_ledger": false,
+  "independent_confirmation_claimed": false,
+  "limit": "No overlap with these two known manifested cohorts does not authenticate absence of every historical use or create new independent confirmation."
+}

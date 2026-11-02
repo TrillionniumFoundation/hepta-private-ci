@@ -1,0 +1,286 @@
+{
+  "schema": "hcsn-v13-control-known-cost-ledger.v1",
+  "formal_disjoint_outer_cpu_seconds": "206.359390",
+  "preflight_disjoint_outer_cpu_seconds": "16.009592",
+  "known_disjoint_control_cpu_seconds": "222.368982",
+  "formal_outer_workers": [
+    {
+      "path": "receipts/prepare001/RECEIPT.json",
+      "cpu_seconds": "3.820153",
+      "sha256": "0662cc9c3d3f4de32bbc853aca33007fbda25052236544d7ee8c685605b4f6ac",
+      "task_success": false,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "receipts/prepare002/RECEIPT.json",
+      "cpu_seconds": "3.796191",
+      "sha256": "a9d4b75e294e00f26b4696818a7bb561b7e33151d86db6b7be22eb42d67f1128",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "receipts/batch001/RECEIPT.json",
+      "cpu_seconds": "188.711332",
+      "sha256": "1ca1e1fbd709a4d13e1c5a82aca9e53c58db6d7013b0c7be4e50dcd046c2c273",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "receipts/freeze001/RECEIPT.json",
+      "cpu_seconds": "3.421173",
+      "sha256": "c141c36276cf38f88e4a26f6c21e1e51f5c492ea5ed827ec356414914327c45b",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "receipts/audit_candidates001/RECEIPT.json",
+      "cpu_seconds": "6.610541",
+      "sha256": "632e1e9717eb1507b3c66c09d8742df46367fbd2e67993226e8677607d3fad24",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    }
+  ],
+  "nested_fit_cpu_seconds_not_additive": "185.700554",
+  "nested_fit_workers": [
+    {
+      "path": "receipts/model-fits001/async_av-gru-13301/RECEIPT.json",
+      "cpu_seconds": "4.037707",
+      "task_success": true,
+      "sha256": "4d0130b09958f494d2c6cc924fdd3969bbee39df288568d0288175cfe5770246"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-gru-13303/RECEIPT.json",
+      "cpu_seconds": "3.790978",
+      "task_success": true,
+      "sha256": "c5b38b59482ad3600a044dc3324a2fc5df7c896641b3d6dbb54937f7fa006e1b"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-gru-13307/RECEIPT.json",
+      "cpu_seconds": "4.213083",
+      "task_success": true,
+      "sha256": "dc1832ddc1208f7d412ceaa775ab21f88bd773b9901a4fa9e89a8aaf44f8ad5b"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-history-13301/RECEIPT.json",
+      "cpu_seconds": "4.166359",
+      "task_success": true,
+      "sha256": "ebdc1d528f4e44ad60579cdbb85c07de709749abcd7813d3a90c5049436f3ec2"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-history-13303/RECEIPT.json",
+      "cpu_seconds": "4.096016",
+      "task_success": true,
+      "sha256": "c817e99b82b0b34bf28b55bfca5382f586113081dc4969029b7073c7b0b90799"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-history-13307/RECEIPT.json",
+      "cpu_seconds": "4.245341",
+      "task_success": true,
+      "sha256": "ffdee32448b20cb933e16a6c2b5cc0dba11b8a924c8bd675d0b711bd6bc35401"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-hx_full-13301/RECEIPT.json",
+      "cpu_seconds": "5.938125",
+      "task_success": true,
+      "sha256": "562c4bc65a318f8da42a9fa65b33fbd73fed4d22d25a2751b2e3771bdbdb28c4"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-hx_full-13303/RECEIPT.json",
+      "cpu_seconds": "5.857639",
+      "task_success": true,
+      "sha256": "2f06b9376c98654cf1d2a553011102415bcfaa0002d2f0a170a0636f5086442c"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-hx_full-13307/RECEIPT.json",
+      "cpu_seconds": "5.479646",
+      "task_success": true,
+      "sha256": "4560b3037f32d407b6995cde49c84795b39e4fbb2a4fe5e3eb55650566d83590"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-hx_margin-13301/RECEIPT.json",
+      "cpu_seconds": "4.390112",
+      "task_success": true,
+      "sha256": "b77dffdd1ee6fd1d0e7390ae6eafbb142cd3b16e085f0796fa139dbb12fe3197"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-hx_margin-13303/RECEIPT.json",
+      "cpu_seconds": "4.577070",
+      "task_success": true,
+      "sha256": "be3e20ee6595a361a36ddb8506e9ab0cb81ba3eb10b7a7ab5a165ce290f026f9"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-hx_margin-13307/RECEIPT.json",
+      "cpu_seconds": "4.075912",
+      "task_success": true,
+      "sha256": "6f4952b5194f198c85895a52ba7ebd28c3f72677c8df5d2f762c1d34a94b10e0"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-ordinary_gate-13301/RECEIPT.json",
+      "cpu_seconds": "4.308323",
+      "task_success": true,
+      "sha256": "4052419d896c4f3a00af6c96fb10ed5f892ddbd51a0dd25ee249d25858514421"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-ordinary_gate-13303/RECEIPT.json",
+      "cpu_seconds": "4.462979",
+      "task_success": true,
+      "sha256": "244079d08df0b89a810f9c5cb05df998be1f216d30830c57d66b293fe86f37ca"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-ordinary_gate-13307/RECEIPT.json",
+      "cpu_seconds": "4.131312",
+      "task_success": true,
+      "sha256": "c2c1bfcd4c20cd037abb74415e0d86d83ffafb63d9d1065873472b51de74cfd0"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-ssm-13301/RECEIPT.json",
+      "cpu_seconds": "4.598399",
+      "task_success": true,
+      "sha256": "1067faac16f9f6c3a9e0f7ea5a464625ce9ebd958f9f21a77825a75606a78779"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-ssm-13303/RECEIPT.json",
+      "cpu_seconds": "4.585936",
+      "task_success": true,
+      "sha256": "49c4e48f34596fea02163ff3e7ff4105d9e6b1511150ecd36d392491111a8496"
+    },
+    {
+      "path": "receipts/model-fits001/async_av-ssm-13307/RECEIPT.json",
+      "cpu_seconds": "4.519391",
+      "task_success": true,
+      "sha256": "5e3f489c6b6042b1d3378c9c90b397c780b7283766709ae985476b6d9c3e6807"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-gru-13301/RECEIPT.json",
+      "cpu_seconds": "5.462125",
+      "task_success": true,
+      "sha256": "d47f3dcfb20fa86b64bfc2e15b4950b01bee39e1c7f7fcf802bc552d1d660890"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-gru-13303/RECEIPT.json",
+      "cpu_seconds": "5.343186",
+      "task_success": true,
+      "sha256": "6f76e2e473517914aa0bb26675ca79dbeab01d3ae3ed50e65c46b5a97cc1303d"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-gru-13307/RECEIPT.json",
+      "cpu_seconds": "5.364944",
+      "task_success": true,
+      "sha256": "3679dc73e0d3c0e3d72689ca6afe54d0abd101e1fd61c2fa2f587b3cb1d0f9fd"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-history-13301/RECEIPT.json",
+      "cpu_seconds": "5.082328",
+      "task_success": true,
+      "sha256": "3a5ba1678b51eba12040e6cb776b3f08f5b2d790088d78b4a69487960a24e119"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-history-13303/RECEIPT.json",
+      "cpu_seconds": "5.223227",
+      "task_success": true,
+      "sha256": "fd51e0187def463c12aaadb14cd7c05ceab484c8392767f8c19d8c12d267c79d"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-history-13307/RECEIPT.json",
+      "cpu_seconds": "5.450923",
+      "task_success": true,
+      "sha256": "52d4c828820f71d86ae0df99b6298738790bc68aa13110db7d44bca90ab9a33b"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-hx_full-13301/RECEIPT.json",
+      "cpu_seconds": "7.773532",
+      "task_success": true,
+      "sha256": "53cbe46eee7df1b7ade9699133280a20cdbaebbba8284dd550fdc570ce1eb357"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-hx_full-13303/RECEIPT.json",
+      "cpu_seconds": "7.319268",
+      "task_success": true,
+      "sha256": "a7383e9735e3f2f02a9b7ea7b071b444750fe36db66a7687f6aa66d5fe10fae1"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-hx_full-13307/RECEIPT.json",
+      "cpu_seconds": "7.071995",
+      "task_success": true,
+      "sha256": "bee7160b33864dd1a878723c2cf223f8cf3cb849cc53bc89055023c6e17dc08e"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-hx_margin-13301/RECEIPT.json",
+      "cpu_seconds": "5.411345",
+      "task_success": true,
+      "sha256": "61a67b6856b3848350a24f37f465c2d08d1f07e6934f5b37fc29042205c5b4f6"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-hx_margin-13303/RECEIPT.json",
+      "cpu_seconds": "5.415310",
+      "task_success": true,
+      "sha256": "6b77ce9f84f12c3ee68a85810d193c6a123cfc88c3076d5f7bb88300d401b733"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-hx_margin-13307/RECEIPT.json",
+      "cpu_seconds": "5.577012",
+      "task_success": true,
+      "sha256": "ddeef8ccab4883c45243f632b115e9f65b55f68705652d3f0440bc052d4bcdd9"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-ordinary_gate-13301/RECEIPT.json",
+      "cpu_seconds": "5.582358",
+      "task_success": true,
+      "sha256": "993eb969d3a5f54542c5927e253704204ec3423b2a49d077514cba6beb8b7c7f"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-ordinary_gate-13303/RECEIPT.json",
+      "cpu_seconds": "5.261038",
+      "task_success": true,
+      "sha256": "e6689c4c3d4d727d633ec1eee008e8af869b711eddba2d215502ede5204eb95a"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-ordinary_gate-13307/RECEIPT.json",
+      "cpu_seconds": "6.074359",
+      "task_success": true,
+      "sha256": "09ce82773ef244bdcfdeecdb801e5dd067af916211b82ae4c36c1806fe205296"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-ssm-13301/RECEIPT.json",
+      "cpu_seconds": "5.923413",
+      "task_success": true,
+      "sha256": "ca39c931cf5f48a7c324c7b836e97f74b8a5fb3e045ee2578861436349c71f32"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-ssm-13303/RECEIPT.json",
+      "cpu_seconds": "5.888715",
+      "task_success": true,
+      "sha256": "b38b4e43ec6011ff41827d26fd40cdef74ee9c8dc42f25e32726e9d3f27bf046"
+    },
+    {
+      "path": "receipts/model-fits001/av_binding-ssm-13307/RECEIPT.json",
+      "cpu_seconds": "5.001148",
+      "task_success": true,
+      "sha256": "703c1566f8f31255a1eeef61d8937a3120cb0e2ceff5a54804e503cf09cf8fc9"
+    }
+  ],
+  "reader_fits": 36,
+  "updates_per_reader": 128,
+  "new_head_future_target_records": 124416,
+  "actual_offline_joint_prefix_step_calls": 66096,
+  "candidate_audit": {
+    "checks": 751465,
+    "actual_replayed_train_tree_updates": 1224,
+    "replayed_target_records": 2304,
+    "largest_probability_difference": 0.0,
+    "scope": "Self-produced record arithmetic and same-implementation actual neural replay; not independent quality confirmation"
+  },
+  "historical_test_opened_by_control_pipeline": false,
+  "all_blockers_closed": false,
+  "production_activation": false,
+  "complete_project_cost": null,
+  "complete_process_family_peak_memory_bytes": null,
+  "attributable_device_energy_joules": null,
+  "nested_rule": "188.711332s batch outer already includes all36 per-fit wrapper/model costs and parent launch/wait; never add nested_fit_cpu_seconds_not_additive again. Five formal outer envelopes are disjoint; all preflight reruns and failed preparation counted.",
+  "unmeasured_scope": [
+    "source development/read-only review/bookkeeping/formatting",
+    "network/publication/API execution",
+    "historical raw media preparation and pretraining",
+    "other project stages outside this control task"
+  ]
+}

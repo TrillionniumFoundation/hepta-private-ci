@@ -1,0 +1,54 @@
+{
+  "schema": "hcsn-v13-reused-official-audio-inputs.v1",
+  "files": [
+    {
+      "source_path": "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/CHECKPOINT.json",
+      "copy_path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/CHECKPOINT.json",
+      "bytes": 1549,
+      "sha256": "e889ebdfa1e4a48171223a080223b4a31cc67504e30d72d3d65506579e761bfa"
+    },
+    {
+      "source_path": "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/SOURCE_FREEZE.json",
+      "copy_path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/SOURCE_FREEZE.json",
+      "bytes": 3215,
+      "sha256": "07453104ced290352374f6e009d5f9f9e5086b8881e63ee7c12cf841bc4bcefb"
+    },
+    {
+      "source_path": "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/SOURCE_PUBLICATION.json",
+      "copy_path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/SOURCE_PUBLICATION.json",
+      "bytes": 340,
+      "sha256": "43bdd334b72ea8dc6a26e1b926b3d939ddc9f491e4acea1a3a709a1895ed0a8f"
+    },
+    {
+      "source_path": "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/encoder.py",
+      "copy_path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/encoder.py",
+      "bytes": 10900,
+      "sha256": "77df75fb588936b5bf4bc70e89d93eb752cef113dd4cf513f5a5ab94be33085a"
+    },
+    {
+      "source_path": "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/extract_train001.receipt.json",
+      "copy_path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/extract_train001.receipt.json",
+      "bytes": 2343,
+      "sha256": "79ff7fcb0a528159097a9d2004555338aa5f0fe5d5dd555b79d818047c8a11fe"
+    },
+    {
+      "source_path": "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/inputs/train001/features.npz",
+      "copy_path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/features.npz",
+      "bytes": 3267336,
+      "sha256": "caa50b4db7e189492adea93be0ecd8bad4a4a4bc9ceab3d7961ef28eba6ff4bc"
+    },
+    {
+      "source_path": "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/inputs/train001/COHORT.json",
+      "copy_path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/COHORT.json",
+      "bytes": 136792,
+      "sha256": "9272d2e7939a240557b0bada9f2c0fd161f64521702da63c03ed276bb2dd9e51"
+    },
+    {
+      "source_path": "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/inputs/train001/IDENTITY.json",
+      "copy_path": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/IDENTITY.json",
+      "bytes": 249139,
+      "sha256": "ac52fa2560e36f967d428bc84220148477f0f8e38feca020a14421c73ca1c8f2"
+    }
+  ],
+  "source_project_boundary": "Frozen external training inputs; no validation/test inputs copied and no original v6 recovered"
+}

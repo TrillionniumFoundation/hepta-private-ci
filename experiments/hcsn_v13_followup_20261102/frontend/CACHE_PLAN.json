@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-v13-train-speech-cache-contract-plan.v1",
+  "files_sha256": {
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/cache_contract.py": "abe18fa9775efc07725987d7c063a1dc8cc578da7004e06d8c3f653e672e2b09",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py": "bd9fd1046cc7425f0d580544ff37893f8c2307d787e8e2aa71fa496e5bd0af78",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/encoder.py": "77df75fb588936b5bf4bc70e89d93eb752cef113dd4cf513f5a5ab94be33085a",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/CHECKPOINT.json": "e889ebdfa1e4a48171223a080223b4a31cc67504e30d72d3d65506579e761bfa",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/SOURCE_FREEZE.json": "07453104ced290352374f6e009d5f9f9e5086b8881e63ee7c12cf841bc4bcefb",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/SOURCE_PUBLICATION.json": "43bdd334b72ea8dc6a26e1b926b3d939ddc9f491e4acea1a3a709a1895ed0a8f",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/features.npz": "caa50b4db7e189492adea93be0ecd8bad4a4a4bc9ceab3d7961ef28eba6ff4bc",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/COHORT.json": "9272d2e7939a240557b0bada9f2c0fd161f64521702da63c03ed276bb2dd9e51",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/IDENTITY.json": "ac52fa2560e36f967d428bc84220148477f0f8e38feca020a14421c73ca1c8f2"
+  },
+  "raw_media": "/workspace/scratch/65d0df4e0cbd/video_raw_r2_media",
+  "checkpoint": "/workspace/scratch/65d0df4e0cbd/upstream_audio/wav2vec2_fairseq_base_ls960_asr_ls960.pth",
+  "runtime": "/workspace/scratch/65d0df4e0cbd/runtime_deps",
+  "expected_records": 288,
+  "expected_actors": 24,
+  "feature_descriptor": "First1536: final-layer hidden mean/std only; exclude116 CTC descriptor coordinates",
+  "actual_replay": "Lexicographically first TRAIN clip, original shared-AV-clock accepted 1s prefix",
+  "gate": "Raw/cache/row bytes exact; replay descriptor bitwise equal; no quality evaluation"
+}

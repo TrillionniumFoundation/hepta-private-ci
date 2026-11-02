@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn-v13-sampled-model-contract-audit.v1",
+  "checks": 53,
+  "passed": true,
+  "failures": [],
+  "actual_constructed_reset_count": 16,
+  "actual_constructed_restore_count": 16,
+  "remaining_time_witness": {
+    "elapsed": 0.75,
+    "initial_cooldown": 0.5,
+    "active": 0.25,
+    "expected_h": 0.42044820762685725,
+    "actual_h": 0.42044820762685725,
+    "expected_membrane": 0.9971875,
+    "actual_membrane": 0.9971875
+  },
+  "boundary_content_step_max_effect": 0.002945437555586572,
+  "content_loss": 1.7820730985438302,
+  "gradient_norms": {
+    "rate": 0.00010770861363070249,
+    "reset_content": 0.0,
+    "asset_drive.weight": 0.00013586072702774914,
+    "asset_drive.bias": 0.00024081654656757248,
+    "candidate.weight": 0.01258309244616179,
+    "candidate.bias": 0.018987349269864555,
+    "gate.weight": 0.0009028941650938972,
+    "gate.bias": 0.00040274024309445874,
+    "reader.0.weight": 0.39355283650416295,
+    "reader.0.bias": 0.15447698870067425,
+    "reader.2.weight": 0.1928941266738827,
+    "reader.2.bias": 0.2889343770389924
+  },
+  "parameter_max_changes": {
+    "rate": 6.22241255898546e-07,
+    "reset_content": 0.0,
+    "asset_drive.weight": 3.7010120852842923e-07,
+    "asset_drive.bias": 1.4804048341088283e-06,
+    "candidate.weight": 1.9322056712900437e-05,
+    "candidate.bias": 7.7288226851574e-05,
+    "gate.weight": 1.0412141876331438e-06,
+    "gate.bias": 2.2463912452627688e-06,
+    "reader.0.weight": 0.000497944376002795,
+    "reader.0.bias": 0.000497944376002795,
+    "reader.2.weight": 0.00029699995572395055,
+    "reader.2.bias": 0.001730806793296652
+  },
+  "scope": "Constructed deterministic source-tick crossing/cooldown/restore and real loss-gradient checks. Not trained-model quality, continuous first-hit or financial-parameter training.",
+  "formal_fit_or_quality_pass": false
+}

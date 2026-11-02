@@ -1,0 +1,19 @@
+{
+  "schema": "hcsn-v13-fixed-content-evaluation.v1",
+  "tasks": ["async_av", "av_binding"],
+  "splits": ["val", "test"],
+  "roles": "Both splits were exposed historically. They are development replays, not new independent confirmation.",
+  "candidate_selection": "None. Evaluate all 36 fixed final checkpoints.",
+  "execution_modes": "Each hx_full and hx_margin checkpoint executes once under full and once under margin channels. Other families execute their own ordinary mode.",
+  "condition_records": 96,
+  "training_execution_cells": {"A": "trained full, execute full", "B": "trained full, execute margin", "C": "trained margin, execute full", "D": "trained margin, execute margin"},
+  "metrics": ["all-prefix class accuracy", "last-prefix class accuracy", "all-prefix NLL", "last-prefix NLL"],
+  "contrasts": ["A-B", "C-D", "A-C", "B-D", "(A-B)-(C-D)", "A versus each of margin-trained/margin-executed, ordinary_gate, GRU, SSM and complete-history MLP"],
+  "inference": "Descriptive fixed-candidate differences only. No significance test, independent-sample confidence claim, post-test best-family selection or seed selection.",
+  "grouping": "Ten mandatory-A1 accepted orders per object. Emotion objects are historical recordings; binding objects are source pairs sharing underlying recordings. Neither 10 orders nor overlapping pairs are independent recording samples. Actor identities are retained for provenance only; no IID actor assumption.",
+  "raw_outputs": "All per-sequence, per-prefix probabilities, labels, predictions, reset and restoration flags, source recording IDs, actor IDs and exact accepted orders",
+  "diagonal_reuse": "A and D each execute once and can be reused by aggregate summaries or control comparisons. Reuse creates no new independent observation.",
+  "quality_acceptance": false,
+  "all_blockers_closed": false,
+  "production_activation": false
+}

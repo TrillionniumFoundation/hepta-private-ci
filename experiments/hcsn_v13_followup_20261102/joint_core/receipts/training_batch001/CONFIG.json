@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.joint_core.operations.run_roster",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+    "--receipts",
+    "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001",
+    "--source-remote-head",
+    "4c2fa0d86b9b09d5b26849b4738458fabc7b2945"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001",
+  "timeout": 3600.0,
+  "sample_interval": 0.5
+}
