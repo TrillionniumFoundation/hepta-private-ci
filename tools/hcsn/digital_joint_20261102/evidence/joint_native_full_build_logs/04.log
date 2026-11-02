@@ -1,0 +1,50 @@
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/hepta-types)
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/hepta-neuron)
+   Compiling hepta-digital-joint-native v0.1.0 (/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/digital-joint-native)
+warning: method `read` is never used
+   --> digital-joint-native/src/content.rs:222:12
+    |
+136 | impl Model {
+    | ---------- method in this implementation
+...
+222 |     pub fn read(&self, request: &Request) -> Result<Output, String> {
+    |            ^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `predict` is never used
+   --> digital-joint-native/src/policy.rs:414:12
+    |
+152 | impl Policy {
+    | ----------- method in this implementation
+...
+414 |     pub fn predict(&self, public: &task::Public, state: &task::State) -> Result<Scores, String> {
+    |            ^^^^^^^
+
+warning: field `public_features` is never read
+  --> digital-joint-native/src/port.rs:28:9
+   |
+25 | pub struct DecisionPort<'a> {
+   |            ------------ field in this struct
+...
+28 |     pub public_features: Vec<f64>,
+   |         ^^^^^^^^^^^^^^^
+
+warning: method `history_features` is never used
+   --> digital-joint-native/src/task.rs:335:12
+    |
+128 | impl State {
+    | ---------- method in this implementation
+...
+335 |     pub fn history_features(&self) -> [f64; 12] {
+    |            ^^^^^^^^^^^^^^^^
+
+warning: function `public_names` is never used
+   --> digital-joint-native/src/task.rs:345:8
+    |
+345 | pub fn public_names() -> Vec<String> {
+    |        ^^^^^^^^^^^^
+
+warning: `hepta-digital-joint-native` (bin "hepta-digital-joint-native") generated 5 warnings
+    Finished `release` profile [optimized] target(s) in 8.61s
