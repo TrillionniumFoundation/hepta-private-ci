@@ -17,6 +17,7 @@ from experiments.hcsn_grid_frontend_r2_20261101 import data_v2 as data
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
 FITS=[]
+FIT_PATH=None
 
 
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -92,7 +93,7 @@ def features(role,out,candidate=None):
 
 def load(role,directory):
     model_guard();identity=json.loads((directory/'IDENTITY.json').read_text())
-    if identity['role']!=role or identity['features_sha256']!=sha(directory/'FEATURES.npz') or identity['cohort_sha256']!=sha(HERE/'COHORT_SELECTION.json') or identity['model_source_freeze_sha256']!=sha(HERE/'MODEL_SOURCE_FREEZE.json'):raise ValueError('Featureidentity')
+    if identity['role']!=role or identity['features_sha256']!=sha(directory/'FEATURES.npz') or identity['cohort_sha256']!=sha(HERE/'COHORT_SELECTION.json') or identity['model_source_freeze_sha256'] not in ({sha(HERE/'MODEL_SOURCE_FREEZE.json')}|set(json.loads((HERE/'MODEL_SOURCE_FREEZE.json').read_text()).get('admitted_feature_source_freezes',[]))):raise ValueError('Featureidentity')
     if identity['acquisition_sha256']!=sha(HERE/'inputs'/f'{role.upper()}_ACQUISITION.json'):raise ValueError('Acquisitionidentity')
     with np.load(directory/'FEATURES.npz',allow_pickle=False) as z:arrays={k:z[k] for k in z.files}
     rows=[r for r in json.loads((HERE/'COHORT_SELECTION.json').read_text())['entries'] if r['role']==role]
@@ -110,8 +111,11 @@ def fit(x,y,c,tag,weights=None):
         margin=xx@beta[:-1]+beta[-1];residual=w*(expit(margin)-y)
         return float(np.dot(w,np.logaddexp(0,margin)-y*margin)+np.dot(beta[:-1],beta[:-1])/(2*c)),np.r_[xx.T@residual+beta[:-1]/c,residual.sum()]
     r=minimize(objective,np.zeros(x.shape[1]+1),jac=True,method='L-BFGS-B',options={'maxiter':500,'ftol':1e-10,'gtol':1e-6})
-    FITS.append(dict(tag=tag,C=c,rows=len(y),features=x.shape[1],success=bool(r.success),status=int(r.status),iterations=int(r.nit),cpu_seconds=time.process_time()-tick))
-    if not r.success or not np.isfinite(r.x).all():raise ValueError('Classifieroptimizerfailed; failedrunretained')
+    FITS.append(dict(tag=tag,C=c,rows=len(y),features=x.shape[1],success=bool(r.success),status=int(r.status),iterations=int(r.nit),gradient_inf=float(np.max(np.abs(r.jac))) if np.isfinite(r.jac).all() else None,cpu_seconds=time.process_time()-tick))
+    if FIT_PATH is not None:data.write(FIT_PATH/('optimizer_'+tag.replace('/','_')+'.json'),FITS[-1])
+    if not r.success or not np.isfinite(r.x).all():
+        if FIT_PATH is not None:save(FIT_PATH/('FAILED_'+tag.replace('/','_')+'.npz'),mean=mean,scale=scale,beta=r.x)
+        raise ValueError('Classifieroptimizerfailed; failedrunretained')
     return dict(mean=mean,scale=scale,beta=r.x)
 
 
@@ -137,13 +141,15 @@ def episodes(arrays,probabilities):
 
 
 def train(feature_root,out):
-    arrays,rows=load('train',feature_root);out.mkdir(parents=True,exist_ok=False)
+    global FIT_PATH
+    arrays,rows=load('train',feature_root);out.mkdir(parents=True,exist_ok=False);FIT_PATH=out
     actors=np.unique(arrays['actor']);p=np.empty((len(rows),3));records=[]
     if actors.tolist()!=[1,3,4,5,6,7]:raise ValueError('Registeredtrainingactors')
     for index,name in enumerate(['A','V','T']):
         for fold in range(3):
             held=np.isin(arrays['actor'],actors[fold::3]);cp=fit(arrays[name][~held],arrays['label'][~held],.1,f'{name}/fold{fold}')
-            p[held,index]=infer(cp,arrays[name][held]);records.append(dict(modality=name,fold=fold,held_actors=actors[fold::3].tolist(),fit_actors=actors[~np.isin(actors,actors[fold::3])].tolist()))
+            save(out/f'{name}_fold{fold}.npz',**cp)
+            p[held,index]=infer(cp,arrays[name][held]);records.append(dict(modality=name,fold=fold,checkpoint=f'{name}_fold{fold}.npz',held_actors=actors[fold::3].tolist(),fit_actors=actors[~np.isin(actors,actors[fold::3])].tolist()))
         cp=fit(arrays[name],arrays['label'],.1,f'{name}/full');save(out/f'{name}_classifier.npz',**cp)
     q,y,w,a,ordinal,commands=episodes(arrays,p)
     for name in ['AT','AVT']:save(out/f'{name}_head.npz',**fit(head_features(q,name),y,1.,name,w))

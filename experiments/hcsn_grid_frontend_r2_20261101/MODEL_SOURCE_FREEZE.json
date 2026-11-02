@@ -1,4 +1,8 @@
 {
+  "admitted_feature_source_freezes": [
+    "c9558991beee56190c69e0c01678e021c18b68e22dac660dbefadb66de30791b"
+  ],
+  "amendment": "Addall9outerfoldcheckpointfiles andper-fitoptimizerstatus/residual receipts before anyfit; preservefailediterates ifoptimizerfails. No descriptor,math,hyperparameter,fold,sourcecohort oroutputchoice change; existingv1 featurebank admitted by exactfrozen identity.",
   "confirmation_payloads_accessed": false,
   "dependencies": {
     "experiments/hcsn_audio_pretrained_r2_20261101/CHECKPOINT.json": "e889ebdfa1e4a48171223a080223b4a31cc67504e30d72d3d65506579e761bfa",
@@ -11,14 +15,18 @@
     "COHORT_SELECTION.json": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa",
     "ENC0DERS.json": "682ec79d732a12d0ba1237838f7ed5deecd924accf18d03ff55a5d3ad87822f6",
     "ENCODERS.json": "682ec79d732a12d0ba1237838f7ed5deecd924accf18d03ff55a5d3ad87822f6",
+    "MODEL_SOURCE_FREEZE_FEATURES_V1.json": "c9558991beee56190c69e0c01678e021c18b68e22dac660dbefadb66de30791b",
     "PROTOCOL.json": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1",
     "SOURCE_FREEZE_V2.json": "de816c9311705db8d95c118ff117b155e1fcc49edffc9b55d9ae4106cd62a654",
     "SOURCE_IDENTITY.json": "6c5d08e2457ff36267d0c65964bf8d407b72785da502eb33c508b73f32fa52f8",
     "data_v2.py": "76c5a1df775b98ee31a55ab6936bc1293420fb2ecabcb9c6f1cfc94285632339",
-    "study.py": "d3f0d014851ea23c9838e42cb903d3e8bc8f817405f436470f5088d6adb663f8"
+    "study.py": "8e3b1b489f8c885de8df72f78e0ee8a2ea44313aa425b6afd12cb3e4eceef4e4",
+    "study_features_v1.py": "d3f0d014851ea23c9838e42cb903d3e8bc8f817405f436470f5088d6adb663f8"
   },
   "schema": "hcsn.grid.model-source-freeze.v1",
   "scope": "Fixedmeanstd descriptors,C.1threeactorfolds,cleanAT/AVTC1 asregistered; exactfrozenpretrainedcheckpoints; qualificationlimitedto newrecording-group route.",
-  "train_features_extracted": false,
+  "train_feature_bank_sha256": "01f671146932ea0f64bbf0a7417f481d93d9df4ae13381ad00caec40abf95fef",
+  "train_feature_identity_sha256": "ec4c2a3b793ca4db6572f98411aae6d58a0266e7747fc6186de27fdac128030e",
+  "train_features_extracted": true,
   "train_heads_fitted": false
 }
