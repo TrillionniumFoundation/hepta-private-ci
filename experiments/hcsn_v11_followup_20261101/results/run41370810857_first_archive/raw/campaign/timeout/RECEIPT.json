@@ -1,0 +1,64 @@
+{
+  "schema": "hcsn-v10-delegated-cgroup.v1",
+  "command": [
+    "/usr/bin/python3",
+    "-c",
+    "import subprocess,sys,time; p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)']); print('spawned-child',p.pid,flush=True); time.sleep(30)"
+  ],
+  "source_sha256": "f9e76035ce10fce944b5b58207583bbd71b8dc8bdf313b1acfe1886eb9a7430c",
+  "status": "MEASURED",
+  "payload_released": true,
+  "measurement_valid": true,
+  "cleanup_verified": true,
+  "delegated_parent": "/sys/fs/cgroup/hcsn-ci-5fda13bd76db4aa2867c0e7d8404af26",
+  "group_created": true,
+  "cgroup_memory_charge_peak_bytes": 9576448,
+  "cgroup_cpu_usage_seconds": 0.072817,
+  "complete_process_family_rss_peak_bytes": null,
+  "device_energy_joules": null,
+  "task_success": false,
+  "all_group_tasks_exited": true,
+  "errors": [],
+  "waited_subtrees": [
+    {
+      "pid": 2460,
+      "exit_code": -9,
+      "diagnostic_wait4_cpu_seconds": 0.06426699999999999,
+      "diagnostic_largest_single_process_rss_bytes": 19075072
+    },
+    {
+      "pid": 2461,
+      "exit_code": -9,
+      "diagnostic_wait4_cpu_seconds": 0.014965,
+      "diagnostic_largest_single_process_rss_bytes": 11894784
+    }
+  ],
+  "scope": "Linux delegated-cgroup task charge meter; trusted fork/exec workload only.\n\nThe meter stays outside a fresh task cgroup. Its gated child joins before the\npayload exec; all ordinary descendants inherit membership. memory.peak is the\nhierarchical memory-charge highwater, NOT a continuous RSS sum or unique memory.\nShared/existing-page charges can belong elsewhere. No energy is inferred.\n",
+  "outside_charge_scope": "Parent meter; pre-join gate bootstrap; pages charged elsewhere; deployment preparation/training/energy.",
+  "threat_model": "Trusted task cannot migrate out or admit unrelated processes. No malicious escape qualification.",
+  "group_path": "/sys/fs/cgroup/hcsn-ci-5fda13bd76db4aa2867c0e7d8404af26/hcsn-task-ea7bc20300674fe9b6aca1a6f61d067f",
+  "group_inode": 7080,
+  "empty_group_kill_checked_before_admission": true,
+  "root_pid": 2460,
+  "root_membership_confirmed_before_release": true,
+  "release_monotonic_ns": 151468199832,
+  "timed_out": true,
+  "root_exit_code": -9,
+  "cgroup_memory_current_at_exit_bytes": 688128,
+  "cgroup_cpu_stat_at_exit": {
+    "usage_usec": 72817,
+    "user_usec": 52867,
+    "system_usec": 19949,
+    "nice_usec": 0,
+    "core_sched.force_idle_usec": 0,
+    "nr_periods": 0,
+    "nr_throttled": 0,
+    "throttled_usec": 0,
+    "nr_bursts": 0,
+    "burst_usec": 0
+  },
+  "populated_before_removal": 0,
+  "group_absent_after_removal": true,
+  "meter_wall_seconds": 0.515243738,
+  "source_unchanged": true
+}

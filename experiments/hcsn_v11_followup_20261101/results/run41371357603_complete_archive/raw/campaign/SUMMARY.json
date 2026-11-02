@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-v10-delegated-cgroup-qualification.v1",
+  "status": "PASS",
+  "results": [
+    {
+      "mode": "waited",
+      "accepted": true,
+      "status": "MEASURED",
+      "measurement_valid": true,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "adopted",
+      "accepted": true,
+      "status": "MEASURED",
+      "measurement_valid": true,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "nonzero",
+      "accepted": true,
+      "status": "MEASURED",
+      "measurement_valid": true,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "timeout",
+      "accepted": true,
+      "status": "MEASURED",
+      "measurement_valid": true,
+      "cleanup_verified": true
+    }
+  ],
+  "source_unchanged": true,
+  "complete_family_rss_peak_qualified": false,
+  "device_energy_qualified": false,
+  "metric": "Hierarchical cgroup charge highwater and CPU; no unique-page/RSS/energy equivalence."
+}

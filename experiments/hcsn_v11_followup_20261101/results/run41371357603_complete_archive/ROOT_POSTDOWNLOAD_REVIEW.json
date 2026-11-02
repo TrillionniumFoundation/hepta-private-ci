@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn-v11-downloaded-evidence-review.v1",
+  "run_id": 41371357603,
+  "source_head": "4283ce4e1eced302c5b22d0dcffcc07949ef10ea",
+  "artifact_sha256": "b623390d228a3724d99beafe4f8ab39f9fa881e9ffe87347adcee82dd1d20917",
+  "artifact_source_inventory_complete": true,
+  "verified_source_snapshots": [
+    "experiments/hcsn_v10_followup_20261101/economics/test_gate_controls.py",
+    "experiments/hcsn_v10_followup_20261101/economics/cgroup_meter.py",
+    "experiments/hcsn_v10_followup_20261101/economics/runner_campaign.py",
+    "experiments/hcsn_v11_followup_20261101/economics/test_allocation_floor.py",
+    "experiments/hcsn_v11_followup_20261101/economics/audit_ci.py",
+    "experiments/hcsn_v11_followup_20261101/economics/ci_driver.py",
+    "experiments/hcsn_v9_followup_20261101/economics/short_tree_probe.py",
+    ".github/workflows/hcsn-v11-cgroup-economics.yml"
+  ],
+  "CI_independent_audit_checks": 122,
+  "kernel_charge_campaign_passed": true,
+  "root_postdownload_review_passed": true,
+  "findings": [
+    {
+      "mode": "waited",
+      "charge_peak_bytes": 115777536,
+      "group_cpu_seconds": 0.309269,
+      "task_success": true,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "adopted",
+      "charge_peak_bytes": 81457152,
+      "group_cpu_seconds": 0.303161,
+      "task_success": true,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "nonzero",
+      "charge_peak_bytes": 5939200,
+      "group_cpu_seconds": 0.050756,
+      "task_success": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "timeout",
+      "charge_peak_bytes": 9408512,
+      "group_cpu_seconds": 0.073025,
+      "task_success": false,
+      "cleanup_verified": true
+    }
+  ],
+  "sum_disjoint_group_CPU_seconds": 0.7362110000000001,
+  "complete_CI_CPU_seconds": null,
+  "cancelled_attempt_CPU_seconds": null,
+  "full_family_RSS_qualified": false,
+  "attributable_energy_qualified": false,
+  "actual_model_memory_economics_qualified": false,
+  "scope": "Controlled no-swap Linux fixture profile; all archived source snapshots match committed blobs, including hidden workflow. CI-host interpreter was checked by the CI audit, not against this different host executable."
+}

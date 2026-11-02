@@ -1,0 +1,52 @@
+{
+  "schema": "hcsn-v11-first-artifact-gap-review.v1",
+  "run_id": 41370810857,
+  "source_head": "560b122082416b15d0e8b67919d7786e69425a7c",
+  "artifact_sha256": "0ddf77a04a2c41cc25ae75464dca1aab16fae43f370d1af0af4f6bbe07df3ee4",
+  "kernel_measurements_passed_in_CI": true,
+  "downloaded_artifact_source_inventory_complete": false,
+  "expected_source_snapshots": 8,
+  "verified_present_sources": [
+    "experiments/hcsn_v10_followup_20261101/economics/test_gate_controls.py",
+    "experiments/hcsn_v10_followup_20261101/economics/cgroup_meter.py",
+    "experiments/hcsn_v10_followup_20261101/economics/runner_campaign.py",
+    "experiments/hcsn_v11_followup_20261101/economics/test_allocation_floor.py",
+    "experiments/hcsn_v11_followup_20261101/economics/audit_ci.py",
+    "experiments/hcsn_v11_followup_20261101/economics/ci_driver.py",
+    "experiments/hcsn_v9_followup_20261101/economics/short_tree_probe.py"
+  ],
+  "missing_source_snapshots": [
+    "sources/.github__workflows__hcsn-v11-cgroup-economics.yml"
+  ],
+  "artifact_modified_or_backfilled": false,
+  "root_first_complete_review_result": "FileNotFoundError for the hidden workflow snapshot, retained as an actual delivery defect",
+  "findings": [
+    {
+      "mode": "waited",
+      "charge_peak_bytes": 115994624,
+      "group_cpu_seconds": 0.3061,
+      "task_success": true
+    },
+    {
+      "mode": "adopted",
+      "charge_peak_bytes": 81416192,
+      "group_cpu_seconds": 0.301566,
+      "task_success": true
+    },
+    {
+      "mode": "nonzero",
+      "charge_peak_bytes": 5775360,
+      "group_cpu_seconds": 0.05176,
+      "task_success": false
+    },
+    {
+      "mode": "timeout",
+      "charge_peak_bytes": 9576448,
+      "group_cpu_seconds": 0.072817,
+      "task_success": false
+    }
+  ],
+  "full_family_RSS_qualified": false,
+  "energy_qualified": false,
+  "fix": "Explicit include-hidden-files for only the controlled evidence directory; fresh source head and CI run required for complete artifact qualification"
+}

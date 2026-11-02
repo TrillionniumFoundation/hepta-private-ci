@@ -1,0 +1,73 @@
+{
+  "schema": "hcsn-v10-delegated-cgroup.v1",
+  "command": [
+    "/usr/bin/python3",
+    "-m",
+    "experiments.hcsn_v9_followup_20261101.economics.short_tree_probe",
+    "--out",
+    "evidence/hcsn-v11-cgroup/campaign/adopted_nodes",
+    "--mode",
+    "adopted"
+  ],
+  "source_sha256": "f9e76035ce10fce944b5b58207583bbd71b8dc8bdf313b1acfe1886eb9a7430c",
+  "status": "MEASURED",
+  "payload_released": true,
+  "measurement_valid": true,
+  "cleanup_verified": true,
+  "delegated_parent": "/sys/fs/cgroup/hcsn-ci-678e12d52e5446febbdc4d8092d27961",
+  "group_created": true,
+  "cgroup_memory_charge_peak_bytes": 81457152,
+  "cgroup_cpu_usage_seconds": 0.303161,
+  "complete_process_family_rss_peak_bytes": null,
+  "device_energy_joules": null,
+  "task_success": true,
+  "all_group_tasks_exited": true,
+  "errors": [],
+  "waited_subtrees": [
+    {
+      "pid": 2489,
+      "exit_code": 0,
+      "diagnostic_wait4_cpu_seconds": 0.09923599999999999,
+      "diagnostic_largest_single_process_rss_bytes": 22208512
+    },
+    {
+      "pid": 2490,
+      "exit_code": 0,
+      "diagnostic_wait4_cpu_seconds": 0.060413999999999995,
+      "diagnostic_largest_single_process_rss_bytes": 26447872
+    },
+    {
+      "pid": 2491,
+      "exit_code": 0,
+      "diagnostic_wait4_cpu_seconds": 0.14715099999999998,
+      "diagnostic_largest_single_process_rss_bytes": 64143360
+    }
+  ],
+  "scope": "Linux delegated-cgroup task charge meter; trusted fork/exec workload only.\n\nThe meter stays outside a fresh task cgroup. Its gated child joins before the\npayload exec; all ordinary descendants inherit membership. memory.peak is the\nhierarchical memory-charge highwater, NOT a continuous RSS sum or unique memory.\nShared/existing-page charges can belong elsewhere. No energy is inferred.\n",
+  "outside_charge_scope": "Parent meter; pre-join gate bootstrap; pages charged elsewhere; deployment preparation/training/energy.",
+  "threat_model": "Trusted task cannot migrate out or admit unrelated processes. No malicious escape qualification.",
+  "group_path": "/sys/fs/cgroup/hcsn-ci-678e12d52e5446febbdc4d8092d27961/hcsn-task-12f7c3c5e64f4c7688c808d638a2fac7",
+  "group_inode": 6926,
+  "empty_group_kill_checked_before_admission": true,
+  "root_pid": 2489,
+  "root_membership_confirmed_before_release": true,
+  "release_monotonic_ns": 22237195918,
+  "root_exit_code": 0,
+  "cgroup_memory_current_at_exit_bytes": 921600,
+  "cgroup_cpu_stat_at_exit": {
+    "usage_usec": 303161,
+    "user_usec": 152584,
+    "system_usec": 150576,
+    "nice_usec": 0,
+    "core_sched.force_idle_usec": 0,
+    "nr_periods": 0,
+    "nr_throttled": 0,
+    "throttled_usec": 0,
+    "nr_bursts": 0,
+    "burst_usec": 0
+  },
+  "populated_before_removal": 0,
+  "group_absent_after_removal": true,
+  "meter_wall_seconds": 0.252986366,
+  "source_unchanged": true
+}
