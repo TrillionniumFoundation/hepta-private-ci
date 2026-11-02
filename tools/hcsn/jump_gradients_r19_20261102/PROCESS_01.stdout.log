@@ -1,0 +1,56 @@
+{
+  "gates": {
+    "nonvacuous_all_coordinate_coverage": true,
+    "regular_finite_difference": false,
+    "independent_global": true,
+    "independent_heat_tangent_ode": true,
+    "continuous_input_inside_cell": true,
+    "critical_directional": true,
+    "explicit_time_knot_contract": true,
+    "actual_primal_binding": true,
+    "training_gradient_update": true,
+    "gauge": true
+  },
+  "coverage": {
+    "jump": {
+      "log_sigma": 5,
+      "log_wait_cost": 6,
+      "log_recovery_cost": 6,
+      "log_fee_0": 6,
+      "log_fee_1": 6,
+      "reset_x": 5,
+      "mode_logit_00": 6,
+      "mode_logit_01": 6,
+      "mode_logit_10": 6,
+      "mode_logit_11": 6,
+      "base_logit_0": 6,
+      "base_logit_1": 6,
+      "amplitude_share_logit_0": 6,
+      "amplitude_share_logit_1": 6,
+      "log_reward_slope": 6
+    },
+    "positive": {
+      "log_sigma": 6,
+      "log_wait_cost": 6,
+      "log_recovery_cost": 6,
+      "log_fee_0": 6,
+      "log_fee_1": 6,
+      "reset_x": 6,
+      "mode_logit_00": 6,
+      "mode_logit_01": 6,
+      "mode_logit_10": 6,
+      "mode_logit_11": 6,
+      "base_logit_0": 6,
+      "base_logit_1": 6,
+      "amplitude_share_logit_0": 6,
+      "amplitude_share_logit_1": 6,
+      "log_reward_slope": 6
+    }
+  },
+  "training": {
+    "actual_gradient_update": true,
+    "fixed_target_fit": true,
+    "actual_boundary_update": true
+  },
+  "cpu_seconds": 28.678590577
+}

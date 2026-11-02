@@ -1,0 +1,21 @@
+{
+  "schema": "hcsn-r19-actual-jump-gradient-blockers-v1",
+  "implemented": {
+    "actual_jump_jacobian": "Analytic15-coordinate derivative of unmodified actual R18 captured primal, including causal left/right limits, delayed reset quality interpolation and full content/reward/cost chain.",
+    "ordinary_reference_jacobian": "All15coordinates through the actual positive Gaussian reference, with actual8or16node quadrature.",
+    "independent_equations": "Three independently assembled global8710equation/15RHS systems agree near floating precision; independent heat tangent ODE checked separately.",
+    "nonsmooth_contract": "Critical-cone LCP/max directions at switches; ordinary interpolation/time/topology derivatives rejected where not defined.",
+    "training_smoke": "20actual gradient/value-model calibration steps, fixed24physical inputs/teacher targets, loss decreases and100canonicalPython gridactioncells change. This is notRustnativeactortraining or neural quality."
+  },
+  "preserved_failure": "Originalrun01regularFDgate fails at1e-5 perturbations of log_sigma/reset_x on sigma1.3/finegrid because the finite step crosses branches. All rows remain; post-outcome smaller-neighbourhood qualification is separate.",
+  "unclosed": {
+    "uniform_neighbourhood_or_continuum_derivatives": "Finite registered checks do not prove a uniform parameter radius, continuum free-boundary derivative theorem or smoothness across action/admission topology.",
+    "variable_recovery_and_horizon": "rho/T/domain/grids are fixed discrete topology; off-lattice changes reject. No ordinary continuous recovery-delay/horizon derivative qualified.",
+    "full_financial_model": "Declared15taskcoordinates do not integrate all He-Xiong financial/neural parameters.",
+    "learning_and_core_gain": "Fixed-target value calibration is not neural learning quality, semantic content, multimodal binding, independent owner-net gain or an exclusive analytical core advantage.",
+    "production": "Research profiler reads private Python solver locals; no public stable native tangent API, productionRust ownership, FP32/GPU/energy or deployment qualification."
+  },
+  "production_activation": false,
+  "all_scientific_blockers_closed": false,
+  "qualified_bounded_scope": "run02 ALL90cases\u00d72smallersteps\u00d7bothengines keepregularbranches atoriginal2e-5tolerance; maxjump3.55e-9/positive5.32e-9. Explicit post-outcome neighbourhood qualification does not rewrite run01failedgate."
+}
