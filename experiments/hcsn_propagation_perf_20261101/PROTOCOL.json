@@ -1,0 +1,17 @@
+{
+  "schema": "hcsn.addressed.exact-preparation-performance.v1",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "development_seed": 971401,
+  "confirmation_seed": 971603,
+  "threads": 1,
+  "warmups": 4,
+  "repeats": 15,
+  "tasks": ["mqar", "binding"],
+  "workloads": [[1, "base"], [24, "base"], [64, "base"], [1, "long_tokens_128"], [24, "long_tokens_128"]],
+  "numerical_output_atol": 0.00001,
+  "parameter_gradient_atol": 0.00002,
+  "scipy_matrix_atol": 0.000003,
+  "steady_timing_claim_gate": "All five workloads and both tasks must improve median complete-model forward and forward+backward time by at least 5% in the fresh timing confirmation; otherwise no stable whole-model speed claim.",
+  "confirmation_rule": "Freeze adapter, audit source, checkpoint identities and protocol before opening the confirmation seed. Preserve development and every failed run.",
+  "scope": "Same trained development weights; exact same finite CTMC model; no retraining, heldout task quality, production, GPU or energy claim. Default remains unchanged."
+}

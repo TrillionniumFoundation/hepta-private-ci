@@ -1,0 +1,42 @@
+{
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "blocking_static_defects_remaining": [],
+  "checks": {
+    "audio_text_probabilities_shared_between_AT_and_AVT_heads": true,
+    "candidate_selection_uses_train_only_inner_actor_folds": true,
+    "motion_DCT_map_is_fixed_clip_local_accepted_prefix_transform": true,
+    "outer_held_actors_excluded_from_encoder_fit_and_model_selection": true,
+    "relation_heads_separately_fitted_on_nested_OOF_training_probabilities": true,
+    "source_protocol_checkpoint_training_and_input_identity_freeze_guards_present": true,
+    "standardization_fit_uses_only_each_fit_training_rows": true,
+    "statistical_output_retains_development_scope": true,
+    "validation_not_loaded_in_prepare_code_path": true
+  },
+  "genuinely_external_confirmation": false,
+  "limits": [
+    "AT masking at video probability 0.5 produces duplicate normalized polynomial columns. With C fixed, this changes effective ridge regularization relative to AVT. The comparison is between separately regularized feature models, not an equal-capacity proof of video necessity.",
+    "All optimizer statuses are retained, but failed optimizer iterates are not rejected. The final report must explicitly summarize convergence failures if any.",
+    "Six validation actors were historically exposed. Actor bootstrap intervals are descriptive development intervals and cannot establish new independent population generalization.",
+    "No original-test, eight-actor reevaluation, or actor-1019 inputs are evaluated in this workflow.",
+    "This static review does not validate computed results, total execution cost, video adoption, or analytic-core superiority."
+  ],
+  "passed_limited_static_review": true,
+  "production_activation": false,
+  "resolved_findings": [
+    {
+      "issue": "TRAINING.json was used for feature selection without enforcing its candidate-freeze hash.",
+      "resolution": "evaluate now verifies training_sha256 before reading selection metadata.",
+      "resolved": true
+    },
+    {
+      "issue": "Restored numerical input caches could change after their restoration checks.",
+      "resolution": "candidate freeze binds INPUT_IDENTITY.json; evaluate checks its digest; load verifies every split array and accessed cache file against exact recorded SHA256 before np.load.",
+      "resolved": true
+    }
+  ],
+  "review_scope": "Independent read-only review of source and protocol before validation execution; no validation features, labels, or predictions were opened by this reviewer.",
+  "reviewed_input_identity_sha256": "cc56fdb72fb5f0b3b90a6167064d1825e826c8c94883916fb0456f2493e4a0f7",
+  "reviewed_protocol_sha256": "74285ca1db535884293fe5ab35b1db736a2fa1894939276894d612f32bf14398",
+  "reviewed_source_sha256": "36ecee8bc7b3357890aaa3ddd0ff79732a49ce4601dcc319c1c0f4b0cc170e76",
+  "schema": "hcsn.video.independent-static-review.v1"
+}

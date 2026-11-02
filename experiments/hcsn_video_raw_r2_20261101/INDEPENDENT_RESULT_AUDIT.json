@@ -1,0 +1,125 @@
+{
+  "actors": [
+    "1006",
+    "1017",
+    "1026",
+    "1054",
+    "1055",
+    "1056"
+  ],
+  "all_blockers_closed": false,
+  "bootstrap": {
+    "draws": 10000,
+    "seed": 20261103,
+    "unit": "actor, retaining all paired episodes"
+  },
+  "candidate_sha256": "a23f3bea94af9040a1813063627b11aa66d87201b3d07e93fadd08ebd020444c",
+  "check_count": 53,
+  "checks": [
+    "reported candidate freeze SHA matches exact published candidate",
+    "candidate artifact hash: AT_head.npz",
+    "candidate artifact hash: AT_unique_head.npz",
+    "candidate artifact hash: AVT_head.npz",
+    "candidate artifact hash: TRAINING.json",
+    "candidate artifact hash: TRAIN_OOF.npz",
+    "candidate artifact hash: video_fold0.pt",
+    "candidate artifact hash: video_fold1.pt",
+    "candidate artifact hash: video_fold2.pt",
+    "candidate artifact hash: video_fold3.pt",
+    "candidate artifact hash: video_full.pt",
+    "inherited dependency hash: experiments/hcsn_video_followup_20261101/INPUT_IDENTITY.json",
+    "inherited dependency hash: experiments/hcsn_video_followup_20261101/results/run002/CANDIDATE_FREEZE.json",
+    "inherited dependency hash: experiments/hcsn_video_followup_20261101/results/run002/TRAINING.json",
+    "inherited dependency hash: experiments/hcsn_video_followup_20261101/results/run002/TRAIN_OOF.npz",
+    "inherited dependency hash: experiments/hcsn_video_followup_20261101/results/run002/audio_encoder.npz",
+    "inherited dependency hash: experiments/hcsn_video_followup_20261101/results/run002/text_encoder.npz",
+    "current source hash: study.py",
+    "current source hash: raw_data.py",
+    "current source hash: PROTOCOL.json",
+    "train input identity hash",
+    "corrected train pixels/cache hash",
+    "local publication receipt binds correct candidate",
+    "finite 288episode probability bank shape",
+    "finite score range: AT",
+    "AT accuracy",
+    "AT brier",
+    "finite score range: AT_unique",
+    "AT_unique accuracy",
+    "AT_unique brier",
+    "finite score range: AVT",
+    "AVT accuracy",
+    "AVT brier",
+    "72 unique raw video clips exactly match original validation cohort",
+    "binary video targets follow COHORT.sentence rather than emotion label",
+    "video clip actors match authoritative cohort",
+    "all records are the same six historical validation actors",
+    "no oldtest actor or1019 in audited outputs",
+    "video sentence accuracy: original",
+    "video sentence accuracy: reverse",
+    "video sentence accuracy: static",
+    "video score is exactly28/72",
+    "episode correspondence: y",
+    "episode correspondence: sample_weight",
+    "episode actor ordering matches original arrays",
+    "raw video scores mapped to correct episode video sentence",
+    "six actor paired accuracy/Brier differences",
+    "paired bootstrap/point accuracy",
+    "paired bootstrap/point accuracy_actor_bootstrap_95",
+    "paired bootstrap/point brier",
+    "paired bootstrap/point brier_actor_bootstrap_95",
+    "predeclared video/increment development gate remains false",
+    "scope and broad acceptance flags remain false"
+  ],
+  "cohort_sha256": "b65adcd877528b7cb5b81962ff3662c59ee1e144c26034b8a4e1d5e6426cf37a",
+  "derived_AT_unique_sidecar": {
+    "path": "AT_UNIQUE_OUTPUTS.npz",
+    "scope": "Derived only from the frozen linear head and saved A/T probabilities; no new fit, raw pixel decode or CNN inference",
+    "sha256": "b4276c6679599f760fbd7dc8b01b9bdfaea5b1c9af2ec799462b5794e0343d82"
+  },
+  "methodology": "Independent NumPy/SciPy arithmetic on saved raw scores and frozen cleanAT_unique head; no project helper imports, no CNN inference, no network or GRID held access",
+  "old_test_or1019_present": false,
+  "paired_AVT_minus_AT_unique": {
+    "accuracy": 0.0023148148148148147,
+    "accuracy_actor_bootstrap_95": [
+      0.0,
+      0.006944444444444444
+    ],
+    "brier": 0.005544862532621156,
+    "brier_actor_bootstrap_95": [
+      0.0011410336522120737,
+      0.009626607706151947
+    ]
+  },
+  "passed": true,
+  "precision": {
+    "absolute_tolerance": 1e-12,
+    "issues_observed": [],
+    "weights": "Explicit float64 before weighted averages"
+  },
+  "production_activation": false,
+  "raw_outputs_sha256": "9c4a60cce8f7deddd6845311b34f2bb3c04ea64e1e0796c6ba9d5b26c101d87e",
+  "result_sha256": "e62e311476036d4c9662ae15278b578000f11b10b0805a4fcc0a42bbfc703279",
+  "schema": "hcsn.rawcnn.independent-result-audit.v1",
+  "scope": "Historical six-actor CREMA-D development group; not independent population or new-blind confirmation",
+  "video_counts": {
+    "original": 28,
+    "reverse": 34,
+    "static": 31
+  },
+  "video_gate": false,
+  "video_total": 72,
+  "weighted_relation": {
+    "AT": {
+      "accuracy": 0.7175925925925926,
+      "brier": 0.19013566018762137
+    },
+    "AT_unique": {
+      "accuracy": 0.7175925925925926,
+      "brier": 0.1899449107521816
+    },
+    "AVT": {
+      "accuracy": 0.7199074074074074,
+      "brier": 0.19548977328480277
+    }
+  }
+}

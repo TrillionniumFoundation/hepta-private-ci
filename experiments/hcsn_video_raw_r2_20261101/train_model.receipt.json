@@ -1,0 +1,19 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "running",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_video_raw_r2_20261101.study",
+    "train",
+    "--out",
+    "experiments/hcsn_video_raw_r2_20261101/results/run001"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T01:34:56.199701+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_video_raw_r2_20261101/train_model.stdout.log",
+  "stderr_path": "experiments/hcsn_video_raw_r2_20261101/train_model.stderr.log",
+  "pid": 14
+}
