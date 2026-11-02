@@ -9,8 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER_TEST_LABEL = (
-    "//codex-rs/hepta-learning-ledger:"
-    "hepta-learning-ledger-qualification-lib"
+    "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib"
 )
 
 
