@@ -275,6 +275,13 @@ if [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then
 fi
 
 post_config_bazel_args=()
+# Hosted macOS Bazel 9.0.0 hit java.lang.OutOfMemoryError (native-thread
+# exhaustion) in both test and release-build jobs on PR #4668. Bound remote
+# action concurrency, analysis threads and local test processes. This adjusts
+# scheduling only: every original target, test and failure remains required.
+if [[ "${RUNNER_OS:-}" == "macOS" && "${GITHUB_ACTIONS:-}" == "true" ]]; then
+  post_config_bazel_args+=(--jobs=24 --loading_phase_threads=8 --local_test_jobs=8)
+fi
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_msvc_host_platform -eq 1 ]]; then
   has_host_platform_override=0
   for arg in "${bazel_args[@]}"; do
