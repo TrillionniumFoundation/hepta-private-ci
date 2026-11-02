@@ -1,0 +1,37 @@
+{
+  "exact_parameters": {
+    "rate": "1/20",
+    "payout": "2/25",
+    "volatility": "1/4",
+    "maturity": "3",
+    "principal": "60",
+    "coupon": "4",
+    "tax_shield": "1/4",
+    "recovery": "3/20",
+    "shock_intensity": "1",
+    "sale_fraction": "2/25"
+  },
+  "raw_cases": [
+    {
+      "offset_power": 20,
+      "asset_hex": "0x1.8c9967dc6cd24p+6"
+    },
+    {
+      "offset_power": 30,
+      "asset_hex": "0x1.8c994f190a465p+6"
+    },
+    {
+      "offset_power": 40,
+      "asset_hex": "0x1.8c994f12d96dbp+6"
+    },
+    {
+      "offset_power": 48,
+      "asset_hex": "0x1.8c994f12d7e2ap+6"
+    },
+    {
+      "offset_power": 52,
+      "asset_hex": "0x1.8c994f12d7e13p+6"
+    }
+  ],
+  "construction": "pre-frozen float(B midpoint)*(1+2^-n); no result selection"
+}

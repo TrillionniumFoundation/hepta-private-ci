@@ -1,0 +1,294 @@
+[
+  {
+    "case": "wrong_parameters",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Exact model parameters mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "wrong_parameters",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Exact model parameters mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "swapped_model_digest",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Exact model parameters mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "swapped_model_digest",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Exact model parameters mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "cross_root",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Receipt fields mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "cross_root",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Receipt fields mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "cross_coefficients",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Cross-model receipts",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "cross_coefficients",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Cross-model receipts",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "wrong_log_domain",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: log_distance_upper",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "wrong_log_domain",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: log_distance_upper",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "wrong_endpoint",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Contract differs from registered binding",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "wrong_endpoint",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Contract differs from registered binding",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "weaker_threshold",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: runtime_relative_bound",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "weaker_threshold",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: runtime_relative_bound",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "schema_version",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: schema_version",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "schema_version",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: schema_version",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "proof_version",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: proof_version",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "proof_version",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: proof_version",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "flint_version",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: python_flint",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "flint_version",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Contract claim mismatch: python_flint",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "nonfinite_json",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Nonfinite JSON constant: NaN",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "nonfinite_json",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Nonfinite JSON constant: NaN",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "nonfinite_coefficient",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Unresolved or excessive uniform bound",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "nonfinite_coefficient",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Unresolved or excessive uniform bound",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "missing_contract",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Contract fields mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "missing_contract",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Contract fields mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "missing_coefficient",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Receipt fields mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "missing_coefficient",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Receipt fields mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "unknown_coefficient_status",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Unknown coefficient status",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "unknown_coefficient_status",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Unknown coefficient status",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "unknown_root_status",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Unknown root status",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "unknown_root_status",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Unknown root status",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "duplicate_contract_key",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Duplicate JSON key: schema_version",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "duplicate_contract_key",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Duplicate JSON key: schema_version",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "unknown_contract_field",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Contract fields mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "unknown_contract_field",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Contract fields mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "unregistered_rational_spelling",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Exact model parameters mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "unregistered_rational_spelling",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Exact model parameters mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "float_parameter",
+    "preexisting": false,
+    "rejected": true,
+    "reason": "ContractError: Exact model parameters mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "float_parameter",
+    "preexisting": true,
+    "rejected": true,
+    "reason": "ContractError: Exact model parameters mismatch",
+    "output_unchanged_or_absent": true
+  },
+  {
+    "case": "runtime_model",
+    "rejected": true,
+    "not_imported": true,
+    "checker_nonmutating": true
+  },
+  {
+    "case": "runtime_constant",
+    "rejected": true,
+    "not_imported": true,
+    "checker_nonmutating": true
+  }
+]
