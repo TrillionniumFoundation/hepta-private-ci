@@ -1,0 +1,72 @@
+{
+  "advancement": "Full Flow exceeds both retrained factorized Flow and Transformer in all three seed point estimates, and both conditional episode-bootstrap lower bounds exceed zero",
+  "arms": [
+    "full_flow",
+    "factorized_flow",
+    "transformer"
+  ],
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "batch_size": 24,
+  "bootstrap": {
+    "draws": 2000,
+    "scope": "Conditional on these checkpoints; not uncertainty over training seeds or generators",
+    "seed": 925117,
+    "unit": "paired episode, averaging the same three frozen training seeds"
+  },
+  "checkpoint": "Final update only; no selection",
+  "conditions": [
+    "base",
+    "irregular",
+    "missing",
+    "resample"
+  ],
+  "confirmation_seed": 124731,
+  "costs": "Fixed equal updates/data, not equal CPU. Outer meter contains training/evaluation/imports/writes. Inner timers are nested.",
+  "episodes": 512,
+  "exclusions": [
+    "No complete-distribution necessity claim",
+    "No task redesign or new generator",
+    "No population-of-training-seeds CI",
+    "No GPU, device joules or production activation"
+  ],
+  "frozen_utc": "2026-11-02T00:58:34.477070+00:00",
+  "gradient_clip": 1.0,
+  "learning_rate": 0.003,
+  "primary": "Missing-condition first post-jump query accuracy (original index 9)",
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "threads": 1,
+    "torch": "2.6.0+cpu"
+  },
+  "schema": "hcsn-joint-dynamics-retrain.v1",
+  "secondary": [
+    "all-query accuracy",
+    "NLL",
+    "resampling logits",
+    "complete-sequence CPU latency"
+  ],
+  "seeds": [
+    67,
+    83,
+    101
+  ],
+  "source_hashes": {
+    "experiments/hcsn_addressed_flow_20261101/data.py": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/dynamic_data.py": "df016a6142ecc5a9fffaa45956ec253169ce33adb7101f8b18d41b4a845102c7",
+    "experiments/hcsn_four_stage_flow_20261031/extended_eval.py": "9c6f9633225625e9696871c4396e5b52f872ac117b8a4d47cba6f125cf53f84d",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e",
+    "experiments/hcsn_joint_dynamics_20261101/campaign.py": "9b853cdb13127942c0489de3ad7340a42c3ff7bb6a44c142c9607e56aab6c6a0"
+  },
+  "steps": 600,
+  "stream": "Original addressed train stream, seed*10000+step; identical for all arms",
+  "timing": {
+    "batch": 24,
+    "repeats": 9,
+    "warmup": 3
+  },
+  "weight_decay": 0.0001
+}
