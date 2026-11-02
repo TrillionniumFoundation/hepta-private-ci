@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn-native-kernel-r19-protocol-v1",
+  "base_commit": "b25601c9bae257ffb651c8f9354fc380d8333f38",
+  "scope": "Standalone FP64 Rust execution of frozen R15 finite 40-state conservative row generators and supplied emission matrices. Financial parameter-to-generator construction remains Python input. This is not a continuum financial solution or production neuron adoption.",
+  "source": ["main.rs", "verify.py", "PROTOCOL.json"],
+  "profile": {"states":40,"maximum_exit_rate":100,"maximum_duration":20,"maximum_operations":512,"maximum_input_bytes":2000000,"arithmetic":"FP64","segments":"ceil(lambda*dt/8), at least 1","terms_per_segment":160},
+  "methods": "Positive row-vector uniformization; simultaneous flux integration for expected repeated natural absorptions and killed-generator first-event probability; Bayesian READ/REFRESH; explicit reset into recovery preserving content; missing observation identity. No probability clipping or semigroup renormalization.",
+  "reference": "Independent scipy.linalg.expm on supplied Q, killed Q and 41-state flux augmentations; no project propagation methods imported.",
+  "confirmation_namespace": 19110471,
+  "cases": "8 frozen declared models (4 HX parameterized and 4 unconstrained finite rate/reset models) x 8 initial states, 12 causal operations per case. New random dense priors are generated only after source freeze. Every case also has cold-process state round-trip and semigroup check.",
+  "gates": {"maximum_absolute_state_or_flux_difference":2e-11,"mass_difference":4e-11,"tiny_first_relative_difference":1e-9,"cold_process_roundtrip_exact":64,"semigroup_absolute_difference":2e-11,"valid_failures":0,"negative_inputs":"all rejected with explicit error"},
+  "failure_policy": "Preserve all diagnostic and confirmation records. Any gate failure remains failed; a changed source requires a new freeze and new namespace.",
+  "limits": ["No native financial generator construction", "No parameter derivatives", "No live owner callback integration", "No task quality or core D-B gain", "No Q24, FP32, GPU, energy, power-loss or production lifecycle qualification", "The truncation bound addresses exact arithmetic, not a uniform FP64 roundoff proof; unrepresentable observation evidence and propagation clocks are rejected"],
+  "production_activation": false
+}

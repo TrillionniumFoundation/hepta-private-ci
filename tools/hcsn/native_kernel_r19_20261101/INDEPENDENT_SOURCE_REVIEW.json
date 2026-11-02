@@ -1,0 +1,69 @@
+{
+  "reviewer": "independent recovery agent",
+  "type": "source review and independently derived closed-form native execution; not full formal confirmation audit",
+  "source_sha256": {
+    "main.rs": "0ca2a70b8604b57fd91ed71b1d147a52e37f6de2d0836b7b54d5c2ae7b73da86",
+    "verify.py": "7f8c37210673125820527410cc74fd4224e0828ebc26b625f4dd84320ebd53aa",
+    "PROTOCOL.json": "e3682c89243007f4e08117fc2ef6118d12607ce87020c9d18bb0e30967ca157f",
+    "NUMERICAL_SCOPE.md": "c137cc1561cc0fbe541896b3d57c5cfe00e3e6da3d37c8815251876ea913e29e",
+    "independent_cycle_probe.py": "bee3d23b7d487a3c330b0123034162607665a6cb83b4c66039e29c6bf4c4931c"
+  },
+  "findings": [
+    {
+      "area": "uniformization",
+      "status": "pass_with_scope",
+      "reason": "P=I+Q/lambda is positive for validated row generator; substeps retain the carried state and flux. Fixed160terms truncate rather than clipping or normalizing."
+    },
+    {
+      "area": "reward recurrence",
+      "status": "pass",
+      "reason": "For embedded chain p_k, cumulative c_(k+1)=c_k+p_k*r/lambda; Poisson weightedc_k is integrated event flux. The same recurrence on killed generator computes first-event probability and surviving successor."
+    },
+    {
+      "area": "zero-clock",
+      "status": "pass_with_scope",
+      "reason": "lambda0 implies zero outgoing natural-event rate for conservative generator. Positive-duration lambda*dt underflow rejects. Full subnormal relative accuracy is not claimed."
+    },
+    {
+      "area": "Bayes and reset",
+      "status": "pass",
+      "reason": "Observation multiplies full state by selected emission and divides by actual finite positive evidence; reset maps all phase content mass into recoveryphase0 with no content mixing."
+    },
+    {
+      "area": "input layout and negatives",
+      "status": "pass_with_scope",
+      "reason": "Native token positions agree with1600Q+200READ+160REFRESH+40prior. Fourteen final negativecase names match finite/token/time/evidence/capacity checks; formal execution will be audited separately."
+    },
+    {
+      "area": "limits",
+      "status": "retained",
+      "reason": "InputQ/emissions frozen modeldata; no native financial generator or gradients; no deployed ownercallback, productionQ24,taskD-B,GPUorenergy claim."
+    }
+  ],
+  "independent_probe": {
+    "script": "independent_cycle_probe.py",
+    "records": "independent_cycle_probe01/RESULT.json",
+    "closed_form": {
+      "p0": ".6+.4exp(-5t)",
+      "p32": ".4(1-exp(-5t))",
+      "first": "1-exp(-2t)",
+      "events": "1.2t+.16(1-exp(-5t))"
+    },
+    "cases": 7,
+    "maximum_absolute_error": 1.7763568394002505e-14,
+    "threshold": 2e-11,
+    "all_passed": true,
+    "build_command": [
+      "/tmp/hcsn-r15-runtime-tools/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "--edition=2024",
+      "-O",
+      "-D",
+      "warnings",
+      "tools/hcsn/native_kernel_r19_20261101/main.rs",
+      "-o",
+      "/tmp/hcsn-r19-independent-cycle-kernel"
+    ],
+    "build_exit_code": 0
+  },
+  "blocking_defects_found_within_declared_scope": []
+}
