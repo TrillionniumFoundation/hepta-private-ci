@@ -1,0 +1,69 @@
+{
+  "all_blockers_closed": false,
+  "binary_sentence_targets_verified": true,
+  "candidate_sha256": "5085a6a08869181d31c1b417fff8736eed5fc07b526f62b767b6cef3aacf06fb",
+  "feature_dimensions": 3060,
+  "feature_sha256": "8c431e4bc01dd996d5a419f33366da6c850382c7a8023b9d7cc515ad1746c10f",
+  "fit_performed": false,
+  "fits": [
+    {
+      "gradient_inf_recomputed": 3.286496415102515e-05,
+      "mean_scale_max_error": 0.0,
+      "optimizer_iterations": 104,
+      "optimizer_success": true,
+      "tag": "video/fold0"
+    },
+    {
+      "gradient_inf_recomputed": 8.464177802001982e-06,
+      "mean_scale_max_error": 0.0,
+      "optimizer_iterations": 105,
+      "optimizer_success": true,
+      "tag": "video/fold1"
+    },
+    {
+      "gradient_inf_recomputed": 1.4707829828314659e-05,
+      "mean_scale_max_error": 0.0,
+      "optimizer_iterations": 105,
+      "optimizer_success": true,
+      "tag": "video/fold2"
+    },
+    {
+      "gradient_inf_recomputed": 1.5950959395858583e-05,
+      "mean_scale_max_error": 0.0,
+      "optimizer_iterations": 106,
+      "optimizer_success": true,
+      "tag": "video/fold3"
+    },
+    {
+      "gradient_inf_recomputed": 1.3051594629606006e-05,
+      "mean_scale_max_error": 0.0,
+      "optimizer_iterations": 130,
+      "optimizer_success": true,
+      "tag": "video/full"
+    },
+    {
+      "gradient_inf_recomputed": 0.0003038493017690769,
+      "mean_scale_max_error": 0.0,
+      "optimizer_iterations": 8,
+      "optimizer_success": true,
+      "tag": "relation/AT_unique"
+    },
+    {
+      "gradient_inf_recomputed": 0.002025653281163109,
+      "mean_scale_max_error": 0.0,
+      "optimizer_iterations": 22,
+      "optimizer_success": true,
+      "tag": "relation/AVT"
+    }
+  ],
+  "frozen_candidate_files_checked": 10,
+  "held_media_decoded": false,
+  "independent_actor_partition_verified": true,
+  "input_clips": 288,
+  "known_audio_text_unchanged": true,
+  "limitation": "Recorded optimizer success uses objective-reduction termination; independent gradient magnitudes retained. Offline presentation prefix and unknown pretraining actor overlap remain explicit. OOF68.06% is below90%; no tuning or adoption claim.",
+  "schema": "hcsn.pretrained-visual.independent-candidate-audit.v1",
+  "source_freeze_sha256": "a7ddb7a8f45b7d88aec00840ea0be609715021b9cbbb48dfb9afdc32dc640682",
+  "video_oof_accuracy": 0.6805555555555556,
+  "video_oof_probability_max_error": 1.1102230246251565e-16
+}
