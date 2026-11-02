@@ -1,0 +1,93 @@
+{
+  "dataset": "68eb4ad81ec1f96bdba4b3a22b21ca8cdad2caeff43b9a2bbff81409ba74c50f",
+  "rows": [
+    {
+      "kind": "analytic",
+      "objective": 1.7416706085205078,
+      "parameters": 1461,
+      "gradient_norms": {
+        "log_scale": 0.0010356223664477996,
+        "head.0.weight": 0.0696529820561409,
+        "head.0.bias": 0.07919465750455856,
+        "head.2.weight": 0.09511803090572357,
+        "head.2.bias": 0.1441589593887329,
+        "symbol.weight": 0.0003710228484123945
+      },
+      "parameter_update_squared": 0.013147739902295374,
+      "source_operator_max_error": 1.4988010832439613e-15,
+      "stop_history_token_target_mutation_invariant": true
+    },
+    {
+      "kind": "hmm",
+      "objective": 1.7416706085205078,
+      "parameters": 1461,
+      "gradient_norms": {
+        "log_scale": 0.0010356223664477996,
+        "head.0.weight": 0.0696529820561409,
+        "head.0.bias": 0.07919465750455856,
+        "head.2.weight": 0.09511803090572357,
+        "head.2.bias": 0.1441589593887329,
+        "symbol.weight": 0.0003710228484123945
+      },
+      "parameter_update_squared": 0.013147739902295374,
+      "source_operator_max_error": 1.4988010832439613e-15,
+      "stop_history_token_target_mutation_invariant": true
+    },
+    {
+      "kind": "gru",
+      "objective": 1.7487720251083374,
+      "parameters": 7580,
+      "gradient_norms": {
+        "head.0.weight": 0.10637181252241135,
+        "head.0.bias": 0.0884058028459549,
+        "head.2.weight": 0.15291477739810944,
+        "head.2.bias": 0.1610034853219986,
+        "symbol.weight": 0.000269249954726547,
+        "gru.weight_ih": 0.06243642419576645,
+        "gru.weight_hh": 0.021690823137760162,
+        "gru.bias_ih": 0.04379701614379883,
+        "gru.bias_hh": 0.021290361881256104
+      },
+      "parameter_update_squared": 0.06788574544043513,
+      "source_operator_max_error": null,
+      "stop_history_token_target_mutation_invariant": true
+    },
+    {
+      "kind": "ssm",
+      "objective": 1.7271738052368164,
+      "parameters": 1900,
+      "gradient_norms": {
+        "ssm_factor": 0.01876087114214897,
+        "log_decay": 0.005453622434288263,
+        "event_gate": 0.00029862264636904,
+        "head.0.weight": 0.26002368330955505,
+        "head.0.bias": 0.07899673283100128,
+        "head.2.weight": 0.23323984444141388,
+        "head.2.bias": 0.1302860826253891,
+        "symbol.weight": 0.004205462988466024,
+        "event.weight": 0.07067060470581055,
+        "event.bias": 0.022074559703469276
+      },
+      "parameter_update_squared": 0.017098829230235424,
+      "source_operator_max_error": null,
+      "stop_history_token_target_mutation_invariant": true
+    },
+    {
+      "kind": "cache",
+      "objective": 1.780666708946228,
+      "parameters": 1460,
+      "gradient_norms": {
+        "head.0.weight": 0.506481945514679,
+        "head.0.bias": 0.08468347042798996,
+        "head.2.weight": 0.4795965254306793,
+        "head.2.bias": 0.20103897154331207,
+        "symbol.weight": 0.0030276793986558914
+      },
+      "parameter_update_squared": 0.003059977352677379,
+      "source_operator_max_error": null,
+      "stop_history_token_target_mutation_invariant": true
+    }
+  ],
+  "cpu_seconds": 1.7143306049999998,
+  "scope": "Four development worlds only; no formal training/validation/test opened."
+}

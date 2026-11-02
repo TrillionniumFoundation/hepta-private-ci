@@ -1,0 +1,52 @@
+[
+  {
+    "kind": "analytic",
+    "threshold": -1.0,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "analytic",
+    "threshold": 0.05,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "hmm",
+    "threshold": -1.0,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "hmm",
+    "threshold": 0.05,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "gru",
+    "threshold": -1.0,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "gru",
+    "threshold": 0.05,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "ssm",
+    "threshold": -1.0,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "ssm",
+    "threshold": 0.05,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "cache",
+    "threshold": -1.0,
+    "nonread_invalid_response_and_target_invariant": true
+  },
+  {
+    "kind": "cache",
+    "threshold": 0.05,
+    "nonread_invalid_response_and_target_invariant": true
+  }
+]
