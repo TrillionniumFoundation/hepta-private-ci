@@ -1,0 +1,72 @@
+{
+  "source_commit": "175db459cd4134dc24cc2bbdce24185bfd8887e5",
+  "checks": [
+    {
+      "name": "final_committed_source_identity",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "missing_real_evidence_rejected",
+      "exit_code": 1,
+      "passed": true
+    },
+    {
+      "name": "allocation_refusals",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "experiments.hcsn_v11_followup_20261101.economics.test_allocation_floor",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_boolean_counter_rejects (experiments.hcsn_v11_followup_20261101.economics.test_allocation_floor.AllocationFloorRefusals.test_boolean_counter_rejects) ... ok\ntest_missing_or_invalid_allocation_rejects (experiments.hcsn_v11_followup_20261101.economics.test_allocation_floor.AllocationFloorRefusals.test_missing_or_invalid_allocation_rejects) ... ok\ntest_one_byte_below_leaf_rejects (experiments.hcsn_v11_followup_20261101.economics.test_allocation_floor.AllocationFloorRefusals.test_one_byte_below_leaf_rejects) ... ok\ntest_zero_charge_rejects_touched_payload (experiments.hcsn_v11_followup_20261101.economics.test_allocation_floor.AllocationFloorRefusals.test_zero_charge_rejects_touched_payload) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nOK\n",
+      "passed": true
+    },
+    {
+      "name": "actionlint",
+      "argv": [
+        "/tmp/hcsn-bp-ci-tools/actionlint",
+        ".github/workflows/hcsn-v11-cgroup-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "prettier",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hcsn-bp-ci-tools/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hcsn-v11-cgroup-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "diff_check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "additional_semantics_review": [
+    "waited/adopted require every waited_subtrees exit_code zero",
+    "timeout requires task_success is False"
+  ],
+  "hardware_positive_receipts_fabricated": false,
+  "hardware_cgroup_campaigns_executed_locally": 0
+}

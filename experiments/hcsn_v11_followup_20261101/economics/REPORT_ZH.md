@@ -19,6 +19,9 @@
 或既有 job 组的控制器，也不移动 job 的进程。缺少父级委派、控制器不可写
 或无权创建时必须真实失败。清理仅针对该自有 parent，核对 inode，终止
 其后代并要求空组删除；最后写入 `CI_RESULT.json`。
+此专用 profile 还只在该新自有空 parent 写 `memory.swap.max=0` 并读回，
+保存 `PARENT_PROFILE.json`。无法确认 no-swap 时必须失败；不改 root/job
+组。该限制的语义依据 [Linux cgroup v2 官方文档](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html)。
 
 在该 parent 实际调用未改动的 v10 `runner_campaign.py`，执行正常四进程、
 收养四进程、非零 payload 和带后代的超时四组。独立 `audit_ci.py` 只读取
@@ -39,6 +42,24 @@ artifact 使用 `always()` 保存成功和失败的原始输出、全部 tested 
 Prettier 及 diff 检查。另有继承的 v10 真实 gate 控制 7/7 通过、零跳过；
 原始日志为 `GATE_CONTROLS.log`。本机没有重跑 EROFS 硬件探针，没有执行
 成功内核 campaign。最后仓库 formatter 的独立结果另存。
+
+随后根审核补入严格的匿名分配下界：waited/adopted 的真实 payload 在
+gate 入组后才逐页触碰分配；在上述显式 no-swap profile 下，收费峰值
+必须至少达到 `max(nodes[*].allocated_touched_bytes)`，本夹具至少为
+叶子的 48 MiB。这只适用于该夹具和 profile，并非一般完整驻留/RSS 定理。
+独立审核必须同时确认 no-swap profile 及每个 task 组所属的自有 parent。
+零/零 counter 因而不能再伪过。旧提交 `a88290314ba21cb957d621fac2eb9b9d07e436ba`
+及其 driver/auditor 原始字节均保留在 review 目录。
+
+分配下界源码阶段为 `eca9b8ce`（完整身份在 `ALLOCATION_FLOOR_SOURCE_IDENTITY.json`），
+四项纯拒绝约束加原七项真实 gate 控制共 11/11 通过；没有构造硬件正样本
+回执。新六项 source/lint preflight 通过，见 `ALLOCATION_FLOOR_VALIDATION.json`。
+旧验证没有覆盖这一新约束，因此全部旧回执保留，最终 formatter 状态另存。
+最后再补两条独立退出语义：正常两组所有 waited 子树必须 exit 0，timeout
+必须明确 `task_success=false`。控制性源码阶段现为 `175db459`，完整身份和
+六项实际 source/拒绝/lint 检查在 `EXIT_SEMANTICS_SOURCE_IDENTITY.json` 与
+`EXIT_SEMANTICS_VALIDATION.json`。没有构造成功硬件回执，也未重复本机
+只读 cgroup 探针；实际 CI 仍是这些正向条件的唯一待执行验收。
 
 严格口径保持：cgroup `memory.peak` 是层次内存收费峰值，并非完整进程族
 RSS 连续峰值、物理唯一页或完整部署内存；共享/已有页面可能由其他组收费。

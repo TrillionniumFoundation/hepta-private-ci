@@ -1,0 +1,63 @@
+{
+  "source_commit": "eca9b8ce77ed83aef64943cb41aba22aef7bba56",
+  "checks": [
+    {
+      "name": "real_committed_source_identity",
+      "exit_code": 0,
+      "passed": true,
+      "sources": 8
+    },
+    {
+      "name": "wrong_head_rejected_before_group_creation",
+      "exit_code": 1,
+      "passed": true
+    },
+    {
+      "name": "missing_real_evidence_rejected",
+      "exit_code": 1,
+      "passed": true
+    },
+    {
+      "name": "actionlint",
+      "argv": [
+        "/tmp/hcsn-bp-ci-tools/actionlint",
+        ".github/workflows/hcsn-v11-cgroup-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "prettier",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hcsn-bp-ci-tools/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hcsn-v11-cgroup-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "diff_check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "negative_allocation_constraints": 4,
+  "inherited_real_gate_controls": 7,
+  "tests_total": 11,
+  "hardware_cgroup_campaigns_executed_locally": 0,
+  "hardware_acceptance": "HOLD; real CI required"
+}

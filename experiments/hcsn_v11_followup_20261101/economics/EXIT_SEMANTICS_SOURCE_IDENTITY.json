@@ -1,0 +1,70 @@
+{
+  "checkout_sha": "175db459cd4134dc24cc2bbdce24185bfd8887e5",
+  "expected_head": "175db459cd4134dc24cc2bbdce24185bfd8887e5",
+  "sources": [
+    {
+      "path": "experiments/hcsn_v10_followup_20261101/economics/cgroup_meter.py",
+      "git_blob": "b38bf2fa7397ff4a4c26fabc3d5862b16bf0fb4d",
+      "sha256": "f9e76035ce10fce944b5b58207583bbd71b8dc8bdf313b1acfe1886eb9a7430c",
+      "temporary_snapshot_name": "sources/experiments__hcsn_v10_followup_20261101__economics__cgroup_meter.py"
+    },
+    {
+      "path": "experiments/hcsn_v10_followup_20261101/economics/runner_campaign.py",
+      "git_blob": "a47b99b1743228d86c0888cb230fb377eae81dc5",
+      "sha256": "21590866ed330717a6bd984bb73bc58bc0a9bfa0462290fddada1f9245faac44",
+      "temporary_snapshot_name": "sources/experiments__hcsn_v10_followup_20261101__economics__runner_campaign.py"
+    },
+    {
+      "path": "experiments/hcsn_v10_followup_20261101/economics/test_gate_controls.py",
+      "git_blob": "ca4eaa66c4619fe8d57ea9d97fbf55ee7c0384b1",
+      "sha256": "6d2b123a9269b01896da8b2bedd8468ccc2dc2d3ce5089847d3cd6df2dcac140",
+      "temporary_snapshot_name": "sources/experiments__hcsn_v10_followup_20261101__economics__test_gate_controls.py"
+    },
+    {
+      "path": "experiments/hcsn_v11_followup_20261101/economics/audit_ci.py",
+      "git_blob": "620d4614ed52f1e83f69e34f2cae604ab0ff771f",
+      "sha256": "bcc84bf8e0ec99dd274253b923327b83ca253950aa7a43d391e25da79d320a97",
+      "temporary_snapshot_name": "sources/experiments__hcsn_v11_followup_20261101__economics__audit_ci.py"
+    },
+    {
+      "path": "experiments/hcsn_v11_followup_20261101/economics/ci_driver.py",
+      "git_blob": "5bda70609521a93dcb4de9c7cee1ff72099d2977",
+      "sha256": "974f8136a525bc871495147a4f45e443f8f1e4338067c3f3daf168a47643cfe6",
+      "temporary_snapshot_name": "sources/experiments__hcsn_v11_followup_20261101__economics__ci_driver.py"
+    },
+    {
+      "path": "experiments/hcsn_v11_followup_20261101/economics/test_allocation_floor.py",
+      "git_blob": "547b1433c41a93b657e6ab5081dbb8e46c381ca7",
+      "sha256": "259c7e50d7d9fb45344c3e98550592f45616c04406d20e326953c81ed591e29c",
+      "temporary_snapshot_name": "sources/experiments__hcsn_v11_followup_20261101__economics__test_allocation_floor.py"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/short_tree_probe.py",
+      "git_blob": "36383a4e9f69ecd721ae2e73f4b039c5d63a4164",
+      "sha256": "22cadc72b8c7ecf0eb7f63eee613f10bfc94d359abd30db9069da48a5377479b",
+      "temporary_snapshot_name": "sources/experiments__hcsn_v9_followup_20261101__economics__short_tree_probe.py"
+    },
+    {
+      "path": ".github/workflows/hcsn-v11-cgroup-economics.yml",
+      "git_blob": "0978ec9f9be64361d287ab08af29c30279731560",
+      "sha256": "889495be9ac9595a8c6c3085e0bdb56044c6fe1a2ba93ef47575e3d9a0242b31",
+      "temporary_snapshot_name": "sources/.github__workflows__hcsn-v11-cgroup-economics.yml"
+    }
+  ],
+  "python_binary": {
+    "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+    "version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "platform": {
+    "system": "Linux",
+    "node": "2e2145b2a411",
+    "release": "6.18.57",
+    "version": "#1 SMP Tue Oct 20 21:56:04 UTC 2026",
+    "machine": "x86_64",
+    "processor": "x86_64"
+  },
+  "run_id": null,
+  "run_attempt": null,
+  "local_snapshot_storage": "Temporary local control snapshots discarded; source_commit Git blobs retain exact bytes. Actual CI retains its source snapshots."
+}
