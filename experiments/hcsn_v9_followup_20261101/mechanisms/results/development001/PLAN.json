@@ -1,0 +1,94 @@
+{
+  "created_unix": 1793579588.8007932,
+  "source_sha256": {
+    "experiments/hcsn_v9_followup_20261101/mechanisms/campaign.py": "d4e26c7732c2c986974810d3b0ce73f526534f592d24902fce99884c15003eab",
+    "experiments/hcsn_mechanism_content_v2/mechanism.py": "65754d240a34c5acf5eaac68a4aa3be1acbcfb96e07d735c5fcf6d4ca24e7fc0",
+    "experiments/hcsn_mechanism_content_v2/renewal.py": "aa6bedde8d15d473d0b8beef36805955447fa88cc906846ee48be927ecab0cb6",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/count_interventions.py": "572b11dfbb67cd3b92a4fc3d14f1b57f662f97323c4dd16d703d8fecbaefa58e",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/recurrent_counts.py": "eef2fd26eb764d70e58ce7b2334b751e9916e9cf2aaa3f7598ba47b24f44ceb7"
+  },
+  "historical_assets": {
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81101/models.pt": "95b89e04a4c2dc2b7dba78f754d7422bc6a1a3720ac3db131452b937278163f3",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81103/models.pt": "1445db4ff68e612237bde72e93d3dd37a8db3de76db0c2ff3209232b35ca4df0",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81107/models.pt": "c5a43747b858f2927d29c69316c063cdb1777a0f341feead78777782232c6aca",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81109/models.pt": "3fd4da24bf5faa029a1b2cddaf41fb158250e488842058b251b4e915e1c1fc21",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81113/models.pt": "0332b3f548e170d8879aecc66b61a5fe619850b6cb99905765c15f68b6c3221d",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81101/FIT.json": "5548d663dcf903bdbd062a4ba706cb1809a3467d69069ad9277c5b8cb6c957ac",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81103/FIT.json": "f11bf7d477666bef4976cef8e99bf6917214cdfced278e865850d8ecb0f0a74e",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81107/FIT.json": "8247ec5f9f0813090013ae9df19366798595e66f53dd405b4a01db81766243de",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81109/FIT.json": "1082b9c41c10fa9aaf886cf073e1cc2fd3e6cbf771d9e2caca8b289ed3adf725",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81113/FIT.json": "24605c5e539a9fb491c2f1fad8fbbe622034ac66db7b922aaa352d06d5dc3195"
+  },
+  "fit_seeds": [
+    91103,
+    91107,
+    91113
+  ],
+  "world_namespace": [
+    20261101,
+    93819
+  ],
+  "conditions": [
+    "matched",
+    "hidden_refractory_mismatch"
+  ],
+  "worlds_per_condition": 12,
+  "train_size": 512,
+  "validation_size": 128,
+  "drift_grid": [
+    0.5,
+    0.55,
+    0.6,
+    0.65,
+    0.7,
+    0.75,
+    0.8,
+    0.8500000000000001,
+    0.9,
+    0.95,
+    1.0,
+    1.05,
+    1.1,
+    1.15,
+    1.2000000000000002,
+    1.25,
+    1.3,
+    1.35,
+    1.4,
+    1.4500000000000002,
+    1.5
+  ],
+  "modes": [
+    "original",
+    "mean_two_point",
+    "single_transition"
+  ],
+  "service_calibration_seed": 918341,
+  "service_trials_per_tick": 256,
+  "service_success_rule": "0.9 - 0.7 * arrival_tick/20",
+  "service_randomness": "one public-law private uniform per world and arrival; common across arms",
+  "risk_intervention": "forecast success set to one only; actual failures, fees and worlds unchanged",
+  "analytic_fit": "per shape and seed, drift multiplier minimizes sampled-count NLL on new train only",
+  "nll_floor": 1e-12,
+  "ordinary": "unchanged v8 five fits; both GRU/SSM retained; old validation selection",
+  "primary": "D-B net reward at same risk forecast; paired world-cluster descriptive interval",
+  "scope": "new finite synthetic service task; historical ordinary fits; not AV admission or neural analytic retraining",
+  "config": {
+    "dt": 0.15,
+    "ticks": 20,
+    "deadlines": [
+      5,
+      10,
+      15,
+      20
+    ],
+    "budget": 3,
+    "classes": 5,
+    "read_cost": 0.04,
+    "light_threshold": 0.28,
+    "particles": 4,
+    "condition": "matched"
+  },
+  "real_AV_confirmation": false,
+  "architecture_acceptance": false
+}

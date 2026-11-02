@@ -1,0 +1,97 @@
+{
+  "status": "passed",
+  "checks": 198,
+  "absolute_nll_tolerance": 2e-08,
+  "maximum_nll_error": 6.827871601444713e-14,
+  "implementation": "scipy.stats.invgauss.cdf, independent vector event-count differences and count-shape transforms",
+  "fits": {
+    "91103": {
+      "original": {
+        "selected_scale": 1.0,
+        "train_nll": 0.6529188850997909,
+        "validation_nll": 0.6315530755552239,
+        "train_label_zero_support_count": 0,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 0,
+        "validation_examples": 128
+      },
+      "mean_two_point": {
+        "selected_scale": 0.95,
+        "train_nll": 2.703030313730127,
+        "validation_nll": 2.557786536017848,
+        "train_label_zero_support_count": 42,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 10,
+        "validation_examples": 128
+      },
+      "single_transition": {
+        "selected_scale": 0.95,
+        "train_nll": 6.266015784469504,
+        "validation_nll": 7.553498937084016,
+        "train_label_zero_support_count": 111,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 34,
+        "validation_examples": 128
+      }
+    },
+    "91107": {
+      "original": {
+        "selected_scale": 1.0,
+        "train_nll": 0.5513950873547859,
+        "validation_nll": 0.7156625293162953,
+        "train_label_zero_support_count": 0,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 0,
+        "validation_examples": 128
+      },
+      "mean_two_point": {
+        "selected_scale": 1.0,
+        "train_nll": 1.9024413177149768,
+        "validation_nll": 2.82133741942882,
+        "train_label_zero_support_count": 28,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 11,
+        "validation_examples": 128
+      },
+      "single_transition": {
+        "selected_scale": 1.0,
+        "train_nll": 5.330096233170355,
+        "validation_nll": 7.200106862362503,
+        "train_label_zero_support_count": 94,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 32,
+        "validation_examples": 128
+      }
+    },
+    "91113": {
+      "original": {
+        "selected_scale": 1.05,
+        "train_nll": 0.6307961779785396,
+        "validation_nll": 0.6778368133216485,
+        "train_label_zero_support_count": 0,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 0,
+        "validation_examples": 128
+      },
+      "mean_two_point": {
+        "selected_scale": 0.95,
+        "train_nll": 2.56543826521379,
+        "validation_nll": 3.6355084747409343,
+        "train_label_zero_support_count": 39,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 15,
+        "validation_examples": 128
+      },
+      "single_transition": {
+        "selected_scale": 1.0,
+        "train_nll": 7.580696620562697,
+        "validation_nll": 6.7064783741809695,
+        "train_label_zero_support_count": 136,
+        "train_examples": 512,
+        "validation_label_zero_support_count": 30,
+        "validation_examples": 128
+      }
+    }
+  },
+  "claim": "exact declared finite refit replay; no analytic neural network retraining"
+}

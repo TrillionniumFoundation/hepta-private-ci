@@ -1,0 +1,36 @@
+{
+  "scope": "Historical exposed recordings, developmental persistent ordinary controls",
+  "source_sha256": {
+    "candidate.py": "4880f4c2c953c2e565db68a2e27f1e426adf76c8a70d9056c27ac33219c661b1"
+  },
+  "seeds": [
+    91101,
+    91103
+  ],
+  "families": [
+    "direct",
+    "gru",
+    "ssm"
+  ],
+  "epochs": 100,
+  "selection": "lowest historical-validation BCE; retain final and selected weights",
+  "tasks": [
+    "async_av",
+    "av_binding"
+  ],
+  "test_role": "previously exposed historical replay",
+  "training_sequences_per_object": 10,
+  "state_scalars": 32,
+  "policy_pair": [
+    "fixed common-full",
+    "same task-value controller"
+  ],
+  "analytic_av_law_defined": false,
+  "four_cell_complete": false,
+  "strong_reference_qualified": false,
+  "scientific_confirmation": false,
+  "torch": "2.15.0+cpu",
+  "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "timing": "Logical source/service clock, actual CPU is enclosing worker receipt",
+  "raw_media_feature_preparation_included": false
+}

@@ -1,0 +1,2151 @@
+{
+  "schema": "hcsn-v8-task-supervision.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v9_followup_20261101.persistent_av.candidate",
+    "--out",
+    "experiments/hcsn_v9_followup_20261101/persistent_av/results002"
+  ],
+  "boundary_begin_monotonic_ns": 54066762401547,
+  "boundary_end_monotonic_ns": 54109624299207,
+  "command_to_collection_seconds": 42.86189766,
+  "first_stdout_receive_monotonic_ns": 54066841309273,
+  "root_exit_code": 0,
+  "timed_out": false,
+  "all_waitable_children_collected": true,
+  "subreaper": {
+    "enabled": true,
+    "scope": "Dedicated supervisor and its ordinary spawned descendants"
+  },
+  "disjoint_wait4_subtrees": [
+    {
+      "pid_in_supervisor_namespace": 6,
+      "is_direct_worker": true,
+      "exit_code": 0,
+      "wait4": {
+        "cpu_seconds": 37.083956,
+        "user_cpu_seconds": 36.650427,
+        "system_cpu_seconds": 0.433529,
+        "largest_single_process_highwater_bytes": 351596544
+      }
+    }
+  ],
+  "observed_task_subtree_cpu_seconds": 37.083956,
+  "complete_task_cpu_coverage": true,
+  "task_success": true,
+  "episode_outputs": [],
+  "protocol_errors": [],
+  "owned_identity_error": null,
+  "memory": {
+    "family_sampled_peak_rss_sum_bytes": null,
+    "all_family_samples_available": false,
+    "successful_family_samples": 0,
+    "family_errors": [
+      "Direct live child has not completed identity handshake",
+      "Cannot read required owned-process metadata: /proc/488732/task/488732/children: [Errno 2] No such file or directory: '/proc/488732/task/488732/children'",
+      "Cannot read required owned-process metadata: /proc/488732/task/488732/children: [Errno 2] No such file or directory: '/proc/488732/task/488732/children'"
+    ],
+    "registered_subset_peak_rss_sum_bytes": 366014464,
+    "successful_registered_samples": 415,
+    "retained_raw_sample_limit_per_kind": 2048,
+    "raw_samples_truncated": false,
+    "registered_subset_samples": [
+      {
+        "at_ns": 54066785435429,
+        "rss_bytes": 13250560,
+        "known_processes": 1
+      },
+      {
+        "at_ns": 54066891478708,
+        "rss_bytes": 22589440,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54066996895566,
+        "rss_bytes": 32169984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067101506241,
+        "rss_bytes": 38535168,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067204367409,
+        "rss_bytes": 70885376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067307027485,
+        "rss_bytes": 101801984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067410024103,
+        "rss_bytes": 114716672,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067511178427,
+        "rss_bytes": 122212352,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067614688826,
+        "rss_bytes": 140394496,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067716569253,
+        "rss_bytes": 162607104,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067818500627,
+        "rss_bytes": 169316352,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54067922319832,
+        "rss_bytes": 176685056,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068025053681,
+        "rss_bytes": 180822016,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068139786535,
+        "rss_bytes": 188338176,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068232757548,
+        "rss_bytes": 198172672,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068335605597,
+        "rss_bytes": 207339520,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068438405460,
+        "rss_bytes": 209534976,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068541841848,
+        "rss_bytes": 213827584,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068646867824,
+        "rss_bytes": 220430336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068750042870,
+        "rss_bytes": 221495296,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068855024076,
+        "rss_bytes": 224604160,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54068958552494,
+        "rss_bytes": 228003840,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069058991685,
+        "rss_bytes": 229982208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069163002787,
+        "rss_bytes": 231682048,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069263160251,
+        "rss_bytes": 233259008,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069381053250,
+        "rss_bytes": 235024384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069468988180,
+        "rss_bytes": 235663360,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069586049389,
+        "rss_bytes": 237166592,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069686197394,
+        "rss_bytes": 242024448,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069791146082,
+        "rss_bytes": 242032640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54069896545037,
+        "rss_bytes": 242540544,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070001325456,
+        "rss_bytes": 242610176,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070101547976,
+        "rss_bytes": 242642944,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070206381775,
+        "rss_bytes": 242688000,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070306717112,
+        "rss_bytes": 242876416,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070409701446,
+        "rss_bytes": 244027392,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070511720413,
+        "rss_bytes": 244281344,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070616934654,
+        "rss_bytes": 244613120,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070718984115,
+        "rss_bytes": 244621312,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070820235827,
+        "rss_bytes": 244686848,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54070922239460,
+        "rss_bytes": 244690944,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071027392250,
+        "rss_bytes": 244727808,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071130677369,
+        "rss_bytes": 244768768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071232598814,
+        "rss_bytes": 244846592,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071332707764,
+        "rss_bytes": 244858880,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071437512636,
+        "rss_bytes": 244875264,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071539046723,
+        "rss_bytes": 244928512,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071640517330,
+        "rss_bytes": 245014528,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071742772543,
+        "rss_bytes": 245088256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071842794723,
+        "rss_bytes": 245121024,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54071945501473,
+        "rss_bytes": 245186560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072049444412,
+        "rss_bytes": 245280768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072151180497,
+        "rss_bytes": 245362688,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072251845788,
+        "rss_bytes": 245395456,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072353151065,
+        "rss_bytes": 248627200,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072453205854,
+        "rss_bytes": 249049088,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072558509525,
+        "rss_bytes": 249057280,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072661881720,
+        "rss_bytes": 249057280,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072781092366,
+        "rss_bytes": 249061376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072881104611,
+        "rss_bytes": 249061376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54072980858295,
+        "rss_bytes": 249061376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073086132432,
+        "rss_bytes": 249061376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073186081885,
+        "rss_bytes": 249061376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073293875548,
+        "rss_bytes": 250888192,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073396251629,
+        "rss_bytes": 259489792,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073496173066,
+        "rss_bytes": 259604480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073599619940,
+        "rss_bytes": 269504512,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073701655093,
+        "rss_bytes": 279646208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073801791682,
+        "rss_bytes": 286801920,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54073906545059,
+        "rss_bytes": 291209216,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074011452233,
+        "rss_bytes": 295763968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074111952235,
+        "rss_bytes": 295763968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074217083330,
+        "rss_bytes": 299749376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074320426211,
+        "rss_bytes": 304816128,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074425169994,
+        "rss_bytes": 310288384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074521853347,
+        "rss_bytes": 311603200,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074625453909,
+        "rss_bytes": 316891136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074741076539,
+        "rss_bytes": 321298432,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074832360488,
+        "rss_bytes": 321462272,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54074933114971,
+        "rss_bytes": 321462272,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075036611039,
+        "rss_bytes": 321462272,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075139208237,
+        "rss_bytes": 335355904,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075239785118,
+        "rss_bytes": 335372288,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075342896351,
+        "rss_bytes": 335433728,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075447798078,
+        "rss_bytes": 335503360,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075551195189,
+        "rss_bytes": 335630336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075653157118,
+        "rss_bytes": 335630336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075756643451,
+        "rss_bytes": 335638528,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075857384915,
+        "rss_bytes": 340238336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54075957833446,
+        "rss_bytes": 341655552,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076058192755,
+        "rss_bytes": 341770240,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076161408148,
+        "rss_bytes": 341774336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076261765423,
+        "rss_bytes": 341778432,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076363493717,
+        "rss_bytes": 341778432,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076513778749,
+        "rss_bytes": 342102016,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076574563466,
+        "rss_bytes": 342102016,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076681101980,
+        "rss_bytes": 342102016,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076786205465,
+        "rss_bytes": 342106112,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076891376844,
+        "rss_bytes": 342106112,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54076996593361,
+        "rss_bytes": 342110208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077099689943,
+        "rss_bytes": 342110208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077201613831,
+        "rss_bytes": 342110208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077306837548,
+        "rss_bytes": 342110208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077406771984,
+        "rss_bytes": 342114304,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077509957318,
+        "rss_bytes": 342114304,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077611946491,
+        "rss_bytes": 342118400,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077714641935,
+        "rss_bytes": 342122496,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077817757260,
+        "rss_bytes": 342122496,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54077920033965,
+        "rss_bytes": 342122496,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078020451249,
+        "rss_bytes": 342761472,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078121541339,
+        "rss_bytes": 342761472,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078226991462,
+        "rss_bytes": 342761472,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078327135227,
+        "rss_bytes": 342761472,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078431521075,
+        "rss_bytes": 342761472,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078532884394,
+        "rss_bytes": 342773760,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078637547212,
+        "rss_bytes": 342777856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078737443693,
+        "rss_bytes": 342777856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078841393075,
+        "rss_bytes": 342777856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54078945093290,
+        "rss_bytes": 342994944,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079049895624,
+        "rss_bytes": 342994944,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079158456566,
+        "rss_bytes": 342999040,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079258356341,
+        "rss_bytes": 342999040,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079365046887,
+        "rss_bytes": 342999040,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079463249692,
+        "rss_bytes": 342999040,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079563473477,
+        "rss_bytes": 342999040,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079680939347,
+        "rss_bytes": 343003136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079785974936,
+        "rss_bytes": 343003136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079889407034,
+        "rss_bytes": 343027712,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54079993303749,
+        "rss_bytes": 343027712,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080096234128,
+        "rss_bytes": 343027712,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080194305013,
+        "rss_bytes": 343031808,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080302758070,
+        "rss_bytes": 343240704,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080405797221,
+        "rss_bytes": 343240704,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080510228061,
+        "rss_bytes": 343240704,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080614769754,
+        "rss_bytes": 343515136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080719013977,
+        "rss_bytes": 343515136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080823422934,
+        "rss_bytes": 343523328,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54080925858473,
+        "rss_bytes": 343523328,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081026053548,
+        "rss_bytes": 343523328,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081130003066,
+        "rss_bytes": 343523328,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081237790740,
+        "rss_bytes": 343527424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081337591342,
+        "rss_bytes": 343527424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081438449288,
+        "rss_bytes": 343531520,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081541092744,
+        "rss_bytes": 343531520,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081642823771,
+        "rss_bytes": 343531520,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081747825234,
+        "rss_bytes": 343531520,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081852711607,
+        "rss_bytes": 343531520,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54081954361154,
+        "rss_bytes": 343539712,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082056442778,
+        "rss_bytes": 343539712,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082159868252,
+        "rss_bytes": 343572480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082261195772,
+        "rss_bytes": 343638016,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082363513967,
+        "rss_bytes": 343699456,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082481210383,
+        "rss_bytes": 343777280,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082569668402,
+        "rss_bytes": 343781376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082677317972,
+        "rss_bytes": 343887872,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082778981849,
+        "rss_bytes": 343891968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082881451088,
+        "rss_bytes": 343891968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54082985489887,
+        "rss_bytes": 343891968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083085803173,
+        "rss_bytes": 343896064,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083185918625,
+        "rss_bytes": 343916544,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083294843971,
+        "rss_bytes": 343920640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083398916291,
+        "rss_bytes": 343961600,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083503864936,
+        "rss_bytes": 343961600,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083640487930,
+        "rss_bytes": 343961600,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083737736734,
+        "rss_bytes": 343998464,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083842071366,
+        "rss_bytes": 344420352,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54083944672129,
+        "rss_bytes": 344559616,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084048430674,
+        "rss_bytes": 344649728,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084151606648,
+        "rss_bytes": 344760320,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084256806459,
+        "rss_bytes": 344825856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084354021228,
+        "rss_bytes": 344920064,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084454249022,
+        "rss_bytes": 345051136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084558751176,
+        "rss_bytes": 345108480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084663511571,
+        "rss_bytes": 345255936,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084767615934,
+        "rss_bytes": 345317376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084885940785,
+        "rss_bytes": 345473024,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54084990762888,
+        "rss_bytes": 345546752,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085094572916,
+        "rss_bytes": 345690112,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085198431354,
+        "rss_bytes": 345780224,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085302502037,
+        "rss_bytes": 345939968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085403055883,
+        "rss_bytes": 345997312,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085506203912,
+        "rss_bytes": 346132480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085609737626,
+        "rss_bytes": 346251264,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085709842974,
+        "rss_bytes": 346406912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085813910082,
+        "rss_bytes": 346652672,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54085916260691,
+        "rss_bytes": 346779648,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086022618991,
+        "rss_bytes": 346955776,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086123533747,
+        "rss_bytes": 347004928,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086227446737,
+        "rss_bytes": 347119616,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086332716312,
+        "rss_bytes": 347213824,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086434812365,
+        "rss_bytes": 347283456,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086537577286,
+        "rss_bytes": 347488256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086642462153,
+        "rss_bytes": 347549696,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086744810498,
+        "rss_bytes": 347725824,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086847739743,
+        "rss_bytes": 347807744,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54086951750918,
+        "rss_bytes": 347906048,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087054845647,
+        "rss_bytes": 348205056,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087158401879,
+        "rss_bytes": 348307456,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087261754320,
+        "rss_bytes": 348483584,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087363047455,
+        "rss_bytes": 348491776,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087465820329,
+        "rss_bytes": 348491776,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087566066285,
+        "rss_bytes": 348491776,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087680921711,
+        "rss_bytes": 349421568,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087780991717,
+        "rss_bytes": 349507584,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087875053790,
+        "rss_bytes": 349564928,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54087985822086,
+        "rss_bytes": 349630464,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088086192978,
+        "rss_bytes": 349659136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088190733045,
+        "rss_bytes": 349716480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088295586009,
+        "rss_bytes": 349782016,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088398972984,
+        "rss_bytes": 349851648,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088506506290,
+        "rss_bytes": 349908992,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088607208846,
+        "rss_bytes": 349970432,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088708698666,
+        "rss_bytes": 350044160,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088818965600,
+        "rss_bytes": 350121984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54088917822511,
+        "rss_bytes": 350175232,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089020288810,
+        "rss_bytes": 350232576,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089124304585,
+        "rss_bytes": 350289920,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089233147158,
+        "rss_bytes": 350330880,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089332172028,
+        "rss_bytes": 350375936,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089433893680,
+        "rss_bytes": 350445568,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089537469104,
+        "rss_bytes": 350466048,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089640185363,
+        "rss_bytes": 350474240,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089741413240,
+        "rss_bytes": 350474240,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089842959644,
+        "rss_bytes": 350474240,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54089946778958,
+        "rss_bytes": 350474240,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090050844627,
+        "rss_bytes": 350478336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090154483690,
+        "rss_bytes": 350478336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090264598670,
+        "rss_bytes": 350478336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090362806206,
+        "rss_bytes": 350478336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090466623565,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090568538315,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090671704454,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090776484580,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090882051489,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54090986235713,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091091313208,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091192488453,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091296660489,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091396513919,
+        "rss_bytes": 351248384,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091499198495,
+        "rss_bytes": 360632320,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091600848983,
+        "rss_bytes": 360632320,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091705032947,
+        "rss_bytes": 360226816,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091806155733,
+        "rss_bytes": 360603648,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54091907099460,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092007241878,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092108451333,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092214087415,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092314837415,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092419509822,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092520754639,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092623117079,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092727543285,
+        "rss_bytes": 359780352,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092831809533,
+        "rss_bytes": 359936000,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54092935660997,
+        "rss_bytes": 360640512,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093038088617,
+        "rss_bytes": 360992768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093141862817,
+        "rss_bytes": 360992768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093245870713,
+        "rss_bytes": 360992768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093348381600,
+        "rss_bytes": 360992768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093450725014,
+        "rss_bytes": 359956480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093551293404,
+        "rss_bytes": 360202240,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093653972786,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093758129943,
+        "rss_bytes": 360816640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093862785246,
+        "rss_bytes": 359305216,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54093981202328,
+        "rss_bytes": 360787968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094070858237,
+        "rss_bytes": 360787968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094173181447,
+        "rss_bytes": 361259008,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094273376710,
+        "rss_bytes": 361259008,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094375852831,
+        "rss_bytes": 361263104,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094488927318,
+        "rss_bytes": 361304064,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094585798151,
+        "rss_bytes": 361177088,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094691256636,
+        "rss_bytes": 361422848,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094796116813,
+        "rss_bytes": 361824256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54094896671472,
+        "rss_bytes": 360595456,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095000390861,
+        "rss_bytes": 361615360,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095105379572,
+        "rss_bytes": 361619456,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095202746218,
+        "rss_bytes": 361345024,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095303824968,
+        "rss_bytes": 361345024,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095406944435,
+        "rss_bytes": 361590784,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095511441103,
+        "rss_bytes": 361250816,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095613723222,
+        "rss_bytes": 361377792,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095714523675,
+        "rss_bytes": 361377792,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095813489991,
+        "rss_bytes": 361377792,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54095918113893,
+        "rss_bytes": 361377792,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096022179870,
+        "rss_bytes": 361254912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096126804753,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096234417099,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096337400169,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096442704472,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096545915640,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096648939015,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096753168739,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096853827342,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54096957822579,
+        "rss_bytes": 354086912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097057917679,
+        "rss_bytes": 354091008,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097161290506,
+        "rss_bytes": 354091008,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097265035390,
+        "rss_bytes": 360087552,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097367663413,
+        "rss_bytes": 360947712,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097486218713,
+        "rss_bytes": 360947712,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097586872592,
+        "rss_bytes": 360947712,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097691982390,
+        "rss_bytes": 361009152,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097794582561,
+        "rss_bytes": 361009152,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54097899353983,
+        "rss_bytes": 361009152,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098000215237,
+        "rss_bytes": 361009152,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098104417604,
+        "rss_bytes": 361156608,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098206806863,
+        "rss_bytes": 361156608,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098310495875,
+        "rss_bytes": 361193472,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098406962781,
+        "rss_bytes": 361197568,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098508042965,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098614798782,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098718683563,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098819775849,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54098959352370,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099063022053,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099191128907,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099277383618,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099377204630,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099478124071,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099580678279,
+        "rss_bytes": 361721856,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099682943745,
+        "rss_bytes": 361725952,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099786131245,
+        "rss_bytes": 357924864,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099886146565,
+        "rss_bytes": 360652800,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54099990912178,
+        "rss_bytes": 360652800,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100094848721,
+        "rss_bytes": 361148416,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100196878839,
+        "rss_bytes": 361394176,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100296366202,
+        "rss_bytes": 361885696,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100401936045,
+        "rss_bytes": 361271296,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100507044706,
+        "rss_bytes": 361271296,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100608530570,
+        "rss_bytes": 361398272,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100712250293,
+        "rss_bytes": 361922560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100816570361,
+        "rss_bytes": 361922560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54100921776829,
+        "rss_bytes": 358531072,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101025933976,
+        "rss_bytes": 361521152,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101129878258,
+        "rss_bytes": 361553920,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101234818903,
+        "rss_bytes": 361275392,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101335175514,
+        "rss_bytes": 358424576,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101437958239,
+        "rss_bytes": 361156608,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101539837782,
+        "rss_bytes": 361680896,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101643958785,
+        "rss_bytes": 362049536,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101747316069,
+        "rss_bytes": 361435136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101851741952,
+        "rss_bytes": 362147840,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54101956258591,
+        "rss_bytes": 361410560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102059329512,
+        "rss_bytes": 361410560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102164372348,
+        "rss_bytes": 361811968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102268222540,
+        "rss_bytes": 360914944,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102369110993,
+        "rss_bytes": 360931328,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102473843771,
+        "rss_bytes": 360935424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102574489700,
+        "rss_bytes": 360935424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102678111215,
+        "rss_bytes": 360935424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102780634085,
+        "rss_bytes": 360935424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102882054009,
+        "rss_bytes": 360939520,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54102982788715,
+        "rss_bytes": 360943616,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103086704419,
+        "rss_bytes": 360943616,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103191944542,
+        "rss_bytes": 360943616,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103296861648,
+        "rss_bytes": 360943616,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103396916292,
+        "rss_bytes": 360988672,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103503068850,
+        "rss_bytes": 361029632,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103606731405,
+        "rss_bytes": 361156608,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103707662116,
+        "rss_bytes": 361320448,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103811369077,
+        "rss_bytes": 361385984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54103912071349,
+        "rss_bytes": 361504768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104013677859,
+        "rss_bytes": 361619456,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104115354643,
+        "rss_bytes": 361693184,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104218103107,
+        "rss_bytes": 361922560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104321483324,
+        "rss_bytes": 361988096,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104423536395,
+        "rss_bytes": 362082304,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104527316824,
+        "rss_bytes": 362225664,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104632531469,
+        "rss_bytes": 362332160,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104735442624,
+        "rss_bytes": 362524672,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104839395178,
+        "rss_bytes": 362643456,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54104942986272,
+        "rss_bytes": 362790912,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105042629443,
+        "rss_bytes": 362881024,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105143425104,
+        "rss_bytes": 362946560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105244714686,
+        "rss_bytes": 363130880,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105349210950,
+        "rss_bytes": 363216896,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105449806806,
+        "rss_bytes": 363343872,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105566241710,
+        "rss_bytes": 363462656,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105672673562,
+        "rss_bytes": 363556864,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105771466222,
+        "rss_bytes": 363610112,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105875182868,
+        "rss_bytes": 363732992,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54105978745387,
+        "rss_bytes": 363839488,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106082715638,
+        "rss_bytes": 363880448,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106186023940,
+        "rss_bytes": 364064768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106286471448,
+        "rss_bytes": 364150784,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106390106869,
+        "rss_bytes": 364318720,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106494068763,
+        "rss_bytes": 364482560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106596608915,
+        "rss_bytes": 364572672,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106696792793,
+        "rss_bytes": 364707840,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106796911298,
+        "rss_bytes": 364756992,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54106901230440,
+        "rss_bytes": 364797952,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107003813616,
+        "rss_bytes": 364933120,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107107265516,
+        "rss_bytes": 365039616,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107208716216,
+        "rss_bytes": 365101056,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107311641257,
+        "rss_bytes": 365273088,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107412249572,
+        "rss_bytes": 365355008,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107514391144,
+        "rss_bytes": 365408256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107615769928,
+        "rss_bytes": 365543424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107716817133,
+        "rss_bytes": 365617152,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107821601533,
+        "rss_bytes": 365649920,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54107924343413,
+        "rss_bytes": 365760512,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108024842567,
+        "rss_bytes": 365916160,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108125163687,
+        "rss_bytes": 365916160,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108227169338,
+        "rss_bytes": 365920256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108327595784,
+        "rss_bytes": 365920256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108430558961,
+        "rss_bytes": 365969408,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108530760014,
+        "rss_bytes": 365969408,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108632899813,
+        "rss_bytes": 365969408,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108735441466,
+        "rss_bytes": 365969408,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108836345215,
+        "rss_bytes": 365969408,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54108940467212,
+        "rss_bytes": 365969408,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54109043315788,
+        "rss_bytes": 365981696,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54109146209859,
+        "rss_bytes": 365981696,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54109250335518,
+        "rss_bytes": 365981696,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54109353233811,
+        "rss_bytes": 366014464,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54109455060574,
+        "rss_bytes": 366014464,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 54109555310181,
+        "rss_bytes": 359661568,
+        "known_processes": 2
+      }
+    ],
+    "family_samples": [],
+    "continuous_peak_proved": false,
+    "physical_unique_memory": false,
+    "scope": "Includes supervisor. Registered subset can omit descendants; RSS sums double-count shared pages."
+  },
+  "energy": {
+    "joules": null,
+    "attributable_to_task": false,
+    "visible_counter_directories": {
+      "/sys/class/powercap": false,
+      "/sys/class/hwmon": false,
+      "/sys/class/drm": false
+    },
+    "reason": "No configured directly observed, attributable device-energy counter"
+  },
+  "accounting": "Inner waited subtrees are disjoint diagnostics. Outer supervisor wait4 includes these once; never add inner waits again.",
+  "limits": [
+    "Dedicated Linux supervisor, ordinary fork/exec children; arbitrary malicious clone/reparent behavior is not qualified.",
+    "Timeout cleanup kills only an unreaped direct task. Uncollected descendants make coverage fail; no whole-tree fault recovery claim.",
+    "Sampled family RSS is not an atomic or continuous peak even where enumeration is available."
+  ]
+}

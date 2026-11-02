@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "experiments/hcsn_v9_followup_20261101/mechanisms/review/audit.py",
+    "--run",
+    "experiments/hcsn_v9_followup_20261101/mechanisms/results/development001",
+    "--out",
+    "experiments/hcsn_v9_followup_20261101/mechanisms/review/RAW_AUDIT_STATS.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v9_followup_20261101/mechanisms/receipts/audit001",
+  "timeout": 180.0,
+  "sample_interval": 0.2
+}

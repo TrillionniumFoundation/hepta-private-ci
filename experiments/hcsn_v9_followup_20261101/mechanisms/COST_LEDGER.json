@@ -1,0 +1,53 @@
+{
+  "measured_disjoint_worker_cpu_seconds_lower_bound": 225.626449,
+  "workers": [
+    {
+      "path": "receipts/audit001/RECEIPT.json",
+      "cpu_seconds": 1.5795080000000001,
+      "task_success": true
+    },
+    {
+      "path": "receipts/evaluate001/RECEIPT.json",
+      "cpu_seconds": 201.774596,
+      "task_success": true
+    },
+    {
+      "path": "receipts/exact_audit001/RECEIPT.json",
+      "cpu_seconds": 0.9198989999999999,
+      "task_success": true
+    },
+    {
+      "path": "receipts/fit001/RECEIPT.json",
+      "cpu_seconds": 11.997261,
+      "task_success": true
+    },
+    {
+      "path": "receipts/fit_audit001/RECEIPT.json",
+      "cpu_seconds": 2.0220149999999997,
+      "task_success": true
+    },
+    {
+      "path": "receipts/fixed_risk001/RECEIPT.json",
+      "cpu_seconds": 3.613566,
+      "task_success": true
+    },
+    {
+      "path": "receipts/tests001/RECEIPT.json",
+      "cpu_seconds": 3.719604,
+      "task_success": true
+    }
+  ],
+  "unknown_additional_cpu": [
+    "initial preparation",
+    "source development",
+    "first unmetered fit audit",
+    "review writing",
+    "historical preparation and pretraining"
+  ],
+  "nested_rule": "Inner per-arm, training and child timers already included; do not add twice",
+  "complete_project_cost": null,
+  "complete_process_family_peak_memory_bytes": null,
+  "attributable_energy_joules": null,
+  "architecture_acceptance": false,
+  "production_activation": false
+}

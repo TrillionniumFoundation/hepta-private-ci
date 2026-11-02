@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v9_followup_20261101/persistent_av/candidate.py", line 288, in <module>
+    main()
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v9_followup_20261101/persistent_av/candidate.py", line 237, in main
+    model, model_sha = fit(family, seed, train, val, args.out)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v9_followup_20261101/persistent_av/candidate.py", line 203, in fit
+    write(output / f"{family}-{seed}-fit.json", {"history": history, "selected_epoch": selected,
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v9_followup_20261101/persistent_av/candidate.py", line 42, in write
+    with path.open("x") as stream:
+         ^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: 'experiments/hcsn_v9_followup_20261101/persistent_av/results001/direct-91101-fit.json'

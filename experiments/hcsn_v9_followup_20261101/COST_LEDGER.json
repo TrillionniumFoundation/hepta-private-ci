@@ -1,0 +1,99 @@
+{
+  "schema": "hcsn-v9-measured-envelopes.v1",
+  "receipts": [
+    {
+      "path": "economics/results/adopted/RECEIPT.json",
+      "sha256": "4275c19d21597d5795b91c51c38d3d55fcbf7206c94c61e4123636ed544115b0",
+      "cpu_seconds": 0.38413699999999995,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "economics/results/waited/RECEIPT.json",
+      "sha256": "dd01bae69c73ea48444d204b447c6af5aa4c7fdad2271ce248c4702b5834eb58",
+      "cpu_seconds": 0.37149999999999994,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "mechanisms/receipts/audit001/RECEIPT.json",
+      "sha256": "670fca183218510df20514f80cc2148f6bf503613af1f9a0e87872af472506c6",
+      "cpu_seconds": 1.5795080000000001,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "mechanisms/receipts/evaluate001/RECEIPT.json",
+      "sha256": "470ae302689b7a34f4f3830029b381b3b7b7a9a99fb1c1f1bad049a910724e0d",
+      "cpu_seconds": 201.774596,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "mechanisms/receipts/exact_audit001/RECEIPT.json",
+      "sha256": "a5c62c20ffeac5ddf44895cc147332ef0955969cff2488db9e0ba8ae81b2afa7",
+      "cpu_seconds": 0.9198989999999999,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "mechanisms/receipts/fit001/RECEIPT.json",
+      "sha256": "73449b09a30fe3354dec1f811be09134fde4580f8315f0a2bbb64d24128e5add",
+      "cpu_seconds": 11.997261,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "mechanisms/receipts/fit_audit001/RECEIPT.json",
+      "sha256": "e07caa1fde3d9dc88b899bb6c62ec7f9d65fb4c09575a7a24f9e32c0f91bc983",
+      "cpu_seconds": 2.0220149999999997,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "mechanisms/receipts/fixed_risk001/RECEIPT.json",
+      "sha256": "f80b708b18ddbd33b4c0780f0847941d24b419b4e6a3dba53f5220c2379a6479",
+      "cpu_seconds": 3.613566,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "mechanisms/receipts/tests001/RECEIPT.json",
+      "sha256": "2aa50b789e37d62d548fb4cf39316d4479862279e591edec0cfc2cdfa90aa526",
+      "cpu_seconds": 3.719604,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "persistent_av/cost001/RECEIPT.json",
+      "sha256": "35d1defd52dc29d16121c5425b82f3bf1991a53d44f1163974b247381dfd5234",
+      "cpu_seconds": 21.326506000000002,
+      "task_success": false,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "persistent_av/cost002/RECEIPT.json",
+      "sha256": "eb0cc04782a256573ce2da8611fab22283237baf11922e81861a66a73074fc01",
+      "cpu_seconds": 38.228770000000004,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "persistent_av/cost003/RECEIPT.json",
+      "sha256": "d1935de2e38ab0e07e52c8320f87836d21cf07634ce0f5fa79b52f2c522c392c",
+      "cpu_seconds": 16.681842,
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    }
+  ],
+  "measured_disjoint_worker_envelopes_cpu_seconds": 302.619204,
+  "includes_failed_workers": true,
+  "inner_timers_added_again": false,
+  "total_research_cpu_seconds": null,
+  "historical_preparation_cpu_seconds": null,
+  "complete_process_family_peak_bytes": null,
+  "device_energy_joules": null,
+  "H20_complete_cost": null,
+  "H10000_complete_cost": null,
+  "scope": "Disjoint enclosing worker process trees, including their supervisor and owned descendants. Concurrent wall times are not added. Development, unmetered preparation/recovery/audits, original media preparation/pretraining, outer-launcher setup and final receipt serialization are outside these envelopes. This is a measured-work lower bound, not complete model or deployment economics."
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn-v9-baseline-reconciliation.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_pr": 4567,
+  "baseline_commit": "059b43a0b20ad07654880c155cc49799e0bb8858",
+  "baseline_branch": "research/hcsn-v8-causal-execution-20261101",
+  "scope": "Continuation of the specific v8 AV, renewal-mechanism and worker-cost study; other HCSN R18 research lines are not substituted",
+  "historical_recovery": {
+    "verified_source_files": 16,
+    "verified_transport_parts": 27,
+    "historical_av_archive_sha256": "c10347a8c55983720133dd0d948b40a793990a951a43803d0a697efdc436aa80",
+    "historical_foundations_archive_sha256": "cfd7cd8a1f50635bfac30f1c32def69493b7c46a523f683d32f964a31a062adb",
+    "v8_large_files_restored": 8,
+    "v8_large_original_bytes": 7289944,
+    "restore_source": "Unchanged v8 recover_local.py and publication/transport.py",
+    "v6_recovered": false,
+    "historical_preparation_cpu_seconds": null,
+    "recovery_cpu_seconds": null
+  },
+  "v8_independent_audit": {
+    "path": "baseline/V8_INDEPENDENT_AUDIT.json",
+    "checks": 133975,
+    "passed": true,
+    "worlds": 48,
+    "runs": 1728,
+    "matched_D_minus_B": -0.008249999999999957,
+    "mismatch_D_minus_B": -0.0016666666666666162,
+    "new_experiment": false
+  },
+  "v6_remote_lookup": {
+    "commit": "febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+    "rest_response_status": 422,
+    "rest_message": "No commit found for SHA: febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+    "lookup_scope": "Connected repository at the time of this request; not a proof of global nonexistence"
+  },
+  "scientific_confirmation": false,
+  "all_blockers_closed": false,
+  "production_activation": false
+}

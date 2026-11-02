@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn-v9-independent-raw-review.v1",
+  "checks": 104474,
+  "all_checks_passed": true,
+  "failed_examples": [],
+  "worlds": 24,
+  "runs": 2040,
+  "contrasts": {
+    "matched/risk=True": {
+      "A": 0.6355,
+      "B": 0.5491666666666667,
+      "C": 0.6416666666666667,
+      "D": 0.57,
+      "D-B": 0.020833333333333332,
+      "world_count": 12
+    },
+    "matched/risk=False": {
+      "A": 0.6795,
+      "B": 0.5576666666666666,
+      "C": 0.7036111111111111,
+      "D": 0.5952777777777778,
+      "D-B": 0.03761111111111111,
+      "world_count": 12
+    },
+    "hidden_refractory_mismatch/risk=True": {
+      "A": 0.6358333333333334,
+      "B": 0.5675,
+      "C": 0.6391666666666667,
+      "D": 0.5391666666666667,
+      "D-B": -0.028333333333333332,
+      "world_count": 12
+    },
+    "hidden_refractory_mismatch/risk=False": {
+      "A": 0.6145,
+      "B": 0.47700000000000004,
+      "C": 0.5916666666666667,
+      "D": 0.49083333333333334,
+      "D-B": 0.01383333333333333,
+      "world_count": 12
+    }
+  },
+  "scope": "Frozen record semantics and world-paired point estimates only; no acceptance or optimality claim"
+}
