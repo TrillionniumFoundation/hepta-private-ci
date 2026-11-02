@@ -1,0 +1,1390 @@
+{
+  "schema": "hcsn-v10-historical-AV-target-shift-diagnostic.v1",
+  "post_hoc": true,
+  "test_bytes_or_labels_opened": false,
+  "model_or_seed_selection_performed": false,
+  "target": "Actual correctness of the old fixed content head at legal future cache endpoints",
+  "schedule_replicates_are_independent_recordings": false,
+  "scope": "Descriptive train/validation shift and constant correctness baselines; no new recording or generalization qualification",
+  "source_sha256": "bdd6d59e2fdd81566fde87896532464e89278469f5b8405c4e5f0fcbd7ca3103",
+  "tasks": {
+    "async_av": {
+      "metadata": {
+        "train": {
+          "objects": 24,
+          "acquisition_schedules_per_object": 10,
+          "source_recordings": [
+            "1016_DFA_ANG_XX",
+            "1016_DFA_DIS_XX",
+            "1016_DFA_FEA_XX",
+            "1016_DFA_HAP_XX",
+            "1016_DFA_NEU_XX",
+            "1016_DFA_SAD_XX",
+            "1043_DFA_ANG_XX",
+            "1043_DFA_DIS_XX",
+            "1043_DFA_FEA_XX",
+            "1043_DFA_HAP_XX",
+            "1043_DFA_NEU_XX",
+            "1043_DFA_SAD_XX",
+            "1050_DFA_ANG_XX",
+            "1050_DFA_DIS_XX",
+            "1050_DFA_FEA_XX",
+            "1050_DFA_HAP_XX",
+            "1050_DFA_NEU_XX",
+            "1050_DFA_SAD_XX",
+            "1051_DFA_ANG_XX",
+            "1051_DFA_DIS_XX",
+            "1051_DFA_FEA_XX",
+            "1051_DFA_HAP_XX",
+            "1051_DFA_NEU_XX",
+            "1051_DFA_SAD_XX"
+          ],
+          "distinct_source_recordings": 24,
+          "actors": [
+            "1016",
+            "1043",
+            "1050",
+            "1051"
+          ],
+          "distinct_actors": 4,
+          "unique_eligible_endpoints_per_object": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "object_macro_unique_endpoint_target_positive_rate": 0.8181818181818182,
+          "complete_endpoint_object_accuracy": 1.0
+        },
+        "validation": {
+          "objects": 12,
+          "acquisition_schedules_per_object": 10,
+          "source_recordings": [
+            "1011_DFA_ANG_XX",
+            "1011_DFA_DIS_XX",
+            "1011_DFA_FEA_XX",
+            "1011_DFA_HAP_XX",
+            "1011_DFA_NEU_XX",
+            "1011_DFA_SAD_XX",
+            "1082_DFA_ANG_XX",
+            "1082_DFA_DIS_XX",
+            "1082_DFA_FEA_XX",
+            "1082_DFA_HAP_XX",
+            "1082_DFA_NEU_XX",
+            "1082_DFA_SAD_XX"
+          ],
+          "distinct_source_recordings": 12,
+          "actors": [
+            "1011",
+            "1082"
+          ],
+          "distinct_actors": 2,
+          "unique_eligible_endpoints_per_object": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "object_macro_unique_endpoint_target_positive_rate": 0.3333333333333333,
+          "complete_endpoint_object_accuracy": 0.3333333333333333
+        }
+      },
+      "training_masked_prior": 0.8895061728395062,
+      "baseline_prior_clip": [
+        1e-06,
+        0.999999
+      ],
+      "statistics": {
+        "train": {
+          "constant_half": {
+            "by_original_audio_recording": {
+              "1051_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8740740740740741,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9481481481481482,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7444444444444445,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8333333333333334,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9259259259259259,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9111111111111111,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.42962962962962964,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7444444444444445,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8333333333333334,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9629629629629629,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8740740740740741,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8666666666666667,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "by_actor_group": {
+              "1051": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.8999999999999999,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.9228395061728394,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.8283950617283949,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.9067901234567901,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "recording_macro_target_positive_rate": 0.8895061728395062,
+            "recording_macro_bce": 0.6931471805599453,
+            "actor_macro_bce": 0.6931471805599453,
+            "complete_endpoint_recording_macro_accuracy": 1.0
+          },
+          "constant_training_prior": {
+            "by_original_audio_recording": {
+              "1051_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8740740740740741,
+                "bce": 0.37973339098764125,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9481481481481482,
+                "bce": 0.22523659171662153,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7444444444444445,
+                "bce": 0.6501027897119259,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8333333333333334,
+                "bce": 0.46470663058670214,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7,
+                "bce": 0.7428008692745377,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9259259259259259,
+                "bce": 0.27158563149792747,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9111111111111111,
+                "bce": 0.3024849913521314,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.42962962962962964,
+                "bce": 1.30671418661376,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7444444444444445,
+                "bce": 0.6501027897119259,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8333333333333334,
+                "bce": 0.46470663058670214,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9629629629629629,
+                "bce": 0.19433723186241758,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8740740740740741,
+                "bce": 0.37973339098764125,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8666666666666667,
+                "bce": 0.3951830709147433,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7,
+                "bce": 0.7428008692745377,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "by_actor_group": {
+              "1051": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.8999999999999999,
+                "bce": 0.3256595112427843,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.9228395061728394,
+                "bce": 0.27802299813422,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.8283950617283949,
+                "bce": 0.47500641720477016,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.9067901234567901,
+                "bce": 0.31149730464294084,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "recording_macro_target_positive_rate": 0.8895061728395062,
+            "recording_macro_bce": 0.34754655780617877,
+            "actor_macro_bce": 0.3475465578061788,
+            "complete_endpoint_recording_macro_accuracy": 1.0
+          }
+        },
+        "validation": {
+          "constant_half": {
+            "by_original_audio_recording": {
+              "1011_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8333333333333334,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1011_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1011_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1011_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1011_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.21851851851851853,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1011_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.16666666666666666,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1082_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7444444444444445,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.08888888888888889,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1082_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9111111111111111,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.0,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1082_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.1,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              }
+            },
+            "by_actor_group": {
+              "1011": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.3419753086419753,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.3333333333333333
+              },
+              "1082": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.3351851851851852,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.3333333333333333
+              }
+            },
+            "recording_macro_target_positive_rate": 0.3385802469135803,
+            "recording_macro_bce": 0.6931471805599453,
+            "actor_macro_bce": 0.6931471805599453,
+            "complete_endpoint_recording_macro_accuracy": 0.3333333333333333
+          },
+          "constant_training_prior": {
+            "by_original_audio_recording": {
+              "1011_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.8333333333333334,
+                "bce": 0.46470663058670214,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1011_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.0,
+                "bce": 2.202795622385675,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1011_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.0,
+                "bce": 2.202795622385675,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1011_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.0,
+                "bce": 2.202795622385675,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1011_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.21851851851851853,
+                "bce": 1.747030064536166,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1011_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 1.0,
+                "bce": 0.11708883222690766,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_ANG_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.16666666666666666,
+                "bce": 1.8551778240258803,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1082_DFA_DIS_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.7444444444444445,
+                "bce": 0.6501027897119259,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_FEA_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.08888888888888889,
+                "bce": 2.017399463260451,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1082_DFA_HAP_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.9111111111111111,
+                "bce": 0.3024849913521314,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_NEU_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.0,
+                "bce": 2.202795622385675,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1082_DFA_SAD_XX": {
+                "objects": 1,
+                "target_positive_rate_masked": 0.1,
+                "bce": 1.9942249433697978,
+                "complete_endpoint_correctness": 0.0
+              }
+            },
+            "by_actor_group": {
+              "1011": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.3419753086419753,
+                "bce": 1.4895353990844666,
+                "complete_endpoint_correctness": 0.3333333333333333
+              },
+              "1082": {
+                "objects": 6,
+                "target_positive_rate_masked": 0.3351851851851852,
+                "bce": 1.5036976056843103,
+                "complete_endpoint_correctness": 0.3333333333333333
+              }
+            },
+            "recording_macro_target_positive_rate": 0.3385802469135803,
+            "recording_macro_bce": 1.4966165023843887,
+            "actor_macro_bce": 1.4966165023843885,
+            "complete_endpoint_recording_macro_accuracy": 0.3333333333333333
+          }
+        }
+      },
+      "input_sha256": {
+        "async_av/training.npz": "e7722df0e2498e7e347e6e069b15e8a95b0a28ae2af33b683576b24d1bc02228",
+        "assets/data/train.npz": "cc53d3185720157590fa47fd7b93103fe92b0186b587ec4ea763c61ee7de6da1",
+        "async_av/validation.npz": "0145a0ae71c92b6ed47f83ab38e0a3fd45c660ddb93b23520a6776877940e67b",
+        "assets/data/validation.npz": "e3c74e378df33592b0d40014deeb213e3639395ff0e0ecf3956dff57e7f39b2f"
+      }
+    },
+    "av_binding": {
+      "metadata": {
+        "train": {
+          "objects": 48,
+          "acquisition_schedules_per_object": 10,
+          "source_recordings": [
+            "1016_DFA_ANG_XX",
+            "1016_DFA_DIS_XX",
+            "1016_DFA_FEA_XX",
+            "1016_DFA_HAP_XX",
+            "1016_DFA_NEU_XX",
+            "1016_DFA_SAD_XX",
+            "1043_DFA_ANG_XX",
+            "1043_DFA_DIS_XX",
+            "1043_DFA_FEA_XX",
+            "1043_DFA_HAP_XX",
+            "1043_DFA_NEU_XX",
+            "1043_DFA_SAD_XX",
+            "1050_DFA_ANG_XX",
+            "1050_DFA_DIS_XX",
+            "1050_DFA_FEA_XX",
+            "1050_DFA_HAP_XX",
+            "1050_DFA_NEU_XX",
+            "1050_DFA_SAD_XX",
+            "1051_DFA_ANG_XX",
+            "1051_DFA_DIS_XX",
+            "1051_DFA_FEA_XX",
+            "1051_DFA_HAP_XX",
+            "1051_DFA_NEU_XX",
+            "1051_DFA_SAD_XX"
+          ],
+          "distinct_source_recordings": 24,
+          "actors": [
+            "1016",
+            "1043",
+            "1050",
+            "1051"
+          ],
+          "distinct_actors": 4,
+          "unique_eligible_endpoints_per_object": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "object_macro_unique_endpoint_target_positive_rate": 0.8352272727272728,
+          "complete_endpoint_object_accuracy": 1.0
+        },
+        "validation": {
+          "objects": 24,
+          "acquisition_schedules_per_object": 10,
+          "source_recordings": [
+            "1011_DFA_ANG_XX",
+            "1011_DFA_DIS_XX",
+            "1011_DFA_FEA_XX",
+            "1011_DFA_HAP_XX",
+            "1011_DFA_NEU_XX",
+            "1011_DFA_SAD_XX",
+            "1082_DFA_ANG_XX",
+            "1082_DFA_DIS_XX",
+            "1082_DFA_FEA_XX",
+            "1082_DFA_HAP_XX",
+            "1082_DFA_NEU_XX",
+            "1082_DFA_SAD_XX"
+          ],
+          "distinct_source_recordings": 12,
+          "actors": [
+            "1011",
+            "1082"
+          ],
+          "distinct_actors": 2,
+          "unique_eligible_endpoints_per_object": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "object_macro_unique_endpoint_target_positive_rate": 0.6780303030303031,
+          "complete_endpoint_object_accuracy": 0.75
+        }
+      },
+      "training_masked_prior": 0.9004629629629628,
+      "baseline_prior_clip": [
+        1e-06,
+        0.999999
+      ],
+      "statistics": {
+        "train": {
+          "constant_half": {
+            "by_original_audio_recording": {
+              "1051_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8722222222222222,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8685185185185185,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8074074074074074,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8907407407407407,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8907407407407407,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.85,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.85,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8907407407407407,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8685185185185185,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8907407407407407,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.6148148148148148,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.85,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "by_actor_group": {
+              "1051": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.8808641975308643,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.8950617283950617,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.8879629629629631,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.937962962962963,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "recording_macro_target_positive_rate": 0.9004629629629628,
+            "recording_macro_bce": 0.6931471805599453,
+            "actor_macro_bce": 0.6931471805599453,
+            "complete_endpoint_recording_macro_accuracy": 1.0
+          },
+          "constant_training_prior": {
+            "by_original_audio_recording": {
+              "1051_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8722222222222222,
+                "bce": 0.3862613681938435,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8685185185185185,
+                "bce": 0.394418328297269,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8074074074074074,
+                "bce": 0.5290081700037895,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8907407407407407,
+                "bce": 0.34547656767671603,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1051_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8907407407407407,
+                "bce": 0.34547656767671603,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.85,
+                "bce": 0.4352031288143964,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.85,
+                "bce": 0.4352031288143964,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8907407407407407,
+                "bce": 0.34547656767671603,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8685185185185185,
+                "bce": 0.394418328297269,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8907407407407407,
+                "bce": 0.3454765676767161,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.6148148148148148,
+                "bce": 0.9531700953819149,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.85,
+                "bce": 0.4352031288143965,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "by_actor_group": {
+              "1051": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.8808641975308643,
+                "bce": 0.3672284612858507,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1043": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.8950617283950617,
+                "bce": 0.3359601142227197,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1016": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.8879629629629631,
+                "bce": 0.3515942877542852,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1050": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.937962962962963,
+                "bce": 0.24147532635804117,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "recording_macro_target_positive_rate": 0.9004629629629628,
+            "recording_macro_bce": 0.3240645474052242,
+            "actor_macro_bce": 0.32406454740522417,
+            "complete_endpoint_recording_macro_accuracy": 1.0
+          }
+        },
+        "validation": {
+          "constant_half": {
+            "by_original_audio_recording": {
+              "1011_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8685185185185185,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1011_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1011_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.5185185185185185,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.5
+              },
+              "1011_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8722222222222222,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1011_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.5,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.5
+              },
+              "1011_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.5,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.5
+              },
+              "1082_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.85,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.5833333333333334,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.5
+              },
+              "1082_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8722222222222222,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.15,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1082_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8722222222222222,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "by_actor_group": {
+              "1011": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.7024691358024691,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.75
+              },
+              "1082": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.7138888888888889,
+                "bce": 0.6931471805599453,
+                "complete_endpoint_correctness": 0.75
+              }
+            },
+            "recording_macro_target_positive_rate": 0.708179012345679,
+            "recording_macro_bce": 0.6931471805599453,
+            "actor_macro_bce": 0.6931471805599453,
+            "complete_endpoint_recording_macro_accuracy": 0.75
+          },
+          "constant_training_prior": {
+            "by_original_audio_recording": {
+              "1011_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8685185185185185,
+                "bce": 0.394418328297269,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1011_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1011_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.5185185185185185,
+                "bce": 1.1652510580709776,
+                "complete_endpoint_correctness": 0.5
+              },
+              "1011_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8722222222222222,
+                "bce": 0.38626136819384355,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1011_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.5,
+                "bce": 1.206035858588105,
+                "complete_endpoint_correctness": 0.5
+              },
+              "1011_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.5,
+                "bce": 1.206035858588105,
+                "complete_endpoint_correctness": 0.5
+              },
+              "1082_DFA_ANG_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.85,
+                "bce": 0.4352031288143964,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_DIS_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.5833333333333334,
+                "bce": 1.0225042562610316,
+                "complete_endpoint_correctness": 0.5
+              },
+              "1082_DFA_FEA_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8722222222222222,
+                "bce": 0.3862613681938435,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_HAP_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.15,
+                "bce": 1.9768685883618136,
+                "complete_endpoint_correctness": 0.0
+              },
+              "1082_DFA_NEU_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.9555555555555555,
+                "bce": 0.20272976586677005,
+                "complete_endpoint_correctness": 1.0
+              },
+              "1082_DFA_SAD_XX": {
+                "objects": 2,
+                "target_positive_rate_masked": 0.8722222222222222,
+                "bce": 0.3862613681938435,
+                "complete_endpoint_correctness": 1.0
+              }
+            },
+            "by_actor_group": {
+              "1011": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.7024691358024691,
+                "bce": 0.7601220396008449,
+                "complete_endpoint_correctness": 0.75
+              },
+              "1082": {
+                "objects": 12,
+                "target_positive_rate_masked": 0.7138888888888889,
+                "bce": 0.7349714126152831,
+                "complete_endpoint_correctness": 0.75
+              }
+            },
+            "recording_macro_target_positive_rate": 0.708179012345679,
+            "recording_macro_bce": 0.747546726108064,
+            "actor_macro_bce": 0.7475467261080639,
+            "complete_endpoint_recording_macro_accuracy": 0.75
+          }
+        }
+      },
+      "input_sha256": {
+        "av_binding/training.npz": "762ef06eead5e9f19bf7d069308af0df59de652d9dfa9b2c9caa91683ee44b92",
+        "assets/data/train.npz": "cc53d3185720157590fa47fd7b93103fe92b0186b587ec4ea763c61ee7de6da1",
+        "av_binding/validation.npz": "392a197b9fdccfc48fe086d536fe40b304023500f56a626315c55dda14cbbc06",
+        "assets/data/validation.npz": "e3c74e378df33592b0d40014deeb213e3639395ff0e0ecf3956dff57e7f39b2f"
+      }
+    }
+  }
+}

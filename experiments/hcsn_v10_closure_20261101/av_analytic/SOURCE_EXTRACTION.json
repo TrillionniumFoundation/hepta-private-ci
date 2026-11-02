@@ -1,0 +1,27 @@
+{
+  "library_file_id": "libfile_7b0ea4bcecd88191ac9ee31765d67012",
+  "archive_sha256": "b9bc77d41716de8e2babec5899f3e2c80f2ebacc9ced6553ce6d7ccd2a764518",
+  "archive_source_commit": "ad2a79d0699979108543d3052b76942b14e0e8a6",
+  "sources": {
+    "/workspace/scratch/8da28d12955f/recovery-v10/extracted/experiments/hcsn_v9_followup_20261101/persistent_av/candidate.py": "64167009cc7d867425c26d07f27012b6542af92f29fe8e10a8e381408eff537b",
+    "/workspace/scratch/8da28d12955f/recovery-v10/extracted/experiments/hcsn_v9_followup_20261101/persistent_av/history_reference.py": "52f6d2eceb12fc13bb48284f7b4755024cbde37600f42cbd7a2da04322be18ed"
+  },
+  "exact_AST_definitions": {
+    "interfaces.py": [
+      "cache_features",
+      "Forecast",
+      "schedules",
+      "dataset",
+      "data_identity"
+    ],
+    "history.py": [
+      "HistoryModel",
+      "AcceptedHistory",
+      "HistoryForecast"
+    ]
+  },
+  "new_analytic_model_is_not_inherited_from_v9": true,
+  "intentional_adapter_changes": {
+    "PersistentCore": "Add packet=x[0].tolist() to accepted-state diagnostic record; transition and readout logic otherwise unchanged"
+  }
+}
