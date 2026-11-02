@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn-evidence-transport-v2",
+  "component": "tools/hcsn/native_value_channels_r22_20261102",
+  "included_directories": [
+    "development_01",
+    "development_02",
+    "confirmation_01"
+  ],
+  "included_files": [],
+  "file_count_cap": 65536,
+  "logical_bytes_cap": 536870912,
+  "archive": {
+    "gzip_bytes": 934076,
+    "gzip_sha256": "66209cb079eb9595d614873f63e76e2b922aae1dfff871444df16e363daab105",
+    "raw_bytes": 1013760,
+    "raw_sha256": "fcd4a74622e36bfbf5d06ca3c8433993bd62545ee29c86cd60508ee55aacb9e7",
+    "parts": [
+      {
+        "path": "transport/0000.part",
+        "size": 450000,
+        "sha256": "32e02c5f537673c4e2f381685ca388435ddcbdd2d45d5f1d8bfb5df3e476ab14"
+      },
+      {
+        "path": "transport/0001.part",
+        "size": 450000,
+        "sha256": "c7a25017d7bd88a95a951aa4b8ecfcb53489d96f2ccc92567c17f08e5737e099"
+      },
+      {
+        "path": "transport/0002.part",
+        "size": 34076,
+        "sha256": "a21fb8c32e23e98cc4a316d393d688bba9d3bc34c95ade38f5ddb9643c69dc84"
+      }
+    ]
+  },
+  "file_map": {
+    "gzip_bytes": 1395,
+    "gzip_sha256": "ea9229607c0a90b7f44a76f45835c3fed6425b8ab9177e854e5dbc1a9c684735",
+    "raw_bytes": 5643,
+    "raw_sha256": "63659b68d98ce356f8591c2fa5ba29ff4fd2b2127e9d7e79c8c7b684054e5b91",
+    "parts": [
+      {
+        "path": "map_transport/0000.part",
+        "size": 1395,
+        "sha256": "ea9229607c0a90b7f44a76f45835c3fed6425b8ab9177e854e5dbc1a9c684735"
+      }
+    ]
+  }
+}
