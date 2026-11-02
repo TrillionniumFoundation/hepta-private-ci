@@ -1,0 +1,18 @@
+{
+  "audio_checkpoint_bytes": 377664473,
+  "audio_checkpoint_location": "ROOT.parent/upstream_audio/wav2vec2_fairseq_base_ls960_asr_ls960.pth",
+  "audio_checkpoint_sha256": "488fd4f16de84438ffc945334278c1b9fb9b7159a806c1080b16111a958c945d",
+  "audio_descriptor": "Last49x768contextualfeatures mean+populationstd =>1536; noCTClogitdescriptor; nofine-tuning",
+  "audio_model": "torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H",
+  "audio_weight_terms": "MIT; official model documentation explicitly licenses redistributed weights",
+  "checkpoint_redistribution": false,
+  "protocol_alias": "ENC0DERS.json is a byte-identical alias for the protocol spelling; canonical file is ENCODERS.json",
+  "schema": "hcsn.grid.frozen-encoders.v1",
+  "text_descriptor": "26normalizedcharactercounts ofliteralbin/set string",
+  "video_checkpoint_bytes": 145630317,
+  "video_checkpoint_location": "ROOT.parent/pretrained_lipreading_weights/resnet18_mstcn_video.pth",
+  "video_checkpoint_sha256": "c72c9d494ffdcb8616ce183b92393b17a8bdf1ad8b523c9ac42b0507824c214f",
+  "video_descriptor": "25x512frozenvisualframefeatures mean+populationstd =>1024; noLRW500logitdescriptor; nofine-tuning",
+  "video_model": "Non-boundary resnet18_mstcn_video, frozen original-author LRW pretrained weights",
+  "video_weight_terms": "Repository custom noncommercial research/comparative-benchmark conditions, including BBC-content restrictions; commercial/production permission not established. Preserve upstream terms and attribution. Third-party weights are not republished in this lane."
+}

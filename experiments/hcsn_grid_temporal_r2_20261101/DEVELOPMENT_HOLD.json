@@ -1,0 +1,53 @@
+{
+  "aggregate_model_scores": null,
+  "all_blockers_closed": false,
+  "candidate_sha256": "01c515bc4214de328c2097de144d5a44ce744e2e4bd008ea2df301752778c84b",
+  "complete_child_cpu_seconds": 11.14852,
+  "complete_child_wall_seconds": 11.19843692699942,
+  "confirmation_status": "Unchanged fixed confirmation remains separate; no repair or candidate selection based on this failure",
+  "failed_meter_receipt_sha256": "622003a582611a9ef8007ccfb045f527507c1339b3a6c878c4591bc9b051ba58",
+  "failed_returncode": 1,
+  "failed_source_clips": 3,
+  "full_registered_source_qa_path": "experiments/hcsn_grid_frontend_r2_20261101/DEVELOPMENT_SOURCE_QA.json",
+  "full_registered_source_qa_sha256": "b1c7acbb8e99bd03daf11577ab4dd132256a0d32b8533d91a05fd5fb11d90f20",
+  "padding_or_short_prefix_exception": false,
+  "production_activation": false,
+  "qualified_source_clips": 61,
+  "registered_actors": [
+    8,
+    9
+  ],
+  "registered_clips": 64,
+  "registered_sample_replaced": false,
+  "retained_feature_bank": false,
+  "role": "development",
+  "source_failure": {
+    "audio_start": "0.000000",
+    "first_pts": 0.0,
+    "full_one_second": false,
+    "last_pts": 0.28,
+    "member": "s8/bbar6a.mpg",
+    "minimum_pts_increment": 0.03999999999999998,
+    "ordered": true,
+    "ordinal": 11,
+    "origin": 0.0,
+    "pts": [
+      0.0,
+      0.04,
+      0.08,
+      0.12,
+      0.16,
+      0.2,
+      0.24,
+      0.28
+    ],
+    "raw_sha256": "de0e29e8b8dd3eed5a1547562674f2125a65ab32b1e8cc0d6a51bc9c0d0d368d",
+    "speaker": 8,
+    "video_frames": 8
+  },
+  "source_or_candidate_changed": false,
+  "source_qa_path": "experiments/hcsn_grid_frontend_r2_20261101/FAILURE_DEVELOPMENT_PREFIX_QA.json",
+  "source_qa_sha256": "93cae945da137f3e250773b1638dae7ae03a2fca17875ab553ba146e9cc57349",
+  "status": "SOURCE_FAILURE_HOLD",
+  "valid_subset_scores": null
+}

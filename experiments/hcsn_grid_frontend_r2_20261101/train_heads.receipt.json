@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_grid_frontend_r2_20261101.study",
+    "train",
+    "--features",
+    "experiments/hcsn_grid_frontend_r2_20261101/features/train",
+    "--out",
+    "experiments/hcsn_grid_frontend_r2_20261101/results/run001"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T02:15:52.952076+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_grid_frontend_r2_20261101/train_heads.stdout.log",
+  "stderr_path": "experiments/hcsn_grid_frontend_r2_20261101/train_heads.stderr.log",
+  "pid": 6,
+  "finished_utc": "2026-11-02T02:15:57.253231+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 4.300845817000663,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 2.643417,
+  "system_cpu_seconds": 0.253899,
+  "total_cpu_seconds": 2.897316,
+  "peak_rss_bytes": 266829824,
+  "peak_rss_native_units": 260576,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/train_heads.stdout.log",
+      "is_file": true,
+      "bytes": 101,
+      "sha256": "5e2d74e7877ee1629c27179686976ed717768128a6bdb27967242067e81f17ca"
+    },
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/train_heads.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_grid_frontend_r2_20261101/results/run001/CANDIDATE_FREEZE.json",
+      "is_file": true,
+      "bytes": 4352,
+      "sha256": "408843812ca057e5500b8006eafbba8fc1a66e69e512633246f3a19f5528dd5c"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0012589830000000052,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

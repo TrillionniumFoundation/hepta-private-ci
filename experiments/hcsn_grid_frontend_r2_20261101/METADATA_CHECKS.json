@@ -1,0 +1,41 @@
+{
+  "checks": [
+    "exact registered speaker roles and discovery actor2 excluded",
+    "speaker sets disjoint across roles",
+    "384 unique speaker/member identities",
+    "raw bytes below prospectively registered170MB capacity",
+    "each speaker has exact16bin+16set lexical members",
+    "source URLs/archive sizes/central identities and metadata SHA agree for all384entries",
+    "prospective protocol bytes unchanged during metadata collection",
+    "collector scope remains metadata-only"
+  ],
+  "cohort_sha256": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa",
+  "count": 8,
+  "media_payloads_requested_by_collector": 0,
+  "passed": true,
+  "selected_by_role": {
+    "confirmation": 128,
+    "development": 64,
+    "train": 192
+  },
+  "selected_by_role_target": {
+    "confirmation": {
+      "0": 64,
+      "1": 64
+    },
+    "development": {
+      "0": 32,
+      "1": 32
+    },
+    "train": {
+      "0": 96,
+      "1": 96
+    }
+  },
+  "source_bindings": {
+    "COHORT_SELECTION.json": "63413cefa90021700f3738d475b262c5b2552332632c90cde6ea35700e3103aa",
+    "PROTOCOL.json": "6df1bf7fcbff2e2612a01d5c9e1ac99ae60ea2bc329c8892d367866e4704e7e1",
+    "collect_metadata.py": "e0cd6847d3676a65dce5c1808fe32890eb026581452f5f359e1a25085a6f7b52",
+    "metadata_range.py": "4908b4d5ec998e4887469c799455eb72aec9d86c933b4b46ec86f7750e48db1b"
+  }
+}

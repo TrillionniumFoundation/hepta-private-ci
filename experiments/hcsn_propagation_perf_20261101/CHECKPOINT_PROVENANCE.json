@@ -1,0 +1,25 @@
+{
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "upstream_manifest": "experiments/hcsn_addressed_flow_20261101/artifacts/COMPLETE_EVIDENCE_MANIFEST.json",
+  "manifest_sha256": "aa0c96b8691c7786672e034e4a03a198e408457f3dfb59268a2ed955ad8e0c33",
+  "archive_sha256": "a2fb63821deaa52bc24e043ca2bc5a8431afe5ab46b2c3fb4d554911b9ae8b69",
+  "selected": [
+    {
+      "local_path": "experiments/hcsn_propagation_perf_20261101/checkpoints/mqar_flow.pt",
+      "upstream_record": {
+        "bytes": 39198,
+        "path": "experiments/hcsn_addressed_flow_20261101/dev/addressing_train001/mqar_flow.pt",
+        "sha256": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390"
+      }
+    },
+    {
+      "local_path": "experiments/hcsn_propagation_perf_20261101/checkpoints/binding_flow.pt",
+      "upstream_record": {
+        "bytes": 39267,
+        "path": "experiments/hcsn_addressed_flow_20261101/dev/addressing_train001/binding_flow.pt",
+        "sha256": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b"
+      }
+    }
+  ],
+  "qualification": "Original trained development weights, never selected by new benchmark results; copied from hash-verified selective evidence restoration by the video lane."
+}

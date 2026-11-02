@@ -1,0 +1,19 @@
+{
+  "schema": "hcsn.video.nested-development.v1",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "scope": "Development study only: inherited 24 train actors and 6 historically exposed validation actors. No original test, eight-actor reevaluation or 1019 inputs are used.",
+  "change": "Train-only candidate selection with genuinely nested actor exclusion; use regularized logistic probabilities without pooled OOF calibration; fixed motion temporal-DCT descriptor as additional video candidate.",
+  "folds": "Outer four actor folds and inner three actor folds, fixed sorted-actor round-robin assignment; every encoder held actor excluded from fitting and candidate selection.",
+  "candidate_C": [0.01, 0.1, 1.0],
+  "audio_features": ["temporal"],
+  "video_features": ["temporal", "mouth", "motion_dct"],
+  "selection": "Minimum actor-fold OOF binary log loss, then feature order and C order; no validation selection.",
+  "relation_heads": ["audio+text", "audio+video+text"],
+  "relation_fitting": "Separately trained ordinary logistic heads C=1 on seven polynomial probability features, with masked modalities exactly 0.5; same nested OOF audio and text probabilities.",
+  "increment": "Paired per-actor accuracy and Brier AVT minus AT, with development-only actor bootstrap 95% intervals, 10000 draws seed 20261101.",
+  "negative_control": "Permute video across episodes within each validation actor, same frozen AVT head, 100 predeclared permutations seed 20261102; descriptive mechanism diagnostic only.",
+  "video_gate": "Video sentence accuracy >=0.9 and development paired AVT-AT accuracy lower bound >0; even if met this is not independent population qualification.",
+  "optimizer": {"method":"L-BFGS-B", "maxiter":300, "ftol":1e-10, "gtol":1e-6},
+  "energy_joules": null,
+  "production_activation": false
+}

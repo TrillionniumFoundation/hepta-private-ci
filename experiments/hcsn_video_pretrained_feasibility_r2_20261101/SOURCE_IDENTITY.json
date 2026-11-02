@@ -1,0 +1,39 @@
+{
+  "checkpoint_bytes": 145630317,
+  "checkpoint_sha256": "c72c9d494ffdcb8616ce183b92393b17a8bdf1ad8b523c9ac42b0507824c214f",
+  "commit": "0cc99fab046bd959578f2baac52e654746da4825",
+  "installed_inference_dependencies": {
+    "Pillow": "12.3.0",
+    "numpy": "2.3.5",
+    "torch": "2.6.0+cpu"
+  },
+  "license": "Repository custom noncommercial research/comparative-benchmark conditions, including BBC-content restrictions; commercial/production permission not established. Preserve upstream terms and attribution. Third-party weights are not republished in this lane.",
+  "license_url": "https://github.com/mpc001/Lipreading_using_Temporal_Convolutional_Networks/blob/0cc99fab046bd959578f2baac52e654746da4825/LICENSE",
+  "minimum_code_dependency": "Official model.py imports torch andnumpy; adapter addsPillow+ffmpeg/ffprobe. SciPy only fits newlogisticheads. No torchvision/torchaudio required.",
+  "model": "Non-boundary resnet18_mstcn_video, frozen original-author LRW pretrained weights",
+  "original_author_model_url": "https://bit.ly/3AQTFOG",
+  "pretraining_actor_overlap": "Unknown; no audited LRW-to-CREMA identity exclusion list is available",
+  "pretraining_data": "LRW per official repository; upstream reported LRW performance is not a CREMA result",
+  "repository": "https://github.com/mpc001/Lipreading_using_Temporal_Convolutional_Networks",
+  "tree": "501b86dff712bb406b7ce331b2e389878a87d2d3",
+  "upstream_files_sha256": {
+    "LICENSE": "3fbb299ff7ee66205d181c20c9048b45c2825463a9d1c84bf0b07feae8ad4c73",
+    "configs/lrw_resnet18_mstcn.json": "00d4315bd39e05f0abf28bf968aac938be1abeb0a3cffb1d6c87e1e082e5841b",
+    "lipreading/dataloaders.py": "a0398bbf256f3b0927ad4f4902dcd3dde636d50a9fd3433900645c8bfb203880",
+    "lipreading/dataset.py": "8a6e520468eea2089795f0ae76ddc2ac7563ba717fbfc9474120083caa61e29b",
+    "lipreading/mixup.py": "19ea79529de8cb60749d9cfa0d81b5ebba65b42c63284899414edda0ed1a6260",
+    "lipreading/model.py": "d78fcb4adc79715668e652383d830c98bbd45ff82b92bc95b66c0c38238137fc",
+    "lipreading/models/densetcn.py": "1fcf3a5d63833245b17e1ceeb1d659c55db98622e70112cf54da6f46a5d12852",
+    "lipreading/models/resnet.py": "9867c52241f92204f855c81ddba92eb19c5842a30d01cb7fc213be68a115ba7f",
+    "lipreading/models/resnet1D.py": "18ecf85da13298cb7c36c4f87da7c22a73ee92bca364c3f95cea788afc563f08",
+    "lipreading/models/se_module.py": "3ab376f3ce7a7659bbcdbb591ebb73ffbae6ee6e3f884c8f416a0328c244ee5d",
+    "lipreading/models/shufflenetv2.py": "75ae800c88cb639da9815e748cc87882601410f3b2cf614aaed450bec06cf281",
+    "lipreading/models/swish.py": "33b12a9da6570d670530a78e3318959c38adc3c2bc1c0cdf6cb95be99361fccd",
+    "lipreading/models/tcn.py": "e39421dd347654b75bd49e9cba1b1b29c327e62a73f9bd4116846d5be92b7ea2",
+    "lipreading/optim_utils.py": "c177d958be5738d5cffa47742ae5020d0e439968d40f50bba03a12d3e1cd2b91",
+    "lipreading/preprocess.py": "0108b2c99a55643d91c4d536bf0a654a377b614232c9c4c1a124a8ff390465ce",
+    "lipreading/utils.py": "c11959a18f4a646ad6b9b1bd2981b93b4044344f980f61654f19c27cbb3aee16",
+    "main.py": "7db57c7d2411e57dba60db34097a907944399ee24f4b6907f48261936b32f664",
+    "requirements.txt": "c253cf12cf75928bd8ec4325e9b0ca376e6f20d4978a7d950ad1a0a9f35f1dcb"
+  }
+}

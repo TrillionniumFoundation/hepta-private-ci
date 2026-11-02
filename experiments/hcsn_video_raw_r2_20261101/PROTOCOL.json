@@ -1,0 +1,17 @@
+{
+  "audio_text": "Reuse bytefrozenR1 nestedtraining OOF and finalaudio/text encoders. Allcorrespondence and source/checkpoint hashesbound. Rawvideo model receives pixelsonly; targetsentence used assupervision only.",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "cost": "Meteracquisition/extraction,training,evaluation separately; waitedffmpegchildcost included; noCPUtojouleconversion; failedattemptsretained.",
+  "data": "Only original COHORT24train and6historicalvalidation actors, bothDFA/IOM and sixemotions; nooldtest, eightactor reevaluation or1019. Rawbytes use existing pinned URLs, lengths andSHA256.",
+  "development_prior": "Cached temporal-DCT R1 failed (video48.61%, no increment). Raw train actor1007 NEU two clips inspected for crop geometry only before this protocol. No new model outcomes or development raw clips inspected.",
+  "evaluation": "Afterremotesource/candidatefreeze, decodehistoricalvalidationrawprefixes; reportvideoaccuracy,weightedAT/AVTaccuracy/Brier,paired6actor bootstrap10000seed20261103.100withinactorvideopermutationsseed20261104. Fixeddiagnostics: temporalreverse andfirstframerepeated on frozenvisualmodel, no modelselection.",
+  "exposure_scope": "CREMA-D historical development only; no newpopulation confirmation and no externalcorpus data in this round.",
+  "gate": "Videoaccuracy>=.9 and pairedAVT-ATaccuracy95%lowerbound>0 are development gates only. Externalindependentpopulation, analyticcoreincrement and fulladoption remain separate.",
+  "model": "Fixed2channel3Dconv: perclipcontrastnormalized pixels plus temporalmean residual; channels8,16,16; kernels(3,5,5),3,3; strides(1,2,2),2,2; flatten,64SiLU,dropout.15,1logit. No pretrainedweights.",
+  "observation": "Exactly1second from max(audio start,firstvideoPTS);16last-original frames at/before origin+k/16,k1..16. Decodewholefile offline, but selectedpixels and normalization onlyacceptedprefix. No endofclip normalization, padding, clipduration or filenames as modelinput.",
+  "production_activation": false,
+  "relations": "IndependentlyfitAT andAVT ordinarylogisticC1 on sharednestedOOF audio/text and newactorcrossfitvideo. ATmaskedvideoprobability.5 in same7polynomialfeatures; duplicationchangesATeffectivepenalty and isexplicitlimitation. Add primary cleanAT_unique control with unique3basis[pA,pT,pA*pT], independentlyfitC1 on sameOOFdata; reportAVT-AT_unique and keeporiginalduplicatedATsecondary.",
+  "schema": "hcsn.rawvideo.r2.v1",
+  "spatial": "Nativeframe normalizedROI x[.33,.67),y[.40,.70), deterministicevenpixel crop, area downsample48x32 grayscale. ROI selected by rawtrain geometry, not outcomes.",
+  "training": "Fixed300AdamW updates,batch24,lr.003,weight_decay.001,finalcheckpoint,randomseed5103+fold. Four sortedactor roundrobin outerfold fits plus onefulltrain fit. No video hyperparameter selection or earlystop. Gradientnorm clipping1."
+}

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_grid_temporal_r2_20261101/study.py", line 115, in <module>
+    if args.mode=='features':features(args.role,args.out,args.candidate)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_grid_temporal_r2_20261101/study.py", line 53, in features
+    _,pixels,detail=data.prefix(row,None if role=='train' else ORIGINAL/'CANDIDATE_FREEZE.json')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_grid_frontend_r2_20261101/data_v2.py", line 151, in prefix
+    if not np.all(np.diff(times)>0) or times[-1]<origin+1:raise ValueError('Incompleteorderedprefix')
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Incompleteorderedprefix
