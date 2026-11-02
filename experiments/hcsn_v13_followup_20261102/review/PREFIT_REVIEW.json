@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-v13-independent-pre-fit-qualification.v1",
+  "results": [
+    {
+      "name": "reference001",
+      "checks": 117,
+      "passed": true,
+      "receipt_sha256": "33689212e45752124611023709fc9dd8ed50fefe735e09d670ba350dcccf0c80",
+      "cpu_seconds": "0.583942",
+      "scope": "Fixed financial-law value/probability and numerical reference admission; no trained neural or reset claim."
+    },
+    {
+      "name": "port001",
+      "checks": 90,
+      "passed": true,
+      "receipt_sha256": "69d87d42631183677657835394d171a64e11611601ee2d392fffb627cd871535",
+      "cpu_seconds": "2.255448",
+      "scope": "Fixed financial-law value and asset/log-asset derivatives only. No financial-parameter or neural quality claim."
+    },
+    {
+      "name": "model001",
+      "checks": 53,
+      "passed": true,
+      "receipt_sha256": "acfbbd0578ffe35fd288a79fedb0a7c5e2232287eb70aee86b4c973a9b4c12b3",
+      "cpu_seconds": "3.450512",
+      "scope": "Constructed deterministic source-tick crossing/cooldown/restore and real loss-gradient checks. Not trained-model quality, continuous first-hit or financial-parameter training."
+    }
+  ],
+  "disjoint_complete_wrapper_cpu_seconds": "6.289902",
+  "unwrapped_exploration_self_cpu_lower_bound_seconds": "0.379491",
+  "formal_training_or_quality_passed": false,
+  "production_activation": false
+}

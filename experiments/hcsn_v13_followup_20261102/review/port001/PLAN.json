@@ -1,0 +1,52 @@
+{
+  "schema": "hcsn-v13-independent-torch-financial-audit.v1",
+  "port_sha256": "3a14bd9afb403848427d6c77d936445da7ddd72f18cbdb45cc10de4a31493f49",
+  "auditor_sha256": "6c69dd0e5470c0c06d3a578fd7dbb0a09b62d39839b08614b54c0201b2eb5329",
+  "reference_sha256": "f7089527461983ebfd53ce82d95a124314a797fc57ed40386ad2e8d4b75e1d19",
+  "fixed_parameters": {
+    "rate": 0.05,
+    "payout": 0.03,
+    "volatility": 0.25,
+    "maturity": 2.0,
+    "principal": 60.0,
+    "coupon": 4.0,
+    "tax_shield": 0.25,
+    "recovery": 0.6,
+    "shock_intensity": 1.0,
+    "sale_fraction": 0.015
+  },
+  "torch": "2.15.0+cpu",
+  "value_atol": 1e-10,
+  "value_rtol": 1e-10,
+  "gradient_atol": 3e-07,
+  "gradient_rtol": 3e-06,
+  "finite_difference_relative_steps": [
+    0.0001,
+    5e-05
+  ],
+  "value_log_margins": [
+    -0.5,
+    -0.02,
+    0.0,
+    0.02,
+    0.05,
+    0.1,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "interior_gradient_log_margins": [
+    0.02,
+    0.1,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "times": [
+    0.0,
+    0.05,
+    0.5,
+    2.0
+  ],
+  "scope": "Fixed financial-law value and asset/log-asset derivatives only. No financial-parameter or neural quality claim."
+}

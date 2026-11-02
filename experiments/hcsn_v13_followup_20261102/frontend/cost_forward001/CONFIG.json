@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.frontend.strong_audio",
+    "run",
+    "--plan",
+    "experiments/hcsn_v13_followup_20261102/frontend/FORWARD_PLAN.json",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/frontend/forward001"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/frontend/cost_forward001",
+  "timeout": 180.0,
+  "sample_interval": 0.5
+}

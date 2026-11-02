@@ -1,0 +1,16 @@
+{
+  "scope": "TRAIN-only interface controls, no formal candidate fit or evaluation",
+  "source_sha256": {
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/model.py": "cd8666ebcbfb23e9d3d7b283c1814ead4246cb91f8f5ee76705fd38b25c1f7e4",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/data.py": "97dd9fb11e32257f183084a75de103125a9adbd43ef956b6600ae78f9d38d445",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/campaign.py": "3760db42f332cac14134b2f98af8d8d0c2a506c9c0e5cede085b93928ee25be6",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/hx_torch.py": "3a14bd9afb403848427d6c77d936445da7ddd72f18cbdb45cc10de4a31493f49",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/review/audit_train_interface.py": "d6a3df4137029c39798caf48ad20a13e0ae5ead4dbdcffcf25326a9897cfa634"
+  },
+  "split_policy": "Only train; no val/test loader calls",
+  "initialization_seed": 13301,
+  "temporary_optimizer_steps": 1,
+  "torch": "2.15.0+cpu",
+  "rtol": 1e-11,
+  "atol": 1e-12
+}
