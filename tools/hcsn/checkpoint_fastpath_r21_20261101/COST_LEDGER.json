@@ -1,0 +1,63 @@
+{
+  "all_recorded_cpu_lower_bound": 941.0530041129999,
+  "full_investment_gain_established": false,
+  "nested_actor_timers_added_again": false,
+  "prior_ledger_sha256": "11a77956db48fa125840f8a7b4fd562b24cd30f1a61654e392ea3dbd638752fa",
+  "prior_r20_and_inherited_cpu_lower_bound": 877.5941482999999,
+  "r21_recorded_cpu_lower_bound": 63.45885581300001,
+  "recorded_nonoverlapping_r21_phases": [
+    {
+      "cpu_seconds": 16.077676,
+      "name": "V1engineeringcompletechild",
+      "scope": "Fullengineeringchildimports,proofspyIO,alltiming/memoryattempts,guardrejectionsandoutputs; nestedtimersnotadded"
+    },
+    {
+      "cpu_seconds": 1.543668556,
+      "name": "V1independentreviewpartial",
+      "scope": "SeparateprocessparentCPUafterimports; notcompleteprocesscost"
+    },
+    {
+      "cpu_seconds": 45.603368,
+      "name": "V2coldcompletechildfamily",
+      "scope": "Completecoldcontroller+reapedchildren+legacyreferences; notperformanceconfirmation"
+    },
+    {
+      "cpu_seconds": 0.10314922900000001,
+      "name": "V2native60caseadmissionpartial",
+      "scope": "Recorded parent_cpu_seconds starts after imports; it is not a full independent-process or model-adoption cost. No runtime advantage inferred."
+    },
+    {
+      "cpu_seconds": 0.130994028,
+      "name": "V2stdlibcoldrecordauditbody",
+      "scope": "Standardlibraryrecordauditonly: actualchildstatuses/fsyncprobes,completelegacywirebytes,prefixfees/history,all117statechecksums/typedcounters/projection/numericrows. No resource or hidden-world simulator claim."
+    }
+  ],
+  "resource_adoption_qualified": false,
+  "schema": "checkpoint-r21-cost-ledger-v1",
+  "unknown_or_excluded": [
+    {
+      "cpu_seconds": null,
+      "phase": "separateV1guard/counterexampleprocesscostswithoutatimer"
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "parentstartup/importsoutsidepartialtimers"
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "sourcepublication/bookkeeping/reasoning/packaging"
+    },
+    {
+      "cpu_seconds": null,
+      "phase": "GPU/joules/productionlifecycle"
+    }
+  ],
+  "v1_timing_only": {
+    "actual_cpu_difference": 0.06522136700000569,
+    "new_actor_cpu_with_preparation": 3.93891194600001,
+    "old_actor_cpu_with_preparation": 4.004133313000016,
+    "scope": "V1cache-onlyengineering; excludesV2admission, noformaladoptionclaim",
+    "uses_per_group": 8,
+    "versions": 2
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn-evidence-transport-v2",
+  "component": "tools/hcsn/checkpoint_fastpath_r21_20261101",
+  "included_directories": [
+    "development_01",
+    "v2_cold_confirmation_01"
+  ],
+  "included_files": [],
+  "file_count_cap": 65536,
+  "logical_bytes_cap": 536870912,
+  "archive": {
+    "gzip_bytes": 295004,
+    "gzip_sha256": "fc46d9d45a491e65ef790d548fdb2e3e5f22f15e660775ff7520d685df7679c6",
+    "raw_bytes": 2355200,
+    "raw_sha256": "2f6af60863a8671847774e4857e0c0047068b5a26bf55e5d3d8ce340f96553a2",
+    "parts": [
+      {
+        "path": "transport/0000.part",
+        "size": 295004,
+        "sha256": "fc46d9d45a491e65ef790d548fdb2e3e5f22f15e660775ff7520d685df7679c6"
+      }
+    ]
+  },
+  "file_map": {
+    "gzip_bytes": 14168,
+    "gzip_sha256": "fe1ba9a8e197d08056c887aee48b23a7b64e454adcff49c5d2b1c0598963d1e2",
+    "raw_bytes": 79610,
+    "raw_sha256": "78bf883f95b328eaf9aca5150d3f2c20ffb824b8e3ad4a23f96b2f159838c878",
+    "parts": [
+      {
+        "path": "map_transport/0000.part",
+        "size": 14168,
+        "sha256": "fe1ba9a8e197d08056c887aee48b23a7b64e454adcff49c5d2b1c0598963d1e2"
+      }
+    ]
+  }
+}
