@@ -1,0 +1,429 @@
+{
+  "baseline_commit": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+  "checks": [
+    {
+      "error": 0.0,
+      "name": "killed_mass",
+      "passed": true
+    },
+    {
+      "error": 1.143065626162154e-07,
+      "law": {
+        "boundary": 0.8,
+        "diffusion": 0.8,
+        "drift": 0.0,
+        "recovery_rate": 2.0,
+        "reset_minus": 0.0,
+        "reset_plus": 0.0,
+        "reset_sd": 0.0
+      },
+      "mesh_difference": 3.4660590938317604e-07,
+      "name": "independent_killed_PDE",
+      "passed": true,
+      "t": 0.05,
+      "x": 0.0
+    },
+    {
+      "error": 5.804943004148605e-10,
+      "name": "flux_CDF_derivative",
+      "passed": true
+    },
+    {
+      "name": "image_truncation_stability",
+      "passed": true
+    },
+    {
+      "error": 0.0,
+      "name": "killed_mass",
+      "passed": true
+    },
+    {
+      "error": 1.511198195719432e-06,
+      "law": {
+        "boundary": 0.8,
+        "diffusion": 0.8,
+        "drift": 0.0,
+        "recovery_rate": 2.0,
+        "reset_minus": 0.0,
+        "reset_plus": 0.0,
+        "reset_sd": 0.0
+      },
+      "mesh_difference": 4.534391041199903e-06,
+      "name": "independent_killed_PDE",
+      "passed": true,
+      "t": 0.5,
+      "x": 0.0
+    },
+    {
+      "error": 1.4187206964777488e-11,
+      "name": "flux_CDF_derivative",
+      "passed": true
+    },
+    {
+      "name": "image_truncation_stability",
+      "passed": true
+    },
+    {
+      "error": 0.0,
+      "name": "killed_mass",
+      "passed": true
+    },
+    {
+      "error": 7.239768440303607e-07,
+      "law": {
+        "boundary": 0.8,
+        "diffusion": 0.8,
+        "drift": 0.0,
+        "recovery_rate": 2.0,
+        "reset_minus": 0.0,
+        "reset_plus": 0.0,
+        "reset_sd": 0.0
+      },
+      "mesh_difference": 2.171897171332482e-06,
+      "name": "independent_killed_PDE",
+      "passed": true,
+      "t": 2.0,
+      "x": 0.0
+    },
+    {
+      "error": 4.108657941648275e-07,
+      "name": "flux_CDF_derivative",
+      "passed": true
+    },
+    {
+      "name": "image_truncation_stability",
+      "passed": true
+    },
+    {
+      "error": 0.0,
+      "name": "killed_mass",
+      "passed": true
+    },
+    {
+      "error": 4.611083433275764e-06,
+      "law": {
+        "boundary": 0.8,
+        "diffusion": 0.8,
+        "drift": 0.8,
+        "recovery_rate": 2.0,
+        "reset_minus": 0.0,
+        "reset_plus": 0.0,
+        "reset_sd": 0.0
+      },
+      "mesh_difference": 1.6431557597340607e-05,
+      "name": "independent_killed_PDE",
+      "passed": true,
+      "t": 1.2,
+      "x": -0.24
+    },
+    {
+      "error": 1.0648593118389726e-11,
+      "name": "flux_CDF_derivative",
+      "passed": true
+    },
+    {
+      "name": "image_truncation_stability",
+      "passed": true
+    },
+    {
+      "error": 0.0,
+      "name": "killed_mass",
+      "passed": true
+    },
+    {
+      "error": 1.3079499825763286e-05,
+      "law": {
+        "boundary": 1.2,
+        "diffusion": 0.35,
+        "drift": -1.1,
+        "recovery_rate": 2.0,
+        "reset_minus": 0.0,
+        "reset_plus": 0.0,
+        "reset_sd": 0.0
+      },
+      "mesh_difference": 1.1032299702340431e-05,
+      "name": "independent_killed_PDE",
+      "passed": true,
+      "t": 2.0,
+      "x": 0.36
+    },
+    {
+      "error": 4.367749894096384e-06,
+      "name": "flux_CDF_derivative",
+      "passed": true
+    },
+    {
+      "name": "image_truncation_stability",
+      "passed": true
+    },
+    {
+      "error": 1.1102230246251565e-16,
+      "name": "killed_mass",
+      "passed": true
+    },
+    {
+      "error": 4.910145027181567e-06,
+      "law": {
+        "boundary": 1.0,
+        "diffusion": 0.575,
+        "drift": 0.1,
+        "recovery_rate": 2.0,
+        "reset_minus": 0.0,
+        "reset_plus": 0.0,
+        "reset_sd": 0.0
+      },
+      "mesh_difference": 1.473373396507216e-05,
+      "name": "independent_killed_PDE",
+      "passed": true,
+      "t": 0.75,
+      "x": 0.2
+    },
+    {
+      "error": 9.309664150691788e-12,
+      "name": "flux_CDF_derivative",
+      "passed": true
+    },
+    {
+      "name": "image_truncation_stability",
+      "passed": true
+    },
+    {
+      "contexts": 300,
+      "maximum_error": 8.881784197001252e-16,
+      "name": "envelope_probability_mass",
+      "passed": true
+    },
+    {
+      "maximum_error": 0.0,
+      "name": "reflection_symmetry",
+      "passed": true
+    },
+    {
+      "error": 0.0027947036238743783,
+      "mc": 0.16375,
+      "name": "renewal_PDE_lower_refractory",
+      "passed": true,
+      "reference": 0.16654470362387438,
+      "tolerance": 0.037110334669249775
+    },
+    {
+      "error": 0.0015000000000000013,
+      "name": "distribution_semigroup_lower_refractory",
+      "passed": true,
+      "tolerance": 0.051561698573509805
+    },
+    {
+      "error": 0.00020529637612562435,
+      "mc": 0.16675,
+      "name": "renewal_PDE_upper_refractory",
+      "passed": true,
+      "reference": 0.16654470362387438,
+      "tolerance": 0.037366886347614536
+    },
+    {
+      "error": 0.005499999999999977,
+      "name": "distribution_semigroup_upper_refractory",
+      "passed": true,
+      "tolerance": 0.052342357545518546
+    },
+    {
+      "error": 0.002589407249059539,
+      "mc": 0.6695,
+      "name": "renewal_PDE_active",
+      "passed": true,
+      "reference": 0.6669105927509404,
+      "tolerance": 0.046631108552893756
+    },
+    {
+      "error": 0.0040000000000000036,
+      "name": "distribution_semigroup_active",
+      "passed": true,
+      "tolerance": 0.06521324606931399
+    },
+    {
+      "error": 0.0012485322927821285,
+      "mc": -0.0012485322927820724,
+      "name": "renewal_PDE_voltage_mean",
+      "passed": true,
+      "reference": 5.624892292299266e-17,
+      "tolerance": 0.052348308241838046
+    },
+    {
+      "error": 0.015570691979148272,
+      "name": "distribution_semigroup_voltage_mean",
+      "passed": true,
+      "tolerance": 0.07322390922898303
+    },
+    {
+      "error": 0.018498937118208048,
+      "mc": 1.38875,
+      "name": "renewal_PDE_event_count",
+      "passed": true,
+      "reference": 1.3702510628817919,
+      "tolerance": 0.07644516113916171
+    },
+    {
+      "error": 0.03299999999999992,
+      "name": "distribution_semigroup_event_count",
+      "passed": true,
+      "tolerance": 0.10636024693476381
+    },
+    {
+      "name": "multiple_continuous_resets",
+      "passed": true,
+      "paths": 1702,
+      "samples": 4000
+    },
+    {
+      "lower_six_se": 1.3143356511731257,
+      "mean": 1.38875,
+      "name": "more_than_one_expected_event",
+      "passed": true
+    },
+    {
+      "mass": 0.9999999999986893,
+      "name": "independent_generator_mass",
+      "passed": true
+    },
+    {
+      "name": "checkpoint_exact_replay",
+      "passed": true
+    },
+    {
+      "name": "refractory_true_residual",
+      "passed": true
+    },
+    {
+      "name": "release_consumes_remaining_interval",
+      "passed": true
+    },
+    {
+      "name": "zero_duration_identity",
+      "passed": true
+    },
+    {
+      "name": "event_guard_rejects_transactionally",
+      "passed": true
+    },
+    {
+      "mc": 1.427,
+      "name": "truncated_reset_PDE_count",
+      "passed": true,
+      "reference": 1.428132427937864
+    }
+  ],
+  "details": {
+    "coarse_reference": {
+      "active": 0.6669106494336023,
+      "event_count": 1.3702664690379356,
+      "lower": 0.1665446752833243,
+      "mass": 1.0000000000002511,
+      "mean_voltage": 7.947832673161537e-18,
+      "upper": 0.1665446752833243
+    },
+    "maximum_killed_PDE_error": 1.3079499825763286e-05,
+    "primary_law": {
+      "boundary": 0.8,
+      "diffusion": 0.8,
+      "drift": 0.0,
+      "recovery_rate": 2.0,
+      "reset_minus": 0.0,
+      "reset_plus": 0.0,
+      "reset_sd": 0.0
+    },
+    "reference": {
+      "active": 0.6669105927509404,
+      "event_count": 1.3702510628817919,
+      "lower": 0.16654470362387438,
+      "mass": 0.9999999999986893,
+      "mean_voltage": 5.624892292299266e-17,
+      "upper": 0.16654470362387438
+    },
+    "resolved_first_hits": [
+      null,
+      0.7403796504093382,
+      1.543024483430529,
+      1.2858015603581716,
+      null,
+      0.9063302267458677,
+      0.8114698533058028,
+      0.25256410012439756,
+      1.336707740111358,
+      1.0435607638064803,
+      1.2415172491063857,
+      0.4653679613476783,
+      null,
+      0.6609365632927764,
+      null,
+      0.9942729575587891,
+      1.0225358703962912,
+      1.424371357657079,
+      1.0870113057637134,
+      null,
+      0.4371441277408195,
+      1.5066389423577233,
+      null,
+      null,
+      0.4078944418076194,
+      null,
+      0.2973850476105331,
+      0.3631280379610553,
+      0.5711885317893045,
+      0.4532860466188479
+    ],
+    "split": {
+      "mean": [
+        0.16225,
+        0.17225,
+        0.6655,
+        0.0143221596863662,
+        1.35575,
+        0.397
+      ],
+      "multi_event_paths": 1588,
+      "se": [
+        0.00583007133815297,
+        0.005971088497875468,
+        0.007460988814394561,
+        0.008396250987202047,
+        0.012194677606049139,
+        0.007737099952754727
+      ]
+    },
+    "whole": {
+      "mean": [
+        0.16375,
+        0.16675,
+        0.6695,
+        -0.0012485322927820724,
+        1.38875,
+        0.4255
+      ],
+      "multi_event_paths": 1702,
+      "se": [
+        0.005851712998024938,
+        0.005894471611085732,
+        0.007438499197928327,
+        0.00839138470697299,
+        0.012402391471145717,
+        0.007818421799177707
+      ]
+    }
+  },
+  "implementation": "continuous-brownian-renewal-numerical-v1",
+  "mc_samples": 4000,
+  "passed": true,
+  "process_cpu_seconds": 25.291396681,
+  "raw_sample_evidence": {
+    "file": "continuous_renewal_samples.csv",
+    "rows": 10000,
+    "sha256": "6452200860d2263b946f3ac7307c14f321a23d2842c6aa7636c9ce49e8803d00"
+  },
+  "schema": "continuous-renewal-validation-v1",
+  "scope": "bounded numerical reference; no task, gradient, Rust deployment or production qualification",
+  "source_sha256": {
+    "continuous_renewal.py": "4b3e5b10e26c17f8e5fa8a9ad31041a30a1bdf8bd3ecd1aff47d9e6a1551d427",
+    "continuous_renewal_validate.py": "08370793ab59a6c35034f4e5f467f68bcc3b5b38cfbc4075b21cf8877bb403d3"
+  },
+  "wall_seconds": 37.338452292999136
+}
