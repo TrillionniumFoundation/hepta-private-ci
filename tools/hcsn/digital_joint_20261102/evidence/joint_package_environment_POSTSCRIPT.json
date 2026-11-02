@@ -1,0 +1,38 @@
+{
+  "claim_limits": [
+    "No GPU qualification.",
+    "No energy qualification.",
+    "No native deployment qualification.",
+    "No end-to-end lifecycle cost or advantage qualification."
+  ],
+  "hardware_and_isolation": {
+    "cpu_affinity_pinning": false,
+    "exclusive_cpu_access": false,
+    "interpretation": "Concurrent operator work and shared-container scheduling may affect CPU and wall measurements; this record is a disclosure, not a numerical correction.",
+    "isolated_hardware_benchmark": false,
+    "reported_available_cpus": 8,
+    "shared_container": true
+  },
+  "preservation": {
+    "archive_bytes_changed_by_this_postscript": false,
+    "original_archive": {
+      "bytes": 24095392,
+      "path": "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz",
+      "sha256": "ba94cf476f1c627ba6f4e408c77e203544ababaa58b578abfcc8da54eb4e77ca"
+    },
+    "original_archive_sha256_required": "ba94cf476f1c627ba6f4e408c77e203544ababaa58b578abfcc8da54eb4e77ca",
+    "original_sources_or_endpoint_definitions_changed_by_this_postscript": false,
+    "result_dependent_rerun_performed_for_this_postscript": false
+  },
+  "provenance": "Reported after the run by the root operator; not an independent operating-system process sample, trace, or measured process inventory.",
+  "record_type": "retrospective_root_operator_report",
+  "reported_activity_window": {
+    "after_main_4800_request_timing_ended": true,
+    "during_auxiliary_raw_slim_3200_request_benchmark": true,
+    "heavy_scientific_recomputation_or_training_reported": false,
+    "reader_process_count": "Not recorded; no process count is inferred.",
+    "reader_process_description": "Small Python reading processes were started for approximately 18 KB (18,000-byte) data blocks, followed by base64 encoding.",
+    "root_background_work": "Approximately 4 MB of CI evidence reading/chunk upload and Git API metadata operations."
+  },
+  "schema": "joint-package-environment-postscript-v1"
+}
