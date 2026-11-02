@@ -1,0 +1,70 @@
+{
+  "actual_six_group_baseline_minus_r19_cpu_savings": 23.660112315001,
+  "actual_timed_actor_cpu_with_preparation": {
+    "baseline": 86.91463397500078,
+    "r18": 59.67000013799927,
+    "r19": 63.25452165999978
+  },
+  "full_investment_gate": false,
+  "nested_actor_preparation_and_memory_timers_added_to_receipts": false,
+  "nonoverlapping_r19_measured_phases": [
+    {
+      "cpu_seconds": 6.840084,
+      "measurement": "complete wait4 child",
+      "name": "development_01"
+    },
+    {
+      "cpu_seconds": 7.097189,
+      "measurement": "complete wait4 child",
+      "name": "development_03_layout_fixed"
+    },
+    {
+      "cpu_seconds": 223.28879,
+      "measurement": "complete wait4 child",
+      "name": "confirmation_01"
+    },
+    {
+      "cpu_seconds": 0.49668262400000013,
+      "measurement": "non-overlapping measured body only; startup excluded",
+      "name": "initial_smoke_partial_loops"
+    },
+    {
+      "cpu_seconds": 0.8594723769999999,
+      "measurement": "non-overlapping measured body only; startup excluded",
+      "name": "immutable_input_differential_body"
+    },
+    {
+      "cpu_seconds": 0.026193187000000007,
+      "measurement": "non-overlapping measured body only; startup excluded",
+      "name": "diagnostic_stdlib_audit_body"
+    },
+    {
+      "cpu_seconds": 2.7875607760000003,
+      "measurement": "non-overlapping measured body only; startup excluded",
+      "name": "formal_stdlib_audit_body"
+    },
+    {
+      "cpu_seconds": 1.916494459,
+      "measurement": "non-overlapping measured body only; startup excluded",
+      "name": "independent_raw_review_after_imports"
+    },
+    {
+      "cpu_seconds": 0.580815832,
+      "measurement": "non-overlapping measured body only; startup excluded",
+      "name": "independent_numeric_review_after_imports"
+    }
+  ],
+  "prior_plus_r19_recorded_cpu_lower_bound": 384.99147125499996,
+  "r18_historical_recorded_investment_cpu_seconds": 141.098189,
+  "r19_recorded_cpu_lower_bound": 243.893282255,
+  "savings_minus_historical_investment_only": -117.43807668499899,
+  "schema": "hcsn-r19-cost-ledger-v1",
+  "scope": "All recorded investment is a lower bound. Historical investment alone exceeds actually measured savings; formal child envelope is research comparison cost and is not added again as deployment actor cost.",
+  "unmetered_or_excluded": [
+    "initial failed layout test whole process",
+    "post-failure diagnostic interpreter/startup",
+    "parent interpreter/import startup before launch receipt baseline",
+    "source retrieval/publication/bookkeeping",
+    "GPU/device joules/network/deployment lifecycle"
+  ]
+}
