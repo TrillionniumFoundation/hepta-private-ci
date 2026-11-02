@@ -1,0 +1,90 @@
+{
+  "archive": "joint_native_task_fixture.tar.gz",
+  "archive_bytes": 72566,
+  "archive_sha256": "887d53ad557c9944dac469ba21d0563e95597166065a1a81e49760b4b49cf9d0",
+  "binary_sha256": "d3f5ef73ed85fa232526775d00da958643d0d8d497d6e8bf919fb271f9fde183",
+  "members": [
+    {
+      "bytes": 2684,
+      "path": "Cargo.lock",
+      "sha256": "6376401f9be48c950a66b910a6c40a8942b3a8c13d153c7a5e56d0f4f17db14c"
+    },
+    {
+      "bytes": 292,
+      "path": "Cargo.toml",
+      "sha256": "ff9140b19c3cf007a9341e821c24e38f64c8a8b20e5c854dca772089a7553282"
+    },
+    {
+      "bytes": 1393,
+      "path": "SUMMARY.json",
+      "sha256": "dbd23f1b59989206b2b95830ae93a8b43813784e146e7bad142f29db8991b3e3"
+    },
+    {
+      "bytes": 1198,
+      "path": "build.stderr",
+      "sha256": "9102dbc9b39c97b8f503cd9e5aaa5b1c91cea051f7335927e28ef5d173991798"
+    },
+    {
+      "bytes": 0,
+      "path": "build.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 786158,
+      "path": "input_0.json",
+      "sha256": "4873b999cbdb60b29236c6c680339df3666f4a20dd825652686cc48c08031a48"
+    },
+    {
+      "bytes": 675355,
+      "path": "input_1.json",
+      "sha256": "0a4231144b9dabfd698512995bbe3f8781aed91738f0e82ddda5dd06f5cd3aaa"
+    },
+    {
+      "bytes": 721270,
+      "path": "input_2.json",
+      "sha256": "404941171d9772f394562bd3630147b090866d68443a6a54cdcad38c2e1d744d"
+    },
+    {
+      "bytes": 1154327,
+      "path": "output_0.json",
+      "sha256": "1952f612020f90d429acd54f7da097633e7da0b87aa87c45069229fb51267a62"
+    },
+    {
+      "bytes": 977839,
+      "path": "output_1.json",
+      "sha256": "534410aa58ca87bd21619355ec661a1d78d2a7cef743bac2ff088ab342ef43f8"
+    },
+    {
+      "bytes": 1073519,
+      "path": "output_2.json",
+      "sha256": "fc6398325203193b8de3b080631cfd746b000fcae46d5f0a61f5b721675a0fad"
+    },
+    {
+      "bytes": 12761,
+      "path": "src/joint_native_task.rs",
+      "sha256": "2238312aa19dbac426b5a752eee3c322806950c0162e5ede8f8a887846046263"
+    },
+    {
+      "bytes": 2285,
+      "path": "src/joint_native_task_fixture.rs",
+      "sha256": "59dc9c7715552d3e12d1e5bc260962d53546b8b74b85627cd5e5930e3cc10037"
+    },
+    {
+      "bytes": 0,
+      "path": "stderr_0.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "stderr_1.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "stderr_2.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "schema": "joint-task-native-fixture-archive-v1",
+  "scope": "bounded pure task semantic pairing, no world cohort/runtime/content/ACK/nextest qualification"
+}

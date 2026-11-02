@@ -1,0 +1,42 @@
+{
+  "build_command": [
+    "/tmp/trnm-original-budget-tools/rust195/bin/cargo",
+    "build",
+    "--offline",
+    "--manifest-path",
+    "/workspace/scratch/9d953b0104b2/joint-native-task-fixture-build/Cargo.toml"
+  ],
+  "comparison": "all serialized fields exactly; no numeric tolerance",
+  "fixtures": [
+    {
+      "paired_rows": 2080,
+      "prior_distance": 0.125,
+      "states": 128
+    },
+    {
+      "paired_rows": 1884,
+      "prior_distance": 0.375,
+      "states": 128
+    },
+    {
+      "paired_rows": 2004,
+      "prior_distance": 0.75,
+      "states": 128
+    }
+  ],
+  "formal_worlds_generated": 0,
+  "lock_sha256": "6376401f9be48c950a66b910a6c40a8942b3a8c13d153c7a5e56d0f4f17db14c",
+  "paired_rows": 5968,
+  "parent_cpu_seconds": 0.28356463600000004,
+  "passed": true,
+  "rejected_rows": 3861,
+  "schema": "joint-native-task-pairing-v1",
+  "scope": "pure task fixture; no actual runtime/content/ACK or nextest gate claim",
+  "source_sha256": {
+    "joint_native_task.rs": "2238312aa19dbac426b5a752eee3c322806950c0162e5ede8f8a887846046263",
+    "joint_native_task_check.py": "caa51775852e33b7ed648cbbd5c690e40efab1d78f04cd563ddda6024bef6deb",
+    "joint_native_task_fixture.rs": "59dc9c7715552d3e12d1e5bc260962d53546b8b74b85627cd5e5930e3cc10037",
+    "joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5"
+  },
+  "wall_seconds": 7.795147223994718
+}
