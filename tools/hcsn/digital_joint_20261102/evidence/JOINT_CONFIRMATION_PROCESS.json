@@ -1,0 +1,24 @@
+{
+  "schema": "joint-confirmation-complete-process-v1",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-u",
+    "-m",
+    "tools.hcsn.digital_joint_20261102.joint_confirmation_runner",
+    "--root",
+    "/workspace/scratch/9d953b0104b2/joint-formal_attempt2",
+    "--out",
+    "/workspace/scratch/9d953b0104b2/joint-confirmation",
+    "--model-commit",
+    "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+    "--adapter-commit",
+    "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc"
+  ],
+  "returncode": 0,
+  "wall_seconds": 167.05815139200422,
+  "user_cpu_seconds": 164.063531,
+  "system_cpu_seconds": 2.406598,
+  "cpu_seconds": 166.47012900000001,
+  "maximum_resident_kib": 119800,
+  "scope": "complete child process through exit including imports, data generation, actual requests, evaluation, output serialization and scalar adapter; benchmark subsegments overlap this total"
+}

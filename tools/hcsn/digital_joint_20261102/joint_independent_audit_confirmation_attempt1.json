@@ -1,0 +1,7 @@
+{
+  "audit_cpu_seconds": 4.107289356000001,
+  "audit_source_sha256": "7da1aac6936feed783b2d3cdf6235412d19a2bc0fdf8a12ebda53193410a9c11",
+  "audit_wall_seconds": 4.139505593004287,
+  "error": "Traceback (most recent call last):\n  File \"/workspace/scratch/9d953b0104b2/research/tools/hcsn/digital_joint_20261102/joint_independent_audit_confirmation.py\", line 350, in main\n    result, manifest = audit(a.root,a.confirmation,receipt)\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/9d953b0104b2/research/tools/hcsn/digital_joint_20261102/joint_independent_audit_confirmation.py\", line 217, in audit\n    close(row, dict(q=np.where(mask,q,0.).tolist(), legal=mask.tolist(), belief=declared.posterior(s), action=int(np.argmax(q))))\n  File \"/workspace/scratch/9d953b0104b2/research/tools/hcsn/digital_joint_20261102/joint_independent_audit_confirmation.py\", line 45, in close\n    close(actual[key], expected[key], where+\"/\"+str(key))\n  File \"/workspace/scratch/9d953b0104b2/research/tools/hcsn/digital_joint_20261102/joint_independent_audit_confirmation.py\", line 51, in close\n    assert math.isfinite(actual) and abs(actual-expected) <= 2e-9*(1+abs(expected)), (where, actual, expected)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('/action', 3, 1)\n",
+  "passed": false
+}

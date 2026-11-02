@@ -87,11 +87,19 @@ def intervals(aggregate, protocol):
     return primary, secondary
 
 
-def audit(root, confirmation):
+def audit(root, confirmation, process_receipt):
     protocol = read(HERE/"joint_protocol.json")
     freeze = read(root/"MODEL_FREEZE.json")
     started, summary = read(confirmation/"STARTED.json"), read(confirmation/"SUMMARY.json")
     adapter_provenance = read(confirmation/"ADAPTER.json")
+    process = read(process_receipt)
+    assert process["returncode"] == 0
+    close(process["cpu_seconds"], process["user_cpu_seconds"]+process["system_cpu_seconds"])
+    assert process["wall_seconds"] >= summary["wall_seconds"]
+    assert process["cpu_seconds"]+1e-5 >= sum(summary["complete_process_usage"].values())
+    assert "tools.hcsn.digital_joint_20261102.joint_confirmation_runner" in process["argv"]
+    for flag, expected in (("--model-commit",started["published_model_commit"]),("--adapter-commit",adapter_provenance["published_adapter_commit"])):
+        assert process["argv"][process["argv"].index(flag)+1] == expected
     assert adapter_provenance["status"] == "completed"
     assert adapter_provenance["before_guard"] and adapter_provenance["after_guard"]
     assert adapter_provenance["identities"] == dict(runner=sha(HERE/"joint_confirmation_runner.py"),protocol=sha(HERE/"joint_confirmation_runner_protocol.json"))
@@ -115,15 +123,37 @@ def audit(root, confirmation):
     adapter, decoded, all_inputs, all_missing = task.ContentAdapter(), {}, {}, {}
     aggregate, references, counts, reference_counts = {}, {}, {}, {}
     totals = dict(episodes=0, decisions=0, due_read_attempts=0, successful_content_decodes=0,
-                  failed_content_reads=0, compiled_states=0, wire_bytes=0)
-    training_payloads, confirmation_payloads = set(), set()
+                  failed_content_reads=0, compiled_states=0, wire_bytes=0,
+                  complete_request_cpu_seconds=0., postexecution_audit_cpu_seconds=0.,
+                  compiled_argmax_numerical_ties=0, max_compiled_stored_action_oracle_gap=0.)
+    training_payloads, confirmation_payloads, calibration_inputs = set(), set(), {}
     model_load_cpu = {}; full_cpu = {}; input_files = {}
     for fit in protocol["fits"]:
         prepared = read(root/freeze["data"][str(fit)]["path"])
+        calibration = prepared["calibration"]
+        rng = np.random.default_rng(protocol["data_seed_base"]+fit*1000000+900000)
+        calibration_counts = np.zeros((2,2),dtype=int)
+        assert len(calibration["rows"]) == protocol["calibration_count"] == 64
+        for index, row in enumerate(calibration["rows"]):
+            path = (root/freeze["data"][str(fit)]["path"]).parent/Path(row["path"]).parent.name/Path(row["path"]).name
+            expected_packet = task.packet(index%2,int(rng.integers(0,2**63-1)),protocol["packet_length"])
+            digest = hashlib.sha256(joint_data.bytes_json(expected_packet)).hexdigest()
+            assert sha(path) == row["payload_sha256"] == digest and row["symbol"] == index%2
+            result = adapter.read(path)
+            close(result["logits"],row["logits"])
+            assert result["observation"] == row["observation"]
+            calibration_counts[row["symbol"],result["observation"]] += 1
+            training_payloads.add(digest)
+            calibration_inputs[str(path.relative_to(root))] = dict(sha256=digest,bytes=path.stat().st_size)
+        close(calibration["counts"],calibration_counts.tolist())
+        close(prepared["confusion"],((calibration_counts+.5)/(calibration_counts.sum(1,keepdims=True)+1.)).tolist())
         for split in ("train", "validation"):
             training_payloads.update(prepared[split+"_cohort"]["payload_sha256"])
         confusion = freeze["data"][str(fit)]["confusion"]
+        close(prepared["confusion"],confusion)
         models = {f: NumpyPolicy(read(root/f"fit_{fit}/model_{f}/model.json")) for f in protocol["families"]}
+        assert all(m.artifact["confusion"] == confusion for m in models.values())
+        assert all(m.artifact["nominal_raw"] == models["renewal"].artifact["nominal_raw"] for m in models.values())
         nominal = IndependentLaw(models["renewal"].artifact["nominal_raw"])
         setup = summary["decoder_setup"][str(fit)]
         setup_totals = dict(cpu=0., wall=0.)
@@ -185,7 +215,13 @@ def audit(root, confirmation):
                             for key, row in artifact["states"].items():
                                 s = declared._state(tuple(json.loads(key)))
                                 mask = np.asarray(task.legal(public, s)); q = declared.q(s)
-                                close(row, dict(q=np.where(mask,q,0.).tolist(), legal=mask.tolist(), belief=declared.posterior(s), action=int(np.argmax(q))))
+                                close({k:v for k,v in row.items() if k != "action"},
+                                      dict(q=np.where(mask,q,0.).tolist(), legal=mask.tolist(), belief=declared.posterior(s)))
+                                assert row["action"] == int(np.argmax(np.where(mask,row["q"],-np.inf)))
+                                gap = float(max(q)-q[row["action"]])
+                                assert mask[row["action"]] and gap <= 1e-12
+                                totals["max_compiled_stored_action_oracle_gap"] = max(totals["max_compiled_stored_action_oracle_gap"],gap)
+                                totals["compiled_argmax_numerical_ties"] += int(row["action"] != int(np.argmax(q)))
                             totals["compiled_states"] += artifact["state_count"]
                         elif family == "reference_deadline_read":
                             assert reference["policy_source_sha256"] == sha(HERE/"joint_deadline_reference.py")
@@ -265,6 +301,8 @@ def audit(root, confirmation):
                     totals["episodes"] += 1; totals["due_read_attempts"] += attempts
                     totals["successful_content_decodes"] += successes; totals["failed_content_reads"] += attempts-successes
                     totals["wire_bytes"] += actual["wire_bytes"]
+                    totals["complete_request_cpu_seconds"] += actual["full_execution_cpu_seconds"]
+                    totals["postexecution_audit_cpu_seconds"] += actual["audit_cpu_seconds"]
                 means = {k:float(np.mean([e["outcome"][k] for e in episodes])) for k in episodes[0]["outcome"]}
                 key = split+"/"+family+("" if family in REFERENCES else "/"+controller)
                 if family not in REFERENCES:
@@ -279,6 +317,8 @@ def audit(root, confirmation):
         close(setup_totals, dict(cpu=setup["load_cpu_seconds"],wall=setup["load_wall_seconds"]), "decoder_setup_total")
     assert not training_payloads.intersection(confirmation_payloads)
     assert len(confirmation_payloads) == 2400 and totals["episodes"] == 4800
+    assert summary["internal_cpu_seconds"]+1e-5 >= totals["complete_request_cpu_seconds"]+totals["postexecution_audit_cpu_seconds"]
+    assert summary["complete_process_usage"]["self_cpu_seconds"] >= summary["internal_cpu_seconds"]
     close(summary["fit_means"],aggregate); close(summary["reference_fit_means"],references)
     close(summary["counts"],counts); close(summary["reference_counts"],reference_counts)
     primary, secondary = intervals(aggregate, protocol)
@@ -291,12 +331,16 @@ def audit(root, confirmation):
     assert all(sha(root/p)==h for p,h in freeze["models"].items())
     manifest = dict(schema="joint-confirmation-independent-input-manifest-v1",files=all_inputs,
                     expected_missing=all_missing, cohort_manifests=input_files,
+                    training_calibration_files=calibration_inputs,
                     regenerated_worlds=400, training_confirmation_payloads_disjoint=True)
     return dict(passed=True, **totals, unique_packets_independently_redecoded=len(decoded),
         verified_input_files=len(all_inputs), verified_absent_packets=len(all_missing),
+        training_calibration_packets_regenerated_and_redecoded=len(calibration_inputs),
         source_sha256=freeze["sources"], model_freeze_sha256=sha(root/"MODEL_FREEZE.json"),
         published_model_commit=started["published_model_commit"], primary=primary, secondary=secondary,
         published_adapter_commit=adapter_provenance["published_adapter_commit"],
+        complete_process_receipt_sha256=sha(process_receipt), complete_process_cpu_seconds=process["cpu_seconds"],
+        complete_process_wall_seconds=process["wall_seconds"], complete_process_peak_resident_kib=process["maximum_resident_kib"],
         primary_passes=sum(r["passed"] for r in primary.values()), secondary_comparison_passes=sum(r["passed"] for r in secondary.values()),
         inference_frame_model_load_cpu_fraction={k:float(np.mean(model_load_cpu[k])/np.mean(full_cpu[k])) for k in model_load_cpu},
         scope="All raw episodes, regenerated inputs, supplied-law Q, actual FullHX redecode, costs arithmetic and separate14/24 CI families; not independent hardware timing, continuous-law optimum, lifecycle adoption or optimizer rerun"), manifest
@@ -305,10 +349,12 @@ def audit(root, confirmation):
 def main():
     p = argparse.ArgumentParser(); p.add_argument("--root",type=Path,required=True)
     p.add_argument("--confirmation",type=Path,required=True); p.add_argument("--out",type=Path,required=True)
+    p.add_argument("--process-receipt",type=Path)
     p.add_argument("--input-manifest",type=Path,required=True); a = p.parse_args()
     wall, cpu = time.perf_counter(),time.process_time()
     try:
-        result, manifest = audit(a.root,a.confirmation)
+        receipt = a.process_receipt or a.confirmation.with_name(a.confirmation.name+".process.json")
+        result, manifest = audit(a.root,a.confirmation,receipt)
         with a.input_manifest.open("x") as stream:
             json.dump(manifest,stream,sort_keys=True,indent=2,allow_nan=False); stream.write("\n")
         result["input_manifest_sha256"] = sha(a.input_manifest)
