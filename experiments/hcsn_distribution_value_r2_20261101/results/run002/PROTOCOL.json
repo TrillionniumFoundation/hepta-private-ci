@@ -1,0 +1,96 @@
+{
+  "actions": {
+    "READ": "advance.15, pay read fee, receive noisy target-bit and outage indicator",
+    "RESET": "preserve unknown bit, reset physical X0, advance.25, pay reset fee, receive outage indicator",
+    "STOP_0": "submit fixed hidden target bit0",
+    "STOP_1": "submit bit1",
+    "WAIT": "advance.9, receive outage indicator"
+  },
+  "bootstrap": {
+    "draws": 2000,
+    "scope": "Conditional on these three fitted models and this registered context domain; six context clusters give limited population evidence",
+    "seed": 638911,
+    "unit": "heldout context, with equal cue/profile/episode and three independently fitted model averages"
+  },
+  "cue_count": 8,
+  "decision_horizon": 3,
+  "energy_joules": null,
+  "episodes_per_cell": 64,
+  "fit_seeds": [
+    211,
+    337,
+    499
+  ],
+  "frozen_utc": "2026-11-02T01:28:47.082398+00:00",
+  "kernel_precision": "FP64",
+  "light_controller": "Rolling one-action lookahead, all5 actions considered, same3-action execution horizon",
+  "main_2x2": [
+    "A_ordinary_light",
+    "B_ordinary_value",
+    "C_analytic_light",
+    "D_analytic_value"
+  ],
+  "observations": "Raw cue, public context, known prices/durations, own actions, noisy READ bits, and interval outage bit. Exact event counts and hidden states appear only in terminal settlement/audit records, never planner features.",
+  "outage_fee": 0.04,
+  "predecessor": "experiments/hcsn_joint_dynamics_20261101/REPORT_ZH.md: prior scalar task stays negative; this is a redesigned finite mechanism study",
+  "primary": {
+    "adoption": "Original learned-network and real AV gates remain open regardless of this finite witness",
+    "analytic_increment": "D-B complete actual utility, positive for each fit and context-bootstrap lower bound>0",
+    "distribution_mechanism": "D minus joint-train/factorized-execution on association cues2/3, positive for each fit and context-bootstrap lower bound>0 plus actual action differences"
+  },
+  "prior_fit": "Full joint empirical MLE versus independently fitted product-marginal MLE from identical stratified samples; not neural network retraining",
+  "profiles": [
+    [
+      0.03,
+      0.22,
+      0.03
+    ],
+    [
+      0.48,
+      0.28,
+      0.01
+    ],
+    [
+      0.22,
+      0.015,
+      0.04
+    ],
+    [
+      0.65,
+      0.35,
+      0.08
+    ]
+  ],
+  "reporting": "All5 main2x2 contrasts; all4 training/execution cells, mean-projection intervention, first actions and complete action counts. Zero-width same-law intervals do not establish population certainty.",
+  "reward": "terminal bit correctness minus actual READ/RESET fees, elapsed-time fee and actual repeated-outage fee",
+  "runtime": {
+    "device": "CPU",
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "scipy": "1.17.0",
+    "threads": 1
+  },
+  "schema": "hcsn-distribution-value-r2.v1",
+  "secondary": [
+    "joint_train_factor_execute",
+    "factor_train_joint_execute",
+    "factor_train_factor_execute",
+    "joint_train_mean_execute"
+  ],
+  "source_hashes": {
+    "analysis.py": "886dc5333fc441a5f5e3a66ae16c946a8ac88702f4592d8f5ea52db1ef83eb7f",
+    "campaign.py": "2ceb52ce5d2f786558c371a2f567fd268421f1b6ffd2d025efeecf7b07581710",
+    "controller.py": "ad5db0e7fe1931513891ae274ea360c4e6895cf0e33ebad5a7c5689a7efe3d4e",
+    "model.py": "a87680c6edf8c4f78f0f80d4efd968e28a4666a6aa952c06cb3aeee70c04b9d5",
+    "world.py": "1081061162dd902267da58fba49d5928996520e071f734c1ebf5c1d2d7077be6"
+  },
+  "test_context_seed": 318617,
+  "test_contexts": 6,
+  "test_domain": "New independent context features from[-1,1]^2 under same fixed rate-function family; training context features from[-.8,.8]^2; not an unknown generator family",
+  "train_contexts": 24,
+  "training": "Shared fully observed physical transition counts/exposures and state-labelled READ calibration; balanced cue-state-bit identification. Both full-law cores and both controllers receive identical fitted models, never trueQ or sampled hidden test X,Y.",
+  "trajectories_per_train_context": 64,
+  "trajectory_duration": 5.0,
+  "value_controller": "Numerical finite remaining-horizon belief DP under fitted model; 1e-10 action tie tolerance and14decimal belief memoization",
+  "world_seed": 891317
+}
