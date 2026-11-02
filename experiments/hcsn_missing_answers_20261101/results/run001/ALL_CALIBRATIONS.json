@@ -1,0 +1,553 @@
+{
+  "cpu_seconds": 18.141652501000003,
+  "evaluation_protocol_sha256": "fbce44dad7ec025c0239e670f35d0610c23369316e9f95bb08bc7aee747146de",
+  "identity": {
+    "candidate_sha256": "88842f4a56d921910821d42acc092805e456332c90a6f719c413b7ba63a39db9",
+    "evaluation_source_sha256": "22f8c020d0e952c4ea29af3094df5c0cef3025fd016dcefffbe2419cb27692e7",
+    "historical_candidate_sha256": "468459cd0353f7a84dd108edd5c7b416dc2beda0e972cdca87224d9e135c59a4",
+    "protocol_sha256": "4dae7a396460abb9dba65b5c23aa8162a4124ac102a5eb426fb1fc5243897b38"
+  },
+  "records": [
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9798879397601883,
+        "dev_coverage": 0.89404296875,
+        "dev_nll": 0.2375290916020065,
+        "temperature": 0.25,
+        "threshold": 0.4
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/binding_diagonal_17/checkpoint.pt",
+      "checkpoint_sha256": "44a6a66b562e04d9f1d5d070e87d3126f24c83aa7db1ee38b5378145a5652d3d",
+      "core": "diagonal",
+      "seed": 17,
+      "task": "binding",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9791665977369253,
+        "dev_coverage": 0.889404296875,
+        "dev_nll": 0.44367512996359443,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/binding_diagonal_17/checkpoint.pt",
+      "checkpoint_sha256": "4962bca9b20e90608392ad791ffbc1868b6d72a19e39b4d0fa2307b89705358e",
+      "core": "diagonal",
+      "seed": 17,
+      "task": "binding",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9894938246938139,
+        "dev_coverage": 0.883544921875,
+        "dev_nll": 0.24450836601861595,
+        "temperature": 0.25,
+        "threshold": 0.3
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/binding_diagonal_29/checkpoint.pt",
+      "checkpoint_sha256": "4153653e653f34198abd220878406e96a4f58aa74ccf4bd5e88971eaf0560106",
+      "core": "diagonal",
+      "seed": 29,
+      "task": "binding",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9901209913760436,
+        "dev_coverage": 0.880859375,
+        "dev_nll": 0.41867400570603003,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/binding_diagonal_29/checkpoint.pt",
+      "checkpoint_sha256": "d2b956a461389c8beb0947700066b776369e620bc55629a9f778c7c10a3bd9a6",
+      "core": "diagonal",
+      "seed": 29,
+      "task": "binding",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9891547888790779,
+        "dev_coverage": 0.882568359375,
+        "dev_nll": 0.24614277386563127,
+        "temperature": 0.5,
+        "threshold": 0.3
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/binding_diagonal_43/checkpoint.pt",
+      "checkpoint_sha256": "343bdb32b32e253ceff541fc3adeb23274323dd81ac8f0dd1ed730b2ca42210a",
+      "core": "diagonal",
+      "seed": 43,
+      "task": "binding",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9770610151677207,
+        "dev_coverage": 0.89111328125,
+        "dev_nll": 0.4388962071527506,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/binding_diagonal_43/checkpoint.pt",
+      "checkpoint_sha256": "13c65f769cb26dded53654dace1baf7d3be3de1ea793de8c49aa10eaa562e822",
+      "core": "diagonal",
+      "seed": 43,
+      "task": "binding",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9789852532225654,
+        "dev_coverage": 0.894775390625,
+        "dev_nll": 0.2376169945762071,
+        "temperature": 0.25,
+        "threshold": 0.4
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/binding_flow_17/checkpoint.pt",
+      "checkpoint_sha256": "d328f770b30684b5bdfd69e70465a4b77da56f5a4252cb1fb1e7bdb1a4fab221",
+      "core": "flow",
+      "seed": 17,
+      "task": "binding",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.978261574926209,
+        "dev_coverage": 0.89013671875,
+        "dev_nll": 0.4435530090452894,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/binding_flow_17/checkpoint.pt",
+      "checkpoint_sha256": "d1aca88d38261759b29d1166cae3c95f0e77d6c7d19b34195a5818f267dd4dba",
+      "core": "flow",
+      "seed": 17,
+      "task": "binding",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.982584578570543,
+        "dev_coverage": 0.889892578125,
+        "dev_nll": 0.24192365623918938,
+        "temperature": 0.25,
+        "threshold": 0.3
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/binding_flow_29/checkpoint.pt",
+      "checkpoint_sha256": "42b60a76d9f3305e7744f959e6953bbb8d7c6033ad681202cf0c4661462eebcd",
+      "core": "flow",
+      "seed": 29,
+      "task": "binding",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9812948863663781,
+        "dev_coverage": 0.8876953125,
+        "dev_nll": 0.426879317665326,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/binding_flow_29/checkpoint.pt",
+      "checkpoint_sha256": "b8f86cb4475d581123555588568fb8e8b3575b4fc229100c88b16554a13335e6",
+      "core": "flow",
+      "seed": 29,
+      "task": "binding",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9989293119930787,
+        "dev_coverage": 0.875,
+        "dev_nll": 0.25138099459264124,
+        "temperature": 0.5,
+        "threshold": 0.3
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/binding_flow_43/checkpoint.pt",
+      "checkpoint_sha256": "0772f722d6415a640acd0040699b51468422e93a9641f98d52e90bb26a91796c",
+      "core": "flow",
+      "seed": 43,
+      "task": "binding",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9773605172767967,
+        "dev_coverage": 0.890869140625,
+        "dev_nll": 0.4393391091755938,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/binding_flow_43/checkpoint.pt",
+      "checkpoint_sha256": "6db0655a846ce07a022d94b368272992d68e2d91a6c34dded9499f1d7a57c529",
+      "core": "flow",
+      "seed": 43,
+      "task": "binding",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9831857371475924,
+        "dev_coverage": 0.888671875,
+        "dev_nll": 0.24162981007150305,
+        "temperature": 0.25,
+        "threshold": 0.4
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/mqar_diagonal_17/checkpoint.pt",
+      "checkpoint_sha256": "b6254def88adc5125508262208fce1c88140395d6fc701835cfa0d4e0af25f56",
+      "core": "diagonal",
+      "seed": 17,
+      "task": "mqar",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9834489842297818,
+        "dev_coverage": 0.885986328125,
+        "dev_nll": 0.43710638237457256,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/mqar_diagonal_17/checkpoint.pt",
+      "checkpoint_sha256": "81db62cbe7e2c0d5d2e2ea96c1777ebce38040e0414c13fe4263c0f4d0099395",
+      "core": "diagonal",
+      "seed": 17,
+      "task": "mqar",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9952473218528077,
+        "dev_coverage": 0.87744140625,
+        "dev_nll": 0.24475232837954222,
+        "temperature": 0.5,
+        "threshold": 0.3
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/mqar_diagonal_29/checkpoint.pt",
+      "checkpoint_sha256": "abdd3a214375de8ce9e2e5b7982360d7be0d3f92ec9b9e2df2908254b53a190d",
+      "core": "diagonal",
+      "seed": 29,
+      "task": "mqar",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9516709318830322,
+        "dev_coverage": 0.912841796875,
+        "dev_nll": 0.4216361196558572,
+        "temperature": 2.0,
+        "threshold": 0.4
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/mqar_diagonal_29/checkpoint.pt",
+      "checkpoint_sha256": "f60d530cf85449e6365975e28e13ebc448bf2463b839ad88a1a73ec9c7b2d804",
+      "core": "diagonal",
+      "seed": 29,
+      "task": "mqar",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.985034588183094,
+        "dev_coverage": 0.886474609375,
+        "dev_nll": 0.24602715237075673,
+        "temperature": 0.5,
+        "threshold": 0.3
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/mqar_diagonal_43/checkpoint.pt",
+      "checkpoint_sha256": "2dbe92dac0bd8ae2ae1d360589befb2223246a498dc85cd7ffe50ebd50d008f6",
+      "core": "diagonal",
+      "seed": 43,
+      "task": "mqar",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9743835203718316,
+        "dev_coverage": 0.893310546875,
+        "dev_nll": 0.43557345329061126,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/mqar_diagonal_43/checkpoint.pt",
+      "checkpoint_sha256": "f5aec74f06582a9857cf7edf41488c50c5ac7f5017702dce813a089e669a24b2",
+      "core": "diagonal",
+      "seed": 43,
+      "task": "mqar",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9664152387373612,
+        "dev_coverage": 0.905029296875,
+        "dev_nll": 0.24173049905857005,
+        "temperature": 0.25,
+        "threshold": 0.3
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/mqar_flow_17/checkpoint.pt",
+      "checkpoint_sha256": "cdfc49f16e8a383cec7816a913c6f03b00fe8aea37d0fdc2e3321915eceb6fac",
+      "core": "flow",
+      "seed": 17,
+      "task": "mqar",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9806843240088053,
+        "dev_coverage": 0.88818359375,
+        "dev_nll": 0.43754671222544383,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/mqar_flow_17/checkpoint.pt",
+      "checkpoint_sha256": "28442de08c6ca1ffcf1c731f3cf7634658ee3152f9b1851976ef46ad9aa39e1d",
+      "core": "flow",
+      "seed": 17,
+      "task": "mqar",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9875615385555825,
+        "dev_coverage": 0.884765625,
+        "dev_nll": 0.24098951556559883,
+        "temperature": 0.25,
+        "threshold": 0.4
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/mqar_flow_29/checkpoint.pt",
+      "checkpoint_sha256": "a1742c0a2d0493ba14bec2637ce458525b7df9981f8ccdd25cde7af58ce8ad2f",
+      "core": "flow",
+      "seed": 29,
+      "task": "mqar",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9843810798119214,
+        "dev_coverage": 0.88525390625,
+        "dev_nll": 0.42723064687197126,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/mqar_flow_29/checkpoint.pt",
+      "checkpoint_sha256": "9f438db13bb1ee4606eab9c530c8819ac17288ca6df6e577f8825369f627afb8",
+      "core": "flow",
+      "seed": 29,
+      "task": "mqar",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9633432573259866,
+        "dev_coverage": 0.908935546875,
+        "dev_nll": 0.2488840941812943,
+        "temperature": 0.25,
+        "threshold": 0.3
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/mqar_flow_43/checkpoint.pt",
+      "checkpoint_sha256": "96107cc13ddf78a0edc45ee5ab7e8db3c4592d2a706936690921522450ec0ca1",
+      "core": "flow",
+      "seed": 43,
+      "task": "mqar",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9726153833371101,
+        "dev_coverage": 0.894775390625,
+        "dev_nll": 0.43576195900950937,
+        "temperature": 2.0,
+        "threshold": 0.5
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/mqar_flow_43/checkpoint.pt",
+      "checkpoint_sha256": "0a63c5fd0e39234ec5bca8d648f8f88a4970a59ffa77d358c51a1e2939618fc1",
+      "core": "flow",
+      "seed": 43,
+      "task": "mqar",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.38088861067349084,
+        "temperature": 1.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/selective_diagonal_17/checkpoint.pt",
+      "checkpoint_sha256": "9c9a2aff2a8452b0145e092d8735e8cf47cf3d225c0524bd58f24b6bf8347366",
+      "core": "diagonal",
+      "seed": 17,
+      "task": "selective",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.4455550416899621,
+        "temperature": 3.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/selective_diagonal_17/checkpoint.pt",
+      "checkpoint_sha256": "ab66a9c4a651e226833660b182c2163842da53e66b5a9965cb905e42f9aa6196",
+      "core": "diagonal",
+      "seed": 17,
+      "task": "selective",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.3823248004261727,
+        "temperature": 1.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/selective_diagonal_29/checkpoint.pt",
+      "checkpoint_sha256": "30fec824225a784548c7955ca7e9202d188d27895aaab13b6e0ec456b0f4ee0b",
+      "core": "diagonal",
+      "seed": 29,
+      "task": "selective",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.4472925150562068,
+        "temperature": 3.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/selective_diagonal_29/checkpoint.pt",
+      "checkpoint_sha256": "e9cf0782e0282200863d0106a4b1c8657cb173a69b9d260c2ea2663687fb1e38",
+      "core": "diagonal",
+      "seed": 29,
+      "task": "selective",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.9604395359329423,
+        "dev_coverage": 0.37646484375,
+        "dev_nll": 0.3697938936477577,
+        "temperature": 1.0,
+        "threshold": 0.95
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/selective_diagonal_43/checkpoint.pt",
+      "checkpoint_sha256": "11cf0c517a02131e39d0d2b181c7bba7f17bddfd012ede0a9fdde49e0d72bb90",
+      "core": "diagonal",
+      "seed": 43,
+      "task": "selective",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.4321670933425451,
+        "temperature": 3.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/selective_diagonal_43/checkpoint.pt",
+      "checkpoint_sha256": "9cb5310a14b90f91a99a29fdbd2ea6308e1a9dcfacd033020842b8ea69dc736b",
+      "core": "diagonal",
+      "seed": 43,
+      "task": "selective",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.3774852656744919,
+        "temperature": 1.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/selective_flow_17/checkpoint.pt",
+      "checkpoint_sha256": "ecf8167542c56ec7344b653a98181a13f717b95b6cf44035f0c1d852c4f23c11",
+      "core": "flow",
+      "seed": 17,
+      "task": "selective",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.44592144489700847,
+        "temperature": 3.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/selective_flow_17/checkpoint.pt",
+      "checkpoint_sha256": "2b3267621ed33b6e465bb71d715f034d9193863b40c6be9c5fffead3da40f23b",
+      "core": "flow",
+      "seed": 17,
+      "task": "selective",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.37836459854305776,
+        "temperature": 1.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/selective_flow_29/checkpoint.pt",
+      "checkpoint_sha256": "84ddf3125fd8aba63362e5785db33c9168614671d80bc3dbc70e2786cea3d2cb",
+      "core": "flow",
+      "seed": 29,
+      "task": "selective",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.44889918718298805,
+        "temperature": 3.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/selective_flow_29/checkpoint.pt",
+      "checkpoint_sha256": "d8fc08b30b97a9e7855ddfde01c9fe9242181bf705bb1cbfc3f98af9950200c0",
+      "core": "flow",
+      "seed": 29,
+      "task": "selective",
+      "version": "historical_base_only"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.37611106963371854,
+        "temperature": 1.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_missing_answers_20261101/results/run001/fits/selective_flow_43/checkpoint.pt",
+      "checkpoint_sha256": "9265a3afb9bc1bd753b77925fbbb355f428e624fe475073f162f1bc09b0df10a",
+      "core": "flow",
+      "seed": 43,
+      "task": "selective",
+      "version": "missing_trained"
+    },
+    {
+      "calibration": {
+        "dev_accepted_wilson_lower": 0.0,
+        "dev_coverage": 0.0,
+        "dev_nll": 0.4423579161720236,
+        "temperature": 3.0,
+        "threshold": 1.000001
+      },
+      "checkpoint": "experiments/hcsn_video_followup_20261101/inputs/results/retention001/fits/selective_flow_43/checkpoint.pt",
+      "checkpoint_sha256": "1665d76bbf3a6b936a706dae76b0aa61bad71a8cbdda916aa4abb4345f84c4e9",
+      "core": "flow",
+      "seed": 43,
+      "task": "selective",
+      "version": "historical_base_only"
+    }
+  ],
+  "wall_seconds": 23.17497233299946
+}

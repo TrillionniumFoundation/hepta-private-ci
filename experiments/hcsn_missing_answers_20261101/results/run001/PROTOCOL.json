@@ -1,0 +1,110 @@
+{
+  "architecture": "Unchanged PR4548 typed addressed model; shared initialization and typed prior for both cores",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "batch": 24,
+  "calibration": {
+    "conditions": [
+      "base",
+      "missing"
+    ],
+    "episodes": 512,
+    "method": "Largest dev coverage with Wilson lower bound >= .95; zero-coverage if none",
+    "seed": 172019,
+    "split": "dev",
+    "target_correctness": 0.95,
+    "temperature_grid": [
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      8.0
+    ],
+    "threshold_grid": [
+      0.125,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      0.95,
+      0.98,
+      0.99,
+      0.995,
+      0.999,
+      1.000001
+    ]
+  },
+  "comparison": "Historical base-only 600-step final checkpoints evaluated on the same fresh draws; runtime version differs from original campaign",
+  "confirmation": {
+    "conditions": [
+      "base",
+      "missing",
+      "long_tokens_128",
+      "missing_tokens_128"
+    ],
+    "episodes": 512,
+    "seed": 173029,
+    "split": "confirm"
+  },
+  "cores": [
+    "diagonal",
+    "flow"
+  ],
+  "energy_joules": null,
+  "fit_seeds": [
+    17,
+    29,
+    43
+  ],
+  "frozen_utc": "2026-11-02T00:57:20.551000+00:00",
+  "gates": {
+    "accepted_correctness_min": 0.95,
+    "accepted_known_coverage_min": 0.8,
+    "known_accuracy_min": 0.95,
+    "missing_brier_better_than_baseline": true,
+    "missing_nll_better_than_baseline": true,
+    "unavailable_accuracy": "Descriptive, cannot recover erased information"
+  },
+  "gpu": null,
+  "gradient_clip": 1.0,
+  "input_contract": "Only raw x, dt, observed; y used only by loss; target_available used only by scorer",
+  "learning_rate": 0.003,
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "threads": 1,
+    "torch": "2.6.0+cpu"
+  },
+  "schema": "hcsn.missing-training.v1",
+  "source_hashes": {
+    "experiments/hcsn_addressed_flow_20261101/addressed_models.py": "2c2c434c567f66d5e0f48d5befc05e54c201c724f0b2b5d6f211f3784612f25e",
+    "experiments/hcsn_addressed_flow_20261101/data.py": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+    "experiments/hcsn_addressed_flow_20261101/study.py": "06b650f82d75e6677651a109cee8ef89a7f21d41c8852981153c0a88e080b3b1",
+    "experiments/hcsn_addressed_flow_20261101/typed_retention.py": "680d156cbd1290794d747d282763559a277ffc4a47b3e7347e1024db0ef23cf4",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/dynamic_data.py": "df016a6142ecc5a9fffaa45956ec253169ce33adb7101f8b18d41b4a845102c7",
+    "experiments/hcsn_four_stage_flow_20261031/extended_eval.py": "9c6f9633225625e9696871c4396e5b52f872ac117b8a4d47cba6f125cf53f84d",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e",
+    "experiments/hcsn_missing_answers_20261101/__init__.py": "027ad7b3a9677e15d743d52e41d6bd1a1efb0a100de1e4a981651b2862fd3f78",
+    "experiments/hcsn_missing_answers_20261101/campaign.py": "5c39d4673027d9815bd15a76803792fbbef86750f7bd2eab4aa38afd2706c1fb"
+  },
+  "steps": 600,
+  "tasks": [
+    "mqar",
+    "selective",
+    "binding"
+  ],
+  "training": "Fresh final-step fits; even steps missing condition, odd steps base; seed*10000+step+7000000 in train stream",
+  "uncertainty": "Per-fit metrics and min/max across three training seeds; no synthetic episode independence claim across fits",
+  "weight_decay": 0.0001
+}

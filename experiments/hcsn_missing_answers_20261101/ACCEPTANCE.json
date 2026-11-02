@@ -1,0 +1,381 @@
+{
+  "all_blockers_closed": false,
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "calibration_sha256": "83d2ce808219056902b3cff33ae59930b05ec33c5e18c5689b5513f0cdb68115",
+  "candidate_sha256": "88842f4a56d921910821d42acc092805e456332c90a6f719c413b7ba63a39db9",
+  "condition_records": 144,
+  "conditions": 4,
+  "fresh_fits": 18,
+  "historical_fits": 18,
+  "independent_metric_checks": 2343,
+  "joint_rejection_failed_records": 27,
+  "joint_rejection_total_candidate_records": 72,
+  "known_accuracy_min": 1.0,
+  "limits": [
+    "Known generator, explicit typed address prior, four keys and eight values",
+    "Historical base-only training namespace differs from new training namespace",
+    "PyTorch2.6 evaluation compared with original training under2.9",
+    "Dev Wilson bound is selection heuristic, not population certificate",
+    "No isolated analytical-core or full-cost adoption success"
+  ],
+  "nonmissing_all4_min": 1.0,
+  "nonmissing_all4_scope": "Only base and128-interference; not all nine historical conditions rerun",
+  "observed_nonempty_accepted_correctness_min": 0.9381443298969072,
+  "production_activation": false,
+  "publication_commit": "91b6a88740f36e708fa4365cef24b53612d50ede",
+  "schema": "hcsn.missing-answers.acceptance.v1",
+  "source_unchanged": true,
+  "unavailable_metrics": [
+    {
+      "condition": "missing",
+      "core": "diagonal",
+      "task": "mqar",
+      "versions": {
+        "historical_base_only": {
+          "accepted_correctness_by_seed": [
+            0.9715370018975332,
+            0.9067296340023613,
+            0.9594003747657714
+          ],
+          "known_coverage_by_seed": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 1.0,
+            "accuracy": 0.7511393229166666,
+            "brier": 0.2882366680291755,
+            "coverage": 0.7936197916666666,
+            "nll": 0.8426393439030054
+          },
+          "unavailable_mean": {
+            "accuracy": 0.004557291666666667,
+            "brier": 1.1501513875432157,
+            "mean_confidence": 0.37968382535240575,
+            "nll": 3.2869171687970424
+          }
+        },
+        "missing_trained": {
+          "accepted_correctness_by_seed": [
+            0.9675202998126171,
+            0.9967595593000648,
+            0.9772727272727273
+          ],
+          "known_coverage_by_seed": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 1.0,
+            "accuracy": 0.8024088541666666,
+            "brier": 0.21221610320453035,
+            "coverage": 0.76953125,
+            "nll": 0.48507570539927847
+          },
+          "unavailable_mean": {
+            "accuracy": 0.20963541666666666,
+            "brier": 0.8488644128077737,
+            "mean_confidence": 0.24685772776857143,
+            "nll": 1.9402992787761584
+          }
+        }
+      }
+    },
+    {
+      "condition": "missing",
+      "core": "flow",
+      "task": "mqar",
+      "versions": {
+        "historical_base_only": {
+          "accepted_correctness_by_seed": [
+            0.9684741488020177,
+            0.9709228824273072,
+            0.9528535980148883
+          ],
+          "known_coverage_by_seed": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 1.0,
+            "accuracy": 0.75048828125,
+            "brier": 0.2887342585448715,
+            "coverage": 0.7779947916666666,
+            "nll": 0.8484648279279021
+          },
+          "unavailable_mean": {
+            "accuracy": 0.001953125,
+            "brier": 1.1520788392201708,
+            "mean_confidence": 0.38205893348479797,
+            "nll": 3.3094596934714082
+          }
+        },
+        "missing_trained": {
+          "accepted_correctness_by_seed": [
+            0.9399038461538461,
+            0.9840153452685422,
+            0.945995145631068
+          ],
+          "known_coverage_by_seed": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 1.0,
+            "accuracy": 0.8020833333333334,
+            "brier": 0.21315864114367558,
+            "coverage": 0.7936197916666666,
+            "nll": 0.48390989940157647
+          },
+          "unavailable_mean": {
+            "accuracy": 0.20833333333333334,
+            "brier": 0.8526345645747023,
+            "mean_confidence": 0.277774784156033,
+            "nll": 1.9356395976034324
+          }
+        }
+      }
+    },
+    {
+      "condition": "missing",
+      "core": "diagonal",
+      "task": "selective",
+      "versions": {
+        "historical_base_only": {
+          "accepted_correctness_by_seed": [
+            null,
+            null,
+            null
+          ],
+          "known_coverage_by_seed": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 0.0,
+            "accuracy": 0.82763671875,
+            "brier": 0.2611858907970654,
+            "coverage": 0.0,
+            "nll": 0.7752799524470516
+          },
+          "unavailable_mean": {
+            "accuracy": 0.0,
+            "brier": 1.4444731086224767,
+            "mean_confidence": 0.586606386340054,
+            "nll": 3.9998444057486817
+          }
+        },
+        "missing_trained": {
+          "accepted_correctness_by_seed": [
+            null,
+            null,
+            0.9381443298969072
+          ],
+          "known_coverage_by_seed": [
+            0.0,
+            0.0,
+            0.4294985250737463
+          ],
+          "mean": {
+            "accepted_known_coverage": 0.1431661750245821,
+            "accuracy": 0.82763671875,
+            "brier": 0.24935898746167326,
+            "coverage": 0.12630208333333334,
+            "nll": 0.7020913279817469
+          },
+          "unavailable_mean": {
+            "accuracy": 0.0,
+            "brier": 1.4291769841146866,
+            "mean_confidence": 0.5648240932352756,
+            "nll": 3.8124197017115127
+          }
+        }
+      }
+    },
+    {
+      "condition": "missing",
+      "core": "flow",
+      "task": "selective",
+      "versions": {
+        "historical_base_only": {
+          "accepted_correctness_by_seed": [
+            null,
+            null,
+            null
+          ],
+          "known_coverage_by_seed": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 0.0,
+            "accuracy": 0.82763671875,
+            "brier": 0.26184834514409877,
+            "coverage": 0.0,
+            "nll": 0.7824988319321268
+          },
+          "unavailable_mean": {
+            "accuracy": 0.0,
+            "brier": 1.4471089788061995,
+            "mean_confidence": 0.5858371143277975,
+            "nll": 4.045617599244498
+          }
+        },
+        "missing_trained": {
+          "accepted_correctness_by_seed": [
+            null,
+            null,
+            null
+          ],
+          "known_coverage_by_seed": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 0.0,
+            "accuracy": 0.82763671875,
+            "brier": 0.24892857731941828,
+            "coverage": 0.0,
+            "nll": 0.7015803981674663
+          },
+          "unavailable_mean": {
+            "accuracy": 0.0,
+            "brier": 1.4272995509056357,
+            "mean_confidence": 0.5572223110596359,
+            "nll": 3.811385737994506
+          }
+        }
+      }
+    },
+    {
+      "condition": "missing",
+      "core": "diagonal",
+      "task": "binding",
+      "versions": {
+        "historical_base_only": {
+          "accepted_correctness_by_seed": [
+            0.9672544080604534,
+            0.9890534449452673,
+            0.9552238805970149
+          ],
+          "known_coverage_by_seed": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 1.0,
+            "accuracy": 0.7513020833333334,
+            "brier": 0.2877731060956912,
+            "coverage": 0.77294921875,
+            "nll": 0.841089366487962
+          },
+          "unavailable_mean": {
+            "accuracy": 0.005208333333333333,
+            "brier": 1.1483287119599366,
+            "mean_confidence": 0.3801566872707384,
+            "nll": 3.2813111207596273
+          }
+        },
+        "missing_trained": {
+          "accepted_correctness_by_seed": [
+            0.9670192906036092,
+            0.972972972972973,
+            0.9802924348378894
+          ],
+          "known_coverage_by_seed": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 1.0,
+            "accuracy": 0.79638671875,
+            "brier": 0.2141949506524512,
+            "coverage": 0.7765299479166666,
+            "nll": 0.48944148690565425
+          },
+          "unavailable_mean": {
+            "accuracy": 0.185546875,
+            "brier": 0.8567798026048034,
+            "mean_confidence": 0.25848685766932766,
+            "nll": 1.9577640120856055
+          }
+        }
+      }
+    },
+    {
+      "condition": "missing",
+      "core": "flow",
+      "task": "binding",
+      "versions": {
+        "historical_base_only": {
+          "accepted_correctness_by_seed": [
+            0.9642184557438794,
+            0.9612015018773467,
+            0.9540372670807453
+          ],
+          "known_coverage_by_seed": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 1.0,
+            "accuracy": 0.7509765625,
+            "brier": 0.28867202096530886,
+            "coverage": 0.7814127604166666,
+            "nll": 0.8472440003968663
+          },
+          "unavailable_mean": {
+            "accuracy": 0.00390625,
+            "brier": 1.1518734475417807,
+            "mean_confidence": 0.38498901794967016,
+            "nll": 3.305462174965907
+          }
+        },
+        "missing_trained": {
+          "accepted_correctness_by_seed": [
+            0.9682440846824408,
+            0.9742138364779874,
+            1.0
+          ],
+          "known_coverage_by_seed": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "mean": {
+            "accepted_known_coverage": 1.0,
+            "accuracy": 0.7975260416666666,
+            "brier": 0.2139268364116256,
+            "coverage": 0.7701822916666666,
+            "nll": 0.4900296518200906
+          },
+          "unavailable_mean": {
+            "accuracy": 0.19010416666666666,
+            "brier": 0.8557073456370907,
+            "mean_confidence": 0.2550441651921377,
+            "nll": 1.960115994300405
+          }
+        }
+      }
+    }
+  ],
+  "verdict": {
+    "abstention_accuracy_and_coverage_gate": false,
+    "all_blockers_closed": false,
+    "all_missing_brier_improved": true,
+    "all_missing_nll_improved": true,
+    "analytic_advantage_established": false,
+    "known_accuracy_gate": true,
+    "registered_restricted_criteria_pass": false
+  }
+}
