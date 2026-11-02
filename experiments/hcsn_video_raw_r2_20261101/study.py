@@ -34,7 +34,10 @@ def raw(split):
     identity=json.loads((HERE/'inputs'/f'{split}_IDENTITY.json').read_text())
     assert identity['source_sha256']==sha(HERE/'raw_data.py') and identity['protocol_sha256']==sha(HERE/'PROTOCOL.json')
     path=HERE/'inputs'/f'{split}_pixels.npz';assert sha(path)==identity['pixels_sha256']
-    with np.load(path,allow_pickle=False) as z:return {k:z[k] for k in z.files}
+    with np.load(path,allow_pickle=False) as z:values={k:z[k] for k in z.files}
+    expected=np.asarray([('DFA','IOM').index(str(clip).split('_')[1]) for clip in values['clip']])
+    assert np.array_equal(values['label'],expected) and np.array_equal(np.unique(values['label']),[0,1]), 'Sentence binary target required; inherited COHORT.label is emotion'
+    return values
 
 
 def transform(pixels):

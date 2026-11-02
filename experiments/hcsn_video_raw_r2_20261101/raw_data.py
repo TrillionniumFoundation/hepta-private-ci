@@ -82,7 +82,7 @@ def prepare(split):
         cube,detail=decode(row);pixels.append(cube);metadata.append(detail)
         if (i+1)%48==0:print(json.dumps(dict(split=split,decoded=i+1,total=len(rows))),flush=True)
     np.savez_compressed(target,pixels=np.stack(pixels),actor=np.asarray([r['actor'] for r in rows]),
-        clip=np.asarray([r['clip'] for r in rows]),label=np.asarray([r['label'] for r in rows]),emotion=np.asarray([r['emotion'] for r in rows]))
+        clip=np.asarray([r['clip'] for r in rows]),label=np.asarray([('DFA','IOM').index(r['sentence']) for r in rows]),emotion=np.asarray([r['emotion'] for r in rows]))
     write(out/f'{split}_IDENTITY.json',dict(records=metadata,source_sha256=sha(__file__),protocol_sha256=sha(HERE/'PROTOCOL.json'),cohort_sha256=sha(COHORT),
         pixels_sha256=sha(target),split=split,actor_count=len({r['actor'] for r in rows}),raw_bytes=sum(r['bytes'] for r in rows)))
     print(json.dumps(dict(split=split,clips=len(rows),pixel_bytes=target.stat().st_size,pixels_sha256=sha(target))),flush=True)
