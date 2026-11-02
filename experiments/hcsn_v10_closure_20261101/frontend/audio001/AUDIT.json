@@ -1,0 +1,95 @@
+{
+  "schema": "hcsn-v10-historical-audio-audit.v1",
+  "passed": true,
+  "prediction_rows": 432,
+  "unique_historical_recordings": 48,
+  "metric_scalar_checks": 81,
+  "boundary_checks": [
+    "moments:future-NaN-isolation",
+    "moments:video-isolation",
+    "moments:missing-audio-is-zero",
+    "quantiles:future-NaN-isolation",
+    "quantiles:video-isolation",
+    "quantiles:missing-audio-is-zero"
+  ],
+  "split_populations": {
+    "train": {
+      "recordings": [
+        "1016_DFA_ANG_XX",
+        "1016_DFA_DIS_XX",
+        "1016_DFA_FEA_XX",
+        "1016_DFA_HAP_XX",
+        "1016_DFA_NEU_XX",
+        "1016_DFA_SAD_XX",
+        "1043_DFA_ANG_XX",
+        "1043_DFA_DIS_XX",
+        "1043_DFA_FEA_XX",
+        "1043_DFA_HAP_XX",
+        "1043_DFA_NEU_XX",
+        "1043_DFA_SAD_XX",
+        "1050_DFA_ANG_XX",
+        "1050_DFA_DIS_XX",
+        "1050_DFA_FEA_XX",
+        "1050_DFA_HAP_XX",
+        "1050_DFA_NEU_XX",
+        "1050_DFA_SAD_XX",
+        "1051_DFA_ANG_XX",
+        "1051_DFA_DIS_XX",
+        "1051_DFA_FEA_XX",
+        "1051_DFA_HAP_XX",
+        "1051_DFA_NEU_XX",
+        "1051_DFA_SAD_XX"
+      ],
+      "actors": [
+        "1016",
+        "1043",
+        "1050",
+        "1051"
+      ]
+    },
+    "validation": {
+      "recordings": [
+        "1011_DFA_ANG_XX",
+        "1011_DFA_DIS_XX",
+        "1011_DFA_FEA_XX",
+        "1011_DFA_HAP_XX",
+        "1011_DFA_NEU_XX",
+        "1011_DFA_SAD_XX",
+        "1082_DFA_ANG_XX",
+        "1082_DFA_DIS_XX",
+        "1082_DFA_FEA_XX",
+        "1082_DFA_HAP_XX",
+        "1082_DFA_NEU_XX",
+        "1082_DFA_SAD_XX"
+      ],
+      "actors": [
+        "1011",
+        "1082"
+      ]
+    },
+    "test": {
+      "recordings": [
+        "1023_DFA_ANG_XX",
+        "1023_DFA_DIS_XX",
+        "1023_DFA_FEA_XX",
+        "1023_DFA_HAP_XX",
+        "1023_DFA_NEU_XX",
+        "1023_DFA_SAD_XX",
+        "1040_DFA_ANG_XX",
+        "1040_DFA_DIS_XX",
+        "1040_DFA_FEA_XX",
+        "1040_DFA_HAP_XX",
+        "1040_DFA_NEU_XX",
+        "1040_DFA_SAD_XX"
+      ],
+      "actors": [
+        "1023",
+        "1040"
+      ]
+    }
+  },
+  "binding_audio_bound": 0.5,
+  "scientific_confirmation": false,
+  "strong_audio_qualified": false,
+  "scope": "Saved-output arithmetic and causal feature contract only; 48 previously exposed recordings, not raw-media or v6 recovery"
+}

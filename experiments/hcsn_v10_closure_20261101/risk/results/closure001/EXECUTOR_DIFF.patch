@@ -1,0 +1,116 @@
+--- v8/execution.py
++++ v10/execution.py
+@@ -1,4 +1,9 @@
+-"""Serial causal execution with a frozen output before any late-work drain."""
++"""V8 causal executor with an explicit bounded finalization reservation.
++
++Copied from v8 execution.py; source identity and exact diff are retained.
++A declared budget is checked after actual work, not a preemption guarantee for
++unbounded heads, sinks, Python scheduling, or operating-system stalls.
++"""
+ 
+ from dataclasses import dataclass
+ import hashlib
+@@ -8,7 +13,9 @@
+ from experiments.hcsn_v7_support_20261101.content_interface.content_interface import (
+     BackendKind, ContractError, CoreSnapshot, CostWeights, Modality, VisibleContent, finite,
+ )
+-from .planning import Plan, Read, Wait, choose_plan, enumerate_plans, validate_plan
++from experiments.hcsn_v8_execution_20261101.scheduler.planning import (
++    Plan, Read, Wait, choose_plan, enumerate_plans, validate_plan,
++)
+ 
+ 
+ class RealClock:
+@@ -56,9 +63,26 @@
+             max(prior, observation.prefix_end) - prior)
+ 
+ 
++@dataclass(frozen=True, slots=True)
++class FinalizationBudget:
++    head_seconds: float = .08
++    serialization_seconds: float = .04
++    sink_seconds: float = .08
++    guard_seconds: float = .20
++
++    def __post_init__(self):
++        for name in ("head_seconds", "serialization_seconds", "sink_seconds", "guard_seconds"):
++            object.__setattr__(self, name, finite(getattr(self, name), name, 0, 10))
++
++    @property
++    def reserve_seconds(self):
++        return self.head_seconds + self.serialization_seconds + self.sink_seconds + self.guard_seconds
++
++
+ def run_episode(object_id, budget, head, forecast, service_model, service, output_sink,
+                 clock=None, core=None, deadline=4.0, horizon=2, wait_seconds=(),
+-                max_requests=6, max_decisions=16, costs=CostWeights(), fixed_plans=None):
++                max_requests=6, max_decisions=16, costs=CostWeights(), fixed_plans=None,
++                finalization_budget=FinalizationBudget()):
+     """Adapter interfaces: request(Read,clock)->pending; pending.wait_until(t,clock).
+ 
+     pending.wait_until returns ReadResult only after actual completion, or None
+@@ -72,6 +96,12 @@
+     """
+     clock = RealClock() if clock is None else clock
+     deadline = finite(deadline, "deadline", 0, 60)
++    hard_deadline = deadline
++    if not isinstance(finalization_budget, FinalizationBudget):
++        raise ContractError("Explicit validated finalization budget required")
++    deadline = hard_deadline - finalization_budget.reserve_seconds
++    if deadline <= 0:
++        raise ContractError("Finalization reserve consumes the entire deadline")
+     if type(max_requests) is not int or not 1 <= max_requests <= 6:
+         raise ContractError("One to six requested observations are allowed")
+     if type(max_decisions) is not int or not 1 <= max_decisions <= 64:
+@@ -182,7 +212,9 @@
+     drains = []
+     try:
+         # Freeze and flush before draining. Even a failed head/sink drains owned work.
++        finalization_started = clock.now()
+         stop = head.evaluate(content)
++        head_completed = clock.now()
+         output = {"kind": "episode_prediction", "episode_id": object_id,
+                   "predicted_class": stop.predicted_class, "probabilities": stop.class_probabilities,
+                   "head_id": stop.calibrated_correctness.head_id,
+@@ -190,6 +222,7 @@
+                   "accepted_event_ids": content.accepted_event_ids,
+                   "scientific_confirmation": False}
+         serialized = (json.dumps(output, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode()
++        serialized_at = clock.now()
+         output_sink(serialized)
+         output_at = clock.now()
+         flush_ns = time.monotonic_ns() if clock.origin_ns is not None else None
+@@ -202,15 +235,28 @@
+             except Exception as error:
+                 drains.append({"start": before, "end": clock.now(), "status": "drain_error",
+                                "reason": f"{type(error).__name__}: {error}"[:512]})
+-    return {"schema": "hcsn-v8-causal-execution.v2", "purpose": "development_support",
++    return {"schema": "hcsn-v10-reserved-causal-execution.v1", "purpose": "development_support",
+             "scientific_confirmation": False, "clock": type(clock).__name__,
+             "service_mode": service.mode, "source_monotonic_ns": clock.origin_ns,
+             "output_flush_monotonic_ns": flush_ns, "output_elapsed_seconds": output_at,
+-            "post_drain_elapsed_seconds": clock.now(), "timely_output": output_at <= deadline,
+-            "deadline_seconds": deadline, "requested_observations": requests,
++            "post_drain_elapsed_seconds": clock.now(), "timely_output": output_at <= hard_deadline,
++            "deadline_seconds": hard_deadline, "service_deadline_seconds": deadline,
++            "finalization": {"started_at": finalization_started, "head_completed_at": head_completed,
++                "serialized_at": serialized_at, "sink_completed_at": output_at,
++                "head_seconds": head_completed-finalization_started,
++                "serialization_seconds": serialized_at-head_completed,
++                "sink_seconds": output_at-serialized_at,
++                "reserve_seconds": finalization_budget.reserve_seconds,
++                "budget": {name: getattr(finalization_budget, name) for name in
++                    ("head_seconds", "serialization_seconds", "sink_seconds", "guard_seconds")},
++                "budget_satisfied": (head_completed-finalization_started <= finalization_budget.head_seconds
++                    and serialized_at-head_completed <= finalization_budget.serialization_seconds
++                    and output_at-serialized_at <= finalization_budget.sink_seconds
++                    and finalization_started <= deadline+finalization_budget.guard_seconds)},
++            "requested_observations": requests,
+             "observation_fee": requests * costs.observation,
+             "latency_fee": output_at * costs.elapsed_second,
+-            "deadline_penalty": costs.deadline_miss * (output_at > deadline),
++            "deadline_penalty": costs.deadline_miss * (output_at > hard_deadline),
+             "output": output, "serialized_output_sha256": hashlib.sha256(serialized).hexdigest(),
+             "events": traces, "decisions": decisions, "source_window_updates": updates,
+             "late_drains": drains, "cache_storage": content.storage_accounting()}

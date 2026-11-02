@@ -1,0 +1,45 @@
+{
+  "schema": "hcsn-v10-frontend-recovery-lookups.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "current_v6_commit_lookup": {
+    "commit": "febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+    "operation": "connected GitHub fetch_commit",
+    "response_status": 422,
+    "message": "No commit found for SHA: febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+    "local_source_checkout_cat_file_exit": 128,
+    "local_source_checkout": "/workspace/scratch/3511158fb83b/hepta",
+    "scope": "These exact repository/local-object lookups did not resolve v6; no claim of global absence."
+  },
+  "v9_branch_lookup": {
+    "query": "hcsn-v9",
+    "page_size": 100,
+    "pages_completed": 2,
+    "last_cursor": null,
+    "returned_branches": [
+      "research/hcsn-v9-followup-20261101",
+      "research/hcsn-v9-mechanism-economics-20261101"
+    ]
+  },
+  "new_library_package_source_identity": {
+    "library_file_id": "libfile_7b0ea4bcecd88191ac9ee31765d67012",
+    "archive_head_from_incremental_bundle": "ad2a79d0699979108543d3052b76942b14e0e8a6",
+    "archive_scientific_commit_from_report": "599db6072116a18968355f95ba822faad1d06533",
+    "incremental_prerequisite": "059b43a0b20ad07654880c155cc49799e0bb8858",
+    "archive_head_remote_commit_lookup_status": 422,
+    "current_remote_branch": "research/hcsn-v9-followup-20261101",
+    "current_remote_commit": "03f338eb44bf585bfe9d4f87e4f5ef7af98884ad",
+    "current_remote_v9_directory_tree": "dcfc600b44c6dfa2698969558a56b9df6dc753f3",
+    "whole_v9_directory_files_byte_matched": 250,
+    "same_commit_identity_claimed": false,
+    "interpretation": "All 250 packaged v9 directory files match the fixed remote tree by Git blob and size. Local bundle and remote commit SHAs differ. Archived publication-blocked metadata is historical and does not describe current branch availability."
+  },
+  "unresolved_frontend_assets": {
+    "original_v6_source_and_protocol": null,
+    "original_v6_strong_av_head": null,
+    "original_v6_strong_audio_reference": null,
+    "complete_v5_v6_historical_exclusion_ledger": null,
+    "new_independent_real_av_recordings": null,
+    "raw_media_bytes_recovered": 0
+  },
+  "frontend_admitted": false
+}

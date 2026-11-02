@@ -1,0 +1,201 @@
+{
+  "architecture_acceptance": false,
+  "arms": [
+    "old_full",
+    "old_zero",
+    "reserve_full",
+    "reserve_zero",
+    "reserve_fixed_old_zero",
+    "old_zero_fixed_reserve"
+  ],
+  "baseline_commit": "8cc469fcb0e6527fac56e26b65baa3ae1c09c86b",
+  "content_value": "identical expected correctness includes half successful video and half current-content timeout fallback",
+  "costs": {
+    "deadline_miss": 1.0,
+    "elapsed_second": 0.005,
+    "observation": 0.02
+  },
+  "finalization_budget": {
+    "guard_seconds": 0.2,
+    "head_seconds": 0.08,
+    "serialization_seconds": 0.04,
+    "sink_seconds": 0.08
+  },
+  "hard_deadline": 2.4,
+  "head_accuracy": {
+    "audio": 0.72,
+    "video": 0.96
+  },
+  "head_delay": 0.015,
+  "logical_worlds": [
+    {
+      "audio": 1,
+      "fast": false,
+      "id": "v10-new-bsc-00",
+      "target": 0,
+      "video": 1,
+      "weight": 0.0028000000000000004
+    },
+    {
+      "audio": 1,
+      "fast": true,
+      "id": "v10-new-bsc-01",
+      "target": 0,
+      "video": 1,
+      "weight": 0.0028000000000000004
+    },
+    {
+      "audio": 1,
+      "fast": false,
+      "id": "v10-new-bsc-02",
+      "target": 0,
+      "video": 0,
+      "weight": 0.06720000000000001
+    },
+    {
+      "audio": 1,
+      "fast": true,
+      "id": "v10-new-bsc-03",
+      "target": 0,
+      "video": 0,
+      "weight": 0.06720000000000001
+    },
+    {
+      "audio": 0,
+      "fast": false,
+      "id": "v10-new-bsc-04",
+      "target": 0,
+      "video": 1,
+      "weight": 0.0072
+    },
+    {
+      "audio": 0,
+      "fast": true,
+      "id": "v10-new-bsc-05",
+      "target": 0,
+      "video": 1,
+      "weight": 0.0072
+    },
+    {
+      "audio": 0,
+      "fast": false,
+      "id": "v10-new-bsc-06",
+      "target": 0,
+      "video": 0,
+      "weight": 0.17279999999999998
+    },
+    {
+      "audio": 0,
+      "fast": true,
+      "id": "v10-new-bsc-07",
+      "target": 0,
+      "video": 0,
+      "weight": 0.17279999999999998
+    },
+    {
+      "audio": 0,
+      "fast": false,
+      "id": "v10-new-bsc-08",
+      "target": 1,
+      "video": 0,
+      "weight": 0.0028000000000000004
+    },
+    {
+      "audio": 0,
+      "fast": true,
+      "id": "v10-new-bsc-09",
+      "target": 1,
+      "video": 0,
+      "weight": 0.0028000000000000004
+    },
+    {
+      "audio": 0,
+      "fast": false,
+      "id": "v10-new-bsc-10",
+      "target": 1,
+      "video": 1,
+      "weight": 0.06720000000000001
+    },
+    {
+      "audio": 0,
+      "fast": true,
+      "id": "v10-new-bsc-11",
+      "target": 1,
+      "video": 1,
+      "weight": 0.06720000000000001
+    },
+    {
+      "audio": 1,
+      "fast": false,
+      "id": "v10-new-bsc-12",
+      "target": 1,
+      "video": 0,
+      "weight": 0.0072
+    },
+    {
+      "audio": 1,
+      "fast": true,
+      "id": "v10-new-bsc-13",
+      "target": 1,
+      "video": 0,
+      "weight": 0.0072
+    },
+    {
+      "audio": 1,
+      "fast": false,
+      "id": "v10-new-bsc-14",
+      "target": 1,
+      "video": 1,
+      "weight": 0.17279999999999998
+    },
+    {
+      "audio": 1,
+      "fast": true,
+      "id": "v10-new-bsc-15",
+      "target": 1,
+      "video": 1,
+      "weight": 0.17279999999999998
+    }
+  ],
+  "order": "Latin rotation by world index modulo six",
+  "qualification": "all normal reserve actual runs timely and within declared finalization budgets; late workers excluded and drained after flush",
+  "real_AV_confirmation": false,
+  "real_selection": "predeclared odd-parity half-factor design, descriptive unweighted; not iid cohort",
+  "real_world_ids": [
+    "v10-new-bsc-01",
+    "v10-new-bsc-02",
+    "v10-new-bsc-04",
+    "v10-new-bsc-07",
+    "v10-new-bsc-08",
+    "v10-new-bsc-11",
+    "v10-new-bsc-13",
+    "v10-new-bsc-14"
+  ],
+  "risk_target": "extra contract cost of actual final-output deadline miss, separate from lost content accuracy",
+  "schema": "hcsn-v10-flush-reservation.v1",
+  "scope": "registered synthetic bounded head/sink execution; no arbitrary head/sink or scheduling hard guarantee",
+  "service_timeout_probability": 0.5,
+  "sink_delay": 0.015,
+  "source_derivation": "execution.py is isolated v8 executor copy plus explicit service cutoff/finalization-budget accounting",
+  "source_sha256": {
+    "experiments/hcsn_v10_closure_20261101/risk/audit.py": "211274b1b8031bf7757c3a1ba0c7b15f3cb811c77409b21c267ba6b62e7f20d8",
+    "experiments/hcsn_v10_closure_20261101/risk/execution.py": "46a47c3b8cfa70baa4adb320ddcb5bb1b7c4728a5f04d332dad1d5c5f65ebb50",
+    "experiments/hcsn_v10_closure_20261101/risk/study.py": "7855df505a3995b3dbff4afaf67ff2a2249a4e938ab842b36d0a1793d7440221",
+    "experiments/hcsn_v10_closure_20261101/risk/test_study.py": "1594a4be7c14ad83d28356c23ac1623030efe3b18168b3ced56b528d90ff6d12",
+    "experiments/hcsn_v7_support_20261101/content_interface/content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+    "experiments/hcsn_v8_execution_20261101/scheduler/execution.py": "f38d0ea01ba71d7c128da9ddd86597e41b83b79cbba428eaade0f33e4177243b",
+    "experiments/hcsn_v8_execution_20261101/scheduler/planning.py": "3b616986599fb242d715c5a8b92fb73a68be01858723c6c6cc3111cda773ed61"
+  },
+  "stress_probes": [
+    {
+      "head_delay": 0.45,
+      "name": "slow_head_outside_contract",
+      "sink_delay": 0.015
+    },
+    {
+      "head_delay": 0.015,
+      "name": "slow_sink_outside_contract",
+      "sink_delay": 0.45
+    }
+  ]
+}
