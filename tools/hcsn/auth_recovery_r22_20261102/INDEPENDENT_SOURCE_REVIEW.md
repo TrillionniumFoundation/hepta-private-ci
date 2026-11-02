@@ -1,0 +1,11 @@
+# Independent R22 authenticated-checkpoint source review
+
+The original seven frozen source/protocol files still match SOURCE_FREEZE. The recorded32-context/80-control MAC and retained-witness rollback checks, four retained-world native replays, and100-record OpenSSL audit are consistent with their explicitly limited trusted-host/key/witness-custody profile. This review does not refute those bounded integrity results or supply a production security certification.
+
+A real availability counterexample is now preserved. An unauthenticated localhost peer sent an opening brace plus blank bytes every0.2 seconds,23 bytes total over4.4 seconds. The serial witness remained occupied and a separately authenticated valid tip query timed out after3.003617 seconds. Valid service resumed when the slow peer closed. The full invoked checker/witness family used0.116789 CPU seconds; the top-level checker exited0 because detecting this limitation was its prewritten objective.
+
+Socket settimeout is an idle timeout, not an absolute request deadline. Client.query has the corresponding slow-response limitation until separately corrected. A prospective V2 should bound both directions with monotonic absolute deadlines and explicit framing caps; this will still not prove service under an unlimited flood, hard realtime scheduling, or independent-host failure domains.
+
+The first counterexample was locally prewritten but ran before the remote source publication notification. Its receipt completed at02:30:09 UTC and source commit daf9f9ce28834ad4540c07f2ea0a5e3a085457e5 was created at02:30:20 UTC. This engineering discovery is not remotely prefrozen; a later publication or replay cannot rewrite that history. It is separate from the original80 controls. All original outputs and frozen candidate sources are preserved.
+
+Two scope points remain: repeated public commit() calls can consume new witness sequences after a lost acknowledgement, so there is no exactly-once API theorem; and an authorized writer can sign stale semantic states at a new sequence. The independently retained witness-storage assumption also excludes rolling the witness log back with both actors. A single logical coordinator is assumed; there is no general concurrent-owner lifecycle lease or physical power-loss qualification.

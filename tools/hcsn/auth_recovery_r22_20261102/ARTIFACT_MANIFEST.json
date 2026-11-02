@@ -20,6 +20,42 @@
       "mode": 420
     },
     {
+      "path": "INDEPENDENT_REVIEW_PROTOCOL.json",
+      "bytes": 1213,
+      "sha256": "44624287a64e77e2fc6459601052ac99fd22d47939c804c61909f5feb8b7a381",
+      "mode": 420
+    },
+    {
+      "path": "INDEPENDENT_SLOW_PEER.process.json",
+      "bytes": 682,
+      "sha256": "ca7ce9fc72f90c05e4f1dcaa21c1bf586b69e62853acd5623b59fbd19d0db748",
+      "mode": 420
+    },
+    {
+      "path": "INDEPENDENT_SLOW_PEER.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "INDEPENDENT_SLOW_PEER.stdout",
+      "bytes": 80,
+      "sha256": "9e792d9759423066f3984f16edab97c06332a06c428bbe79c8e13d6299359765",
+      "mode": 420
+    },
+    {
+      "path": "INDEPENDENT_SOURCE_REVIEW.json",
+      "bytes": 3569,
+      "sha256": "071d7636c4edee75dcbe2cc85cb5df710529f36bb007c471ca2dc3f194e915fe",
+      "mode": 420
+    },
+    {
+      "path": "INDEPENDENT_SOURCE_REVIEW.md",
+      "bytes": 2299,
+      "sha256": "6943c68c357f5ab982c06e6a0ebbaff21f21cdd34cf8c3ad38ff89d56e6e5199",
+      "mode": 420
+    },
+    {
       "path": "OPENSSL_AUDIT.process.json",
       "bytes": 657,
       "sha256": "b2888d2c29f0fdd69ae5d9d963a567abdab1662a105c06e4ec005023188e5911",
@@ -51,8 +87,8 @@
     },
     {
       "path": "REJECTED_SYMLINK_FIXTURES.json",
-      "bytes": 1653,
-      "sha256": "0da11e3f57492491aaf4eb096c572bc5800f57069319422cf738d5982d7fed6f",
+      "bytes": 1427,
+      "sha256": "1f14a52a00c5bf6275d2f72f4855ef256705d11ab60a84bb79404b23221a5b25",
       "mode": 420
     },
     {
@@ -71,6 +107,12 @@
       "path": "SOURCE_FREEZE.json",
       "bytes": 7874,
       "sha256": "040093e3b3e340492331f72b27062375f4b308b60cba8185cdcac535485b6ccc",
+      "mode": 420
+    },
+    {
+      "path": "V1_FOLLOWUP.md",
+      "bytes": 773,
+      "sha256": "ee74fdfc5fabdaf93e11103603fd5fdba8f15b9e9e01f4502c66edf79c94b7bb",
       "mode": 420
     },
     {
@@ -2378,6 +2420,42 @@
       "mode": 384
     },
     {
+      "path": "independent_slow_peer.py",
+      "bytes": 5550,
+      "sha256": "2267ada20d284c7cecaba47e9b34362a9fa4636609b9fd21940acf7df5ff981a",
+      "mode": 420
+    },
+    {
+      "path": "independent_slow_peer_01/COUNTEREXAMPLE.json",
+      "bytes": 2278,
+      "sha256": "5ad63770f1c1127a135a61d08ad866b0802687ec7316beb3245d94c1034d4e97",
+      "mode": 420
+    },
+    {
+      "path": "independent_slow_peer_01/endpoint.json",
+      "bytes": 33,
+      "sha256": "aaf34f1c6379b83ee2840a833b8118d86cf2ecd88602af67aab9bf44cd5cc220",
+      "mode": 384
+    },
+    {
+      "path": "independent_slow_peer_01/public-fixture.key",
+      "bytes": 32,
+      "sha256": "ef2b56fe7d800ae925e6340a014a6ff1ff2152c3a08f1d655385bf58373192ca",
+      "mode": 384
+    },
+    {
+      "path": "independent_slow_peer_01/witness.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "independent_slow_peer_01/witness.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
       "path": "meter.py",
       "bytes": 1459,
       "sha256": "96823fe5499c4f725153b1dbb6707cd5872c0e0556912d55a16294c9e177f2e8",
@@ -2402,7 +2480,7 @@
       "mode": 420
     }
   ],
-  "file_count": 400,
+  "file_count": 413,
   "test_keys": "Only public synthetic fixture bytes; no live credential",
-  "symlinks": "Rejected fixture literal link targets preserved in REJECTED_SYMLINK_FIXTURES.json; not restored as admitted inputs."
+  "rejected_link_metadata": "REJECTED_SYMLINK_FIXTURES.json"
 }
