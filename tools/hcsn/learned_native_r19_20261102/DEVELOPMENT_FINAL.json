@@ -1,0 +1,68 @@
+{
+  "all_actions_answers_exact": true,
+  "constant_fold": "fixed learned symbol operations, original checkpoint source arrays exact verified before worlds",
+  "formal_worlds_opened": false,
+  "guards": {
+    "cases": [
+      {
+        "name": "nan_threshold",
+        "rejected": true,
+        "stderr": "nonfinite controller threshold\n"
+      },
+      {
+        "name": "fp32_overflow",
+        "rejected": true,
+        "stderr": "FP32 parameter overflow\n"
+      },
+      {
+        "name": "head_exact_tie",
+        "rejected": true,
+        "stderr": "UNCERTIFIED_LEARNED_HEAD_GAP\n"
+      },
+      {
+        "name": "valid_value",
+        "rejected": false,
+        "stderr": ""
+      },
+      {
+        "name": "action_near_tie",
+        "rejected": true,
+        "stderr": "UNCERTIFIED_LEARNED_ACTION_GAP\n"
+      },
+      {
+        "name": "stop_unpurchased_invalid_token",
+        "rejected": false,
+        "stderr": ""
+      }
+    ],
+    "cpu_seconds_including_children": 0.019757204,
+    "scope": "Pre-freeze engineering checks, not formal parity worlds",
+    "status": "PASS"
+  },
+  "max_logits_error": 5.964794311807964e-07,
+  "max_probability_error": 1.7884470826512455e-07,
+  "max_state_error": 9.825473767932635e-15,
+  "min_action_gap": 0.001855313778,
+  "min_head_gap": 0.0001838803291,
+  "model_domain_pairs": 48,
+  "process": {
+    "cpu_seconds": 7.804265999999999,
+    "exit_code": 0,
+    "max_rss_linux_kib": 330692,
+    "scope": "Whole worker including imports, compile, all Rust children and Torch/reference/output; export/developer/audit separate",
+    "wall_seconds": 12.41719760200067
+  },
+  "profiles": 16,
+  "queries": 768,
+  "retained_development_failure": "development_02: raw FP32softmax drift state5.898216678956736e-9; contract5e-9 unchanged; original output retained",
+  "sources": {
+    "PROFILE_MANIFEST.json": "a0952b6de92df52e96492ee782372fd083a5300b1c3211bb94f30c11ffe075aa",
+    "PROTOCOL.json": "137861ca044f19b95889b93851baef470c778292db24cf5ee2ca446584d799d3",
+    "driver.py": "9491ffc1c5d6e07108bc7913090cd7950af0ddce2b6441e9c2d7280fe6b14708",
+    "export.py": "3e2b34b0a3053dbf2399ecf23b3d27323b1842d58c440e1e96b9c8c35e3063dd",
+    "guards.py": "484f922e542e32d9df34b757bb8ee546350a5ed28b496bb06eada7af985f8272",
+    "main.rs": "fd5cf4a2fbeb45e30f321e034de29cc39cf08799a572dd106ccf035b980a7917",
+    "model.rs": "f405cbcb8e43648252798dcdb1b97b0a04cb019c6d6c78c0583a13b41ceae7e7"
+  },
+  "status": "PASS"
+}

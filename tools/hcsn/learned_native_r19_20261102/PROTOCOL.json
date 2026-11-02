@@ -1,0 +1,69 @@
+{
+  "acceptance": {
+    "actual_actions_and_answers": "exact, all queries; no dropped worlds",
+    "logits_max_abs": 1e-05,
+    "probabilities_max_abs": 2e-06,
+    "state_max_abs": 5e-09
+  },
+  "constant_fold_scope": "Immutable learned operation compilation, not owner state/action oracle. Runtime parameter updates are unsupported; new checkpoint requires new export/freeze.",
+  "cost": "Linux wait4 whole worker includes imports,16 original-checkpoint/export-origin checks, rustc, all Rust children, Torch references, data and outputs. Parent/development/export/auditor separate; early exporter internalCPU only, importCPU unmetered; no energy/GPU claims.",
+  "development": [
+    [
+      "iid",
+      2,
+      6,
+      192111
+    ],
+    [
+      "ood",
+      2,
+      6,
+      192112
+    ],
+    [
+      "long",
+      1,
+      24,
+      192113
+    ]
+  ],
+  "development_profiles": "All16 original profiles; same five development worlds, no profile selection",
+  "export_origin": "Original rawW is retained. Before any owner worlds open, worker independently reloads each pinned original checkpoint and demands all exported arrays, exp(log_scale), folded column/row probabilities, control and threshold match exactly at original dtype; no training or profile selection.",
+  "failure": "Any native near-tie/nonfinite/checkpoint mismatch/parity failure aborts and preserves all outputs; no success subset or post-test changes",
+  "finite_scope": "Known-law finite symbolic task; 20 fresh owner worlds and3072 model-query comparisons; not arbitrary-input proof, GPU, energy, ownership/recovery or production adoption",
+  "fit_selection_freeze": "087e0bd9471a80eb5526940f3244072d1a20a7756145c345bf899e56937d8915",
+  "formal": [
+    [
+      "iid",
+      8,
+      6,
+      192201
+    ],
+    [
+      "ood",
+      8,
+      6,
+      192202
+    ],
+    [
+      "long",
+      4,
+      24,
+      192203
+    ]
+  ],
+  "identity": "Original checkpoint SHA256 + actual serialized profile fingerprint; publication binds full profileSHA256",
+  "margins": {
+    "all_five_head_logit_top2_gap_min": 2e-05,
+    "near_tie": "hard rejection; no altered policy/tie/skip",
+    "value_action_gap_min": 5e-05
+  },
+  "native": "Independent FP64 gammaQ uniformization; exact immutable FP32 column-softmax WRITE and row-softmax emission constants; independent Rust rawW softmax consistency within2e-7; FP32 dense/tanh/dense/softmax and expected endpoint READ value. No Python callback.",
+  "no_new_training": true,
+  "production_activation": false,
+  "profiles": "All16 original analytic fits; 8seeds x independently trained light/value; no best-test selection",
+  "schema": "learned-native-forward-r19-v1",
+  "semantics": "initial public codes; WRITE then advance all4addresses once to deadline; STOP/READ endpoint controller; selected READ only enters history; no original four-action policy claim",
+  "source_learning_freeze": "a53c9ce9033c41cd42b147ae0a8c2b68175fe1c13ea82038d7458aa1fffd39cf",
+  "source_staging": "Stage1 native model/main plus exporter+16profiles; Stage2 paritydriver/guards/protocol; Stage3 owned-runtime adapter separately; frozen learning confirm and native02 unchanged."
+}

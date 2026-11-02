@@ -1,0 +1,37 @@
+{
+  "cases": [
+    {
+      "name": "nan_threshold",
+      "rejected": true,
+      "stderr": "nonfinite controller threshold\n"
+    },
+    {
+      "name": "fp32_overflow",
+      "rejected": true,
+      "stderr": "FP32 parameter overflow\n"
+    },
+    {
+      "name": "head_exact_tie",
+      "rejected": true,
+      "stderr": "UNCERTIFIED_LEARNED_HEAD_GAP\n"
+    },
+    {
+      "name": "valid_value",
+      "rejected": false,
+      "stderr": ""
+    },
+    {
+      "name": "action_near_tie",
+      "rejected": true,
+      "stderr": "UNCERTIFIED_LEARNED_ACTION_GAP\n"
+    },
+    {
+      "name": "stop_unpurchased_invalid_token",
+      "rejected": false,
+      "stderr": ""
+    }
+  ],
+  "cpu_seconds_including_children": 0.019757204,
+  "scope": "Pre-freeze engineering checks, not formal parity worlds",
+  "status": "PASS"
+}
