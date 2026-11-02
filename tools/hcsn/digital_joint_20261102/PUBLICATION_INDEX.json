@@ -358,7 +358,13 @@
     "cpu_ci": {
       "parts": "evidence/joint_ci_PUBLISHED_PARTS.json",
       "local": "evidence/joint_ci_ARCHIVE.json",
-      "hosted": "evidence/joint_ci_HOSTED_MANIFEST.json"
+      "hosted": "evidence/joint_ci_HOSTED_MANIFEST.json",
+      "integrated": {
+        "bytes": 1494391,
+        "sha256": "f522344cfabc011286a59c677c84d349b0449f9aef2f839bb5f6c69b62eb3df2",
+        "parts": "evidence/joint_ci_INTEGRATED_SUCCESS.json",
+        "members": "evidence/joint_ci_INTEGRATED_MANIFEST.json"
+      }
     }
   },
   "reassembly": {
@@ -381,9 +387,11 @@
     "integrated_followup": {
       "id": 41378071269,
       "head_sha": "b9e4126afe3a7deb07685be75e46a74e01efaef4",
-      "last_observed_status": "queued",
-      "last_observed_conclusion": null,
-      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41378071269"
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41378071269",
+      "evidence": "evidence/joint_ci_INTEGRATED_SUCCESS.json",
+      "cases": 6
     },
     "scope": "CPU fixture replay only; no frozen-weight bit regeneration, formal fit/confirmation, full native CI, GPU or energy claim",
     "admission_auditor_selection": "The integrated tree retains the newer admitted-training auditor from52d; it does not overwrite it with the earlier hosted fixture snapshot."
@@ -413,5 +421,11 @@
     "duplicate_core_refs": 0,
     "metadata_only_addition_note": "The final child commit adds this index, review indexes and read-only verification records; executable sources, raw data and all original model bytes are identical to the verified evidence commit.",
     "unchecked_optional_scope": "13 kernel archive-only members and independent sensitivity member were not redundantly rehashed in this final pass; earlier exact archive/member qualifications remain separate. Refer to final verifier for per-item coverage."
+  },
+  "integrated_ci_append": {
+    "base_remote_verification": "21 logical archives/72 physical blobs at b9, as recorded independently; successful integrated CI adds one archive/two physical blobs.",
+    "final_logical_archive_count": 22,
+    "final_physical_archive_blobs": 74,
+    "all20_sources_unchanged": true
   }
 }
