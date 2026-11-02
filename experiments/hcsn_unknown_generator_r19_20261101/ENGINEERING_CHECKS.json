@@ -1,0 +1,28 @@
+{
+  "schema": "hcsn.r19.content.engineering.v1",
+  "prefreeze_restricted_law_reduction": {
+    "namespace": "R19 train, generators 0..23, world0; no confirmation worlds opened",
+    "converted_law": "T=rho*I+(1-rho)*pi; same initial pi and q",
+    "worlds": 24,
+    "exact_final_and_hidden_arrays": true,
+    "maximum_weight_or_surprise_difference": 0.0,
+    "exit_code": 0,
+    "cpu_seconds": null,
+    "cost_limit": "Development probe was not separately CPU metered; do not count it as zero lifecycle cost"
+  },
+  "prefreeze_scalar_reference": {
+    "command": "python -m experiments.hcsn_unknown_generator_r19_20261101.audit_reference",
+    "stdout": {
+      "independent_action_comparisons": 192,
+      "marginal_components": 656,
+      "maximum_absolute_error": 3.3306690738754696e-16,
+      "passed": true,
+      "process_cpu_seconds": 0.148038016,
+      "raw_owner_prediction_checks": 0,
+      "reference_worlds": 12
+    },
+    "scope": "Audit's own process_time, excludes interpreter/import startup and lifecycle cost"
+  },
+  "failed_or_aborted_scientific_campaigns": [],
+  "production_activation": false
+}

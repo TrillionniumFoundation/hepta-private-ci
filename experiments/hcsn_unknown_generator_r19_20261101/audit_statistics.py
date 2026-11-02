@@ -61,6 +61,7 @@ def main():
     summary = json.loads((confirmation / "SUMMARY.json").read_text())
     for panel in spec["panels"]:
         boot = np.random.default_rng(1905513).integers(256, size=(4096, 256))
+        stored = {}
         for name in spec["models"]:
             grouped = np.zeros((256, 8))
             for row in (r for r in raw if r["panel"] == panel):
@@ -81,7 +82,17 @@ def main():
             passed = (calibration["selected"][name]["calibration_gate_passed"] and not total[6]
                 and total[2] >= 32 and max(expected["upper95_fractional"], expected["upper95_overall"]) <= .1)
             assert expected["gate"] == passed
+            stored[name] = grouped / 4
             checks += 9
+        paired = summary[panel + ":paired"]
+        for col, sign, mean_key, interval_key in ((4, 1, "payoff_difference", "payoff_ci95"),
+                (5, -1, "before_brier_improvement", "before_brier_ci95")):
+            difference = sign * (stored["full_transition"][:, col] - stored["restricted_markov"][:, col])
+            assert abs(difference.mean() - paired[mean_key]) < 1e-12
+            assert np.max(np.abs(np.quantile(difference[boot].mean(1), [.025, .975]) - paired[interval_key])) < 1e-12
+            checks += 3
+    assert summary["unseen_family_gate"] == all(summary["models"][panel + ":full_transition"]["quality"]["gate"]
+        for panel in ("reverse", "lag2"))
     print(json.dumps(dict(passed=True, calibration_prediction_records=2048 * 2 * 4,
         confirmation_prediction_records=len(raw) * 2, numerical_statistic_checks=checks,
         process_cpu_seconds=time.process_time() - start), sort_keys=True))
