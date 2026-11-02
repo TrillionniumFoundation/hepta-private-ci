@@ -1,0 +1,9 @@
+{
+  "schema": "joint-native-cancel-audit-attempt-v1",
+  "status": "failed_audit_expectation",
+  "source_sha256": "56e2f1e80127f5e160cd941a16b11bac7cd8df70a3ee8a091e6f5f179103cea2",
+  "native_source_changed": false,
+  "reason": "auditor incorrectly required the learned GRU forecast bank to be invariant to pending cancellation; bank also consumes public pending flag. Correct check is unchanged mass plus fresh artifact bank from post-cancel public state.",
+  "raw_directory": "joint-native-cancel-independent",
+  "completed_invocations": 38
+}
