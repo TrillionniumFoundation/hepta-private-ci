@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-r20-complete-formal-process-envelope-v1",
+  "started_utc": "2026-11-02T01:12:21.238466+00:00",
+  "completed_utc": "2026-11-02T01:13:24.598681+00:00",
+  "commands": [
+    {
+      "name": "EXACT",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "tools.hcsn.continuous_task_r20_20261101.campaign",
+        "--output",
+        "tools/hcsn/continuous_task_r20_20261101/exact_run"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 6.008892022000509,
+      "child_user_cpu_seconds": 1.384994,
+      "child_system_cpu_seconds": 0.080092,
+      "cumulative_child_maximum_rss_linux_kib": 50220
+    },
+    {
+      "name": "EXACT_REPLAY",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "tools.hcsn.continuous_task_r20_20261101.record_check",
+        "--run",
+        "tools/hcsn/continuous_task_r20_20261101/exact_run",
+        "--out",
+        "tools/hcsn/continuous_task_r20_20261101/EXACT_RAW_REPLAY.json"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 0.1627997389950906,
+      "child_user_cpu_seconds": 0.04296499999999992,
+      "child_system_cpu_seconds": 0.0,
+      "cumulative_child_maximum_rss_linux_kib": 50220
+    },
+    {
+      "name": "GENERIC",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "tools.hcsn.continuous_task_r20_20261101.generic",
+        "--output",
+        "tools/hcsn/continuous_task_r20_20261101/generic_run"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 52.83911789300328,
+      "child_user_cpu_seconds": 10.695552000000001,
+      "child_system_cpu_seconds": 1.250956,
+      "cumulative_child_maximum_rss_linux_kib": 52384
+    },
+    {
+      "name": "GENERIC_REPLAY",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "tools.hcsn.continuous_task_r20_20261101.generic_record_check",
+        "--run",
+        "tools/hcsn/continuous_task_r20_20261101/generic_run",
+        "--out",
+        "tools/hcsn/continuous_task_r20_20261101/GENERIC_RAW_REPLAY.json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 4.349055797007168,
+      "child_user_cpu_seconds": 1.1089399999999987,
+      "child_system_cpu_seconds": 0.03746399999999994,
+      "cumulative_child_maximum_rss_linux_kib": 52384
+    }
+  ],
+  "wall_seconds": 63.36021694000374,
+  "wrapper_cpu_seconds": 0.004277620999999995,
+  "complete_child_cpu_seconds": 14.600963,
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "blas_threads": 1,
+  "includes": "Interpreter startup, frozen-source verification, every successful/failed numerical attempt, complete array serialization and both raw arithmetic replays. Inner CPU is nested and not added.",
+  "excludes": "Prior development, compilation, root integration, whole-project lifecycle and hardware joules.",
+  "energy_joules": null
+}

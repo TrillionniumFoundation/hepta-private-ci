@@ -1,0 +1,21 @@
+{
+  "schema": "hcsn-r20-nonconstant-directional-probe-protocol-v1",
+  "classification": "Separate prospective nonconstant finite-step challenge; generic/full-gradient qualification remains open regardless of numeric outcome",
+  "profiles": [{"sigma": 0.82, "reset_x": 0.57}, {"sigma": 1.17, "reset_x": 0.73}, {"sigma": 1.53, "reset_x": 0.91}],
+  "mesh": [0.2, 0.02],
+  "directions": "Both signed unit directions for each of all thirteen coefficients, in every profile",
+  "steps": [0.0001, 0.00003],
+  "one_sided_tolerance": 0.000001,
+  "primal_tolerance": 0.000000000002,
+  "requirements": [
+    "All 78 attempted signed directions retained, including convergence failures, all 156 one-sided comparisons if completed",
+    "Complete primal/reference/directional/shifted numerical arrays saved losslessly",
+    "Report numerical unresolved rows and nonzero derivative coverage separately",
+    "No failed direction removed or repaired by a new smaller-step selection",
+    "No equivalence between finite-step failure and incorrect local derivative is assumed",
+    "No generic mathematical classification certificate or full financial/neural gradient claim"
+  ],
+  "original_r19_whole_array_gate": false,
+  "all_blockers_closed": false,
+  "production_activation": false
+}

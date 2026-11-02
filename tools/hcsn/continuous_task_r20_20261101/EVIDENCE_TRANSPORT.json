@@ -1,0 +1,75 @@
+{
+  "schema": "hcsn-evidence-transport-v2",
+  "component": "tools/hcsn/continuous_task_r20_20261101",
+  "included_directories": [
+    "source_v1",
+    "exact_run",
+    "exact_run_v2",
+    "generic_run",
+    "generic_run_v2"
+  ],
+  "included_files": [],
+  "file_count_cap": 65536,
+  "logical_bytes_cap": 536870912,
+  "archive": {
+    "gzip_bytes": 3395078,
+    "gzip_sha256": "527adaa9779196a71de90f1d07096703666d07009722d414dcff4412d9db62a8",
+    "raw_bytes": 3880960,
+    "raw_sha256": "8469d6ffb039696ebbe09b9a869d9f409886dde5e7c47a2ab7adb0d2025f8fd9",
+    "parts": [
+      {
+        "path": "transport/0000.part",
+        "size": 450000,
+        "sha256": "1ca6fdcb9872c8313a4de64ff253d214f2625a32ae112dfc4a968722a812ef72"
+      },
+      {
+        "path": "transport/0001.part",
+        "size": 450000,
+        "sha256": "c92ce6680e28e2ba81a7cfc813be744bc3a3ac7357c18c17b84ecc314df4e8b9"
+      },
+      {
+        "path": "transport/0002.part",
+        "size": 450000,
+        "sha256": "9c28c2d72201115b9080e9500a4c4301c4fafb85e2c467fa48f56929975448a5"
+      },
+      {
+        "path": "transport/0003.part",
+        "size": 450000,
+        "sha256": "b04757cd6b77e559c5334d890244fbed6512da42fca9137ec2252f7c439ce1dc"
+      },
+      {
+        "path": "transport/0004.part",
+        "size": 450000,
+        "sha256": "86cf6f70c48e10c300e542f16fe11ab0a8f2dbb7696a76e4312ba6f90ce27a66"
+      },
+      {
+        "path": "transport/0005.part",
+        "size": 450000,
+        "sha256": "81d0243e0ba22264aa32ab57bb5e2ca037d0815ffff5dc60df65abccfb3b12c5"
+      },
+      {
+        "path": "transport/0006.part",
+        "size": 450000,
+        "sha256": "fcaa3d29bbd5c75d7fef4baac01a5f44e4cff12cdb8259a718fea8f51b1ba7c3"
+      },
+      {
+        "path": "transport/0007.part",
+        "size": 245078,
+        "sha256": "1ca6156cca1458c084c9b999898c8f50f4206ddca627d7b7fb7248fbe37ffce3"
+      }
+    ]
+  },
+  "file_map": {
+    "gzip_bytes": 5955,
+    "gzip_sha256": "0bba4a15c4055cf509370525dceefd78ed65c4fbfc6536aee68bd34dd9fbec54",
+    "raw_bytes": 26976,
+    "raw_sha256": "e0d0e4e065fdf7e5916c9d3e5e16df6738010cd3ebae368a43a01739e67bfe53",
+    "parts": [
+      {
+        "path": "map_transport/0000.part",
+        "size": 5955,
+        "sha256": "0bba4a15c4055cf509370525dceefd78ed65c4fbfc6536aee68bd34dd9fbec54"
+      }
+    ]
+  }
+}

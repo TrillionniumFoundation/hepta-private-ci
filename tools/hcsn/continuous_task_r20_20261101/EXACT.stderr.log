@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/continuous_task_r20_20261101/campaign.py", line 149, in <module>
+    raise SystemExit(0 if run(parser.parse_args().output)["passed"] else 1)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/continuous_task_r20_20261101/campaign.py", line 125, in run
+    positive, negative = [task_directional.solve(config, sign * d, dx, dt) for sign in (1, -1)]
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/continuous_task_r20_20261101/task_directional.py", line 99, in solve
+    dlv[mode], record = derivative(a, lower, upper, lv[mode], rhs[mode], obstacle[mode],
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/continuous_task_r20_20261101/directional.py", line 68, in derivative
+    result, record = mixed_lcp(a, lower, upper, drhs - dmatrix_value, dobstacle, states)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/continuous_task_r20_20261101/directional.py", line 45, in mixed_lcp
+    raise RuntimeError("Mixed directional LCP policy iteration did not converge")
+RuntimeError: Mixed directional LCP policy iteration did not converge
