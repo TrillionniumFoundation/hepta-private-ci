@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn-v13-emotion-source-preflight.v1",
+  "checks": [
+    {
+      "name": "final_local_contracts",
+      "exit_code": 0,
+      "stdout": "{\"out\": \"experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_local_contracts003\", \"task_success\": true, \"cpu_seconds\": 0.441233, \"wall_seconds\": 0.443792045}\n"
+    },
+    {
+      "name": "actual_transport_roundtrip",
+      "exit_code": 0,
+      "stdout": "{'schema': 'hcsn-v13-physical-waveform-roundtrip.v1', 'parts': 4, 'restored_bytes': 17207799, 'whole_sha256': '2dc28d9ac49549f9b550787cbeaf2c8d7e1956942808a0da05443b57d6819709', 'original_npz_sha_equal': True, 'duplicated_full_npz_not_needed_in_git': True, 'cost': 'Unwrapped transport contract overhead; not imputed as zero or included in complete-worker subtotal'}\n"
+    },
+    {
+      "name": "actionlint",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "name": "prettier",
+      "exit_code": 0,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    }
+  ],
+  "real_emotion_model_weights_loaded_locally": false,
+  "actual_emotion_model_forwards_locally": 0,
+  "local_network_retries": 0,
+  "scope": "Local schema/identity and prepared-waveform contracts only; actual fixed-emotion acquisition/model run pending dedicated CI."
+}

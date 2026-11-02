@@ -1,7 +1,9 @@
 # Independent emotion-encoder CI review
 
-Status: **source review in progress; no pretrained emotion forward or quality
-PASS is established by this document.** Earlier ASR evidence remains unchanged.
+Status: **reviewed for real CI execution; no remaining blocking source finding
+in this scope. Actual pretrained emotion forward and quality remain pending.**
+Earlier ASR evidence remains unchanged. Reviewed source hashes are recorded in
+`EMOTION_SOURCE_REVIEW.json`; this is source review, not a completed CI receipt.
 
 ## Primary architecture and preprocessing
 
@@ -49,7 +51,52 @@ for all records, native crop length 44,099 at 44.1 kHz, origins 0.027 seconds fo
 rounding-related boundary padding; its actual zero count must not be turned
 into a universal guarantee that arbitrary shorter media can be admitted.
 
-## Required remaining source and actual-CI checks
+## Final source review findings and limits
+
+One blocking publication-boundary issue was found and corrected before CI:
+`campaign.py` initially persisted the official pretrained classifier tensors
+in `HEAD_REFERENCE_WEIGHTS.npz`. An entire raw artifact ZIP later published to
+Git would have carried those upstream parameter bytes despite excluding the
+661 MB checkpoint. The final source instead recomputes mean pooling and the
+dense/tanh/head equations in memory using NumPy FP64, checks the declared
+numeric gate, and preserves only shape/SHA/error evidence. It does not export
+any pretrained parameter slice. The new six-emotion ridge heads are separate
+user-trained parameters and remain retained.
+
+The self-written model matches the fixed publisher architecture. All actual
+asset bytes are sealed before graph construction/inference; weight identity,
+all keys, shapes, FP32 finiteness and strict load must succeed. Only the exact
+legacy positional `g/v` aliases are canonicalized, with collision rejection.
+The original augmentation config is retained for state compatibility; eval
+mode disables its training behavior. Eager CPU attention is declared.
+
+Prefix cropping precedes the local feature extractor. Actual future-suffix
+and invalid-window controls are scheduled before readout. The first real
+hidden sequence and regression outputs have an independent NumPy mean/head
+check. At success, 288 recording forwards plus two future controls account
+for the declared 290 calls; no synthetic local contract is counted as one.
+
+The actor-OOF loop uses only the sealed TRAIN records and 1024 pooled features.
+Its reused ridge function recomputes mean/scale/coefficients from each fold's
+23 training actors. Targets and actor/clip metadata select supervision/folds
+and are not model features. Fixed lambda 10 and temperature 1 do not provide
+probability calibration or independent qualification.
+
+The dedicated push-only workflow binds checkout to the actual event head,
+uses pinned actions and a fresh pinned scientific environment, restores the
+byte-exact waveform transport, and runs official acquisition and model/readout
+in separate waited-worker cost envelopes. The model is offline after explicit
+acquisition. Source/input Git blob snapshots include the hidden workflow;
+failure progress and receipts are uploaded with `always()` and hidden files.
+The official checkpoint stays in runner temporary storage outside the artifact.
+
+No new local real-emotion forward was executed by this reviewer. The author's
+1,178 local checks deliberately forbid model-runtime imports and validate
+schema/identity/transport contracts, not downloaded emotion weights. Actual
+runtime installation, acquisition, strict loading, numerical controls, all
+prefixes, readout and complete artifact verification remain real CI gates.
+
+The following conditions must remain true in the actual downloaded artifact:
 
 - Fixed revision and actual downloaded SHA are required. Preserve original
   config/preprocessor/model-card/license bytes and hashes. Disable remote code,

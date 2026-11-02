@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.emotion_encoder.prepare_waveforms",
+    "run",
+    "--plan",
+    "experiments/hcsn_v13_followup_20261102/emotion_encoder/PREPARE_PLAN.json",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/emotion_encoder/inputs"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_prepare_waveforms001",
+  "timeout": 300.0,
+  "sample_interval": 0.5
+}
