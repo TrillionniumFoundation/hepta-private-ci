@@ -1,0 +1,157 @@
+{
+  "fitted_law_counterexample": {
+    "actual_fullhx_accuracy_measured": false,
+    "calibration_event_probability": 0.0009692947691201281,
+    "calibration_row_counts": [
+      32,
+      32
+    ],
+    "correct_law_optimal_value": 0.0,
+    "fitted_confusion": [
+      [
+        0.9545454545454546,
+        0.045454545454545414
+      ],
+      [
+        0.045454545454545414,
+        0.9545454545454546
+      ]
+    ],
+    "fitted_policy_value_under_true_law": -0.011199999999999941,
+    "fitted_q_initial": [
+      0.0,
+      -0.06,
+      0.006363636363636439,
+      null,
+      0.0,
+      0.0
+    ],
+    "new_confirmation_worlds": 0,
+    "ordinary_stop_value": 0.0,
+    "passed": true,
+    "public": {
+      "deadline": 6,
+      "duration": [
+        1.5,
+        1.5,
+        1.5,
+        1.5,
+        1.5,
+        1.5
+      ],
+      "failure_probability": 0.16,
+      "id": "fitted-law-counterexample",
+      "initial_budget": 3,
+      "latency_price": 0.04,
+      "packet_sha256": [
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "packets": [
+        "packet_0.json",
+        "packet_1.json",
+        "packet_2.json",
+        "packet_3.json",
+        "packet_4.json",
+        "packet_5.json"
+      ],
+      "read_delay": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "read_price": [
+        0.01,
+        0.18,
+        0.18,
+        0.18,
+        0.18,
+        0.18
+      ],
+      "reliability": [
+        0.55,
+        0.55,
+        0.55,
+        0.55,
+        0.55,
+        0.55
+      ],
+      "repair_price": 0.05,
+      "schema": "digital-read-before-public-v1"
+    },
+    "stipulated_calibration_correct_counts": [
+      31,
+      31
+    ],
+    "stipulated_true_confusion": [
+      [
+        0.85,
+        0.15000000000000002
+      ],
+      [
+        0.15000000000000002,
+        0.85
+      ]
+    ],
+    "true_q_initial": [
+      0.0,
+      -0.06,
+      -0.011199999999999941,
+      null,
+      0.0,
+      0.0
+    ]
+  },
+  "kernel": {
+    "finite_difference": [
+      0.026665991981200673,
+      -0.05084237277575009,
+      -0.11400540571582239,
+      -0.03460481119432757,
+      -0.033633641277619475,
+      -0.008992195588142238,
+      0.03445448153172048,
+      -0.00018244543931178467
+    ],
+    "mass_defect": 2.4646951146678475e-14,
+    "max_generator_quadrature_error": 1.6653345369377348e-16,
+    "max_raw_gradient_error": 9.652582066976834e-10,
+    "max_scipy_transition_error": 8.493206138382448e-15,
+    "ordinary_fixed_boundary_inactive_coordinates": [
+      0,
+      4,
+      5,
+      6,
+      7
+    ],
+    "passed": true,
+    "raw_gradient": [
+      0.026665992365080094,
+      -0.050842373274983255,
+      -0.11400540475056418,
+      -0.03460481140468603,
+      -0.033633641332715736,
+      -0.008992195580886122,
+      0.03445448158422788,
+      -0.00018244545616866948
+    ],
+    "scale_gauge_generator_error": 1.4210854715202004e-14,
+    "scope": "Finite CTMC long-prefix/readout/count gradients and independent quadrature/expm; no Brownian continuum or task-benefit qualification",
+    "semigroup_error": 6.716849298982197e-15,
+    "semigroup_gradient_error": 3.3584246494910985e-15
+  },
+  "schema": "joint-pre-fit-independent-audit-v1",
+  "scope": "Mathematical counterexample and archived task semantics; no new model efficacy inference",
+  "source_sha256": {
+    "joint_independent_audit.py": "444a49db71c1b14ca15b9e2e4d30726a4cca9e00ec210fb47f3e107921bc7daa",
+    "joint_kernel.py": "0439cf12f4519c29b1b079adb2ebc66eb86a252c59a2754770acc58ed5cff0e9",
+    "task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06"
+  }
+}

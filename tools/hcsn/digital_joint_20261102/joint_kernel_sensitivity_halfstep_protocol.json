@@ -1,0 +1,15 @@
+{
+  "schema": "joint-kernel-sensitivity-halfstep-v1",
+  "base_result": "joint_kernel_sensitivity_attempt_002.json",
+  "base_source_commit": "29b2246c4bfb53d2bb5c3ca3ce83dcf142af0f2a",
+  "base_source_sha256": "7958a01460f20f7c274ae16ef40bf13bfb1f42461ae1e9d938a19ab831e89255",
+  "kernel_sha256": "0439cf12f4519c29b1b079adb2ebc66eb86a252c59a2754770acc58ed5cff0e9",
+  "reference_intervals": 480,
+  "reference_fd_step": 0.00005,
+  "physical_point": [0.84,0.78,0.2,0.15,-0.12,1.9,0.08],
+  "duration": 2.0,
+  "gate_maximum_1e4_5e5_Jacobian_difference": 0.0001,
+  "procedure": "Use independently implemented PDE480 whole output centered differences, all seven physical coordinates, 14 actual plus/minus solves; compare to preserved h1e-4 PDE480 Jacobian and report all fine-grid AD discrepancies separately",
+  "retention": "Publish source/protocol first; save every full PDE terminal mass/count and call cost, exact sources/input hashes, failed checks/exceptions without overwrite",
+  "limits": "FD step stability in one registered local subdomain does not prove whole-domain continuum gradient, moving boundary, parameter identification or task benefit"
+}

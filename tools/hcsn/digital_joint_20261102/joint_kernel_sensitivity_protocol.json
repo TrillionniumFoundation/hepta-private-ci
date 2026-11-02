@@ -1,0 +1,29 @@
+{
+  "schema": "joint-kernel-continuum-sensitivity-v1",
+  "scope": "One registered multi-event physical subdomain; finite-grid autodiff sensitivity versus independent refined FV-PDE centered differences; not global continuum-gradient proof",
+  "kernel_sha256": "0439cf12f4519c29b1b079adb2ebc66eb86a252c59a2754770acc58ed5cff0e9",
+  "physical_names": ["boundary","diffusion","drift","reset_plus","reset_minus","recovery_rate","reset_sd"],
+  "physical_point": [0.84,0.78,0.2,0.15,-0.12,1.9,0.08],
+  "duration": 2.0,
+  "initial": "center active atom, normalized coordinate zero",
+  "autodiff_grids": [31,63,127],
+  "reference_intervals": [240,480],
+  "reference_fd_step": 0.0001,
+  "cdf_thresholds": [-0.5,0.0,0.5],
+  "outputs": "Three relative-threshold CDFs after projecting active mass uniformly into its Voronoi bins, lower/upper refractory mass, full repeated-event expectation; separately three exact finite-node strict-bank-complement CDFs (<= threshold)",
+  "cdf_reference": "Projected FV-PDE CDF at relative physical thresholds k*b. The strict finite-node outputs are compared against this continuous-density approximation and retain their atom bias",
+  "gates": {
+    "reference_240_480_jacobian_max_difference": 0.0015,
+    "grid31_projected_ref_count_max_jacobian_error": 0.02,
+    "grid127_projected_ref_count_max_jacobian_error": 0.003,
+    "grid31_strict_cdf_max_jacobian_error": 0.05,
+    "grid127_strict_cdf_max_jacobian_error": 0.015,
+    "refinement_error_reduction_factor": 2.0,
+    "stress_expected_event_count_minimum": 1.0
+  },
+  "reference_independence": "Archived independently implemented NumPy central-difference generator with truncated Gaussian reset and scipy.sparse.linalg.expm_multiply; no torch kernel called for reference construction or centered differences",
+  "cost": "Retain every PDE call full terminal mass, physical point, observable vector, wall and process CPU; report total cost separately",
+  "publication": "Publish this source/protocol before execution, record full source commit and exact source snapshots; verify frozen kernel and reference hashes before/after",
+  "failure_retention": "Exclusive attempt files preserve every check/exception and source snapshot, no failed case deletion or new threshold tuning",
+  "limits": "Physical derivatives hold other physical parameters fixed, normalized initial coordinate and relative thresholds fixed. Bounds/scale gauge remain; this is one local sensitivity comparison, not arbitrary moving-boundary, arbitrary recovery, whole-domain accuracy or task benefit"
+}
