@@ -1,0 +1,25 @@
+name: HIA buildifier diagnostic (research only)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pinned-buildifier-diff:
+    name: Exact-source formatter difference (expected RED until fixed)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Print exact pinned buildifier difference, never modify files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          dotslash tools/buildifier -mode=diff defs.bzl
