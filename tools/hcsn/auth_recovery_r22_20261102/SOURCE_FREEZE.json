@@ -1,0 +1,195 @@
+{
+  "schema": "hcsn.r22.auth-recovery-freeze.v1",
+  "source": [
+    {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/security.py",
+      "sha256": "41d97f53dc53ce5e25612d81d8cb997d068d5b0ddf4ffacc66a1a0a88d1a6daa",
+      "bytes": 4155
+    },
+    {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/witness.py",
+      "sha256": "f72ad0424a11a413966ed24f78c2971fac898b5cb79ed4c92015b0ea266591c4",
+      "bytes": 3985
+    },
+    {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/checkpoint.py",
+      "sha256": "854c90d251fb0cbac38fdc486bbcdb6cb04f593ee1a13a03038332607df43c08",
+      "bytes": 3917
+    },
+    {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/verify.py",
+      "sha256": "8c23aff325ce0b29a72c2642bad7a8c25610c5ab0c83b611f33006195efaad96",
+      "bytes": 13809
+    },
+    {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/meter.py",
+      "sha256": "96823fe5499c4f725153b1dbb6707cd5872c0e0556912d55a16294c9e177f2e8",
+      "bytes": 1459
+    },
+    {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/audit.py",
+      "sha256": "1e092b6321049e8bd3a915c8200f343257e88925e9822f228c7456e598b5207b",
+      "bytes": 3473
+    },
+    {
+      "path": "tools/hcsn/auth_recovery_r22_20261102/PROTOCOL.json",
+      "sha256": "f77365aea655063559034b436de87171d01157fe74a3dd3f235b04038da6fbe3",
+      "bytes": 2889
+    }
+  ],
+  "retained_inputs": [
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/negative/identical_artifact",
+      "sha256": "b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798",
+      "bytes": 4952336
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/negative/alternate_artifact",
+      "sha256": "3f408dfdeb30fd53b593235461b0fbaeb6a3b34b0956200b55c7773fb184de76",
+      "bytes": 4952379
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_03/MODEL",
+      "sha256": "8a9358c834a903c217ac2aaf9830fdc749c6fc8bdbf159c8ca7fdafb282eb393",
+      "bytes": 92
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_03/PLAN",
+      "sha256": "151e345b71ed8c23a7498503cf413a6b33841bae9b8ffccdd864fa8f927eb2cf",
+      "bytes": 303
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_03/CATALOG",
+      "sha256": "0ea5933456a58543ed1ad94422377fe00c3012edad400432b1637824da4519c4",
+      "bytes": 178
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_03/at_fault_owner.state",
+      "sha256": "057db0d46725971170b9807d4f1ebb9feed968df96ab7a9bf4ee2a7b3ffdc51f",
+      "bytes": 830
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_03/at_fault_provider.state",
+      "sha256": "96017ba12d2def1758a4b848048ed1206700040cc08a77d4772868c419ff0561",
+      "bytes": 279
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_00/owner.state",
+      "sha256": "7f8f5d48139a7fc30cb3989cf05b735b83f1dd7b71dfad09b1286e464c609268",
+      "bytes": 1213
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_00/provider.state",
+      "sha256": "7cf2bb504136cf6775f1bb1489ca80785fb75ba07559403830a1591d53f6834a",
+      "bytes": 535
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/17_07/MODEL",
+      "sha256": "98ef67a3660ab4659fddf10000dcca4a2b57bab259b95176848e67ce158093ce",
+      "bytes": 92
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/17_07/PLAN",
+      "sha256": "bec0d9f687de00295dbe7b581f6918242c3465240eaa7eea5acb4884cd0c7e4f",
+      "bytes": 303
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/17_07/CATALOG",
+      "sha256": "40043e9d4f43df7235822995dbd627a207b9cf1b8397f7d7c3e63caeff08911c",
+      "bytes": 178
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/17_07/at_fault_owner.state",
+      "sha256": "5eb7fdbb8699a17acf79ea345e54fd5974a1def7d01c25f649261f6262162622",
+      "bytes": 830
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/17_07/at_fault_provider.state",
+      "sha256": "e86ecdaf41afe4a4fa6f76b8a8a83ff9e1eebacfe297d7484eb4e767c349d856",
+      "bytes": 279
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/17_00/owner.state",
+      "sha256": "75171f627848f5588aca4fa18d5cd669f35ebf6a2b84919259161e63bbe7dc24",
+      "bytes": 1213
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/17_00/provider.state",
+      "sha256": "ec5541d6bd22842c84b96e30cc51d9b86156af145dd753c30e24d3f9f546e622",
+      "bytes": 535
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/18_08/MODEL",
+      "sha256": "3a2b939c43e6ded856e787e50105ef99163f16b984f7506358da6f45fca08e63",
+      "bytes": 92
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/18_08/PLAN",
+      "sha256": "309eaba4801df842b320de1ffb04fc3116ec9cabaf5e127df74ea5c13e909ed1",
+      "bytes": 303
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/18_08/CATALOG",
+      "sha256": "e89f52761a919885e6deb2682d7f5cf1f3a4d68fcb0e4a8686b26e9c04fa66cf",
+      "bytes": 178
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/18_08/at_fault_owner.state",
+      "sha256": "67972e4aa3767c0ef3b47190c0c3d0ebcac6537e0a4b420a99e479a6973a68cf",
+      "bytes": 830
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/18_08/at_fault_provider.state",
+      "sha256": "6dc25d79e321add6b1db9e3d7b2eb1529c38f78e1e27b25cae4c4b71e1940ab0",
+      "bytes": 279
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/18_00/owner.state",
+      "sha256": "f3667ee055efc47d8f2a62da22c33915b5f848856b7496b759ad3ba17a503599",
+      "bytes": 1213
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/18_00/provider.state",
+      "sha256": "095a9b17775a472fc6a0c14e082081588f80f6d887d6f96be4a96c2578e17dc0",
+      "bytes": 535
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/19_04/MODEL",
+      "sha256": "8990475a7041355bbb85d7cebe0b42452c6101bd4be2e4be050c72ff7a1a4a27",
+      "bytes": 92
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/19_04/PLAN",
+      "sha256": "e26b639f0fe7a79cbaae57f438f2e8665a09abac1899942068ebb10158d911b9",
+      "bytes": 303
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/19_04/CATALOG",
+      "sha256": "f3a59f1e542b4f35fff27ddce7e1506f2967008525cac25519927b83318ff7cc",
+      "bytes": 178
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/19_04/at_fault_owner.state",
+      "sha256": "35f35e3e97435ad1844aae11033369fb8327b878c8cede6ea6e3871fa22af3a2",
+      "bytes": 830
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/19_04/at_fault_provider.state",
+      "sha256": "9311fd13067aa6c5653797efa0dee18b7c7d26b7b4eec1216773bf1494ffc968",
+      "bytes": 279
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/19_00/owner.state",
+      "sha256": "957dbcfc6b37e3256812717c93dd08df31c3a9cfaea67bc8aedf5aff08449673",
+      "bytes": 1213
+    },
+    {
+      "path": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/19_00/provider.state",
+      "sha256": "a5386f6622ec61d3cec6a769482872e36a1b2a6d3765816d92a177d9967ca368",
+      "bytes": 535
+    }
+  ],
+  "stdlib_imports_only": true,
+  "independent_tool": "OpenSSL3.0.13",
+  "source_written_before_formal_execution": true
+}

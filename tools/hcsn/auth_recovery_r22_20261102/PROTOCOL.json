@@ -1,0 +1,52 @@
+{
+  "schema": "hcsn.r22.auth-recovery-contract.v1",
+  "baseline_commit": "ff611d62793c2829cab85b38d6ab246691b3ba1d",
+  "classification": "Correctness/security engineering on deterministic public synthetic fixtures and retained R20 task worlds; no new task-world confirmation, trained-model adoption or production certification.",
+  "synthetic_contexts": 32,
+  "development_overlap_contexts": 4,
+  "native_retained_roster": [
+    [
+      16,
+      3
+    ],
+    [
+      17,
+      7
+    ],
+    [
+      18,
+      8
+    ],
+    [
+      19,
+      4
+    ]
+  ],
+  "actual_native_processes": 8,
+  "witness_processes": 3,
+  "negative_controls": 80,
+  "witness_log_records": 68,
+  "gates": [
+    "all32 two-checkpoint authenticated roundtrips",
+    "32 paired-owner-provider rollback refusals against independently retained witness",
+    "32 tamper refusals",
+    "staleCAS/boolSequence/duplicateJSON/wrongDomain/nonfinite/wrongKey/keyMode/keySymlink/replayedWitnessNonce/witnessOutage/tamperedWitnessLog refuse",
+    "changed model/plan/exact executable contexts refuse",
+    "pair-directory and checkpoint-file symlinks refuse",
+    "all4 actual paid-pending native resumptions match BOTH final actor files of their same original uninterrupted world",
+    "actual witness restart retains all monotone tips",
+    "OpenSSL independently matches100 HMAC records and8 final state byte comparisons"
+  ],
+  "crypto": "stdlib Python HMAC-SHA256 with domain separation, canonical JSON, constant-time tag comparison; fixture key is PUBLIC and never a live credential. Key path admission uses O_NOFOLLOW/fstat owner600 checks.",
+  "host_boundary": "Coordinator and kernel/user custody trusted; private700 checkpoint/log directories. No active same-uid hostile filesystem writer, key compromise or authorized malicious signer claim. TCP peer unauthenticated transport is bounded localhost; application request/response MAC+nonce/context authenticates messages. Witness state/key must be retained independently of actor rollback.",
+  "limitations": [
+    "three local processes do not establish independent-host failure domains",
+    "no powerloss/mid-fsync or hardware monotone counter qualification",
+    "rolling back witness storage with all actors is outside the retained-witness assumption",
+    "authorized signer can request new sequences for stale semantic states; no general semantic rollback theorem",
+    "same exact executable relocation only, no arbitrary upgrade migration",
+    "uncommitted/partial new candidate or witness record may fail closed and need operator recovery; no universal availability claim",
+    "no GPU/joule, multimodal quality, exclusive D-B or full cost benefit claim"
+  ],
+  "complete_formal_cost": "Outer wait4 of verifier worker, including imports and all waited Rust/witness children; independent OpenSSL audit separately metered; early development CPU unknown/null."
+}
