@@ -1,0 +1,63 @@
+{
+  "all_families": [
+    "iid",
+    "sticky",
+    "rotor",
+    "switching_rotor",
+    "pair_renewal"
+  ],
+  "calibration_family_error": 0.05,
+  "confirm_generators_per_family": 256,
+  "confirm_worlds_per_generator": 4,
+  "confirmation": "Fresh256generators*4worlds for EACH of5families; no never-trained family source is opened in fitting,calibration,guardselection orthresholdselection",
+  "families": "IID pi~Dirichlet(.4);sticky previous with rho Uniform(.6,.97) else pi;rotor forward or backward with rho else pi; all have q Uniform. Switching rotor flips direction at WRITE index3;pair-renewal holds each value for two consecutive WRITEs. Last two processes appear only in locked confirmation",
+  "fitting": "Base classes from complete public training groups. On separate fullPUBLIC fitting streams construct independent2/3/4missing masks; target derived from publicfinalWRITE for rawaliasquery. Optimize classprior by world-averaged conditional NLL of pre-READ and EACHactualmaskedPUBLICtoken post-READview, preserving minimum.10broadclassprior. No owner target or familylabel received by fitter",
+  "forecast_calibration": "Generative sequence temperature beta in[.5,.65,.8,1]. For each class/keyrepeatstatus normalize jointL overall4096value sequences toS=L/K, thenLbeta=K*S^beta/sum(S^beta); preservekeymarginals andclassjointREAD. Chooseprimarybeta on independentPUBLICmasked-cal conditionalNLL afterpriorfit. Strongstatic choosesbest(class,beta) fromALL12options on identicalPUBLICmasked-calNLL. No label-only postprocessing",
+  "fractional": "Prediction maximum strictly below1-1e-9; concentrated numerical predictions are not mathematical certainty",
+  "guard": "Separate OOD calibration per trained family. Runtime model-specific surprise cutoff=max family.99higher quantiles; broad-component posterior cutoff=max family.99higher quantiles. Same cutoffs apply family-blind. ActualREAD recomputes broad posterior and rechecks guard; READ expected branch payoff includes that postguard. Broad mass comparisons allow1e-12FPtolerance only",
+  "invalid_rule": "Any unexpected invalid makes whole-population family quality null; failed attempts and costs retained",
+  "minimum_fractional_calibration": 32,
+  "minimum_fractional_confirmation": 32,
+  "models": [
+    "class_mixture",
+    "best_static"
+  ],
+  "never_trained_families": [
+    "switching_rotor",
+    "pair_renewal"
+  ],
+  "ood_generators_per_family": 128,
+  "previous_evidence": "R19IIDoverconfidenceandpowerdiagnostics motivate thisNEWcandidate; none ofR19rawworlds are reused asR19btraining,calibrationorconfirmation. OriginalR19STOPFAIL retained; oldunseenprocessworlds remain unopened",
+  "public_cal_generators_per_family": 32,
+  "public_cal_worlds_per_generator": 4,
+  "public_fit_generators_per_family": 16,
+  "public_fit_worlds_per_generator": 8,
+  "public_objective": "Each source world has1preREADview andmactualPUBLICtoken postREADviews, eachweight1/(1+m), then equalweight worlds. Fitsuseonly complete rawpublictokenstreams/aliases, no ownerlabels/parameters/familyfeatures. MinimizeconditionalNLL; ties choosebeta closestto1 then lowestclassindex. OptimizerL-BFGS-B2logits bounds[-12,12],max200ftol1e-12 at3fixedstarts[0,0],[-4,4],[4,-4]; choosebestconvergedfitobjective,retainallattempts;ifallfailstopandretainpublicinputs/cost",
+  "publication": "Publish source beforeallformaldata. Fitonlypubliccandidate; publishFITTED_CANDIDATE_FREEZE beforeanyfreshfixedN8192/familyriskcalibration. ThenpublishPOSTCALIBRATION_FREEZE before5familyconfirmation. DoNOTpoolR19failedcalibration oradaptN. IfANYselectedmodelcalibrationfails,confirmHARDSTOPSbeforecreatingoutputorgeneratingANYworld;retainfailureandsealedholdout",
+  "read": "At most one missing-index real owner token conditioned at original history position; same-index identical retries idempotent, conflicting retries rejected. Reward correct+1,incorrect-1,abstain0 minus actual fee in .02,.12,.3,.6",
+  "risk_generators_per_family": 8192,
+  "risk_limit": 0.1,
+  "risk_selection": "FixedNEW8192queryworlds/family, one per independent generator in each of3trained families. Simultaneous48Clopper-Pearson one-sided bounds:2models*4thresholds*3families*2risks(overallaccepted,fractionalaccepted),delta=.05/48. A threshold mustpass.10risk and>=32fractional answers in EACH trained family. Among passing choose maximum minimum-family fractional count,then maximum total fractional count,then lowest threshold. None=>concentrated-only fallback and gatefailure",
+  "runtime": "Raw public prefix, mask, complete raw alias bridges, raw alias query and price only; no owner family, generator parameters, targets or runtime family oracle",
+  "schedule": "Four initial keys permuted, then two overwrite keys drawn from generator q distinct-or-independent mixture; six WRITEs randomly interleaved with8or24distractors;2/3/4uniformcontent-independentmissingpositions",
+  "schema": "hcsn.cross-family.r19b.v1",
+  "seed": 19112187,
+  "simultaneous_confirmation": "PRIMARYcandidate class_mixture only:5families*4quantities(overallacceptedrisk,fractionalacceptedrisk,beforeREADBriergain,actualpayoffgain),20one-sided generator-bootstrap bounds at delta=.05/20.4096pairedbootstrap replicates per family,seed19112991+familyindex. Preserve all4dependentworlds per generator, all zero-answer clusters;zero denominator=>risk1. Approximate bootstrap evidence,not exact simultaneous coverage theorem",
+  "thresholds": [
+    0.8,
+    0.9,
+    0.95,
+    0.975
+  ],
+  "time_scope": "20/100gaps recorded but contents static; full-prefix ordinary reference,not learned time evolution or bounded streaming retention",
+  "train_generators_per_family": 24,
+  "train_worlds_per_generator": 32,
+  "trained_families": [
+    "iid",
+    "sticky",
+    "rotor"
+  ],
+  "training_information": "Only complete public raw streams and generator groups, without owner parameters or family labels passed to fitting; all candidates share training and validation data",
+  "unknown_scope": "Neither finite model classes nor guard guarantee arbitrary unknown-family identifiability; coherent unseen processes may fail and must remain negative. This does not replace original HCSN analyticD-B, multimodal,physics,production orcost gates",
+  "whole_gate": "For EACH of5families:no invalid/supportfailure;>=32genuinelyfractionalaccepted;both riskuppers<=.10;same-initial-prefix beforeREADBriergain andactualfee-paidselectivepayoffgain versusbest_static have simultaneouslowerbounds>=0. ANYfailure means wholecrossfamilygatefalse. No average masking or postholdout repair"
+}
