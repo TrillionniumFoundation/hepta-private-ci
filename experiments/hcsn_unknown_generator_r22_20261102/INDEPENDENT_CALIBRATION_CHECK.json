@@ -1,0 +1,68 @@
+{
+  "audit_cpu_seconds": 67.067139532,
+  "audit_wall_seconds": 67.07422534099896,
+  "checker_sha256": "21cb37460d9415ae362d562d15f24a3c838b009aa9b5156d1c28f49c6abc1dc2",
+  "costs": {
+    "outer_descendant_cpu_seconds": 1304.132853,
+    "outer_includes_workers_do_not_add": true,
+    "peak_concurrent_family_rss_known": false,
+    "wall_seconds": 675.1911456719972,
+    "worker_cpu_seconds": 1303.411246
+  },
+  "helper_sha256": "95e8419af3e2af6b265dff4321311e5f19dceffec196d06f7789f7179534789f",
+  "independent_binomial_bounds": 70,
+  "max_rss_kib": 80180,
+  "maximum_absolute_recompute_difference": 1.1102230246251565e-15,
+  "new_world_generator_calls": 0,
+  "passed": true,
+  "postcalibration": null,
+  "primary": "context_robust",
+  "qualifications": {
+    "context_mixture": false,
+    "context_orbit": false,
+    "context_robust": true,
+    "first_mixture": false,
+    "first_orbit": false,
+    "first_robust": false,
+    "r20_context_common": false
+  },
+  "scope": "Independent arithmetic and bounded Cartesian replay; finite known law families only; no universal coverage or analytic-core attribution",
+  "source": {
+    "files": 75,
+    "freeze_sha256": "ccb16aa56f1f09d65efb25385a8b89ee0e911c583731e6c13f018032c613d308",
+    "publication_sha256": "fe5b467aac6c116f4c8f9140a659572f4243f07b6860dfedf72326c1ab985616"
+  },
+  "stage": "calibration",
+  "strata": {
+    "calibrate": {
+      "archives": 16,
+      "cartesian_policies": 56,
+      "cartesian_worlds": 8,
+      "rows": 4096
+    },
+    "calibrate_lag2": {
+      "archives": 128,
+      "cartesian_policies": 56,
+      "cartesian_worlds": 8,
+      "rows": 32768
+    },
+    "calibrate_lag2_skip": {
+      "archives": 64,
+      "cartesian_policies": 56,
+      "cartesian_worlds": 8,
+      "rows": 16384
+    },
+    "calibrate_relabeled_lag2": {
+      "archives": 128,
+      "cartesian_policies": 56,
+      "cartesian_worlds": 8,
+      "rows": 32768
+    },
+    "calibrate_reverse": {
+      "archives": 32,
+      "cartesian_policies": 56,
+      "cartesian_worlds": 8,
+      "rows": 8192
+    }
+  }
+}

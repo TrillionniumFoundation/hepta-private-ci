@@ -1,0 +1,100 @@
+"""One-READ nominal or finite-model maximin control; decision bounds are not probabilities."""
+
+import numpy as np
+
+
+class ReceiptFailure(ValueError):
+    """An issued READ failed; its attempted observation fee remains explicit."""
+
+    def __init__(self, index, fee, reason):
+        super().__init__(reason)
+        self.read_index, self.fee = index, fee
+
+
+def _aligned(states):
+    if not states or any(state.missing != states[0].missing
+            or not np.array_equal(state.final, states[0].final)
+            or not np.array_equal(state.hidden, states[0].hidden) for state in states[1:]):
+        raise ValueError("Ambiguity models must share the same latent completions")
+
+
+def _stop(probabilities, threshold):
+    label = int(probabilities[0].argmax())
+    confidence = min(float(p[label]) for p in probabilities)
+    return label, confidence, confidence >= threshold
+
+
+def choose(states, key, price, threshold):
+    if not .5 < threshold < 1 or price < 0 or not np.isfinite(price):
+        raise ValueError("Declared threshold and nonnegative finite price required")
+    _aligned(states)
+    if len(states) == 1:
+        return states[0].choose(key, price, threshold)[0]
+    probabilities = [state.probability(key) for state in states]
+    label, _, accepted = _stop(probabilities, threshold)
+    best_value = min(2 * float(p[label]) - 1 for p in probabilities) if accepted else 0.
+    best = None
+    # For each candidate READ, commit to the SAME conservative branch policy
+    # under every member. Then minimize total expected utility over models;
+    # do not choose a different worst model independently within each branch.
+    for column, index in enumerate(states[0].missing):
+        values = np.full(len(states), -price)
+        for code in np.unique(states[0].hidden[:, column]):
+            keep = states[0].hidden[:, column] == code
+            masses = [float(state.weights[keep].sum()) for state in states]
+            if any(mass <= 0 for mass in masses):
+                raise ValueError("Ambiguity branch lost support")
+            branch = [np.bincount(state.final[keep, key], weights=state.weights[keep], minlength=4) / mass
+                      for state, mass in zip(states, masses, strict=True)]
+            label, _, accepted = _stop(branch, threshold)
+            if accepted:
+                values += [mass * (2 * float(p[label]) - 1) for p, mass in zip(branch, masses, strict=True)]
+        candidate = float(values.min())
+        if candidate > best_value + 1e-12:
+            best, best_value = index, candidate
+    return best
+
+
+def execute(world, states, key, threshold):
+    """Forecast probability is the FIRST normalized law, never its lower envelope."""
+    _aligned(states)
+    before = [state.probability(key) for state in states]
+    index = choose(states, key, world["price"], threshold)
+    event = None
+    # Exactly one owner acquisition per policy, then the same lawful receipt
+    # updates its model hypotheses. Other policies receive no receipt reuse.
+    after_states = states
+    if index is not None:
+        try:
+            event = world["owner_events"][index]
+            if event is None:
+                raise ValueError("Issued READ returned no raw receipt")
+            event = np.asarray(event)
+            after_states = [state.acquire(index, event) for state in states]
+        except Exception as error:
+            raise ReceiptFailure(index, world["price"], "Issued READ receipt failed: " + str(error)) from error
+    after = [state.probability(key) for state in after_states]
+    label, decision_confidence, accepted = _stop(after, threshold)
+    before_label, before_confidence, stop_accepted = _stop(before, threshold)
+    forecast = after[0]
+    forecast_confidence = float(forecast.max())
+    if accepted and label != int(forecast.argmax()):
+        raise ValueError("Accepted label differs from the declared forecast")
+    fee = world["price"] if index is not None else 0.
+    # Hidden target is accessed only after action/receipt/posterior decisions.
+    target = world["target"]
+    correct = int(label == target)
+    stop_correct = int(before_label == target)
+    return dict(invalid=False, admitted=True, probability=forecast.tolist(), before=before[0].tolist(),
+        accepted=bool(accepted), fractional=bool(forecast_confidence < 1 - 1e-9), correct=correct,
+        confidence=forecast_confidence, decision_confidence=decision_confidence,
+        before_decision_confidence=before_confidence, ambiguity_members=len(states),
+        probability_scope="First normalized posterior law; decision_confidence is a lower bound, not a probability vector",
+        read_index=index, actual_read=event.tolist() if event is not None else None, fee=fee,
+        payoff=(2 * correct - 1 if accepted else 0) - fee,
+        no_read_payoff=2 * stop_correct - 1 if stop_accepted else 0.,
+        before_brier=float(np.sum((before[0] - np.eye(4)[target]) ** 2)),
+        brier=float(np.sum((forecast - np.eye(4)[target]) ** 2)),
+        before_log_loss=float(-np.log(before[0][target])) if before[0][target] > 0 else None,
+        log_loss=float(-np.log(forecast[target])) if forecast[target] > 0 else None,
+        true_probability=float(forecast[target]), surprise=states[0].surprise)
