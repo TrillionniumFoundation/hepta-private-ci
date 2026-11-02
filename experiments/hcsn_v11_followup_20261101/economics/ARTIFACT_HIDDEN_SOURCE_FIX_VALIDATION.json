@@ -1,0 +1,46 @@
+{
+  "predecessor_source_commit": "2291ae5390875fe5baecfec8a1a757326061df49",
+  "first_successful_ci_run": 41370810857,
+  "fix": "include-hidden-files true restricted to evidence/hcsn-v11-cgroup",
+  "checks": [
+    {
+      "name": "actionlint",
+      "argv": [
+        "/tmp/hcsn-bp-ci-tools/actionlint",
+        ".github/workflows/hcsn-v11-cgroup-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "prettier",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hcsn-bp-ci-tools/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hcsn-v11-cgroup-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "diff_check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "meter_core_modified": false,
+  "new_ci_complete_download_verified_locally": false
+}

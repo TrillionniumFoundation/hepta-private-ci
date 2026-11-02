@@ -50,5 +50,6 @@ jobs:
         with:
           name: hcsn-v11-cgroup-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: evidence/hcsn-v11-cgroup/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
