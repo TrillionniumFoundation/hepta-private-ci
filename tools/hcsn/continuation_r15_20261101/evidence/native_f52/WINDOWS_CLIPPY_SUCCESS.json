@@ -1,0 +1,178 @@
+{
+  "schema": "hcsn.current-head-windows-clippy-success.v1",
+  "recorded_at_utc": "2026-11-02T00:33:24.763Z",
+  "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "tree_sha": "1437e365efb2e45e887d4a7835706bdd01b4b3a9",
+  "executed_merge_sha": "0758e6c2efd3009bcceb13536f60075581467d39",
+  "merge_tree_verified_equal": true,
+  "check_run": {
+    "id": 125028471616,
+    "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+    "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-11-02T00:22:13Z",
+    "completed_at": "2026-11-02T00:30:44Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471616"
+  },
+  "normalized_job": {
+    "id": 125028471616,
+    "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 41366558746,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "bazel build --config=clippy lint targets",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Upload Bazel execution logs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Save bazel repository cache",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15
+      }
+    ]
+  },
+  "excerpts": [
+    {
+      "kind": "merge_checkout",
+      "matches": [
+        {
+          "line": 34,
+          "text": "2026-11-02T00:22:15.4006124Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/4550/merge (0758e6c2efd3009bcceb13536f60075581467d39)"
+        },
+        {
+          "line": 87,
+          "text": "2026-11-02T00:22:19.5378796Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0758e6c2efd3009bcceb13536f60075581467d39:refs/remotes/pull/4550/merge"
+        },
+        {
+          "line": 89,
+          "text": "2026-11-02T00:22:50.8072938Z  * [new ref]         0758e6c2efd3009bcceb13536f60075581467d39 -> pull/4550/merge"
+        },
+        {
+          "line": 209,
+          "text": "2026-11-02T00:23:04.4028229Z 0758e6c2efd3009bcceb13536f60075581467d39"
+        }
+      ]
+    },
+    {
+      "kind": "msvc_platform",
+      "matches": [
+        {
+          "line": 962,
+          "text": "2026-11-02T00:23:34.3968206Z \u001b[36;1m  bazel_clippy_args+=(--platforms=//:windows_x86_64_msvc)\u001b[0m"
+        }
+      ]
+    },
+    {
+      "kind": "compatibility_option",
+      "matches": [
+        {
+          "line": 965,
+          "text": "2026-11-02T00:23:34.3969590Z \u001b[36;1m  bazel_clippy_args+=(--skip_incompatible_explicit_targets)\u001b[0m"
+        }
+      ]
+    },
+    {
+      "kind": "analyzed",
+      "matches": [
+        {
+          "line": 5687,
+          "text": "2026-11-02T00:28:35.5422691Z INFO: Analyzed 1424 targets (1216 packages loaded, 73545 targets configured, 1240 aspect applications)."
+        }
+      ]
+    },
+    {
+      "kind": "success",
+      "matches": [
+        {
+          "line": 5803,
+          "text": "2026-11-02T00:30:08.9982527Z INFO: Build completed successfully, 6572 total actions"
+        }
+      ]
+    },
+    {
+      "kind": "cleanliness",
+      "matches": [
+        {
+          "line": 5926,
+          "text": "2026-11-02T00:30:39.8205530Z ##[start-action display=Check for a clean worktree;id=__self.__run]"
+        }
+      ]
+    }
+  ],
+  "workflow_sha256": "4bf5b7b9211d0943eda0df95dc966a3ab7371f0ffa5215db4e7c462eba8a5053",
+  "workflow_git_blob": "78a041f4324c7bb2c7b11cf71a85f25059a771e5",
+  "source_cleanliness": {
+    "step_number": 7,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "actual_bazel": {
+    "analyzed_top_level_targets": 1424,
+    "total_actions": 6572,
+    "build_completed_successfully": true,
+    "explicit_incompatible_target_failure_lines": 0
+  },
+  "acceptance": "The Windows/MSVC Clippy platform-selection repair has passed the actual f52 current-head job. This does not close independent Windows tests, native platform/backend issues, cargo-deny, or the whole CI matrix.",
+  "log_transport": "Exact UTF-8 bytes of the GitHub connector-decoded job log; this is not a claim about a GitHub downloadable ZIP's original byte identity.",
+  "log_identity": {
+    "decoded_utf8_bytes": 557799,
+    "decoded_utf8_sha256": "10b314fac307d9f2969e9ec587587340f998b002e9a80a130866f43d13f41eac",
+    "gzip_bytes": 73120,
+    "gzip_sha256": "5873704a42d4d94d2c1352bca21989d88fa192ef3f8e04afa6f6fb766ed0ab73",
+    "line_count": 5998
+  }
+}
