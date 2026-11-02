@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn.audio.pretrained.source-freeze.v1",
+  "created_unix_ns": 1793585064027535392,
+  "source": {
+    "experiments/hcsn_audio_pretrained_r2_20261101/acquire.py": "4b1a1bd7c2094ded1cab243239eecb720aeeed6428b4373f5fa20c2b8649e5a0",
+    "experiments/hcsn_audio_pretrained_r2_20261101/encoder.py": "77df75fb588936b5bf4bc70e89d93eb752cef113dd4cf513f5a5ab94be33085a",
+    "experiments/hcsn_audio_pretrained_r2_20261101/study.py": "b49506c1d85b989723fd6821fdfa8348bb09e5ea72073d20b40d06f1e12591bb",
+    "experiments/hcsn_audio_pretrained_r2_20261101/checks.py": "04d40054d427ef9ab0907fa83bd7686c0d3ea4748b85985cf759f2b99d145add",
+    "experiments/hcsn_audio_pretrained_r2_20261101/PROTOCOL.json": "11918a929e5a5986c8c18fbcb68a72d580071b4cbb2992ecae76688e29bf6ae7",
+    "experiments/hcsn_audio_pretrained_r2_20261101/CHECKPOINT.json": "e889ebdfa1e4a48171223a080223b4a31cc67504e30d72d3d65506579e761bfa",
+    "experiments/hcsn_audio_pretrained_r2_20261101/TRAIN_COHORT.json": "9272d2e7939a240557b0bada9f2c0fd161f64521702da63c03ed276bb2dd9e51",
+    "experiments/hcsn_audio_pretrained_r2_20261101/CHECKS_FINAL.json": "18f8567f01fb0fae0b8a665a5c467edefceef12c22e2d4ef2d4c27800982e4e6",
+    "experiments/hcsn_video_followup_20261101/study.py": "36ecee8bc7b3357890aaa3ddd0ff79732a49ce4601dcc319c1c0f4b0cc170e76",
+    "experiments/hcsn_video_followup_20261101/INPUT_IDENTITY.json": "cc56fdb72fb5f0b3b90a6167064d1825e826c8c94883916fb0456f2493e4a0f7",
+    "experiments/hcsn_video_followup_20261101/results/run002/CANDIDATE_FREEZE.json": "6863852f90db0225ebce33e6bcf8e59d49e86fe227f623bb48cf2f9fcdaa669b",
+    "experiments/hcsn_video_followup_20261101/results/run002/TRAINING.json": "89ea4b79a4ab210b901ca643d52ebc80c5544ce3d12626a3857994c40b36fac9",
+    "experiments/hcsn_video_followup_20261101/results/run002/TRAIN_OOF.npz": "42afd9dade6b3e638c721710c6c26561dce262f844053fc35b02bb692093c267",
+    "experiments/hcsn_video_followup_20261101/results/run002/text_encoder.npz": "10fde1410d57cb832563758554d38d8622f815caa2857ec91f65ccffedfcec69",
+    "experiments/hcsn_video_followup_20261101/results/run002/video_encoder.npz": "f476dfd3e94812b0871aa5a8de2d02f4164fe0b9ddd8d90308c861a6e9f1ece4"
+  },
+  "runtime_source_sha256": {
+    "torchaudio.pipelines._wav2vec2.impl": "cdd5c58f2b493b932f9c1fb76b283351414ac424e440653f397feb85487d7349",
+    "torchaudio.pipelines._wav2vec2.utils": "43cfdf58e4762439c7bb44d34661f346323704e25ad21188025d1c8ed00b82c4",
+    "torchaudio.models.wav2vec2.model": "67654de8a6c338e76ae49b4fee5c4f41e6f062ab312a6b3512ee088c326d65a4",
+    "torchaudio.models.wav2vec2.components": "0d1996f861d87fe25178283fd25d68bcd58906701abde3cedd2daf3d8fb5cdee"
+  },
+  "checkpoint_sha256": "488fd4f16de84438ffc945334278c1b9fb9b7159a806c1080b16111a958c945d",
+  "development_loaded": false,
+  "runtime": {
+    "python": "3.12.14",
+    "torch": "2.6.0+cpu",
+    "torchaudio": "2.6.0+cpu",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "protocol_sha256": "11918a929e5a5986c8c18fbcb68a72d580071b4cbb2992ecae76688e29bf6ae7"
+}

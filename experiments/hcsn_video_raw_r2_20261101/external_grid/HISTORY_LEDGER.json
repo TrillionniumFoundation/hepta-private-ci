@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn.grid.history-scope.v1",
+  "inspected": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/AV_SCOPE.json",
+      "sha256": "0b933d66ad5ed9c17646a600db58498236b513f8940275378bac5f428f6a2d2f",
+      "contains_grid_source_literal": false
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/HISTORICAL_ACTOR_UNION_PROOF.json",
+      "sha256": "7af9b818d9f33c4ef09cbb1f92f8a145e2514669380ca35e48a115d47d51631b",
+      "contains_grid_source_literal": false
+    },
+    {
+      "path": "experiments/hcsn_video_followup_20261101/INPUT_IDENTITY.json",
+      "sha256": "cc56fdb72fb5f0b3b90a6167064d1825e826c8c94883916fb0456f2493e4a0f7",
+      "contains_grid_source_literal": false
+    },
+    {
+      "path": "experiments/hcsn_video_followup_20261101/PUBLICATION.json",
+      "sha256": "4a4f7e54b8ffcadf2d1f2a576b10008ab96368f1665bff6c508b310434d7735e",
+      "contains_grid_source_literal": false
+    }
+  ],
+  "inspected_history_scope": "Exact baseline CREMA-D exposure proof plus completedR1 frozen inputs/publication only; not a global repository/Library/pretraining history claim.",
+  "prior_recording_union": "Inspected baseline proof concernsCREMA-D and reports90of91actors; this does not establish thatGRID was never used elsewhere.",
+  "observed_grid_exposure_this_round": [
+    {
+      "kind": "source metadata",
+      "what": "Officialcorpuspage,creatorZenodorecord,twoEOCDsuffixprobes,speaker1ZIPcentraldirectory"
+    },
+    {
+      "kind": "public example alignment",
+      "actor_namespace": "GRID:2",
+      "clip": "swwp2s",
+      "action": "excludedfromallfuturequalification"
+    }
+  ],
+  "selected_recordings_loaded": 0,
+  "selected_recordings_model_used": 0,
+  "source_independence": "GRID is separately documented source corpus; distinctrecordingprocess is supported. Humanidentitydisjointness fromCREMA-D is not established by numeric IDs.",
+  "proposed_confirmation_namespaces": [
+    "GRID:9",
+    "GRID:10",
+    "GRID:11",
+    "GRID:12"
+  ],
+  "confirmation_raw_bytes_accessed": false,
+  "qualification_requires": [
+    "Broader scopedhistorysearch forGRIDsource/recordingidentities",
+    "Frozenselectedmember/rawSHA256 ledger beforelearning",
+    "Explicittaskchange andsameinformation/control/costconditions",
+    "No source/candidate updates usingconfirmation outcomes"
+  ],
+  "globally_unseen_population_claim": false,
+  "independent_confirmation_passed": false
+}

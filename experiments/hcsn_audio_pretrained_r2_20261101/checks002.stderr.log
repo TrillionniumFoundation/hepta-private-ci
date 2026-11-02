@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/checks.py", line 70, in <module>
+    if __name__=="__main__":run()
+                            ^^^^^
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/checks.py", line 65, in run
+    encoder.write(encoder.HERE/"CHECKS.json",result)
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/encoder.py", line 37, in write
+    with Path(path).open("x") as stream:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_audio_pretrained_r2_20261101/CHECKS.json'

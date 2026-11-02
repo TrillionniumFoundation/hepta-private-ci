@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn.audio.preflight-history.v1",
+  "before_source_publication": true,
+  "attempts": [
+    {
+      "receipt": "checks001.receipt.json",
+      "returncode": 0,
+      "checks": 14,
+      "source_snapshot": "preflight_v1",
+      "note": "Initial successful preflight preserved. Subsequent read-only review strengthened exact cache-manifest/extra-clip guards before source freeze."
+    },
+    {
+      "receipt": "checks002.receipt.json",
+      "returncode": 1,
+      "note": "Refused to overwrite existing CHECKS.json; FileExistsError stderr retained. No checkpoint, candidate head or development evaluation was changed."
+    },
+    {
+      "receipt": "checks003.receipt.json",
+      "returncode": 0,
+      "checks": 14,
+      "authoritative_output": "CHECKS_FINAL.json",
+      "note": "Final published source; explicit fresh output path."
+    }
+  ],
+  "old_files_retained": [
+    "CHECKS.json",
+    "preflight_v1/CHECKS.json",
+    "preflight_v1/CHECKS_ORIGINAL.json",
+    "preflight_v1/checks.py",
+    "preflight_v1/encoder.py",
+    "preflight_v1/study.py"
+  ],
+  "failed_freeze_log": "FREEZE.log",
+  "successful_freeze_log": "FREEZE_FINAL.log",
+  "failed_freeze_cpu_seconds": null
+}

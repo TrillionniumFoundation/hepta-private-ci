@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn.video.cost.v1",
+  "nonoverlapping_wait4_envelopes": [
+    {
+      "path": "results/prepare002.receipt.json",
+      "cpu_seconds": 3.906377,
+      "wall_seconds": 9.949650730995927,
+      "exit_code": 0,
+      "peak_rss_bytes": 108507136
+    },
+    {
+      "path": "results/evaluate002.receipt.json",
+      "cpu_seconds": 0.861926,
+      "wall_seconds": 2.009321222998551,
+      "exit_code": 0,
+      "peak_rss_bytes": 71815168
+    }
+  ],
+  "measured_run002_cpu_seconds": 4.7683029999999995,
+  "run001_inner_fit_cpu_seconds": 1.9538662860000016,
+  "run001_scope": "Inner fits lower bound only; no whole-process envelope. Kept separate, not included in measured run002 sum.",
+  "unmeasured": [
+    "original cache acquisition/extraction",
+    "selective restoration and first failed restore",
+    "run001 startup/imports/data preparation/writes",
+    "code development and guard/audit execution",
+    "inherited historical preparation"
+  ],
+  "complete_campaign_cpu_seconds": null,
+  "device_energy_joules": null,
+  "gpu_cost": null,
+  "memory_scope": "wait4 individual child highwater, not complete process-family simultaneous memory or deployable resident model footprint"
+}

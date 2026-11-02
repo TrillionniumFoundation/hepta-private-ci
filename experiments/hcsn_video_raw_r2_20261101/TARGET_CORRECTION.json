@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn.rawvideo.target-correction.v1",
+  "failure": "COHORT.label encodes emotion0..5, while this task target is sentenceDFA/IOM. QA failed before learning but enclosing shell continued and launched wrong-target run001.",
+  "old_class_counts": [
+    48,
+    48,
+    48,
+    48,
+    48,
+    48
+  ],
+  "corrected_class_counts": [
+    144,
+    144
+  ],
+  "pixels_bitwise_unchanged": true,
+  "pixel_tensor_sha256": "ffcd2fd9e89371407c27d49a7a878a372fbb7f1c92ff66cd000d0e868ca8c75f",
+  "old_cache_sha256": "bc908c4dfc97b514c6e61039c1bb0440131b7e562b101e943f261a3c57f8f090",
+  "new_cache_sha256": "45bf4d5dfe6c11c37295bb57c5746945f708b12b706df9582d511badde483e00",
+  "wrong_target_run": "results/run001",
+  "interrupted_tool_exit_code": 130,
+  "wrong_target_training_cpu_seconds": null,
+  "wrong_target_receipt_status": "running remains original because wrapper was interrupted; no complete wait4 envelope recovered",
+  "process_no_longer_observed": true,
+  "validation_decoded": false,
+  "scientific_results_eligible": false
+}

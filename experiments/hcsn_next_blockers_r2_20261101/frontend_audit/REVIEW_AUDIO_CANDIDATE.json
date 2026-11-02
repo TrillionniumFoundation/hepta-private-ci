@@ -1,0 +1,74 @@
+{
+  "all_blockers_closed": false,
+  "audio_oof_accuracy": 0.9548611111111112,
+  "candidate_sha256": "48b874ce106be48d907095203acd258a9ff54fd0b17aeffd2a541571bcaa0ee2",
+  "ctc_descriptor_max_error": 1.9073486328125e-06,
+  "feature_dimensions": 1652,
+  "feature_sha256": "caa50b4db7e189492adea93be0ecd8bad4a4a4bc9ceab3d7961ef28eba6ff4bc",
+  "fit_performed": false,
+  "fits": [
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 1.8047627318093507e-06,
+      "optimizer_iterations": 179,
+      "optimizer_success": true,
+      "tag": "audio/fold0"
+    },
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 1.5010531034809205e-06,
+      "optimizer_iterations": 159,
+      "optimizer_success": true,
+      "tag": "audio/fold1"
+    },
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 1.4833233667843441e-06,
+      "optimizer_iterations": 141,
+      "optimizer_success": true,
+      "tag": "audio/fold2"
+    },
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 2.798145405977226e-06,
+      "optimizer_iterations": 189,
+      "optimizer_success": true,
+      "tag": "audio/fold3"
+    },
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 2.0437167666670364e-06,
+      "optimizer_iterations": 191,
+      "optimizer_success": true,
+      "tag": "audio/full"
+    },
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 8.777373230017815e-06,
+      "optimizer_iterations": 13,
+      "optimizer_success": true,
+      "tag": "relation/AT_unique"
+    },
+    {
+      "fit_only_mean_scale_exact": true,
+      "gradient_inf_recomputed": 1.79947052261209e-05,
+      "optimizer_iterations": 40,
+      "optimizer_success": true,
+      "tag": "relation/AVT_R1V"
+    }
+  ],
+  "frozen_candidate_files_checked": 10,
+  "held_media_decoded": false,
+  "inherited_video_text_bit_identical": true,
+  "input_clips": 288,
+  "local_publication_receipt_present": false,
+  "oof_probability_max_error": 1.1102230246251565e-16,
+  "real_media_opened": false,
+  "schema": "hcsn.pretrained-audio.independent-candidate-audit.v1",
+  "scope": "Independent cached-feature/head audit. Frozen speech inference was not rerun; official model equivalence and future-PCM isolation are separately recorded preflight checks. Remote publication is a separate parent gate; this audit may run before publication.",
+  "source_freeze_sha256": "07453104ced290352374f6e009d5f9f9e5086b8881e63ee7c12cf841bc4bcefb",
+  "target_counts": [
+    144,
+    144
+  ]
+}
