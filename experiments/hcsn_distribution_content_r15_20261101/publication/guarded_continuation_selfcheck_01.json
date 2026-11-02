@@ -1,0 +1,30 @@
+{
+  "checks": {
+    "atomic_evidence_never_overwritten": true,
+    "cleanup_escalates_own_group_to_kill": true,
+    "exact_addendum_5_commands": true,
+    "exact_primary_12_commands": true,
+    "existing_scientific_output_refused": true,
+    "exited_leader_does_not_hide_live_grandchild": true,
+    "hysteresis_one_stop_then_resume_only_at_high": true,
+    "outsider_not_stopped": true,
+    "owned_group_identity": true,
+    "owned_parent_and_grandchild_stopped": false,
+    "pause_wall_recorded_without_extra_cpu": true,
+    "start_waits_until_high_threshold": true,
+    "unrelated_fixture_process_survives_cleanup": true
+  },
+  "fixture_helper_sha256": "a4fcaeb3bf037c8062856168a10b4bd5771b84e8d405414535b164b2bae7d237",
+  "fixture_root": "/tmp/hcsn-guarded-continuation-artificial-ub_xl3cg",
+  "formal_confirmation_data_read": false,
+  "observations": {
+    "outsider_not_stopped": true,
+    "owned_group_identity": true,
+    "owned_parent_and_grandchild_stopped": false
+  },
+  "passed": false,
+  "raw_npz_or_model_checkpoints_loaded": false,
+  "real_runtime_records_read": false,
+  "schema": "hcsn.r15.guarded-continuation.fixture.v1",
+  "source_sha256": "0b8fee98412088817641fa332603f0440d2ae7a332934d4499820eded055fcd5"
+}

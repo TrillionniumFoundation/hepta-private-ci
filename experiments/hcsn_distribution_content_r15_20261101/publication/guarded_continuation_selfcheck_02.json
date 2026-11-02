@@ -1,0 +1,37 @@
+{
+  "checks": {
+    "atomic_evidence_never_overwritten": true,
+    "cleanup_escalates_own_group_to_kill": true,
+    "exact_addendum_5_commands": true,
+    "exact_primary_12_commands": true,
+    "existing_scientific_output_refused": true,
+    "exited_leader_does_not_hide_live_grandchild": true,
+    "hysteresis_one_stop_then_resume_only_at_high": true,
+    "outsider_not_stopped": true,
+    "owned_group_identity": true,
+    "owned_parent_and_grandchild_stopped": true,
+    "pause_wall_recorded_without_extra_cpu": true,
+    "start_waits_until_high_threshold": true,
+    "unrelated_fixture_process_survives_cleanup": true
+  },
+  "fixture_helper_sha256": "1f9e05dd2926e292733592806395a18583bdd39ef12c1eb32eeea75c94cf6541",
+  "fixture_root": "/tmp/hcsn-guarded-continuation-artificial-nzdafvi8",
+  "formal_confirmation_data_read": false,
+  "observations": {
+    "namespace_pid_and_procfs_pid": {
+      "child": 7,
+      "child_proc": 444288,
+      "parent": 6,
+      "parent_proc": 444287,
+      "pgid": 6
+    },
+    "outsider_not_stopped": true,
+    "owned_group_identity": true,
+    "owned_parent_and_grandchild_stopped": true
+  },
+  "passed": true,
+  "raw_npz_or_model_checkpoints_loaded": false,
+  "real_runtime_records_read": false,
+  "schema": "hcsn.r15.guarded-continuation.fixture.v1",
+  "source_sha256": "764ce586c8cbc679ee4e47cb7cbe8ea025e27ca412c13746c526be05ef8775df"
+}

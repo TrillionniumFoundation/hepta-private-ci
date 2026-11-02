@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-01T19:10:05.814280+00:00",
+  "purpose": "Additional immutable partial-checkpoint metadata, preserving the earlier archive plan and preparation record byte-for-byte",
+  "checkpoint_remote_commit": "42ef5081ef1ff233abe26468a8d26ccbfb9e61f9",
+  "remote_files_readback_verified": 31,
+  "files": [
+    {
+      "source": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_resumed_first5/manifest.json",
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_resumed_first5/manifest.json",
+      "bytes": 18659,
+      "sha256": "6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab"
+    },
+    {
+      "source": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_resumed_first5/manifest.sha256",
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_resumed_first5/manifest.sha256",
+      "bytes": 80,
+      "sha256": "43e0987e3a6a5753cc9f08a01e378d290aecda7c9ca52031af0ad4ef772ce958"
+    }
+  ],
+  "full_archive_not_started": true,
+  "confirmation_accessed": false
+}

@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""Small artificial-only checks for the operational continuation guard."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+
+if __package__:
+    from . import guarded_continuation as guard
+else:
+    import guarded_continuation as guard
+
+
+def process_state(pid):
+    try:
+        rows = Path(f"/proc/{pid}/status").read_text().splitlines()
+        return next(row.split()[1] for row in rows if row.startswith("State:"))
+    except FileNotFoundError:
+        return None
+
+
+def eventually(predicate, timeout=1.):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if predicate():
+            return True
+        time.sleep(.01)
+    return predicate()
+
+
+def selfcheck(output):
+    root = Path(tempfile.mkdtemp(prefix="hcsn-guarded-continuation-artificial-"))
+    checks, events, observations = {}, [], {}
+    real_events = guard.Events(root / "events")
+    marker = root / "group.json"
+    orphan_marker = root / "orphan.json"
+    outsider = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"], start_new_session=True)
+
+    def emit(event, **fields):
+        real_events(event, **fields)
+        events.append(dict(event=event, **fields))
+        if event == "paused":
+            ids = json.loads(marker.read_text())
+            observations["owned_parent_and_grandchild_stopped"] = eventually(
+                lambda: process_state(ids["parent"]) == "T" and process_state(ids["child"]) == "T")
+            observations["outsider_not_stopped"] = process_state(outsider.pid) not in ("T", None)
+            observations["owned_group_identity"] = fields["pgid"] == ids["parent"] == ids["pgid"] == os.getpgid(ids["child"])
+
+    try:
+        fake_run = root / "formal_03"
+        commit = "a" * 40
+        plans = {phase: guard.plan(phase, fake_run, commit) for phase in ("primary", "addendum")}
+        checks["exact_primary_12_commands"] = plans["primary"] == guard.primary.commands(fake_run) and len(plans["primary"]) == 12
+        checks["exact_addendum_5_commands"] = plans["addendum"] == guard.addendum.commands(fake_run, commit) and len(plans["addendum"]) == 5
+        guard.atomic_json(root / "PLANS.json", plans)
+        sequence = iter((guard.GIB//2, 3*guard.GIB//2, 2*guard.GIB))
+        start_events = []
+        free = guard.wait_space(lambda: next(sequence), 2*guard.GIB,
+                                lambda event, **fields: start_events.append(dict(event=event, **fields)), .001)
+        checks["start_waits_until_high_threshold"] = free == 2*guard.GIB and [r["event"] for r in start_events] == ["waiting_for_start_space", "start_space_recovered"]
+        child_code = "import time; time.sleep(.6)"
+        body = ("import json,os,subprocess,sys,time; from pathlib import Path; "
+                "child=subprocess.Popen([sys.executable,'-c',sys.argv[2]]); "
+                "Path(sys.argv[1]).write_text(json.dumps(dict(parent=os.getpid(),child=child.pid,pgid=os.getpgrp()))); "
+                "time.sleep(.6); child.wait()")
+        probe_steps = iter((guard.GIB//2, 3*guard.GIB//2, 2*guard.GIB))
+        def probe():
+            return next(probe_steps, 2*guard.GIB) if marker.exists() else 2*guard.GIB
+        row = guard.execute_stage(root / "normal", "artificial_normal", [sys.executable,"-c",body,str(marker),child_code],
+                                  emit, probe, guard.GIB, 2*guard.GIB, poll=.02, cwd=root, cleanup_timeout=.2)
+        changes = [r for r in events if r["event"] in ("paused", "resumed")]
+        checks.update(observations)
+        checks["hysteresis_one_stop_then_resume_only_at_high"] = len(changes) == 2 and changes[0]["event"] == "paused" and changes[0]["visible_free_bytes"] < guard.GIB and changes[1]["event"] == "resumed" and changes[1]["visible_free_bytes"] == 2*guard.GIB
+        checks["pause_wall_recorded_without_extra_cpu"] = row["pause_seconds"] > 0 and row["wall_seconds"] >= row["pause_seconds"] and row["cpu_seconds"] is None and "actor raw wall" in row["wall_scope"]
+        original_start = (root / "normal/START.json").read_bytes()
+        try:
+            guard.atomic_json(root / "normal/START.json", dict(replacement=True))
+        except FileExistsError:
+            checks["atomic_evidence_never_overwritten"] = (root / "normal/START.json").read_bytes() == original_start
+        else:
+            checks["atomic_evidence_never_overwritten"] = False
+        fake_run.mkdir()
+        (fake_run / "TRAINING_INDEX.json").write_text("preserved")
+        try:
+            guard.no_existing_targets(fake_run, [plans["primary"][0]])
+        except ValueError:
+            checks["existing_scientific_output_refused"] = (fake_run / "TRAINING_INDEX.json").read_text() == "preserved"
+        else:
+            checks["existing_scientific_output_refused"] = False
+        orphan = ("import json,os,signal,sys,time; from pathlib import Path; "
+                  "signal.signal(signal.SIGTERM,signal.SIG_IGN); "
+                  "Path(sys.argv[1]).write_text(json.dumps(dict(pid=os.getpid(),pgid=os.getpgrp()))); time.sleep(30)")
+        leader = ("import subprocess,sys,time; from pathlib import Path; "
+                  "subprocess.Popen([sys.executable,'-c',sys.argv[2],sys.argv[1]]); "
+                  "p=Path(sys.argv[1]); "
+                  "exec('while not p.exists(): time.sleep(.01)')")
+        try:
+            guard.execute_stage(root / "orphan_stage", "artificial_orphan", [sys.executable,"-c",leader,str(orphan_marker),orphan],
+                                emit, lambda: 2*guard.GIB, guard.GIB, 2*guard.GIB, poll=.02, cwd=root, cleanup_timeout=.15)
+        except RuntimeError:
+            failure = json.loads((root / "orphan_stage/FAILURE.json").read_text())
+            orphan_id = json.loads(orphan_marker.read_text())["pid"]
+            checks["exited_leader_does_not_hide_live_grandchild"] = failure["shutdown"]["leader_exit_code"] == 0
+            checks["cleanup_escalates_own_group_to_kill"] = failure["shutdown"]["sigkill_sent"] is True and eventually(lambda: process_state(orphan_id) in (None,"Z"))
+        else:
+            checks["exited_leader_does_not_hide_live_grandchild"] = False
+            checks["cleanup_escalates_own_group_to_kill"] = False
+        checks["unrelated_fixture_process_survives_cleanup"] = outsider.poll() is None
+    except BaseException as error:
+        checks["unexpected_fixture_exception"] = False
+        observations["unexpected_error"] = repr(error)
+    finally:
+        for path, field in ((marker,"child"),(orphan_marker,"pid")):
+            if path.exists():
+                pid = json.loads(path.read_text())[field]
+                if process_state(pid) not in (None,"Z"):
+                    try: os.kill(pid,signal.SIGKILL)
+                    except ProcessLookupError: pass
+        outsider.terminate(); outsider.wait(timeout=2.)
+    result = dict(schema="hcsn.r15.guarded-continuation.fixture.v1", source_sha256=guard.digest(guard.SOURCE),
+                  fixture_helper_sha256=guard.digest(Path(__file__)), fixture_root=str(root),
+                  checks=checks, observations=observations, passed=all(checks.values()),
+                  formal_confirmation_data_read=False, real_runtime_records_read=False,
+                  raw_npz_or_model_checkpoints_loaded=False)
+    guard.atomic_json(output, result)
+    guard.require(result["passed"], "Guarded continuation artificial checks failed")
+    return result
+
+
+if __name__ == "__main__":
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output",required=True,type=Path)
+    args=parser.parse_args()
+    result=selfcheck(args.output.resolve())
+    print(json.dumps(dict(passed=result["passed"],checks=len(result["checks"]),fixture_root=result["fixture_root"])))

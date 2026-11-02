@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-01T19:18:54.366317+00:00",
+  "pid": 408826,
+  "signal": "SIGTERM",
+  "verified_exact_argv": [
+    "python",
+    "experiments/hcsn_distribution_content_r15_20261101/publication/continue_addendum_v3.py",
+    "--output",
+    "experiments/hcsn_distribution_content_r15_20261101/results/formal_03",
+    "--source-commit",
+    "5fac50a59a33b30e3110ea0334508d949de73984"
+  ],
+  "no_children_before_signal": true,
+  "no_training_TOTAL": true,
+  "no_scientific_stage_started_by_helper": true,
+  "reason": "Replace waiting operational helper with guarded continuation after observed visible-disk pause. Actual training resumer remains running; scientific commands and conditions unchanged."
+}
