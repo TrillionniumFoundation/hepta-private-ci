@@ -1,0 +1,53 @@
+{
+  "case_matrix": "64normalcases=16profilesx2domainsx2worlds;80faultattempts=16profilesx5stagesononecheap-observationOODstressworld. AnunreachedREADhookisrecordedandnotclaimedasactualkill. Keepallfailedcandidatesandnullquality;no success-onlysummary.",
+  "clock_invariant": "Forecastedstatehasmodel_clock=deadlineandphysical_clock=start. WAITinboxadvancesphysicalstep0->1withoutmodeladvance;REFRESHadvances1->3thenlearnedREADonce. Persistedphaseandsemanticopidpreventrepeatedforecast/Bayes/fee. ModelSHAandserializedprofilefingerprintboundtoownedstate.",
+  "development_seed": 193610000000001,
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "faults": [
+    "forecasted",
+    "wait_response_before_commit",
+    "refresh_response_before_commit",
+    "read_apply_before_commit",
+    "submit_response_before_commit"
+  ],
+  "fees": "Modeldecisionfee_f32=float32(0.07*scale+0.003*3*dt);actualREADfeeistwolegaltimechargesplusREFRESHpurchase,storedinexactmicrocreditsandverifiedagainstproviderlogicaldoublefee. STOPsubmitsatstep0,passiveforecastdoesnotbuyobservations.",
+  "negative_contexts": [
+    "samecheckpointheaderchangedFP32headcannotresumeoldowner",
+    "NaNmodelclockrejected",
+    "validsealwrongmodel/physicalclockphaserejected",
+    "NaNbeliefrejected",
+    "negativebeliefrejected"
+  ],
+  "production_activation": false,
+  "quality_scope": "PrivateScorerreportsutilitybutnoarchitecturebenefit/samequalitycostadoptiongateisclaimed. Rootlearnedcontentstudycomparisonsstayseparate.",
+  "reference": "OriginalfrozenContentNetworkcheckpoint,originalFP32symbol/head/channelandF64gammaQmatrixexpwithdynamic3dt. ExactREADandanswerparity;stateabs<=5e-9,headlogits<=1e-5,probabilities<=2e-6. Newtasktiming/feesarenotborrowedfromphysicalargmaxorpureforwardqualification.",
+  "reference_error_contract": {
+    "exact_actions_answers": true,
+    "logits_max": 1e-05,
+    "margins_max": 2e-05,
+    "probs_max": 2e-06,
+    "read_value_max": 1e-05,
+    "state_max": 5e-09
+  },
+  "schema": "hcsn-trained-owner-recovery-v1",
+  "scope": "ActualsixqueryRustownerwithall16frozenanalytictrainedprofiles:learnedgammaQ,FP32symbolWRITE/READandFP32head. Modelstateforecasts3dtone time,independentphysicalREADprotocolWAIT1+REFRESH2. CausalTorchreferenceusesonlyactualpublicOPENandpurchasedtokens;futuretargetsstayprivate. Notphysicalplainargmax,notruntimelearningorproductionactivation.",
+  "source_before_world": "FormalrunnerrequiresmatchingOWNER_PUBLICATIONreadbackandOWNER_SOURCE_FREEZEbeforeanyworld. developmentflagusesdisjoint19361namespaceonly.",
+  "state_mass": "PreserveactualFP32symbolsoftmaxmass1\u00b1approximately1e-7;trustedowned-statevalidationpermits1e-6,norenormalizationorprobabilityfloor.",
+  "stress_price_rule": "Afterpublication,choosethefirstseedin[base+50000,base+100000)withprice(q0)=0.5andatleast3of6publicprices0.5;nofuturestates/tokens/labels/modeloutputsenterselection. Normalworldsareunfilteredandseparatefromthisrecoveryworkload.",
+  "unmeasured": [
+    "nativeparametertraining/gradients",
+    "unknownsemanticgenerators",
+    "realmedia/open-domainbinding",
+    "productionModelPortauthority",
+    "network",
+    "GPU",
+    "joules",
+    "powerfailure",
+    "hostilewriterconsensus"
+  ],
+  "world_seed_base": 193630000000001,
+  "worlds_per_domain": 2
+}
