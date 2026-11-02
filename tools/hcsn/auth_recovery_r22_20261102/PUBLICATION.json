@@ -1,0 +1,23 @@
+{
+  "source_commit": "6bf394ba09633a250d0cb4521dd3285515361c1d",
+  "source_tree": "98441fe78725d3cfbd461fa1c9ddee1f5199ea54",
+  "source_readback_before_formal": true,
+  "readback_verified": true,
+  "source_freeze_sha256": "040093e3b3e340492331f72b27062375f4b308b60cba8185cdcac535485b6ccc",
+  "source_sha256": {
+    "security.py": "41d97f53dc53ce5e25612d81d8cb997d068d5b0ddf4ffacc66a1a0a88d1a6daa",
+    "witness.py": "f72ad0424a11a413966ed24f78c2971fac898b5cb79ed4c92015b0ea266591c4",
+    "checkpoint.py": "854c90d251fb0cbac38fdc486bbcdb6cb04f593ee1a13a03038332607df43c08",
+    "verify.py": "8c23aff325ce0b29a72c2642bad7a8c25610c5ab0c83b611f33006195efaad96",
+    "meter.py": "96823fe5499c4f725153b1dbb6707cd5872c0e0556912d55a16294c9e177f2e8",
+    "audit.py": "1e092b6321049e8bd3a915c8200f343257e88925e9822f228c7456e598b5207b",
+    "PROTOCOL.json": "f77365aea655063559034b436de87171d01157fe74a3dd3f235b04038da6fbe3",
+    "SOURCE_FREEZE.json": "040093e3b3e340492331f72b27062375f4b308b60cba8185cdcac535485b6ccc"
+  },
+  "receipt_recorded_after_confirmation": true,
+  "audit_process_meter": {
+    "path": "tools/hcsn/full_parameters_r22_20261102/measure.py",
+    "published_commit": "7a319af55c8c99805ad445290af72c674438fd00",
+    "scope": "Meter chosen and published before the read-only OpenSSL audit; not a numerical dependency of the earlier authenticated-restore campaign."
+  }
+}
