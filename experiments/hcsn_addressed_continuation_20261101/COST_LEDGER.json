@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn-addressed-followup-cost.v1",
+  "whole_child_cpu_seconds": {
+    "operator_regression": 2.650954,
+    "optional_numeric": 3.727685,
+    "propagation_performance": 200.842181,
+    "joint_dynamics": 244.16455,
+    "video_final": 4.768303,
+    "missing_calibration": 20.068745,
+    "missing_confirmation": 127.874395
+  },
+  "whole_child_cpu_sum": 604.096813,
+  "other_disjoint_partial_cpu_lower_bounds": {
+    "missing_training_parent_and_waited_children": 508.724286541,
+    "superseded_video_fit_body": 1.953866286
+  },
+  "measured_work_cpu_lower_bound_seconds": 1114.774965827,
+  "complete_campaign_cpu_seconds": null,
+  "energy_joules": null,
+  "gpu": null,
+  "overlapping_wall_seconds_not_added": true,
+  "inner_fit_timers_not_added": true,
+  "excluded": [
+    "environment preparation",
+    "historical data/pretraining",
+    "some development, restoration and independent review",
+    "packaging/publication",
+    "full process-family memory peak"
+  ]
+}
