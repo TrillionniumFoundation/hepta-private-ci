@@ -1,0 +1,81 @@
+{
+  "source_commit": "b9d0d3d4a9ea573c9b666584c35b1d263625e8d2",
+  "checks": [
+    {
+      "name": "real_committed_source_identity",
+      "exit_code": 0,
+      "passed": true,
+      "sources": 7
+    },
+    {
+      "name": "wrong_head_rejected_before_cgroup_creation",
+      "exit_code": 1,
+      "passed": true,
+      "result": {
+        "status": "FAIL",
+        "owned_parent_created": false,
+        "parent_cleanup_verified": false,
+        "hardware_charge_campaign_passed": false,
+        "full_family_rss_qualified": false,
+        "energy_qualified": false,
+        "failure": {
+          "type": "ValueError",
+          "message": "Actual checkout HEAD differs from requested event head"
+        },
+        "wall_seconds": 0.0034580930005176924
+      }
+    },
+    {
+      "name": "missing_real_evidence_rejected",
+      "exit_code": 1,
+      "passed": true,
+      "result": {
+        "passed": false,
+        "error": {
+          "type": "FileNotFoundError",
+          "message": "[Errno 2] No such file or directory: '/tmp/hcsn-v11-source-controls-4yari73q/empty/IDENTITY.json'"
+        }
+      }
+    },
+    {
+      "name": "actionlint",
+      "argv": [
+        "/tmp/hcsn-bp-ci-tools/actionlint",
+        ".github/workflows/hcsn-v11-cgroup-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "prettier",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/tmp/hcsn-bp-ci-tools/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/hcsn-v11-cgroup-economics.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": "",
+      "passed": true
+    },
+    {
+      "name": "diff_check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "inherited_v10_gate_controls": "7/7, zero skips; GATE_CONTROLS.log",
+  "hardware_cgroup_campaigns_executed_locally": 0,
+  "hardware_acceptance": "HOLD; awaiting real GitHub runner"
+}
