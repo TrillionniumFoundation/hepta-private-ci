@@ -1,0 +1,28 @@
+{
+  "baseline_commit": "ede941c81edaf246486c88725a8a921bf70279ec",
+  "inputs": [
+    {
+      "path": "tools/hcsn/native_kernel_r19_20261101/main.rs",
+      "size": 6623,
+      "sha256": "0ca2a70b8604b57fd91ed71b1d147a52e37f6de2d0836b7b54d5c2ae7b73da86",
+      "git_blob": "4bb342796740e6a1369efb1e40794fe57704f696",
+      "origin": "pinned_baseline"
+    },
+    {
+      "path": "tools/hcsn/native_owner_r18_20261101/common.rs",
+      "size": 4112,
+      "sha256": "6ccfac7e38109696bbb9bbebe9b5e9490445007a7b00a6741d65f1b943d051ac",
+      "git_blob": "0decf6650c64b2de522f69aba9c03af33c03fe3f",
+      "origin": "pinned_baseline"
+    },
+    {
+      "path": "tools/hcsn/native_financial_r20_20261101/financial.rs",
+      "size": 6809,
+      "sha256": "4b3d60b3aa3a56387bb07efb9ff9024a1634493dbecbd8d7c682cdd1bf5f57b4",
+      "git_blob": "023ff6a956a31e62d612feea681a89edb602067e",
+      "origin": "same_round_candidate"
+    }
+  ],
+  "numeric_derivation": "numeric.rs extracts R19generatorvalidation,beliefvalidation,andpositiveuniformization; IOdriverremoved,visibilitymadepublic,mathematicaloperationsretained. Liveowner doesnotread an after-state tape.",
+  "old_files_modified": false
+}
