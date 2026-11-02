@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn-v13-new-head-adapter-controls.v1",
+  "checks": 49,
+  "all_checks_passed": true,
+  "source_training_identity": {
+    "task": "async_av",
+    "split": "train",
+    "ids": [
+      "1051_DFA_ANG_XX",
+      "1051_DFA_DIS_XX",
+      "1051_DFA_FEA_XX",
+      "1051_DFA_HAP_XX",
+      "1051_DFA_NEU_XX",
+      "1051_DFA_SAD_XX",
+      "1043_DFA_ANG_XX",
+      "1043_DFA_DIS_XX",
+      "1043_DFA_FEA_XX",
+      "1043_DFA_HAP_XX",
+      "1043_DFA_NEU_XX",
+      "1043_DFA_SAD_XX",
+      "1016_DFA_ANG_XX",
+      "1016_DFA_DIS_XX",
+      "1016_DFA_FEA_XX",
+      "1016_DFA_HAP_XX",
+      "1016_DFA_NEU_XX",
+      "1016_DFA_SAD_XX",
+      "1050_DFA_ANG_XX",
+      "1050_DFA_DIS_XX",
+      "1050_DFA_FEA_XX",
+      "1050_DFA_HAP_XX",
+      "1050_DFA_NEU_XX",
+      "1050_DFA_SAD_XX"
+    ],
+    "objects": 24,
+    "sequences": 240,
+    "x_shape": [
+      240,
+      6,
+      55
+    ],
+    "x_sha256": "12694fefcb697422bc0504f92fbb5df8d92171014f557b901cf281367d0a4ad6",
+    "y_sha256": "0c3614eec98fe6105505292c0e49b48fc2e0171eb0bf05912002f3607c9179e2",
+    "source_array_sha256": "01ffc02e803cfcd35733dc6b689d57baaacc6b46d10541c2f3f463ab79b1dd29",
+    "scope": "Historical exposed V3 records; no independent confirmation qualification"
+  },
+  "real_joint_updates": 6,
+  "test_or_val_opened": false,
+  "scope": "Untrained actual HX content model and explicit execution fixtures only; not quality, trained calibration or scientific confirmation"
+}

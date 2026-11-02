@@ -1,0 +1,21 @@
+{
+  "schema": "hcsn-v13-qualification-clarification.v1",
+  "actual_joint_task_classes": {
+    "async_av": 6,
+    "av_binding": 2
+  },
+  "actual_new_audio_readout_classes": [
+    "ANG",
+    "DIS",
+    "FEA",
+    "HAP",
+    "NEU",
+    "SAD"
+  ],
+  "original_v6_task_equivalence": "UNVERIFIED: original source/protocol/weights remain unavailable",
+  "inherited_five_class_description": "Some earlier reports described missing v6 as five-class. That is inherited narrative, not authenticated by original v6 bytes. Preserved historical artifacts are not rewritten; this round does not assert that original class count.",
+  "audio_corpus_vs_joint_corpus": "The 288 TRAIN audio recordings and 1536-dimensional pretrained descriptor are a separate development corpus from the original 55-dimensional joint AV packets; results do not cross-qualify frontends or dynamics.",
+  "statistical_comparisons": "Joint full/margin training-by-execution contrasts are separate from ordinary/HX by fixed/value control contrasts. No overloaded A/B/C/D label is used as original D-B without its explicit context.",
+  "all_blockers_closed": false,
+  "production_activation": false
+}

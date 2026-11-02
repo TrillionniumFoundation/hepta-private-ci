@@ -1,0 +1,59 @@
+{
+  "schema": "hcsn-v13-future-target-controls.v1",
+  "checks": 69,
+  "all_checks_passed": true,
+  "actual_prefix_tree_updates": 34,
+  "actual_descendant_targets": 64,
+  "schedule_prefix_comparisons": 60,
+  "largest_probability_difference": 0.0,
+  "source_sha256": {
+    "experiments/hcsn_v13_followup_20261102/control/value_fit.py": "3adce752dfcef9fd97f43f88f75073728f27bd6c004db71e17931baba3f653c3",
+    "experiments/hcsn_v13_followup_20261102/control/check_targets.py": "c65ebe9a2ffed3f983992a75a657b49a2e3163b5ca54ed8a5d56063ee6af6887",
+    "experiments/hcsn_v13_followup_20261102/control/runtime.py": "42d8e1fec026ddbabc393a32218d6a895f49ca7f0b1b54a91bcdf1f283875217"
+  },
+  "feature_bytes_sha256": "f475eb3010fa8e621408b40a9f52e90bb96e1d85adc12f2e5a21aea86eee5f5a",
+  "test_or_val_opened": false,
+  "training_identity": {
+    "task": "async_av",
+    "split": "train",
+    "ids": [
+      "1051_DFA_ANG_XX",
+      "1051_DFA_DIS_XX",
+      "1051_DFA_FEA_XX",
+      "1051_DFA_HAP_XX",
+      "1051_DFA_NEU_XX",
+      "1051_DFA_SAD_XX",
+      "1043_DFA_ANG_XX",
+      "1043_DFA_DIS_XX",
+      "1043_DFA_FEA_XX",
+      "1043_DFA_HAP_XX",
+      "1043_DFA_NEU_XX",
+      "1043_DFA_SAD_XX",
+      "1016_DFA_ANG_XX",
+      "1016_DFA_DIS_XX",
+      "1016_DFA_FEA_XX",
+      "1016_DFA_HAP_XX",
+      "1016_DFA_NEU_XX",
+      "1016_DFA_SAD_XX",
+      "1050_DFA_ANG_XX",
+      "1050_DFA_DIS_XX",
+      "1050_DFA_FEA_XX",
+      "1050_DFA_HAP_XX",
+      "1050_DFA_NEU_XX",
+      "1050_DFA_SAD_XX"
+    ],
+    "objects": 24,
+    "sequences": 240,
+    "x_shape": [
+      240,
+      6,
+      55
+    ],
+    "x_sha256": "12694fefcb697422bc0504f92fbb5df8d92171014f557b901cf281367d0a4ad6",
+    "y_sha256": "0c3614eec98fe6105505292c0e49b48fc2e0171eb0bf05912002f3607c9179e2",
+    "source_array_sha256": "01ffc02e803cfcd35733dc6b689d57baaacc6b46d10541c2f3f463ab79b1dd29",
+    "scope": "Historical exposed V3 records; no independent confirmation qualification"
+  },
+  "torch": "2.15.0+cpu",
+  "scope": "Untrained actual new HX content and TRAIN-only fixtures; future labels alter targets, never reader inputs; no accepted fit or quality claim"
+}

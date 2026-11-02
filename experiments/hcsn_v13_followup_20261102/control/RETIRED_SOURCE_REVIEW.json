@@ -1,0 +1,12 @@
+{
+  "schema": "hcsn-v13-retired-control-source-review.v1",
+  "finding": "First Forecast encoded all planned READs after deleting WAIT, although deadline can prevent issue or acceptance. Fixed before any formal reader fit/evaluation.",
+  "retired_sources": {
+    "source001/PROTOCOL.json": "c0a419f69a48734da8a0c139bfbbbb6de06f838af796d56816cb89c3ceaf93ce",
+    "source001/runtime.py": "0a8115bccb575e125dde2768a29422da1938a14a40188682318eebd4278b5124",
+    "source001/check_runtime.py": "cd4291e9af53cb5cd1bf02be1cf6f47f17c0d16d19b3b3eb807ad714ec03043a"
+  },
+  "actual_revised_controls": "check002/RESULT.json",
+  "original_limited_controls": "check001/RESULT.json",
+  "formal_fit_or_test_used_retired_source": false
+}

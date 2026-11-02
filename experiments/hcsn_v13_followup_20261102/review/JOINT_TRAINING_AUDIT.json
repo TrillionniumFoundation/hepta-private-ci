@@ -1,0 +1,336 @@
+{
+  "schema": "hcsn-v13-independent-joint-training-record-audit.v1",
+  "checks": 501,
+  "all_checks_passed": true,
+  "failed_examples": [],
+  "fits": 36,
+  "optimizer_updates": 4608,
+  "rows": [
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.796903706956021,
+      "final_loss": 0.047325732140026194
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.796712175190346,
+      "final_loss": 0.052860253379817555
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.7968887164928813,
+      "final_loss": 0.0421146212077887
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 32550,
+      "initial_loss": 1.8014728968856222,
+      "final_loss": 0.04299307859543757
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 29382,
+      "initial_loss": 1.841665170749965,
+      "final_loss": 0.05477736650006393
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 21958,
+      "initial_loss": 1.7377048409506388,
+      "final_loss": 0.10411941917213474
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.7747954965059893,
+      "final_loss": 0.04693298716019333
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.7745585818485237,
+      "final_loss": 0.02561883388152082
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.774516720445676,
+      "final_loss": 0.030885904215338714
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 32550,
+      "initial_loss": 1.8048883782288352,
+      "final_loss": 0.03142656085942333
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 29382,
+      "initial_loss": 1.6843495776328323,
+      "final_loss": 0.043197583267121205
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 21958,
+      "initial_loss": 1.8054352828777116,
+      "final_loss": 0.11044300060807764
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.8350217682663663,
+      "final_loss": 0.04760085153248275
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.8350529829024593,
+      "final_loss": 0.04258378369440299
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 31430,
+      "initial_loss": 1.8350701911419016,
+      "final_loss": 0.047821164464818454
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 32550,
+      "initial_loss": 1.80988435391203,
+      "final_loss": 0.040979504757115495
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 29382,
+      "initial_loss": 1.8311313236549591,
+      "final_loss": 0.06473803924231551
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 21958,
+      "initial_loss": 1.8364574402944802,
+      "final_loss": 0.1339632440412958
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.7264154626164565,
+      "final_loss": 0.6085609100392119
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.726459339444021,
+      "final_loss": 0.6247460716941474
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.7264113897167931,
+      "final_loss": 0.6199880922376072
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 32290,
+      "initial_loss": 0.7097320100737008,
+      "final_loss": 0.6310361808407866
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 29122,
+      "initial_loss": 0.7022886090695124,
+      "final_loss": 0.6565243783329165
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13301,
+      "updates": 128,
+      "parameter_count": 21698,
+      "initial_loss": 0.7230813426487243,
+      "final_loss": 0.671200777453908
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.7212559104808581,
+      "final_loss": 0.6009622384567685
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.7212515367879461,
+      "final_loss": 0.6118272595816693
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.7213247002113362,
+      "final_loss": 0.6144788161060714
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 32290,
+      "initial_loss": 0.689472242183594,
+      "final_loss": 0.6098515493649612
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 29122,
+      "initial_loss": 0.7352809262759009,
+      "final_loss": 0.6147719695300904
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13303,
+      "updates": 128,
+      "parameter_count": 21698,
+      "initial_loss": 0.7098615041718555,
+      "final_loss": 0.64143452348046
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.6977518052089552,
+      "final_loss": 0.6392733731247405
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.6977455099573832,
+      "final_loss": 0.6323131739861969
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 31170,
+      "initial_loss": 0.6977870240579137,
+      "final_loss": 0.6425379437085832
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 32290,
+      "initial_loss": 0.6873595760829082,
+      "final_loss": 0.6207564882256655
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 29122,
+      "initial_loss": 0.6893073048207636,
+      "final_loss": 0.6603822973576797
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13307,
+      "updates": 128,
+      "parameter_count": 21698,
+      "initial_loss": 0.6821175115468231,
+      "final_loss": 0.6787883676341616
+    }
+  ],
+  "validation_or_test_loaded": false,
+  "scope": "Actual frozen TRAIN tensors, initialization, exact batch streams, all step logs and final parameter identities; no second full fit or evaluation qualification"
+}

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.joint_core.campaign",
+    "fit",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+    "--task",
+    "av_binding",
+    "--family",
+    "history",
+    "--seed",
+    "13301"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-history-13301",
+  "timeout": 180.0,
+  "sample_interval": 0.5
+}

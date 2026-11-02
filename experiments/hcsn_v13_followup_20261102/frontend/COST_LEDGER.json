@@ -1,0 +1,46 @@
+{
+  "schema": "hcsn-v13-frontend-disjoint-cost-ledger.v1",
+  "new_complete_waited_workers": [
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/frontend/cost_forward001/RECEIPT.json",
+      "receipt_sha256": "e75db3ac22c796dc7feae285ebff85639251b0362e45fc65a0762cb121f26c77",
+      "cpu_seconds": "3.314803",
+      "task_success": true,
+      "scope": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/frontend/cost_cache001/RECEIPT.json",
+      "receipt_sha256": "de19b0ab167426610f92fcff2f882cd61f94910380acf7d162c343e93c5ce6f5",
+      "cpu_seconds": "7.875889",
+      "task_success": true,
+      "scope": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/frontend/cost_readout001/RECEIPT.json",
+      "receipt_sha256": "79366b8fe30889fa4d5bc03816ce52eaabfe2e30ffe6aa547c52830cbb65dc08",
+      "cpu_seconds": "0.655452",
+      "task_success": true,
+      "scope": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write."
+    }
+  ],
+  "new_disjoint_cpu_seconds": "11.846144",
+  "nested_timing_rule": "Inner process/fit/encoder timers already included in outer worker; not additional CPU",
+  "retained_reused_feature_preparation_cpu_seconds": 107.396369,
+  "reused_feature_preparation_scope": "Adjacent project extract_train001.receipt.json; exact copy retained, existing generic encoder preparation of these288 TRAIN inputs, not a new execution or zero-cost setup",
+  "other_current_or_historical_cost": {
+    "source_creation_and_reporting": null,
+    "source_lookup_freezing_and_unwrapped_hash_checks": null,
+    "weight_acquisition_complete_cost": null,
+    "ASR_pretraining_and_finetuning": null,
+    "historical_v5_v6_preparation": null
+  },
+  "complete_frontend_stage_cpu_seconds": null,
+  "complete_process_family_peak_memory_bytes": null,
+  "device_energy_joules": null,
+  "strong_audio_reference_qualified": false,
+  "separately_recorded_independent_review": {
+    "report": "experiments/hcsn_v13_followup_20261102/review/EMOTION_OOF_AUDIT.json",
+    "cpu_seconds": 0.990825,
+    "accounting": "Independent reviewer/root ledger; not added again to the three frontend execution envelopes"
+  }
+}
