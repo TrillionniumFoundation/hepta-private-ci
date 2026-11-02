@@ -1,0 +1,125 @@
+{
+  "schema": "hcsn.two-layer-checker-nonfinancial-tests.v1",
+  "passed": true,
+  "checker_sha256": "2bcbf849a32624295cb674dcf2272e1cddfb9fcaafe99063bc2de341d054031c",
+  "script_sha256": "1f09825ba5daaf254585ab2d0e1f8905e462a2d621872793da707462be3ad40f",
+  "count": 19,
+  "results": [
+    {
+      "name": "invented nonfinancial FP32 trajectory",
+      "expected": "accept",
+      "passed": true
+    },
+    {
+      "name": "missing final state",
+      "expected": "reject",
+      "passed": true,
+      "error": "Wrong shape or nonfinite array: (17, 8, 4)"
+    },
+    {
+      "name": "changed Euler state",
+      "expected": "reject",
+      "passed": true,
+      "error": "Initial physical state changed"
+    },
+    {
+      "name": "wrong represented drift",
+      "expected": "reject",
+      "passed": true,
+      "error": "Exact FP32 drift mismatch"
+    },
+    {
+      "name": "wrong continuous drive",
+      "expected": "reject",
+      "passed": true,
+      "error": "Linear drive link mismatch"
+    },
+    {
+      "name": "wrong link",
+      "expected": "reject",
+      "passed": true,
+      "error": "Interlayer margin link is not the represented readout"
+    },
+    {
+      "name": "wrong preactivation",
+      "expected": "reject",
+      "passed": true,
+      "error": "Exact FP32 conditioning preactivation mismatch"
+    },
+    {
+      "name": "wrong tanh",
+      "expected": "reject",
+      "passed": true,
+      "error": "FP32 nonlinear record mismatch: conditioned tanh2"
+    },
+    {
+      "name": "wrong downstream theta",
+      "expected": "reject",
+      "passed": true,
+      "error": "Theta2/recorded tanh mismatch"
+    },
+    {
+      "name": "wrong actual branch",
+      "expected": "reject",
+      "passed": true,
+      "error": "Raw boundary branch record mismatch"
+    },
+    {
+      "name": "wrong default count",
+      "expected": "reject",
+      "passed": true,
+      "error": "Default count mismatch"
+    },
+    {
+      "name": "missing financial readout row",
+      "expected": "reject",
+      "passed": true,
+      "error": "Wrong shape or nonfinite array: (17, 8, 3)"
+    },
+    {
+      "name": "wrong physical margin",
+      "expected": "reject",
+      "passed": true,
+      "error": "Comparison failed: layer2 margin"
+    },
+    {
+      "name": "nonfinite JSON",
+      "expected": "reject",
+      "passed": true,
+      "error": "Nonfinite JSON number"
+    },
+    {
+      "name": "duplicate JSON object key",
+      "expected": "reject",
+      "passed": true,
+      "error": "Duplicate JSON key: x"
+    },
+    {
+      "name": "nonword actual gradient",
+      "expected": "reject",
+      "passed": true,
+      "error": "Record is not exact FP32 words"
+    },
+    {
+      "name": "missing trace flags",
+      "expected": "reject",
+      "passed": true,
+      "error": "Missing or failed flags: test"
+    },
+    {
+      "name": "forged comparison summary",
+      "expected": "reject",
+      "passed": true,
+      "error": "Comparison error summary mismatch: test"
+    },
+    {
+      "name": "full gradient cannot hide dead conditioning",
+      "expected": "reject",
+      "passed": true,
+      "error": "Dead conditioning route"
+    }
+  ],
+  "financial_kernel_calls": 0,
+  "candidate_model_calls": 0,
+  "scope": "Synthetic invented readouts and direct checker guard tests only. No frozen two-layer experiment, financial values or numerical-performance validation."
+}
