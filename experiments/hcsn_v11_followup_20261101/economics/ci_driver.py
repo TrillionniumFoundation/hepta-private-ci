@@ -71,6 +71,16 @@ def main():
         if not {"cpu", "memory"}.issubset(enabled):
             raise ValueError("Owned parent controller enablement was not confirmed")
         result["owned_parent_controllers"] = enabled
+        (parent / "memory.swap.max").write_text("0")
+        swap_limit = (parent / "memory.swap.max").read_text().strip()
+        if swap_limit != "0":
+            raise ValueError("Owned-parent no-swap profile was not confirmed")
+        profile = {"parent": str(parent), "inode": parent.stat().st_ino,
+                   "enabled_controllers": enabled, "memory_swap_max": swap_limit,
+                   "empty_before_admission": not (parent / "cgroup.procs").read_text().strip(),
+                   "scope": "Hierarchical no-swap limit on this fresh owned parent only; root/job groups unchanged."}
+        (args.out / "PARENT_PROFILE.json").write_text(json.dumps(profile, indent=2) + "\n")
+        result["parent_profile_sha256"] = hashlib.sha256((args.out / "PARENT_PROFILE.json").read_bytes()).hexdigest()
         command = [sys.executable, "-m", "experiments.hcsn_v10_followup_20261101.economics.runner_campaign",
                    "--delegated-parent", str(parent), "--out", str(args.out / "campaign")]
         with (args.out / "CAMPAIGN.log").open("xb") as log:

@@ -6,9 +6,19 @@ import json
 from pathlib import Path
 
 
+def allocation_floor_holds(peak, nodes):
+    allocations = [node["allocated_touched_bytes"] for node in nodes.values()]
+    return (type(peak) is int and bool(allocations)
+            and all(type(value) is int and value > 0 for value in allocations)
+            and peak >= max(allocations))
+
+
 def audit(run):
     checks, findings = [], {}
     identity = json.loads((run / "IDENTITY.json").read_text())
+    profile = json.loads((run / "PARENT_PROFILE.json").read_text())
+    checks.extend([profile["memory_swap_max"] == "0", profile["empty_before_admission"] is True,
+                   {"cpu", "memory"}.issubset(profile["enabled_controllers"])])
     checks.append(identity["checkout_sha"] == identity["expected_head"])
     required = {"experiments/hcsn_v10_followup_20261101/economics/cgroup_meter.py",
                 "experiments/hcsn_v10_followup_20261101/economics/runner_campaign.py",
@@ -32,6 +42,7 @@ def audit(run):
             receipt["root_membership_confirmed_before_release"] is True,
             receipt["empty_group_kill_checked_before_admission"] is True,
             receipt["populated_before_removal"] == 0, receipt["group_absent_after_removal"] is True,
+            Path(receipt["group_path"]).parent == Path(profile["parent"]),
             receipt["complete_process_family_rss_peak_bytes"] is None, receipt["device_energy_joules"] is None,
             receipt["cgroup_memory_charge_peak_bytes"] >= receipt["cgroup_memory_current_at_exit_bytes"] >= 0,
             receipt["cgroup_cpu_usage_seconds"] > 0,
@@ -45,6 +56,10 @@ def audit(run):
             checks.append(len({n["pid"] for n in nodes.values()}) == 4)
             checks.append(nodes["root"]["pid"] == receipt["root_pid"])
             checks.append(receipt["task_success"] is True)
+            # Payload allocations are touched after the pre-exec cgroup gate.
+            # The verified hierarchical no-swap profile makes the leaf's 48 MiB
+            # a resident anonymous-charge floor for this specific fixture.
+            checks.append(allocation_floor_holds(receipt["cgroup_memory_charge_peak_bytes"], nodes))
             for parent, child in (("root", "child"), ("child", "grandchild"), ("grandchild", "short_leaf")):
                 checks.append(nodes[parent]["spawned_pid"] == nodes[child]["pid"])
             checks.append(all(n["allocated_touched_bytes"] > 0 and n["family_peak_bytes"] is None for n in nodes.values()))
