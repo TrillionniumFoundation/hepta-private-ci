@@ -1,0 +1,21 @@
+{
+  "binary_bytes": 4557712,
+  "binary_in_delivery": false,
+  "binary_sha256": "77a526c464fc85bcc673145ef83c8b8fb700df140bb840c731d545cf5a99f394",
+  "compiler_executable_sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+  "compiler_version_verbose": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+  "qualification": "Compileperformedlocallywithnoexternalcrates. Versionandexecutabledigestidentifyobservedcompiler;notfulltoolchainattestation.",
+  "schema": "hcsn-r19-build-identity-v1",
+  "source_manifest_sha256": "bf361b8d89af1a0041db61c6fe3f5a6539ce1fe24a33ecb872a454ef8e6e8847",
+  "verbatim_command": [
+    "/tmp/trnm-original-budget-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "--edition=2024",
+    "-C",
+    "opt-level=2",
+    "-D",
+    "warnings",
+    "tools/hcsn/native_numeric_r19_20261102/main.rs",
+    "-o",
+    "/tmp/hcsn-native-numeric-r19-frozen"
+  ]
+}

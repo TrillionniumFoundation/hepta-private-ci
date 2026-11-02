@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-r19-provider-check-v1",
+  "all_passed": true,
+  "checks": 133,
+  "process_records": [
+    {
+      "case": "lost-lease",
+      "exit_code": -9,
+      "stderr": ""
+    },
+    {
+      "case": "lost-lease-restart",
+      "exit_code": 0
+    },
+    {
+      "case": "storage-failure",
+      "exit_code": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/workspace/scratch/4464023fd803/project/tools/hcsn/native_numeric_r19_20261102/provider.py\", line 242, in <module>\n    serve(args.config, args.state, args.mailbox, args.stop, args.marker)\n  File \"/workspace/scratch/4464023fd803/project/tools/hcsn/native_numeric_r19_20261102/provider.py\", line 220, in serve\n    response = provider.apply(request_id, request, stop == \"storage_failure\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/4464023fd803/project/tools/hcsn/native_numeric_r19_20261102/provider.py\", line 132, in apply\n    raise OSError(28, \"injected storage failure before commit\")\nOSError: [Errno 28] injected storage failure before commit\n"
+    },
+    {
+      "case": "storage-failure-restart",
+      "exit_code": 0
+    }
+  ],
+  "cpu_internal_seconds": 0.067011406,
+  "scope": "Protocol/cursor/effect/scorer consistency plus real provider death and fail-stop; no numeric Rust claim"
+}
