@@ -1,0 +1,29 @@
+{
+  "excluded_rebuildable_executables": [
+    {
+      "bytes": 4455840,
+      "essential_resumable_state_artifact": false,
+      "path": "confirmation_01/financial",
+      "sha256": "a92fd9a0953317f0b04911c7033e3eb9e34d78f00d4c2383546b04a4ae8c6b96"
+    },
+    {
+      "bytes": 4445248,
+      "essential_resumable_state_artifact": false,
+      "path": "development_01/financial",
+      "sha256": "4d18a50dd89411c0b4d58de7e9855182d469be4369e654c6bea15c072456a31b"
+    },
+    {
+      "bytes": 4445248,
+      "essential_resumable_state_artifact": false,
+      "path": "development_02/financial",
+      "sha256": "4d18a50dd89411c0b4d58de7e9855182d469be4369e654c6bea15c072456a31b"
+    },
+    {
+      "bytes": 4455840,
+      "essential_resumable_state_artifact": false,
+      "path": "development_04/financial",
+      "sha256": "a92fd9a0953317f0b04911c7033e3eb9e34d78f00d4c2383546b04a4ae8c6b96"
+    }
+  ],
+  "reason": "Outputs contain no binary-bound checkpoint state. Exact executed binary digests remain in summaries; retained sources and compiler identity allow rebuild. Source/evidence manifest excludes these build products, unlike R20 runtime essential ELF artifacts."
+}

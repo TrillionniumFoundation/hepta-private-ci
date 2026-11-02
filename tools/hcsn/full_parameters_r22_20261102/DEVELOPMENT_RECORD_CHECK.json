@@ -1,0 +1,32 @@
+{
+  "checker_sha256": "470c51adf6d527114a5e77125ea6d6336a434b19694b40716eabea44c61b7d64",
+  "checks": 244,
+  "controls": 34,
+  "cost_scope": "Checker body after imports; complete process cost requires outer receipt.",
+  "counts": {
+    "cases": 9,
+    "finite_difference_positions": 324162,
+    "jacobian_positions": 162081,
+    "value_positions": 18009
+  },
+  "independent_scope": "Separate raw aggregation and finite-difference evaluation; this does not independently regenerate high-precision references or prove a uniform analytic error bound.",
+  "maxima": {
+    "finite_difference": 3.2625014684809985e-08,
+    "jacobian_ratio": 8.273109989737925e-05,
+    "mass": 5.684341886080802e-14,
+    "value_ratio": 6.533189126300136e-05
+  },
+  "parent_cpu_seconds": 0.202985476,
+  "passed": true,
+  "raw_gzip_sha256": "18930f58a0f1f37aff8fe683102a1b0c035edd01da654fe90e991c1d73978e6a",
+  "source_match": {
+    "DEPENDENCIES.json": true,
+    "PROTOCOL.json": true,
+    "dual.rs": true,
+    "financial.rs": true,
+    "independent_check.py": true,
+    "main.rs": true,
+    "reference.py": true,
+    "verify.py": true
+  }
+}
