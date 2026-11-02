@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn-r22-v1-retrospective-status-v1",
+  "fresh_profiles_run": false,
+  "diagnosis_cases": 78,
+  "diagnosis_local_pass": 78,
+  "independent_replay_passed": true,
+  "old_r20_both_step_pass": 30,
+  "old_r20_both_step_total": 78,
+  "old_r20_gate": false,
+  "adversarial_initial_left_verifier_gate": false,
+  "input_hole": "Both saved initial-left arrays omitted from maxima; development05 corruption accepted. Solver initializes them correctly, but general verifier input contract failed.",
+  "superseding_component": "tools/hcsn/continuous_task_v2_r22_20261102",
+  "source_freeze_sha256": "7b7e7afee08f7da2a040970a8a617fb0a9401b73470c7cb7b5c983c7a006694c",
+  "preservation": "All original17 frozen source files, freeze/publication, retrospective logs/raw arrays, peer review and development failures retained byte-exact."
+}

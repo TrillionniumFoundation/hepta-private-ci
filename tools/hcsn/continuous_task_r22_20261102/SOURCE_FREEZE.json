@@ -1,0 +1,94 @@
+{
+  "schema": "hcsn-r22-control-direction-prospective-freeze-v1",
+  "baseline_commit": "ff611d62793c2829cab85b38d6ab246691b3ba1d",
+  "classification": "New prospective six-profile confirmation; original R20 complete roster is retrospective diagnosis and all old failures retained. Exact tie family was developed beforehand.",
+  "files": [
+    {
+      "path": "DERIVATIVE_CONTRACT.md",
+      "bytes": 6201,
+      "sha256": "cf84f6554ff5b9e23f71898b3810de12489f24b1108263e76f66152c82d1aa7a"
+    },
+    {
+      "path": "INPUT_IDENTITIES.json",
+      "bytes": 17348,
+      "sha256": "f115f05a62e01cac19ed3d214eebe1eac6c01ae21377d0129d085d85c6510f95"
+    },
+    {
+      "path": "MATH_ANALYSIS.md",
+      "bytes": 7175,
+      "sha256": "03423dd911076f0d7be60dfb68dcc03879a38693fe87734f5432e65967afac13"
+    },
+    {
+      "path": "PROTOCOL.json",
+      "bytes": 3569,
+      "sha256": "ca67422b86f9146494c47272ae0e5e92963f3ca0f37e55e4f890788719b677c4"
+    },
+    {
+      "path": "REPRODUCE.md",
+      "bytes": 3077,
+      "sha256": "d5c53caf4715d5adc2fe71635a305aa6123d9a2cebdb034df9ac7eead0867dde"
+    },
+    {
+      "path": "RUNTIME.json",
+      "bytes": 316,
+      "sha256": "5f51606c791a479c2ae32a7873e40ca11748493848e2fc5c40931c8e382e3b1b"
+    },
+    {
+      "path": "certificate.py",
+      "bytes": 15035,
+      "sha256": "5289026ff3b24ce020a631f84e2b96e09aecea7c7e8f2580bb68b016e392f439"
+    },
+    {
+      "path": "complex_reference.py",
+      "bytes": 3175,
+      "sha256": "e8a47ba1383c5440d7d8009f51ede845551815176fcd35c4ea88445de7cce844"
+    },
+    {
+      "path": "correction.py",
+      "bytes": 1530,
+      "sha256": "c46100c6e6c1a818c908829504d8f851243517b101155c705be508cbca203a5e"
+    },
+    {
+      "path": "dependencies/BUILD_HISTORY.json",
+      "bytes": 319,
+      "sha256": "f1656476ee6d71cdf8ab798b5d90b0dd2d46a518251a2a3a9eabd0abaaee6af4"
+    },
+    {
+      "path": "dependencies/MPMATH_MANIFEST.json",
+      "bytes": 5789,
+      "sha256": "f79c4b7bb754752b040afb03bd3c5b4e3805e3851e60cef1bbc57d95a8c2bc4b"
+    },
+    {
+      "path": "dependencies/mpmath_1_3_0_sources.zip",
+      "bytes": 414902,
+      "sha256": "2fe6a605736d9c33068be5211063b47f5fc7438ec4d715be94b58d9f43e2c8c0"
+    },
+    {
+      "path": "dependency.py",
+      "bytes": 1146,
+      "sha256": "a2818688fefba91a008c56e8913425a51beb7aaabdc7e4c41dfcba47cdb71956"
+    },
+    {
+      "path": "measure.py",
+      "bytes": 1815,
+      "sha256": "8e1c79c193d042ee245e127e65d1fb383773eedc031f23e98ce1a64dfb8eba1c"
+    },
+    {
+      "path": "record_check.py",
+      "bytes": 7467,
+      "sha256": "d0c7e631c6537b73887bd5cb1667d9c7dc314ac2f906c1dc2d54cd823d724c14"
+    },
+    {
+      "path": "solver.py",
+      "bytes": 6570,
+      "sha256": "109ede86fd6f120a25a2b4d7648a2fcfd038061a279ee8f6fdbc716400adf48d"
+    },
+    {
+      "path": "study.py",
+      "bytes": 11521,
+      "sha256": "bb1419aac2437a5a6dcde6995d8c522b61936208d027451af0f66c7878bc6bbe"
+    }
+  ],
+  "project_import_closure": "Four inherited source files in INPUT_IDENTITIES; no external mpmath helper path. Numerical runtime versions recorded, implementations not formally verified.",
+  "fresh_profiles_drawn_before_freeze": false
+}
