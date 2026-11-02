@@ -1,12 +1,13 @@
 {
-  "schema": "hcsn-r20-directional-source-freeze-v1",
+  "schema": "hcsn-r20-directional-source-freeze-v2",
   "baseline_commit": "ede941c81edaf246486c88725a8a921bf70279ec",
-  "timing": "Frozen after disclosed one-direction engineering probe and independent source review, before fresh registered directional campaigns. Original R19 gates remain failed.",
+  "original_source_checkpoint": "ce6d07d5f1e4210e8c1ade9846dd4e5cd89038ce",
+  "timing": "Separate prospective V2 residual-termination repair after preserved V1 solver failure. Protocol, directions, steps and all registered thresholds unchanged.",
   "files": [
     {
       "path": "directional.py",
-      "bytes": 4190,
-      "sha256": "d493c40a15485ee798a4c1aebe51fb491820ab0a95a158e517caa9448df23fe8"
+      "bytes": 4569,
+      "sha256": "e5344b1602056e7af11364421d13daa9136f4dc87d2f16cb1ea1be66bfc0426b"
     },
     {
       "path": "task_directional.py",
@@ -72,6 +73,11 @@
       "path": "DEVELOPMENT_SCOPE.md",
       "bytes": 638,
       "sha256": "8c0246dbd5b66ba9dcd86234418d866847aace961465c96ffc4465be6badc57f"
+    },
+    {
+      "path": "V1_CYCLE_DIAGNOSTIC_NOTES.md",
+      "bytes": 2034,
+      "sha256": "a999c76f8e1b0223df31b89939c85c68828a129b63b0563b42ac66c06c498bac"
     }
   ]
 }

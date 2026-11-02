@@ -37,10 +37,14 @@ def mixed_lcp(a, lower, upper, rhs, obstacle, states=None):
         value = solve_banded((1, 1), band, target, check_finite=False)
         contact, equation = value - obstacle, apply(a, lower, upper, value) - rhs
         next_active = (states == 1) | ((states == 2) & (contact <= equation))
-        if np.array_equal(next_active, active):
-            residual = np.where(states == 0, equation, np.where(states == 1, contact, np.minimum(contact, equation)))
+        residual = np.where(states == 0, equation, np.where(states == 1, contact, np.minimum(contact, equation)))
+        norm = float(np.max(a + np.r_[0., abs(lower)] + np.r_[abs(upper), 0.]))
+        tolerance = 64 * np.finfo(float).eps * (1 + np.max(abs(rhs)) + np.max(abs(obstacle)) + norm * np.max(abs(value)))
+        if np.max(abs(residual)) <= tolerance:
             return value, dict(residual=float(abs(residual).max()), iterations=iteration + 1,
-                               biactive_rows=int(np.sum(states == 2)))
+                               biactive_rows=int(np.sum(states == 2)), residual_stop_tolerance=float(tolerance))
+        if np.array_equal(next_active, active):
+            raise RuntimeError("Stable policy failed the mixed residual accuracy contract")
         active = next_active
     raise RuntimeError("Mixed directional LCP policy iteration did not converge")
 
