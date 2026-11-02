@@ -183,3 +183,24 @@ fn exact_request_snapshot_and_objective_bind_native_receipt_identity() {
         changed_goal["evaluation_digest"]
     );
 }
+
+#[test]
+fn abstain_refuses_nonzero_uncertainty_without_rejecting_ordinary_candidates() {
+    // The zero-effect fallback must not carry an uncertainty penalty that
+    // could change native advisory selection against a valid alternative.
+    let mut altered = request(vec![]);
+    altered["candidates"][0]["uncertainty_q32"] = json!(Q32 / 4);
+    let wire = serde_json::to_vec(&altered).expect("encode altered abstain");
+    assert!(
+        evaluate(&wire).is_err(),
+        "nonzero uncertainty on the exact zero-effect abstain must refuse"
+    );
+
+    // Uncertainty is valid on an ordinary candidate: this is a targeted
+    // fallback-invariant check, not a blanket tightening of the objective.
+    let mut ordinary = request(vec![path("uncertain", &[1])]);
+    ordinary["candidates"][0]["uncertainty_q32"] = json!(Q32 / 4);
+    assert!(
+        evaluate(&serde_json::to_vec(&ordinary).expect("encode ordinary candidate")).is_ok()
+    );
+}

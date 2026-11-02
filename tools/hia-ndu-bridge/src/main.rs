@@ -164,6 +164,7 @@ fn evaluate(input: &[u8]) -> Result<Value, String> {
             && (!candidate.verified
                 || candidate.resource_cost_q32 != 0
                 || candidate.risk_q32 != 0
+                || candidate.uncertainty_q32 != 0
                 || candidate.terminal_q32 != 0
                 || candidate.events.iter().any(|event| event.instant_q32 != 0))
         {
