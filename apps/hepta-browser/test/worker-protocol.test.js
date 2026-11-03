@@ -59,7 +59,10 @@ test("decoder rejects non-canonical and oversized announced frames", () => {
     }),
     "utf8",
   );
-  assert.notEqual(nonCanonicalBody.toString("utf8"), canonicalWorkerJson(valid));
+  assert.notEqual(
+    nonCanonicalBody.toString("utf8"),
+    canonicalWorkerJson(valid),
+  );
   const prefix = Buffer.alloc(4);
   prefix.writeUInt32BE(nonCanonicalBody.length, 0);
   const decoder = new WorkerFrameDecoder();

@@ -174,6 +174,12 @@ fn run_runtime(
     isolate_handle_tx: std_mpsc::SyncSender<v8::IsolateHandle>,
     runtime_command_tx: std_mpsc::Sender<RuntimeCommand>,
 ) {
+    // V8's sandboxed PartitionAlloc backend initializes its shared pool lazily.
+    // Keep first-isolate construction and its first backing-store allocation
+    // together; normal cell execution proceeds independently after this guard.
+    let initialization = crate::v8_init::V8_ISOLATE_CREATION
+        .lock()
+        .unwrap_or_else(|error| panic!("V8 isolate initialization mutex poisoned: {error}"));
     let isolate = &mut v8::Isolate::new(v8::CreateParams::default());
     let isolate_handle = isolate.thread_safe_handle();
     if isolate_handle_tx.send(isolate_handle).is_err() {
@@ -184,6 +190,8 @@ fn run_runtime(
     v8::scope!(let scope, isolate);
     let context = v8::Context::new(scope, Default::default());
     let scope = &mut v8::ContextScope::new(scope, context);
+    let _initial_buffer = v8::ArrayBuffer::new(scope, /*byte_length*/ 1);
+    drop(initialization);
 
     scope.set_slot(RuntimeState {
         event_tx: event_tx.clone(),

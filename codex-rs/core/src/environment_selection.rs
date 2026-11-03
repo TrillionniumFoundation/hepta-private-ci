@@ -1229,8 +1229,9 @@ url = "ws://127.0.0.1:8765"
             .with_span_events(FmtSpan::NEW)
             .with_writer(MockWriter::new(buffer))
             .finish();
-        let _subscriber_guard = tracing::subscriber::set_default(subscriber);
-
+        // Bind the collector to every poll, rather than keeping a thread-local
+        // default guard alive across suspension and spawned environment work.
+        async {
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
             .expect("bind websocket listener");
@@ -1262,7 +1263,8 @@ url = "ws://127.0.0.1:8765"
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
+            // set_default is thread-local; preserve it across Tokio workers.
+            async move { environments.snapshot().await }.with_current_subscriber()
         });
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());
@@ -1297,6 +1299,9 @@ url = "ws://127.0.0.1:8765"
             ),
             "environment resolution should contain the remote environment-info span: {logs}"
         );
+        }
+        .with_subscriber(subscriber)
+        .await;
     }
 
     #[tokio::test]

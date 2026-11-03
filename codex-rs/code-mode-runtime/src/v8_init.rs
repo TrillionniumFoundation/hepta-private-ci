@@ -1,3 +1,4 @@
+use std::sync::Mutex;
 use std::sync::OnceLock;
 
 /// Controls whether V8 may generate executable code at runtime.
@@ -14,6 +15,7 @@ struct V8Initialization {
 }
 
 static V8_INITIALIZATION: OnceLock<Result<V8Initialization, String>> = OnceLock::new();
+pub(crate) static V8_ISOLATE_CREATION: Mutex<()> = Mutex::new(());
 
 /// Initializes the process-wide V8 platform with the requested JIT mode.
 ///

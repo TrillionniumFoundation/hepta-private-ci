@@ -71,6 +71,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+An execution-port seam may normalize bounded requests, observations and original-
+operation reconciliation inside the existing contracts and adapter owners. The
+current App Server remains the execution spine. A neutral contract does not
+authorize dispatch, equate model-only turns with process/tool execution, or install
+another executor. Any later backend change must preserve final-use binding,
+terminal uncertainty and persisted-history compatibility at equal measured work.
+
 The bounded components are:
 
 - `contract translator`
@@ -81,6 +88,16 @@ The bounded components are:
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+
+A terminal notification can precede the completion of its durable recovery and
+idle side effects. Follow-up starts observe the exact current terminalizer's
+bounded completion signal and then use normal atomic admission checks. Idle
+queue contributors defer that wait until their callback returns, so they cannot
+wait on their own completion fence. Deferred contributions keep registration
+order, including user-queue dispatch before automatic goal continuation, and
+are bounded to 32 pending contributions per thread. Timeout or cancellation
+never releases the fence, consumes a queued item, or authorizes replay of an
+accepted effect.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 

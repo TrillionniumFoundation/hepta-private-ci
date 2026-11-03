@@ -84,6 +84,7 @@ ignore = [
     { id = "RUSTSEC-2026-0173", reason = "proc-macro-error2 is unmaintained; pulled in via i18n-embed-fl/age used by codex-secrets local storage; remove when codex-secrets migrates off age or age drops i18n-embed-fl" },
     { id = "RUSTSEC-2026-0194", reason = "quick-xml v0.39.4 remains via plist/syntect and wayland-scanner; plist does not exercise the affected APIs and wayland-scanner parses trusted build-time XML; remove when rust-plist#191 and wayland-rs#938 are released" },
     { id = "RUSTSEC-2026-0195", reason = "quick-xml v0.39.4 remains via plist/syntect and wayland-scanner; plist does not exercise the affected APIs and wayland-scanner parses trusted build-time XML; remove when rust-plist#191 and wayland-rs#938 are released" },
+    { id = "RUSTSEC-2026-0247", reason = "bitmaps 3.2.1 is unmaintained and pulled in via imbl under matrix-sdk 0.18 used by codex-hepta-matrix-sdk/matrixd; no patched release exists; remove when Matrix SDK drops bitmaps or the Matrix stack migrates off imbl" },
 ]
 # If this is true, then cargo deny will use the git executable to fetch advisory database.
 # If this is false, then it uses a built-in git library.
@@ -108,6 +109,7 @@ allow = [
     # BSD-2-Clause - https://opensource.org/license/bsd-2-clause
     # Used by: transitive only
     "BSD-2-Clause",
+    # bzip2-sys reports the upstream bzip2-1.0.6 license text.
     # BSD-3-Clause - https://opensource.org/license/bsd-3-clause
     # Used by: encoding_rs, seccompiler
     "BSD-3-Clause",
@@ -156,6 +158,11 @@ exceptions = [
     # Each entry is the crate and version constraint, and its specific allow
     # list
     #{ allow = ["Zlib"], crate = "adler32" },
+    # SPDX bzip2-1.0.6 permits use and redistribution with copyright/origin
+    # preservation and no author endorsement. Scope acceptance ONLY to the
+    # reviewed libbz2-rs-sys 0.2.5 brought in by zip 9.0.5 via bzip2 0.6.1;
+    # this is not an advisory waiver or a blanket license policy change.
+    { crate = "libbz2-rs-sys@0.2.5", allow = ["bzip2-1.0.6"] },
 ]
 
 # Some crates don't have (easily) machine readable licensing information,

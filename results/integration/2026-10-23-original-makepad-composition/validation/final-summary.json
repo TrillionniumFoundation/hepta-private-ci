@@ -1,0 +1,64 @@
+{
+  "schema": "hepta-original-app-composition-evidence.v1",
+  "utc": "2026-10-23T10:45:37.431797+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "56630b12b8a4c69fff2c47b95b36d88a7389c39f",
+  "base_root_tree": "15ff893b92898185ea709e847b244e4d66ae2bf4",
+  "source_commit": "bb3a82cc6c4c24fae5fe62d83ff723afb6326224",
+  "source_tree": "9f45307ad3502328aee501e5c142388c541351b0",
+  "source_files": 35,
+  "modified_preimages": 10,
+  "new_paths": 25,
+  "original_input_files": 212,
+  "execution": {
+    "python_gate": {
+      "normal_passed": 12,
+      "optimized_passed": 12,
+      "independent_root_repeat_each": 12
+    },
+    "rustfmt": {
+      "upstream_files": 13,
+      "toolchain": "1.95.0",
+      "scope": "stdin syntax/format only; no compiler"
+    },
+    "workflow_parsing": {
+      "bash_blocks_passed": 4,
+      "yaml": "parsed",
+      "toml": "parsed",
+      "python": "parsed",
+      "command_profiles": "exactly matched"
+    },
+    "final_patch": "actual apply --check, apply and all 35 final bytes passed",
+    "historical_patch_v1": "real apply --check exit 128 preserved, corrected LF splitting in v2/v3",
+    "remote_readback": "root checked all 9159 leaf modes/blobs",
+    "cargo": "not run",
+    "rust_compilation": "not run",
+    "rust_tests": "not run",
+    "nextest": "not run",
+    "clippy": "not run",
+    "renderer": "not run"
+  },
+  "unchanged_source_boundaries": [
+    "original Hepta UI Cargo.lock",
+    "Makepad SDK pin and source",
+    "original core/presenter/ImeRouter/pointer gate/room/composer",
+    "original NativeHost render before_event through EOF (14590 bytes)"
+  ],
+  "known_open_gates": [
+    "real locked headless/native Rust package compilation and exact JUnit gates",
+    "Desktop adapter and normal Cargo lock generation using the real source commit",
+    "full original 29-asset/15-notice/Liberation-source resource bundle",
+    "real window and actual font consumption/readable CJK pixels",
+    "physical IME, selection/undo preservation, assistive technology",
+    "Web/mobile/bare-metal and full three-slot workspace integration",
+    "independent production Chat authority; RequestSend remains SendUnavailable"
+  ],
+  "archive_exclusions": [
+    "unfinished Desktop source and Desktop rustfmt inputs/outputs",
+    "all Cargo/Git cache files and cache-migration records",
+    "temporary patch-check repositories and targets",
+    "Agentd V8 side-review",
+    "font payloads and binaries"
+  ],
+  "mixed_receipts": "Original combined rustfmt receipts remain unedited; only upstream raw records are included."
+}

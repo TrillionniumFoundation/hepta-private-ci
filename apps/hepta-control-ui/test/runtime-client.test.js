@@ -66,7 +66,10 @@ test("submits and reconciles a generation-bound stop request", async () => {
   });
   assert.equal(disposition.status, "succeeded");
   assert.equal(client.readView().pending, 0);
-  assert.equal(io.calls.some(([method]) => method === "runtime/stop"), true);
+  assert.equal(
+    io.calls.some(([method]) => method === "runtime/stop"),
+    true,
+  );
 });
 
 test("blocks mutation from a stale view and preserves indeterminate work", async () => {
