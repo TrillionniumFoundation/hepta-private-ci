@@ -1,0 +1,67 @@
+name: Hepta E2 Beans independent paired uncertainty (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e2-beans-independent-paired-power-20261015
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/e2_beans_paired_uncertainty.py'
+      - 'experiments/shared_stem_cell/test_e2_beans_paired_uncertainty.py'
+      - '.github/workflows/hepta-e2-beans-independent-paired-power.yml'
+permissions:
+  contents: read
+jobs:
+  independent-statistics:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify exact data integrity, p-value arithmetic, and fail-closed disposition
+        env:
+          PYTHONPATH: experiments/shared_stem_cell
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s experiments/shared_stem_cell -p test_e2_beans_paired_uncertainty.py -v
+          python3 -O -m unittest discover -s experiments/shared_stem_cell -p test_e2_beans_paired_uncertainty.py -v
+          python3 -m py_compile experiments/shared_stem_cell/e2_beans_paired_uncertainty.py
+  tied-mlm-syntax:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate repaired V11 YAML and bash without loading pretrained weights
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check PyYAML==6.0.3
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import yaml
+          p=Path('.github/workflows/hepta-stem-tied-mlm-v11.yml')
+          text=p.read_text()
+          workflow=yaml.safe_load(text)
+          assert isinstance(workflow,dict)
+          steps=workflow['jobs']['exact-stock-mlm-safetensors']['steps']
+          run_steps=[x['run'] for x in steps if 'run' in x]
+          assert len(run_steps)==3, 'missing or duplicated shell steps'
+          assert text.count('Retain exact-source and failure disposition')==1
+          assert text.count('actions/upload-artifact@')==1
+          script=next(x for x in run_steps if 'test_multimodal_exact_tied_alias_v11.py' in x)
+          for name in ('test_multimodal_exact_tied_alias_v11.py',
+                       'test_multimodal_saved_tie_recovery_v18.py',
+                       'test_multimodal_saved_tie_material_v18.py',
+                       'test_multimodal_modernbert_mlm_v11.py'):
+              assert name in script, f'missing original test: {name}'
+          for command in run_steps:
+              subprocess.run(['bash','-n'],input=command,text=True,check=True)
+          assert 'if-no-files-found: error' in text
+          print('V11 YAML and all 3 bash run steps parse; no tests omitted')
+          PY
