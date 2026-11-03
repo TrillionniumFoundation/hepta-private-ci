@@ -43,10 +43,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends build-essential dbus gnome-keyring python3-dbus python3-gi pkg-config libssl-dev
-          rustup toolchain install 1.95.0 --profile minimal
-          echo "RUSTC=$(rustup which --toolchain 1.95.0 rustc)" >> "$GITHUB_ENV"
-          echo "RUSTDOC=$(rustup which --toolchain 1.95.0 rustdoc)" >> "$GITHUB_ENV"
-          dirname "$(rustup which --toolchain 1.95.0 cargo)" >> "$GITHUB_PATH"
+          rustup toolchain install 1.96.0 --profile minimal
+          echo "RUSTC=$(rustup which --toolchain 1.96.0 rustc)" >> "$GITHUB_ENV"
+          echo "RUSTDOC=$(rustup which --toolchain 1.96.0 rustdoc)" >> "$GITHUB_ENV"
+          dirname "$(rustup which --toolchain 1.96.0 cargo)" >> "$GITHUB_PATH"
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.151
