@@ -1,0 +1,896 @@
+name: Hepta original Core build-only cache producer
+'on':
+  push:
+    branches:
+    - test/hepta-normal-core-cache-20261103
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-pinned-core-build-cache-20261103
+  cancel-in-progress: false
+jobs:
+  core-build-cache:
+    name: Core original target build and cache only (${{ matrix.platform }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - gnu
+        - musl
+    env:
+      EXPECTED_HEAD: 32401b2aff9b3cd976ccb10d928595c3b9d3568d
+      EXPECTED_BASE: 3a81000aae08c658276958d678874aca4db5eedd
+      EXPECTED_MERGE: d674db1adb923833bd320485aabd8b801fadc087
+      EXPECTED_TREE: 7d7b390d6e00f7acbd50893bd8b488538272f01f
+      SOURCE_KIND: head
+      BAZEL_PLATFORM: ${{ matrix.platform == 'gnu' && '//:local_linux' || '@rules_rs//rs/platforms:x86_64-unknown-linux-musl'
+        }}
+    steps:
+    - name: Reserve the original 60-minute job for build and evidence handoff
+      id: clock
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "$RUNNER_TEMP/normal-bazel"
+        python3 - <<'PYCLOCK'
+        import json, os, time
+        from pathlib import Path
+        started = time.time()
+        deadline = started + 59 * 60
+        record = {'job_started_epoch': started, 'internal_deadline_epoch': deadline,
+            'job_timeout_minutes': 60, 'maximum_build_phase_seconds': 48 * 60,
+            'post_build_reserve_seconds': 10 * 60, 'native_tests_requested': 0}
+        (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/job-clock.json').write_text(json.dumps(record, indent=2) + '\n')
+        with Path(os.environ['GITHUB_ENV']).open('a') as stream:
+            stream.write('CORE_JOB_DEADLINE_EPOCH=' + str(deadline) + '\n')
+        PYCLOCK
+    - name: Fetch the exact harness and its bounded ancestry
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ github.sha }}
+        fetch-depth: 32
+        persist-credentials: false
+    - name: Check out the exact tested source with bounded history
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ env.EXPECTED_HEAD }}
+        fetch-depth: 32
+        persist-credentials: false
+    - name: Bind the harness and the exact tested source before execution
+      id: source
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "$RUNNER_TEMP/normal-bazel"
+        python3 - <<'PYSOURCE'
+        import hashlib, json, os, re, subprocess
+        from pathlib import Path
+        def git(*args):
+            return subprocess.check_output(['git', '--no-replace-objects', *args]).decode().strip()
+        for key in ['EXPECTED_HEAD', 'EXPECTED_BASE', 'EXPECTED_MERGE', 'EXPECTED_TREE']:
+            assert re.fullmatch(r'[0-9a-f]{40}', os.environ[key]), 'bind every immutable source identity before publication'
+        assert os.environ['SOURCE_KIND'] == 'head'
+        assert os.environ['GITHUB_RUN_ATTEMPT'] == '1'
+        tested = git('rev-parse', 'HEAD')
+        expected = os.environ['EXPECTED_HEAD'] if os.environ['SOURCE_KIND'] == 'head' else os.environ['EXPECTED_MERGE']
+        assert tested == expected
+        assert git('rev-parse', 'HEAD^{tree}') == os.environ['EXPECTED_TREE']
+        if os.environ['SOURCE_KIND'] == 'prospective-merge':
+            assert git('show', '-s', '--format=%P', 'HEAD').split() == [os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD']]
+            assert git('merge-tree', '--write-tree', os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD']) == os.environ['EXPECTED_TREE']
+        harness = os.environ['GITHUB_SHA']
+        required_objects = {'harness': harness, 'candidate': os.environ['EXPECTED_HEAD'],
+            'base': os.environ['EXPECTED_BASE'], 'tested': tested,
+            'dependency_declaration': 'dc69725d957c79d8737eb5fbedfe6f213252317a'}
+        for label, revision in required_objects.items():
+            assert git('cat-file', '-t', revision) == 'commit', 'bounded checkout omitted required object: ' + label
+        merge_base = git('merge-base', os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD'])
+        assert merge_base == os.environ['EXPECTED_BASE'], 'expected base must remain the common ancestor in each bounded checkout'
+        workflow = '.github/workflows/hepta-pinned-core-build-cache.yml'
+        assert os.environ['GITHUB_EVENT_NAME'] == 'push'
+        assert os.environ['GITHUB_REF'] == 'refs/heads/test/hepta-normal-core-cache-20261103'
+        assert os.environ['GITHUB_REPOSITORY'] == 'TrillionniumFoundation/hepta-private-ci'
+        assert git('show', '-s', '--format=%P', harness) == os.environ['EXPECTED_HEAD']
+        assert git('diff-tree', '--no-commit-id', '--name-status', '-r', harness) == 'A\t' + workflow
+        source = subprocess.check_output(['git', 'show', harness + ':' + workflow])
+        assert git('status', '--porcelain', '--untracked-files=normal') == ''
+        subprocess.run(['git', 'diff', '--exit-code', 'dc69725d957c79d8737eb5fbedfe6f213252317a', tested,
+            '--', 'MODULE.bazel', 'MODULE.bazel.lock', '.bazelversion'], check=True)
+        record = {'schema': 'hepta-core-build-only-cache-source-v1', 'tested_commit': tested,
+            'tested_tree': os.environ['EXPECTED_TREE'], 'source_kind': os.environ['SOURCE_KIND'],
+            'candidate': os.environ['EXPECTED_HEAD'], 'base': os.environ['EXPECTED_BASE'],
+            'prospective_merge': os.environ['EXPECTED_MERGE'], 'harness_commit': harness,
+            'workflow_sha256': hashlib.sha256(source).hexdigest(), 'bazel_platform': os.environ['BAZEL_PLATFORM'],
+            'checkout_fetch_depth': 32, 'required_git_objects': required_objects,
+            'observed_merge_base': merge_base, 'is_shallow_repository': git('rev-parse', '--is-shallow-repository'),
+            'build_only': True, 'native_tests_requested': 0,
+            'scope': 'Build only the original //codex-rs/core:core-responses_headers-test; preserve all declared runfiles; no native tests or consumer'}
+        (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/source-before.json').write_text(json.dumps(record, indent=2) + '\n')
+        print(json.dumps(record))
+        PYSOURCE
+    - name: Prepare the existing Bazel toolchain and repository cache
+      id: prepare
+      uses: ./.github/actions/prepare-bazel-ci
+      with:
+        target: ${{ matrix.platform == 'gnu' && 'x86_64-unknown-linux-gnu' || 'x86_64-unknown-linux-musl' }}
+        cache-scope: bazel-core-build-cache
+    - name: Import the already verified fixed dependency artifact
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+      with:
+        artifact-ids: '13245890316'
+        run-id: '41664243615'
+        repository: TrillionniumFoundation/hepta-private-ci
+        github-token: ${{ github.token }}
+        merge-multiple: true
+        digest-mismatch: error
+        path: ${{ runner.temp }}/normal-bazel-distdir
+    - name: Recheck the fixed metadata and complete dependency bytes
+      id: dependency
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 - <<'PYDEPENDENCY'
+        import base64, hashlib, json, os
+        from pathlib import Path
+        root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'
+        assert sorted(path.name for path in root.iterdir()) == ['source.json', 'transfer.json', 'v5.1.0.tar.gz']
+        metadata = (root / 'source.json').read_bytes()
+        assert hashlib.sha256(metadata).hexdigest() == '7d88fc6db323947a11d1638fe95185e9c733c337a1d1e7b50cdcf487e29ce56e'
+        source = json.loads(metadata)
+        assert 'https://github.com/aws/aws-lc/archive/refs/tags/v5.1.0.tar.gz' in [source.get('url')] + source.get('urls', [])
+        expected = 'a6bf6adfc5f9bba559d28554b7d3581b15f2813f03bc9f2ae19f0d915e97dadf'
+        assert source['integrity'].startswith('sha256-')
+        assert base64.b64decode(source['integrity'][7:], validate=True).hex() == expected
+        archive = root / 'v5.1.0.tar.gz'
+        assert archive.stat().st_size == 145542555
+        with archive.open('rb') as stream:
+            actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+        assert actual == expected
+        transfer = json.loads((root / 'transfer.json').read_text())
+        assert transfer['workflow_commit'] == '4a78bf9314197ef5a8ea97f67134fdac6795589f'
+        assert transfer['workflow_run_id'] == '41664243615'
+        assert transfer['declaration_source_commit'] == 'dc69725d957c79d8737eb5fbedfe6f213252317a'
+        assert transfer['verified'] is True and transfer['source_sha256'] == expected and transfer['source_bytes'] == 145542555
+        report = {'artifact_id': 13245890316, 'sha256': actual, 'bytes': archive.stat().st_size,
+            'fixed_metadata_sha256': hashlib.sha256(metadata).hexdigest(), 'verified': True}
+        (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/dependency-import.json').write_text(json.dumps(report, indent=2) + '\n')
+        print(json.dumps(report))
+        PYDEPENDENCY
+        test "$(cat .bazelversion)" = '9.3.0'
+        bazel --version | tee "$RUNNER_TEMP/normal-bazel/bazel-version.txt"
+        test "$(cat "$RUNNER_TEMP/normal-bazel/bazel-version.txt")" = 'bazel 9.3.0'
+    - name: Write the build-only producer outside the tested source
+      id: scripts
+      shell: bash
+      run: |
+        set -euo pipefail
+        cat > "$RUNNER_TEMP/normal-bazel/core_cache_common.py" <<'PYCORE0'
+        """Helpers for the bounded Core compile-cache producer; no native runner."""
+        import hashlib
+        import json
+        import os
+        import signal
+        import stat
+        import subprocess
+        import time
+        from pathlib import Path
+
+        TARGET = '//codex-rs/core:core-responses_headers-test'
+        BUILD_PHASE_MAX_SECONDS = 48 * 60
+        BUILD_STOP_RESERVE_SECONDS = 50
+        POST_BUILD_RESERVE_SECONDS = 10 * 60
+        PACK_MAX_SECONDS = 6 * 60
+        TRANSFER_RESERVE_SECONDS = 4 * 60
+        MAX_CACHE_FILES = 200000
+        MAX_CACHE_INPUT_BYTES = 32 * 1024**3
+        MAX_ARCHIVE_BYTES = 8 * 1024**3
+        DISK_RESERVE_BYTES = 512 * 1024**2
+        INPUT_FILES = (
+            '.bazelversion', '.bazelrc', 'MODULE.bazel', 'MODULE.bazel.lock', 'defs.bzl',
+            'codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'codex-rs/core/BUILD.bazel',
+            'codex-rs/code-mode-host/BUILD.bazel',
+        )
+
+        def paths():
+            temporary = Path(os.environ['RUNNER_TEMP']).resolve()
+            root = temporary / 'normal-bazel'
+            return {
+                'root': root, 'evidence': root / 'core_build',
+                'output_base': temporary / 'normal-core-output-base',
+                'cache': temporary / 'normal-core-disk-cache',
+                'transfer': temporary / 'normal-core-cache-transfer',
+            }
+
+        def sha256_file(path):
+            with Path(path).open('rb') as stream:
+                return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+        def file_identity(path):
+            path = Path(path)
+            info = path.lstat()
+            assert stat.S_ISREG(info.st_mode), 'expected a regular evidence file: ' + str(path)
+            return {'path': str(path), 'bytes': info.st_size, 'sha256': sha256_file(path)}
+
+        def read_json(path):
+            return json.loads(Path(path).read_text())
+
+        def write_json(path, value):
+            path = Path(path)
+            temporary = path.with_name(path.name + '.tmp')
+            with temporary.open('x') as stream:
+                json.dump(value, stream, indent=2)
+                stream.write('\n')
+            os.replace(temporary, path)
+
+        def output(key, value):
+            assert key.replace('_', '').isalnum()
+            value = str(value)
+            assert '\n' not in value and '\r' not in value
+            with Path(os.environ['GITHUB_OUTPUT']).open('a') as stream:
+                stream.write(key + '=' + value + '\n')
+
+        def seconds_left():
+            return float(os.environ['CORE_JOB_DEADLINE_EPOCH']) - time.time()
+
+        def stop_group(process, deadline):
+            """Only signal this invocation's new process group; never other jobs."""
+            for signum, grace in ((signal.SIGINT, 30), (signal.SIGTERM, 10), (signal.SIGKILL, 5)):
+                if process.poll() is not None:
+                    break
+                try:
+                    os.killpg(process.pid, signum)
+                except ProcessLookupError:
+                    pass
+                wait = max(0.01, min(grace, deadline - time.monotonic()))
+                try:
+                    process.wait(timeout=wait)
+                except subprocess.TimeoutExpired:
+                    pass
+            return process.poll()
+
+        def producer_binding():
+            p = paths()
+            source = read_json(p['root'] / 'source-before.json')
+            assert source['source_kind'] == 'head'
+            assert source['tested_commit'] == os.environ['EXPECTED_HEAD']
+            assert source['tested_tree'] == os.environ['EXPECTED_TREE']
+            assert os.environ['GITHUB_RUN_ATTEMPT'] == '1', 'a rerun is a new decision, not an automatic retry'
+            assert os.environ['BAZEL_PLATFORM'] in ('//:local_linux', '@rules_rs//rs/platforms:x86_64-unknown-linux-musl')
+            inputs = []
+            for name in INPUT_FILES:
+                row = file_identity(Path.cwd() / name)
+                row['path'] = name
+                inputs.append(row)
+            scripts = []
+            for name in ('core_cache_common.py', 'core_build.py', 'core_shutdown.py', 'core_pack.py', 'core_transfer_receipt.py'):
+                row = file_identity(p['root'] / name)
+                row['path'] = name
+                scripts.append(row)
+            return {
+                'repository': os.environ['GITHUB_REPOSITORY'],
+                'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                'job': os.environ['GITHUB_JOB'], 'harness_commit': os.environ['GITHUB_SHA'],
+                'workflow_ref': os.environ['GITHUB_WORKFLOW_REF'],
+                'source': source, 'source_before': file_identity(p['root'] / 'source-before.json'),
+                'source_inputs': inputs, 'producer_scripts': scripts,
+                'platform': os.environ['BAZEL_PLATFORM'], 'target': TARGET,
+                'original_profile': 'Unchanged repository default profile; no --config, feature, runfile, or test-budget override.',
+                'native_tests_requested': 0, 'native_admission': False,
+            }
+        PYCORE0
+        cat > "$RUNNER_TEMP/normal-bazel/core_build.py" <<'PYCORE1'
+        """One bounded bazel build of the original Core target; never bazel test."""
+        import json
+        import os
+        import subprocess
+        import sys
+        import time
+        from pathlib import Path
+        from core_cache_common import (
+            BUILD_PHASE_MAX_SECONDS, BUILD_STOP_RESERVE_SECONDS, POST_BUILD_RESERVE_SECONDS,
+            TARGET, file_identity, output, paths, producer_binding, seconds_left,
+            sha256_file, stop_group, write_json,
+        )
+
+        def main():
+            p = paths()
+            p['evidence'].mkdir(mode=0o700)
+            record = {
+                'schema': 'hepta-core-build-only-result-v2', 'result': 'FAIL',
+                'build_complete': False, 'build_only': True, 'native_tests_requested': 0,
+                'native_admission': False, 'target': TARGET, 'cache_kind': 'partial_build_only',
+                'build_exit': None, 'build_deadline_expired': False,
+                'original_job_timeout_minutes': 60, 'maximum_build_phase_seconds': BUILD_PHASE_MAX_SECONDS,
+                'post_build_reserve_seconds': POST_BUILD_RESERVE_SECONDS,
+                'test_execution_observed': False, 'build_started': False,
+            }
+            started = time.monotonic()
+            process = None
+            try:
+                record['producer'] = producer_binding()
+                p['output_base'].mkdir(mode=0o700)
+                p['cache'].mkdir(mode=0o700)
+                assert not p['output_base'].is_symlink() and not p['cache'].is_symlink()
+                limit = min(BUILD_PHASE_MAX_SECONDS, int(seconds_left()) - POST_BUILD_RESERVE_SECONDS)
+                assert limit > BUILD_STOP_RESERVE_SECONDS, 'insufficient job time for a bounded build and evidence transfer'
+                command = ['bazel', '--output_base=' + str(p['output_base']), 'build', '--jobs=2',
+                    '--disk_cache=' + str(p['cache']),
+                    '--distdir=' + str(Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'),
+                    '--platforms=' + os.environ['BAZEL_PLATFORM'],
+                    '--build_event_json_file=' + str(p['evidence'] / 'build-events.jsonl'), TARGET]
+                record.update({'command': command, 'cwd': os.getcwd(),
+                    'isolated_output_base': str(p['output_base']), 'fresh_disk_cache': str(p['cache']),
+                    'actual_build_phase_limit_seconds': limit, 'client_stop_reserve_seconds': BUILD_STOP_RESERVE_SECONDS,
+                    'sandbox_env_present': {key: key in os.environ for key in ('CODEX_SANDBOX', 'CODEX_SANDBOX_NETWORK_DISABLED')}})
+                write_json(p['evidence'] / 'command.json', record)
+                build_started = time.monotonic()
+                phase_deadline = build_started + limit
+                with (p['evidence'] / 'bazel.log').open('xb') as log:
+                    process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                    record['build_started'] = True
+                    record['client_pid'] = process.pid
+                    try:
+                        record['build_exit'] = process.wait(timeout=limit - BUILD_STOP_RESERVE_SECONDS)
+                    except subprocess.TimeoutExpired:
+                        record['build_deadline_expired'] = True
+                        record['build_exit'] = stop_group(process, phase_deadline)
+                record['build_phase_wall_seconds'] = time.monotonic() - build_started
+                assert process.poll() is not None, 'build client did not terminate; cache is not quiescent'
+                (p['evidence'] / 'build.exit').write_text(str(record['build_exit']) + '\n')
+                record['build_client_stopped'] = True
+
+                event_path = p['evidence'] / 'build-events.jsonl'
+                assert event_path.is_file(), 'missing original build BEP'
+                completed, finished, configurations, options, starts, test_events = [], [], [], [], [], []
+                malformed = []
+                line_count = 0
+                with event_path.open('rb') as stream:
+                    for line_count, raw in enumerate(stream, 1):
+                        if not raw.strip():
+                            continue
+                        try:
+                            event = json.loads(raw)
+                        except (json.JSONDecodeError, UnicodeDecodeError) as error:
+                            malformed.append({'line': line_count, 'error': str(error)})
+                            continue
+                        eid = event.get('id', {})
+                        if any(k in eid for k in ('testResult', 'testSummary')) or event.get('action', {}).get('type') == 'TestRunner':
+                            test_events.append(event)
+                        if eid.get('targetCompleted', {}).get('label') == TARGET:
+                            completed.append(event)
+                        if 'buildFinished' in eid:
+                            finished.append(event)
+                        if 'configuration' in eid:
+                            configurations.append(event)
+                        if 'optionsParsed' in event:
+                            options.append(event)
+                        if 'started' in event:
+                            starts.append(event)
+                record.update({'original_bep': file_identity(event_path), 'bep_line_count': line_count,
+                    'bep_malformed_lines': malformed, 'target_completion': completed, 'build_finished': finished,
+                    'configurations': configurations, 'parsed_options': options, 'build_starts': starts,
+                    'test_execution_observed': bool(test_events), 'unexpected_test_events': test_events})
+                assert not test_events, 'a build-only producer must not contain any observed TestRunner/native result'
+                assert not malformed, 'an interrupted/malformed BEP cannot qualify a complete build'
+                assert not record['build_deadline_expired'] and record['build_exit'] == 0
+                assert len(completed) == 1 and completed[0].get('completed', {}).get('success') is True
+                configuration_id = completed[0]['id']['targetCompleted']['configuration']['id']
+                matching_configuration = [event for event in configurations if event['id']['configuration'].get('id') == configuration_id]
+                assert len(matching_configuration) == 1, 'one exact configured target identity is required'
+                record['configured_target_id'] = configuration_id
+                assert len(finished) == 1
+                terminal = finished[0]['finished']
+                assert terminal.get('overallSuccess') is True
+                assert terminal.get('exitCode', {}).get('name') == 'SUCCESS'
+                assert terminal.get('exitCode', {}).get('code', 0) == 0
+                assert len(starts) == 1 and starts[0]['started']['command'] == 'build'
+                assert starts[0]['started']['buildToolVersion'] == Path('.bazelversion').read_text().strip()
+                assert len(options) == 1
+                record['build_complete'] = True
+                record['cache_kind'] = 'complete_target_build'
+
+                # Identity inspection only. cquery never executes the resulting ELF.
+                query = ['bazel', '--output_base=' + str(p['output_base']), 'cquery', '--output=files',
+                    '--disk_cache=' + str(p['cache']), '--platforms=' + os.environ['BAZEL_PLATFORM'], TARGET]
+                query_budget = min(60, int(seconds_left()) - 300)
+                assert query_budget > 0, 'no time remains for bounded output identity capture'
+                record['binary_query_command'] = query
+                with (p['evidence'] / 'binary-query.stdout').open('xb') as out, (p['evidence'] / 'binary-query.stderr').open('xb') as err:
+                    query_process = subprocess.Popen(query, stdout=out, stderr=err, start_new_session=True)
+                    try:
+                        query_exit = query_process.wait(timeout=query_budget)
+                    except subprocess.TimeoutExpired:
+                        stop_group(query_process, time.monotonic() + 45)
+                        raise RuntimeError('bounded cquery identity capture timed out')
+                record['binary_query_exit'] = query_exit
+                assert query_exit == 0
+                binaries = []
+                for line in (p['evidence'] / 'binary-query.stdout').read_text().splitlines():
+                    binary = Path(line)
+                    if binary.is_file():
+                        with binary.open('rb') as stream:
+                            is_elf = stream.read(4) == b'\x7fELF'
+                        if is_elf:
+                            binaries.append({'path': str(binary.resolve()), 'bytes': binary.stat().st_size,
+                                             'sha256': sha256_file(binary)})
+                assert len(binaries) == 1, 'one actual original Core test ELF identity required'
+                record['core_test_elf_identity_only'] = binaries
+                write_json(p['evidence'] / 'binary-identities.json', binaries)
+                record['result'] = 'PASS_BUILD_ONLY'
+            except Exception as error:
+                record['error'] = type(error).__name__ + ': ' + str(error)
+            finally:
+                if process is not None and process.poll() is None:
+                    record['build_exit'] = stop_group(process, time.monotonic() + 45)
+                    record['result'] = 'FAIL'
+                    record['build_client_stopped'] = process.poll() is not None
+                record['elapsed_seconds'] = time.monotonic() - started
+                record['native_admission'] = False
+                write_json(p['evidence'] / 'build-result.json', record)
+                output('build_complete', 'true' if record['build_complete'] else 'false')
+                output('build_result', record['result'])
+                print(json.dumps({k: record.get(k) for k in ('result', 'build_complete', 'build_exit', 'build_deadline_expired', 'cache_kind', 'native_admission', 'error')}))
+            return 0 if record['result'] == 'PASS_BUILD_ONLY' else 1
+
+        if __name__ == '__main__':
+            sys.exit(main())
+        PYCORE1
+        cat > "$RUNNER_TEMP/normal-bazel/core_shutdown.py" <<'PYCORE2'
+        """Stop only the producer's isolated Bazel server before any cache snapshot."""
+        import json
+        import os
+        import subprocess
+        import sys
+        import time
+        from core_cache_common import file_identity, output, paths, read_json, stop_group, write_json
+
+        def main():
+            p = paths()
+            p['evidence'].mkdir(mode=0o700, exist_ok=True)
+            record = {'schema': 'hepta-core-isolated-shutdown-v1', 'result': 'FAIL',
+                      'server_shutdown_confirmed': False, 'native_admission': False}
+            process = None
+            try:
+                intent = read_json(p['evidence'] / 'command.json')
+                assert intent['producer']['harness_commit'] == os.environ['GITHUB_SHA']
+                assert intent['producer']['run_id'] == os.environ['GITHUB_RUN_ID']
+                assert intent['isolated_output_base'] == str(p['output_base'])
+                assert intent['fresh_disk_cache'] == str(p['cache'])
+                assert p['output_base'].is_dir() and not p['output_base'].is_symlink()
+                assert p['cache'].is_dir() and not p['cache'].is_symlink()
+                command = ['bazel', '--output_base=' + str(p['output_base']), 'shutdown']
+                record.update({'command': command, 'output_base': str(p['output_base']),
+                               'fresh_disk_cache': str(p['cache']), 'build_intent': file_identity(p['evidence'] / 'command.json')})
+                started = time.monotonic()
+                with (p['evidence'] / 'shutdown.log').open('xb') as log:
+                    process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                    try:
+                        code = process.wait(timeout=60)
+                    except subprocess.TimeoutExpired:
+                        stop_group(process, time.monotonic() + 45)
+                        raise RuntimeError('isolated shutdown did not confirm completion within 60 seconds')
+                record.update({'shutdown_exit': code, 'wall_seconds': time.monotonic() - started})
+                assert code == 0, 'no snapshot is allowed after failed Bazel shutdown'
+                record.update({'result': 'PASS_SHUTDOWN', 'server_shutdown_confirmed': True})
+            except Exception as error:
+                record['error'] = type(error).__name__ + ': ' + str(error)
+            finally:
+                if process is not None and process.poll() is None:
+                    stop_group(process, time.monotonic() + 45)
+                write_json(p['evidence'] / 'shutdown-result.json', record)
+                output('server_stopped', 'true' if record['server_shutdown_confirmed'] else 'false')
+                print(json.dumps(record))
+            return 0 if record['server_shutdown_confirmed'] else 1
+
+        if __name__ == '__main__':
+            sys.exit(main())
+        PYCORE2
+        cat > "$RUNNER_TEMP/normal-bazel/core_pack.py" <<'PYCORE3'
+        """Snapshot only stopped ac/cas regular files; verify every archive byte/member."""
+        import gzip
+        import hashlib
+        import json
+        import os
+        import re
+        import shutil
+        import signal
+        import stat
+        import sys
+        import tarfile
+        import time
+        from pathlib import PurePosixPath
+        from core_cache_common import (
+            DISK_RESERVE_BYTES, MAX_ARCHIVE_BYTES, MAX_CACHE_FILES, MAX_CACHE_INPUT_BYTES,
+            PACK_MAX_SECONDS, TRANSFER_RESERVE_SECONDS,
+            file_identity, output, paths, read_json, seconds_left, sha256_file, write_json,
+        )
+
+        def fingerprint(info):
+            return (info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns, info.st_nlink)
+
+        def safe_name(name):
+            path = PurePosixPath(name)
+            return (not path.is_absolute() and len(path.parts) >= 2 and path.parts[0] in ('ac', 'cas')
+                    and all(part not in ('', '.', '..') for part in path.parts)
+                    and '\\' not in name and len(name) <= 1024
+                    and all(32 <= ord(c) < 127 for c in name))
+
+        def scan(cache, guard):
+            assert cache.is_dir() and not cache.is_symlink()
+            files, directories, total = {}, {}, 0
+            for kind in ('ac', 'cas'):
+                base = cache / kind
+                if not base.exists():
+                    continue
+                assert base.is_dir() and not base.is_symlink(), 'cache roots must be actual directories'
+                for current, dirs, names in os.walk(base, followlinks=False):
+                    guard()
+                    current = type(cache)(current)
+                    info = current.lstat()
+                    assert stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode)
+                    directories[str(current.relative_to(cache))] = fingerprint(info)
+                    dirs.sort()
+                    names.sort()
+                    for name in dirs:
+                        child = current / name
+                        child_info = child.lstat()
+                        assert stat.S_ISDIR(child_info.st_mode) and not stat.S_ISLNK(child_info.st_mode), 'no linked cache directory'
+                    for name in names:
+                        path = current / name
+                        info = path.lstat()
+                        relative = path.relative_to(cache).as_posix()
+                        assert safe_name(relative), 'noncanonical cache member name'
+                        assert stat.S_ISREG(info.st_mode) and not stat.S_ISLNK(info.st_mode), 'only regular files are transferable'
+                        assert relative not in files
+                        files[relative] = fingerprint(info)
+                        total += info.st_size
+                        assert len(files) <= MAX_CACHE_FILES, 'cache member count exceeds the explicit packaging bound'
+                        assert total <= MAX_CACHE_INPUT_BYTES, 'cache input bytes exceed the explicit packaging bound'
+            assert files, 'empty cache is not transferable compiled work'
+            assert any(n.startswith('ac/') for n in files) and any(n.startswith('cas/') for n in files), 'both action records and content blobs are required'
+            return files, directories, total
+
+        class LimitedWriter:
+            def __init__(self, stream, directory, byte_limit, guard):
+                self.stream, self.directory, self.byte_limit, self.guard = stream, directory, byte_limit, guard
+                self.written, self.next_space_check = 0, 0
+
+            def write(self, data):
+                self.guard()
+                assert self.written + len(data) <= self.byte_limit, 'compressed archive exceeds available-space/size bound'
+                if self.written >= self.next_space_check:
+                    assert shutil.disk_usage(self.directory).free >= DISK_RESERVE_BYTES + len(data), 'preserve disk reserve while packing'
+                    self.next_space_check = self.written + 4 * 1024**2
+                count = self.stream.write(data)
+                assert count == len(data)
+                self.written += count
+                return count
+
+            def flush(self):
+                self.stream.flush()
+
+            def tell(self):
+                return self.written
+
+        class HashingReader:
+            def __init__(self, stream, guard):
+                self.stream, self.guard, self.hasher, self.bytes = stream, guard, hashlib.sha256(), 0
+
+            def read(self, size=-1):
+                self.guard()
+                assert size >= 0, 'unbounded file reads are not used by this packer'
+                data = self.stream.read(size)
+                self.hasher.update(data)
+                self.bytes += len(data)
+                return data
+
+        def main():
+            p = paths()
+            p['evidence'].mkdir(mode=0o700, exist_ok=True)
+            record = {'schema': 'hepta-core-cache-pack-result-v2', 'result': 'FAIL',
+                'archive_verified': False, 'native_admission': False, 'consumer_implemented': False,
+                'limits': {'maximum_pack_seconds': PACK_MAX_SECONDS, 'maximum_regular_files': MAX_CACHE_FILES,
+                           'maximum_input_bytes': MAX_CACHE_INPUT_BYTES, 'maximum_archive_bytes': MAX_ARCHIVE_BYTES,
+                           'disk_reserve_bytes': DISK_RESERVE_BYTES, 'upload_reserve_seconds': TRANSFER_RESERVE_SECONDS}}
+            partial = None
+            alarm_enabled = False
+            started = time.monotonic()
+            try:
+                build = read_json(p['evidence'] / 'build-result.json')
+                shutdown = read_json(p['evidence'] / 'shutdown-result.json')
+                assert shutdown['result'] == 'PASS_SHUTDOWN' and shutdown['server_shutdown_confirmed'] is True
+                assert shutdown['output_base'] == str(p['output_base']) and shutdown['fresh_disk_cache'] == str(p['cache'])
+                assert build['producer']['harness_commit'] == os.environ['GITHUB_SHA']
+                assert build['producer']['run_id'] == os.environ['GITHUB_RUN_ID']
+                assert build['producer']['run_attempt'] == os.environ['GITHUB_RUN_ATTEMPT'] == '1'
+                assert build['producer']['source']['tested_commit'] == os.environ['EXPECTED_HEAD']
+                assert build['producer']['source']['tested_tree'] == os.environ['EXPECTED_TREE']
+                assert build.get('test_execution_observed') is False
+                assert (p['root'] / 'source-after.txt').read_text().splitlines() == [os.environ['EXPECTED_HEAD'], os.environ['EXPECTED_TREE']]
+                assert (p['root'] / 'source-after-status.txt').read_bytes() == b''
+                assert os.environ['SMALL_EVIDENCE_OUTCOME'] == 'success', 'small original evidence must already be uploaded'
+                evidence_id = os.environ['SMALL_EVIDENCE_ARTIFACT_ID']
+                evidence_digest = os.environ['SMALL_EVIDENCE_ARTIFACT_DIGEST']
+                assert re.fullmatch(r'[1-9][0-9]*', evidence_id)
+                assert re.fullmatch(r'[0-9a-f]{64}', evidence_digest)
+                record['small_evidence_artifact'] = {'id': evidence_id, 'sha256': evidence_digest, 'upload_reported_success': True}
+                budget = min(PACK_MAX_SECONDS, int(seconds_left()) - TRANSFER_RESERVE_SECONDS)
+                assert budget > 0, 'no time remains for bounded packing with upload reserve'
+                record['actual_pack_budget_seconds'] = budget
+                deadline = time.monotonic() + budget
+                def guard():
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError('pack/readback phase exhausted its reserved budget')
+                def alarm(signum, frame):
+                    raise TimeoutError('hard pack/readback alarm expired')
+                signal.signal(signal.SIGALRM, alarm)
+                signal.setitimer(signal.ITIMER_REAL, budget)
+                alarm_enabled = True
+
+                p['transfer'].mkdir(mode=0o700)
+                initial_free = shutil.disk_usage(p['transfer']).free
+                assert initial_free > DISK_RESERVE_BYTES + 1024**2, 'insufficient disk reserve for packaging'
+                byte_limit = min(MAX_ARCHIVE_BYTES, initial_free - DISK_RESERVE_BYTES)
+                record.update({'disk_free_before': initial_free, 'effective_archive_byte_limit': byte_limit})
+                before_files, before_dirs, total_bytes = scan(p['cache'], guard)
+                partial = p['transfer'] / 'core-action-cache.tar.gz.partial'
+                rows = []
+                with partial.open('xb') as raw:
+                    bounded = LimitedWriter(raw, p['transfer'], byte_limit, guard)
+                    with gzip.GzipFile(filename='', mode='wb', fileobj=bounded, compresslevel=1, mtime=0) as gz:
+                        with tarfile.open(fileobj=gz, mode='w|', format=tarfile.PAX_FORMAT) as tar:
+                            for name in sorted(before_files):
+                                guard()
+                                source = p['cache'] / name
+                                fd = os.open(source, os.O_RDONLY | os.O_NOFOLLOW)
+                                with os.fdopen(fd, 'rb') as stream:
+                                    original = os.fstat(stream.fileno())
+                                    assert stat.S_ISREG(original.st_mode) and fingerprint(original) == before_files[name]
+                                    member = tarfile.TarInfo(name)
+                                    member.size = original.st_size
+                                    member.type = tarfile.REGTYPE
+                                    member.mode, member.uid, member.gid, member.mtime = 0o600, 0, 0, 0
+                                    member.uname = member.gname = ''
+                                    reader = HashingReader(stream, guard)
+                                    tar.addfile(member, reader)
+                                    assert reader.bytes == original.st_size
+                                    assert fingerprint(os.fstat(stream.fileno())) == before_files[name]
+                                    assert fingerprint(source.lstat()) == before_files[name]
+                                rows.append({'path': name, 'bytes': original.st_size,
+                                             'sha256': reader.hasher.hexdigest(), 'archive_mode': '0600'})
+                after_files, after_dirs, after_total = scan(p['cache'], guard)
+                assert (after_files, after_dirs, after_total) == (before_files, before_dirs, total_bytes), 'stopped cache changed during snapshot'
+
+                expected = {row['path']: row for row in rows}
+                observed = set()
+                with partial.open('rb') as raw:
+                    with gzip.GzipFile(fileobj=raw, mode='rb') as gz:
+                        with tarfile.open(fileobj=gz, mode='r|') as tar:
+                            for member in tar:
+                                guard()
+                                assert member.isreg() and member.type in (tarfile.REGTYPE, tarfile.AREGTYPE)
+                                assert safe_name(member.name) and member.name in expected and member.name not in observed
+                                row = expected[member.name]
+                                assert member.size == row['bytes'] and member.mode == 0o600
+                                assert member.uid == member.gid == member.mtime == 0
+                                assert member.uname == member.gname == '' and not member.linkname
+                                h = hashlib.sha256()
+                                count = 0
+                                stream = tar.extractfile(member)
+                                assert stream is not None
+                                with stream:
+                                    while True:
+                                        guard()
+                                        chunk = stream.read(1024**2)
+                                        if not chunk:
+                                            break
+                                        count += len(chunk)
+                                        h.update(chunk)
+                                assert count == row['bytes'] and h.hexdigest() == row['sha256']
+                                observed.add(member.name)
+                        # Drain gzip through its trailer, so CRC/size verification is not skipped at tar EOF.
+                        while gz.read(1024**2):
+                            guard()
+                assert observed == set(expected)
+                guard()
+                archive_sha = sha256_file(partial)
+                archive_bytes = partial.stat().st_size
+                assert archive_bytes <= byte_limit
+                complete = build['build_complete'] is True and build['result'] == 'PASS_BUILD_ONLY'
+                cache_kind = 'complete_target_build' if complete else 'partial_build_only'
+                bindings = {
+                    'producer': build['producer'], 'build_result': file_identity(p['evidence'] / 'build-result.json'),
+                    'shutdown': file_identity(p['evidence'] / 'shutdown-result.json'),
+                    'source_after': file_identity(p['root'] / 'source-after.txt'),
+                    'source_after_status': file_identity(p['root'] / 'source-after-status.txt'),
+                    'small_evidence_artifact': record['small_evidence_artifact'],
+                    'build_complete': build['build_complete'], 'producer_build_result': build['result'],
+                    'cache_kind': cache_kind, 'native_admission': False,
+                    'configured_target': build.get('target_completion', []),
+                    'bazel_configurations': build.get('configurations', []),
+                    'actual_bazel_options': build.get('parsed_options', []),
+                    'actual_bazel_started': build.get('build_starts', []),
+                }
+                manifest = {'schema': 'hepta-core-ac-cas-manifest-v2', 'bindings': bindings,
+                    'file_count': len(rows), 'input_bytes': total_bytes,
+                    'ac_file_count': sum(r['path'].startswith('ac/') for r in rows),
+                    'cas_file_count': sum(r['path'].startswith('cas/') for r in rows),
+                    'only_regular_files': True, 'symlinks_and_devices_rejected': True,
+                    'cache_set_and_file_stat_identity_unchanged': True, 'files': rows}
+                manifest_path = p['transfer'] / 'core-cache-manifest.json'
+                write_json(manifest_path, manifest)
+                final_archive = p['transfer'] / 'core-action-cache.tar.gz'
+                assert not final_archive.exists()
+                os.link(partial, final_archive)  # create-only publication of this job's verified bytes
+                partial.unlink()
+                partial = None
+                record.update({'result': 'VERIFIED_COMPLETE_BUILD_CACHE_BYTES' if complete else 'VERIFIED_PARTIAL_COMPILE_DATA', 'archive_verified': True,
+                    'cache_kind': cache_kind, 'build_complete': build['build_complete'],
+                    'producer_build_result': build['result'], 'file_count': len(rows), 'input_bytes': total_bytes,
+                    'archive': {'file': final_archive.name, 'bytes': archive_bytes, 'sha256': archive_sha},
+                    'manifest': file_identity(manifest_path), 'all_members_rehashed': True,
+                    'gzip_trailer_validated': True,
+                    'native_admission': False,
+                    'consumer_requirement': 'Data only. Independently bind producer/run/source/tree/lock/configuration, download and verify archive plus every regular member and manifest before Bazel decides reuse by action key. Partial data never qualifies a complete Core build or native execution.'})
+                write_json(p['transfer'] / 'cache-pack.json', record)
+                output('archive_verified', 'true')
+                output('cache_kind', cache_kind)
+            except Exception as error:
+                record['error'] = type(error).__name__ + ': ' + str(error)
+                output('archive_verified', 'false')
+            finally:
+                if alarm_enabled:
+                    signal.setitimer(signal.ITIMER_REAL, 0)
+                if partial is not None and partial.exists():
+                    partial.unlink()  # only this invocation's incomplete transfer file
+                record['elapsed_seconds'] = time.monotonic() - started
+                record['disk_free_after'] = shutil.disk_usage(p['root']).free
+                write_json(p['evidence'] / 'pack-result.json', record)
+                print(json.dumps({k: record.get(k) for k in ('result', 'archive_verified', 'cache_kind', 'build_complete', 'file_count', 'input_bytes', 'archive', 'native_admission', 'error')}))
+            return 0 if record['archive_verified'] else 1
+
+        if __name__ == '__main__':
+            sys.exit(main())
+        PYCORE3
+        cat > "$RUNNER_TEMP/normal-bazel/core_transfer_receipt.py" <<'PYCORE4'
+        """Record service-reported artifact transfer, without granting native admission."""
+        import hashlib
+        import json
+        import os
+        import re
+        import sys
+        from core_cache_common import paths, read_json, write_json
+
+        def main():
+            p = paths()
+            record = {'schema': 'hepta-core-cache-upload-outcome-v1', 'result': 'NO_VERIFIED_TRANSFER',
+                'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                'harness_commit': os.environ['GITHUB_SHA'], 'source_head': os.environ['EXPECTED_HEAD'],
+                'source_tree': os.environ['EXPECTED_TREE'], 'platform': os.environ['BAZEL_PLATFORM'],
+                'outcomes': {key: os.environ[key] for key in ('BUILD_OUTCOME', 'SHUTDOWN_OUTCOME', 'SOURCE_AFTER_OUTCOME', 'PACK_OUTCOME', 'CACHE_UPLOAD_OUTCOME')},
+                'cache_artifact_id': os.environ['CACHE_ARTIFACT_ID'],
+                'cache_artifact_digest': os.environ['CACHE_ARTIFACT_DIGEST'],
+                'consumer_download_verified': False, 'native_admission': False, 'core_native_pass': False}
+            try:
+                pack_path = p['evidence'] / 'pack-result.json'
+                pack = read_json(pack_path)
+                record['pack_receipt_sha256'] = hashlib.sha256(pack_path.read_bytes()).hexdigest()
+                record['cache_kind'] = pack.get('cache_kind')
+                record['build_complete'] = pack.get('build_complete', False)
+                record['archive'] = pack.get('archive')
+                record['manifest'] = pack.get('manifest')
+                assert pack['archive_verified'] is True and os.environ['PACK_OUTCOME'] == 'success'
+                assert os.environ['SHUTDOWN_OUTCOME'] == os.environ['SOURCE_AFTER_OUTCOME'] == 'success'
+                assert os.environ['CACHE_UPLOAD_OUTCOME'] == 'success'
+                assert re.fullmatch(r'[1-9][0-9]*', os.environ['CACHE_ARTIFACT_ID'])
+                assert re.fullmatch(r'[0-9a-f]{64}', os.environ['CACHE_ARTIFACT_DIGEST'])
+                record['result'] = 'UPLOADED_CACHE_DATA_ONLY'
+            except Exception as error:
+                record['error'] = type(error).__name__ + ': ' + str(error)
+            finally:
+                write_json(p['root'] / 'cache-upload-outcome.json', record)
+                print(json.dumps(record))
+            return 0 if record['result'] == 'UPLOADED_CACHE_DATA_ONLY' else 1
+
+        if __name__ == '__main__':
+            sys.exit(main())
+        PYCORE4
+    - name: Build only the original Core headers target within the reserved 48-minute phase
+      id: build
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.scripts.outcome == 'success' }}
+      timeout-minutes: 49
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 "$RUNNER_TEMP/normal-bazel/core_build.py"
+    - name: Stop only the isolated producer Bazel server before any cache snapshot
+      id: shutdown
+      if: ${{ always() && steps.scripts.outcome == 'success' }}
+      timeout-minutes: 2
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 "$RUNNER_TEMP/normal-bazel/core_shutdown.py"
+    - name: Retain the exact source state after every outcome
+      if: always()
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "$RUNNER_TEMP/normal-bazel"
+        git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/normal-bazel/source-after.txt"
+        git status --porcelain --untracked-files=normal > "$RUNNER_TEMP/normal-bazel/source-after-status.txt"
+        expected="$EXPECTED_HEAD"
+        if [ "$SOURCE_KIND" = prospective-merge ]; then expected="$EXPECTED_MERGE"; fi
+        test "$(git rev-parse HEAD)" = "$expected"
+        test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+        git diff --exit-code
+        git diff --cached --exit-code
+        test ! -s "$RUNNER_TEMP/normal-bazel/source-after-status.txt"
+      id: source_after
+      timeout-minutes: 1
+    - name: Upload original build, shutdown, and source evidence before packaging
+      id: small_evidence
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      timeout-minutes: 2
+      with:
+        name: core-build-evidence-before-pack-${{ matrix.platform }}-${{ env.EXPECTED_HEAD }}
+        path: ${{ runner.temp }}/normal-bazel/
+        if-no-files-found: error
+        retention-days: 30
+    - name: Pack only stopped ac/cas regular files and fully rehash the archive members
+      id: pack
+      shell: bash
+      timeout-minutes: 7
+      if: ${{ !cancelled() && steps.scripts.outcome == 'success' && steps.shutdown.outcome == 'success' && steps.source_after.outcome
+        == 'success' && steps.small_evidence.outcome == 'success' }}
+      env:
+        SMALL_EVIDENCE_OUTCOME: ${{ steps.small_evidence.outcome }}
+        SMALL_EVIDENCE_ARTIFACT_ID: ${{ steps.small_evidence.outputs.artifact-id }}
+        SMALL_EVIDENCE_ARTIFACT_DIGEST: ${{ steps.small_evidence.outputs.artifact-digest }}
+      run: |
+        set -euo pipefail
+        python3 "$RUNNER_TEMP/normal-bazel/core_pack.py"
+    - name: Upload verified cache data separately without changing the build verdict
+      id: cache_upload
+      if: ${{ !cancelled() && steps.pack.outcome == 'success' && steps.pack.outputs.archive_verified == 'true' }}
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      timeout-minutes: 2
+      with:
+        name: core-build-cache-${{ matrix.platform }}-${{ env.EXPECTED_HEAD }}
+        path: |
+          ${{ runner.temp }}/normal-core-cache-transfer/core-action-cache.tar.gz
+          ${{ runner.temp }}/normal-core-cache-transfer/core-cache-manifest.json
+          ${{ runner.temp }}/normal-core-cache-transfer/cache-pack.json
+        compression-level: 0
+        if-no-files-found: error
+        retention-days: 30
+    - name: Record the actual upload outcome without granting native admission
+      id: transfer
+      if: ${{ always() && steps.scripts.outcome == 'success' }}
+      shell: bash
+      timeout-minutes: 1
+      env:
+        BUILD_OUTCOME: ${{ steps.build.outcome }}
+        SHUTDOWN_OUTCOME: ${{ steps.shutdown.outcome }}
+        SOURCE_AFTER_OUTCOME: ${{ steps.source_after.outcome }}
+        PACK_OUTCOME: ${{ steps.pack.outcome }}
+        CACHE_UPLOAD_OUTCOME: ${{ steps.cache_upload.outcome }}
+        CACHE_ARTIFACT_ID: ${{ steps.cache_upload.outputs.artifact-id }}
+        CACHE_ARTIFACT_DIGEST: ${{ steps.cache_upload.outputs.artifact-digest }}
+      run: |
+        set -euo pipefail
+        python3 "$RUNNER_TEMP/normal-bazel/core_transfer_receipt.py"
+    - name: Retain packaging and transfer receipts after every outcome
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      timeout-minutes: 1
+      with:
+        name: core-build-evidence-after-pack-${{ matrix.platform }}-${{ env.EXPECTED_HEAD }}
+        path: ${{ runner.temp }}/normal-bazel/
+        if-no-files-found: error
+        retention-days: 30
