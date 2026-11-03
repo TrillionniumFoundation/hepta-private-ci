@@ -24,6 +24,11 @@ rust_library(
 
 rust_test(
     name = "hepta-operator-acceptance-tests",
+    # G5 trust tests invoke the host's real /usr/bin/ssh-keygen. The Linux
+    # RBE image does not provide that binary; execute the same test locally
+    # instead of silently replacing key generation or skipping its negatives.
+    # Do not reuse a remote test result for fresh acceptance evidence.
+    tags = ["no-remote-exec", "no-remote-cache"],
     crate = ":hepta-operator-acceptance-lib",
     rustc_flags = select({
         "@platforms//os:windows": [
