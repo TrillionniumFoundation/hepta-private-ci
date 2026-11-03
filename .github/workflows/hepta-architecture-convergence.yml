@@ -38,6 +38,48 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
+      - name: Retain immutable event source identity before network validation
+        shell: bash
+        env:
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          jq -nc --arg source "$SOURCE_SHA" --arg event_base "$BASE_SHA" --arg lane "$LANE" \
+            '{schema_version:1,source_sha:$source,event_base_sha:$event_base,lane:$lane,authority:"non-authorizing"}' \
+            > "$RUNNER_TEMP/hepta-command-records/event-identity.json"
+      - name: Bind live PR base to an independently retrieved prospective merge
+        if: matrix.lane == 'base-merge'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PR_NUMBER"
+          test -n "$BASE_REF"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          pr_json="$(gh api "repos/$REPO/pulls/$PR_NUMBER")"
+          test "$(jq -er '.head.sha' <<< "$pr_json")" = "$SOURCE_SHA"
+          test "$(jq -er '.base.ref' <<< "$pr_json")" = "$BASE_REF"
+          live_base="$(gh api "repos/$REPO/branches/$BASE_REF" --jq '.commit.sha')"
+          [[ "$live_base" =~ ^[0-9a-f]{40}$ ]]
+          ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
+          actual_sha="$(jq -er '.object.sha' <<< "$ref_json")"
+          merge_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
+          mapfile -t parents < <(jq -r '.parents[].sha' <<< "$merge_json")
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$live_base"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          # The event base can be stale after main advances. Bind the exact
+          # GitHub merge parent, never silently accept a different candidate.
+          jq -nc --arg event_base "$BASE_SHA" --arg live_base "$live_base" \
+            --arg source "$SOURCE_SHA" --arg merge "$actual_sha" \
+            '{schema_version:1,event_base_sha:$event_base,verified_live_base_sha:$live_base,source_sha:$source,github_merge_sha:$merge}' \
+            > "$RUNNER_TEMP/hepta-command-records/live-base-binding.json"
+          printf 'BASE_SHA=%s\n' "$live_base" >> "$GITHUB_ENV"
       - name: Fetch exact qualification history
         env:
           GH_TOKEN: ${{ github.token }}
@@ -55,10 +97,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         shell: bash
         run: |
           set -euo pipefail
           test -n "$PR_NUMBER"
+          # Fail closed if main or the PR source moved during the fetch.
+          test "$(gh api "repos/$REPO/branches/$BASE_REF" --jq '.commit.sha')" = "$BASE_SHA"
+          test "$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.head.sha')" = "$SOURCE_SHA"
           ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
           actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
           commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
@@ -157,14 +203,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          set +e
-          cargo metadata --locked --format-version=1 >/dev/null
-          locked_status=$?
-          set -e
-          if [ "$locked_status" -eq 0 ]; then
-            exit 0
-          fi
-          echo "::error::Cargo.lock differs from the exact candidate manifests"
+          # The exact locked resolution MUST pass. Retry only a clearly
+          # diagnosed registry transport failure (e.g. crates.io HTTP/2
+          # framing), not a manifest, checksum or resolver discrepancy.
+          export CARGO_HTTP_MULTIPLEXING=false
+          locked_before="$(sha256sum Cargo.lock | cut -d ' ' -f 1)"
+          locked_status=1
+          for attempt in 1 2 3; do
+            set +e
+            cargo metadata --locked --format-version=1 >/dev/null 2>"$RUNNER_TEMP/cargo-metadata.err"
+            locked_status=$?
+            set -e
+            if [ "$locked_status" -eq 0 ]; then
+              test "$(sha256sum Cargo.lock | cut -d ' ' -f 1)" = "$locked_before" || {
+                echo "::error::Cargo.lock changed during verified resolution"
+                exit 1
+              }
+              exit 0
+            fi
+            cat "$RUNNER_TEMP/cargo-metadata.err"
+            if [ "$attempt" -eq 3 ] || ! grep -Eiq               'curl failed|HTTP.?2 framing|timed out|network failure|connection reset|download of .* failed|failed to fetch'               "$RUNNER_TEMP/cargo-metadata.err"; then
+              break
+            fi
+            echo "::warning::transient crates.io transport error; retrying the same locked manifest ($attempt/3)"
+            sleep "$((attempt * 3))"
+          done
+          echo "::error::Cargo --locked resolution did not pass (transport or manifest failure)"
           set +e
           cargo metadata --offline --format-version=1 >/dev/null
           offline_status=$?
@@ -261,6 +325,21 @@ jobs:
           observation.update(admin_denial_proven=False, pull_request_write_denial_proven=False)
           print(json.dumps(observation, sort_keys=True))
           PYCODE
+      - name: Revalidate current GitHub merge identity after native qualification
+        if: matrix.lane == 'base-merge' && success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gh api "repos/$REPO/branches/$BASE_REF" --jq '.commit.sha')" = "$BASE_SHA"
+          test "$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.head.sha')" = "$SOURCE_SHA"
+          merge_ref="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge" --jq '.object.sha')"
+          test "$merge_ref" = "$GITHUB_PROSPECTIVE_MERGE_SHA"
+          test "$(git rev-parse "HEAD^{tree}")" = "$GITHUB_PROSPECTIVE_MERGE_TREE"
       - name: Verify unchanged reviewed source
         run: |
           set -euo pipefail

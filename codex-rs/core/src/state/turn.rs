@@ -68,6 +68,7 @@ pub(crate) struct StartReservation {
 /// publication until the exact transition's terminalizer has finished (or
 /// failed closed without signalling this fence).
 pub(crate) struct StartTransitionCompletion {
+    admission_released: AtomicBool,
     done: AtomicBool,
     notify: Notify,
 }
@@ -75,12 +76,28 @@ pub(crate) struct StartTransitionCompletion {
 impl StartTransitionCompletion {
     pub(crate) fn new() -> Arc<Self> {
         Arc::new(Self {
+            admission_released: AtomicBool::new(false),
             done: AtomicBool::new(false),
             notify: Notify::new(),
         })
     }
 
+    /// Releases this owner's admission fence. Full completion always releases
+    /// it; an ordinary-finish caller may release earlier only after its proof
+    /// and terminal enqueue, while shutdown still waits for callback completion.
+    pub(crate) fn release_admission(&self) {
+        self.admission_released
+            .store(true, std::sync::atomic::Ordering::Release);
+    }
+
+    pub(crate) fn blocks_admission(&self) -> bool {
+        !self
+            .admission_released
+            .load(std::sync::atomic::Ordering::Acquire)
+    }
+
     pub(crate) fn complete(&self) {
+        self.release_admission();
         self.done.store(true, std::sync::atomic::Ordering::Release);
         // Keep a permit as well as waking current waiters so a waiter that is
         // registered just after the completion cannot lose the signal.

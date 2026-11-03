@@ -26,6 +26,10 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+#[cfg(windows)]
+#[path = "authority_lease_windows.rs"]
+mod windows;
+
 const LEASE_SCHEMA_VERSION: u32 = 1;
 const STORE_SCHEMA_VERSION: u32 = 2;
 pub const MAX_AUTHORITY_LEASES: usize = 16_384;
@@ -1150,11 +1154,31 @@ fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
     .map_err(|_| AuthorityLeaseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, AuthorityLeaseError> {
+    windows::prepare_directory(root)
+}
+
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, AuthorityLeaseError> {
+    windows::open_private(directory, name, access)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, AuthorityLeaseError> {
+    windows::entry_exists(directory, name)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
+    windows::replace_state(directory)
+}
+
+#[cfg(all(not(unix), not(windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1162,11 +1186,11 @@ fn open_private(
 ) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_state(_directory: &File) -> Result<(), AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }

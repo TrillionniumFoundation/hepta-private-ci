@@ -165,7 +165,7 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
             }
         }
         let invalid_flow_like_scalar = matches!(first_char, '[' | '{' | '@' | '`')
-            && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();
+            && serde_yaml::from_str::<serde_json::Value>(scalar).is_err();
         if !has_colon_separator && !invalid_flow_like_scalar {
             repaired_lines.push(line.to_string());
             continue;

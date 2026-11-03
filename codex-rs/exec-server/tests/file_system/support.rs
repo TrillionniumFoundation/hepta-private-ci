@@ -26,8 +26,21 @@ use crate::common::exec_server::test_codex_helper_paths;
 
 pub(crate) struct FileSystemContext {
     pub(crate) file_system: Arc<dyn ExecutorFileSystem>,
+    #[cfg(unix)]
+    environment: Option<Environment>,
     _helper_paths: Option<TestCodexHelperPaths>,
     _server: Option<ExecServerHarness>,
+}
+
+#[cfg(unix)]
+impl FileSystemContext {
+    pub(crate) async fn stable_handle_authorized_read_available(&self) -> Result<bool> {
+        let info = match &self.environment {
+            Some(environment) => environment.info().await?,
+            None => codex_exec_server::local_environment_info(),
+        };
+        Ok(info.capabilities.stable_handle_authorized_read)
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -57,6 +70,8 @@ pub(crate) async fn create_file_system_context(
             )?;
             Ok(FileSystemContext {
                 file_system: Arc::new(LocalFileSystem::with_runtime_paths(runtime_paths)),
+                #[cfg(unix)]
+                environment: None,
                 _helper_paths: Some(helper_paths),
                 _server: None,
             })
@@ -67,6 +82,8 @@ pub(crate) async fn create_file_system_context(
                 Environment::create_for_tests(Some(server.websocket_url().to_string()))?;
             Ok(FileSystemContext {
                 file_system: environment.get_filesystem(),
+                #[cfg(unix)]
+                environment: Some(environment),
                 _helper_paths: None,
                 _server: Some(server),
             })

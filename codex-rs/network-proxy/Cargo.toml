@@ -60,5 +60,3 @@ windows-sys = { version = "0.52", features = [
     "Win32_System_Threading",
 ] }
 
-[target.'cfg(windows)'.dev-dependencies]
-codex-windows-sandbox = { path = "../windows-sandbox-rs" }

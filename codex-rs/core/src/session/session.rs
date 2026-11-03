@@ -140,8 +140,24 @@ pub(crate) struct RecoveryCandidate {
 }
 
 #[cfg(test)]
+#[derive(Default)]
+pub(crate) struct TerminalPreparationGate {
+    pub(crate) entered: tokio::sync::Notify,
+    pub(crate) release: tokio::sync::Notify,
+}
+
+#[cfg(test)]
+#[derive(Default)]
+pub(crate) struct TerminalPublicationGate {
+    pub(crate) entered: tokio::sync::Notify,
+    pub(crate) release: tokio::sync::Notify,
+}
+
+#[cfg(test)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum RolloutPersistenceFault {
+    RolloutFlush,
+    TurnCompleteAppend,
     TurnAbortedAppend,
     InterruptedMarkerAppend,
     WarningAppend,
