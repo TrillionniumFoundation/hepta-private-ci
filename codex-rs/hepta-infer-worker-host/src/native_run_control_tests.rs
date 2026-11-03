@@ -2,6 +2,7 @@ use super::*;
 use crate::native_app_server::NativeWorkerConfig;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use pretty_assertions::assert_eq;
 use std::path::PathBuf;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -310,4 +311,194 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
             .unwrap()
         )
     );
+}
+
+fn running_journal(label: &str) -> (DurableInferenceControl, PathBuf) {
+    let (driver, path) = fixture(label);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let request = request(&driver);
+    let payload_digest = request.payload_digest.clone();
+    control.reserve_native(request, 1).unwrap();
+    control
+        .dispatch_native(
+            "r1",
+            NativeDispatch {
+                thread_id: "thread-1".to_string(),
+                model_provider: "provider".to_string(),
+                context_digest: "a".repeat(64),
+                owner_context_digest: None,
+                codex_payload_digest: Some("d".repeat(64)),
+                codex_request_digest: Some("b".repeat(64)),
+                app_server_version: Some("1.2.3".to_string()),
+                protocol_id: Some("codex.app-server.v2".to_string()),
+                codex_source_admission_digest: Some(payload_digest),
+                codex_home_digest: Some("f".repeat(64)),
+                codex_connection_id: Some(9),
+                codex_session_id: Some("session-1".to_string()),
+                codex_deadline_ms: Some(10_000),
+                codex_authority_epoch: Some(1),
+                codex_revocation_revision: Some(1),
+                codex_revocation_head_sha256: Some("2".repeat(64)),
+                codex_authority_witness_sha256: Some("1".repeat(64)),
+            },
+        )
+        .unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    (control, path)
+}
+
+fn reconciled_completion() -> NativeRunOutput {
+    NativeRunOutput {
+        thread_id: "thread-1".to_string(),
+        turn_id: "turn-1".to_string(),
+        model: "model".to_string(),
+        model_provider: "provider".to_string(),
+        status: NativeRunStatus::Completed,
+        boundary_status: NativeBoundaryStatus::Succeeded,
+        output: "complete provider output".to_string(),
+        observed_output_tokens: None,
+        terminal_observed: true,
+        owner_authority: NativeOwnerAuthority::ObservedReady,
+        stop_reason: None,
+        codex_terminal_correlation_digest: Some("c".repeat(64)),
+    }
+}
+
+#[test]
+fn terminal_reconciliation_preserves_durable_denials_after_reopening() {
+    for (boundary_status, reason) in [
+        (
+            NativeBoundaryStatus::Quarantined,
+            "completed agent message changed",
+        ),
+        (
+            NativeBoundaryStatus::Quarantined,
+            "output byte limit exceeded",
+        ),
+        (NativeBoundaryStatus::Cancelled, "cancelled"),
+        (NativeBoundaryStatus::TimedOut, "deadline elapsed"),
+    ] {
+        let (mut control, path) = running_journal("denied-reconciliation");
+        let pending = NativeRunOutput {
+            status: NativeRunStatus::Indeterminate,
+            boundary_status,
+            terminal_observed: false,
+            stop_reason: Some(reason.to_string()),
+            observed_output_tokens: Some(7),
+            codex_terminal_correlation_digest: None,
+            ..reconciled_completion()
+        };
+        control.settle_native("r1", pending).unwrap();
+        control.cancel_native("r1").unwrap();
+        drop(control);
+
+        let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+        let mut completed = reconciled_completion();
+        retain_reconciliation_boundary(reopened.native_record("r1").unwrap(), &mut completed);
+        let expected = NativeRunOutput {
+            boundary_status,
+            stop_reason: Some(reason.to_string()),
+            observed_output_tokens: Some(7),
+            ..reconciled_completion()
+        };
+        assert_eq!(completed, expected);
+        assert!(!completed.succeeded());
+        let settled = reopened.settle_native("r1", completed).unwrap();
+        assert_eq!(settled.state, NativeReservationState::Released);
+        assert_eq!(settled.observation, Some(expected));
+        drop(reopened);
+        let replayed = DurableInferenceControl::open(&path, 8).unwrap();
+        assert_eq!(replayed.native_record("r1"), Some(&settled));
+        drop(replayed);
+        std::fs::remove_file(path).unwrap();
+    }
+}
+
+#[test]
+fn cancellation_intent_without_an_observation_cannot_reconcile_to_success() {
+    let (mut control, path) = running_journal("cancel-intent-reconciliation");
+    control.cancel_native("r1").unwrap();
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let record = reopened.native_record("r1").unwrap();
+    assert_eq!(record.observation, None);
+    let mut completed = reconciled_completion();
+    retain_reconciliation_boundary(record, &mut completed);
+    let expected = NativeRunOutput {
+        boundary_status: NativeBoundaryStatus::Quarantined,
+        stop_reason: Some(
+            "durable cancellation requested; original boundary reason unavailable".to_string(),
+        ),
+        ..reconciled_completion()
+    };
+    assert_eq!(completed, expected);
+    assert!(!completed.succeeded());
+    let settled = reopened.settle_native("r1", completed).unwrap();
+    assert_eq!(settled.observation, Some(expected));
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn ordinary_indeterminate_reconciliation_can_settle_with_retained_usage() {
+    let (mut control, path) = running_journal("unknown-reconciliation");
+    let pending = NativeRunOutput {
+        status: NativeRunStatus::Indeterminate,
+        boundary_status: NativeBoundaryStatus::Indeterminate,
+        terminal_observed: false,
+        stop_reason: Some("terminal observation not yet available".to_string()),
+        observed_output_tokens: Some(7),
+        codex_terminal_correlation_digest: None,
+        ..reconciled_completion()
+    };
+    control.settle_native("r1", pending).unwrap();
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut completed = reconciled_completion();
+    retain_reconciliation_boundary(reopened.native_record("r1").unwrap(), &mut completed);
+    let expected = NativeRunOutput {
+        observed_output_tokens: Some(7),
+        ..reconciled_completion()
+    };
+    assert_eq!(completed, expected);
+    assert!(completed.succeeded());
+    let settled = reopened.settle_native("r1", completed).unwrap();
+    assert_eq!(settled.state, NativeReservationState::Released);
+    assert_eq!(settled.observation, Some(expected));
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn terminal_reconciliation_cannot_restore_a_durably_lost_owner() {
+    let (mut control, path) = running_journal("lost-owner-reconciliation");
+    let lost = NativeOwnerAuthority::Lost {
+        reason: "owner fenced".to_string(),
+    };
+    let pending = NativeRunOutput {
+        status: NativeRunStatus::Indeterminate,
+        boundary_status: NativeBoundaryStatus::Quarantined,
+        terminal_observed: false,
+        owner_authority: lost.clone(),
+        stop_reason: Some("owner fenced".to_string()),
+        codex_terminal_correlation_digest: None,
+        ..reconciled_completion()
+    };
+    control.settle_native("r1", pending).unwrap();
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut completed = reconciled_completion();
+    retain_reconciliation_boundary(reopened.native_record("r1").unwrap(), &mut completed);
+    let expected = NativeRunOutput {
+        boundary_status: NativeBoundaryStatus::Quarantined,
+        owner_authority: lost,
+        stop_reason: Some("owner fenced".to_string()),
+        ..reconciled_completion()
+    };
+    assert_eq!(completed, expected);
+    assert!(!completed.succeeded());
+    let settled = reopened.settle_native("r1", completed).unwrap();
+    assert_eq!(settled.observation, Some(expected));
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
 }

@@ -1,0 +1,113 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 123006077672,
+      "run_id": 40742088819,
+      "workflow_name": "Memory skill adapter fixed-horizon maintenance",
+      "head_branch": "research/memory-cell-completion-20261028",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40742088819",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAco7vK6A",
+      "head_sha": "4693e8028fb8563ec730dcb55458a212389154a5",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/123006077672",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40742088819/job/123006077672",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-28T18:07:01Z",
+      "started_at": "2026-10-28T18:07:03Z",
+      "completed_at": "2026-10-28T18:19:54Z",
+      "name": "skill-maintenance",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-28T18:07:04Z",
+          "completed_at": "2026-10-28T18:07:05Z"
+        },
+        {
+          "name": "Record runner-local start before checkout and Python setup",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-28T18:07:05Z",
+          "completed_at": "2026-10-28T18:07:05Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-28T18:07:05Z",
+          "completed_at": "2026-10-28T18:08:04Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-28T18:08:04Z",
+          "completed_at": "2026-10-28T18:08:04Z"
+        },
+        {
+          "name": "Restore original inputs and run the frozen skill-maintenance protocol",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-28T18:08:04Z",
+          "completed_at": "2026-10-28T18:19:32Z"
+        },
+        {
+          "name": "Preserve all outcomes in a filename-safe evidence archive",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-28T18:19:32Z",
+          "completed_at": "2026-10-28T18:19:50Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-28T18:19:50Z",
+          "completed_at": "2026-10-28T18:19:52Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-28T18:19:52Z",
+          "completed_at": "2026-10-28T18:19:52Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-28T18:19:52Z",
+          "completed_at": "2026-10-28T18:19:52Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-28T18:19:52Z",
+          "completed_at": "2026-10-28T18:19:52Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/123006077672",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000277025,
+      "runner_name": "GitHub Actions 1000277025",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

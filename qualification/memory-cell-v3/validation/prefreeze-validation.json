@@ -1,0 +1,47 @@
+{
+  "limits": [
+    "Test counts record observed successful invocations; no junit or full terminal log was retained for the Rust run.",
+    "Independent legacy audit probes are separate from the 47 Python tests.",
+    "Final formatting preserved the Python executable AST. Integrated study execution and artifact audits follow source freeze."
+  ],
+  "python": {
+    "distinct_tests_passed": 47,
+    "execution_groups": [
+      {
+        "kind": "complete unittest discovery before final additions",
+        "passed": 42,
+        "tests": 42
+      },
+      {
+        "kind": "new structure initial-route boundary test",
+        "passed": 1,
+        "tests": 1
+      },
+      {
+        "kind": "new independent capacity audit tests",
+        "passed": 4,
+        "tests": 4
+      }
+    ],
+    "format_report": "python-final-format.json",
+    "post_format_unit_tests_rerun": false
+  },
+  "rust": {
+    "command": "just test --manifest-path /workspace/scratch/3df12f9191cd/hepta-memory-native-v3/Cargo.toml -p codex-hepta-neuron",
+    "failed": 0,
+    "final_fix_completed": true,
+    "final_fmt_completed": true,
+    "fix_changes": "native-clippy-test-only-changes.diff",
+    "full_product_validation": false,
+    "nextest_run_id": "c7fd6079-60ff-4fe9-a642-f4a25bc78544",
+    "passed": 90,
+    "post_fix_or_fmt_unit_tests_rerun": false,
+    "retained_full_test_log": false,
+    "scope": "real hepta-neuron source and original locked dependencies in extracted three-crate workspace",
+    "skipped": 0,
+    "warnings": [
+      "isolated nextest reported unknown profile.local.inherits and filtered metadata IDs; all 90 discovered tests executed"
+    ]
+  },
+  "schema": "memory-cell-v3.prefreeze-validation.v1"
+}

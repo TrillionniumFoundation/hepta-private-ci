@@ -1,0 +1,34 @@
+{
+  "command": [
+    "python3",
+    "train_routing.py",
+    "--output",
+    "results/formal/routing",
+    "--seeds",
+    "1019",
+    "1021",
+    "1031",
+    "1033",
+    "1039",
+    "--source-commit",
+    "21da14adf9910fa5218696f6451f517fa0ef46a7"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "freeze_before": {
+    "bytes": 7422,
+    "sha256": "9e10b723c13a0243aa8d652a192809f73b8c4dc8e7ae41959625383e4ec80afa"
+  },
+  "held_read_by_wrapper": false,
+  "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "schema": "memory-cell-v5.formal-training-command.v1",
+  "source_commit": "21da14adf9910fa5218696f6451f517fa0ef46a7",
+  "started_utc": "2026-10-27T07:44:43.316870+00:00",
+  "status": "running",
+  "training_output": "/workspace/scratch/3df12f9191cd/hepta-memory-v5-targeted/results/formal/routing",
+  "unit_tests_run": false,
+  "working_directory": "/workspace/scratch/3df12f9191cd/hepta-memory-v5-targeted"
+}

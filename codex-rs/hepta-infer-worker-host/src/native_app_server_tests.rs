@@ -5,6 +5,7 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
+use pretty_assertions::assert_eq;
 
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
@@ -46,7 +47,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut agent_output::AgentOutput::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -163,6 +169,8 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut agent_output = agent_output::AgentOutput::default();
+    let binding = binding();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +179,30 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    observe_event(
+        &mut output,
+        &mut agent_output,
+        &observed(delta("unrelated", "discard".to_string())),
+        &binding,
+    )
+    .unwrap();
+    observe_event(
+        &mut output,
+        &mut agent_output,
+        &observed(delta("thread-a", "model output".to_string())),
+        &binding,
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe_event(
+            &mut output,
+            &mut agent_output,
+            &observed(delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))),
+            &binding
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -407,14 +433,18 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("authorized physical turn-start call");
+    let physical_send = source
+        .find(".request_typed_observed(ClientRequest::TurnStart {")
+        .expect("observed physical turn-start transport in the authorized helper");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    assert!(turn_start < physical_send);
 }
 
 #[cfg(unix)]
@@ -489,7 +519,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "observed output: {accepted:?}"
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
@@ -678,6 +711,30 @@ fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
         assert!(value.terminal_observed);
         assert!(!value.succeeded());
     }
+}
+
+#[test]
+fn interrupt_grace_provider_failure_keeps_the_original_quarantine_reason() {
+    let mut value = output();
+    value.boundary_status = NativeBoundaryStatus::Quarantined;
+    value.stop_reason = Some("completed agent message changed".to_string());
+    let mut failed = terminal("thread-a", "turn-a", TurnStatus::Failed);
+    if let ServerNotification::TurnCompleted(notification) = &mut failed {
+        notification.turn.error = Some(codex_app_server_protocol::TurnError {
+            message: "provider stopped after interruption".to_string(),
+            codex_error_info: None,
+            additional_details: None,
+        });
+    }
+    assert!(observe_for_test(&mut value, failed).unwrap());
+    assert_eq!(value.status, NativeRunStatus::Failed);
+    assert_eq!(value.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert_eq!(
+        value.stop_reason.as_deref(),
+        Some("completed agent message changed")
+    );
+    assert!(value.terminal_observed);
+    assert!(!value.succeeded());
 }
 
 #[test]

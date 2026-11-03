@@ -1,0 +1,55 @@
+{
+  "all_audit_comparisons_unchanged": true,
+  "files": {
+    "qualification/memory-cell-adapters/evaluation/audit_longrun_resume.py": {
+      "bytes": 33497,
+      "original_bytes": 33497,
+      "original_sha256": "b66ff525904da0409bcc106c742cee5fa908efc83f7d648ae704b3fc92701f21",
+      "sha256": "b66ff525904da0409bcc106c742cee5fa908efc83f7d648ae704b3fc92701f21"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun.py": {
+      "bytes": 23938,
+      "original_bytes": 23940,
+      "original_sha256": "ad14eaf3d6ae103202fb0d80c30e702e9c4000105d2314be65f9f69c5cddcf8a",
+      "sha256": "82402db63b00bd3903c0c9fc1b67f5b635a9defbc3bd0b0302340b5a025ad5af"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun_ci.py": {
+      "bytes": 11774,
+      "original_bytes": 11774,
+      "original_sha256": "ed39f19b097907210eb840bf35fb05b10cb0c39bc918146c0007cb2fc65583e7",
+      "sha256": "ed39f19b097907210eb840bf35fb05b10cb0c39bc918146c0007cb2fc65583e7"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun_fit.py": {
+      "bytes": 6424,
+      "original_bytes": 6424,
+      "original_sha256": "c573447f73f8c361d53e5faee51c904bc50e6fe79776450c6e7872d6e149891e",
+      "sha256": "c573447f73f8c361d53e5faee51c904bc50e6fe79776450c6e7872d6e149891e"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun_support.py": {
+      "bytes": 23778,
+      "original_bytes": 23778,
+      "original_sha256": "f6fece3099b14f07685b08e0ba21821974ee23f771ab270fe94562abd79d1193",
+      "sha256": "f6fece3099b14f07685b08e0ba21821974ee23f771ab270fe94562abd79d1193"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun_tests.py": {
+      "bytes": 5473,
+      "original_bytes": 5473,
+      "original_sha256": "2558593d8fbd95e11d16cde54788c49d55729d80c17288da18170ad65683bc5e",
+      "sha256": "2558593d8fbd95e11d16cde54788c49d55729d80c17288da18170ad65683bc5e"
+    },
+    "qualification/memory-cell-adapters/evaluation/skill_audit_report.py": {
+      "bytes": 2111,
+      "post_formal_transport_only": true,
+      "sha256": "9be138ede005b6fe96eb1e8d078bc4a7a9dc8ff2e89af63922543496ac66490f"
+    },
+    "qualification/memory-cell-adapters/evaluation/skill_audit_report_tests.py": {
+      "bytes": 2647,
+      "post_formal_transport_only": true,
+      "sha256": "e83add60ab416e5a3590158535afee3dd0488e6a66ee06ffa53cfba98a0e6c62"
+    }
+  },
+  "main_change": "Exactly one report-writer import replaced; new serializer splits oversized encoded detail batches",
+  "original_source_commit": "4693e8028fb8563ec730dcb55458a212389154a5",
+  "original_source_tree": "df3224a5a13c1fcc0a41d3b0278a864174e12d7e",
+  "post_formal_serialization_repair_disclosed": true
+}

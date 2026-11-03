@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40560143963,
+  "job_id": 122386655823,
+  "group": "bazel-lock",
+  "status": "completed",
+  "conclusion": "success",
+  "source_commit": "13eadb8944c39b0a2aa71d74a8f65d5a442bf70e",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40560143963/job/122386655823",
+  "receipt": {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "commands": [
+      [
+        "just",
+        "bazel-lock-update"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 19.166933285
+      }
+    ],
+    "exit_code": 0,
+    "final_tracked_changes": "",
+    "group": null,
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 2188,
+      "sha256": "62386224faba3dabe746b0cc40c0d2bf9b726bc4486fb30d30312a6b9a8c4da8"
+    },
+    "mode": "lock",
+    "passed": true,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 5,
+      "groups": [
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "typed-memory-native-utc-cutoff",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "13eadb8944c39b0a2aa71d74a8f65d5a442bf70e",
+    "source_tree": "5085862bb713c855cd1ba2636a4a4f649a62ba51",
+    "wall_seconds": 19.167040625
+  },
+  "test_summaries": [],
+  "test_counts": null,
+  "provider_log": {
+    "name": "122386655823.log",
+    "bytes": 61959,
+    "sha256": "9414bd9931425b50f8134a11940be09a74f6e0307459450120d08bf9df0dab26"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt.",
+  "lock_unchanged": true,
+  "verified_lock_file": "MODULE.bazel.lock"
+}

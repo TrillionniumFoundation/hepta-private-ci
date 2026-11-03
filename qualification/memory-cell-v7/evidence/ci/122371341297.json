@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40555778949,
+  "job_id": 122371341297,
+  "group": "bazel-lock",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40555778949/job/122371341297",
+  "receipt": {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "commands": [
+      [
+        "just",
+        "bazel-lock-update"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 18.169240860000002
+      }
+    ],
+    "exit_code": 0,
+    "final_tracked_changes": "",
+    "group": null,
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 2188,
+      "sha256": "873bf40a5c3ff6aad69097092ad2457d4a5b1c537e08a253d7d829a7a219a6b9"
+    },
+    "mode": "lock",
+    "passed": true,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 3,
+      "groups": [
+        "source-owner",
+        "population",
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "trained-owner-network-and-population",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "f0e6641fd3ae80806f97efff92ea66d7b8fd07e3",
+    "source_tree": "efbbf01f1a71ee9bafc0733bb0a2fbae522059ac",
+    "wall_seconds": 18.169383784000004
+  },
+  "test_summaries": [],
+  "log_representation": "Exact UTF-8 decoded provider job log; distinct from the execution.log whose identity is in the CI receipt."
+}

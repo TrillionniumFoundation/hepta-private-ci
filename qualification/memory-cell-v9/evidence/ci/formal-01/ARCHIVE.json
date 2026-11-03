@@ -1,0 +1,67 @@
+{
+  "archive": {
+    "bytes": 28706,
+    "sha256": "c8e7d5bf80c0a809be01b6ac9078c7ab1592f000ba41bdbb5aebe70a57a7f1a2"
+  },
+  "artifact_id": 12793819775,
+  "extraction": "Concatenate ordered parts; verify original ZIP and every member SHA256; preserve member paths.",
+  "files": {
+    "_temp/memory-v9-runtime/PREPARATION.json": {
+      "bytes": 4295,
+      "sha256": "82e1f542c6ce09fef9e4be4271f895470ceb334205c150471f9a35520e8f33b9"
+    },
+    "_temp/memory-v9-runtime/V8_PREPARATION.json": {
+      "bytes": 1358,
+      "sha256": "b78f1da1b640406b2e251229247a6691af84f464a435746585586270d2eeeb7c"
+    },
+    "_temp/memory-v9-runtime/V9_PREPARATION.json": {
+      "bytes": 1331,
+      "sha256": "d289e30991c09ac8dcd71be907f62a1215b51a023909a0ef83615fa456ba4bf6"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/commands/01.log": {
+      "bytes": 115,
+      "sha256": "98071cd7d6531baa93339a9f01497ab85d6d7a5b893d6e34e494f7a8e66c9b1d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/commands/02.log": {
+      "bytes": 120,
+      "sha256": "933421a1bf80e86778794b2e2d589afc105cce81c10eec740e123f0b21027a87"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/commands/03.log": {
+      "bytes": 17105,
+      "sha256": "547294134cbab3815ac3162162a0fedb53ec65ddd553facd93fb0adebc2a8fe5"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/commands/04.log": {
+      "bytes": 48954,
+      "sha256": "fb28a6396ac7b6c2719c65d428c907baac9515e967707426b3c38cd5569a7231"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/commands/05.log": {
+      "bytes": 34235,
+      "sha256": "745f2aaf823629c8d38258db9bf5a92e6d64b2a26b1e16298707178c159d5e6b"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/execution.log": {
+      "bytes": 101707,
+      "sha256": "5c15dd885aa5eb73257904292f5cf79b5e2f73be6f6d9caf8cbaa3099437ea8f"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/generated.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/receipt.json": {
+      "bytes": 5412,
+      "sha256": "ac61304089a6e8f2c4faeb6d61633475e17cdaa6092e882a68e1fb126ad42995"
+    }
+  },
+  "original_receipt_inventory_verified": true,
+  "parts": [
+    {
+      "bytes": 28706,
+      "path": "archive.part-000",
+      "sha256": "c8e7d5bf80c0a809be01b6ac9078c7ab1592f000ba41bdbb5aebe70a57a7f1a2"
+    }
+  ],
+  "product_receipt_member": "hepta-private-ci/hepta-private-ci/memory-v9-ci-output/receipt.json",
+  "run_id": 40636927751,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40636927751",
+  "schema": "hepta.memory.v9.original-ci-artifact.v1",
+  "source_commit": "429d6e85c25047271c43f7cf71ef39e11c82176f"
+}

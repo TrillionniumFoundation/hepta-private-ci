@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.memory.v7.recovered-provider-job.v1",
+  "run_id": 40568534089,
+  "source_commit": "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+  "job": {
+    "id": 122416179044,
+    "name": "plan",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 40568534089,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Run python3 qualification/memory-cell-v7/ci_verify.py plan",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      }
+    ]
+  },
+  "provider_log": {
+    "archive": "ci10-job-logs.tar.xz",
+    "path": "122416179044.log",
+    "bytes": 15665,
+    "sha256": "b40268d03299e0823083633cd95df67858731b0c103ec7617912414f81df25f9"
+  }
+}

@@ -1,0 +1,2573 @@
+{
+  "after_tracked_tree": "28b310cc8db30270110605f8509f95b772451fd6",
+  "artifacts": {
+    "AFTER_FILES.json": {
+      "bytes": 74427,
+      "sha256": "31ea97ccf16a937fb226fadd5180a84224b23e782e95dd1a41592e681bb653e9"
+    },
+    "BEFORE_FILES.json": {
+      "bytes": 77140,
+      "sha256": "2abf6dd800d2798d2ee4090a04f5c376b36bbadf16cdf2ad81c4927a068a5477"
+    },
+    "FINALIZE_REQUEST.json": {
+      "bytes": 747,
+      "sha256": "90d47e85e6e6a0cbdc19b2f973d99586fb871db6de79945989df2b102d3308c7"
+    },
+    "PATCH.tar.xz": {
+      "bytes": 59908,
+      "sha256": "ea6c85f07393028ce162b1390302b5be891b67f1951c0d732f4e22ea054e99f7"
+    },
+    "PATCH_INDEX.json": {
+      "bytes": 6491,
+      "sha256": "c82618ccedd784a55fb32753ccd6964195597ef1f68990557161d5ed5d77e562"
+    },
+    "SHA256SUMS": {
+      "bytes": 2171,
+      "sha256": "0ec628b7fa4d10ac4c79d478a287eee433e5ea075ef31a7df9a993c703f9d595"
+    },
+    "SOURCE.json": {
+      "bytes": 1522,
+      "sha256": "46e50cdbfc57850af29549d044c246510f84d67e35162e487dabd9cee55db7eb"
+    },
+    "TESTED_VERIFICATION_RECEIPT.json": {
+      "bytes": 106653,
+      "sha256": "57a5bd42848344f8c4c93448c55d925000ffb5f9de0e119a54d2a5a32fb2ce31"
+    },
+    "after-fix.from-head.patch": {
+      "bytes": 1329,
+      "sha256": "ce67e74534e76a1d0df1e24468a131736611a7582ba22be7f36fb540bac7546e"
+    },
+    "after-fix.from-head.patch.xz": {
+      "bytes": 612,
+      "sha256": "1836fb0698bce6b7e25b9671739f1e1f0904b0d9e73d8751db0e4b9e7679fa7c"
+    },
+    "after-fix.json": {
+      "bytes": 1093,
+      "sha256": "560b433902e79471f04478b2f7260b60433db4b64967a53bd13c03cf50393a64"
+    },
+    "after-fix.patch": {
+      "bytes": 1329,
+      "sha256": "ce67e74534e76a1d0df1e24468a131736611a7582ba22be7f36fb540bac7546e"
+    },
+    "after-fix.patch.xz": {
+      "bytes": 612,
+      "sha256": "1836fb0698bce6b7e25b9671739f1e1f0904b0d9e73d8751db0e4b9e7679fa7c"
+    },
+    "after-format.from-head.patch": {
+      "bytes": 297234,
+      "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+    },
+    "after-format.from-head.patch.xz": {
+      "bytes": 48688,
+      "sha256": "7147f51dd72bb0aa8f3900b8d5b87cafe5d3e6b81a8bfbb6b7825f931a525b4d"
+    },
+    "after-format.json": {
+      "bytes": 1116,
+      "sha256": "e70867adda9f768b8f4c1f06c7cfa1db488919125b60ee3f60853980bba31182"
+    },
+    "after-format.patch": {
+      "bytes": 297233,
+      "sha256": "342eb0b21828549a58cab5235e2800f3871762db6933faedf0361f2ecdf57ce4"
+    },
+    "after-format.patch.xz": {
+      "bytes": 48668,
+      "sha256": "ddd3588f46ac520fb37e4c6f773e4ea8ae37f9741c5f8d9361c7a8ffb274301f"
+    },
+    "commands/01.output.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commands/02.output.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commands/03.output.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commands/04.output.log": {
+      "bytes": 346456,
+      "sha256": "67d3f6777f6f0588821d65116fbe5a184846c7dd0111147fcff37928b7885ef2"
+    },
+    "commands/05.output.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "execution.log": {
+      "bytes": 356738,
+      "sha256": "7413679440c9d2a0974dc46812da453b077ffe5eaca30e31987847331d5615c2"
+    },
+    "generated.patch": {
+      "bytes": 297234,
+      "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+    },
+    "generated.patch.xz": {
+      "bytes": 48688,
+      "sha256": "7147f51dd72bb0aa8f3900b8d5b87cafe5d3e6b81a8bfbb6b7825f931a525b4d"
+    }
+  },
+  "automatic_commit": false,
+  "automatic_push": false,
+  "cargo_target_dir": "/home/runner/.cache/codex-ci/cargo-target",
+  "clippy_compiles_test_targets": true,
+  "executions": [
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "0b6cff2afa88e469361608be3790fb7b03a1dd7e",
+        "8510464dd7c4bbed20b5dfa81d3b65eaf6671132"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_output_path": "commands/01.output.log",
+      "wall_seconds": 0.004003449999800068
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "8510464dd7c4bbed20b5dfa81d3b65eaf6671132",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_output_path": "commands/02.output.log",
+      "wall_seconds": 0.0024098330000015267
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "--quiet",
+        "8510464dd7c4bbed20b5dfa81d3b65eaf6671132",
+        "HEAD",
+        "--",
+        ".github/actions/setup-ci",
+        ".github/workflows/memory-cell-v8-finalize.yml",
+        ".github/workflows/memory-cell-v8.yml",
+        ".github/workflows/memory-cell-v9-finalize.yml",
+        ".github/workflows/memory-cell-v9.yml",
+        "codex-rs",
+        "evaluation_preflight.py",
+        "justfile",
+        "qualification/memory-cell-v6/audit_results.py",
+        "qualification/memory-cell-v6/audit_transport.py",
+        "qualification/memory-cell-v6/auditors/audit_source_truth.py",
+        "qualification/memory-cell-v6/auditors/verify_structure.py",
+        "qualification/memory-cell-v6/download_encoder.py",
+        "qualification/memory-cell-v6/held/author_corpus.py",
+        "qualification/memory-cell-v6/memory_cli.py",
+        "qualification/memory-cell-v6/native/make_fixture.py",
+        "qualification/memory-cell-v6/native/qualify.py",
+        "qualification/memory-cell-v6/prepare_run.py",
+        "qualification/memory-cell-v6/run_extensions.py",
+        "qualification/memory-cell-v6/run_language.py",
+        "qualification/memory-cell-v6/supplement/structure-verification/verification-script.py",
+        "qualification/memory-cell-v6/tests/test_audit.py",
+        "qualification/memory-cell-v6/tests/test_cells.py",
+        "qualification/memory-cell-v6/tests/test_contracts.py",
+        "qualification/memory-cell-v6/tests/test_evolution.py",
+        "qualification/memory-cell-v6/tests/test_language_runner.py",
+        "qualification/memory-cell-v6/tests/test_lifecycle.py",
+        "qualification/memory-cell-v6/tests/test_memory_cli.py",
+        "qualification/memory-cell-v6/tests/test_network.py",
+        "qualification/memory-cell-v6/tests/test_router.py",
+        "qualification/memory-cell-v6/tests/test_runtime.py",
+        "qualification/memory-cell-v6/tests/test_transfer.py",
+        "qualification/memory-cell-v6/tools/evidence_archive.py",
+        "qualification/memory-cell-v6/train_router.py",
+        "qualification/memory-cell-v6/v6",
+        "qualification/memory-cell-v6/v6/__init__.py",
+        "qualification/memory-cell-v6/v6/artifacts.py",
+        "qualification/memory-cell-v6/v6/cells.py",
+        "qualification/memory-cell-v6/v6/contracts.py",
+        "qualification/memory-cell-v6/v6/encoder.py",
+        "qualification/memory-cell-v6/v6/evolution.py",
+        "qualification/memory-cell-v6/v6/learning.py",
+        "qualification/memory-cell-v6/v6/lifecycle.py",
+        "qualification/memory-cell-v6/v6/network.py",
+        "qualification/memory-cell-v6/v6/router.py",
+        "qualification/memory-cell-v6/v6/runtime.py",
+        "qualification/memory-cell-v6/v6/store.py",
+        "qualification/memory-cell-v6/v6/study_data.py",
+        "qualification/memory-cell-v6/v6/training_language.py",
+        "qualification/memory-cell-v6/v6/transfer.py",
+        "qualification/memory-cell-v6/v6/values.py",
+        "qualification/memory-cell-v7/address_eval.py",
+        "qualification/memory-cell-v7/addressing",
+        "qualification/memory-cell-v7/addressing/__init__.py",
+        "qualification/memory-cell-v7/addressing/calibration.py",
+        "qualification/memory-cell-v7/addressing/capabilities.py",
+        "qualification/memory-cell-v7/addressing/cli.py",
+        "qualification/memory-cell-v7/addressing/contracts.py",
+        "qualification/memory-cell-v7/addressing/corpus.py",
+        "qualification/memory-cell-v7/addressing/model.py",
+        "qualification/memory-cell-v7/addressing/planner.py",
+        "qualification/memory-cell-v7/addressing/tests/test_planner.py",
+        "qualification/memory-cell-v7/addressing/tests/test_worker.py",
+        "qualification/memory-cell-v7/addressing/train.py",
+        "qualification/memory-cell-v7/addressing/worker.py",
+        "qualification/memory-cell-v7/archive_addressing.py",
+        "qualification/memory-cell-v7/audit_addressing.py",
+        "qualification/memory-cell-v7/ci_finalize.py",
+        "qualification/memory-cell-v7/ci_verify.py",
+        "qualification/memory-cell-v7/fixtures",
+        "qualification/memory-cell-v7/native_export.py",
+        "qualification/memory-cell-v7/native_export_fixtures.py",
+        "qualification/memory-cell-v7/population_benchmark.py",
+        "qualification/memory-cell-v7/population_fixture.py",
+        "qualification/memory-cell-v7/population_test.py",
+        "qualification/memory-cell-v7/population_training.py",
+        "qualification/memory-cell-v7/population_worker.py",
+        "qualification/memory-cell-v7/prepare_language_ci.py",
+        "qualification/memory-cell-v7/public_smoke.py",
+        "qualification/memory-cell-v7/reconstruct_addressing.py",
+        "qualification/memory-cell-v7/test_training.py",
+        "qualification/memory-cell-v7/training.py",
+        "qualification/memory-cell-v7/training_worker.py",
+        "qualification/memory-cell-v8/addressing",
+        "qualification/memory-cell-v8/addressing/bootstrap.py",
+        "qualification/memory-cell-v8/addressing/evaluate.py",
+        "qualification/memory-cell-v8/addressing/qualification_shadow_worker.py",
+        "qualification/memory-cell-v8/addressing/tests/__init__.py",
+        "qualification/memory-cell-v8/addressing/tests/addressing_tests.py",
+        "qualification/memory-cell-v8/addressing/train.py",
+        "qualification/memory-cell-v8/addressing/v8_addressing/__init__.py",
+        "qualification/memory-cell-v8/addressing/v8_addressing/model.py",
+        "qualification/memory-cell-v8/addressing/v8_addressing/native_fixture.py",
+        "qualification/memory-cell-v8/addressing/v8_addressing/policy.py",
+        "qualification/memory-cell-v8/addressing/v8_addressing/public_corpus.py",
+        "qualification/memory-cell-v8/addressing/v8_addressing/runner_io.py",
+        "qualification/memory-cell-v8/addressing/worker.py",
+        "qualification/memory-cell-v8/ci_finalize.py",
+        "qualification/memory-cell-v8/ci_verify.py",
+        "qualification/memory-cell-v8/evaluation",
+        "qualification/memory-cell-v8/evaluation/author_suites.py",
+        "qualification/memory-cell-v8/evaluation/repair_suites_v2.py",
+        "qualification/memory-cell-v8/fixtures",
+        "qualification/memory-cell-v8/learning",
+        "qualification/memory-cell-v8/learning/__init__.py",
+        "qualification/memory-cell-v8/learning/allocation.py",
+        "qualification/memory-cell-v8/learning/allocation_tests.py",
+        "qualification/memory-cell-v8/learning/costs.py",
+        "qualification/memory-cell-v8/learning/evidence.py",
+        "qualification/memory-cell-v8/learning/fit_evidence.py",
+        "qualification/memory-cell-v8/learning/population_training.py",
+        "qualification/memory-cell-v8/learning/score.py",
+        "qualification/memory-cell-v8/learning/score_tests.py",
+        "qualification/memory-cell-v8/learning/worker.py",
+        "qualification/memory-cell-v8/prepare_ci.py",
+        "qualification/memory-cell-v9/VERIFY_REQUEST.json",
+        "qualification/memory-cell-v9/addressing",
+        "qualification/memory-cell-v9/addressing/bootstrap.py",
+        "qualification/memory-cell-v9/addressing/evaluate.py",
+        "qualification/memory-cell-v9/addressing/qualification_shadow_worker.py",
+        "qualification/memory-cell-v9/addressing/tests/__init__.py",
+        "qualification/memory-cell-v9/addressing/tests/addressing_tests.py",
+        "qualification/memory-cell-v9/addressing/tests/capability_tests.py",
+        "qualification/memory-cell-v9/addressing/tests/policy_budget_tests.py",
+        "qualification/memory-cell-v9/addressing/train.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/__init__.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/artifact.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/capabilities.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/identity.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/model.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/native_fixture.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/policy.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/public_corpus.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/public_language.py",
+        "qualification/memory-cell-v9/addressing/v9_addressing/runner_io.py",
+        "qualification/memory-cell-v9/addressing/worker.py",
+        "qualification/memory-cell-v9/ci_finalize.py",
+        "qualification/memory-cell-v9/ci_verify.py",
+        "qualification/memory-cell-v9/evaluation",
+        "qualification/memory-cell-v9/evaluation/author_inputs.py",
+        "qualification/memory-cell-v9/evaluation/language_materials.py",
+        "qualification/memory-cell-v9/evaluation/native_evidence.py",
+        "qualification/memory-cell-v9/evaluation/preflight.py",
+        "qualification/memory-cell-v9/evidence/fresh-reader-local-01/restore.py",
+        "qualification/memory-cell-v9/fixtures",
+        "qualification/memory-cell-v9/learning",
+        "qualification/memory-cell-v9/learning/__init__.py",
+        "qualification/memory-cell-v9/learning/byte_model.py",
+        "qualification/memory-cell-v9/learning/evidence.py",
+        "qualification/memory-cell-v9/learning/evidence_tests.py",
+        "qualification/memory-cell-v9/learning/fresh_reader.py",
+        "qualification/memory-cell-v9/learning/fresh_reader_support.py",
+        "qualification/memory-cell-v9/learning/fresh_reader_tests.py",
+        "qualification/memory-cell-v9/learning/model_evidence.py",
+        "qualification/memory-cell-v9/learning/model_tests.py",
+        "qualification/memory-cell-v9/learning/paired.py",
+        "qualification/memory-cell-v9/learning/resource_cleanup.py",
+        "qualification/memory-cell-v9/learning/resource_evidence.py",
+        "qualification/memory-cell-v9/learning/resource_monitor.py",
+        "qualification/memory-cell-v9/learning/resource_samples.py",
+        "qualification/memory-cell-v9/learning/resource_tests.py",
+        "qualification/memory-cell-v9/learning/score.py",
+        "qualification/memory-cell-v9/learning/selection_wire_tests.py",
+        "qualification/memory-cell-v9/learning/structure_evidence.py",
+        "qualification/memory-cell-v9/learning/structure_evidence_tests.py",
+        "qualification/memory-cell-v9/learning/structure_score.py",
+        "qualification/memory-cell-v9/learning/structure_selection.py",
+        "qualification/memory-cell-v9/learning/structure_tests.py",
+        "qualification/memory-cell-v9/learning/worker.py",
+        "qualification/memory-cell-v9/pack_evidence.py",
+        "qualification/memory-cell-v9/prepare_ci.py",
+        "scripts/format.py",
+        "scripts/just-shell.py",
+        "scripts/pyproject.toml",
+        "scripts/run-nextest.py",
+        "scripts/uv.lock"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_output_path": "commands/03.output.log",
+      "wall_seconds": 0.0028769870000360243
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 346456,
+        "sha256": "67d3f6777f6f0588821d65116fbe5a184846c7dd0111147fcff37928b7885ef2"
+      },
+      "raw_output_path": "commands/04.output.log",
+      "wall_seconds": 415.12532569099994
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "0b6cff2afa88e469361608be3790fb7b03a1dd7e"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_output_path": "commands/05.output.log",
+      "wall_seconds": 2.0700475350001852
+    }
+  ],
+  "final_patch": {
+    "compressed": {
+      "bytes": 48688,
+      "path": "generated.patch.xz",
+      "sha256": "7147f51dd72bb0aa8f3900b8d5b87cafe5d3e6b81a8bfbb6b7825f931a525b4d"
+    },
+    "raw_patch_limit_bytes": 512000,
+    "standalone_uncompressed_path": "generated.patch",
+    "transport": "artifact files",
+    "uncompressed": {
+      "bytes": 297234,
+      "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+    }
+  },
+  "final_tracked_changes": "M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/memory_cell_address_worker_profile_v9.rs\n M codex-rs/hepta-agentd/src/memory_cell_address_worker_profile_v9_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_language_v9_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_case_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_concurrency_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_image.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_process_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_process_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_receiver.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_storage.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_store.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_target_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_taskflow_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_taskflow_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_transport.rs\n M codex-rs/hepta-agentd/src/memory_cell_migration_v9_wire.rs\n M codex-rs/hepta-agentd/src/memory_cell_network.rs\n M codex-rs/hepta-agentd/src/memory_cell_network_process_test_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_v9_continual_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_v9_data.rs\n M codex-rs/hepta-agentd/src/memory_cell_v9_fit.rs\n M codex-rs/hepta-agentd/src/memory_cell_v9_structure_gate.rs\n M codex-rs/hepta-agentd/src/memory_cell_v9_structure_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_v9_structure_tests.rs\n M codex-rs/hepta-agentd/src/memory_structure_runtime_v9.rs\n M codex-rs/hepta-agentd/src/memory_structure_runtime_v9_tests.rs\n M codex-rs/hepta-neuron/src/memory_byte_cell_v9.rs\n M codex-rs/hepta-neuron/src/memory_byte_cell_v9_tests.rs\n M codex-rs/hepta-neuron/src/memory_parameter_cell_v9.rs\n M codex-rs/hepta-neuron/src/memory_population.rs\n M codex-rs/hepta-neuron/src/memory_population_cache.rs",
+  "fitting_performed": false,
+  "formal_artifact_identities": {
+    "baseline-v7-native-held.json": {
+      "bytes": 1214015,
+      "sha256": "90ac378058469c09dfbc03fa4bb484463a73d8581bfbeba2e72f17c4cf9800ba"
+    },
+    "baseline-v8-native-held.json": {
+      "bytes": 1303044,
+      "sha256": "632d83e79d7de96dc59f796271da8c5b7ad5a2a941aa54a15d09390daf7e7ec1"
+    },
+    "candidate-v9-native-held.json": {
+      "bytes": 1318925,
+      "sha256": "03eedeb56259cd8f54c7918123544a1085662ac4b02a8e8965ea42038bfc6e20"
+    },
+    "continual-learning-score.json": {
+      "bytes": 181544,
+      "sha256": "15fba3b4332ba1efcb00370284747c1f5c9a0caf818d8a06a7f43950f93709b0"
+    },
+    "continual-learning.json": {
+      "bytes": 127398,
+      "sha256": "70637d275066b6f037ab6daf61c841bd59a75add4ea52e49b9de8d4943e4416e"
+    },
+    "legacy-network-process.json": {
+      "bytes": 4445,
+      "sha256": "6d26759500dca87054adbacc14bd9d1d32a055293a38847a5a59532ffb45c2c8"
+    },
+    "migration-process.json": {
+      "bytes": 133248,
+      "sha256": "d2b70f96ccfbb65a6b1e2b6cc9e0de5a163551e6e49029c1ab52c3afd28755cb"
+    },
+    "native-language-audit.json": {
+      "bytes": 5330,
+      "sha256": "e9ed2defa736b40b4820108ef5a90788dcce4ca8e555c9001615cd1b8ff3c432"
+    },
+    "structure-learning-score.json": {
+      "bytes": 311049,
+      "sha256": "1da686a2dc91e0ffe2baf8c0f6ac359025608b0e28b103c0f658b5df8373b1c4"
+    },
+    "structure-learning.json": {
+      "bytes": 552371,
+      "sha256": "d796d09788243986ea91db4c468649f9d3c30f7e971da9b4e5021fa1fab2f960"
+    }
+  },
+  "format_base": "0b6cff2afa88e469361608be3790fb7b03a1dd7e",
+  "frozen_python": {
+    "evaluation_preflight.py": {
+      "bytes": 3018,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cb91fbadae1fe4c3722c3351812c06480f4b486e1cfff4e278362eb421177c25"
+    },
+    "qualification/memory-cell-v6/audit_results.py": {
+      "bytes": 18153,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "33bfe7c13510efcc1a826a6e5d69ba176b4d3ebb5c558582ed498e7034c246e5"
+    },
+    "qualification/memory-cell-v6/audit_transport.py": {
+      "bytes": 2525,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e282601fe97681d92a3a5f1140573089af712f249468cbe042f896d920b993a2"
+    },
+    "qualification/memory-cell-v6/auditors/audit_source_truth.py": {
+      "bytes": 17805,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e232afb19cdfb15e274af2e0423e250cdbfe372d63c37d4920941e42c8188bcd"
+    },
+    "qualification/memory-cell-v6/auditors/verify_structure.py": {
+      "bytes": 18689,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c3be0ea7d91510869fcb7b819a921ac0a09921d9a646e99bb3a094952176c4a4"
+    },
+    "qualification/memory-cell-v6/download_encoder.py": {
+      "bytes": 2102,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ebfb24bd70140f76f640fff5bc6142983d0a76cc80f32b27aa2b76b73b329a92"
+    },
+    "qualification/memory-cell-v6/held/author_corpus.py": {
+      "bytes": 27871,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cfb2b42e5a79e8a3090b921904e3c7522a6c7a9de49d76f88c3bf091a8ac8920"
+    },
+    "qualification/memory-cell-v6/memory_cli.py": {
+      "bytes": 10468,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c9b21b2e1304f09a885926748886f911b69a3b57a683070e81a5e294a5b971af"
+    },
+    "qualification/memory-cell-v6/native/make_fixture.py": {
+      "bytes": 5508,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c5c97f72327e1fea46ef768eb00b1c8087f44ffbdaaac08211c5a9a3c6b2e905"
+    },
+    "qualification/memory-cell-v6/native/qualify.py": {
+      "bytes": 11089,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e1ee2e14944a75f9b97a76b89a1723e9493395fa94cf8f8f5b99577783d1be67"
+    },
+    "qualification/memory-cell-v6/prepare_run.py": {
+      "bytes": 12533,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "226ece97158c499169d10c1783211ed3b92cf684ee2bc392270f792926ea6f63"
+    },
+    "qualification/memory-cell-v6/run_extensions.py": {
+      "bytes": 4122,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "789aa266bf4b4bb5bc4c69b7329358930ceda5422b410a193c5cea3a198bc950"
+    },
+    "qualification/memory-cell-v6/run_language.py": {
+      "bytes": 20592,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f65aa01387674774494cecebe7bed5f3ba73c74795667fc41cae89438701732d"
+    },
+    "qualification/memory-cell-v6/supplement/structure-verification/verification-script.py": {
+      "bytes": 18689,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c3be0ea7d91510869fcb7b819a921ac0a09921d9a646e99bb3a094952176c4a4"
+    },
+    "qualification/memory-cell-v6/tests/test_audit.py": {
+      "bytes": 8151,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "4b5f616cfe5977bc4350ea665d7d1bf99a382ecfb42477c7b3f0c7db8bbf8801"
+    },
+    "qualification/memory-cell-v6/tests/test_cells.py": {
+      "bytes": 7743,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d859f8d4ba9d7c60b2947925db8a5731eb826cac3f94f1a4cc1b0becb01caaf4"
+    },
+    "qualification/memory-cell-v6/tests/test_contracts.py": {
+      "bytes": 3363,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c8670a77ca77b7ade84560b3b9ce7ffa660c72fffe30f49fa58aab02a3468768"
+    },
+    "qualification/memory-cell-v6/tests/test_evolution.py": {
+      "bytes": 7802,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e75182baa3384e4901bf6c7f648f0ce398dc8e0bc14114850f83f7dc9cd1ad61"
+    },
+    "qualification/memory-cell-v6/tests/test_language_runner.py": {
+      "bytes": 8222,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "4987269c8d490ce3bd3c8b7c6548fc7369ca4a51dd20caa17eb73fd3dbda1c7a"
+    },
+    "qualification/memory-cell-v6/tests/test_lifecycle.py": {
+      "bytes": 3000,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d433028e5a302bea40185e3a2f762d37a5cd6007e7aa21780675f4110b76af80"
+    },
+    "qualification/memory-cell-v6/tests/test_memory_cli.py": {
+      "bytes": 4793,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "68a651e2842582271d203af6e99e94db5a19c4c99f0d68fc443acae64999163e"
+    },
+    "qualification/memory-cell-v6/tests/test_network.py": {
+      "bytes": 14976,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "77abb854180f52bb87408cae3b469ce126e74a96fcb7950288c3f27a17408c83"
+    },
+    "qualification/memory-cell-v6/tests/test_router.py": {
+      "bytes": 3759,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e7fc0684f6bec9164837994a3f6633546a297ef8f29188ab33c9fb7673c398a4"
+    },
+    "qualification/memory-cell-v6/tests/test_runtime.py": {
+      "bytes": 6929,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9a5de4e0047f44037aad1b3dd507c7d480b7631de84bf073bbbee1486c0b37be"
+    },
+    "qualification/memory-cell-v6/tests/test_transfer.py": {
+      "bytes": 7112,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "60607e71443e080588f077bf6a01a28a1550416b80adf328a99b55c1d939e869"
+    },
+    "qualification/memory-cell-v6/tools/evidence_archive.py": {
+      "bytes": 6923,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d8994c4b5307ade0ff5b394696f7dd91cb53d3f0cb2f39b6405e5386ebd08991"
+    },
+    "qualification/memory-cell-v6/train_router.py": {
+      "bytes": 9757,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a866d93dcbf655d29df6fa330c59eb3fa8ed8603588962ba70faf4539007f71d"
+    },
+    "qualification/memory-cell-v6/v6/__init__.py": {
+      "bytes": 84,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e48c0b6136220a43e666e0616e415b365f4041f4ce1211846d9a144d7073bfed"
+    },
+    "qualification/memory-cell-v6/v6/artifacts.py": {
+      "bytes": 7451,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "209c8d8581b02217cc4705111f7a060c78845ea804fb46364d4456d651882fbd"
+    },
+    "qualification/memory-cell-v6/v6/cells.py": {
+      "bytes": 16224,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e0b2f7dbf3f280ebf6618c68c60b7799bb945eaf76cc603b6bfcfc3d33de2024"
+    },
+    "qualification/memory-cell-v6/v6/contracts.py": {
+      "bytes": 5785,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "42be7b9d9f0e3afe86c5ad52c58d8d4b8a5ba8972846c0702fc1e42c3b62834f"
+    },
+    "qualification/memory-cell-v6/v6/encoder.py": {
+      "bytes": 6724,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5660dc13f9ee7f1b7239e61edae9b51eee6a8870f0b4ef351d5d0f35e87d18ab"
+    },
+    "qualification/memory-cell-v6/v6/evolution.py": {
+      "bytes": 23036,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c60be48c2713fc97cea803894fc0df6e9b0a6655edbdcd0d35f2e97a753e939d"
+    },
+    "qualification/memory-cell-v6/v6/learning.py": {
+      "bytes": 20809,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "602e4976ba819a102271b669ff9c1972a07054e832051a560c49ef068c18d470"
+    },
+    "qualification/memory-cell-v6/v6/lifecycle.py": {
+      "bytes": 22775,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "dc5ea910465ba2aa1139764dac104c924786c16d2e7231999429e5f1b177f548"
+    },
+    "qualification/memory-cell-v6/v6/network.py": {
+      "bytes": 24129,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "af3a667031fe9e185aa59ff2fa9cd01ee763107ab3bdee67ddb1e7094cfaa6d6"
+    },
+    "qualification/memory-cell-v6/v6/router.py": {
+      "bytes": 16676,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "369c86fc1e6cb6d64823f6602c535d36cc292de4f6c834dff15d617fa24e35f0"
+    },
+    "qualification/memory-cell-v6/v6/runtime.py": {
+      "bytes": 9891,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f4ceaa5b80b372385f902d63afb1151aada0d2c79eae786747a668f13dc8801a"
+    },
+    "qualification/memory-cell-v6/v6/store.py": {
+      "bytes": 8880,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "81d8917a49a9a2ed79cb8ae9f52f843123fb304e7addcada80b561e88c4a41a1"
+    },
+    "qualification/memory-cell-v6/v6/study_data.py": {
+      "bytes": 3846,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "882f4e38eb90a11fa6cea582f60efea961037656ed5b3b2e48ac6863f08ec4b8"
+    },
+    "qualification/memory-cell-v6/v6/training_language.py": {
+      "bytes": 25133,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "18c5d7254c99b1f39f3f426e0f1cda389670cf35c19aaebf4c44ec0eaef9a668"
+    },
+    "qualification/memory-cell-v6/v6/transfer.py": {
+      "bytes": 28290,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "389e5a684af86b211830232ac37cc061b99f06c6a1bcc0608b2f0466d78b9692"
+    },
+    "qualification/memory-cell-v6/v6/values.py": {
+      "bytes": 1789,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5b3d658ce921ec7e91778fa58507091257bba151eb773f515fdf0ad6097dedfb"
+    },
+    "qualification/memory-cell-v7/address_eval.py": {
+      "bytes": 8418,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b16a48b5ce19372cb3aabaec4dea58b8084f05e7154090d37c7b6bfcc5e117f6"
+    },
+    "qualification/memory-cell-v7/addressing/__init__.py": {
+      "bytes": 139,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "63b47bb28e00abee0c283d5eebc7480633028b17061cc40ba95aa0fadce89e90"
+    },
+    "qualification/memory-cell-v7/addressing/calibration.py": {
+      "bytes": 5485,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ce1a8de18b63666ff9c77d152edccddb03fc2e758a4262d529b61ec30b289c8d"
+    },
+    "qualification/memory-cell-v7/addressing/capabilities.py": {
+      "bytes": 5547,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f2c7b4882dadb2f3a68c51a5cf8963f79c3648ffc7b14b7f45d58594e48793fd"
+    },
+    "qualification/memory-cell-v7/addressing/cli.py": {
+      "bytes": 1506,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d6f3b0a8511f6a15bc80c277b2d70c84302a71a5a025296cf427b8ca089c88bf"
+    },
+    "qualification/memory-cell-v7/addressing/contracts.py": {
+      "bytes": 8899,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9b4553b6bbe8054ce7fcdc947dbb47a0087562793ab975092cbb0f8d0e6879d1"
+    },
+    "qualification/memory-cell-v7/addressing/corpus.py": {
+      "bytes": 30433,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a55897eecc8d34ab2ba6dfef34d13571bfda030046f67e6fafba76fedec6e448"
+    },
+    "qualification/memory-cell-v7/addressing/model.py": {
+      "bytes": 14944,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a825bc732833d3d9d0c6b92fc2684a578b58b1056c89d35501b29fdd3ece72b2"
+    },
+    "qualification/memory-cell-v7/addressing/planner.py": {
+      "bytes": 1970,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e31b71fa9ffaaddba7ff956c656af0abe4deb0ada1e5bee5afd1269dff874481"
+    },
+    "qualification/memory-cell-v7/addressing/tests/test_planner.py": {
+      "bytes": 7752,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1657200d5c2fb7e0b31405922aba1a4b2d928ddbb958f6a8c833d586fab53af7"
+    },
+    "qualification/memory-cell-v7/addressing/tests/test_worker.py": {
+      "bytes": 4471,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "04e191419a35cf655c6446d21f45f8b209a4953098afbbb80b4aab75d9cb1871"
+    },
+    "qualification/memory-cell-v7/addressing/train.py": {
+      "bytes": 12915,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "65c460f3696cacc1441c9071ebfc7266c9b94f245ec7190f48480d90604447b9"
+    },
+    "qualification/memory-cell-v7/addressing/worker.py": {
+      "bytes": 4833,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "75325681fe3b4247b8bacf6acaae8e2f7b3cf64a0aa2029439777e45cb10b679"
+    },
+    "qualification/memory-cell-v7/archive_addressing.py": {
+      "bytes": 8498,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "01af958887589eef8186d886a67ab32baa5ca658612c65ba8b63ec4a45d191fa"
+    },
+    "qualification/memory-cell-v7/audit_addressing.py": {
+      "bytes": 22027,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "617a7da1cc16b6b41ef0d4d3bcbe62c61ef20031c15fdc0cc13aac8eb68bcc86"
+    },
+    "qualification/memory-cell-v7/ci_finalize.py": {
+      "bytes": 9200,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d88663feff34e92b05d06dbb9e6341a64925c40b12e194c939cc6e343b757017"
+    },
+    "qualification/memory-cell-v7/ci_verify.py": {
+      "bytes": 5967,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "060574e3bb5c0735755dce8a7d75755a29cfe6520726cb8d31e900e456976b56"
+    },
+    "qualification/memory-cell-v7/native_export.py": {
+      "bytes": 2976,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cbdc28764bd14c9524ce046ea6fd0a1c8043a75225a66def4b8ce23d874a9616"
+    },
+    "qualification/memory-cell-v7/native_export_fixtures.py": {
+      "bytes": 6356,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "770eefed94d64ff46ca5366dc24992f530d11d960a37f956253b4fc62c4e1e7e"
+    },
+    "qualification/memory-cell-v7/population_benchmark.py": {
+      "bytes": 18294,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "53e4036f77b569f7a8407b5e3ad26fd1925c7ccdd4e5e78234825a4d64df8866"
+    },
+    "qualification/memory-cell-v7/population_fixture.py": {
+      "bytes": 1311,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "dca5cf2facf720ad8739a3c4f898a75e51d935364520dc6085b580b82fb42a29"
+    },
+    "qualification/memory-cell-v7/population_test.py": {
+      "bytes": 3837,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "2c147ce7ee992014aa56dbe209d1f4cd7516d4d59a028fe8c3a18f884a3c1d06"
+    },
+    "qualification/memory-cell-v7/population_training.py": {
+      "bytes": 6003,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6ae057448f3f8d5dce746401adb116d8c47f73f47d5e87d6a763af1ff648d069"
+    },
+    "qualification/memory-cell-v7/population_worker.py": {
+      "bytes": 1318,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f71afd8d40f724f596a3278c35ddf162a05e419ea08afeeee7d92617ecf27ec7"
+    },
+    "qualification/memory-cell-v7/prepare_language_ci.py": {
+      "bytes": 12980,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "597727225df8029e595dafa1a2121c2d8f65fef5af5ee6d6be0ba9a5e3f73621"
+    },
+    "qualification/memory-cell-v7/public_smoke.py": {
+      "bytes": 8883,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "23cd2370d5fec2d4c263dc418cf234b62358cc999f32d40f75779daccb07f6f1"
+    },
+    "qualification/memory-cell-v7/reconstruct_addressing.py": {
+      "bytes": 7169,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c91b6dbc844d650294b5767b3dc975936a416d70eca822fbcb9f2be52d9af61b"
+    },
+    "qualification/memory-cell-v7/test_training.py": {
+      "bytes": 6089,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "4f7005c5d0f3aec5f5f197465980ffadb0030d735f5017a2742446df1eea961d"
+    },
+    "qualification/memory-cell-v7/training.py": {
+      "bytes": 9763,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d6205c6020fb2218a9afb56371482f77fe8a2b49ba42ec9b4f0f516eeb55a0c0"
+    },
+    "qualification/memory-cell-v7/training_worker.py": {
+      "bytes": 965,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "43392c23d00fa1a2c706742c9834fd27b9319f22b05927d796015c9d542cc040"
+    },
+    "qualification/memory-cell-v8/addressing/bootstrap.py": {
+      "bytes": 312,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b6d26d4f713fcec2e843e45c4532a4f9539a59847b90e2ee2261920b113a3b7d"
+    },
+    "qualification/memory-cell-v8/addressing/evaluate.py": {
+      "bytes": 6386,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9bc73dacaab6a55e66e5279766d2f6ac1b0aa7051252f21da6e63e27aecde015"
+    },
+    "qualification/memory-cell-v8/addressing/qualification_shadow_worker.py": {
+      "bytes": 3011,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "365e59fc69497423fc3a4205a224c796c14be215e0750bef3a09b8a2356c4b50"
+    },
+    "qualification/memory-cell-v8/addressing/tests/__init__.py": {
+      "bytes": 79,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "919c4f5fe5bdaf49046af6c3d4aabf89a22a9574c5e860645b8ad28822893e3d"
+    },
+    "qualification/memory-cell-v8/addressing/tests/addressing_tests.py": {
+      "bytes": 10149,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3b7db84a3aceac2dc9caee844bcff59e5ffd8a04907d6dc7c7fc417cb5f002ff"
+    },
+    "qualification/memory-cell-v8/addressing/train.py": {
+      "bytes": 9340,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "90fbdae2e30c1888e7186b053fd01f3a54d61bbd1668f180167f8ae972c7bd17"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/__init__.py": {
+      "bytes": 80,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "599346afde716a55387d57146d3b07ff1cd8702a2c4c4226bbf78efa369f2079"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/model.py": {
+      "bytes": 14445,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "20bd1498a812eb4c15cefc02eb99a28bc271f8bc8fefc0a674a798234177c731"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/native_fixture.py": {
+      "bytes": 13766,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "859e13ac327039419e0a2c39b2f8eb104bf68c072ba9030807b2e2e724a1791e"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/policy.py": {
+      "bytes": 5342,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6b6837e1c50eceae46ce20533b8f1d698cb399ac70d35ec6d2d17bb395e9d4b1"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/public_corpus.py": {
+      "bytes": 9658,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d5fb5fc144659a91d6d828d7d7976aceb9dd5efc0c17a491177c46df23eec44a"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/runner_io.py": {
+      "bytes": 2499,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c6143184d4f580712cda63307160f83b47ef9d959117a6592b5392d6862d9cdb"
+    },
+    "qualification/memory-cell-v8/addressing/worker.py": {
+      "bytes": 1606,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e9756280d7f05719bca686d591bc0a8036dafdc3556342ff3162effaf48df0ac"
+    },
+    "qualification/memory-cell-v8/ci_finalize.py": {
+      "bytes": 16584,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "4b15c3f76ece095ab2e345fede6c6259e48ade2ff6f912f8371a3318fc5313b8"
+    },
+    "qualification/memory-cell-v8/ci_verify.py": {
+      "bytes": 6048,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "8473973246a2b4c28c1407ab0b4f41899b9d5f2db575a2f3a7921fa289f2fe71"
+    },
+    "qualification/memory-cell-v8/evaluation/author_suites.py": {
+      "bytes": 20716,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "97ef1301183290c5eec32fdc3d14ccf12226efdd7ae0595b0ac7c36fd5ec118e"
+    },
+    "qualification/memory-cell-v8/evaluation/repair_suites_v2.py": {
+      "bytes": 2914,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "954c33f8b97d957f596e9ce59b2dd5bab13181e23bc540d94c9b099f8d81f8a5"
+    },
+    "qualification/memory-cell-v8/learning/__init__.py": {
+      "bytes": 77,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "010f0c6f40cc03b81d422b3d82b81400cbb588d21e09c96075939dec45711bb2"
+    },
+    "qualification/memory-cell-v8/learning/allocation.py": {
+      "bytes": 6317,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5297c3a0df4e23bab64320ed8ce8e97c3b7bd21d6adedbf3f1b21990b566a808"
+    },
+    "qualification/memory-cell-v8/learning/allocation_tests.py": {
+      "bytes": 2870,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "fc3f6ea7d4545cede08821cc540363794373d8a2f817231ef3ea87dc7acd345d"
+    },
+    "qualification/memory-cell-v8/learning/costs.py": {
+      "bytes": 8434,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ddf93e8041e4a184ec55aa37c29d3e5072564314f798451868bd2644baa4bf29"
+    },
+    "qualification/memory-cell-v8/learning/evidence.py": {
+      "bytes": 13590,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "87faacbbba46776477e454fbf51d089823f2c0ad71081da1fcafd18ce1eb055f"
+    },
+    "qualification/memory-cell-v8/learning/fit_evidence.py": {
+      "bytes": 10841,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0ff9b912da94ecbf44fc45e38a5e0c49ba23d467fc9b9a6713285e9918b45314"
+    },
+    "qualification/memory-cell-v8/learning/population_training.py": {
+      "bytes": 4812,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "66442c6667e16a18be983c974651dac6f17d91cb7843e5db6cbd768061284a0e"
+    },
+    "qualification/memory-cell-v8/learning/score.py": {
+      "bytes": 16825,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e1a537c69176ddad40f6cb345e5953ba05730815cf0a3799289c3d7dbbca7d52"
+    },
+    "qualification/memory-cell-v8/learning/score_tests.py": {
+      "bytes": 8475,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1a1c959d7cb3e667b6e9a27aead43a6c04b9d24e9eebfd30c34fa68d41906702"
+    },
+    "qualification/memory-cell-v8/learning/worker.py": {
+      "bytes": 1779,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5c2d2f9e659623e5c531e8a3982376f5392ae436dd1024a95e27e6cf61ed4a23"
+    },
+    "qualification/memory-cell-v8/prepare_ci.py": {
+      "bytes": 3907,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "19a2916a06e51a5f4d0e288f123fc131f9f123ecc68b131e2341888b394c4b3d"
+    },
+    "qualification/memory-cell-v9/addressing/bootstrap.py": {
+      "bytes": 308,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "20e0f04fce1ebd8568ea7de244fd17b086790b3e99e6b0affc7498eb994a8de8"
+    },
+    "qualification/memory-cell-v9/addressing/evaluate.py": {
+      "bytes": 7375,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "851130bc0d9c58b1da936f40e02a369029bf19505815c5841ca2c364f7f50d4b"
+    },
+    "qualification/memory-cell-v9/addressing/qualification_shadow_worker.py": {
+      "bytes": 3019,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5b54f96769d52b2197512193deb10baeca97f69b137f30d4d3dacaec3023020d"
+    },
+    "qualification/memory-cell-v9/addressing/tests/__init__.py": {
+      "bytes": 50,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "be20ee1a46963eeb2b2e69a1bca385b2ec5570c0b45f212f0d1ad77f222ae054"
+    },
+    "qualification/memory-cell-v9/addressing/tests/addressing_tests.py": {
+      "bytes": 12458,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6974a41bc0f578b4107856f68a360e45ff36daef85dd4819c9d088029eeedc4a"
+    },
+    "qualification/memory-cell-v9/addressing/tests/capability_tests.py": {
+      "bytes": 4096,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "da0a3898860e3c5c2996b9192b7cb65cc55619826a944ddb06e457fb3e9b0fd7"
+    },
+    "qualification/memory-cell-v9/addressing/tests/policy_budget_tests.py": {
+      "bytes": 3997,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b62490cffee0a9f22668a954e3cf1d76416d10d5661417d16caf15175fdf419b"
+    },
+    "qualification/memory-cell-v9/addressing/train.py": {
+      "bytes": 13064,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5d7e1fcbc22a070e4fe5df044e456a05df1e9a47c7be54182b89e54e11452422"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/__init__.py": {
+      "bytes": 57,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c2a3506049e85e3e2c5b7eb0b064feedaeb340f1fc68bd74c27a106160074cec"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/artifact.py": {
+      "bytes": 8744,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "33f9484c9011d519caa2819263f7d43a7e9f0256d5ab5f81abab841c0b2c1ecb"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/capabilities.py": {
+      "bytes": 5040,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "70ae781572e8603fda3b81ac967493d97a2f36857b55779b88c041d17fe28b03"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/identity.py": {
+      "bytes": 1319,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "8cd715c0e3ce2911f47433fab24a25742c896ba9f86a3e39f7cbbe8c98183b75"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/model.py": {
+      "bytes": 7538,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f92c687662e743c7be451142f73ed02f1d0cb9f1957b4454096d9bff34db00e9"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/native_fixture.py": {
+      "bytes": 13766,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5f7720e0e15d002e6a95a4e52c1de6d183d3b95922ce444c0755c5591df3ad20"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/policy.py": {
+      "bytes": 7642,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ee10726efe656a3bcbc1b97df2ed8d126a9554c13c8c299c579ec8aa2cd2d462"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/public_corpus.py": {
+      "bytes": 2401,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "600d83aea84aba3bc413fba4eef6cc1b255f871ab28d8b428e54061abd259fa4"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/public_language.py": {
+      "bytes": 23855,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "676364ab306a26aa8c0d75d0c78924095a349cbf915cfda247ba3040dd6de568"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/runner_io.py": {
+      "bytes": 2768,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "820872f3493fcebd5b2a02a5542293836eb42e103feed359adabbcbd257d091c"
+    },
+    "qualification/memory-cell-v9/addressing/worker.py": {
+      "bytes": 1620,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "2f8e0969b1fd13e72dd497859a83ef48a0c6fc8e61aa84e7337735a0759eb8e3"
+    },
+    "qualification/memory-cell-v9/ci_finalize.py": {
+      "bytes": 20009,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a5b7d812ba49ab15b5623ce8031e1942fcf805dd01034e4cc36600ae03d7de35"
+    },
+    "qualification/memory-cell-v9/ci_verify.py": {
+      "bytes": 7902,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a1b951dfd0944e3deaf34b8908794a8d28fe245bc325a0f9396536f9c1c57cc9"
+    },
+    "qualification/memory-cell-v9/evaluation/author_inputs.py": {
+      "bytes": 10014,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1ab129b5ccc3866dfd3cf5580d659d5ecf7f3f6ef073a5e3e64739a67466adf1"
+    },
+    "qualification/memory-cell-v9/evaluation/language_materials.py": {
+      "bytes": 17917,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f6bb428aae2c23965f416479afe8150d541a1e08028ba96fd1f7cda8feac0ae3"
+    },
+    "qualification/memory-cell-v9/evaluation/native_evidence.py": {
+      "bytes": 12265,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1398403b1d4ac9a24920106fb7578b0e24e74402e269d14ba72215e6c1fc1a3e"
+    },
+    "qualification/memory-cell-v9/evaluation/preflight.py": {
+      "bytes": 5351,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "faf00adbe5b6719f3b39d460627dc551ca7091ea8806079a49f417d129080530"
+    },
+    "qualification/memory-cell-v9/evidence/fresh-reader-local-01/restore.py": {
+      "bytes": 2680,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3158ddf4fe3800e2bb3b89922619c485e01573d33f36b83d52fcc931b9ef604d"
+    },
+    "qualification/memory-cell-v9/learning/__init__.py": {
+      "bytes": 75,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5aa574f8c0e9a4829f38e83e0b35c006236ef8ba84ecdbb09ebb11775d3ca114"
+    },
+    "qualification/memory-cell-v9/learning/byte_model.py": {
+      "bytes": 9217,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b53b93eb18b4784000eb7ab3cf09b84a57da2d545928247071960ddccb24b3f3"
+    },
+    "qualification/memory-cell-v9/learning/evidence.py": {
+      "bytes": 12210,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "957c4c26d3bc7e95983d78539c7eec4a6f38aadffd46c13cb6fc2a227d864d66"
+    },
+    "qualification/memory-cell-v9/learning/evidence_tests.py": {
+      "bytes": 3485,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3558cebdd2265fa2e193255f4fa38ed5ead7d24474d5d351cae20cb9bb2bcbf0"
+    },
+    "qualification/memory-cell-v9/learning/fresh_reader.py": {
+      "bytes": 12357,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3ea114a069148e2c403e2d0cf208419663724e24bae6dd86d93836a33d6300d8"
+    },
+    "qualification/memory-cell-v9/learning/fresh_reader_support.py": {
+      "bytes": 17756,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ec819785180c6a735851f55fbae91f2ce0dd5c24717fe948106c4465d8c1f48a"
+    },
+    "qualification/memory-cell-v9/learning/fresh_reader_tests.py": {
+      "bytes": 6079,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "beee478f2a3d48f3eb46be3726e55fbae66c3f7dc34d31052c49f5f715b47ef3"
+    },
+    "qualification/memory-cell-v9/learning/model_evidence.py": {
+      "bytes": 9799,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cb5806740f2182e301a0bfc67d85a130f9e5905655d6bfe83edb22d3c8d75f3b"
+    },
+    "qualification/memory-cell-v9/learning/model_tests.py": {
+      "bytes": 3203,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "fcbb863ca4ff421073a224e41f071798083db66a508254b9d227cd233ecda92d"
+    },
+    "qualification/memory-cell-v9/learning/paired.py": {
+      "bytes": 7019,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a95abe8a88d420e66649ffbce51bddddabfbf37e3fa358e6f2fca06f4507c61f"
+    },
+    "qualification/memory-cell-v9/learning/resource_cleanup.py": {
+      "bytes": 4597,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9eb4ed0868da1fe01a568369d9243607ee9bb7de8d4a6c10527c3a9ee7a812d5"
+    },
+    "qualification/memory-cell-v9/learning/resource_evidence.py": {
+      "bytes": 6206,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "26ff87386191910859a057dfaefb1401b30848d3f156413b123095e743a7895a"
+    },
+    "qualification/memory-cell-v9/learning/resource_monitor.py": {
+      "bytes": 14324,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "541811a934c1ab6319d3d925599fa12fd8e5beadb0a4a4d87cf6a2a7cb22d7bf"
+    },
+    "qualification/memory-cell-v9/learning/resource_samples.py": {
+      "bytes": 7857,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "626447e8fbf4f6f81403ac63dc587a0ec970c41deebddc59c658f213754edc87"
+    },
+    "qualification/memory-cell-v9/learning/resource_tests.py": {
+      "bytes": 23844,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "dcf4035492b79bbbcc0a25c26554957fd385aa8d4e04e92e0c8ff317fc210b15"
+    },
+    "qualification/memory-cell-v9/learning/score.py": {
+      "bytes": 15101,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "46abb3acdde79a3ec5a282b38a2f4bdc6d5077817298fa51bd795668bd74ee74"
+    },
+    "qualification/memory-cell-v9/learning/selection_wire_tests.py": {
+      "bytes": 5051,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "4b6d7feee6354696fbc4d8077430f5ca95c45038d6773910897ff7beaaf778c0"
+    },
+    "qualification/memory-cell-v9/learning/structure_evidence.py": {
+      "bytes": 11135,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "111c90995443938fcab0cae97e061434511fcc0f3577137f30340f7766db549e"
+    },
+    "qualification/memory-cell-v9/learning/structure_evidence_tests.py": {
+      "bytes": 5934,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6e3fca3924bd14ba8c87913c432f920d6926a32c2b7dbabf50e0c23350b2c08f"
+    },
+    "qualification/memory-cell-v9/learning/structure_score.py": {
+      "bytes": 13366,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d16f6313492a4441036127a46c52f260b133032e20fd2b7a2c1d938510d48e60"
+    },
+    "qualification/memory-cell-v9/learning/structure_selection.py": {
+      "bytes": 4261,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "06f934a7c9896b0dfca4e5a60b6ab5f5c6e5b8f5d899c06d3a71479b98f5b8bc"
+    },
+    "qualification/memory-cell-v9/learning/structure_tests.py": {
+      "bytes": 1984,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d315c576f1be9e572465d5a2b94657e231f383a40baaf04b3eb35710c01c732d"
+    },
+    "qualification/memory-cell-v9/learning/worker.py": {
+      "bytes": 1766,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0201761844731e8f58dd9813e8140509a310b53ec8b378b797aa551eda2c3630"
+    },
+    "qualification/memory-cell-v9/pack_evidence.py": {
+      "bytes": 2664,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "569950ea74e85d9a7860a57f2abb8d4eea25493a7e6c0e8d2f19e9b6418bad7d"
+    },
+    "qualification/memory-cell-v9/prepare_ci.py": {
+      "bytes": 4170,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c8ece2a05a13af3a17b80e24e81829aa3ce44d6724a43d99a06666a23c9ecf49"
+    }
+  },
+  "frozen_python_unchanged": true,
+  "frozen_source_inputs": {
+    ".github/actions/setup-ci/action.yml": {
+      "bytes": 4141,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba"
+    },
+    ".github/workflows/memory-cell-v8-finalize.yml": {
+      "bytes": 2203,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "929d6aeb7a1f858a1b73d80c097672c600bc51785892cf5167f352ecf635df66"
+    },
+    ".github/workflows/memory-cell-v8.yml": {
+      "bytes": 2563,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3bee741dbe41d1a9000783f0a7a35a21c02ea7e2fff50064abb76e956212392b"
+    },
+    ".github/workflows/memory-cell-v9-finalize.yml": {
+      "bytes": 2303,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9c48c8e4c03d600ef0cf669174f6a27f977bb0200dfa3d185b17aa1f6ea490d2"
+    },
+    ".github/workflows/memory-cell-v9.yml": {
+      "bytes": 3370,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "77e0c94c8512efdf27932b25047595c6a3bf51350421610f97dfffe95e37f0e8"
+    },
+    "evaluation_preflight.py": {
+      "bytes": 3018,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cb91fbadae1fe4c3722c3351812c06480f4b486e1cfff4e278362eb421177c25"
+    },
+    "qualification/memory-cell-v6/v6/__init__.py": {
+      "bytes": 84,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e48c0b6136220a43e666e0616e415b365f4041f4ce1211846d9a144d7073bfed"
+    },
+    "qualification/memory-cell-v6/v6/artifacts.py": {
+      "bytes": 7451,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "209c8d8581b02217cc4705111f7a060c78845ea804fb46364d4456d651882fbd"
+    },
+    "qualification/memory-cell-v6/v6/cells.py": {
+      "bytes": 16224,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e0b2f7dbf3f280ebf6618c68c60b7799bb945eaf76cc603b6bfcfc3d33de2024"
+    },
+    "qualification/memory-cell-v6/v6/contracts.py": {
+      "bytes": 5785,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "42be7b9d9f0e3afe86c5ad52c58d8d4b8a5ba8972846c0702fc1e42c3b62834f"
+    },
+    "qualification/memory-cell-v6/v6/encoder.py": {
+      "bytes": 6724,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5660dc13f9ee7f1b7239e61edae9b51eee6a8870f0b4ef351d5d0f35e87d18ab"
+    },
+    "qualification/memory-cell-v6/v6/evolution.py": {
+      "bytes": 23036,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c60be48c2713fc97cea803894fc0df6e9b0a6655edbdcd0d35f2e97a753e939d"
+    },
+    "qualification/memory-cell-v6/v6/learning.py": {
+      "bytes": 20809,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "602e4976ba819a102271b669ff9c1972a07054e832051a560c49ef068c18d470"
+    },
+    "qualification/memory-cell-v6/v6/lifecycle.py": {
+      "bytes": 22775,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "dc5ea910465ba2aa1139764dac104c924786c16d2e7231999429e5f1b177f548"
+    },
+    "qualification/memory-cell-v6/v6/network.py": {
+      "bytes": 24129,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "af3a667031fe9e185aa59ff2fa9cd01ee763107ab3bdee67ddb1e7094cfaa6d6"
+    },
+    "qualification/memory-cell-v6/v6/router.py": {
+      "bytes": 16676,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "369c86fc1e6cb6d64823f6602c535d36cc292de4f6c834dff15d617fa24e35f0"
+    },
+    "qualification/memory-cell-v6/v6/runtime.py": {
+      "bytes": 9891,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f4ceaa5b80b372385f902d63afb1151aada0d2c79eae786747a668f13dc8801a"
+    },
+    "qualification/memory-cell-v6/v6/store.py": {
+      "bytes": 8880,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "81d8917a49a9a2ed79cb8ae9f52f843123fb304e7addcada80b561e88c4a41a1"
+    },
+    "qualification/memory-cell-v6/v6/study_data.py": {
+      "bytes": 3846,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "882f4e38eb90a11fa6cea582f60efea961037656ed5b3b2e48ac6863f08ec4b8"
+    },
+    "qualification/memory-cell-v6/v6/training_language.py": {
+      "bytes": 25133,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "18c5d7254c99b1f39f3f426e0f1cda389670cf35c19aaebf4c44ec0eaef9a668"
+    },
+    "qualification/memory-cell-v6/v6/transfer.py": {
+      "bytes": 28290,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "389e5a684af86b211830232ac37cc061b99f06c6a1bcc0608b2f0466d78b9692"
+    },
+    "qualification/memory-cell-v6/v6/values.py": {
+      "bytes": 1789,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5b3d658ce921ec7e91778fa58507091257bba151eb773f515fdf0ad6097dedfb"
+    },
+    "qualification/memory-cell-v7/addressing/HANDOFF.json": {
+      "bytes": 5157,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "100729d1e9865edbf206be99e31b4999c240db259fed24b78933cac5a506edee"
+    },
+    "qualification/memory-cell-v7/addressing/README.md": {
+      "bytes": 7167,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3c78efe4c829204d44ded4d76d921fbc3d9271a1446e591f847f81718362d1b5"
+    },
+    "qualification/memory-cell-v7/addressing/__init__.py": {
+      "bytes": 139,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "63b47bb28e00abee0c283d5eebc7480633028b17061cc40ba95aa0fadce89e90"
+    },
+    "qualification/memory-cell-v7/addressing/calibration.py": {
+      "bytes": 5485,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ce1a8de18b63666ff9c77d152edccddb03fc2e758a4262d529b61ec30b289c8d"
+    },
+    "qualification/memory-cell-v7/addressing/capabilities.py": {
+      "bytes": 5547,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f2c7b4882dadb2f3a68c51a5cf8963f79c3648ffc7b14b7f45d58594e48793fd"
+    },
+    "qualification/memory-cell-v7/addressing/cli.py": {
+      "bytes": 1506,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d6f3b0a8511f6a15bc80c277b2d70c84302a71a5a025296cf427b8ca089c88bf"
+    },
+    "qualification/memory-cell-v7/addressing/contracts.py": {
+      "bytes": 8899,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9b4553b6bbe8054ce7fcdc947dbb47a0087562793ab975092cbb0f8d0e6879d1"
+    },
+    "qualification/memory-cell-v7/addressing/corpus.py": {
+      "bytes": 30433,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a55897eecc8d34ab2ba6dfef34d13571bfda030046f67e6fafba76fedec6e448"
+    },
+    "qualification/memory-cell-v7/addressing/model.py": {
+      "bytes": 14944,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a825bc732833d3d9d0c6b92fc2684a578b58b1056c89d35501b29fdd3ece72b2"
+    },
+    "qualification/memory-cell-v7/addressing/planner.py": {
+      "bytes": 1970,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e31b71fa9ffaaddba7ff956c656af0abe4deb0ada1e5bee5afd1269dff874481"
+    },
+    "qualification/memory-cell-v7/addressing/tests/test_planner.py": {
+      "bytes": 7752,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1657200d5c2fb7e0b31405922aba1a4b2d928ddbb958f6a8c833d586fab53af7"
+    },
+    "qualification/memory-cell-v7/addressing/tests/test_worker.py": {
+      "bytes": 4471,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "04e191419a35cf655c6446d21f45f8b209a4953098afbbb80b4aab75d9cb1871"
+    },
+    "qualification/memory-cell-v7/addressing/train.py": {
+      "bytes": 12915,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "65c460f3696cacc1441c9071ebfc7266c9b94f245ec7190f48480d90604447b9"
+    },
+    "qualification/memory-cell-v7/addressing/worker.py": {
+      "bytes": 4833,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "75325681fe3b4247b8bacf6acaae8e2f7b3cf64a0aa2029439777e45cb10b679"
+    },
+    "qualification/memory-cell-v7/fixtures/address-model/PARTS.json": {
+      "bytes": 804,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d2d138eec898b43d2f0149b722a6f052dbc999b25359a645938ced818cc863cb"
+    },
+    "qualification/memory-cell-v7/fixtures/address-model/encoder-source.json": {
+      "bytes": 1972,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6db659cdc0a0ae7b57dd45da6d210e85cc81d0f91f6fc75822146c2dc644b0e5"
+    },
+    "qualification/memory-cell-v7/fixtures/address-model/manifest.json": {
+      "bytes": 131626,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0"
+    },
+    "qualification/memory-cell-v7/fixtures/address-model/weights.npz.part-00": {
+      "bytes": 400000,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e4a531d5148e2d439b8ac47c56de61dd5c7d0acd47d60b99bb43138e22f19f65"
+    },
+    "qualification/memory-cell-v7/fixtures/address-model/weights.npz.part-01": {
+      "bytes": 400000,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0192965453f2d99ed688fb547adf004d9b97950c2be3d35d138b3758cd02d62f"
+    },
+    "qualification/memory-cell-v7/fixtures/address-model/weights.npz.part-02": {
+      "bytes": 42102,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "969c87ec1c1d1f9c7f191dcfd8018bb63b91bacf6127dccc18f050efa426e0b3"
+    },
+    "qualification/memory-cell-v8/addressing/README.md": {
+      "bytes": 7677,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "943a5bfcd3e25f94d3764cf668d4faa6769fe5bdedb38c521e0b8af79304d767"
+    },
+    "qualification/memory-cell-v8/addressing/bootstrap.py": {
+      "bytes": 312,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b6d26d4f713fcec2e843e45c4532a4f9539a59847b90e2ee2261920b113a3b7d"
+    },
+    "qualification/memory-cell-v8/addressing/evaluate.py": {
+      "bytes": 6386,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9bc73dacaab6a55e66e5279766d2f6ac1b0aa7051252f21da6e63e27aecde015"
+    },
+    "qualification/memory-cell-v8/addressing/qualification_shadow_worker.py": {
+      "bytes": 3011,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "365e59fc69497423fc3a4205a224c796c14be215e0750bef3a09b8a2356c4b50"
+    },
+    "qualification/memory-cell-v8/addressing/tests/__init__.py": {
+      "bytes": 79,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "919c4f5fe5bdaf49046af6c3d4aabf89a22a9574c5e860645b8ad28822893e3d"
+    },
+    "qualification/memory-cell-v8/addressing/tests/addressing_tests.py": {
+      "bytes": 10149,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3b7db84a3aceac2dc9caee844bcff59e5ffd8a04907d6dc7c7fc417cb5f002ff"
+    },
+    "qualification/memory-cell-v8/addressing/train.py": {
+      "bytes": 9340,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "90fbdae2e30c1888e7186b053fd01f3a54d61bbd1668f180167f8ae972c7bd17"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/__init__.py": {
+      "bytes": 80,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "599346afde716a55387d57146d3b07ff1cd8702a2c4c4226bbf78efa369f2079"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/model.py": {
+      "bytes": 14445,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "20bd1498a812eb4c15cefc02eb99a28bc271f8bc8fefc0a674a798234177c731"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/native_fixture.py": {
+      "bytes": 13766,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "859e13ac327039419e0a2c39b2f8eb104bf68c072ba9030807b2e2e724a1791e"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/policy.py": {
+      "bytes": 5342,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6b6837e1c50eceae46ce20533b8f1d698cb399ac70d35ec6d2d17bb395e9d4b1"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/public_corpus.py": {
+      "bytes": 9658,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d5fb5fc144659a91d6d828d7d7976aceb9dd5efc0c17a491177c46df23eec44a"
+    },
+    "qualification/memory-cell-v8/addressing/v8_addressing/runner_io.py": {
+      "bytes": 2499,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c6143184d4f580712cda63307160f83b47ef9d959117a6592b5392d6862d9cdb"
+    },
+    "qualification/memory-cell-v8/addressing/worker.py": {
+      "bytes": 1606,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e9756280d7f05719bca686d591bc0a8036dafdc3556342ff3162effaf48df0ac"
+    },
+    "qualification/memory-cell-v8/ci_finalize.py": {
+      "bytes": 16584,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "4b15c3f76ece095ab2e345fede6c6259e48ade2ff6f912f8371a3318fc5313b8"
+    },
+    "qualification/memory-cell-v8/ci_verify.py": {
+      "bytes": 6048,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "8473973246a2b4c28c1407ab0b4f41899b9d5f2db575a2f3a7921fa289f2fe71"
+    },
+    "qualification/memory-cell-v8/evaluation/INPUT_LOCK-02.json": {
+      "bytes": 2541,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6cbfd34afdf3c9c8a0d2046dd3624edb016e293e5a4ac09680b82195bb4d71e2"
+    },
+    "qualification/memory-cell-v8/evaluation/INPUT_LOCK.json": {
+      "bytes": 1242,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3ceec60c3658c1c5017083b417d9f6310250c64844d66ce55bdf85c1c3dc41a0"
+    },
+    "qualification/memory-cell-v8/evaluation/PREFLIGHT-01.json": {
+      "bytes": 360,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6b3449dc3767319b15bdaedc03814357a1e26be2da5c3ea09630aa77ac638c9a"
+    },
+    "qualification/memory-cell-v8/evaluation/PREFLIGHT-02.json": {
+      "bytes": 50698,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6f424cdfa51bc6f97986308d7258ca80b9aaccf332842203ecac213111a70980"
+    },
+    "qualification/memory-cell-v8/evaluation/author_suites.py": {
+      "bytes": 20716,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "97ef1301183290c5eec32fdc3d14ccf12226efdd7ae0595b0ac7c36fd5ec118e"
+    },
+    "qualification/memory-cell-v8/evaluation/inputs-02/calibration.json": {
+      "bytes": 98686,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9ff41aea889f459df2dd8276ee2cbfcc8eb4bb87a29e688b9c28a82617739ffb"
+    },
+    "qualification/memory-cell-v8/evaluation/inputs-02/held.json": {
+      "bytes": 95502,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0514a7443e249087e02a5a98b2096795ef25770de35e7cd2a910564d17ba4b16"
+    },
+    "qualification/memory-cell-v8/evaluation/inputs/calibration.json": {
+      "bytes": 98563,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "555506dfd380617e9547f02204f3945f99d1e911d46acac9797a42f69b952bf9"
+    },
+    "qualification/memory-cell-v8/evaluation/inputs/held.json": {
+      "bytes": 95502,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0514a7443e249087e02a5a98b2096795ef25770de35e7cd2a910564d17ba4b16"
+    },
+    "qualification/memory-cell-v8/evaluation/repair_suites_v2.py": {
+      "bytes": 2914,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "954c33f8b97d957f596e9ce59b2dd5bab13181e23bc540d94c9b099f8d81f8a5"
+    },
+    "qualification/memory-cell-v8/fixtures/address-model/PARTS.json": {
+      "bytes": 650,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a31667bffc5d18a2d44e06d3a14c40c9462ffb709ca093b1764cd5ac82d2871a"
+    },
+    "qualification/memory-cell-v8/fixtures/address-model/manifest.json": {
+      "bytes": 164264,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86"
+    },
+    "qualification/memory-cell-v8/fixtures/address-model/native-fixture.json": {
+      "bytes": 87539,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "4a991281be123a958f1d0f6f3d5a53c48f3b6bb393abe7ebe6a031cb498098c1"
+    },
+    "qualification/memory-cell-v8/fixtures/address-model/weights.part-000.bin": {
+      "bytes": 286019,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6dd8a3ae3ee86738ad4d92f843092701d1a6091d9057afa90ba9d05b65a491c7"
+    },
+    "qualification/memory-cell-v8/learning/README.md": {
+      "bytes": 10903,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "892dd9c810b430e1344e814ee8c7c5890cce7bdc71fd29dfd48ffcf7aabc4fa5"
+    },
+    "qualification/memory-cell-v8/learning/__init__.py": {
+      "bytes": 77,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "010f0c6f40cc03b81d422b3d82b81400cbb588d21e09c96075939dec45711bb2"
+    },
+    "qualification/memory-cell-v8/learning/allocation.py": {
+      "bytes": 6317,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5297c3a0df4e23bab64320ed8ce8e97c3b7bd21d6adedbf3f1b21990b566a808"
+    },
+    "qualification/memory-cell-v8/learning/allocation_tests.py": {
+      "bytes": 2870,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "fc3f6ea7d4545cede08821cc540363794373d8a2f817231ef3ea87dc7acd345d"
+    },
+    "qualification/memory-cell-v8/learning/costs.py": {
+      "bytes": 8434,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ddf93e8041e4a184ec55aa37c29d3e5072564314f798451868bd2644baa4bf29"
+    },
+    "qualification/memory-cell-v8/learning/evidence.py": {
+      "bytes": 13590,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "87faacbbba46776477e454fbf51d089823f2c0ad71081da1fcafd18ce1eb055f"
+    },
+    "qualification/memory-cell-v8/learning/fit_evidence.py": {
+      "bytes": 10841,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0ff9b912da94ecbf44fc45e38a5e0c49ba23d467fc9b9a6713285e9918b45314"
+    },
+    "qualification/memory-cell-v8/learning/population_training.py": {
+      "bytes": 4812,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "66442c6667e16a18be983c974651dac6f17d91cb7843e5db6cbd768061284a0e"
+    },
+    "qualification/memory-cell-v8/learning/score.py": {
+      "bytes": 16825,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e1a537c69176ddad40f6cb345e5953ba05730815cf0a3799289c3d7dbbca7d52"
+    },
+    "qualification/memory-cell-v8/learning/score_tests.py": {
+      "bytes": 8475,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1a1c959d7cb3e667b6e9a27aead43a6c04b9d24e9eebfd30c34fa68d41906702"
+    },
+    "qualification/memory-cell-v8/learning/worker.py": {
+      "bytes": 1779,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5c2d2f9e659623e5c531e8a3982376f5392ae436dd1024a95e27e6cf61ed4a23"
+    },
+    "qualification/memory-cell-v8/prepare_ci.py": {
+      "bytes": 3907,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "19a2916a06e51a5f4d0e288f123fc131f9f123ecc68b131e2341888b394c4b3d"
+    },
+    "qualification/memory-cell-v9/VERIFY_REQUEST.json": {
+      "bytes": 1070,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9a1686e24de3902e3b251e9410ee28cba8fd79d5efe8a0a1f280564c8e78d75f"
+    },
+    "qualification/memory-cell-v9/addressing/README.md": {
+      "bytes": 9664,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "09ae2daa7a84ff555864ddd38dc2378b5f44953f2b0ff5262c5c58b82e61ebcf"
+    },
+    "qualification/memory-cell-v9/addressing/bootstrap.py": {
+      "bytes": 308,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "20e0f04fce1ebd8568ea7de244fd17b086790b3e99e6b0affc7498eb994a8de8"
+    },
+    "qualification/memory-cell-v9/addressing/evaluate.py": {
+      "bytes": 7375,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "851130bc0d9c58b1da936f40e02a369029bf19505815c5841ca2c364f7f50d4b"
+    },
+    "qualification/memory-cell-v9/addressing/qualification_shadow_worker.py": {
+      "bytes": 3019,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5b54f96769d52b2197512193deb10baeca97f69b137f30d4d3dacaec3023020d"
+    },
+    "qualification/memory-cell-v9/addressing/tests/__init__.py": {
+      "bytes": 50,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "be20ee1a46963eeb2b2e69a1bca385b2ec5570c0b45f212f0d1ad77f222ae054"
+    },
+    "qualification/memory-cell-v9/addressing/tests/addressing_tests.py": {
+      "bytes": 12458,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6974a41bc0f578b4107856f68a360e45ff36daef85dd4819c9d088029eeedc4a"
+    },
+    "qualification/memory-cell-v9/addressing/tests/capability_tests.py": {
+      "bytes": 4096,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "da0a3898860e3c5c2996b9192b7cb65cc55619826a944ddb06e457fb3e9b0fd7"
+    },
+    "qualification/memory-cell-v9/addressing/tests/policy_budget_tests.py": {
+      "bytes": 3997,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b62490cffee0a9f22668a954e3cf1d76416d10d5661417d16caf15175fdf419b"
+    },
+    "qualification/memory-cell-v9/addressing/train.py": {
+      "bytes": 13064,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5d7e1fcbc22a070e4fe5df044e456a05df1e9a47c7be54182b89e54e11452422"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/__init__.py": {
+      "bytes": 57,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c2a3506049e85e3e2c5b7eb0b064feedaeb340f1fc68bd74c27a106160074cec"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/artifact.py": {
+      "bytes": 8744,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "33f9484c9011d519caa2819263f7d43a7e9f0256d5ab5f81abab841c0b2c1ecb"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/capabilities.py": {
+      "bytes": 5040,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "70ae781572e8603fda3b81ac967493d97a2f36857b55779b88c041d17fe28b03"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/identity.py": {
+      "bytes": 1319,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "8cd715c0e3ce2911f47433fab24a25742c896ba9f86a3e39f7cbbe8c98183b75"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/model.py": {
+      "bytes": 7538,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f92c687662e743c7be451142f73ed02f1d0cb9f1957b4454096d9bff34db00e9"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/native_fixture.py": {
+      "bytes": 13766,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5f7720e0e15d002e6a95a4e52c1de6d183d3b95922ce444c0755c5591df3ad20"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/policy.py": {
+      "bytes": 7642,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ee10726efe656a3bcbc1b97df2ed8d126a9554c13c8c299c579ec8aa2cd2d462"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/public_corpus.py": {
+      "bytes": 2401,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "600d83aea84aba3bc413fba4eef6cc1b255f871ab28d8b428e54061abd259fa4"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/public_language.py": {
+      "bytes": 23855,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "676364ab306a26aa8c0d75d0c78924095a349cbf915cfda247ba3040dd6de568"
+    },
+    "qualification/memory-cell-v9/addressing/v9_addressing/runner_io.py": {
+      "bytes": 2768,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "820872f3493fcebd5b2a02a5542293836eb42e103feed359adabbcbd257d091c"
+    },
+    "qualification/memory-cell-v9/addressing/worker.py": {
+      "bytes": 1620,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "2f8e0969b1fd13e72dd497859a83ef48a0c6fc8e61aa84e7337735a0759eb8e3"
+    },
+    "qualification/memory-cell-v9/ci_finalize.py": {
+      "bytes": 20009,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a5b7d812ba49ab15b5623ce8031e1942fcf805dd01034e4cc36600ae03d7de35"
+    },
+    "qualification/memory-cell-v9/ci_verify.py": {
+      "bytes": 7902,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a1b951dfd0944e3deaf34b8908794a8d28fe245bc325a0f9396536f9c1c57cc9"
+    },
+    "qualification/memory-cell-v9/evaluation/INPUT_LOCK.json": {
+      "bytes": 1643,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6b812b781682afcdb80cd7c27337f0b44043f3dd4bf0aa1ec8532f23b481d71a"
+    },
+    "qualification/memory-cell-v9/evaluation/PREFLIGHT-01.json": {
+      "bytes": 45556,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0da170e782ebd4c34b31d859980fa23812f41bbd628af0c81a66d504a3b8f5dd"
+    },
+    "qualification/memory-cell-v9/evaluation/PREFLIGHT-02.json": {
+      "bytes": 45585,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "25a60f64730e72a23b10f3642bf92a26bf6656a7e5efd073f0470da873c25404"
+    },
+    "qualification/memory-cell-v9/evaluation/author_inputs.py": {
+      "bytes": 10014,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1ab129b5ccc3866dfd3cf5580d659d5ecf7f3f6ef073a5e3e64739a67466adf1"
+    },
+    "qualification/memory-cell-v9/evaluation/calibration.json": {
+      "bytes": 112697,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "2a78710313c56fec8d7a0d7c38757a80578abf0d4883f007c859ec3c1c23d247"
+    },
+    "qualification/memory-cell-v9/evaluation/continual-held.json": {
+      "bytes": 137283,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502"
+    },
+    "qualification/memory-cell-v9/evaluation/held.json": {
+      "bytes": 108349,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6fd373b11089db17b8b6ac0a015725d8a0397cf7ba69169132cb136456622f0a"
+    },
+    "qualification/memory-cell-v9/evaluation/language_materials.py": {
+      "bytes": 17917,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f6bb428aae2c23965f416479afe8150d541a1e08028ba96fd1f7cda8feac0ae3"
+    },
+    "qualification/memory-cell-v9/evaluation/native_evidence.py": {
+      "bytes": 12265,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1398403b1d4ac9a24920106fb7578b0e24e74402e269d14ba72215e6c1fc1a3e"
+    },
+    "qualification/memory-cell-v9/evaluation/preflight.py": {
+      "bytes": 5351,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "faf00adbe5b6719f3b39d460627dc551ca7091ea8806079a49f417d129080530"
+    },
+    "qualification/memory-cell-v9/fixtures/address-model/PARTS.json": {
+      "bytes": 1214,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "17ec222a4c2dce17d4f4f6c9d2aafd3c7119c63af6bdd54effa05b39127ac979"
+    },
+    "qualification/memory-cell-v9/fixtures/address-model/manifest.json": {
+      "bytes": 161921,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "36bf40924f93fdc47ab569b02132adb1edef659338d4b82ea1bd695fdfdb40bf"
+    },
+    "qualification/memory-cell-v9/fixtures/address-model/native-fixture.json": {
+      "bytes": 99564,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cb1dabcd85fe5dd7ec1b3e4246d6b4cb51c25d408bc2d295ce155088b4cac357"
+    },
+    "qualification/memory-cell-v9/fixtures/address-model/weights.npz.part-000": {
+      "bytes": 400000,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1a5bc6d1c1f97d89d77ad93e6676fdda529947450af9ecbc97b1da968ad8a4d3"
+    },
+    "qualification/memory-cell-v9/fixtures/address-model/weights.npz.part-001": {
+      "bytes": 246063,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6adb086e8f2d1d5ffda0c8502f386c3019874e326a2f1b874e1a371df05961d4"
+    },
+    "qualification/memory-cell-v9/learning/PROTOCOL.json": {
+      "bytes": 3519,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b6154507a2773fcd0896c7c77ac90bc1b08d3c4460042e3b796637c49efa3feb"
+    },
+    "qualification/memory-cell-v9/learning/STRUCTURE_PROTOCOL.json": {
+      "bytes": 3633,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e85d456a004f481537b83dc26a92978da845d7d1ef0a42dcc6276f687b91f3e7"
+    },
+    "qualification/memory-cell-v9/learning/__init__.py": {
+      "bytes": 75,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5aa574f8c0e9a4829f38e83e0b35c006236ef8ba84ecdbb09ebb11775d3ca114"
+    },
+    "qualification/memory-cell-v9/learning/byte_model.py": {
+      "bytes": 9217,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b53b93eb18b4784000eb7ab3cf09b84a57da2d545928247071960ddccb24b3f3"
+    },
+    "qualification/memory-cell-v9/learning/evidence.py": {
+      "bytes": 12210,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "957c4c26d3bc7e95983d78539c7eec4a6f38aadffd46c13cb6fc2a227d864d66"
+    },
+    "qualification/memory-cell-v9/learning/evidence_tests.py": {
+      "bytes": 3485,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3558cebdd2265fa2e193255f4fa38ed5ead7d24474d5d351cae20cb9bb2bcbf0"
+    },
+    "qualification/memory-cell-v9/learning/fresh_reader.py": {
+      "bytes": 12357,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3ea114a069148e2c403e2d0cf208419663724e24bae6dd86d93836a33d6300d8"
+    },
+    "qualification/memory-cell-v9/learning/fresh_reader_support.py": {
+      "bytes": 17756,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ec819785180c6a735851f55fbae91f2ce0dd5c24717fe948106c4465d8c1f48a"
+    },
+    "qualification/memory-cell-v9/learning/fresh_reader_tests.py": {
+      "bytes": 6079,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "beee478f2a3d48f3eb46be3726e55fbae66c3f7dc34d31052c49f5f715b47ef3"
+    },
+    "qualification/memory-cell-v9/learning/model_evidence.py": {
+      "bytes": 9799,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cb5806740f2182e301a0bfc67d85a130f9e5905655d6bfe83edb22d3c8d75f3b"
+    },
+    "qualification/memory-cell-v9/learning/model_tests.py": {
+      "bytes": 3203,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "fcbb863ca4ff421073a224e41f071798083db66a508254b9d227cd233ecda92d"
+    },
+    "qualification/memory-cell-v9/learning/paired.py": {
+      "bytes": 7019,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a95abe8a88d420e66649ffbce51bddddabfbf37e3fa358e6f2fca06f4507c61f"
+    },
+    "qualification/memory-cell-v9/learning/resource_cleanup.py": {
+      "bytes": 4597,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9eb4ed0868da1fe01a568369d9243607ee9bb7de8d4a6c10527c3a9ee7a812d5"
+    },
+    "qualification/memory-cell-v9/learning/resource_evidence.py": {
+      "bytes": 6206,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "26ff87386191910859a057dfaefb1401b30848d3f156413b123095e743a7895a"
+    },
+    "qualification/memory-cell-v9/learning/resource_monitor.py": {
+      "bytes": 14324,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "541811a934c1ab6319d3d925599fa12fd8e5beadb0a4a4d87cf6a2a7cb22d7bf"
+    },
+    "qualification/memory-cell-v9/learning/resource_samples.py": {
+      "bytes": 7857,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "626447e8fbf4f6f81403ac63dc587a0ec970c41deebddc59c658f213754edc87"
+    },
+    "qualification/memory-cell-v9/learning/resource_tests.py": {
+      "bytes": 23844,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "dcf4035492b79bbbcc0a25c26554957fd385aa8d4e04e92e0c8ff317fc210b15"
+    },
+    "qualification/memory-cell-v9/learning/score.py": {
+      "bytes": 15101,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "46abb3acdde79a3ec5a282b38a2f4bdc6d5077817298fa51bd795668bd74ee74"
+    },
+    "qualification/memory-cell-v9/learning/selection_wire_tests.py": {
+      "bytes": 5051,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "4b6d7feee6354696fbc4d8077430f5ca95c45038d6773910897ff7beaaf778c0"
+    },
+    "qualification/memory-cell-v9/learning/structure_evidence.py": {
+      "bytes": 11135,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "111c90995443938fcab0cae97e061434511fcc0f3577137f30340f7766db549e"
+    },
+    "qualification/memory-cell-v9/learning/structure_evidence_tests.py": {
+      "bytes": 5934,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6e3fca3924bd14ba8c87913c432f920d6926a32c2b7dbabf50e0c23350b2c08f"
+    },
+    "qualification/memory-cell-v9/learning/structure_score.py": {
+      "bytes": 13366,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d16f6313492a4441036127a46c52f260b133032e20fd2b7a2c1d938510d48e60"
+    },
+    "qualification/memory-cell-v9/learning/structure_selection.py": {
+      "bytes": 4261,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "06f934a7c9896b0dfca4e5a60b6ab5f5c6e5b8f5d899c06d3a71479b98f5b8bc"
+    },
+    "qualification/memory-cell-v9/learning/structure_tests.py": {
+      "bytes": 1984,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d315c576f1be9e572465d5a2b94657e231f383a40baaf04b3eb35710c01c732d"
+    },
+    "qualification/memory-cell-v9/learning/worker.py": {
+      "bytes": 1766,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0201761844731e8f58dd9813e8140509a310b53ec8b378b797aa551eda2c3630"
+    },
+    "qualification/memory-cell-v9/prepare_ci.py": {
+      "bytes": 4170,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c8ece2a05a13af3a17b80e24e81829aa3ce44d6724a43d99a06666a23c9ecf49"
+    },
+    "scripts/format.py": {
+      "bytes": 16599,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/pyproject.toml": {
+      "bytes": 177,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "scripts/uv.lock": {
+      "bytes": 6220,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+    }
+  },
+  "initial_tracked_changes": "",
+  "passed": true,
+  "request": {
+    "format_base": "0b6cff2afa88e469361608be3790fb7b03a1dd7e",
+    "packages": [
+      "codex-hepta-cognitive-types",
+      "codex-hepta-neuron",
+      "codex-hepta-memory",
+      "codex-hepta-cognitive-store",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-agent-protocol",
+      "codex-hepta-agentd",
+      "codex-hepta-context-compiler",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-plasticity"
+    ],
+    "schema": "hepta.memory.v9.finalize-request.v1",
+    "tested_commit": "8510464dd7c4bbed20b5dfa81d3b65eaf6671132",
+    "verification_receipt": {
+      "bytes": 106653,
+      "path": "qualification/memory-cell-completion/evidence/native-formal-07/receipt.json",
+      "sha256": "57a5bd42848344f8c4c93448c55d925000ffb5f9de0e119a54d2a5a32fb2ce31"
+    }
+  },
+  "request_identity": {
+    "bytes": 747,
+    "sha256": "90d47e85e6e6a0cbdc19b2f973d99586fb871db6de79945989df2b102d3308c7"
+  },
+  "research_gates_implied_by_test_success": false,
+  "research_quality_pass_asserted": false,
+  "schema": "hepta.memory.v9.finalize-receipt.v1",
+  "source_commit": "d4193c842bba8113719ef36f451cbc9061e34a7f",
+  "source_gate_paths": [
+    ".github/actions/setup-ci",
+    ".github/workflows/memory-cell-v8-finalize.yml",
+    ".github/workflows/memory-cell-v8.yml",
+    ".github/workflows/memory-cell-v9-finalize.yml",
+    ".github/workflows/memory-cell-v9.yml",
+    "codex-rs",
+    "evaluation_preflight.py",
+    "justfile",
+    "qualification/memory-cell-v6/audit_results.py",
+    "qualification/memory-cell-v6/audit_transport.py",
+    "qualification/memory-cell-v6/auditors/audit_source_truth.py",
+    "qualification/memory-cell-v6/auditors/verify_structure.py",
+    "qualification/memory-cell-v6/download_encoder.py",
+    "qualification/memory-cell-v6/held/author_corpus.py",
+    "qualification/memory-cell-v6/memory_cli.py",
+    "qualification/memory-cell-v6/native/make_fixture.py",
+    "qualification/memory-cell-v6/native/qualify.py",
+    "qualification/memory-cell-v6/prepare_run.py",
+    "qualification/memory-cell-v6/run_extensions.py",
+    "qualification/memory-cell-v6/run_language.py",
+    "qualification/memory-cell-v6/supplement/structure-verification/verification-script.py",
+    "qualification/memory-cell-v6/tests/test_audit.py",
+    "qualification/memory-cell-v6/tests/test_cells.py",
+    "qualification/memory-cell-v6/tests/test_contracts.py",
+    "qualification/memory-cell-v6/tests/test_evolution.py",
+    "qualification/memory-cell-v6/tests/test_language_runner.py",
+    "qualification/memory-cell-v6/tests/test_lifecycle.py",
+    "qualification/memory-cell-v6/tests/test_memory_cli.py",
+    "qualification/memory-cell-v6/tests/test_network.py",
+    "qualification/memory-cell-v6/tests/test_router.py",
+    "qualification/memory-cell-v6/tests/test_runtime.py",
+    "qualification/memory-cell-v6/tests/test_transfer.py",
+    "qualification/memory-cell-v6/tools/evidence_archive.py",
+    "qualification/memory-cell-v6/train_router.py",
+    "qualification/memory-cell-v6/v6",
+    "qualification/memory-cell-v6/v6/__init__.py",
+    "qualification/memory-cell-v6/v6/artifacts.py",
+    "qualification/memory-cell-v6/v6/cells.py",
+    "qualification/memory-cell-v6/v6/contracts.py",
+    "qualification/memory-cell-v6/v6/encoder.py",
+    "qualification/memory-cell-v6/v6/evolution.py",
+    "qualification/memory-cell-v6/v6/learning.py",
+    "qualification/memory-cell-v6/v6/lifecycle.py",
+    "qualification/memory-cell-v6/v6/network.py",
+    "qualification/memory-cell-v6/v6/router.py",
+    "qualification/memory-cell-v6/v6/runtime.py",
+    "qualification/memory-cell-v6/v6/store.py",
+    "qualification/memory-cell-v6/v6/study_data.py",
+    "qualification/memory-cell-v6/v6/training_language.py",
+    "qualification/memory-cell-v6/v6/transfer.py",
+    "qualification/memory-cell-v6/v6/values.py",
+    "qualification/memory-cell-v7/address_eval.py",
+    "qualification/memory-cell-v7/addressing",
+    "qualification/memory-cell-v7/addressing/__init__.py",
+    "qualification/memory-cell-v7/addressing/calibration.py",
+    "qualification/memory-cell-v7/addressing/capabilities.py",
+    "qualification/memory-cell-v7/addressing/cli.py",
+    "qualification/memory-cell-v7/addressing/contracts.py",
+    "qualification/memory-cell-v7/addressing/corpus.py",
+    "qualification/memory-cell-v7/addressing/model.py",
+    "qualification/memory-cell-v7/addressing/planner.py",
+    "qualification/memory-cell-v7/addressing/tests/test_planner.py",
+    "qualification/memory-cell-v7/addressing/tests/test_worker.py",
+    "qualification/memory-cell-v7/addressing/train.py",
+    "qualification/memory-cell-v7/addressing/worker.py",
+    "qualification/memory-cell-v7/archive_addressing.py",
+    "qualification/memory-cell-v7/audit_addressing.py",
+    "qualification/memory-cell-v7/ci_finalize.py",
+    "qualification/memory-cell-v7/ci_verify.py",
+    "qualification/memory-cell-v7/fixtures",
+    "qualification/memory-cell-v7/native_export.py",
+    "qualification/memory-cell-v7/native_export_fixtures.py",
+    "qualification/memory-cell-v7/population_benchmark.py",
+    "qualification/memory-cell-v7/population_fixture.py",
+    "qualification/memory-cell-v7/population_test.py",
+    "qualification/memory-cell-v7/population_training.py",
+    "qualification/memory-cell-v7/population_worker.py",
+    "qualification/memory-cell-v7/prepare_language_ci.py",
+    "qualification/memory-cell-v7/public_smoke.py",
+    "qualification/memory-cell-v7/reconstruct_addressing.py",
+    "qualification/memory-cell-v7/test_training.py",
+    "qualification/memory-cell-v7/training.py",
+    "qualification/memory-cell-v7/training_worker.py",
+    "qualification/memory-cell-v8/addressing",
+    "qualification/memory-cell-v8/addressing/bootstrap.py",
+    "qualification/memory-cell-v8/addressing/evaluate.py",
+    "qualification/memory-cell-v8/addressing/qualification_shadow_worker.py",
+    "qualification/memory-cell-v8/addressing/tests/__init__.py",
+    "qualification/memory-cell-v8/addressing/tests/addressing_tests.py",
+    "qualification/memory-cell-v8/addressing/train.py",
+    "qualification/memory-cell-v8/addressing/v8_addressing/__init__.py",
+    "qualification/memory-cell-v8/addressing/v8_addressing/model.py",
+    "qualification/memory-cell-v8/addressing/v8_addressing/native_fixture.py",
+    "qualification/memory-cell-v8/addressing/v8_addressing/policy.py",
+    "qualification/memory-cell-v8/addressing/v8_addressing/public_corpus.py",
+    "qualification/memory-cell-v8/addressing/v8_addressing/runner_io.py",
+    "qualification/memory-cell-v8/addressing/worker.py",
+    "qualification/memory-cell-v8/ci_finalize.py",
+    "qualification/memory-cell-v8/ci_verify.py",
+    "qualification/memory-cell-v8/evaluation",
+    "qualification/memory-cell-v8/evaluation/author_suites.py",
+    "qualification/memory-cell-v8/evaluation/repair_suites_v2.py",
+    "qualification/memory-cell-v8/fixtures",
+    "qualification/memory-cell-v8/learning",
+    "qualification/memory-cell-v8/learning/__init__.py",
+    "qualification/memory-cell-v8/learning/allocation.py",
+    "qualification/memory-cell-v8/learning/allocation_tests.py",
+    "qualification/memory-cell-v8/learning/costs.py",
+    "qualification/memory-cell-v8/learning/evidence.py",
+    "qualification/memory-cell-v8/learning/fit_evidence.py",
+    "qualification/memory-cell-v8/learning/population_training.py",
+    "qualification/memory-cell-v8/learning/score.py",
+    "qualification/memory-cell-v8/learning/score_tests.py",
+    "qualification/memory-cell-v8/learning/worker.py",
+    "qualification/memory-cell-v8/prepare_ci.py",
+    "qualification/memory-cell-v9/VERIFY_REQUEST.json",
+    "qualification/memory-cell-v9/addressing",
+    "qualification/memory-cell-v9/addressing/bootstrap.py",
+    "qualification/memory-cell-v9/addressing/evaluate.py",
+    "qualification/memory-cell-v9/addressing/qualification_shadow_worker.py",
+    "qualification/memory-cell-v9/addressing/tests/__init__.py",
+    "qualification/memory-cell-v9/addressing/tests/addressing_tests.py",
+    "qualification/memory-cell-v9/addressing/tests/capability_tests.py",
+    "qualification/memory-cell-v9/addressing/tests/policy_budget_tests.py",
+    "qualification/memory-cell-v9/addressing/train.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/__init__.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/artifact.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/capabilities.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/identity.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/model.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/native_fixture.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/policy.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/public_corpus.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/public_language.py",
+    "qualification/memory-cell-v9/addressing/v9_addressing/runner_io.py",
+    "qualification/memory-cell-v9/addressing/worker.py",
+    "qualification/memory-cell-v9/ci_finalize.py",
+    "qualification/memory-cell-v9/ci_verify.py",
+    "qualification/memory-cell-v9/evaluation",
+    "qualification/memory-cell-v9/evaluation/author_inputs.py",
+    "qualification/memory-cell-v9/evaluation/language_materials.py",
+    "qualification/memory-cell-v9/evaluation/native_evidence.py",
+    "qualification/memory-cell-v9/evaluation/preflight.py",
+    "qualification/memory-cell-v9/evidence/fresh-reader-local-01/restore.py",
+    "qualification/memory-cell-v9/fixtures",
+    "qualification/memory-cell-v9/learning",
+    "qualification/memory-cell-v9/learning/__init__.py",
+    "qualification/memory-cell-v9/learning/byte_model.py",
+    "qualification/memory-cell-v9/learning/evidence.py",
+    "qualification/memory-cell-v9/learning/evidence_tests.py",
+    "qualification/memory-cell-v9/learning/fresh_reader.py",
+    "qualification/memory-cell-v9/learning/fresh_reader_support.py",
+    "qualification/memory-cell-v9/learning/fresh_reader_tests.py",
+    "qualification/memory-cell-v9/learning/model_evidence.py",
+    "qualification/memory-cell-v9/learning/model_tests.py",
+    "qualification/memory-cell-v9/learning/paired.py",
+    "qualification/memory-cell-v9/learning/resource_cleanup.py",
+    "qualification/memory-cell-v9/learning/resource_evidence.py",
+    "qualification/memory-cell-v9/learning/resource_monitor.py",
+    "qualification/memory-cell-v9/learning/resource_samples.py",
+    "qualification/memory-cell-v9/learning/resource_tests.py",
+    "qualification/memory-cell-v9/learning/score.py",
+    "qualification/memory-cell-v9/learning/selection_wire_tests.py",
+    "qualification/memory-cell-v9/learning/structure_evidence.py",
+    "qualification/memory-cell-v9/learning/structure_evidence_tests.py",
+    "qualification/memory-cell-v9/learning/structure_score.py",
+    "qualification/memory-cell-v9/learning/structure_selection.py",
+    "qualification/memory-cell-v9/learning/structure_tests.py",
+    "qualification/memory-cell-v9/learning/worker.py",
+    "qualification/memory-cell-v9/pack_evidence.py",
+    "qualification/memory-cell-v9/prepare_ci.py",
+    "scripts/format.py",
+    "scripts/just-shell.py",
+    "scripts/pyproject.toml",
+    "scripts/run-nextest.py",
+    "scripts/uv.lock"
+  ],
+  "source_tree": "8f55bde73e94040e4f0db1572966a2882751a1d9",
+  "stages": [
+    {
+      "after_tracked_tree": "0351e222fc2878878085f318e7495293f24b63ce",
+      "before_tracked_tree": "8f55bde73e94040e4f0db1572966a2882751a1d9",
+      "cumulative_patch": {
+        "compressed": {
+          "bytes": 612,
+          "path": "after-fix.from-head.patch.xz",
+          "sha256": "1836fb0698bce6b7e25b9671739f1e1f0904b0d9e73d8751db0e4b9e7679fa7c"
+        },
+        "raw_patch_limit_bytes": 512000,
+        "standalone_uncompressed_path": "after-fix.from-head.patch",
+        "transport": "artifact files",
+        "uncompressed": {
+          "bytes": 1329,
+          "sha256": "ce67e74534e76a1d0df1e24468a131736611a7582ba22be7f36fb540bac7546e"
+        }
+      },
+      "incremental_patch": {
+        "compressed": {
+          "bytes": 612,
+          "path": "after-fix.patch.xz",
+          "sha256": "1836fb0698bce6b7e25b9671739f1e1f0904b0d9e73d8751db0e4b9e7679fa7c"
+        },
+        "raw_patch_limit_bytes": 512000,
+        "standalone_uncompressed_path": "after-fix.patch",
+        "transport": "artifact files",
+        "uncompressed": {
+          "bytes": 1329,
+          "sha256": "ce67e74534e76a1d0df1e24468a131736611a7582ba22be7f36fb540bac7546e"
+        }
+      },
+      "stage": "after-fix"
+    },
+    {
+      "after_tracked_tree": "28b310cc8db30270110605f8509f95b772451fd6",
+      "before_tracked_tree": "0351e222fc2878878085f318e7495293f24b63ce",
+      "cumulative_patch": {
+        "compressed": {
+          "bytes": 48688,
+          "path": "after-format.from-head.patch.xz",
+          "sha256": "7147f51dd72bb0aa8f3900b8d5b87cafe5d3e6b81a8bfbb6b7825f931a525b4d"
+        },
+        "raw_patch_limit_bytes": 512000,
+        "standalone_uncompressed_path": "after-format.from-head.patch",
+        "transport": "artifact files",
+        "uncompressed": {
+          "bytes": 297234,
+          "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+        }
+      },
+      "incremental_patch": {
+        "compressed": {
+          "bytes": 48668,
+          "path": "after-format.patch.xz",
+          "sha256": "ddd3588f46ac520fb37e4c6f773e4ea8ae37f9741c5f8d9361c7a8ffb274301f"
+        },
+        "raw_patch_limit_bytes": 512000,
+        "standalone_uncompressed_path": "after-format.patch",
+        "transport": "artifact files",
+        "uncompressed": {
+          "bytes": 297233,
+          "sha256": "342eb0b21828549a58cab5235e2800f3871762db6933faedf0361f2ecdf57ce4"
+        }
+      },
+      "stage": "after-format"
+    }
+  ],
+  "tested_commit": "8510464dd7c4bbed20b5dfa81d3b65eaf6671132",
+  "tested_source_gate_passed": true,
+  "tested_tree": "71ff3402b3da1ad2d7fa9a39873364fbd9f4f7a5",
+  "tests_executed": false,
+  "verification_receipt_identity": {
+    "bytes": 106653,
+    "path": "qualification/memory-cell-completion/evidence/native-formal-07/receipt.json",
+    "sha256": "57a5bd42848344f8c4c93448c55d925000ffb5f9de0e119a54d2a5a32fb2ce31"
+  },
+  "wall_seconds": 420.24913646899995
+}

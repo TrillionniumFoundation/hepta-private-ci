@@ -1,0 +1,103 @@
+{
+  "complete_exact_storage": [
+    {
+      "best_global_archival_complete_bytes": 2361,
+      "best_global_archival_rank": 1,
+      "best_selected_family": "global_svd",
+      "best_selected_model_residual_complete_bytes": 2479,
+      "common_address_provenance_bytes": 1085,
+      "dataset": "co2",
+      "dataset_group": "co2",
+      "exact_reconstruction_independently_verified": true,
+      "minimum_audited_complete_bytes": 2361,
+      "minimum_audited_relative_saving": 0.02679307502061006,
+      "strong_exact_complete_bytes": 2426
+    },
+    {
+      "best_global_archival_complete_bytes": 42033,
+      "best_global_archival_rank": 0,
+      "best_selected_family": "predeclared_cells",
+      "best_selected_model_residual_complete_bytes": 92124,
+      "common_address_provenance_bytes": 320,
+      "dataset": "digits-pixels",
+      "dataset_group": "digits-pixels",
+      "exact_reconstruction_independently_verified": true,
+      "minimum_audited_complete_bytes": 42033,
+      "minimum_audited_relative_saving": -0.004588800458880046,
+      "strong_exact_complete_bytes": 41841
+    },
+    {
+      "best_global_archival_complete_bytes": 6530,
+      "best_global_archival_rank": 0,
+      "best_selected_family": "global_svd",
+      "best_selected_model_residual_complete_bytes": 6986,
+      "common_address_provenance_bytes": 1297,
+      "dataset": "sunspots",
+      "dataset_group": "sunspots",
+      "exact_reconstruction_independently_verified": true,
+      "minimum_audited_complete_bytes": 6530,
+      "minimum_audited_relative_saving": -0.09453570231310761,
+      "strong_exact_complete_bytes": 5966
+    },
+    {
+      "best_global_archival_complete_bytes": 3182,
+      "best_global_archival_rank": 0,
+      "best_selected_family": "global_svd",
+      "best_selected_model_residual_complete_bytes": 3414,
+      "common_address_provenance_bytes": 1229,
+      "dataset": "temperature",
+      "dataset_group": "temperature",
+      "exact_reconstruction_independently_verified": true,
+      "minimum_audited_complete_bytes": 3182,
+      "minimum_audited_relative_saving": -0.12756909992912827,
+      "strong_exact_complete_bytes": 2822
+    }
+  ],
+  "domains": [
+    "co2",
+    "temperature",
+    "sunspots",
+    "unemployment"
+  ],
+  "exact_lossless_actual_route": [
+    0.3819444444444445,
+    0.33472222222222225,
+    0.3902777777777778,
+    0.4333333333333333
+  ],
+  "exact_pure_parameter_actual_route": [
+    0.006944444444444445,
+    0.00972222222222222,
+    0.0,
+    0.04583333333333333
+  ],
+  "input_audit_sha256": {
+    "formal-capacity-audit.json": "32d83bdec76ac28358f748adc79227a4a0a849a47479041d0f7c03bd3d220e51",
+    "formal-native-structure-audit.json": "b62e29f19eb23a4e080bdbfba9115627cfb9b7133d4303f6d227c4dcaf6a2080",
+    "formal-routing-audit.json": "43107f23b7a1f876fd451a0a76098c0c4614978bee6d6e44f7d80a16c0e86726"
+  },
+  "limits": [
+    "Five-seed means are conditional on fixed template fixtures; no population reliability claim.",
+    "Complete exact storage compares the best audited model-plus-residual archive to the best of 12 exact codec variants, including the same address/provenance metadata.",
+    "Cold MiniLM routing and runtime footprints are reported separately; panel D is numeric storage only."
+  ],
+  "mean_across_five_seeds": true,
+  "semantic_ood_false_accept": [
+    0.025,
+    0.0375,
+    0.25625,
+    0.25
+  ],
+  "structure_flow_order": [
+    "heterogeneous",
+    "convergent",
+    "stable_lowrank",
+    "random"
+  ],
+  "structure_strict_passes_out_of_five": [
+    0,
+    4,
+    0,
+    0
+  ]
+}

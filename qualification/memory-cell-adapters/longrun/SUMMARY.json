@@ -1,0 +1,522 @@
+{
+  "checkpoint_load_ns": 1333163198,
+  "cost_replication": {
+    "local_clean_run": {
+      "directory_created": false,
+      "launch_guard_bytes": 209715200,
+      "observed_free_bytes_after_guard": 15626240,
+      "reason": "shared local disk fell below launch-space guard after archive verification",
+      "started": false,
+      "trainer_or_monitor_started": false
+    },
+    "remote": {
+      "archive": {
+        "all_model_parameters_preserved": true,
+        "archive_bytes": 7089136,
+        "archive_sha256": "20c348466832e026e6d9280ea542f50f252bf9e633f64ea3fec0a0c900442a90",
+        "directories": 633,
+        "github_artifact_id": 12814206358,
+        "github_origin_identity": {
+          "bytes": 1701,
+          "sha256": "9da3d3a694e6a54bb07341466e0c26127989c4bbabcfdb6a5b4b63116cf60a12"
+        },
+        "github_zip_identity": {
+          "bytes": 7089803,
+          "sha256": "e83932000c5827c024560a0dac89789216caf79f26969f454461cdbc2678521b"
+        },
+        "inventory_chunks": 3,
+        "manifest_identity": {
+          "bytes": 6402,
+          "sha256": "1a6558f45232c010445b2c3f3e815d028c290c4ae063c8c4ddc9c781c9082f8b"
+        },
+        "maximum_publication_blob_bytes": 400000,
+        "original_delivery_files": 37,
+        "original_delivery_total_bytes": 8086169,
+        "original_tar_bytes_unchanged": true,
+        "original_zip_tar_raw_and_first_chain_preserved": true,
+        "outer_preparation_and_hardware_preserved": true,
+        "parts": 18,
+        "path": "evidence/longrun64x3-clean/ARCHIVE.json",
+        "raw_bytes": 21766558,
+        "raw_freeze": "evidence/longrun64x3-clean/RAW_FREEZE-run-03-clean.json",
+        "regular_files": 4153
+      },
+      "artifact_created_utc": "2026-10-28T11:54:18Z",
+      "completed_extra_fit_phases": 216,
+      "completed_extra_sample_presentations": 4147200,
+      "completed_extra_steps": 129600,
+      "conclusion": "success",
+      "cross_hardware_parameter_identity_required": false,
+      "encoder_reexecution_requested": false,
+      "final_result_authority": "evidence/longrun64x3-clean/RAW_RESULT.json",
+      "final_results": {
+        "all_preflight_passed": true,
+        "all_readers_after_trainer_exit": true,
+        "all_steps_retained": true,
+        "completed_cycles": 192,
+        "cycles_per_seed": 64,
+        "failures": [],
+        "final_cycle_aggregate": {
+          "exact_sql": {
+            "active": {
+              "correct": 1512,
+              "count": 1512
+            },
+            "changed": {
+              "correct": 207,
+              "count": 207
+            },
+            "retention": {
+              "correct": 1305,
+              "count": 1305
+            },
+            "revoked": {
+              "correct": 24,
+              "count": 24
+            }
+          },
+          "parameter": {
+            "active": {
+              "correct": 1512,
+              "count": 1512
+            },
+            "changed": {
+              "correct": 207,
+              "count": 207
+            },
+            "retention": {
+              "correct": 1305,
+              "count": 1305
+            },
+            "revoked": {
+              "correct": 24,
+              "count": 24
+            }
+          }
+        },
+        "held_inputs_opened": false,
+        "native_runtime_executed": false,
+        "phase_count": 216,
+        "rebuild_fits_attempted": 24,
+        "seeds": [
+          731,
+          732,
+          733
+        ],
+        "update_fits_attempted": 192
+      },
+      "full_cost_exact": false,
+      "hardware": {
+        "cpu_models": [
+          "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz"
+        ],
+        "logical_cpus": 4,
+        "numpy": "2.3.5",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+        "runner_image": "20261023.334.3",
+        "same_hardware_as_local_claimed": false,
+        "torch": "2.8.0+cpu"
+      },
+      "historical_monotonic_cross_host_comparison": false,
+      "independent_audits": [
+        {
+          "check_count": 8563,
+          "identity": {
+            "bytes": 27968,
+            "sha256": "afd753f388f97d83abbadb72c6e387dc71d9d216d72c5f5975ed4e21beca5c66"
+          },
+          "passed": true,
+          "path": "../evaluation/AUDIT-longrun-ci.json"
+        },
+        {
+          "check_count": 11609,
+          "identity": {
+            "bytes": 64857,
+            "sha256": "e6e6baf835102846aa4ceda43f5529de4572286191d646e427038c3de7839bb5"
+          },
+          "passed": true,
+          "path": "../evaluation/AUDIT-longrun-ci-costs.json"
+        }
+      ],
+      "job_id": 122793476485,
+      "numpy": "2.3.5",
+      "observed_costs": {
+        "authority": "evidence/longrun64x3-clean/COST_SUMMARY.json",
+        "full_cost_exact": false,
+        "lifecycle": {
+          "coverage_gaps": [
+            "No atomic whole-tree snapshot; per-process smaps reads and filesystem scans are sequential.",
+            "Short-lived or detached descendants never observed cannot be reconstructed from samples.",
+            "Memory/file changes between samples and before the first sample are not exact integrals.",
+            "RSS sums count shared pages per process; PSS is retained separately.",
+            "Only registered regular file data stocks are measured; filesystem metadata and remote storage are not.",
+            "Final receipt serialization/fsync and monitor exit follow the last sample; parent must measure that tail."
+          ],
+          "direct_waited_driver_rusage": {
+            "ru_inblock": 1384,
+            "ru_majflt": 3,
+            "ru_maxrss": 288340,
+            "ru_minflt": 19888857,
+            "ru_nivcsw": 8306,
+            "ru_nvcsw": 29358,
+            "ru_oublock": 72752,
+            "ru_stime": 55.930697,
+            "ru_utime": 800.84424
+          },
+          "driver_children_and_checkpoint_cost": {
+            "canonical_features_bytes": 23189,
+            "children_cpu_seconds_including_failures": 852.5356869999997,
+            "children_wall_ns_including_failures": 853917392678,
+            "current_output_regular_bytes_before_summary": 21575741,
+            "current_source_sqlite_bytes": 86016,
+            "driver_own_cpu_ns_before_summary": 2786211015,
+            "driver_wall_ns_before_summary": 856770172874,
+            "historical_source_sqlite_snapshot_bytes": 6193152,
+            "initial_checkpoint_copies_bytes": 96172,
+            "kernel_output_blocks_children": 24568,
+            "peak_and_integral_authority": "outer resource.json; independent child maxima are not summed",
+            "reader_children_cpu_seconds": 294.5326029999989,
+            "retained_explicit_source_json_bytes": 537522,
+            "retained_fitted_checkpoint_bytes": 7906432,
+            "shared_encoder_reference_bytes": 127536988,
+            "training_children_cpu_seconds": 558.0030840000007
+          },
+          "full_cost_exact": false,
+          "integrals": {
+            "storage_allocated_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 857133678141,
+              "sampled_byte_ns_estimate": 13579867227695073280,
+              "trapezoid_numerator_byte_ns": 27159734455390146560,
+              "unobserved_interval_ns": 1344647791
+            },
+            "storage_logical_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 857133678141,
+              "sampled_byte_ns_estimate": 9349576638967849172,
+              "trapezoid_numerator_byte_ns": 18699153277935698345,
+              "unobserved_interval_ns": 1344647791
+            },
+            "tree_pss_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 846628073538,
+              "sampled_byte_ns_estimate": 310190895743329220608,
+              "trapezoid_numerator_byte_ns": 620381791486658441216,
+              "unobserved_interval_ns": 11850252394
+            },
+            "tree_rss_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 846628073538,
+              "sampled_byte_ns_estimate": 386358939119975575552,
+              "trapezoid_numerator_byte_ns": 772717878239951151104,
+              "unobserved_interval_ns": 11850252394
+            }
+          },
+          "monitor_own_rusage_before_final_receipt": {
+            "ru_inblock": 0,
+            "ru_majflt": 0,
+            "ru_maxrss": 21276,
+            "ru_minflt": 2941,
+            "ru_nivcsw": 3967,
+            "ru_nvcsw": 5758,
+            "ru_oublock": 7152,
+            "ru_stime": 34.674528,
+            "ru_utime": 63.291013
+          },
+          "monitor_subtree_parent_wait4_cpu_seconds": 954.7468279999999,
+          "peak_sequential_sample_sums": {
+            "storage_allocated_bytes": 31518720,
+            "storage_logical_bytes": 21696180,
+            "tree_pss_bytes": 448604160,
+            "tree_rss_bytes": 548093952
+          },
+          "sample_count": 3802,
+          "sample_error_count": 29,
+          "sampling_gaps": {
+            "after_last_sample_ns": 1124946,
+            "before_first_sample_ns": 12252186,
+            "included_in_unobserved_intervals": true
+          },
+          "wall_ns_through_observation_close": 858478325932
+        },
+        "monitor_storage_scope": "Only lifecycle output and historical evidence under the registered root; excludes installed dependencies, restored initial formal evidence, repository content, remote storage and shared encoder reference.",
+        "outer_cost": {
+          "accounting": "Nested fit/read/driver/monitor CPU totals overlap; outer wrapper total already includes waited descendants. Packaging is a separate later process. Checkout/setup CPU and upload CPU are not measured.",
+          "checkout_and_python_setup_cpu_seconds": null,
+          "packaging_cpu_ns": 4456184323,
+          "packaging_wall_ns": 4456430240,
+          "pre_wrapper_job_marker_wall_ns": 11382182091,
+          "preparation_memory_storage_integrals": null,
+          "upload_cpu_seconds": null,
+          "wrapper_observed_cpu_seconds_including_waited_children_without_double_counting": 977.339552314,
+          "wrapper_own_cpu_ns": 900354314,
+          "wrapper_plus_packaging_observed_cpu_seconds": 981.795736637,
+          "wrapper_wall_ns": 882843591292
+        },
+        "preparation": {
+          "canonical_features": {
+            "bytes": 23189,
+            "sha256": "a2956040051c390cf5ea8ada8603d3224348d50e80888b278a6131d436d8c87d"
+          },
+          "completed_children_cpu_seconds": 21.648317,
+          "encoder_weights_downloaded_or_reencoded": false,
+          "historical_monotonic_compared_to_runner_clock": false,
+          "restored_initial_evidence_bytes": 42634595,
+          "wall_ns": 24251046586
+        },
+        "reader_timing_scope": "Both arms run in fixed parameter-then-SQL order in one fresh Python process. Whole-process time includes imports, loading, both arms and shutdown; read slices exclude shared work. New process identity does not establish an uncached storage read. These are not isolated service latencies.",
+        "reader_timings": {
+          "checkpoint_load_wall_ns": {
+            "count": 219,
+            "max": 3609633,
+            "median": 3310639,
+            "min": 3158742,
+            "p95_nearest_rank": 3439403,
+            "sum": 726890990
+          },
+          "exact_sql_eight_address_loop_ns": {
+            "count": 219,
+            "max": 167390,
+            "median": 116704,
+            "min": 110388,
+            "p95_nearest_rank": 141080,
+            "sum": 26239260
+          },
+          "parameter_eight_address_loop_ns": {
+            "count": 219,
+            "max": 1518955,
+            "median": 1320548,
+            "min": 1176022,
+            "p95_nearest_rank": 1382287,
+            "sum": 288782506
+          },
+          "reader_process_wall_ns": {
+            "count": 219,
+            "max": 1396467595,
+            "median": 1344905092,
+            "min": 1315177079,
+            "p95_nearest_rank": 1372953987,
+            "sum": 295034801812
+          }
+        },
+        "storage_accounting": {
+          "canonical_features_bytes": 23189,
+          "current_source_sqlite_bytes": 86016,
+          "historical_source_sqlite_snapshot_bytes": 6193152,
+          "initial_checkpoint_copies_bytes": 96172,
+          "retained_explicit_source_json_bytes": 537522,
+          "retained_fitted_checkpoint_bytes": 7906432,
+          "shared_encoder_reference_bytes": 127536988,
+          "shared_encoder_reference_scope": "Prior encoder asset is referenced and charged as shared storage; its weights were neither downloaded nor reencoded in this replication. Reference bytes are not part of local output directory stock."
+        }
+      },
+      "protocol_sha256": "3f7a09a1158b3e40cd33157e0da727deda13fa6654950b01449d419c6cb9a007",
+      "python": "3.12.15",
+      "request_id": "clean-cost-20261028-01",
+      "requested_extra_fit_phases": 216,
+      "requested_extra_sample_presentations": 4147200,
+      "requested_extra_steps": 129600,
+      "run_id": 40681620656,
+      "runner_os": "ubuntu-24.04",
+      "same_hardware_as_original_claimed": false,
+      "same_seeds_and_data_are_independent_statistical_samples": false,
+      "source_commit": "773e8c5540521861ab18b1c61268069d6610279a",
+      "source_tree": "f284bab3dc69c87dece3e8ffd8999d2f23bcea6b",
+      "started_utc": "2026-10-28T11:39:17Z",
+      "status": "completed",
+      "status_authority": "evidence/longrun64x3-clean/ARTIFACT_ORIGIN.json",
+      "torch": "2.8.0+cpu",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40681620656",
+      "workflow": "memory-adapter-longrun.yml"
+    },
+    "reporting_rule": "Preserve the complete outer preparation/hardware receipts and inner lifecycle evidence. Charge repeated actual work while retaining the original interruption unknowns. Identical seeds, data and schedules do not supply independent statistical samples; do not pool quality denominators.",
+    "status": "remote_completed_success_and_independently_audited"
+  },
+  "created_utc": "2026-10-28T11:22:26.360844+00:00",
+  "independent_audit": "../evaluation/AUDIT-longrun-complete.json:7198 checks passed; raw record identity remains authoritative",
+  "interpretation": {
+    "cost_and_reproducibility_replication": true,
+    "full_cost_exact": false,
+    "independent_statistical_replication": false,
+    "negative_results_preserved": [
+      "Exact SQL matches parameter-memory correctness without parametric fitting and has a lower observed read-loop slice on this bounded workload.",
+      "No storage compression or complete lifecycle cost advantage is established.",
+      "The fixed eight-address full-replay task does not test growth capacity, single-exposure learning, novel language access or spontaneous cell/network organization.",
+      "Archived historical parameters and sources preclude a physical-erasure claim.",
+      "The remote workflow actually runs Python research code; it does not integrate the new tensor profile into native Hepta/Agentd.",
+      "The original 398.262852720-second observation gap and interrupted work remain unknown; the clean run does not reconstruct their history."
+    ]
+  },
+  "longrun_repeated_work_accounting": {
+    "both_completed_fit_and_reader_cpu_seconds": 2553.042976,
+    "both_reader_children_cpu_seconds": 730.2811979999989,
+    "both_training_children_cpu_seconds": 1822.7617780000014,
+    "clean_completed_cycles": 192,
+    "clean_completed_fit_and_reader_cpu_seconds": 852.5356869999997,
+    "completed_fit_phases_both": 432,
+    "completed_sample_presentations_both": 8294400,
+    "completed_steps_both": 259200,
+    "first_chain_completed_cycles": 192,
+    "first_chain_completed_fit_and_reader_cpu_seconds": 1700.5072890000006,
+    "first_chain_interrupted_additional_attempts": 1,
+    "first_chain_interrupted_cpu_seconds": null,
+    "first_chain_interrupted_steps": null,
+    "full_cost_exact": false,
+    "lower_bound_scope": "Original longrun 435 completed children plus the disjoint clean CI wrapper (including its preparation and waited descendants) and CI packaging only; omits original driver/monitor, original interrupted work, other preparation not recorded here, checkout/setup, upload, earlier formal studies, native CI and local acquisition/auditing.",
+    "observed_disjoint_research_cpu_lower_bound_seconds": 2682.3030256370007,
+    "original_unknown_tail_replaced": false,
+    "original_unobserved_between_segments_ns": 398262852720,
+    "quality_denominators_may_be_pooled_as_independent_trials": false,
+    "same_three_optimizer_seeds_reused": true,
+    "scope": "Two completed longrun executions only; initial formal study and other earlier research validation excluded here, so this is not total project compute.",
+    "warning": "Do not add nested successful-child totals to the clean wrapper total; the clean replication supplements, rather than replaces, the interrupted original chain."
+  },
+  "original_chain": {
+    "all_preflight_passed": true,
+    "all_readers_after_trainer_exit": true,
+    "all_trainers_and_readers_completed": true,
+    "completed_cycles": 192,
+    "completed_fit_steps": 129600,
+    "completed_rebuild_fits": 24,
+    "completed_sample_presentations": 4147200,
+    "completed_update_fits": 192,
+    "cost": {
+      "canonical_features_bytes": 23189,
+      "completed_children_cpu_seconds": 1700.5072890000006,
+      "completed_children_wall_ns": 1740307805997,
+      "fitted_checkpoint_bytes": 7905954,
+      "full_cost_exact": false,
+      "initial_checkpoint_copies_bytes": 96172,
+      "interrupted_child_cpu_seconds": null,
+      "kernel_output_blocks_completed_children": 33104,
+      "original_driver_final_cpu_seconds": null,
+      "output_regular_bytes_before_summary": 25104666,
+      "peak_and_integral_authority": "run-01/RESOURCE_INTERRUPTED.json plus run-02-resume/resource.json; unknown tail and gap remain explicit",
+      "reader_children_cpu_seconds": 435.74859499999997,
+      "resume_driver_own_cpu_ns": 3657979859,
+      "resume_driver_wall_ns_before_summary": 1018921496018,
+      "shared_encoder_reference_bytes": 127536988,
+      "source_sqlite_bytes_all_snapshots": 6336512,
+      "training_children_cpu_seconds": 1264.7586940000006
+    },
+    "cycles_per_seed": 64,
+    "final_cycle_aggregate": {
+      "exact_sql": {
+        "active": {
+          "correct": 1512,
+          "count": 1512
+        },
+        "changed": {
+          "correct": 207,
+          "count": 207
+        },
+        "retention": {
+          "correct": 1305,
+          "count": 1305
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      },
+      "parameter": {
+        "active": {
+          "correct": 1512,
+          "count": 1512
+        },
+        "changed": {
+          "correct": 207,
+          "count": 207
+        },
+        "retention": {
+          "correct": 1305,
+          "count": 1305
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      }
+    },
+    "held_inputs_opened": false,
+    "infrastructure_interrupted_attempts": 1,
+    "interpretation": "Exact SQL is a same-information lookup baseline. The workload has only eight entities, synthetic policy changes, and 64 bounded cycles; neither global memory emergence nor superiority over traditional storage is established. Shared encoder was previously trained and is not rerun; its referenced storage is accounted separately from incremental local writes. Historical checkpoints retain evidence of old sources and are not a physical-erasure guarantee.",
+    "interrupted_attempt_steps": null,
+    "native_runtime_executed": false,
+    "new_failures": [],
+    "original_evidence_unchanged": true,
+    "phase_count": 216,
+    "protocol_sha256": "3f7a09a1158b3e40cd33157e0da727deda13fa6654950b01449d419c6cb9a007",
+    "schema": "hepta.memory.adapter-longrun-combined-result.v1",
+    "seeds": [
+      731,
+      732,
+      733
+    ]
+  },
+  "read_loop_scope": "eight declared addresses per loop; excludes shared import, checkpoint load, connection setup and metadata hashing; not standalone end-to-end latency",
+  "read_loops": {
+    "exact_sql": {
+      "fresh_processes": 219,
+      "median_ns": 83481,
+      "p95_ns": 248150,
+      "sum_ns": 32881626
+    },
+    "parameter": {
+      "fresh_processes": 219,
+      "median_ns": 2210143,
+      "p95_ns": 7840476,
+      "sum_ns": 638190253
+    }
+  },
+  "resource_segments": {
+    "first_segment": "interrupted; reconstructed observed sample intervals only",
+    "first_segment_sample_errors": 31,
+    "first_segment_unobserved_prefix_ns": 2719363,
+    "full_cost_exact": false,
+    "known_gap_ns": 398262852720,
+    "metrics": {
+      "storage_allocated_bytes": {
+        "exact_continuous_integral": false,
+        "known_unobserved_interval_ns_within_segments": 953499986,
+        "observed_byte_ns_estimate": 30948755854759841792,
+        "observed_interval_ns": 1752226880822,
+        "observed_peak_bytes": 35045376,
+        "unobserved_between_segments_ns": 398262852720
+      },
+      "storage_logical_bytes": {
+        "exact_continuous_integral": false,
+        "known_unobserved_interval_ns_within_segments": 953499986,
+        "observed_byte_ns_estimate": 22321988235590808833,
+        "observed_interval_ns": 1752226880822,
+        "observed_peak_bytes": 25257472,
+        "unobserved_between_segments_ns": 398262852720
+      },
+      "tree_pss_bytes": {
+        "exact_continuous_integral": false,
+        "known_unobserved_interval_ns_within_segments": 32133965914,
+        "observed_byte_ns_estimate": 631037095531138762240,
+        "observed_interval_ns": 1721046414894,
+        "observed_peak_bytes": 434688000,
+        "unobserved_between_segments_ns": 398262852720
+      },
+      "tree_rss_bytes": {
+        "exact_continuous_integral": false,
+        "known_unobserved_interval_ns_within_segments": 32133965914,
+        "observed_byte_ns_estimate": 745151598919537604608,
+        "observed_interval_ns": 1721046414894,
+        "observed_peak_bytes": 509120512,
+        "unobserved_between_segments_ns": 398262852720
+      }
+    },
+    "sample_count": 7065,
+    "second_segment": "monitor exit 0; sampled lifecycle",
+    "second_segment_sample_errors": 36
+  },
+  "schema": "hepta.memory.adapter-longrun-delivery-summary.v1"
+}

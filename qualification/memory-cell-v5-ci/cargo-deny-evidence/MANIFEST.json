@@ -1,0 +1,53 @@
+{
+  "artifact": {
+    "artifact_id": 12718718983,
+    "bytes": 1567767,
+    "job_id": 122086309675,
+    "name": "cargo-deny-job-122077331825.zip",
+    "run_id": 40473598340,
+    "sha256": "c541979c81096ac2cf4effe9fb122bdc5bef282b008f266f636214a471ea964c"
+  },
+  "construction": "Each part is a complete gzip stream wrapping one consecutive byte range of the original ZIP. Decompress each part in listed order, then concatenate the decoded bytes to recover the original ZIP.",
+  "local_reconstruction_byte_exact": true,
+  "parts": [
+    {
+      "decoded_bytes": 360000,
+      "decoded_sha256": "b5e20ae1dcabab08c0e964e7c4a28ca1bbc53f60f9d49d53026eb62ebc6e2e87",
+      "encoded_bytes": 360063,
+      "encoded_sha256": "ea9e5ea0b5f226f5c1a5a375c331b22a40adb235dec7c17b0bc0cdb6f14dbdab",
+      "name": "artifact-zip-chunk-000.gz"
+    },
+    {
+      "decoded_bytes": 360000,
+      "decoded_sha256": "3835f08b60d7846ecb45f2675c648d444f5dffd446c0547e52c7f72df54aa9e5",
+      "encoded_bytes": 360128,
+      "encoded_sha256": "644e396dc55bb5558e5111b7c115d86d1dfa24eafc1a5ff74cb225330dd70dad",
+      "name": "artifact-zip-chunk-001.gz"
+    },
+    {
+      "decoded_bytes": 360000,
+      "decoded_sha256": "c392a30dbce8f55a7f73d8d39072203e1b4be79c8a046401ba7ca7bbae58f3b7",
+      "encoded_bytes": 360128,
+      "encoded_sha256": "2d0ac3b4fa682391f89999763d6bf9e0fad3254ac4793183ec8afc34558b9520",
+      "name": "artifact-zip-chunk-002.gz"
+    },
+    {
+      "decoded_bytes": 360000,
+      "decoded_sha256": "1dd2f9f7f433ad8e33b356640d1726520048040b68ed89c337f42e151a8116bc",
+      "encoded_bytes": 360128,
+      "encoded_sha256": "6b325d0f5a45133b1822f2bf513c42931eb81d506ed8c99ceebecd9d6bef7be2",
+      "name": "artifact-zip-chunk-003.gz"
+    },
+    {
+      "decoded_bytes": 127767,
+      "decoded_sha256": "b8baf4d784d0f21d9fa294c6dc24f6f0a114b730b87d5a4b4a3e196ef29e0214",
+      "encoded_bytes": 127796,
+      "encoded_sha256": "18fda56316529b1a33e5c237f78a6ac10ae26d227409e8ee231406b83108d089",
+      "name": "artifact-zip-chunk-004.gz"
+    }
+  ],
+  "raw_failed_head_sha": "332d8156d081e22405450dd607023689f68f03e1",
+  "raw_failed_job_id": 122077331825,
+  "raw_failed_run_id": 40470653139,
+  "schema": "hepta.memory.ci.gzip-wrapped-artifact-chunks.v1"
+}

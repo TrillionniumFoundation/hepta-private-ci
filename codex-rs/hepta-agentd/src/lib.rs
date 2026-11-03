@@ -29,6 +29,38 @@ mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
+mod memory_cell_address_worker;
+#[cfg(test)]
+mod memory_cell_context_tests;
+#[cfg(test)]
+mod memory_cell_control_tests;
+#[cfg(test)]
+mod memory_cell_language_runtime_tests;
+#[cfg(test)]
+mod memory_cell_language_v8_tests;
+#[cfg(test)]
+mod memory_cell_language_v9_tests;
+mod memory_cell_learning;
+#[cfg(unix)]
+mod memory_cell_migration_v9;
+mod memory_cell_network;
+#[cfg(test)]
+mod memory_cell_population_tests;
+#[cfg(test)]
+mod memory_cell_prospective_tests;
+mod memory_cell_release;
+mod memory_cell_runtime;
+#[cfg(test)]
+mod memory_cell_runtime_tests;
+#[cfg(test)]
+mod memory_cell_test_support;
+mod memory_cell_training;
+#[cfg(test)]
+mod memory_cell_training_test_support;
+#[cfg(test)]
+mod memory_cell_training_tests;
+#[cfg(test)]
+mod memory_cell_v9_continual_tests;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
@@ -62,6 +94,7 @@ pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
 pub use client::AgentdClient;
+pub use client::AgentdTrafficSnapshotV1;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -113,6 +146,7 @@ pub use codex_hepta_agent_protocol::MAX_COGNITIVE_CONTEXT_BYTES;
 pub use codex_hepta_agent_protocol::MAX_CONTROL_FRAME_BYTES;
 pub use codex_hepta_agent_protocol::MAX_EVENT_BATCH;
 pub use codex_hepta_agent_protocol::MAX_FEDERATION_CONTROL_LIST;
+pub use codex_hepta_agent_protocol::MemoryCellSnapshotPageV1;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityId;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilitySnapshot;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityState;
@@ -182,6 +216,52 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use memory_cell_address_worker::MEMORY_CELL_TIME_VIEW_PROFILE_V1;
+pub use memory_cell_address_worker::MemoryCellAddressWorkerConfigV1;
+pub use memory_cell_address_worker::MemoryCellAddressWorkerMetricsV1;
+pub use memory_cell_address_worker::MemoryCellAddressWorkerV1;
+pub use memory_cell_learning::MemoryCellLearningDecisionV1;
+pub use memory_cell_learning::MemoryCellLearningSinkV1;
+pub use memory_cell_learning::MemoryCellTrainingDecisionContextV1;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationImageV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationManifestV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationPinV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationProviderV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationReceiverV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationStoreV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationTrafficV9;
+pub use memory_cell_network::MAX_MEMORY_CELL_NETWORK_NODES;
+pub use memory_cell_network::MemoryCellDeploymentV1;
+pub use memory_cell_network::MemoryCellNetworkCostV1;
+pub use memory_cell_network::MemoryCellNetworkErrorV1;
+pub use memory_cell_network::MemoryCellNetworkReadV1;
+pub use memory_cell_network::MemoryCellNetworkReceiptV1;
+pub use memory_cell_network::MemoryCellNetworkV1;
+pub use memory_cell_network::MemoryCellNetworkVersionV1;
+pub use memory_cell_network::MemoryCellNodeBindingV1;
+pub use memory_cell_network::MemoryCellNodeReadoutV1;
+pub use memory_cell_network::MemoryCellVersionPinV1;
+pub use memory_cell_release::LoadedMemoryCellBundleV1;
+pub use memory_cell_release::MemoryCellBundleCandidateV1;
+pub use memory_cell_release::MemoryCellReleaseHostV1;
+pub use memory_cell_release::MemoryStructurePublicationV9;
+pub use memory_cell_release::sleep_selected_memory_v9;
+pub use memory_cell_release::stage_memory_structure_v9;
+pub use memory_cell_runtime::AgentdMemoryCellRuntimeV1;
+pub use memory_cell_runtime::MemoryCellAddressResolverV1;
+pub use memory_cell_runtime::MemoryCellResolvedAddressV1;
+pub use memory_cell_training::MemoryCellFitBudgetV1;
+pub use memory_cell_training::MemoryCellReplayParentV1;
+pub use memory_cell_training::MemoryCellTrainerConfigV1;
+pub use memory_cell_training::MemoryCellTrainingCandidateV1;
+pub use memory_cell_training::MemoryCellTrainingModeV1;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;

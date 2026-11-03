@@ -1,0 +1,154 @@
+{
+  "attempt": "formal-01",
+  "executions": [
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/addressing",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        16
+      ],
+      "raw_output": {
+        "bytes": 115,
+        "sha256": "98071cd7d6531baa93339a9f01497ab85d6d7a5b893d6e34e494f7a8e66c9b1d"
+      },
+      "raw_output_path": "commands/01.log",
+      "test_discovery_nonempty": true,
+      "wall_seconds": 1.4494874559999857
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/learning",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        21
+      ],
+      "raw_output": {
+        "bytes": 120,
+        "sha256": "933421a1bf80e86778794b2e2d589afc105cce81c10eec740e123f0b21027a87"
+      },
+      "raw_output_path": "commands/02.log",
+      "test_discovery_nonempty": true,
+      "wall_seconds": 9.662404793000007
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 17105,
+        "sha256": "547294134cbab3815ac3162162a0fedb53ec65ddd553facd93fb0adebc2a8fe5"
+      },
+      "raw_output_path": "commands/03.log",
+      "wall_seconds": 171.95318841199997
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "exit_code": 101,
+      "raw_output": {
+        "bytes": 48954,
+        "sha256": "fb28a6396ac7b6c2719c65d428c907baac9515e967707426b3c38cd5569a7231"
+      },
+      "raw_output_path": "commands/04.log",
+      "wall_seconds": 205.54487102899998
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_) & test(v9)"
+      ],
+      "exit_code": 101,
+      "raw_output": {
+        "bytes": 34235,
+        "sha256": "745f2aaf823629c8d38258db9bf5a92e6d64b2a26b1e16298707178c159d5e6b"
+      },
+      "raw_output_path": "commands/05.log",
+      "wall_seconds": 20.329981826999983
+    }
+  ],
+  "failure": "Test-target compilation used non-Serialize Digest32/Option<Digest32> directly in the structure gate JSON. Native ordinary and actual experiments did not execute.",
+  "missing_required_receipts": [
+    "legacy-network-process.json",
+    "baseline-v7-native-held.json",
+    "baseline-v8-native-held.json",
+    "candidate-v9-native-held.json",
+    "continual-learning.json",
+    "structure-learning.json",
+    "migration-process.json",
+    "native-language-audit.json",
+    "continual-learning-score.json",
+    "structure-learning-score.json"
+  ],
+  "model_or_evaluation_tuned": false,
+  "passed": false,
+  "provider_log": {
+    "bytes": 254539,
+    "compressed_path": "provider-job.log.xz",
+    "compressed_sha256": "e578dcf0cf093e7fca9a255c2568219539dc80a866b7ae4c42e9863541862bf3",
+    "sha256": "7b4058cacb25ac562b9eef83277659cef941b13df5dd68780a95ffe847e694a4"
+  },
+  "schema": "hepta.memory.v9.ci-review.v1",
+  "source_commit": "429d6e85c25047271c43f7cf71ef39e11c82176f",
+  "source_tree": "d398c3d6c7f943a70c4dfaed92eac73cac7c1719"
+}

@@ -1,0 +1,186 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling version_check v0.9.5
+   Compiling proc-macro2 v1.0.106
+   Compiling typenum v1.20.0
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.22
+   Compiling cpufeatures v0.2.17
+   Compiling cfg-if v1.0.4
+   Compiling serde_core v1.0.228
+   Compiling zmij v1.0.19
+   Compiling zeroize v1.8.2
+   Compiling serde_json v1.0.149
+   Compiling semver v1.0.27
+   Compiling const-oid v0.9.6
+   Compiling serde v1.0.228
+   Compiling generic-array v0.14.7
+   Compiling rustc_version v0.4.1
+   Compiling der v0.7.10
+   Compiling itoa v1.0.17
+   Compiling memchr v2.8.1
+   Compiling subtle v2.6.1
+   Compiling signature v2.2.0
+   Compiling curve25519-dalek v4.1.3
+   Compiling rustix v1.1.4
+   Compiling linux-raw-sys v0.12.1
+   Compiling bitflags v2.13.1
+   Compiling syn v2.0.117
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling spki v0.7.3
+   Compiling digest v0.10.7
+   Compiling pkcs8 v0.10.2
+   Compiling sha2 v0.10.9
+   Compiling ed25519 v2.2.3
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-types)
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-wire)
+   Compiling serde_derive v1.0.228
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-cognitive-types)
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-contracts)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-memory-retrieval)
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-context-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.75s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 43685c80-ba09-43dd-9add-c5cdf833fb71 with nextest profile: local
+    Starting 127 tests across 3 binaries (2 tests skipped)
+        PASS [   0.005s] codex-hepta-cognitive-types contract_tests::all_registered_v1_contracts_have_distinct_cross_language_golden_digests
+        PASS [   0.005s] codex-hepta-cognitive-types contract_tests::ctype_04_canonical_wire_vector_is_exact
+        PASS [   0.007s] codex-hepta-cognitive-types contract_tests::ctype_01_modality_units_cannot_be_rebound
+        PASS [   0.007s] codex-hepta-cognitive-types contract_tests::engram_validity_and_contextual_binding_are_exact
+        PASS [   0.007s] codex-hepta-cognitive-types contract_tests::ctype_03_lifecycle_states_are_semantically_distinct
+        PASS [   0.007s] codex-hepta-cognitive-types contract_tests::ctype_02_asset_extent_and_identity_fail_closed
+        PASS [   0.004s] codex-hepta-cognitive-types contract_tests::maximum_bounds_reject_before_publication
+        PASS [   0.008s] codex-hepta-cognitive-types contract_tests::bounded_arbitrary_byte_decoder_smoke_covers_all_registered_contracts
+        PASS [   0.003s] codex-hepta-cognitive-types contract_tests::q16_and_plasticity_delta_bindings_are_exact
+        PASS [   0.005s] codex-hepta-cognitive-types contract_tests::proposal_contracts_cannot_self_activate
+        PASS [   0.003s] codex-hepta-cognitive-types contract_tests::recall_receipts_bind_counts_and_population_limits
+        PASS [   0.011s] codex-hepta-cognitive-types contract_tests::canonical_wire_roundtrip_property_holds_across_registered_contracts
+        PASS [   0.005s] codex-hepta-cognitive-types contract_tests::replay_receipts_bind_candidate_and_source_bucket_counts
+        PASS [   0.005s] codex-hepta-cognitive-types contract_tests::recall_abstention_and_selected_revision_are_fail_closed
+        PASS [   0.005s] codex-hepta-cognitive-types contract_tests::strict_wire_rejects_unknown_fields_invalid_enum_and_noncanonical_json
+        PASS [   0.004s] codex-hepta-cognitive-types lane_c::tests::compact_checkpoint_and_proof_are_non_authoritative
+        PASS [   0.004s] codex-hepta-cognitive-types lane_c::tests::generation_vector_digest_binds_every_generation
+        PASS [   0.003s] codex-hepta-cognitive-types lane_c::tests::projection_publication_requires_exact_predecessor
+        PASS [   0.005s] codex-hepta-cognitive-types lane_c::tests::memory_admission_requires_unique_bounded_support
+        PASS [   0.007s] codex-hepta-cognitive-types contract_tests::set_insertion_order_cannot_change_wire_or_digest
+        PASS [   0.006s] codex-hepta-cognitive-types lane_c::tests::federation_result_binds_coverage_snapshot_and_items
+        PASS [   0.004s] codex-hepta-cognitive-types lane_c::tests::prompt_snapshot_and_delivery_observation_reject_stale_semantics
+        PASS [   0.003s] codex-hepta-cognitive-types lane_c::tests::snapshot_key_rejects_digest_drift
+        PASS [   0.006s] codex-hepta-cognitive-types memory_cell::tests::duplicate_support_and_missing_model_binding_are_rejected
+        PASS [   0.006s] codex-hepta-cognitive-types memory_cell::tests::requests_reject_unknown_fields_and_invalid_temporal_ranges
+        PASS [   0.007s] codex-hepta-cognitive-types memory_cell::tests::a_prediction_survives_roundtrip_without_becoming_source_evidence
+        PASS [   0.005s] codex-hepta-cognitive-types tests::one_source_identity_cannot_bind_conflicting_digests
+        PASS [   0.008s] codex-hepta-cognitive-types tests::duplicate_citation_is_rejected
+        PASS [   0.009s] codex-hepta-cognitive-types tests::duplicate_record_revision_is_rejected
+        PASS [   0.008s] codex-hepta-cognitive-types tests::snapshot_is_canonical_and_authority_free
+        PASS [   0.005s] codex-hepta-context-compiler candidate_bound::tests::mandatory_requirements_remain_bound_and_authority_free
+        PASS [   0.007s] codex-hepta-context-compiler candidate_bound::tests::candidate_identity_and_omitted_tail_are_in_the_binding
+        PASS [   0.004s] codex-hepta-context-compiler candidate_bound::tests::omitted_content_is_bound_without_changing_legacy_compilation
+        PASS [   0.007s] codex-hepta-context-compiler candidate_bound::tests::input_permutation_has_one_candidate_binding
+        PASS [   0.007s] codex-hepta-cognitive-types tests::valid_v1_record_and_snapshot_digests_remain_stable
+        PASS [   0.008s] codex-hepta-cognitive-types tests::later_revision_requires_predecessor
+        PASS [   0.007s] codex-hepta-context-compiler candidate_bound::tests::legacy_validation_errors_are_preserved
+        PASS [   0.004s] codex-hepta-context-compiler requirements::tests::every_required_item_binding_rejects_drift
+        PASS [   0.004s] codex-hepta-context-compiler requirements::tests::insufficient_floor_never_returns_a_partial_provenance_group
+        PASS [   0.005s] codex-hepta-context-compiler tests::duplicate_item_is_rejected
+        PASS [   0.006s] codex-hepta-context-compiler requirements::tests::malformed_groups_and_reference_saturation_are_rejected
+        PASS [   0.006s] codex-hepta-context-compiler requirements::tests::unknown_member_and_mismatched_snapshot_or_objective_are_rejected
+        PASS [   0.005s] codex-hepta-context-compiler requirements::tests::required_group_semantics_are_part_of_the_receipt_digest
+        PASS [   0.007s] codex-hepta-context-compiler requirements::tests::shared_provenance_is_charged_once_and_order_is_canonical
+        PASS [   0.007s] codex-hepta-context-compiler requirements::tests::reserves_whole_provenance_group_before_optional_evidence
+        PASS [   0.005s] codex-hepta-context-compiler tests::evidence_never_becomes_instruction
+        PASS [   0.005s] codex-hepta-context-compiler tests::optional_evidence_omission_is_explicit
+        PASS [   0.005s] codex-hepta-context-compiler tests::oversized_required_cost_reports_the_exact_insufficient_floor
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::admission_role_binding_prevents_evidence_instruction_confusion
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::admission_expires_at_the_exact_expiry_instant
+        PASS [   0.006s] codex-hepta-context-compiler tests::secret_bearing_item_is_rejected
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::delivery_preparation_rejects_snapshot_time_rollback_even_with_same_epoch
+        PASS [   0.012s] codex-hepta-context-compiler tests::legacy_compile_cannot_omit_trusted_instructions
+        PASS [   0.008s] codex-hepta-context-compiler v2::tests::attachment_revalidation_rejects_compile_then_revoke_toc_tou
+        PASS [   0.005s] codex-hepta-context-compiler v2::tests::delivery_preparation_revalidates_and_rejects_revocation_after_attachment
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::deterministic_value_per_token_preserves_mandatory_floors
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::final_serialized_token_count_must_fit_budget_including_framing
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::independent_provider_evidence_verifier_is_required
+        PASS [   0.005s] codex-hepta-context-compiler v2::tests::provider_and_model_identity_must_match_exact_model_profile
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::indeterminate_provider_terminal_remains_indeterminate
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::mandatory_group_policy_is_bound_even_when_selected_set_is_identical
+        PASS [   0.005s] codex-hepta-context-compiler v2::tests::provider_owned_attempt_witness_is_authenticated_by_delivery_verifier
+        PASS [   0.008s] codex-hepta-context-compiler v2::tests::provider_input_witness_must_bind_current_pre_dispatch_revalidation
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::raw_candidate_and_realization_bytes_are_bounded_before_serialization
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::snapshot_scope_and_authority_domain_are_part_of_admission_truth
+        PASS [   0.008s] codex-hepta-context-compiler v2::tests::provider_payload_binding_must_match_exact_serialized_payload
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::serialization_rejects_payload_realization_that_does_not_match_selected_digest
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::serialization_validates_real_bytes_and_tokenizes_final_payload
+        PASS [   0.003s] codex-hepta-context-compiler v2::tests::successor_snapshot_rejects_revocation_resurrection
+        PASS [   0.005s] codex-hepta-context-compiler v2::tests::tiny_budget_refuses_instead_of_truncating_instruction_or_schema
+        PASS [   0.005s] codex-hepta-context-compiler v2::tests::verified_admission_cannot_be_reused_across_request_scope
+        PASS [   0.004s] codex-hepta-context-compiler wire::tests::compiler_composes_into_admitted_v2_transport_without_serializing_authority
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::tokenizer_generation_secret_and_profile_drift_fail_closed
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::well_formed_admission_digest_is_not_enough_without_verifier_acceptance
+        PASS [   0.008s] codex-hepta-memory-retrieval decision::tests::assignment_digest_detects_selected_set_tampering
+        PASS [   0.008s] codex-hepta-context-compiler wire::tests::context_wire_rejects_unknown_fields_and_duplicate_id_partitions
+        PASS [   0.016s] codex-hepta-context-compiler v2::tests::revocation_and_mandatory_reference_bounds_fail_closed
+        PASS [   0.007s] codex-hepta-memory-retrieval decision::tests::exhaustive_generators_produce_causal_eligible_assignment
+        PASS [   0.008s] codex-hepta-memory-retrieval decision::tests::policy_channel_limit_is_recorded_separately_from_source_completeness
+        PASS [   0.007s] codex-hepta-memory-retrieval engram::tests::active_contradiction_forces_abstention
+        PASS [   0.005s] codex-hepta-memory-retrieval engram::tests::engram_product_hard_limits_are_enforced
+        PASS [   0.004s] codex-hepta-memory-retrieval engram::tests::engram_snapshot_and_receipt_tampering_fail_closed
+        PASS [   0.010s] codex-hepta-memory-retrieval decision::tests::source_limit_is_bound_and_blocks_complete_candidate_claim
+        PASS [   0.005s] codex-hepta-memory-retrieval engram::tests::recomputed_structural_receipt_forgery_fails_closed
+        PASS [   0.005s] codex-hepta-memory-retrieval engram::tests::recurrent_association_changes_final_selection_order
+        PASS [   0.004s] codex-hepta-memory-retrieval generation_bound::tests::canonical_shadow_bridge_rejects_cross_packet_or_selection_drift
+        PASS [   0.006s] codex-hepta-memory-retrieval generation_bound::tests::canonical_shadow_receipt_cannot_undercount_legacy_selection
+        PASS [   0.004s] codex-hepta-memory-retrieval generation_bound::tests::legacy_abstention_maps_to_canonical_abstention_without_selected_events
+        PASS [   0.005s] codex-hepta-memory-retrieval generation_bound::tests::channel_completion_order_cannot_change_union_or_recall
+        PASS [   0.004s] codex-hepta-memory-retrieval generation_bound::tests::high_risk_contradiction_forces_abstention
+        PASS [   0.007s] codex-hepta-memory-retrieval engram::tests::ret04_ablation_baselines_are_independent_and_resource_bounded
+        PASS [   0.005s] codex-hepta-memory-retrieval generation_bound::tests::legacy_recall_projects_to_canonical_shadow_without_fabricating_authority
+        PASS [   0.005s] codex-hepta-memory-retrieval generation_bound::tests::ood_and_insufficient_coverage_abstain_explicitly
+        PASS [   0.004s] codex-hepta-memory-retrieval generation_bound::tests::stale_generation_candidate_is_rejected_before_ranking
+        PASS [   0.005s] codex-hepta-memory-retrieval generation_bound::tests::score_floor_applies_to_every_returned_selection
+        PASS [   0.006s] codex-hepta-memory-retrieval generation_bound::tests::public_union_and_packet_validators_reject_structural_tampering
+        PASS [   0.007s] codex-hepta-memory-retrieval generation_bound::tests::public_packet_validator_rejects_impossible_counts_after_rehash
+        PASS [   0.004s] codex-hepta-memory-retrieval generation_bound::tests::zero_weight_channel_cannot_satisfy_coverage
+        PASS [   0.004s] codex-hepta-memory-retrieval generation_bound::tests::tombstones_and_duplicate_channel_candidates_fail_closed
+        PASS [   0.004s] codex-hepta-memory-retrieval generator::tests::active_policy_requires_exact_owner_generator_coverage
+        PASS [   0.004s] codex-hepta-memory-retrieval generator::tests::associative_and_entity_owner_batches_merge_without_double_counting_channel
+        PASS [   0.010s] codex-hepta-memory-retrieval generation_bound::tests::property_all_candidate_permutations_have_one_union_and_recall
+        PASS [   0.004s] codex-hepta-memory-retrieval generator::tests::compile_cue_is_the_validated_constructor
+        PASS [   0.004s] codex-hepta-memory-retrieval generator::tests::generator_completeness_is_bound_even_with_identical_candidates
+        PASS [   0.008s] codex-hepta-memory-retrieval generator::tests::enabled_generator_unavailability_fails_closed
+        PASS [   0.007s] codex-hepta-memory-retrieval generator::tests::generator_batch_requires_one_exact_rank_per_candidate
+        PASS [   0.008s] codex-hepta-memory-retrieval generator::tests::generated_receipt_rejects_cross_generation_rebinding
+        PASS [   0.004s] codex-hepta-memory-retrieval generator::tests::tampered_generator_receipt_fails_closed
+        PASS [   0.003s] codex-hepta-memory-retrieval memory_cell::tests::changed_request_epoch_or_budget_fails_before_source_access
+        PASS [   0.004s] codex-hepta-memory-retrieval memory_cell::tests::an_unavailable_readout_cannot_supply_context
+        PASS [   0.004s] codex-hepta-memory-retrieval memory_cell::tests::every_support_is_checked_without_upgrading_the_prediction
+        PASS [   0.029s] codex-hepta-memory-retrieval engram::tests::population_competition_never_exceeds_declared_active_bound
+        PASS [   0.004s] codex-hepta-memory-retrieval memory_cell::tests::foreign_scope_entity_or_revoked_support_fails_closed
+        PASS [   0.003s] codex-hepta-memory-retrieval tests::result_count_is_bounded
+        PASS [   0.010s] codex-hepta-memory-retrieval generator::tests::property_all_generator_batch_permutations_have_one_recall
+        PASS [   0.004s] codex-hepta-memory-retrieval tests::ranking_is_deterministic_and_explainable
+        PASS [   0.003s] codex-hepta-memory-retrieval tests::stale_candidate_snapshot_is_rejected
+        PASS [   0.004s] codex-hepta-memory-retrieval tests::tombstone_candidates_are_rejected_before_result_truncation
+        PASS [   0.004s] codex-hepta-memory-retrieval v2::tests::omitted_candidate_identity_content_and_every_score_are_bound
+        PASS [   0.005s] codex-hepta-memory-retrieval v2::tests::identical_top_k_with_different_omission_counts_has_distinct_v2_receipts
+        PASS [   0.004s] codex-hepta-memory-retrieval v2::tests::query_snapshot_and_result_limit_are_in_the_expected_input_binding
+        PASS [   0.004s] codex-hepta-memory-retrieval v2::tests::v2_and_expected_input_binding_preserve_validation_failures
+        PASS [   0.006s] codex-hepta-memory-retrieval v2::tests::candidate_and_citation_permutations_have_one_binding
+        PASS [   0.004s] codex-hepta-memory-retrieval v2::tests::v2_preserves_the_v1_result_and_digest_bytes
+        PASS [   0.047s] codex-hepta-memory-retrieval generator::tests::product_generation_construction_is_confined_to_owner_adapter
+        PASS [   0.062s] codex-hepta-memory-retrieval generator::tests::generator_rank_and_total_candidate_bounds_fail_closed
+────────────
+     Summary [   0.149s] 127 tests run: 127 passed, 2 skipped

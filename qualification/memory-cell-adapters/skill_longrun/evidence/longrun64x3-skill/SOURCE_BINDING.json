@@ -1,0 +1,134 @@
+{
+  "all_frozen_source_and_control_files_match_committed_tree": true,
+  "artifact_origin": {
+    "bytes": 1856,
+    "sha256": "64db3e3fedbcfca358763654524f6465df4ca92a040158f34d5151c06af1010f"
+  },
+  "audit_comparison_source": "All comparison code remains as committed before formal execution. Only the report serializer import changed after an output-size failure; its exact source/diff and prior failure are retained separately.",
+  "ci_source": {
+    "bytes": 468,
+    "sha256": "f62b993ba6a2429c1e772e2da9c35b1fd200f94f53e8881012bd3e04da06203b"
+  },
+  "current_checkout_runtime_bytes_match": true,
+  "frozen_source_file_count": 19,
+  "github_api_fetched_by_this_binding_step": false,
+  "job_id": 123006077672,
+  "native_ci_coverage_claimed": false,
+  "run_id": 40742088819,
+  "schema": "hepta.memory.skill-ci-source-binding.v1",
+  "source_commit": "4693e8028fb8563ec730dcb55458a212389154a5",
+  "source_files": {
+    "qualification/memory-cell-adapters/evidence/formal-01/restore.py": {
+      "bytes": 2680,
+      "git_blob_sha": "02b6efcb7477ab7b48a17a896697b50538e874e8",
+      "sha256": "3158ddf4fe3800e2bb3b89922619c485e01573d33f36b83d52fcc931b9ef604d"
+    },
+    "qualification/memory-cell-adapters/longrun/ci_run.py": {
+      "bytes": 16443,
+      "git_blob_sha": "2f7a835b1d4b18025795c5109deac39981ace212",
+      "sha256": "737899e7a59da03a5c840b855a8650f3b8821ab009ee479976bd858c8e25d6a4"
+    },
+    "qualification/memory-cell-adapters/owner.py": {
+      "bytes": 8499,
+      "git_blob_sha": "f17e08356222a581acd580a63669cb927ea5f891",
+      "sha256": "b8de2d15177ac10f93f3d7a8ad87cc8ad6d05612093af0131e374275c8e281a9"
+    },
+    "qualification/memory-cell-adapters/reader.py": {
+      "bytes": 18876,
+      "git_blob_sha": "1271c7c03a15ae013b4762d9fcf40f4ce7cfdd24",
+      "sha256": "d49ada7a931b664b694d4086f24833cbb9b8839704298569c4e831d4a1e98970"
+    },
+    "qualification/memory-cell-adapters/routing.py": {
+      "bytes": 3892,
+      "git_blob_sha": "4a30b9b24ce1bf20549b4807ee8f3d96d2a56434",
+      "sha256": "c4ad38bf56970ea873383c5184bd09aec9f03e714e1c2e73c92257231f731f6b"
+    },
+    "qualification/memory-cell-adapters/runtime_contract.py": {
+      "bytes": 2140,
+      "git_blob_sha": "0f6052f57cea6dcb7bb318f22e5bedaca1a173b1",
+      "sha256": "5e1412097321484f1891562eecdfba4eb0ec1683d841a1dac4e28a47bab27f55"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/LONGRUN_PROTOCOL.json": {
+      "bytes": 6647,
+      "git_blob_sha": "0128d40c11498d4dcd297f9b80c1bbf0113960db",
+      "sha256": "8eba86176ea3a42e19cdc7607859d34733ff82e037b3d8200a3b97924cab8c56"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/LONGRUN_PROTOCOL.sha256": {
+      "bytes": 65,
+      "git_blob_sha": "35416f33d736390127e98b219aa079b53de02f45",
+      "sha256": "a29fa78437fc2fc88a43a95db806ea512f1103baafc59dc84fe558947ee5b95f"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/ci_run.py": {
+      "bytes": 13841,
+      "git_blob_sha": "20620ec1b3936ab42c0af675845135c123658d44",
+      "sha256": "fbbb39faa7b6db7cb2a794e95ef48205cd3dfe246e820b82811099fec2d17114"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/common.py": {
+      "bytes": 5565,
+      "git_blob_sha": "c619ef805d46393468eb18832420909e2a5b6fe0",
+      "sha256": "fc440c95c8eeae74c45671ca2fed816284642715b3c7dd88005563837e664705"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/fit_worker.py": {
+      "bytes": 5151,
+      "git_blob_sha": "14402780150e7d5f8e902cd37f96b33e915787af",
+      "sha256": "db12fd857482b9d25859502c2e42365d57346ff309d1f65b1fce3daea71eaa42"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/maintenance_tests.py": {
+      "bytes": 5386,
+      "git_blob_sha": "7de9b117518ee4e9427b495804d2de938bbef540",
+      "sha256": "83451d705d36606d8c422d40696b4eacbcf6de8858c69f283f37932ecd49b9df"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/manager.py": {
+      "bytes": 19717,
+      "git_blob_sha": "07e2c55d5845d8be1c9e77c22ec284a05cf819dd",
+      "sha256": "9067233229d6b7570784fc4835869074d25ef3579d361d3bf6b23d9a1f46ff25"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/owner_read.py": {
+      "bytes": 6123,
+      "git_blob_sha": "43d9e2c53551711c44ccebd110751e64be13de79",
+      "sha256": "c4ddc4bf886861bc183e1fa5382c5d2c97b88e3f46047ddbb6b3b88947ec6709"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/targets.py": {
+      "bytes": 1048,
+      "git_blob_sha": "cc4ee35913f8a8dfbd94aa23fb177fb2c23e7ff4",
+      "sha256": "b6c6604fa54b1a39810eb8fd530626d356bbbe7064d1c4e5e58695e8776c46fd"
+    },
+    "qualification/memory-cell-adapters/tensor_cell.py": {
+      "bytes": 19726,
+      "git_blob_sha": "d59c077e7d6b14c09e6de1470af7816705837799",
+      "sha256": "2421dc985a74b7b4edb80029a2b486d599ab8cf4409263e894aeb15878c289b4"
+    },
+    "qualification/memory-cell-v9/learning/resource_cleanup.py": {
+      "bytes": 4597,
+      "git_blob_sha": "3871ee712944934771ef9e26276dd2a4630ba05b",
+      "sha256": "9eb4ed0868da1fe01a568369d9243607ee9bb7de8d4a6c10527c3a9ee7a812d5"
+    },
+    "qualification/memory-cell-v9/learning/resource_monitor.py": {
+      "bytes": 14324,
+      "git_blob_sha": "d007917f9c7dbc0b02a6136021b9a74e88f4ca97",
+      "sha256": "541811a934c1ab6319d3d925599fa12fd8e5beadb0a4a4d87cf6a2a7cb22d7bf"
+    },
+    "qualification/memory-cell-v9/learning/resource_samples.py": {
+      "bytes": 7857,
+      "git_blob_sha": "e09a2222939345052d5d28cabac497b5bf6ff16b",
+      "sha256": "626447e8fbf4f6f81403ac63dc587a0ec970c41deebddc59c658f213754edc87"
+    }
+  },
+  "source_freeze": {
+    "bytes": 9015,
+    "sha256": "371721714244320ad5388d5f1284e33096bb4538569e9bfb3dcc07322cdb5553"
+  },
+  "source_tree": "df3224a5a13c1fcc0a41d3b0278a864174e12d7e",
+  "workflow_and_request": {
+    ".github/workflows/memory-adapter-skill-longrun.yml": {
+      "bytes": 4027,
+      "git_blob_sha": "751826da5c3f010435eef347867b0ecd6a86f65a",
+      "sha256": "64c7fb3026fb5f1dc8d66129b2584ef4b98282a5bbcc0dc5f36cd81a07792027"
+    },
+    "qualification/memory-cell-adapters/skill_longrun/RUN_REQUEST.json": {
+      "bytes": 290,
+      "git_blob_sha": "5d900881c7630ba1484e50a5da434208e53aabb9",
+      "sha256": "0a2061e3b88b4c02993fc5e9bc4a2c5a15b3fe69fffab37e41f9fb005680c107"
+    }
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "actual_ignored": {
+    "failed": 2,
+    "passed": 1,
+    "run": 3,
+    "skipped": 234
+  },
+  "attempt": "formal-02",
+  "engineering_fixes_local": [
+    "db2ef46bb",
+    "3ec1a46e872373af49ea66d5f5a1bde75de2ba1a"
+  ],
+  "executions": [
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/addressing",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        16
+      ],
+      "raw_output": {
+        "bytes": 115,
+        "sha256": "7f274de4157c37080902ac1a17153ad150d6a94bb1d7f7b5aa807aebcc1a2f98"
+      },
+      "raw_output_path": "commands/01.log",
+      "test_discovery_nonempty": true,
+      "wall_seconds": 1.1571735160000003
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/learning",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        21
+      ],
+      "raw_output": {
+        "bytes": 120,
+        "sha256": "4dfac68a47bb46b3f7ad5953fa8e99fe57538e9e9da01813d4d6cd0bb6905930"
+      },
+      "raw_output_path": "commands/02.log",
+      "test_discovery_nonempty": true,
+      "wall_seconds": 6.619592221999994
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 17105,
+        "sha256": "73682627828123fb9130f33585668c94851bd2876c17c84832448f1aea44ba10"
+      },
+      "raw_output_path": "commands/03.log",
+      "wall_seconds": 130.580331359
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "exit_code": 100,
+      "raw_output": {
+        "bytes": 219730,
+        "sha256": "2ef644137f4cf261987184ff7e61109a0320caa0c4443b9a9d4573f2b069d465"
+      },
+      "raw_output_path": "commands/04.log",
+      "wall_seconds": 255.26090837099997
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_) & test(v9)"
+      ],
+      "exit_code": 100,
+      "raw_output": {
+        "bytes": 26529,
+        "sha256": "fd24c0ddcb8c75b3b15141f017f7913c18b844c399f3a6d2f3fc530f95b10356"
+      },
+      "raw_output_path": "commands/05.log",
+      "wall_seconds": 79.03177636399994
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/evaluation/native_evidence.py",
+        "--reports",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output",
+        "--output",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/native-language-audit.json"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_output_path": "commands/06.log",
+      "wall_seconds": 0.071662397999944
+    }
+  ],
+  "failures": [
+    "TaskFlow final-use authority fixture directory was not private mode 0700; no migration crash matrix executed.",
+    "Continual and structure child owner control socket paths exceeded SUN_LEN; no paired or structural fitting occurred."
+  ],
+  "missing_required_receipts": [
+    "continual-learning.json",
+    "structure-learning.json",
+    "migration-process.json",
+    "continual-learning-score.json",
+    "structure-learning-score.json"
+  ],
+  "model_or_evaluation_tuned": false,
+  "native_three_arm_audit_passed": true,
+  "ordinary": {
+    "failed": 1,
+    "passed": 949,
+    "run": 950,
+    "skipped": 29
+  },
+  "passed": false,
+  "provider_log": {
+    "bytes": 445203,
+    "compressed_path": "provider-job.log.xz",
+    "compressed_sha256": "b1fe5d4100ae44233d58f33eba3f919e6cd2cca43bc29020fcc6bb6684648e2e",
+    "sha256": "f79f45f39fa69c13477fd6323544b134b17d28edd6fe55601c3abed065f95767"
+  },
+  "schema": "hepta.memory.v9.ci-review.v1",
+  "source_commit": "371890909481dec3229449d4ae0330f7ba01646d",
+  "source_tree": "136e4fc3a74d2b1845fcfb4bd1245faa0e09de21"
+}

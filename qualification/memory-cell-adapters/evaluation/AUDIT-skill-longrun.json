@@ -1,0 +1,2474 @@
+{
+  "all_phase_aggregate": {
+    "exact_sql": {
+      "active": {
+        "correct": 1704,
+        "count": 1704
+      },
+      "changed": {
+        "correct": 231,
+        "count": 231
+      },
+      "retention": {
+        "correct": 1473,
+        "count": 1473
+      },
+      "revoked": {
+        "correct": 24,
+        "count": 24
+      }
+    },
+    "parameter": {
+      "active": {
+        "correct": 1704,
+        "count": 1704
+      },
+      "changed": {
+        "correct": 231,
+        "count": 231
+      },
+      "retention": {
+        "correct": 1473,
+        "count": 1473
+      },
+      "revoked": {
+        "correct": 24,
+        "count": 24
+      }
+    }
+  },
+  "all_phase_execution_aggregate": {
+    "exact_sql": {
+      "active": {
+        "correct": 1704,
+        "count": 1704
+      },
+      "changed": {
+        "correct": 231,
+        "count": 231
+      },
+      "retention": {
+        "correct": 1473,
+        "count": 1473
+      },
+      "revoked": {
+        "correct": 24,
+        "count": 24
+      }
+    },
+    "parameter": {
+      "active": {
+        "correct": 1704,
+        "count": 1704
+      },
+      "changed": {
+        "correct": 231,
+        "count": 231
+      },
+      "retention": {
+        "correct": 1473,
+        "count": 1473
+      },
+      "revoked": {
+        "correct": 24,
+        "count": 24
+      }
+    }
+  },
+  "audit_finished_ns": 81261138460393,
+  "audit_started_ns": 81257817992881,
+  "check_count": 28467,
+  "completed_child_processes": 435,
+  "completed_clean_rebuilds": 24,
+  "completed_cycles": 192,
+  "completed_fit_phases": 216,
+  "completed_sample_presentations": 4147200,
+  "completed_steps": 129600,
+  "completed_update_fits": 192,
+  "cost_inventory": {
+    "canonical_features_bytes": 23189,
+    "children_cpu_seconds_including_failures": 661.6656370000005,
+    "children_wall_ns_including_failures": 665567728491,
+    "current_output_regular_bytes_before_summary": 64071538,
+    "current_source_sqlite_bytes": 86016,
+    "driver_own_cpu_ns_before_summary": 1674140298,
+    "driver_wall_ns_before_summary": 667897596950,
+    "historical_source_sqlite_snapshot_bytes": 6193152,
+    "initial_checkpoint_copies_bytes": 164283,
+    "initial_source_sqlite_snapshot_bytes": 86016,
+    "kernel_output_blocks_children": 99648,
+    "peak_and_integral_authority": "outer resource.json; independent child maxima are not summed",
+    "reader_children_cpu_seconds": 228.33125499999971,
+    "retained_explicit_source_json_bytes": 494374,
+    "retained_fitted_checkpoint_bytes": 13105634,
+    "retained_sample_schedule_bytes": 33177600,
+    "shared_encoder_reference_bytes": 127536988,
+    "training_children_cpu_seconds": 433.33438200000074,
+    "untrained_checkpoint_bytes": 143319
+  },
+  "cost_summary": {
+    "full_cost_exact": false,
+    "latency_boundary": "Both arms share each fresh reader in fixed parameter-then-SQL order; per-arm loops are not independent cold deployments.",
+    "nested_ci_cost_scopes": {
+      "all_fit_and_reader_process_cpu_seconds": 661.6656370000005,
+      "checkout_and_python_setup_cpu_seconds": null,
+      "ci_result": {
+        "bytes": 10489,
+        "sha256": "88c09c21ecb592112551a5aae2a7f1278558e9034291230cffaca1342098f7b0"
+      },
+      "dependencies": {
+        "numpy": "2.3.5",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+        "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+        "torch": "2.8.0+cpu"
+      },
+      "full_cost_exact": false,
+      "hardware": {
+        "boot_id": "a44095c5-63fb-4aa4-8e78-bd2e2af1e189\n",
+        "cpu_max": {
+          "unavailable": "FileNotFoundError"
+        },
+        "cpuinfo": "processor\t: 0\nvendor_id\t: AuthenticAMD\ncpu family\t: 26\nmodel\t\t: 2\nmodel name\t: AMD EPYC 9V45 96-Core Processor\nstepping\t: 1\nmicrocode\t: 0xffffffff\ncpu MHz\t\t: 4323.629\ncache size\t: 1024 KB\nphysical id\t: 0\nsiblings\t: 4\ncore id\t\t: 0\ncpu cores\t: 2\napicid\t\t: 0\ninitial apicid\t: 0\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 28\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy svm cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves user_shstk avx_vnni avx512_bf16 clzero xsaveerptr rdpru arat npt nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold v_vmsave_vmload avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm avx512_vp2intersect\nbugs\t\t: sysret_ss_attrs null_seg spectre_v1 spectre_v2 spec_store_bypass srso spectre_v2_user\nbogomips\t: 5192.23\nTLB size\t: 192 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 1\nvendor_id\t: AuthenticAMD\ncpu family\t: 26\nmodel\t\t: 2\nmodel name\t: AMD EPYC 9V45 96-Core Processor\nstepping\t: 1\nmicrocode\t: 0xffffffff\ncpu MHz\t\t: 2596.119\ncache size\t: 1024 KB\nphysical id\t: 0\nsiblings\t: 4\ncore id\t\t: 0\ncpu cores\t: 2\napicid\t\t: 1\ninitial apicid\t: 1\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 28\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy svm cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves user_shstk avx_vnni avx512_bf16 clzero xsaveerptr rdpru arat npt nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold v_vmsave_vmload avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm avx512_vp2intersect\nbugs\t\t: sysret_ss_attrs null_seg spectre_v1 spectre_v2 spec_store_bypass srso spectre_v2_user\nbogomips\t: 5192.23\nTLB size\t: 192 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 2\nvendor_id\t: AuthenticAMD\ncpu family\t: 26\nmodel\t\t: 2\nmodel name\t: AMD EPYC 9V45 96-Core Processor\nstepping\t: 1\nmicrocode\t: 0xffffffff\ncpu MHz\t\t: 2596.119\ncache size\t: 1024 KB\nphysical id\t: 0\nsiblings\t: 4\ncore id\t\t: 1\ncpu cores\t: 2\napicid\t\t: 2\ninitial apicid\t: 2\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 28\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy svm cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves user_shstk avx_vnni avx512_bf16 clzero xsaveerptr rdpru arat npt nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold v_vmsave_vmload avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm avx512_vp2intersect\nbugs\t\t: sysret_ss_attrs null_seg spectre_v1 spectre_v2 spec_store_bypass srso spectre_v2_user\nbogomips\t: 5192.23\nTLB size\t: 192 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 3\nvendor_id\t: AuthenticAMD\ncpu family\t: 26\nmodel\t\t: 2\nmodel name\t: AMD EPYC 9V45 96-Core Processor\nstepping\t: 1\nmicrocode\t: 0xffffffff\ncpu MHz\t\t: 4326.306\ncache size\t: 1024 KB\nphysical id\t: 0\nsiblings\t: 4\ncore id\t\t: 1\ncpu cores\t: 2\napicid\t\t: 3\ninitial apicid\t: 3\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 28\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy svm cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves user_shstk avx_vnni avx512_bf16 clzero xsaveerptr rdpru arat npt nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold v_vmsave_vmload avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm avx512_vp2intersect\nbugs\t\t: sysret_ss_attrs null_seg spectre_v1 spectre_v2 spec_store_bypass srso spectre_v2_user\nbogomips\t: 5192.23\nTLB size\t: 192 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management:\n\n",
+        "disk_before": {
+          "free": 91227701248,
+          "total": 154894188544,
+          "used": 63649710080
+        },
+        "environment": {
+          "GITHUB_REF": "refs/heads/research/memory-cell-completion-20261028",
+          "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+          "GITHUB_RUN_ATTEMPT": "1",
+          "GITHUB_RUN_ID": "40742088819",
+          "GITHUB_SHA": "4693e8028fb8563ec730dcb55458a212389154a5",
+          "ImageOS": "ubuntu24",
+          "ImageVersion": "20261026.354.1",
+          "RUNNER_ARCH": "X64",
+          "RUNNER_OS": "Linux"
+        },
+        "executable": "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+        "job_pre_wrapper_wall_ns": 59557169756,
+        "logical_cpus": 4,
+        "machine": "x86_64",
+        "meminfo": "MemTotal:       16367524 kB\nMemFree:        14152940 kB\nMemAvailable:   15419812 kB\nBuffers:           70100 kB\nCached:          1471856 kB\nSwapCached:            0 kB\nActive:           700804 kB\nInactive:        1082020 kB\nActive(anon):     293084 kB\nInactive(anon):        0 kB\nActive(file):     407720 kB\nInactive(file):  1082020 kB\nUnevictable:       46728 kB\nMlocked:           43656 kB\nSwapTotal:       3145724 kB\nSwapFree:        3145724 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:            387816 kB\nWriteback:             0 kB\nAnonPages:        287876 kB\nMapped:           329420 kB\nShmem:             43284 kB\nKReclaimable:      76928 kB\nSlab:             154604 kB\nSReclaimable:      76928 kB\nSUnreclaim:        77676 kB\nKernelStack:        4136 kB\nPageTables:         6220 kB\nSecPageTables:         0 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    11329484 kB\nCommitted_AS:    2059836 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:       38820 kB\nVmallocChunk:          0 kB\nPercpu:             2336 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:         0 kB\nFilePmdMapped:         0 kB\nCmaTotal:              0 kB\nCmaFree:         1478656 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nGPUActive:             0 kB\nGPUReclaim:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:      107648 kB\nDirectMap2M:     4081664 kB\nDirectMap1G:    14680064 kB\n",
+        "memory_max": {
+          "unavailable": "FileNotFoundError"
+        },
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+        "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+        "same_hardware_as_semantic_run_claimed": false,
+        "schema": "hepta.memory.adapter-skill-ci-hardware.v1",
+        "scope": "skill",
+        "uname": [
+          "Linux",
+          "runnervm48cm3",
+          "7.0.0-1017-azure",
+          "#17~24.04.1-Ubuntu SMP PREEMPT Thu Sep 24 18:46:57 UTC 2026",
+          "x86_64",
+          "x86_64"
+        ]
+      },
+      "manager_and_waited_descendants_kernel_cpu_seconds": 664.500067,
+      "monitor_launcher_cpu_seconds_including_manager_tree": 751.157676,
+      "monitor_launcher_wall_ns": 669343782478,
+      "origin_authentication": "This verifies downloaded contents and internal source bindings. GitHub origin/ZIP authentication is a separate retained receipt.",
+      "overlap_warning": "Fit/read costs are nested inside manager, manager inside launcher, launcher inside wrapper. Do not add these totals.",
+      "preparation_child_cpu_seconds": 15.690651,
+      "preparation_wall_ns": 18248626993,
+      "source_commit": "4693e8028fb8563ec730dcb55458a212389154a5",
+      "source_identity": {
+        "bytes": 468,
+        "sha256": "f62b993ba6a2429c1e772e2da9c35b1fd200f94f53e8881012bd3e04da06203b"
+      },
+      "source_tree": "df3224a5a13c1fcc0a41d3b0278a864174e12d7e",
+      "upload_cpu_seconds": null,
+      "wrapper_and_children_cpu_seconds_without_double_counting": 767.541729018,
+      "wrapper_own_cpu_ns": 650993018,
+      "wrapper_wall_ns": 687657296069
+    },
+    "resource_kernel_child_exit_rusage": {
+      "ru_inblock": 1560,
+      "ru_majflt": 3,
+      "ru_maxrss": 361136,
+      "ru_minflt": 19361220,
+      "ru_nivcsw": 6652,
+      "ru_nvcsw": 60266,
+      "ru_oublock": 157264,
+      "ru_stime": 65.174147,
+      "ru_utime": 599.32592
+    },
+    "resource_monitor_rusage_before_final_receipt": {
+      "ru_inblock": 0,
+      "ru_majflt": 0,
+      "ru_maxrss": 20300,
+      "ru_minflt": 2970,
+      "ru_nivcsw": 2838,
+      "ru_nvcsw": 5164,
+      "ru_oublock": 5496,
+      "ru_stime": 56.252225,
+      "ru_utime": 30.399177
+    },
+    "timing": {
+      "checkpoint_load_wall_ns": {
+        "count": 219,
+        "max": 4050763,
+        "median": 2649081,
+        "min": 2440418,
+        "p95_nearest_rank": 2991120,
+        "sum": 588596978
+      },
+      "exact_sql_eight_workflow_loop_ns": {
+        "count": 219,
+        "max": 261084,
+        "median": 123206,
+        "min": 111620,
+        "p95_nearest_rank": 196385,
+        "sum": 29406057
+      },
+      "fit_body_cpu_ns": {
+        "count": 216,
+        "max": 968086896,
+        "median": 803239045.0,
+        "min": 749315015,
+        "p95_nearest_rank": 900253774,
+        "sum": 175675070349
+      },
+      "fit_body_wall_ns": {
+        "count": 216,
+        "max": 980282873,
+        "median": 808502571.0,
+        "min": 754247399,
+        "p95_nearest_rank": 905946034,
+        "sum": 176797677996
+      },
+      "fit_method_cpu_seconds": {
+        "count": 216,
+        "max": 0.9575284050000001,
+        "median": 0.7939686324999999,
+        "min": 0.741391919,
+        "p95_nearest_rank": 0.8900010289999999,
+        "sum": 173.628025578
+      },
+      "fit_method_wall_seconds": {
+        "count": 216,
+        "max": 0.9697267999999895,
+        "median": 0.7991763734999608,
+        "min": 0.7461416649999819,
+        "p95_nearest_rank": 0.8953094910000061,
+        "sum": 174.75105134699996
+      },
+      "fit_process_cpu_seconds": {
+        "count": 216,
+        "max": 2.695547999999996,
+        "median": 1.9579150000000096,
+        "min": 1.8404860000000909,
+        "p95_nearest_rank": 2.311159,
+        "sum": 433.33438200000074
+      },
+      "fit_process_wall_ns": {
+        "count": 216,
+        "max": 2716367771,
+        "median": 1969735846.0,
+        "min": 1848252784,
+        "p95_nearest_rank": 2322920212,
+        "sum": 435836452845
+      },
+      "parameter_eight_workflow_loop_ns": {
+        "count": 219,
+        "max": 1563084,
+        "median": 1010242,
+        "min": 820038,
+        "p95_nearest_rank": 1139097,
+        "sum": 222382715
+      },
+      "reader_body_cpu_ns": {
+        "count": 219,
+        "max": 8024238,
+        "median": 5704395,
+        "min": 5266892,
+        "p95_nearest_rank": 6502676,
+        "sum": 1266802260
+      },
+      "reader_body_wall_ns": {
+        "count": 219,
+        "max": 8026012,
+        "median": 5707248,
+        "min": 5268833,
+        "p95_nearest_rank": 6504536,
+        "sum": 1267410654
+      },
+      "reader_process_cpu_seconds": {
+        "count": 219,
+        "max": 1.3634540000000017,
+        "median": 1.013690999999998,
+        "min": 0.9400700000000697,
+        "p95_nearest_rank": 1.263351999999999,
+        "sum": 228.33125499999971
+      },
+      "reader_process_wall_ns": {
+        "count": 219,
+        "max": 1370148102,
+        "median": 1021130909,
+        "min": 944124321,
+        "p95_nearest_rank": 1270475023,
+        "sum": 229731275646
+      }
+    }
+  },
+  "detail_parts": {
+    "checks": [
+      {
+        "bytes": 36746,
+        "file": "AUDIT-skill-longrun.checks.000.json",
+        "records": 500,
+        "sha256": "f01592f202b93087e97e282e784546ad2d502624efb479922136405785d66c8b"
+      },
+      {
+        "bytes": 36865,
+        "file": "AUDIT-skill-longrun.checks.001.json",
+        "records": 500,
+        "sha256": "5e3b3c44cc9e942a491458bd0aaa46ef6a8f95a1ca437b0c00fc7df9ff03be14"
+      },
+      {
+        "bytes": 37027,
+        "file": "AUDIT-skill-longrun.checks.002.json",
+        "records": 500,
+        "sha256": "ce20248b5dd8bcf22b6190672e54556c88edc5d343df4764e34ab1b3f7f4ff74"
+      },
+      {
+        "bytes": 37075,
+        "file": "AUDIT-skill-longrun.checks.003.json",
+        "records": 500,
+        "sha256": "557a3ffd00a1a3d48c09522c1849489fd499199e2c8b0ffb2cd91cc42bd2117b"
+      },
+      {
+        "bytes": 37155,
+        "file": "AUDIT-skill-longrun.checks.004.json",
+        "records": 500,
+        "sha256": "a3e1565a962dc2e65ec25c97bedba3bc4190627a0b3ec385af476757fdd8b8ec"
+      },
+      {
+        "bytes": 37199,
+        "file": "AUDIT-skill-longrun.checks.005.json",
+        "records": 500,
+        "sha256": "501952723c8e4f7f37f194cb1c7888ccedcbb10c8b11daad9aff543bd2416d22"
+      },
+      {
+        "bytes": 37033,
+        "file": "AUDIT-skill-longrun.checks.006.json",
+        "records": 500,
+        "sha256": "07a2106482270f2d22a8396aa4dbdfa24e9bbe127a2efb1dbe0f2ad919c1c36c"
+      },
+      {
+        "bytes": 37049,
+        "file": "AUDIT-skill-longrun.checks.007.json",
+        "records": 500,
+        "sha256": "889a9a353656dcfaccaa7bcc7cb808ab1b7c7c69d381401bbca9a71a11d3b340"
+      },
+      {
+        "bytes": 36873,
+        "file": "AUDIT-skill-longrun.checks.008.json",
+        "records": 500,
+        "sha256": "5c14f4804b804c2cc7c7fae31b5faf955ba860780bb5123d2b56b66e3b06c2ca"
+      },
+      {
+        "bytes": 37007,
+        "file": "AUDIT-skill-longrun.checks.009.json",
+        "records": 500,
+        "sha256": "0b7a106389313fb497cf8040bb7a010926360bee867166e975d0999bc4afc110"
+      },
+      {
+        "bytes": 37083,
+        "file": "AUDIT-skill-longrun.checks.010.json",
+        "records": 500,
+        "sha256": "0043324352e47b9c1cc8ede5d1abad1fd528d1fa133969ab1ffd8d4536e8ba76"
+      },
+      {
+        "bytes": 37167,
+        "file": "AUDIT-skill-longrun.checks.011.json",
+        "records": 500,
+        "sha256": "68d8b0fa94e270f0806ba821c8d498ac12347eace829001a1f8e79f2b180ecfb"
+      },
+      {
+        "bytes": 37228,
+        "file": "AUDIT-skill-longrun.checks.012.json",
+        "records": 500,
+        "sha256": "89cbb4ab01311d860e1f3f4f9fb1b883bad0edbbf02df2c3895f2bb5249cd2e1"
+      },
+      {
+        "bytes": 37002,
+        "file": "AUDIT-skill-longrun.checks.013.json",
+        "records": 500,
+        "sha256": "67b4aa702e974a662e74b19ca2c3739807114076052a9dc7199cf7f6018c649e"
+      },
+      {
+        "bytes": 37036,
+        "file": "AUDIT-skill-longrun.checks.014.json",
+        "records": 500,
+        "sha256": "43c552cbcb8d4bef32af5f2de0cfd8bf1c3ff9c20c5bcb8c492313cf8f8ed308"
+      },
+      {
+        "bytes": 36874,
+        "file": "AUDIT-skill-longrun.checks.015.json",
+        "records": 500,
+        "sha256": "13adcff462e886eb1685b4621578541f69493b095bb92a1af9b313432ab81cb7"
+      },
+      {
+        "bytes": 37000,
+        "file": "AUDIT-skill-longrun.checks.016.json",
+        "records": 500,
+        "sha256": "78e2bdb2e97ba0f41f8a973e79518a5f6af16bc78b327737e0b05cff740078dc"
+      },
+      {
+        "bytes": 37098,
+        "file": "AUDIT-skill-longrun.checks.017.json",
+        "records": 500,
+        "sha256": "e2abdf444528b9c8a46bd8ed58e687dd880c519f6379c4871afd2cfb60124f4d"
+      },
+      {
+        "bytes": 37168,
+        "file": "AUDIT-skill-longrun.checks.018.json",
+        "records": 500,
+        "sha256": "97fc9043e1a1feb9b3977a65516ab9282bfbee2344619133ea9d705671b25586"
+      },
+      {
+        "bytes": 36186,
+        "file": "AUDIT-skill-longrun.checks.019.json",
+        "records": 500,
+        "sha256": "4ba16d3e71e9e7c278c3d766b1d7b665560c4b18b697be283383b438fb851fa0"
+      },
+      {
+        "bytes": 37236,
+        "file": "AUDIT-skill-longrun.checks.020.json",
+        "records": 500,
+        "sha256": "4d45cf14c2178d4a21d6a913eeac6a0f60dfc38d05560d9286b03abf83540d8c"
+      },
+      {
+        "bytes": 37132,
+        "file": "AUDIT-skill-longrun.checks.021.json",
+        "records": 500,
+        "sha256": "5b05f1645aead361e3c9f3f9bdb509f8dfc4926bba0656d2f428e53cbdfb3e48"
+      },
+      {
+        "bytes": 36868,
+        "file": "AUDIT-skill-longrun.checks.022.json",
+        "records": 500,
+        "sha256": "b5b34e9ab83a6b3f826b5e10356f7558fb54191586185a95091a5d12a5eef4d3"
+      },
+      {
+        "bytes": 37041,
+        "file": "AUDIT-skill-longrun.checks.023.json",
+        "records": 500,
+        "sha256": "373cdb1a66920c5cfc24fd0506d9fba6ba054cee40999722d04c5a0498ddf132"
+      },
+      {
+        "bytes": 36833,
+        "file": "AUDIT-skill-longrun.checks.024.json",
+        "records": 500,
+        "sha256": "b14ec8bc21a172a303c2ca2c676c6fef304d9f415105de934896f3d9b2fc6b0b"
+      },
+      {
+        "bytes": 37208,
+        "file": "AUDIT-skill-longrun.checks.025.json",
+        "records": 500,
+        "sha256": "ff099ff9d51b0bc9543a2e9c81d05d3d827f9ca1e369251fe1d598cc8ca38f48"
+      },
+      {
+        "bytes": 37094,
+        "file": "AUDIT-skill-longrun.checks.026.json",
+        "records": 500,
+        "sha256": "08ef2d91f96299477e1f4808acc7d32c5148e6f715793be626775adf88960054"
+      },
+      {
+        "bytes": 37242,
+        "file": "AUDIT-skill-longrun.checks.027.json",
+        "records": 500,
+        "sha256": "a45855d62e09f8acf68f7da82436993975ad2ae85713a3e630c895e61b573568"
+      },
+      {
+        "bytes": 37111,
+        "file": "AUDIT-skill-longrun.checks.028.json",
+        "records": 500,
+        "sha256": "f0d1937546b8a11017c5e1ad63ffdfe7576208f7038376985f9186d77569a6cc"
+      },
+      {
+        "bytes": 36868,
+        "file": "AUDIT-skill-longrun.checks.029.json",
+        "records": 500,
+        "sha256": "b32d86a89c9bb50e81679b14196682cf77b14cb6f9ceafc2c554c253fb50551a"
+      },
+      {
+        "bytes": 37056,
+        "file": "AUDIT-skill-longrun.checks.030.json",
+        "records": 500,
+        "sha256": "dfca24d2791519cd23bab97b91c18e1c134163021ec7af93afc8cc7a644daf64"
+      },
+      {
+        "bytes": 36833,
+        "file": "AUDIT-skill-longrun.checks.031.json",
+        "records": 500,
+        "sha256": "373ff5a52b6c26dbd94c65108ecc0b9a8168ac9441796bf22adcc14a28d7ca76"
+      },
+      {
+        "bytes": 37200,
+        "file": "AUDIT-skill-longrun.checks.032.json",
+        "records": 500,
+        "sha256": "9c334124b7ee0d1732a66c62e4e159673409de81885b994ac29f068ec5061fb6"
+      },
+      {
+        "bytes": 37114,
+        "file": "AUDIT-skill-longrun.checks.033.json",
+        "records": 500,
+        "sha256": "a92ce9433667298e0f8cd4eaf9fe89b9a75d6c40b7132987828faa73227109b1"
+      },
+      {
+        "bytes": 37242,
+        "file": "AUDIT-skill-longrun.checks.034.json",
+        "records": 500,
+        "sha256": "3f1b9795a92eab512a34195645e0cf4dfd8f427921835ec908db5555f51d38a1"
+      },
+      {
+        "bytes": 37099,
+        "file": "AUDIT-skill-longrun.checks.035.json",
+        "records": 500,
+        "sha256": "b65eb0378a37d22f57b9e1633e34839d93dbb95a24eb2678c4bb9306d95b0b57"
+      },
+      {
+        "bytes": 36868,
+        "file": "AUDIT-skill-longrun.checks.036.json",
+        "records": 500,
+        "sha256": "1413fe28e5ab8c85da425c6e03d051866be2ef04c9820f2cb310b625afc03979"
+      },
+      {
+        "bytes": 36613,
+        "file": "AUDIT-skill-longrun.checks.037.json",
+        "records": 500,
+        "sha256": "18942cf4316bedbe8c680a27e3423ccf2e2fb8832a902522f6a7170b36608106"
+      },
+      {
+        "bytes": 36568,
+        "file": "AUDIT-skill-longrun.checks.038.json",
+        "records": 500,
+        "sha256": "5d3fa06dc63e5233a862046ff1ca20960f3480c7898626e74c2f66cddbbd2ada"
+      },
+      {
+        "bytes": 36868,
+        "file": "AUDIT-skill-longrun.checks.039.json",
+        "records": 500,
+        "sha256": "8fffcc98e1e7a994b7161ad528346213085992c40e641f1cbc9535ff0330b467"
+      },
+      {
+        "bytes": 37252,
+        "file": "AUDIT-skill-longrun.checks.040.json",
+        "records": 500,
+        "sha256": "3c840c30ccd7eda7672e7b5e044c967fb0796a33e5297453589282c4a8969592"
+      },
+      {
+        "bytes": 37065,
+        "file": "AUDIT-skill-longrun.checks.041.json",
+        "records": 500,
+        "sha256": "03a41c272ede27092944f812027515e427add277ebf5a0989cfe6cf4a6dfb22a"
+      },
+      {
+        "bytes": 37361,
+        "file": "AUDIT-skill-longrun.checks.042.json",
+        "records": 500,
+        "sha256": "c1f6a6029eb317293be7ebd64c5f0a91e6f58e7974d4817dc67daaf7d90adc48"
+      },
+      {
+        "bytes": 36964,
+        "file": "AUDIT-skill-longrun.checks.043.json",
+        "records": 500,
+        "sha256": "6c01300b3fc60d206fc057eaed7d4aa72196ccc8f5591d86026acb6681c3bc1e"
+      },
+      {
+        "bytes": 37025,
+        "file": "AUDIT-skill-longrun.checks.044.json",
+        "records": 500,
+        "sha256": "bbc9519daddc984bf19fbb5ad695220665cd05521e4a0405d2bd296e9e73ca08"
+      },
+      {
+        "bytes": 36877,
+        "file": "AUDIT-skill-longrun.checks.045.json",
+        "records": 500,
+        "sha256": "55f16d6100e2d946c0f9adac5173b5e22f63d20554d6ef50d1bc592728b7fe68"
+      },
+      {
+        "bytes": 36876,
+        "file": "AUDIT-skill-longrun.checks.046.json",
+        "records": 500,
+        "sha256": "0770c2ea646543ecebd79376193a95b49625b1fd3ef9fa573a0f1ff28ffd966c"
+      },
+      {
+        "bytes": 37240,
+        "file": "AUDIT-skill-longrun.checks.047.json",
+        "records": 500,
+        "sha256": "ab53ebe3cfd106bd64b20db0ac550bb0d1606088a7dd0b7dfaf9a0c5bdd0ddb8"
+      },
+      {
+        "bytes": 37071,
+        "file": "AUDIT-skill-longrun.checks.048.json",
+        "records": 500,
+        "sha256": "16a11aad4729c3c8750367cb14c1c69646ce9852a7babadcdd604f3744a375fe"
+      },
+      {
+        "bytes": 37368,
+        "file": "AUDIT-skill-longrun.checks.049.json",
+        "records": 500,
+        "sha256": "1884a04d3db59b4662515051b6555ebac2a97aa6f4de4ab381784769a39fcc64"
+      },
+      {
+        "bytes": 36944,
+        "file": "AUDIT-skill-longrun.checks.050.json",
+        "records": 500,
+        "sha256": "def78ece4c95ee588f8b03be34ef9b858bcbd23054cb0ceea5cfc49758669994"
+      },
+      {
+        "bytes": 37020,
+        "file": "AUDIT-skill-longrun.checks.051.json",
+        "records": 500,
+        "sha256": "08499cfb6c7d21e7af83c612306981de25362ab92d2194b2350730eb752ccc3a"
+      },
+      {
+        "bytes": 36882,
+        "file": "AUDIT-skill-longrun.checks.052.json",
+        "records": 500,
+        "sha256": "8a2d6b9dc2115c56ab3ae0ebf0accebd4ec7d203591aac139211ca43c861d184"
+      },
+      {
+        "bytes": 36886,
+        "file": "AUDIT-skill-longrun.checks.053.json",
+        "records": 500,
+        "sha256": "4759512aceb8163b28b88048b35b316287b12558df9f3283750e1d34bd839823"
+      },
+      {
+        "bytes": 37235,
+        "file": "AUDIT-skill-longrun.checks.054.json",
+        "records": 500,
+        "sha256": "62ac641467a8dd3b10cb859a798c378ef86f4424fdc6ec2c9a8ab9540dfb3db0"
+      },
+      {
+        "bytes": 37082,
+        "file": "AUDIT-skill-longrun.checks.055.json",
+        "records": 500,
+        "sha256": "b901ab334e3b60e0def3bde5e9b809e1e5d9bfb1cc3029d8446b3d31bab739a0"
+      },
+      {
+        "bytes": 32376,
+        "file": "AUDIT-skill-longrun.checks.056.json",
+        "records": 467,
+        "sha256": "84651c7a6dbc9ff5d10f76b95b3cdc290d6b1bb2ce64496210a7252b39c8104c"
+      }
+    ],
+    "cycle_source_state_identities": [
+      {
+        "bytes": 46495,
+        "file": "AUDIT-skill-longrun.cycle_source_state_identities.000.json",
+        "records": 192,
+        "sha256": "793a3f9e04e461b9c9ac9deb8121c6abc701d5607decff83c35e7225898e4978"
+      }
+    ],
+    "phase_records": [
+      {
+        "bytes": 207898,
+        "file": "AUDIT-skill-longrun.phase_records.000.json",
+        "records": 108,
+        "sha256": "08b433bbf74831ab942a39bcfe1b1d47309873cbeb35068c0002397cecbc11ab"
+      },
+      {
+        "bytes": 207908,
+        "file": "AUDIT-skill-longrun.phase_records.001.json",
+        "records": 108,
+        "sha256": "582701cdd3236fe3fec926e76959381c7aea3e181f1a810f0f6c64cf0cb12817"
+      }
+    ]
+  },
+  "evidence_tree_identity": {
+    "bytes": 64564040,
+    "files": 4399,
+    "sha256": "c5e768fb082281617588c8a4b3c7eead540f83ea635f2bf91b80ce132c6cf2b8"
+  },
+  "failed_checks": [],
+  "final_artifact_identities": {
+    "CYCLES.json": {
+      "bytes": 175511,
+      "sha256": "8f388161dcd445c994c880b958452cadb161a5a7db3415166fccc32612c649c8"
+    },
+    "FREEZE.json": {
+      "bytes": 9015,
+      "sha256": "371721714244320ad5388d5f1284e33096bb4538569e9bfb3dcc07322cdb5553"
+    },
+    "PROCESSES.json": {
+      "bytes": 233381,
+      "sha256": "f1d084af2d1ff433f9089a5ef7a2de840712a881b1d71f28b013ba0f15ed3203"
+    },
+    "RESULT.json": {
+      "bytes": 7015,
+      "sha256": "437866c1bc2e1d7c1cb4581e027ccfd2b8f68d1d1f2e6b082edd85034ebd241d"
+    },
+    "resource.json": {
+      "bytes": 19114,
+      "sha256": "f44c3848f30dece6b4916d1dd29965444ad469752cc5b1321556b1ce0fc3bf12"
+    }
+  },
+  "final_cycle_aggregate": {
+    "exact_sql": {
+      "active": {
+        "correct": 1512,
+        "count": 1512
+      },
+      "changed": {
+        "correct": 207,
+        "count": 207
+      },
+      "retention": {
+        "correct": 1305,
+        "count": 1305
+      },
+      "revoked": {
+        "correct": 24,
+        "count": 24
+      }
+    },
+    "parameter": {
+      "active": {
+        "correct": 1512,
+        "count": 1512
+      },
+      "changed": {
+        "correct": 207,
+        "count": 207
+      },
+      "retention": {
+        "correct": 1305,
+        "count": 1305
+      },
+      "revoked": {
+        "correct": 24,
+        "count": 24
+      }
+    }
+  },
+  "final_cycle_execution_aggregate": {
+    "exact_sql": {
+      "active": {
+        "correct": 1512,
+        "count": 1512
+      },
+      "changed": {
+        "correct": 207,
+        "count": 207
+      },
+      "retention": {
+        "correct": 1305,
+        "count": 1305
+      },
+      "revoked": {
+        "correct": 24,
+        "count": 24
+      }
+    },
+    "parameter": {
+      "active": {
+        "correct": 1512,
+        "count": 1512
+      },
+      "changed": {
+        "correct": 207,
+        "count": 207
+      },
+      "retention": {
+        "correct": 1305,
+        "count": 1305
+      },
+      "revoked": {
+        "correct": 24,
+        "count": 24
+      }
+    }
+  },
+  "fresh_read_processes": 219,
+  "independent_float32_arithmetic_replay": true,
+  "independent_program_interpreter_executed": true,
+  "limitations": [
+    "Eight known canonical addresses, full active replay, synthetic changes, and four public execution probes; no held-language or open-world skill claim.",
+    "Saved schedule bytes match the actual-fit schedule digest and checked row bounds; this auditor does not independently reproduce PyTorch's random-number generator.",
+    "Parameter and exact-SQL arms share fresh reader processes and fixed arm order; arm timings are not isolated deployment latencies.",
+    "Historical checkpoints and explicit sources remain stored. Revocation and clean rebuilding do not erase historical archives.",
+    "No production model is imported; saved coefficients are independently replayed with float32 NumPy arithmetic and argmax.",
+    "Sampled memory/storage integrals include explicit unknown intervals. Nested child, manager, monitor, and wrapper CPU totals must not be added.",
+    "The manager before-summary byte count overlaps a concurrently growing monitor log; it is retained as a snapshot claim, not independently reconstructed as an exact continuous storage total.",
+    "This separate skill run cannot replace the prior semantic experiments or their costs. Native Agentd integration and full lifecycle superiority are not demonstrated."
+  ],
+  "native_runtime_executed": false,
+  "passed": true,
+  "producer_model_or_trainer_imported": false,
+  "protocol_sha256": "8eba86176ea3a42e19cdc7607859d34733ff82e037b3d8200a3b97924cab8c56",
+  "quality_all_correct": true,
+  "read_only_evidence": true,
+  "read_only_path_mapping": {
+    "declaration_identity": {
+      "bytes": 566,
+      "sha256": "7261197e514c131b34d1623597cedc9da4a08208f63d2991e52b1707bad20668"
+    },
+    "raw_evidence_rewritten": false,
+    "resolution_sha256": "eea9851f96a141f21214cfc5255e8352469420937d04f3cda87066afabb6c7bb",
+    "resolved_paths": 896,
+    "rules": [
+      {
+        "local_prefix": "/workspace/scratch/76e2020e4b36/skill-ci-artifacts/formal-01/restored/memory-adapter-skill-longrun-output/run-01-skill",
+        "original_prefix": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-adapter-skill-longrun-output/run-01-skill"
+      },
+      {
+        "local_prefix": "/workspace/scratch/76e2020e4b36/skill-ci-artifacts/formal-01/restored/memory-adapter-skill-longrun-output",
+        "original_prefix": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-adapter-skill-longrun-output"
+      },
+      {
+        "local_prefix": "/workspace/scratch/76e2020e4b36/hepta-memory-completion",
+        "original_prefix": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+      },
+      {
+        "local_prefix": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01",
+        "original_prefix": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01"
+      }
+    ]
+  },
+  "resource_sample_audit": {
+    "after_last_sample_ns": 721622,
+    "before_first_sample_ns": 9076325,
+    "coverage": {
+      "storage_allocated_bytes": {
+        "observed_fraction": 0.9999853608399759,
+        "observed_ns": 669287278104,
+        "observed_peak_bytes": 74301440,
+        "sampled_byte_ns_estimate": 24163130500736090112,
+        "unknown_ns": 9797947
+      },
+      "storage_logical_bytes": {
+        "observed_fraction": 0.9999853608399759,
+        "observed_ns": 669287278104,
+        "observed_peak_bytes": 64489266,
+        "sampled_byte_ns_estimate": 20954491726034329155,
+        "unknown_ns": 9797947
+      },
+      "tree_pss_bytes": {
+        "observed_fraction": 0.9686796704048313,
+        "observed_ns": 648334471032,
+        "observed_peak_bytes": 521078784,
+        "sampled_byte_ns_estimate": 286242864309686973952,
+        "unknown_ns": 20962605019
+      },
+      "tree_rss_bytes": {
+        "observed_fraction": 0.9686796704048313,
+        "observed_ns": 648334471032,
+        "observed_peak_bytes": 690384896,
+        "sampled_byte_ns_estimate": 384068061819131496448,
+        "unknown_ns": 20962605019
+      }
+    },
+    "error_classification": {
+      "process": {
+        "FileNotFoundError": 21,
+        "ProcessLookupError": 25
+      },
+      "storage": {}
+    },
+    "first_sample_ns": 93060468347,
+    "integral_boundary": "Includes pre/post sample gaps as unknown",
+    "integrals": {
+      "storage_allocated_bytes": {
+        "observed_interval_ns": 669287278104,
+        "sampled_byte_ns_estimate": 24163130500736090112,
+        "trapezoid_numerator_byte_ns": 48326261001472180224,
+        "unobserved_interval_ns": 9797947
+      },
+      "storage_logical_bytes": {
+        "observed_interval_ns": 669287278104,
+        "sampled_byte_ns_estimate": 20954491726034329155,
+        "trapezoid_numerator_byte_ns": 41908983452068658311,
+        "unobserved_interval_ns": 9797947
+      },
+      "tree_pss_bytes": {
+        "observed_interval_ns": 648334471032,
+        "sampled_byte_ns_estimate": 286242864309686973952,
+        "trapezoid_numerator_byte_ns": 572485728619373947904,
+        "unobserved_interval_ns": 20962605019
+      },
+      "tree_rss_bytes": {
+        "observed_interval_ns": 648334471032,
+        "sampled_byte_ns_estimate": 384068061819131496448,
+        "trapezoid_numerator_byte_ns": 768136123638262992896,
+        "unobserved_interval_ns": 20962605019
+      }
+    },
+    "last_sample_ns": 762347746451,
+    "maximum_observed_gap_ns": 262010748,
+    "peaks": {
+      "storage_allocated_bytes": 74301440,
+      "storage_logical_bytes": 64489266,
+      "tree_pss_bytes": 521078784,
+      "tree_rss_bytes": 690384896
+    },
+    "sample_count": 2913,
+    "sample_errors": 46
+  },
+  "schema": "hepta.memory.skill-longrun-independent-audit.v1",
+  "scope": "skill",
+  "tensor_decoding": [
+    {
+      "checkpoint": "inputs/seed-731",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.831092834472656,
+      "parameter_sha256": "bf9dfd42f8a661f7b56834788f4bf311fc13529535ea858eb4021b2c3eec62f4",
+      "persistent_bytes": 54793
+    },
+    {
+      "checkpoint": "inputs/untrained-seed-731",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.001380573958158493,
+      "parameter_sha256": "ca477f5e58d10c01a6e4a697ca61af2637b20d23b24504a858eb00dad4758aed",
+      "persistent_bytes": 47743
+    },
+    {
+      "checkpoint": "seed-731/stage-001/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.767862319946289,
+      "parameter_sha256": "e2232b8b41f5b247107dcb18d82fa8fdacad7083db1230841d1f8e405b8a9f3e",
+      "persistent_bytes": 56397
+    },
+    {
+      "checkpoint": "seed-731/stage-002/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.35860824584961,
+      "parameter_sha256": "d3940f0f0d3925a3ee9d9ca19f5e8e15b2eb5ffe709a58f434af053f941ad764",
+      "persistent_bytes": 57978
+    },
+    {
+      "checkpoint": "seed-731/stage-003/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.762222290039062,
+      "parameter_sha256": "6cc791e2ebb65c3d79b2a3a31581f4454ed71e66a673908103a0259dc07e6867",
+      "persistent_bytes": 59529
+    },
+    {
+      "checkpoint": "seed-731/stage-004/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.337925910949707,
+      "parameter_sha256": "2e9b00b56d0b8aa0c4baab546c71614a7da59dfddf6f881c7b43682156ca4bf1",
+      "persistent_bytes": 60796
+    },
+    {
+      "checkpoint": "seed-731/stage-005/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 16.048391342163086,
+      "parameter_sha256": "84618169cf474904699609ada2b6f1757c72d964bfd72eaf56a2926bd7ffaba5",
+      "persistent_bytes": 62131
+    },
+    {
+      "checkpoint": "seed-731/stage-006/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.430593490600586,
+      "parameter_sha256": "9f79b52631515793fd3d736cd153559104906022ae37e2a7cb160b3ded47703c",
+      "persistent_bytes": 63407
+    },
+    {
+      "checkpoint": "seed-731/stage-007/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.826263427734375,
+      "parameter_sha256": "a861f32142847359a7b442b1fa6f82c91aafb75ea84e615e1fed3cae062a4c89",
+      "persistent_bytes": 64720
+    },
+    {
+      "checkpoint": "seed-731/stage-008/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.042335510253906,
+      "parameter_sha256": "112b95c9abc334416b00bb6125e048decf441ab415c0f89983ef854e7bcf2c49",
+      "persistent_bytes": 66036
+    },
+    {
+      "checkpoint": "seed-731/stage-008/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.9194185733795166,
+      "parameter_sha256": "fb0b332ad2ce4d7b6359b7fb247fe0ac1436973c595f3bc68622f1296011d70e",
+      "persistent_bytes": 54852
+    },
+    {
+      "checkpoint": "seed-731/stage-009/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.618291854858398,
+      "parameter_sha256": "8bf0a827b6ee2bdf1923a439db19b62bef9ce292db8830df5efd4d2107388ade",
+      "persistent_bytes": 56353
+    },
+    {
+      "checkpoint": "seed-731/stage-010/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.313309669494629,
+      "parameter_sha256": "668c771aafc82bb7c45c61b93c43d9af0c25a854071174279495926880a7ff58",
+      "persistent_bytes": 58212
+    },
+    {
+      "checkpoint": "seed-731/stage-011/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.697261810302734,
+      "parameter_sha256": "082ec577f41b5e1bd82258cf27922ebb55a843e95ae972bc29ac55de52e407c5",
+      "persistent_bytes": 59509
+    },
+    {
+      "checkpoint": "seed-731/stage-012/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.79690933227539,
+      "parameter_sha256": "63b46b624cdb7135cfdfe4b206986585bb87ab49522334bc371857e38a3367da",
+      "persistent_bytes": 60764
+    },
+    {
+      "checkpoint": "seed-731/stage-013/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.50731372833252,
+      "parameter_sha256": "b266160869351bef97d781803064f93a350885415728f9d4131edac85d06904c",
+      "persistent_bytes": 62178
+    },
+    {
+      "checkpoint": "seed-731/stage-014/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.952493667602539,
+      "parameter_sha256": "5639ff0b8d08136d98c6e6cd18d16cd4f2345de15ec23a1049703b12c56c8ce7",
+      "persistent_bytes": 63476
+    },
+    {
+      "checkpoint": "seed-731/stage-015/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.814628601074219,
+      "parameter_sha256": "e0b21f0a397e50f5e10dc0bcdec7376f5f2076e844e1097a1c9c605fdd79e1fe",
+      "persistent_bytes": 64805
+    },
+    {
+      "checkpoint": "seed-731/stage-016/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.638154029846191,
+      "parameter_sha256": "2bfbf2981b2ece39b69c2c73da460f4259234720d3e1c196dce8249d791c1a02",
+      "persistent_bytes": 66091
+    },
+    {
+      "checkpoint": "seed-731/stage-016/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 1.036325454711914,
+      "parameter_sha256": "19a06fd2555bb757e43a82e13e4ac5eadd5beb73557113967577277d66a8ebd3",
+      "persistent_bytes": 54724
+    },
+    {
+      "checkpoint": "seed-731/stage-017/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.547398567199707,
+      "parameter_sha256": "19b5d60c0229b419f58b77b9a32ca0a21b7d094a339f830dc9729863eb2c19c9",
+      "persistent_bytes": 56597
+    },
+    {
+      "checkpoint": "seed-731/stage-018/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.73138427734375,
+      "parameter_sha256": "0cf9318ecb2bb7270933e4e871ded99bc4f2edfd38f48feea3fa162a4d242e0e",
+      "persistent_bytes": 58017
+    },
+    {
+      "checkpoint": "seed-731/stage-019/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.355313301086426,
+      "parameter_sha256": "45d60c21350cd372e62ddece307b9da0407b3e9c95479872a620fdd9cd77c300",
+      "persistent_bytes": 59454
+    },
+    {
+      "checkpoint": "seed-731/stage-020/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.262397766113281,
+      "parameter_sha256": "28ecbaaeb55022896460c92df41238c6f737b2912eed394556cb766ceeb681bf",
+      "persistent_bytes": 60819
+    },
+    {
+      "checkpoint": "seed-731/stage-021/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.20417594909668,
+      "parameter_sha256": "0aa60e87230783967d257ce2d0fa898495261703cbc81240cee707e057691831",
+      "persistent_bytes": 62120
+    },
+    {
+      "checkpoint": "seed-731/stage-022/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.302955627441406,
+      "parameter_sha256": "c190811bcf8d392299d0a6498be0067f01e46e3b619ca8b344f36755dc4b70a7",
+      "persistent_bytes": 63398
+    },
+    {
+      "checkpoint": "seed-731/stage-023/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 13.075498580932617,
+      "parameter_sha256": "e5b1e95ae1a92c67d84fba3699bd887dd0e6b819b6e0c6da345d7a6dba65fffe",
+      "persistent_bytes": 64721
+    },
+    {
+      "checkpoint": "seed-731/stage-024/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.47031021118164,
+      "parameter_sha256": "2036b490445f5a03bc714546fdd4982a7f253bf66497099c8b69bd19ed582168",
+      "persistent_bytes": 66018
+    },
+    {
+      "checkpoint": "seed-731/stage-024/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.8343467712402344,
+      "parameter_sha256": "a5d78d51ffeb55c0d664914ab3846acbabde6ace9576c180f8356e5f23a4d517",
+      "persistent_bytes": 54705
+    },
+    {
+      "checkpoint": "seed-731/stage-025/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.6171236038208,
+      "parameter_sha256": "8b4180b2f2cbbbd558822d23e6549e4aa1b215af251d49ea2fba5b44ce3754bc",
+      "persistent_bytes": 56443
+    },
+    {
+      "checkpoint": "seed-731/stage-026/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.276293754577637,
+      "parameter_sha256": "3be95cfc280a36f72b19cd5cd53ac8fe87e66e1dd9b7d100c061dcca56130660",
+      "persistent_bytes": 58056
+    },
+    {
+      "checkpoint": "seed-731/stage-027/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.381178855895996,
+      "parameter_sha256": "30a4c07c4edb82899a9247bae8693d8763368ec97fbcaed683f907bb8f71daaf",
+      "persistent_bytes": 59465
+    },
+    {
+      "checkpoint": "seed-731/stage-028/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.125503540039062,
+      "parameter_sha256": "8ad18a1a9758222fbaaeecaa99f9a277e24435cdb39b863825330091effef170",
+      "persistent_bytes": 60825
+    },
+    {
+      "checkpoint": "seed-731/stage-029/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.416604042053223,
+      "parameter_sha256": "db4e9738295f04336ebed3edc87a02ce0f08766ee0edc81c4895007cbf871a41",
+      "persistent_bytes": 62094
+    },
+    {
+      "checkpoint": "seed-731/stage-030/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.22787094116211,
+      "parameter_sha256": "4efd29185f1fc76822cddce0e598f140e3970327180c782fbece0e31de1e213c",
+      "persistent_bytes": 63374
+    },
+    {
+      "checkpoint": "seed-731/stage-031/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.648721694946289,
+      "parameter_sha256": "314dca1a91a78d4d3b67adfaf9611c46137820968dea768acdf4b2242bfa5c77",
+      "persistent_bytes": 64685
+    },
+    {
+      "checkpoint": "seed-731/stage-032/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.20846939086914,
+      "parameter_sha256": "26db66b2eec2ffb3326bde1d1dc586dcf90bfd72d799e4088f80ee4796000d4c",
+      "persistent_bytes": 66023
+    },
+    {
+      "checkpoint": "seed-731/stage-032/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 3.9137277603149414,
+      "parameter_sha256": "4a391ecd92c800902b5ac7638561e2fc4f3652f1759632b58df5a28c03ae6b77",
+      "persistent_bytes": 54819
+    },
+    {
+      "checkpoint": "seed-731/stage-033/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.127619743347168,
+      "parameter_sha256": "0569718a99b89ef4c3c717a2fae74696a2b8bf74107787766e19e520f698b9a5",
+      "persistent_bytes": 56692
+    },
+    {
+      "checkpoint": "seed-731/stage-034/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.940213203430176,
+      "parameter_sha256": "2e72a6611b32a5af6287873ac568bf15fe4598edf88998ca38fdb65d36243f0c",
+      "persistent_bytes": 58227
+    },
+    {
+      "checkpoint": "seed-731/stage-035/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.116910934448242,
+      "parameter_sha256": "f1d361d6c0461b0e1723100d9f853874b51829a0cd91aba25d1efdf08d5ff2a5",
+      "persistent_bytes": 59531
+    },
+    {
+      "checkpoint": "seed-731/stage-036/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.832916259765625,
+      "parameter_sha256": "ef35e912f37d2f1f374aa644f5eb3467021a3941e351aa800b3811b7dd56340d",
+      "persistent_bytes": 60799
+    },
+    {
+      "checkpoint": "seed-731/stage-037/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.517329216003418,
+      "parameter_sha256": "585d43cdc0dc2236340d82616c2824edf4517b19ff7c367e00799402819856aa",
+      "persistent_bytes": 62133
+    },
+    {
+      "checkpoint": "seed-731/stage-038/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.363128662109375,
+      "parameter_sha256": "cc88267a3ecdc276e6e81d2c9931621047f9cb603cbedde66fb98aea05871e5f",
+      "persistent_bytes": 63454
+    },
+    {
+      "checkpoint": "seed-731/stage-039/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.322444915771484,
+      "parameter_sha256": "2ee285fd5da1e080faaf0a0eb09fceb76a7fae605c2eb2e8d72521b4e3dd06e3",
+      "persistent_bytes": 64749
+    },
+    {
+      "checkpoint": "seed-731/stage-040/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 7.9649457931518555,
+      "parameter_sha256": "07d15d4ccd0c8420146edc67de92c0ab3e29cae21ebb366611cd6a123bd2f6ec",
+      "persistent_bytes": 66076
+    },
+    {
+      "checkpoint": "seed-731/stage-040/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 1.581895351409912,
+      "parameter_sha256": "3b509853e4a244d8d2052564a85c5b13b484ec912c1286cf4e44088c9de7ce63",
+      "persistent_bytes": 54825
+    },
+    {
+      "checkpoint": "seed-731/stage-041/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.821409225463867,
+      "parameter_sha256": "d50cbc18c1e71781ad91634864653b4ddd68cc4cf9834027e5884514bbfefec9",
+      "persistent_bytes": 56763
+    },
+    {
+      "checkpoint": "seed-731/stage-042/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.343052864074707,
+      "parameter_sha256": "3385b5c94b0c169f5f834199e06f766ead62f841039759c77aac44d7a9dd6293",
+      "persistent_bytes": 58164
+    },
+    {
+      "checkpoint": "seed-731/stage-043/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.624873161315918,
+      "parameter_sha256": "bbb06e15022320d765bd06f9b790bc2914c5b6d807a06e62d2a6d165284eb1e1",
+      "persistent_bytes": 59472
+    },
+    {
+      "checkpoint": "seed-731/stage-044/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.446233749389648,
+      "parameter_sha256": "323dc88c1571ecc0570193bffbce916719582059badc0a305aef0d9adc341c5c",
+      "persistent_bytes": 60832
+    },
+    {
+      "checkpoint": "seed-731/stage-045/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.567946434020996,
+      "parameter_sha256": "c79f233ce9914d530519b7f39629db6debcbd1421d6614d72835a5c3ec324c6f",
+      "persistent_bytes": 62096
+    },
+    {
+      "checkpoint": "seed-731/stage-046/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.819916725158691,
+      "parameter_sha256": "6805c4d68762dfbfeacc58bc7a533f4f5a0db7c8ea0656db6533b62d2ed40bc9",
+      "persistent_bytes": 63347
+    },
+    {
+      "checkpoint": "seed-731/stage-047/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.248279571533203,
+      "parameter_sha256": "2dd62103eb00502876a65557bb61a821f8116fce8194cda502464d5de6926c49",
+      "persistent_bytes": 64683
+    },
+    {
+      "checkpoint": "seed-731/stage-048/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.27190113067627,
+      "parameter_sha256": "1f5d7a418f29ecfbc87af33353765bbe643ed5390bf1f66897ee9d605df593f1",
+      "persistent_bytes": 66010
+    },
+    {
+      "checkpoint": "seed-731/stage-048/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 3.7702529430389404,
+      "parameter_sha256": "725197ae84840b5b576fc65a8e7aa69b254053163835c2c820931e015078ba2c",
+      "persistent_bytes": 54731
+    },
+    {
+      "checkpoint": "seed-731/stage-049/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.789140701293945,
+      "parameter_sha256": "2a45968056e9df503609192b120b6d0f48ae87aa5f69457d9614348e37db3936",
+      "persistent_bytes": 56473
+    },
+    {
+      "checkpoint": "seed-731/stage-050/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.041504859924316,
+      "parameter_sha256": "2ee014201acbb0f67a95641936d2e1d74bba8a1af17034467433184f91ee4234",
+      "persistent_bytes": 58003
+    },
+    {
+      "checkpoint": "seed-731/stage-051/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.174565315246582,
+      "parameter_sha256": "d0f4672d8a8addb07f454578b8d1192cbc2b10f873c1e582863a88843fdff098",
+      "persistent_bytes": 59379
+    },
+    {
+      "checkpoint": "seed-731/stage-052/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.881704330444336,
+      "parameter_sha256": "1f80ffb16c0a4edfb7cfd970c06d7fd1432acf5d94ab082550b36c2756008f29",
+      "persistent_bytes": 60719
+    },
+    {
+      "checkpoint": "seed-731/stage-053/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.10198974609375,
+      "parameter_sha256": "5597edf65dd73ce83f55302a9b8ad669e7bf7f137831040cd1b37e88413ba6d9",
+      "persistent_bytes": 62072
+    },
+    {
+      "checkpoint": "seed-731/stage-054/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.280603408813477,
+      "parameter_sha256": "3efc8dea738e2f7656afbc63e7012b74941244aa175f21266de59f8929823056",
+      "persistent_bytes": 63337
+    },
+    {
+      "checkpoint": "seed-731/stage-055/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.61763858795166,
+      "parameter_sha256": "2e14ff2217b50924fbd8560a475cb18e42f987d5db522cd8a9b19d2cd3a8c932",
+      "persistent_bytes": 64612
+    },
+    {
+      "checkpoint": "seed-731/stage-056/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.193860054016113,
+      "parameter_sha256": "3fff07ae2c4a0d6daae262d082676c1d3abcdb9bdc5bc654e58afbb1d98457ee",
+      "persistent_bytes": 66029
+    },
+    {
+      "checkpoint": "seed-731/stage-056/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.624786376953125,
+      "parameter_sha256": "a30268ba29b2f93aaaf4c0b8656ed0c38c1d9495531312309f817725df850e85",
+      "persistent_bytes": 54769
+    },
+    {
+      "checkpoint": "seed-731/stage-057/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.251420021057129,
+      "parameter_sha256": "61717ec508b9da12241e305b84ea9d48ce799a7b3e8aaa0e2df3e7a6c2726c42",
+      "persistent_bytes": 56382
+    },
+    {
+      "checkpoint": "seed-731/stage-058/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.521665573120117,
+      "parameter_sha256": "d9bc8a2a5586aaf754537793b28a6818d4caa52e6b10ea94ed76efed9402873f",
+      "persistent_bytes": 58190
+    },
+    {
+      "checkpoint": "seed-731/stage-059/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.353742599487305,
+      "parameter_sha256": "6cb1b9ca4075405ea0dbde9286ab8735cc10dfe7c9440d01ba8521eb3a7c81d0",
+      "persistent_bytes": 59483
+    },
+    {
+      "checkpoint": "seed-731/stage-060/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.217164039611816,
+      "parameter_sha256": "d39cd03162a568ec5edbb5b38da4684bc2c8e71dacb0c7161eafcf34fc9785fa",
+      "persistent_bytes": 60833
+    },
+    {
+      "checkpoint": "seed-731/stage-061/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.959735870361328,
+      "parameter_sha256": "6567597fc0dd5f896b915d849b25b5c6544b23b6547c124e9479c6de5b1ec0d1",
+      "persistent_bytes": 62115
+    },
+    {
+      "checkpoint": "seed-731/stage-062/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.959390640258789,
+      "parameter_sha256": "83669c80eb513b5eda1450abb4ca1ef074031bcbfec0caa0a25eee0472bb1fb3",
+      "persistent_bytes": 63441
+    },
+    {
+      "checkpoint": "seed-731/stage-063/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 13.443604469299316,
+      "parameter_sha256": "9de13305baad369051847508e7a12d75a16b35e5f3adedba27a3e50e6741ce3c",
+      "persistent_bytes": 64719
+    },
+    {
+      "checkpoint": "seed-731/stage-064/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.02194595336914,
+      "parameter_sha256": "38a446d135f913d45bc4e60ae2fac8573eac43d22d7ae86505bc81ce2838a539",
+      "persistent_bytes": 66048
+    },
+    {
+      "checkpoint": "seed-731/stage-064/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 6.025396347045898,
+      "parameter_sha256": "c090392244e29fe8415248612773772694d04efdea88c979b7d200ddb0cd6bc9",
+      "persistent_bytes": 54709
+    },
+    {
+      "checkpoint": "inputs/seed-732",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.863227844238281,
+      "parameter_sha256": "907e2cf743a6a479e37327cdba8be5053cd81c2ffab0eee9de2d566785ab9644",
+      "persistent_bytes": 54710
+    },
+    {
+      "checkpoint": "inputs/untrained-seed-732",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.0010784342885017395,
+      "parameter_sha256": "58bd4550ace1c0e67cec9c5e9a6258ce14292a38a3e9556a858f696db6b445e4",
+      "persistent_bytes": 47785
+    },
+    {
+      "checkpoint": "seed-732/stage-001/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.295836448669434,
+      "parameter_sha256": "0ffddc11c987f763a9239f23e6827862d45bb6bd3992918049bb469ab24814da",
+      "persistent_bytes": 56715
+    },
+    {
+      "checkpoint": "seed-732/stage-002/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.150267601013184,
+      "parameter_sha256": "bb65cc75c3b9f9aa51f4e40f4f72a9003d1d8c544c538287ba50827be67c0aba",
+      "persistent_bytes": 58130
+    },
+    {
+      "checkpoint": "seed-732/stage-003/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.084153175354004,
+      "parameter_sha256": "4fc13b9171c322d04bbe64934a3a92b99f2e1bb791173d1219eb1fd2816e1ed4",
+      "persistent_bytes": 59492
+    },
+    {
+      "checkpoint": "seed-732/stage-004/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.095220565795898,
+      "parameter_sha256": "2d316b58954db9445574ec88de6aa943e1ee696bb4691c775d21aa2ac4bf86a2",
+      "persistent_bytes": 60745
+    },
+    {
+      "checkpoint": "seed-732/stage-005/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.638389587402344,
+      "parameter_sha256": "5a4674bc0b6515a6c26740dffb078c9e7113c941dcaf0ec32ae580b941869779",
+      "persistent_bytes": 62093
+    },
+    {
+      "checkpoint": "seed-732/stage-006/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.951333045959473,
+      "parameter_sha256": "81de6156b083e40eccb9f5274f9e350faa7d578f3624f61ea1fbb92377513ec8",
+      "persistent_bytes": 63436
+    },
+    {
+      "checkpoint": "seed-732/stage-007/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 14.526285171508789,
+      "parameter_sha256": "224c508914399ca1d9c420e535a04da8f246c620bc7a8f7b44e65cc0561177eb",
+      "persistent_bytes": 64705
+    },
+    {
+      "checkpoint": "seed-732/stage-008/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.293601989746094,
+      "parameter_sha256": "8352f5d28c4e52325a5c525ace2667fc9303c9966cc77add3e7bd288245a7009",
+      "persistent_bytes": 66020
+    },
+    {
+      "checkpoint": "seed-732/stage-008/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.4470796585083008,
+      "parameter_sha256": "016615df43749dba7eecbb83c25447acdbf79dd47aee4e7174365df813982d10",
+      "persistent_bytes": 54840
+    },
+    {
+      "checkpoint": "seed-732/stage-009/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.74204158782959,
+      "parameter_sha256": "449d58613054fcea4573f7bc5322cc94c2f52e3f8403424e755f30b361ef9095",
+      "persistent_bytes": 56278
+    },
+    {
+      "checkpoint": "seed-732/stage-010/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.304571151733398,
+      "parameter_sha256": "4d33f364842981dc0814acdd46e9d3ee199347b7549f4b09c2adc3599acda3db",
+      "persistent_bytes": 58166
+    },
+    {
+      "checkpoint": "seed-732/stage-011/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.522968292236328,
+      "parameter_sha256": "b2e780e18e8d68a21a3bdd79c04e03a81e70ccc47ad3399a9a5e2213597cfe82",
+      "persistent_bytes": 59481
+    },
+    {
+      "checkpoint": "seed-732/stage-012/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.245328903198242,
+      "parameter_sha256": "1ba63c99abc9781672c57884113fec00561b18a0cbe0fb7d3891e0c19bbb8e2e",
+      "persistent_bytes": 60792
+    },
+    {
+      "checkpoint": "seed-732/stage-013/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.316271781921387,
+      "parameter_sha256": "42db468eacf8cdeb19af949041d33a53fcfce607db36ae313be1fd18c56d14fd",
+      "persistent_bytes": 62093
+    },
+    {
+      "checkpoint": "seed-732/stage-014/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.854028701782227,
+      "parameter_sha256": "85dbe6734cc8f7e2adae3559a32e0857b48e5d5145e9c1b2ed4d0d3a2ffc7a67",
+      "persistent_bytes": 63414
+    },
+    {
+      "checkpoint": "seed-732/stage-015/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.313188552856445,
+      "parameter_sha256": "3e44492494332e66e82890d99f2c88257c12e153a47e33d34f88d8eb52243ab5",
+      "persistent_bytes": 64726
+    },
+    {
+      "checkpoint": "seed-732/stage-016/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.896644592285156,
+      "parameter_sha256": "a421e9887cfd03965dd4d19f1cfa570bc4bc3950c1f59b0e08ad76771bfbb400",
+      "persistent_bytes": 66065
+    },
+    {
+      "checkpoint": "seed-732/stage-016/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.7556819915771484,
+      "parameter_sha256": "7f64da9d4656b4c40a60821ce7438a0753f7ca76d47cdddad9238594efac38f5",
+      "persistent_bytes": 54681
+    },
+    {
+      "checkpoint": "seed-732/stage-017/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.214337348937988,
+      "parameter_sha256": "2f3e57b865c49d3d8af679cd3fc100251e98f33f9bd68d417d33bee49c9b66ee",
+      "persistent_bytes": 56728
+    },
+    {
+      "checkpoint": "seed-732/stage-018/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.213837623596191,
+      "parameter_sha256": "68ce75f49f0bbf8a9164be44c1fddf9ef3eebda2b62f2b90ce8a1c6c029bdc47",
+      "persistent_bytes": 58068
+    },
+    {
+      "checkpoint": "seed-732/stage-019/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.37403392791748,
+      "parameter_sha256": "cb455e5e29c96ca84179eb61f81b5ab42d5f38f776b544f82ec2692a4025a697",
+      "persistent_bytes": 59496
+    },
+    {
+      "checkpoint": "seed-732/stage-020/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.359343528747559,
+      "parameter_sha256": "804a3469f2392c66506178c20fed5665d6dc4b101d3742188399dc61e2b20255",
+      "persistent_bytes": 60934
+    },
+    {
+      "checkpoint": "seed-732/stage-021/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.51124382019043,
+      "parameter_sha256": "fd0a5e2eb32f8c74f1b712eace3fc4fe896eb11b6839ba0c7098d61791aa8414",
+      "persistent_bytes": 62207
+    },
+    {
+      "checkpoint": "seed-732/stage-022/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.271875381469727,
+      "parameter_sha256": "3c5686d9fca442f0c74d7b67c25cbd7be9b92431c2c89985c1c27d2574d30614",
+      "persistent_bytes": 63470
+    },
+    {
+      "checkpoint": "seed-732/stage-023/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.777371406555176,
+      "parameter_sha256": "78c7243219200eef49686ad71a229afc3a8afe93c3b1898c45e2cc4f0dbc5d84",
+      "persistent_bytes": 64793
+    },
+    {
+      "checkpoint": "seed-732/stage-024/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.284942626953125,
+      "parameter_sha256": "ac60b27f93ef50cd6c071359dab286e0aecdfcd1724219045e9dc693504bd2ed",
+      "persistent_bytes": 66125
+    },
+    {
+      "checkpoint": "seed-732/stage-024/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.3113830089569092,
+      "parameter_sha256": "b1539ad4d1d81641f5b4bec74d64c125be1c709173d41f9bf1d7a53a48f6e7a8",
+      "persistent_bytes": 54773
+    },
+    {
+      "checkpoint": "seed-732/stage-025/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.217124938964844,
+      "parameter_sha256": "52ebad8cb243da39307fc2ffe7ed6a165fce9bedc1ace5d88830f3298b894a25",
+      "persistent_bytes": 56486
+    },
+    {
+      "checkpoint": "seed-732/stage-026/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.228889465332031,
+      "parameter_sha256": "2914e10eadbe00c9916eb32c5be152dc343c09fc06e02fc7c04a4355cd519ee4",
+      "persistent_bytes": 58156
+    },
+    {
+      "checkpoint": "seed-732/stage-027/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.306842803955078,
+      "parameter_sha256": "27ba3d10a4dc2d962d0199e5a3408afe99325976990ce1790f7f8793e5578fbe",
+      "persistent_bytes": 59418
+    },
+    {
+      "checkpoint": "seed-732/stage-028/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.743413925170898,
+      "parameter_sha256": "d8f3fdbc3a0905b1e97250b135497aad6c8be09cdf70cb7bf4c0f4a3f9961da6",
+      "persistent_bytes": 60779
+    },
+    {
+      "checkpoint": "seed-732/stage-029/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.574920654296875,
+      "parameter_sha256": "e7a9f149860483f376b3be21468a743e426d4d5d74a411852433241f36c8c24d",
+      "persistent_bytes": 62122
+    },
+    {
+      "checkpoint": "seed-732/stage-030/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.095861434936523,
+      "parameter_sha256": "f2fef533776184fc00f2b5f72446bf52bad1e45634af0157dcf173fa123506ed",
+      "persistent_bytes": 63381
+    },
+    {
+      "checkpoint": "seed-732/stage-031/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 13.780573844909668,
+      "parameter_sha256": "56cc953a7135d2a46bc7ef862512fcadcd13de0f356f1c3544f83486b1a7c338",
+      "persistent_bytes": 64695
+    },
+    {
+      "checkpoint": "seed-732/stage-032/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.860149383544922,
+      "parameter_sha256": "8914035f60b3d16ce847a5585281141639a6866da7e9447c4c0106fac6705a10",
+      "persistent_bytes": 66017
+    },
+    {
+      "checkpoint": "seed-732/stage-032/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 1.109151840209961,
+      "parameter_sha256": "871e3a162732d9bdbfaed5e9280230eeea3361aa38c3d25df3f6f2d02d60ba70",
+      "persistent_bytes": 54778
+    },
+    {
+      "checkpoint": "seed-732/stage-033/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.55455493927002,
+      "parameter_sha256": "e7e1e4ac3cf5995074acdba9e887ef15b7f494605d49b598f271528a4f3947d6",
+      "persistent_bytes": 56520
+    },
+    {
+      "checkpoint": "seed-732/stage-034/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.030447006225586,
+      "parameter_sha256": "28f2552ad92e4f61bdb195ef7d4b1985b5d2de4403157944c3fe0dc6c6ce671f",
+      "persistent_bytes": 58150
+    },
+    {
+      "checkpoint": "seed-732/stage-035/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.476828575134277,
+      "parameter_sha256": "8ae8540b1100d38fd4fd10e19309395fb2bb515a1b1a597d246974bf6d7e7310",
+      "persistent_bytes": 59510
+    },
+    {
+      "checkpoint": "seed-732/stage-036/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.352834701538086,
+      "parameter_sha256": "e97ad384b8ef19cd2a02596b9abeb750586163cc21be30b5f72e004601f81576",
+      "persistent_bytes": 60764
+    },
+    {
+      "checkpoint": "seed-732/stage-037/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.648321151733398,
+      "parameter_sha256": "74fe2158dbc434dfce302f5528b2a0033125dee01085c3ef4e069b694423bd94",
+      "persistent_bytes": 62102
+    },
+    {
+      "checkpoint": "seed-732/stage-038/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.428933143615723,
+      "parameter_sha256": "91d3c53d4bef1b06f257ea4c769b677932d0b58c985875f9a96c6117db496270",
+      "persistent_bytes": 63382
+    },
+    {
+      "checkpoint": "seed-732/stage-039/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.355525016784668,
+      "parameter_sha256": "60030c9cda0f382d312ed280d743eb7cbe652ace3bd68d2b77cacd56465eb811",
+      "persistent_bytes": 64691
+    },
+    {
+      "checkpoint": "seed-732/stage-040/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.059558868408203,
+      "parameter_sha256": "3fa0220edb0ad4598e4b16e9619ff9937c9417c047cd2f66ebec033f441ad264",
+      "persistent_bytes": 66047
+    },
+    {
+      "checkpoint": "seed-732/stage-040/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.525057315826416,
+      "parameter_sha256": "2b12b6fd2e2f408de44e1aa332c7424757c969561bd1315f30ffcc92b8823086",
+      "persistent_bytes": 54787
+    },
+    {
+      "checkpoint": "seed-732/stage-041/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.257210731506348,
+      "parameter_sha256": "d3a4cddfc77917fd9bcdf8cdb5dc0ea97e54c768004404d83297c805dde17f69",
+      "persistent_bytes": 56798
+    },
+    {
+      "checkpoint": "seed-732/stage-042/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.58562183380127,
+      "parameter_sha256": "f011623e08d692bd324aace7d59dc0e76d64abdadb334d3d35d982afa20acefa",
+      "persistent_bytes": 58233
+    },
+    {
+      "checkpoint": "seed-732/stage-043/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.722601890563965,
+      "parameter_sha256": "3c916e9c53318d57ed6e8ae971bd69d2109082d5845d9391a65e2d8d6fe904fe",
+      "persistent_bytes": 59436
+    },
+    {
+      "checkpoint": "seed-732/stage-044/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.390938758850098,
+      "parameter_sha256": "6868a34cdcf048ef52ef637dfb719129183d1c1f82378931db6a6bf60e26e542",
+      "persistent_bytes": 60806
+    },
+    {
+      "checkpoint": "seed-732/stage-045/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.846305847167969,
+      "parameter_sha256": "90a823342a3836c00f4cf2bfc737d4772bee9bcee16743a9c3ec4b5f4a7a9d9c",
+      "persistent_bytes": 62097
+    },
+    {
+      "checkpoint": "seed-732/stage-046/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.139948844909668,
+      "parameter_sha256": "791739750b1ec2a4135e8c8993809386efb420409c7899c59143770aaccdaee0",
+      "persistent_bytes": 63437
+    },
+    {
+      "checkpoint": "seed-732/stage-047/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.870404243469238,
+      "parameter_sha256": "30dbf612d8bc2cb75206d7ae28e257c87cb5efd5198c8c32178982e6e300cabc",
+      "persistent_bytes": 64746
+    },
+    {
+      "checkpoint": "seed-732/stage-048/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.40014934539795,
+      "parameter_sha256": "5d4fd64bff518eca1445c5d9e12bfff0ae60178374d6c812761df1b08207197e",
+      "persistent_bytes": 66093
+    },
+    {
+      "checkpoint": "seed-732/stage-048/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 2.4967103004455566,
+      "parameter_sha256": "2d576e8f9ec4d4a06b411d76cc83fe16be153daea4da1238440715d2a7c3368e",
+      "persistent_bytes": 54777
+    },
+    {
+      "checkpoint": "seed-732/stage-049/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.335004806518555,
+      "parameter_sha256": "2815326dbf43256b2115112fd6c86f0d34626a6aed37f15386ab025e97846eef",
+      "persistent_bytes": 56738
+    },
+    {
+      "checkpoint": "seed-732/stage-050/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.503402709960938,
+      "parameter_sha256": "e620244b03b1d728f09a8cf608fa92510e9fb9a9676f1c0d66b3d698cc51d6a0",
+      "persistent_bytes": 58225
+    },
+    {
+      "checkpoint": "seed-732/stage-051/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.277667045593262,
+      "parameter_sha256": "8d5925e43b4219549b0868ec0a7dbeb48471ed38598c84fee8ce9d3042151a43",
+      "persistent_bytes": 59498
+    },
+    {
+      "checkpoint": "seed-732/stage-052/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.20766544342041,
+      "parameter_sha256": "3ced38c5bacdf01369f5d2f1eaa5caef7a9be3f0a29d9209eeaa0f48bb9c1af0",
+      "persistent_bytes": 60812
+    },
+    {
+      "checkpoint": "seed-732/stage-053/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.564478874206543,
+      "parameter_sha256": "72b544c31faf3cd158262ff5b60a2286a738e109cfc0a90fcea655fc45efc089",
+      "persistent_bytes": 62096
+    },
+    {
+      "checkpoint": "seed-732/stage-054/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.606027603149414,
+      "parameter_sha256": "880d9cdca869dd6560ded638b615eddb4e6cf7be03c548cdb0cfbc0cc27b7c2c",
+      "persistent_bytes": 63396
+    },
+    {
+      "checkpoint": "seed-732/stage-055/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.735427856445312,
+      "parameter_sha256": "ee3e82eba7c6ea3cc75aaf1735b1dd49fcb5ceeb7e6b55d502e13de2508a9f1d",
+      "persistent_bytes": 64657
+    },
+    {
+      "checkpoint": "seed-732/stage-056/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.111456871032715,
+      "parameter_sha256": "bbbfaaa2765fd9535e2e0399b44ba7ccd27574ae0dc41531accf73842194a524",
+      "persistent_bytes": 66011
+    },
+    {
+      "checkpoint": "seed-732/stage-056/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.014452457427978516,
+      "parameter_sha256": "290902a6515386a02ff5231319eca1305a9db912cd5fce90f8d2d7fb8fdfc0e9",
+      "persistent_bytes": 54752
+    },
+    {
+      "checkpoint": "seed-732/stage-057/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.410335540771484,
+      "parameter_sha256": "4b3489c02ba395a4cd9d42d7a71b7ad8201a25d3349ed37f41dfd7ccbd6b6426",
+      "persistent_bytes": 56825
+    },
+    {
+      "checkpoint": "seed-732/stage-058/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.933934211730957,
+      "parameter_sha256": "634513fbafd05806118cd26710949dab5d24767412e28b06613425885331c17b",
+      "persistent_bytes": 58056
+    },
+    {
+      "checkpoint": "seed-732/stage-059/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.183902740478516,
+      "parameter_sha256": "e1b17395d53a515eb06a4627e8caa781d58865d01fd94a8536aa640a5cc2b6ea",
+      "persistent_bytes": 59498
+    },
+    {
+      "checkpoint": "seed-732/stage-060/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.408406257629395,
+      "parameter_sha256": "5f710bce68790a40bd8ea5e9ec52697a5d330c64cbd01f3b8343dd4ad1ad24ec",
+      "persistent_bytes": 60866
+    },
+    {
+      "checkpoint": "seed-732/stage-061/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.133504867553711,
+      "parameter_sha256": "a4382ae9d78ad5c428711e3210427874af3e368b6182c188005d098e383cfa0e",
+      "persistent_bytes": 62177
+    },
+    {
+      "checkpoint": "seed-732/stage-062/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 14.515132904052734,
+      "parameter_sha256": "297a17a5c5e7f4bcb39d6af8e71ca605c048f61703278d06bddd4c90c17d31a2",
+      "persistent_bytes": 63403
+    },
+    {
+      "checkpoint": "seed-732/stage-063/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 14.366539001464844,
+      "parameter_sha256": "bef4e64dbbf1ba08071f812771841d0de26c95af49bc9d72e5e33b1fb73d3690",
+      "persistent_bytes": 64718
+    },
+    {
+      "checkpoint": "seed-732/stage-064/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.315780639648438,
+      "parameter_sha256": "0c52d904572cb12ac229d4b7fedb7b8d432e3abc8da7b773e0dfb12c00e02b3b",
+      "persistent_bytes": 66060
+    },
+    {
+      "checkpoint": "seed-732/stage-064/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 3.690548896789551,
+      "parameter_sha256": "d1397e827ae3223bf984edbb6bf56e80a65b928d3a28fa97612c4695770304ec",
+      "persistent_bytes": 54575
+    },
+    {
+      "checkpoint": "inputs/seed-733",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.062712669372559,
+      "parameter_sha256": "3f729497669a366f1a05fac228ce270dca0a958455a4b4b87a5dd1691057b5d5",
+      "persistent_bytes": 54780
+    },
+    {
+      "checkpoint": "inputs/untrained-seed-733",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.0001764446496963501,
+      "parameter_sha256": "03be6f9d894bcc1ea66dce28b722b2e79e99b872487e2d3ec1b8843906635231",
+      "persistent_bytes": 47791
+    },
+    {
+      "checkpoint": "seed-733/stage-001/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.09782600402832,
+      "parameter_sha256": "8899bf5b03d38d72b04aada82c5a31f3e270051fd13a820d315fc896bf9dffd2",
+      "persistent_bytes": 56539
+    },
+    {
+      "checkpoint": "seed-733/stage-002/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.581194877624512,
+      "parameter_sha256": "a0bd487e1c7286ecdeba0503149841735e8a8778337fc65fcb5cdc8919f76668",
+      "persistent_bytes": 58086
+    },
+    {
+      "checkpoint": "seed-733/stage-003/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.18454360961914,
+      "parameter_sha256": "98439db1dc4d1039313d68161e7d82899a5b380f64f385663eff9cf775e64224",
+      "persistent_bytes": 59468
+    },
+    {
+      "checkpoint": "seed-733/stage-004/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.217231750488281,
+      "parameter_sha256": "b5e98b68442c0a79bc60dcbaa5f53235f29cae0a3cccf65ed3ba6fa3dc7f313b",
+      "persistent_bytes": 60808
+    },
+    {
+      "checkpoint": "seed-733/stage-005/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.717053413391113,
+      "parameter_sha256": "c1a4b26d6d2576c2b9fc061df4dccb7e455bf168efc637d7230072a9b38f232a",
+      "persistent_bytes": 62100
+    },
+    {
+      "checkpoint": "seed-733/stage-006/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.890751838684082,
+      "parameter_sha256": "139c80888195dd41de2927c5a9ca58b383096121ecac135335b6d49d2b9bef7c",
+      "persistent_bytes": 63424
+    },
+    {
+      "checkpoint": "seed-733/stage-007/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.017919540405273,
+      "parameter_sha256": "5ed44697e9b113ac670f13992cdc9d2a6c8ffc4292fe41e7bfaf1023fcd67cd3",
+      "persistent_bytes": 64711
+    },
+    {
+      "checkpoint": "seed-733/stage-008/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.238630294799805,
+      "parameter_sha256": "609660fbd1716e65acb6b6c405912c2a948c3ffd25f65cf9b0370503061b6874",
+      "persistent_bytes": 66041
+    },
+    {
+      "checkpoint": "seed-733/stage-008/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.6614248752593994,
+      "parameter_sha256": "f075bd762b88eede61c5e49629f20ffb4b6f09d78ca250ecc372c78a62e7c0aa",
+      "persistent_bytes": 54843
+    },
+    {
+      "checkpoint": "seed-733/stage-009/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.409768104553223,
+      "parameter_sha256": "0db3fb3f327ab690ad11079e9b9d278c84d4f00e01e2eec71160f0bf4feefbba",
+      "persistent_bytes": 56557
+    },
+    {
+      "checkpoint": "seed-733/stage-010/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.289227485656738,
+      "parameter_sha256": "9bfb96a3b95ca9481a526a46eb23bb5404a793a6395d375a06d7b9332999ac62",
+      "persistent_bytes": 58193
+    },
+    {
+      "checkpoint": "seed-733/stage-011/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.73642349243164,
+      "parameter_sha256": "60973fd981008e8e7df92fcaf4913e28285c9beafd504e2d00443f996877d89b",
+      "persistent_bytes": 59445
+    },
+    {
+      "checkpoint": "seed-733/stage-012/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.869638442993164,
+      "parameter_sha256": "b99779dd976c7e5d79f6151059da5ec8dc97e7bc2aedd621707eb1a91c01478a",
+      "persistent_bytes": 60847
+    },
+    {
+      "checkpoint": "seed-733/stage-013/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.733402252197266,
+      "parameter_sha256": "32b097c6cfa3949d391a65c7c44997b1dc371c621f76a3f97fe84d92cdf6e3b6",
+      "persistent_bytes": 62136
+    },
+    {
+      "checkpoint": "seed-733/stage-014/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.327789306640625,
+      "parameter_sha256": "60c4b8ac510da9e30bfa3e3a70394ed0280e39eaa972f4ec163cabe1fd1d9678",
+      "persistent_bytes": 63435
+    },
+    {
+      "checkpoint": "seed-733/stage-015/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.142327308654785,
+      "parameter_sha256": "3858a47976c59fa090ce7c82ecdac89f53c7bdadf37c38a8622f13007a5ab79f",
+      "persistent_bytes": 64716
+    },
+    {
+      "checkpoint": "seed-733/stage-016/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 7.839509010314941,
+      "parameter_sha256": "64b2e981f9f7ad271bbcb413b6f839c890bbd6ca24e882c626ad1a90bb26ef5f",
+      "persistent_bytes": 66088
+    },
+    {
+      "checkpoint": "seed-733/stage-016/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 1.8609232902526855,
+      "parameter_sha256": "d32f8eef0bb499c435d90d5569d518d9df58c37b44bcbe7b4bffcf19525e1f06",
+      "persistent_bytes": 54758
+    },
+    {
+      "checkpoint": "seed-733/stage-017/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.532129287719727,
+      "parameter_sha256": "378fc48bb038cc5f321644688ea89ee2e347256bc2d919c2cf0b98b7b62e4661",
+      "persistent_bytes": 56650
+    },
+    {
+      "checkpoint": "seed-733/stage-018/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.270573616027832,
+      "parameter_sha256": "2bca5f26d5a2c30aacb9a730905056cc04dcba4687e2380d6e4098160e05ab04",
+      "persistent_bytes": 58104
+    },
+    {
+      "checkpoint": "seed-733/stage-019/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.343443870544434,
+      "parameter_sha256": "9c4a9fc6d83576a14b8fbb63e027a77a1391e35cc23b4f1e46c86245faa50c40",
+      "persistent_bytes": 59491
+    },
+    {
+      "checkpoint": "seed-733/stage-020/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.430530548095703,
+      "parameter_sha256": "12c90fdfbd706901f0eb0bb2c8802e0403b779e96846844e7129555b6eb3473c",
+      "persistent_bytes": 60827
+    },
+    {
+      "checkpoint": "seed-733/stage-021/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.359474182128906,
+      "parameter_sha256": "f544da82bd30ceace76c6c19dd6eb9901e9ec96573aa47304637dc0fc44832e4",
+      "persistent_bytes": 62149
+    },
+    {
+      "checkpoint": "seed-733/stage-022/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.453551292419434,
+      "parameter_sha256": "ec0319d5916303022db87708040b23175c83217c368c8b3ea650754276bfe5b6",
+      "persistent_bytes": 63439
+    },
+    {
+      "checkpoint": "seed-733/stage-023/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.775514602661133,
+      "parameter_sha256": "83869e4b1ccfd2b788f1d032e8ea40cdede53c5c62a1f386ff2b8c9c6e587e79",
+      "persistent_bytes": 64731
+    },
+    {
+      "checkpoint": "seed-733/stage-024/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 7.772612571716309,
+      "parameter_sha256": "5505cdbde953e7b76c677fef4a844a84b633b970cdc9a1a34c20b7a658a937ae",
+      "persistent_bytes": 66071
+    },
+    {
+      "checkpoint": "seed-733/stage-024/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 2.9486982822418213,
+      "parameter_sha256": "047e2465aad54e67b1236e854410c5e37db9417612da231af00a92496b1afb58",
+      "persistent_bytes": 54801
+    },
+    {
+      "checkpoint": "seed-733/stage-025/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.919330596923828,
+      "parameter_sha256": "d2140a093855fe127e9bda1e91f3da85e4d37a4dedac58294b53c24dce95084b",
+      "persistent_bytes": 56537
+    },
+    {
+      "checkpoint": "seed-733/stage-026/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.963881492614746,
+      "parameter_sha256": "82c289f9543de5cf35901f39778239c5a1f82a180574a0fc54bceb93ee3d9369",
+      "persistent_bytes": 58066
+    },
+    {
+      "checkpoint": "seed-733/stage-027/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.277823448181152,
+      "parameter_sha256": "325f11650990174084a4272d2e1e6b56473c044456430ba2bce9db249846be69",
+      "persistent_bytes": 59459
+    },
+    {
+      "checkpoint": "seed-733/stage-028/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.797248840332031,
+      "parameter_sha256": "88d6576df4ea6c32b2c3d83ba90d08c9ce809a60e732800b38deab2a55406b51",
+      "persistent_bytes": 60805
+    },
+    {
+      "checkpoint": "seed-733/stage-029/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.043152809143066,
+      "parameter_sha256": "e4df5a18a08ec1268a1321fc912614b827d7c3b39ff8882975bc4ef4c730a39a",
+      "persistent_bytes": 62071
+    },
+    {
+      "checkpoint": "seed-733/stage-030/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.7079439163208,
+      "parameter_sha256": "d035ed7531153996632edb4a7b94533b3073daac9129628372b8fe74a50d24e6",
+      "persistent_bytes": 63392
+    },
+    {
+      "checkpoint": "seed-733/stage-031/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 13.990702629089355,
+      "parameter_sha256": "77d54e791880c7c22e0a5df18c9fabe3fe7b65d846390bae95d07f7757c61939",
+      "persistent_bytes": 64729
+    },
+    {
+      "checkpoint": "seed-733/stage-032/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.884279251098633,
+      "parameter_sha256": "335ddfc4980abaa0a0aa4f23f3350ef96db4c560db6cd281cf6d7c1680d95c4a",
+      "persistent_bytes": 65989
+    },
+    {
+      "checkpoint": "seed-733/stage-032/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 3.4656922817230225,
+      "parameter_sha256": "3936d1abfcdd1f1f21c54e809d5c293786086ba456267e6e1fef3dc68cc0d7fd",
+      "persistent_bytes": 54803
+    },
+    {
+      "checkpoint": "seed-733/stage-033/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.980795860290527,
+      "parameter_sha256": "4bb93a8896798aa5f09889fea371b8166250ff575f83e89f280be110a3c9c7b5",
+      "persistent_bytes": 56624
+    },
+    {
+      "checkpoint": "seed-733/stage-034/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.769582748413086,
+      "parameter_sha256": "03edbcf2176e4b69e2c12de981921d9e551c51376cb262b3a3f731e47ace03ae",
+      "persistent_bytes": 58247
+    },
+    {
+      "checkpoint": "seed-733/stage-035/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.703245162963867,
+      "parameter_sha256": "c262e1e3cf352e39214cfe8d163d85097a9b0ad3641b13d0e99a88e01ca66d5f",
+      "persistent_bytes": 59625
+    },
+    {
+      "checkpoint": "seed-733/stage-036/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.505701065063477,
+      "parameter_sha256": "26ceb6d4b45c21b6bba8e494762503a2487de2ea4fa7d3a9f8d72fc26ff1bf48",
+      "persistent_bytes": 60817
+    },
+    {
+      "checkpoint": "seed-733/stage-037/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.595991134643555,
+      "parameter_sha256": "50fad1f891df2c37bc79fb0955692a4235436e08741d71fb0a523d236df9beaf",
+      "persistent_bytes": 62099
+    },
+    {
+      "checkpoint": "seed-733/stage-038/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.096332550048828,
+      "parameter_sha256": "577e18d944bad8da66ff66441c13c33005f570eef4f1633bd40be0e6d0ac38f5",
+      "persistent_bytes": 63424
+    },
+    {
+      "checkpoint": "seed-733/stage-039/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 15.203718185424805,
+      "parameter_sha256": "868cbf222ef3526fd605f0db441afed6e3f07d4d252484212ab72274afef5bd9",
+      "persistent_bytes": 64728
+    },
+    {
+      "checkpoint": "seed-733/stage-040/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.0107421875,
+      "parameter_sha256": "326f6d3901027cc78d6345f9f87504c0a16797b11433da3e5cd3bad6efbfa90a",
+      "persistent_bytes": 66047
+    },
+    {
+      "checkpoint": "seed-733/stage-040/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.23122096061706543,
+      "parameter_sha256": "519332164de3fbcf5e74cc2305ba811f7b7de8fb59a83cc2f88dd9790d33f438",
+      "persistent_bytes": 54806
+    },
+    {
+      "checkpoint": "seed-733/stage-041/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.221433639526367,
+      "parameter_sha256": "165b145cf6117a062ab7be90ef35748150e166a225bcbbded46b93bfe74134a0",
+      "persistent_bytes": 56692
+    },
+    {
+      "checkpoint": "seed-733/stage-042/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.858687400817871,
+      "parameter_sha256": "afcc7e51a7ce5eadba877df3cd7aa4b517157f6904cea7676b6c7c65a98983d7",
+      "persistent_bytes": 58170
+    },
+    {
+      "checkpoint": "seed-733/stage-043/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.875663757324219,
+      "parameter_sha256": "5a04a745cc9eaa66f5cfad678bd4fa4627c63e1a0ae7222716e8b881fcc93329",
+      "persistent_bytes": 59518
+    },
+    {
+      "checkpoint": "seed-733/stage-044/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.243809700012207,
+      "parameter_sha256": "60618f308698f56b47375c47e96735ac94481285e198bf88be3ecc604f35d2ba",
+      "persistent_bytes": 60812
+    },
+    {
+      "checkpoint": "seed-733/stage-045/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.481066703796387,
+      "parameter_sha256": "ed76e329373dae8bd7363c820eb959b9ec98f1f4d34fd1fbbd33c7bb11cdb6f5",
+      "persistent_bytes": 62102
+    },
+    {
+      "checkpoint": "seed-733/stage-046/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.682151794433594,
+      "parameter_sha256": "5f7e6d7b775e8aaded0af654511be0390b95403ad928e71c715f1ecc4045dc14",
+      "persistent_bytes": 63390
+    },
+    {
+      "checkpoint": "seed-733/stage-047/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.468372344970703,
+      "parameter_sha256": "1eb0ece02c46ac02247fba17a8cb7d71ef307438f563b4d30fb6a93d8fe09823",
+      "persistent_bytes": 64754
+    },
+    {
+      "checkpoint": "seed-733/stage-048/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.443582534790039,
+      "parameter_sha256": "cbcc67dc0744eca1346cc489ad59ee2f6bf454028c9ac745552fba7e643aedd3",
+      "persistent_bytes": 66052
+    },
+    {
+      "checkpoint": "seed-733/stage-048/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 4.476720809936523,
+      "parameter_sha256": "4e78f814d7f257be32e1025170fd7ae4d029aee280d56e1b27f6bd9ffd9f24b4",
+      "persistent_bytes": 54908
+    },
+    {
+      "checkpoint": "seed-733/stage-049/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.58469295501709,
+      "parameter_sha256": "b016be0e151cc1ff0f600692ea60ce6b485c4db983a3f9293c408bc85f547348",
+      "persistent_bytes": 56455
+    },
+    {
+      "checkpoint": "seed-733/stage-050/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.027572631835938,
+      "parameter_sha256": "2d68d36f54d0a686ebcc7df22bc73d194c87c875974f124830a524e45034cd95",
+      "persistent_bytes": 58148
+    },
+    {
+      "checkpoint": "seed-733/stage-051/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.508902549743652,
+      "parameter_sha256": "31fcddf78c3de2b036ff9a071ef83a97b1b1b7a39830b8ae459895d0fd8b484e",
+      "persistent_bytes": 59453
+    },
+    {
+      "checkpoint": "seed-733/stage-052/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.587502479553223,
+      "parameter_sha256": "0dbfc022a76070883f3646fcead274ac6fdf7838482819a7f274927e0abc22c1",
+      "persistent_bytes": 60804
+    },
+    {
+      "checkpoint": "seed-733/stage-053/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 10.550731658935547,
+      "parameter_sha256": "a566b5dfd9ddc068a73dda9581eb5632d155911a2f582193b953129233a570fe",
+      "persistent_bytes": 62218
+    },
+    {
+      "checkpoint": "seed-733/stage-054/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.884745597839355,
+      "parameter_sha256": "4affa560f0b8266c41e2f0198b1cfef9893c5880dbf9dcd7cad7f0f03302077c",
+      "persistent_bytes": 63489
+    },
+    {
+      "checkpoint": "seed-733/stage-055/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 14.119710922241211,
+      "parameter_sha256": "96f84fc2905f377f3bd3a7f3716e029a15a4bfb926e87ea1e3c3c7c8232cbfb1",
+      "persistent_bytes": 64811
+    },
+    {
+      "checkpoint": "seed-733/stage-056/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.53548812866211,
+      "parameter_sha256": "a11a969f37553e125c463fba5f8815f8bfb0b230a5ae8fc2aedc31e007db2f22",
+      "persistent_bytes": 66110
+    },
+    {
+      "checkpoint": "seed-733/stage-056/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 0.024829864501953125,
+      "parameter_sha256": "796cdd2b31a9ee60e5ca5547291af0d3eae7ca75a9677552c5a53c1e94393a41",
+      "persistent_bytes": 54779
+    },
+    {
+      "checkpoint": "seed-733/stage-057/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.783493995666504,
+      "parameter_sha256": "2c52bc96bb1a679b83e2e04c1ef46d03bb5795b64dd1bb56b304c1f83f37cd31",
+      "persistent_bytes": 56706
+    },
+    {
+      "checkpoint": "seed-733/stage-058/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.742303848266602,
+      "parameter_sha256": "d97c456fe79c29b96a3e89ef633f848a6acb055ae99270ec679f70bdc0b2a198",
+      "persistent_bytes": 58097
+    },
+    {
+      "checkpoint": "seed-733/stage-059/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 9.358659744262695,
+      "parameter_sha256": "7b4bcb2c088fba6468c7e67554e674beaca0f4569e1610cd22a5380bb32dd76e",
+      "persistent_bytes": 59452
+    },
+    {
+      "checkpoint": "seed-733/stage-060/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 8.887336730957031,
+      "parameter_sha256": "f96a43929c90978ca6ec5510b2186901c4fe00d9ea496268561f5f70dfcb2092",
+      "persistent_bytes": 60732
+    },
+    {
+      "checkpoint": "seed-733/stage-061/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.59520149230957,
+      "parameter_sha256": "0cacb44f94d48f8f6a76bcf8948e9a0ecc5aa92820a68f283bccd7ebd6947b93",
+      "persistent_bytes": 62054
+    },
+    {
+      "checkpoint": "seed-733/stage-062/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 13.625731468200684,
+      "parameter_sha256": "dcc15b4759460cd3607966915dc73ef34d9cfc636833d515494b4a8ec1511179",
+      "persistent_bytes": 63326
+    },
+    {
+      "checkpoint": "seed-733/stage-063/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 12.934739112854004,
+      "parameter_sha256": "72756942fc2c3c6e8e1c866f832a9cd53f0d931fcad119e8a8c1e5a5987a14f1",
+      "persistent_bytes": 64675
+    },
+    {
+      "checkpoint": "seed-733/stage-064/update/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 11.119344711303711,
+      "parameter_sha256": "38888513d25f9788b4fd3c04db83c5b9de558a031e6535c2cea7f4f590145429",
+      "persistent_bytes": 65962
+    },
+    {
+      "checkpoint": "seed-733/stage-064/rebuild/checkpoint",
+      "float32_parameter_bytes": 55408,
+      "minimum_top_two_logit_margin": 6.553234100341797,
+      "parameter_sha256": "e12d17e6b4e170ede277b0afe8d87a472d5af075db1d2b032c21782e77008285",
+      "persistent_bytes": 54714
+    }
+  ],
+  "training_executed": false
+}

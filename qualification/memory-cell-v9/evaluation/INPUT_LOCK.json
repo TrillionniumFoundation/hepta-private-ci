@@ -1,0 +1,54 @@
+{
+  "author": "root evaluator, distinct from addressing and learning implementers",
+  "continual_domains_are_authored_use_cases_not_new_type_discovery": true,
+  "external_third_party": false,
+  "files": {
+    "calibration.json": {
+      "bytes": 112697,
+      "categories": {
+        "ambiguous_alias": 8,
+        "known": 144,
+        "time_conflict": 12,
+        "unknown_entity": 12,
+        "unsupported": 96
+      },
+      "entities": 12,
+      "rows": 272,
+      "sha256": "2a78710313c56fec8d7a0d7c38757a80578abf0d4883f007c859ec3c1c23d247"
+    },
+    "continual-held.json": {
+      "bytes": 137283,
+      "entities": 24,
+      "sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502",
+      "stages": 3
+    },
+    "held.json": {
+      "bytes": 108349,
+      "categories": {
+        "ambiguous_alias": 8,
+        "known": 144,
+        "time_conflict": 12,
+        "unknown_entity": 12,
+        "unsupported": 96
+      },
+      "entities": 12,
+      "rows": 272,
+      "sha256": "6fd373b11089db17b8b6ac0a015725d8a0397cf7ba69169132cb136456622f0a"
+    }
+  },
+  "iid_population_guarantee": false,
+  "language_entity_replicas_per_wording": 2,
+  "model_results_seen_before_authoring": false,
+  "schema": "hepta.memory.v9.evaluator-input-lock.v1",
+  "source_files": {
+    "author_inputs.py": {
+      "bytes": 10014,
+      "sha256": "1ab129b5ccc3866dfd3cf5580d659d5ecf7f3f6ef073a5e3e64739a67466adf1"
+    },
+    "language_materials.py": {
+      "bytes": 17917,
+      "sha256": "f6bb428aae2c23965f416479afe8150d541a1e08028ba96fd1f7cda8feac0ae3"
+    }
+  },
+  "training_receives_future_retention_family_or_domain_fields": false
+}

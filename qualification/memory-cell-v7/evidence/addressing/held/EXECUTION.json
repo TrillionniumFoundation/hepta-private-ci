@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.memory.v7.address-held-execution.v1",
+  "lock_sha256": "4848f67b0d1e543d242f7b8d8788dff7c362b0a976bab4df0210c4a73c561ced",
+  "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+  "policy_digest": "5de1b70ad2d23102cc8fbb91b61a3a88128f378d6911b8b02d69384fa893cdee",
+  "source_model_commit": "f445e938a11a050006a721ff2b6c1a1b2b41d4e0",
+  "evaluator_sha256": "b16a48b5ce19372cb3aabaec4dea58b8084f05e7154090d37c7b6bfcc5e117f6",
+  "execution_git_head": "50eaa9e5034806b812b174dec28078636dfaf2bd",
+  "held_opened": false,
+  "fixture_compatibility": {
+    "authored_max_cells": 32,
+    "runtime_max_cells": 8,
+    "report_strict_original_and_uniform_clamped_budget": true,
+    "adapter_uses_no_gold_operation": true,
+    "memory_values_not_scored": "Author semantic and procedure fixture fields do not match native V1 value contract; this run measures intent/address only. Real native write/read tests are separate."
+  },
+  "scoring": {
+    "known_intent_correct_minimum": 0.8,
+    "near_ood_acceptance_maximum": 0.05,
+    "intent_rows": 360,
+    "address_rows": 80
+  }
+}

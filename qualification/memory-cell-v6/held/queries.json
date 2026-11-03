@@ -1,0 +1,2018 @@
+[
+  {
+    "id": "known-current-en-01",
+    "text": "For {entity}, give me the newest value that actually reached the event log.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.latest_record"
+  },
+  {
+    "id": "known-current-en-02",
+    "text": "Which value is recorded most recently for {entity}?",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.latest_record"
+  },
+  {
+    "id": "known-current-en-03",
+    "text": "I need the latest recorded value for {entity}, without a forecast.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.latest_record"
+  },
+  {
+    "id": "known-current-en-04",
+    "text": "Show the value from the most up-to-date event belonging to {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.latest_record"
+  },
+  {
+    "id": "known-current-en-05",
+    "text": "What value does the present snapshot hold for {entity}?",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.present_view"
+  },
+  {
+    "id": "known-current-en-06",
+    "text": "Read {entity}'s event value in the current view.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.present_view"
+  },
+  {
+    "id": "known-current-en-07",
+    "text": "Using the active memory snapshot, what is {entity}'s value now?",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.present_view"
+  },
+  {
+    "id": "known-current-en-08",
+    "text": "Tell me the value currently on record for {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.present_view"
+  },
+  {
+    "id": "known-current-en-09",
+    "text": "Retrieve the most recent observation value attached to {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.recent_observation"
+  },
+  {
+    "id": "known-current-en-10",
+    "text": "What was the last value observed for {entity}?",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.recent_observation"
+  },
+  {
+    "id": "known-current-en-11",
+    "text": "Look up {entity}'s freshest observation and return its value.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.recent_observation"
+  },
+  {
+    "id": "known-current-en-12",
+    "text": "Of the observations already received for {entity}, return the last one's value.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.recent_observation"
+  },
+  {
+    "id": "known-current-en-13",
+    "text": "Read the value at the head of {entity}'s event history.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.head_event"
+  },
+  {
+    "id": "known-current-en-14",
+    "text": "Give the value in {entity}'s latest event entry.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.head_event"
+  },
+  {
+    "id": "known-current-en-15",
+    "text": "Follow {entity}'s record history to its newest entry; what value is there?",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.head_event"
+  },
+  {
+    "id": "known-current-en-16",
+    "text": "Take the final recorded event for {entity} and report the value it contains.",
+    "operation": "current",
+    "language": "en",
+    "family": "known.current.head_event"
+  },
+  {
+    "id": "known-current-zh-01",
+    "text": "请读出{entity}已经入账的最新事件值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.latest_record"
+  },
+  {
+    "id": "known-current-zh-02",
+    "text": "{entity}最近一条记录的数值是什么？",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.latest_record"
+  },
+  {
+    "id": "known-current-zh-03",
+    "text": "我需要{entity}最新保存的值，不需要预测。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.latest_record"
+  },
+  {
+    "id": "known-current-zh-04",
+    "text": "查看{entity}最后更新的事件记录，告诉我其中的值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.latest_record"
+  },
+  {
+    "id": "known-current-zh-05",
+    "text": "当前快照里，{entity}的事件值是多少？",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.present_view"
+  },
+  {
+    "id": "known-current-zh-06",
+    "text": "按现在有效的记忆版本读取{entity}的值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.present_view"
+  },
+  {
+    "id": "known-current-zh-07",
+    "text": "{entity}目前记载的数值是什么？",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.present_view"
+  },
+  {
+    "id": "known-current-zh-08",
+    "text": "请给出当前视图下{entity}的记录值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.present_view"
+  },
+  {
+    "id": "known-current-zh-09",
+    "text": "找出{entity}最近一次观测的结果值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.recent_observation"
+  },
+  {
+    "id": "known-current-zh-10",
+    "text": "最后一次观测到的{entity}数值是多少？",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.recent_observation"
+  },
+  {
+    "id": "known-current-zh-11",
+    "text": "把{entity}最新收到的观测值取出来。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.recent_observation"
+  },
+  {
+    "id": "known-current-zh-12",
+    "text": "已经收到的{entity}观测中，最后那条的值是什么？",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.recent_observation"
+  },
+  {
+    "id": "known-current-zh-13",
+    "text": "沿着{entity}的事件历史，读最末条记录的值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.head_event"
+  },
+  {
+    "id": "known-current-zh-14",
+    "text": "请返回{entity}事件链顶端记录中的数值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.head_event"
+  },
+  {
+    "id": "known-current-zh-15",
+    "text": "{entity}最新事件条目里写的值是什么？",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.head_event"
+  },
+  {
+    "id": "known-current-zh-16",
+    "text": "取{entity}最后入库的事件，只报告它的值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "known.current.head_event"
+  },
+  {
+    "id": "known-history-en-01",
+    "text": "As of {at}, what event value was recorded for {entity}?",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.cutoff_lookup"
+  },
+  {
+    "id": "known-history-en-02",
+    "text": "Give {entity}'s value at the supplied cutoff {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.cutoff_lookup"
+  },
+  {
+    "id": "known-history-en-03",
+    "text": "Read the value for {entity} that was effective by {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.cutoff_lookup"
+  },
+  {
+    "id": "known-history-en-04",
+    "text": "With {at} as the latest allowed time, what value does {entity}'s history show?",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.cutoff_lookup"
+  },
+  {
+    "id": "known-history-en-05",
+    "text": "What value would the historical view of {entity} show at {at}?",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.historical_state"
+  },
+  {
+    "id": "known-history-en-06",
+    "text": "Open {entity}'s state as it stood at {at} and return its event value.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.historical_state"
+  },
+  {
+    "id": "known-history-en-07",
+    "text": "I need {entity}'s recorded value back at {at}, rather than the current one.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.historical_state"
+  },
+  {
+    "id": "known-history-en-08",
+    "text": "Recover the event value that belonged to {entity}'s {at} snapshot.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.historical_state"
+  },
+  {
+    "id": "known-history-en-09",
+    "text": "Find the last observation of {entity} no later than {at}; what was its value?",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.last_before"
+  },
+  {
+    "id": "known-history-en-10",
+    "text": "Return {entity}'s most recent event value at or before {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.last_before"
+  },
+  {
+    "id": "known-history-en-11",
+    "text": "Ignore entries later than {at} and read the remaining latest value for {entity}.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.last_before"
+  },
+  {
+    "id": "known-history-en-12",
+    "text": "Among {entity}'s events up to and including {at}, give the newest value.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.last_before"
+  },
+  {
+    "id": "known-history-en-13",
+    "text": "Rewind {entity}'s event history to {at} and read its value there.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.rewind"
+  },
+  {
+    "id": "known-history-en-14",
+    "text": "Roll the lookup back to {at} for {entity}; which value was in effect?",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.rewind"
+  },
+  {
+    "id": "known-history-en-15",
+    "text": "Look backward to {at}, then tell me the value recorded for {entity}.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.rewind"
+  },
+  {
+    "id": "known-history-en-16",
+    "text": "Use the supplied historical time {at} to retrieve {entity}'s event value.",
+    "operation": "history",
+    "language": "en",
+    "family": "known.history.rewind"
+  },
+  {
+    "id": "known-history-zh-01",
+    "text": "截至{at}，{entity}当时记录的值是多少？",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.cutoff_lookup"
+  },
+  {
+    "id": "known-history-zh-02",
+    "text": "以{at}为截止时间读取{entity}的事件值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.cutoff_lookup"
+  },
+  {
+    "id": "known-history-zh-03",
+    "text": "请给出{entity}在{at}时已经生效的记录值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.cutoff_lookup"
+  },
+  {
+    "id": "known-history-zh-04",
+    "text": "只考虑不晚于{at}的记录，{entity}的值是什么？",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.cutoff_lookup"
+  },
+  {
+    "id": "known-history-zh-05",
+    "text": "{entity}在{at}的历史视图会显示哪个值？",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.historical_state"
+  },
+  {
+    "id": "known-history-zh-06",
+    "text": "打开{entity}于{at}时的状态，读出事件值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.historical_state"
+  },
+  {
+    "id": "known-history-zh-07",
+    "text": "我要查{entity}在{at}当时的值，而非当前值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.historical_state"
+  },
+  {
+    "id": "known-history-zh-08",
+    "text": "请恢复{entity}截至{at}的快照所记录的数值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.historical_state"
+  },
+  {
+    "id": "known-history-zh-09",
+    "text": "找{entity}在{at}及以前最后一条观测，返回其值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.last_before"
+  },
+  {
+    "id": "known-history-zh-10",
+    "text": "{entity}不晚于{at}的最新事件值是什么？",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.last_before"
+  },
+  {
+    "id": "known-history-zh-11",
+    "text": "排除{at}之后的条目，再取{entity}剩余记录中的最新值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.last_before"
+  },
+  {
+    "id": "known-history-zh-12",
+    "text": "在截至{at}的事件中，{entity}最后保存了什么值？",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.last_before"
+  },
+  {
+    "id": "known-history-zh-13",
+    "text": "把{entity}的事件历史回溯到{at}，读出当时的值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.rewind"
+  },
+  {
+    "id": "known-history-zh-14",
+    "text": "将查询时间退回{at}，{entity}那时生效的值是多少？",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.rewind"
+  },
+  {
+    "id": "known-history-zh-15",
+    "text": "请往回查到{at}，告诉我当时{entity}记录的数值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.rewind"
+  },
+  {
+    "id": "known-history-zh-16",
+    "text": "按照给定的历史时点{at}检索{entity}的事件值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "known.history.rewind"
+  },
+  {
+    "id": "known-semantic-en-01",
+    "text": "Which stable attribute has memory stored for {entity}?",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.attribute_lookup"
+  },
+  {
+    "id": "known-semantic-en-02",
+    "text": "Retrieve the remembered semantic property of {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.attribute_lookup"
+  },
+  {
+    "id": "known-semantic-en-03",
+    "text": "What attribute is associated with {entity} in semantic memory?",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.attribute_lookup"
+  },
+  {
+    "id": "known-semantic-en-04",
+    "text": "Read the stored property for {entity}, rather than an event measurement.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.attribute_lookup"
+  },
+  {
+    "id": "known-semantic-en-05",
+    "text": "What enduring descriptor was saved about {entity}?",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.stored_description"
+  },
+  {
+    "id": "known-semantic-en-06",
+    "text": "Tell me the retained semantic description assigned to {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.stored_description"
+  },
+  {
+    "id": "known-semantic-en-07",
+    "text": "Look up the remembered defining property of {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.stored_description"
+  },
+  {
+    "id": "known-semantic-en-08",
+    "text": "Give the semantic fact saved in {entity}'s description.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.stored_description"
+  },
+  {
+    "id": "known-semantic-en-09",
+    "text": "What persistent property does the memory associate with {entity}?",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.persistent_property"
+  },
+  {
+    "id": "known-semantic-en-10",
+    "text": "I need {entity}'s learned stable attribute, not its latest observation.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.persistent_property"
+  },
+  {
+    "id": "known-semantic-en-11",
+    "text": "Read back the long-lived property that was stored for {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.persistent_property"
+  },
+  {
+    "id": "known-semantic-en-12",
+    "text": "Which fixed semantic attribute is attached to {entity}?",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.persistent_property"
+  },
+  {
+    "id": "known-semantic-en-13",
+    "text": "Consult {entity}'s semantic profile and return its property.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.profile_fact"
+  },
+  {
+    "id": "known-semantic-en-14",
+    "text": "What fact was retained in the profile of {entity}?",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.profile_fact"
+  },
+  {
+    "id": "known-semantic-en-15",
+    "text": "Return the property recorded in {entity}'s semantic entry.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.profile_fact"
+  },
+  {
+    "id": "known-semantic-en-16",
+    "text": "From the stored entity profile, identify {entity}'s attribute.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "known.semantic.profile_fact"
+  },
+  {
+    "id": "known-semantic-zh-01",
+    "text": "记忆里为{entity}保存了什么稳定属性？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.attribute_lookup"
+  },
+  {
+    "id": "known-semantic-zh-02",
+    "text": "请检索{entity}已记住的语义属性。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.attribute_lookup"
+  },
+  {
+    "id": "known-semantic-zh-03",
+    "text": "语义记忆把哪个属性与{entity}关联起来？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.attribute_lookup"
+  },
+  {
+    "id": "known-semantic-zh-04",
+    "text": "读取{entity}保存的属性，不要返回事件测量值。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.attribute_lookup"
+  },
+  {
+    "id": "known-semantic-zh-05",
+    "text": "关于{entity}，保存下来的长期描述是什么？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.stored_description"
+  },
+  {
+    "id": "known-semantic-zh-06",
+    "text": "告诉我为{entity}保留的语义描述。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.stored_description"
+  },
+  {
+    "id": "known-semantic-zh-07",
+    "text": "查一下{entity}记忆中的定义性属性。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.stored_description"
+  },
+  {
+    "id": "known-semantic-zh-08",
+    "text": "{entity}的描述中保存了哪个语义事实？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.stored_description"
+  },
+  {
+    "id": "known-semantic-zh-09",
+    "text": "记忆把{entity}与什么持久属性联系起来？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.persistent_property"
+  },
+  {
+    "id": "known-semantic-zh-10",
+    "text": "我需要{entity}的稳定属性，而非最新观测。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.persistent_property"
+  },
+  {
+    "id": "known-semantic-zh-11",
+    "text": "读回之前为{entity}保存的长期属性。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.persistent_property"
+  },
+  {
+    "id": "known-semantic-zh-12",
+    "text": "{entity}附带的固定语义属性是什么？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.persistent_property"
+  },
+  {
+    "id": "known-semantic-zh-13",
+    "text": "查看{entity}的语义档案，返回其中的属性。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.profile_fact"
+  },
+  {
+    "id": "known-semantic-zh-14",
+    "text": "{entity}的档案保留了什么属性事实？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.profile_fact"
+  },
+  {
+    "id": "known-semantic-zh-15",
+    "text": "请给出{entity}语义条目记载的属性。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.profile_fact"
+  },
+  {
+    "id": "known-semantic-zh-16",
+    "text": "从实体档案中找出{entity}保存的属性。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "known.semantic.profile_fact"
+  },
+  {
+    "id": "known-procedure-en-01",
+    "text": "Which saved steps belong to {entity}'s procedure?",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.steps_lookup"
+  },
+  {
+    "id": "known-procedure-en-02",
+    "text": "Read out the stored instructions for processing {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.steps_lookup"
+  },
+  {
+    "id": "known-procedure-en-03",
+    "text": "What sequence of operations has been remembered for {entity}?",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.steps_lookup"
+  },
+  {
+    "id": "known-procedure-en-04",
+    "text": "Retrieve {entity}'s saved procedure without executing it.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.steps_lookup"
+  },
+  {
+    "id": "known-procedure-en-05",
+    "text": "Show the recipe already stored for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.recipe_description"
+  },
+  {
+    "id": "known-procedure-en-06",
+    "text": "What does {entity}'s retained processing recipe say to do?",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.recipe_description"
+  },
+  {
+    "id": "known-procedure-en-07",
+    "text": "Describe the saved recipe associated with {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.recipe_description"
+  },
+  {
+    "id": "known-procedure-en-08",
+    "text": "Give me the procedure that memory keeps for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.recipe_description"
+  },
+  {
+    "id": "known-procedure-en-09",
+    "text": "Recall the stored workflow for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.workflow_recall"
+  },
+  {
+    "id": "known-procedure-en-10",
+    "text": "Which workflow was saved as the one to use for {entity}?",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.workflow_recall"
+  },
+  {
+    "id": "known-procedure-en-11",
+    "text": "Look up the remembered operation sequence assigned to {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.workflow_recall"
+  },
+  {
+    "id": "known-procedure-en-12",
+    "text": "List the steps of {entity}'s existing workflow from memory.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.workflow_recall"
+  },
+  {
+    "id": "known-procedure-en-13",
+    "text": "Return the stored method specification for {entity}.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.method_specification"
+  },
+  {
+    "id": "known-procedure-en-14",
+    "text": "Which processing method is recorded for {entity}?",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.method_specification"
+  },
+  {
+    "id": "known-procedure-en-15",
+    "text": "I want the saved program for {entity}, not the result of running it.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.method_specification"
+  },
+  {
+    "id": "known-procedure-en-16",
+    "text": "Inspect the procedural entry for {entity} and report its instructions.",
+    "operation": "procedure",
+    "language": "en",
+    "family": "known.procedure.method_specification"
+  },
+  {
+    "id": "known-procedure-zh-01",
+    "text": "{entity}保存的过程包括哪些步骤？",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.steps_lookup"
+  },
+  {
+    "id": "known-procedure-zh-02",
+    "text": "请读出处理{entity}的已有操作说明。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.steps_lookup"
+  },
+  {
+    "id": "known-procedure-zh-03",
+    "text": "记忆为{entity}保留了什么操作顺序？",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.steps_lookup"
+  },
+  {
+    "id": "known-procedure-zh-04",
+    "text": "检索{entity}已经保存的过程，暂时不要执行。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.steps_lookup"
+  },
+  {
+    "id": "known-procedure-zh-05",
+    "text": "显示已经为{entity}存下来的处理配方。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.recipe_description"
+  },
+  {
+    "id": "known-procedure-zh-06",
+    "text": "{entity}保留的处理配方规定怎样操作？",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.recipe_description"
+  },
+  {
+    "id": "known-procedure-zh-07",
+    "text": "描述与{entity}关联的已存配方。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.recipe_description"
+  },
+  {
+    "id": "known-procedure-zh-08",
+    "text": "把记忆中{entity}的过程内容给我。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.recipe_description"
+  },
+  {
+    "id": "known-procedure-zh-09",
+    "text": "回忆一下{entity}保存的工作流程。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.workflow_recall"
+  },
+  {
+    "id": "known-procedure-zh-10",
+    "text": "之前为{entity}记录的是哪套流程？",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.workflow_recall"
+  },
+  {
+    "id": "known-procedure-zh-11",
+    "text": "查出分配给{entity}的已记住操作序列。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.workflow_recall"
+  },
+  {
+    "id": "known-procedure-zh-12",
+    "text": "按记忆列出{entity}现有工作流程的步骤。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.workflow_recall"
+  },
+  {
+    "id": "known-procedure-zh-13",
+    "text": "返回{entity}已经存储的方法说明。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.method_specification"
+  },
+  {
+    "id": "known-procedure-zh-14",
+    "text": "{entity}记载的处理方法是什么？",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.method_specification"
+  },
+  {
+    "id": "known-procedure-zh-15",
+    "text": "我要{entity}保存的程序内容，不是运行后的结果。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.method_specification"
+  },
+  {
+    "id": "known-procedure-zh-16",
+    "text": "查看{entity}的过程条目，报告其中的操作指令。",
+    "operation": "procedure",
+    "language": "zh",
+    "family": "known.procedure.method_specification"
+  },
+  {
+    "id": "known-change-en-01",
+    "text": "What is the signed difference between {entity}'s latest value and its value as of {since}?",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.signed_difference"
+  },
+  {
+    "id": "known-change-en-02",
+    "text": "Subtract {entity}'s value at {since} from its newest recorded value.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.signed_difference"
+  },
+  {
+    "id": "known-change-en-03",
+    "text": "Give the current-minus-{since} difference for {entity}.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.signed_difference"
+  },
+  {
+    "id": "known-change-en-04",
+    "text": "How much higher or lower is {entity}'s current value than its value at {since}?",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.signed_difference"
+  },
+  {
+    "id": "known-change-en-05",
+    "text": "Use {since} as the baseline and report {entity}'s signed numeric delta to the latest entry.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.baseline_delta"
+  },
+  {
+    "id": "known-change-en-06",
+    "text": "Relative to the recorded value at {since}, what signed change has {entity} reached now?",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.baseline_delta"
+  },
+  {
+    "id": "known-change-en-07",
+    "text": "Compare the latest value of {entity} with its baseline at {since}; return the difference in original units.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.baseline_delta"
+  },
+  {
+    "id": "known-change-en-08",
+    "text": "Compute {entity}'s latest value less its recorded baseline at {since}.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.baseline_delta"
+  },
+  {
+    "id": "known-change-en-09",
+    "text": "For {entity}, what does today's stored value minus the value effective at {since} equal?",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.current_minus_prior"
+  },
+  {
+    "id": "known-change-en-10",
+    "text": "Take the newest event value of {entity} and deduct the one effective at {since}.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.current_minus_prior"
+  },
+  {
+    "id": "known-change-en-11",
+    "text": "Read {entity} now and at {since}, then return now minus then.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.current_minus_prior"
+  },
+  {
+    "id": "known-change-en-12",
+    "text": "Calculate the subtraction of {entity}'s historical {since} value from its present value.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.current_minus_prior"
+  },
+  {
+    "id": "known-change-en-13",
+    "text": "What net increase or decrease has {entity}'s recorded value had since {since}?",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.net_movement"
+  },
+  {
+    "id": "known-change-en-14",
+    "text": "Report the signed movement from {entity}'s {since} value to its latest value.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.net_movement"
+  },
+  {
+    "id": "known-change-en-15",
+    "text": "In the value's own units, what signed movement has {entity} made from {since} to the newest record?",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.net_movement"
+  },
+  {
+    "id": "known-change-en-16",
+    "text": "Find {entity}'s change since {since}, preserving the sign and avoiding a percentage conversion.",
+    "operation": "change",
+    "language": "en",
+    "family": "known.change.net_movement"
+  },
+  {
+    "id": "known-change-zh-01",
+    "text": "{entity}最新值减去截至{since}的值，带符号的差是多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.signed_difference"
+  },
+  {
+    "id": "known-change-zh-02",
+    "text": "从{entity}最新记录值中减去{since}时的值。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.signed_difference"
+  },
+  {
+    "id": "known-change-zh-03",
+    "text": "给出{entity}当前值与{since}历史值之差，按当前减历史计算。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.signed_difference"
+  },
+  {
+    "id": "known-change-zh-04",
+    "text": "{entity}当前值比{since}时高或低多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.signed_difference"
+  },
+  {
+    "id": "known-change-zh-05",
+    "text": "以{since}为基准，计算{entity}到最新条目的原单位数值变化。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.baseline_delta"
+  },
+  {
+    "id": "known-change-zh-06",
+    "text": "相对{since}的记录值，{entity}现在的带符号变化是多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.baseline_delta"
+  },
+  {
+    "id": "known-change-zh-07",
+    "text": "比较{entity}最新值与{since}的基准值，返回原单位的差。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.baseline_delta"
+  },
+  {
+    "id": "known-change-zh-08",
+    "text": "计算{entity}最新值扣除{since}记录基准后的结果。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.baseline_delta"
+  },
+  {
+    "id": "known-change-zh-09",
+    "text": "{entity}现在保存的值减去{since}时有效的值等于多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.current_minus_prior"
+  },
+  {
+    "id": "known-change-zh-10",
+    "text": "取{entity}最新事件值，再扣掉{since}时生效的值。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.current_minus_prior"
+  },
+  {
+    "id": "known-change-zh-11",
+    "text": "读取{entity}现在和{since}的值，然后返回现在减当时。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.current_minus_prior"
+  },
+  {
+    "id": "known-change-zh-12",
+    "text": "请从{entity}当前值里减去其{since}历史值。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.current_minus_prior"
+  },
+  {
+    "id": "known-change-zh-13",
+    "text": "自{since}以来，{entity}的记录值净增加或净减少了多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.net_movement"
+  },
+  {
+    "id": "known-change-zh-14",
+    "text": "报告{entity}从{since}值到最新值的带符号变动。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.net_movement"
+  },
+  {
+    "id": "known-change-zh-15",
+    "text": "按数值原有单位，{entity}从{since}到最近记录变化了多少？",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.net_movement"
+  },
+  {
+    "id": "known-change-zh-16",
+    "text": "求{entity}自{since}以来的变化，保留正负号，不换算百分比。",
+    "operation": "change",
+    "language": "zh",
+    "family": "known.change.net_movement"
+  },
+  {
+    "id": "known-apply-en-01",
+    "text": "Run {entity}'s saved procedure on its latest event value with its remembered semantic parameter.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.execute_saved"
+  },
+  {
+    "id": "known-apply-en-02",
+    "text": "Use the stored method for {entity} to process its current value and saved property, then return the result.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.execute_saved"
+  },
+  {
+    "id": "known-apply-en-03",
+    "text": "Execute the remembered processing steps for {entity} using the newest observation and stored attribute.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.execute_saved"
+  },
+  {
+    "id": "known-apply-en-04",
+    "text": "Apply {entity}'s existing program to the latest recorded value with the parameter from its semantic entry.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.execute_saved"
+  },
+  {
+    "id": "known-apply-en-05",
+    "text": "Evaluate the recipe already saved for {entity}, taking its current event and remembered property as inputs.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.evaluate_recipe"
+  },
+  {
+    "id": "known-apply-en-06",
+    "text": "What result does {entity}'s stored recipe produce from its newest value and saved semantic parameter?",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.evaluate_recipe"
+  },
+  {
+    "id": "known-apply-en-07",
+    "text": "Feed {entity}'s latest measurement and retained attribute into its saved recipe; report the output.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.evaluate_recipe"
+  },
+  {
+    "id": "known-apply-en-08",
+    "text": "Calculate the outcome of the remembered recipe for {entity} using its current recorded inputs.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.evaluate_recipe"
+  },
+  {
+    "id": "known-apply-en-09",
+    "text": "Process {entity}'s newest observation according to its stored procedure and semantic property.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.process_measurement"
+  },
+  {
+    "id": "known-apply-en-10",
+    "text": "Transform the latest value of {entity} using the method and parameter already in memory.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.process_measurement"
+  },
+  {
+    "id": "known-apply-en-11",
+    "text": "Take {entity}'s current measurement through its saved operation sequence with its remembered property.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.process_measurement"
+  },
+  {
+    "id": "known-apply-en-12",
+    "text": "Return the processed value for {entity} after running its recorded method on the latest event and saved parameter.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.process_measurement"
+  },
+  {
+    "id": "known-apply-en-13",
+    "text": "Combine {entity}'s latest event, stored semantic parameter and remembered procedure to produce the procedure's output.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.combine_three_memories"
+  },
+  {
+    "id": "known-apply-en-14",
+    "text": "Read all three memories for {entity} and execute the saved procedure with the current value and semantic input.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.combine_three_memories"
+  },
+  {
+    "id": "known-apply-en-15",
+    "text": "Using {entity}'s event value, semantic property and procedure from memory, compute the stored procedure's result.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.combine_three_memories"
+  },
+  {
+    "id": "known-apply-en-16",
+    "text": "Retrieve {entity}'s current value and remembered parameter, pass both to its saved program, and give its output.",
+    "operation": "apply",
+    "language": "en",
+    "family": "known.apply.combine_three_memories"
+  },
+  {
+    "id": "known-apply-zh-01",
+    "text": "用{entity}记住的语义参数，把保存的过程运行在最新事件值上。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.execute_saved"
+  },
+  {
+    "id": "known-apply-zh-02",
+    "text": "按{entity}已存方法处理当前值和保存的属性，返回结果。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.execute_saved"
+  },
+  {
+    "id": "known-apply-zh-03",
+    "text": "对{entity}最新观测执行记住的处理步骤，并使用已存属性。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.execute_saved"
+  },
+  {
+    "id": "known-apply-zh-04",
+    "text": "将{entity}现有程序作用于最新记录值，参数取自它的语义条目。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.execute_saved"
+  },
+  {
+    "id": "known-apply-zh-05",
+    "text": "求{entity}已存配方的结果，输入使用当前事件值和记住的属性。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.evaluate_recipe"
+  },
+  {
+    "id": "known-apply-zh-06",
+    "text": "{entity}保存的配方接收最新值及语义参数后会输出什么？",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.evaluate_recipe"
+  },
+  {
+    "id": "known-apply-zh-07",
+    "text": "把{entity}最新测量和保留属性送入已存配方，报告输出。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.evaluate_recipe"
+  },
+  {
+    "id": "known-apply-zh-08",
+    "text": "使用{entity}当前已记录输入，计算记住的配方的执行结果。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.evaluate_recipe"
+  },
+  {
+    "id": "known-apply-zh-09",
+    "text": "依照{entity}保存的过程和语义属性处理最新观测。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.process_measurement"
+  },
+  {
+    "id": "known-apply-zh-10",
+    "text": "用记忆中已有的方法和参数转换{entity}的最新值。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.process_measurement"
+  },
+  {
+    "id": "known-apply-zh-11",
+    "text": "让{entity}当前测量值经过保存的操作序列，并使用记住的属性。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.process_measurement"
+  },
+  {
+    "id": "known-apply-zh-12",
+    "text": "在最新事件值和已存参数上运行{entity}的记录方法，返回处理结果。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.process_measurement"
+  },
+  {
+    "id": "known-apply-zh-13",
+    "text": "组合{entity}的最新事件、语义参数和过程记忆，给出该过程的输出。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.combine_three_memories"
+  },
+  {
+    "id": "known-apply-zh-14",
+    "text": "读取{entity}的三类记忆，以当前值和语义输入执行已存过程。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.combine_three_memories"
+  },
+  {
+    "id": "known-apply-zh-15",
+    "text": "利用{entity}记忆中的事件值、语义属性与过程，计算既存过程的结果。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.combine_three_memories"
+  },
+  {
+    "id": "known-apply-zh-16",
+    "text": "取出{entity}当前值和已记住参数，将二者传给保存的程序，告诉我输出。",
+    "operation": "apply",
+    "language": "zh",
+    "family": "known.apply.combine_three_memories"
+  },
+  {
+    "id": "ood-forecast-en-01",
+    "text": "Predict the next event value for {entity}.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.forecast"
+  },
+  {
+    "id": "ood-forecast-en-02",
+    "text": "What value will {entity} probably have next week?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.forecast"
+  },
+  {
+    "id": "ood-forecast-en-03",
+    "text": "Extrapolate {entity}'s recorded observations into the future.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.forecast"
+  },
+  {
+    "id": "ood-forecast-en-04",
+    "text": "Forecast {entity}'s next ten values using its event history.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.forecast"
+  },
+  {
+    "id": "ood-forecast-zh-01",
+    "text": "预测{entity}下一次事件的值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.forecast"
+  },
+  {
+    "id": "ood-forecast-zh-02",
+    "text": "{entity}下周大概会是多少？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.forecast"
+  },
+  {
+    "id": "ood-forecast-zh-03",
+    "text": "根据历史观测外推{entity}未来的数值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.forecast"
+  },
+  {
+    "id": "ood-forecast-zh-04",
+    "text": "利用事件历史预报{entity}接下来十个值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.forecast"
+  },
+  {
+    "id": "ood-causal_attribution-en-01",
+    "text": "What caused {entity}'s latest value to change?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.causal_attribution"
+  },
+  {
+    "id": "ood-causal_attribution-en-02",
+    "text": "Explain why {entity} had the recorded value at {at}.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.causal_attribution"
+  },
+  {
+    "id": "ood-causal_attribution-en-03",
+    "text": "Which hidden factor is responsible for {entity}'s current observation?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.causal_attribution"
+  },
+  {
+    "id": "ood-causal_attribution-en-04",
+    "text": "Did the saved procedure cause the last observed change in {entity}?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.causal_attribution"
+  },
+  {
+    "id": "ood-causal_attribution-zh-01",
+    "text": "是什么原因造成{entity}最新值变化？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.causal_attribution"
+  },
+  {
+    "id": "ood-causal_attribution-zh-02",
+    "text": "解释{entity}为何在{at}出现那个记录值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.causal_attribution"
+  },
+  {
+    "id": "ood-causal_attribution-zh-03",
+    "text": "{entity}当前观测是由哪个隐藏因素引起的？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.causal_attribution"
+  },
+  {
+    "id": "ood-causal_attribution-zh-04",
+    "text": "保存的过程是否导致了{entity}上次观测变化？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.causal_attribution"
+  },
+  {
+    "id": "ood-unsupported_statistics-en-01",
+    "text": "Find the median of every recorded value for {entity}.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.unsupported_statistics"
+  },
+  {
+    "id": "ood-unsupported_statistics-en-02",
+    "text": "Compute the variance of {entity}'s event values over its entire history.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.unsupported_statistics"
+  },
+  {
+    "id": "ood-unsupported_statistics-en-03",
+    "text": "Return the ninety-fifth percentile of {entity}'s recorded measurements.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.unsupported_statistics"
+  },
+  {
+    "id": "ood-unsupported_statistics-en-04",
+    "text": "Smooth {entity}'s value history with a seven-observation moving average.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.unsupported_statistics"
+  },
+  {
+    "id": "ood-unsupported_statistics-zh-01",
+    "text": "求{entity}全部记录值的中位数。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.unsupported_statistics"
+  },
+  {
+    "id": "ood-unsupported_statistics-zh-02",
+    "text": "计算{entity}整个事件历史的数值方差。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.unsupported_statistics"
+  },
+  {
+    "id": "ood-unsupported_statistics-zh-03",
+    "text": "返回{entity}历史测量的第九十五百分位数。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.unsupported_statistics"
+  },
+  {
+    "id": "ood-unsupported_statistics-zh-04",
+    "text": "用七次观测的移动平均平滑{entity}的历史值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.unsupported_statistics"
+  },
+  {
+    "id": "ood-new_arithmetic-en-01",
+    "text": "Take the square root of {entity}'s latest value, regardless of its saved program.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.new_arithmetic"
+  },
+  {
+    "id": "ood-new_arithmetic-en-02",
+    "text": "Report the logarithm of {entity}'s current observation.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.new_arithmetic"
+  },
+  {
+    "id": "ood-new_arithmetic-en-03",
+    "text": "Convert {entity}'s change since {since} into a percentage of its baseline.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.new_arithmetic"
+  },
+  {
+    "id": "ood-new_arithmetic-en-04",
+    "text": "Raise {entity}'s current value to the power of its remembered parameter.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.new_arithmetic"
+  },
+  {
+    "id": "ood-new_arithmetic-zh-01",
+    "text": "不管已有程序，直接计算{entity}最新值的平方根。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.new_arithmetic"
+  },
+  {
+    "id": "ood-new_arithmetic-zh-02",
+    "text": "报告{entity}当前观测值的对数。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.new_arithmetic"
+  },
+  {
+    "id": "ood-new_arithmetic-zh-03",
+    "text": "将{entity}自{since}以来的变化换算成相对基准的百分比。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.new_arithmetic"
+  },
+  {
+    "id": "ood-new_arithmetic-zh-04",
+    "text": "以{entity}记住的参数为指数，求当前值的幂。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.new_arithmetic"
+  },
+  {
+    "id": "ood-historical_pair-en-01",
+    "text": "Subtract {entity}'s value at {since} from its value at {at}, excluding the current value.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.historical_pair"
+  },
+  {
+    "id": "ood-historical_pair-en-02",
+    "text": "Compare the two historical snapshots {since} and {at} for {entity} and return their difference.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.historical_pair"
+  },
+  {
+    "id": "ood-historical_pair-en-03",
+    "text": "How much did {entity} change between {since} and {at}, before the latest observation?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.historical_pair"
+  },
+  {
+    "id": "ood-historical_pair-en-04",
+    "text": "Find the signed movement between {entity}'s two supplied historical times, not from history to now.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.historical_pair"
+  },
+  {
+    "id": "ood-historical_pair-zh-01",
+    "text": "用{entity}在{at}的值减去{since}的值，不使用当前值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.historical_pair"
+  },
+  {
+    "id": "ood-historical_pair-zh-02",
+    "text": "比较{entity}在{since}与{at}两个历史快照，返回差值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.historical_pair"
+  },
+  {
+    "id": "ood-historical_pair-zh-03",
+    "text": "在最新观测之前，{entity}从{since}到{at}变化了多少？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.historical_pair"
+  },
+  {
+    "id": "ood-historical_pair-zh-04",
+    "text": "求{entity}两个给定历史时间之间的带符号变化，不是历史到现在。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.historical_pair"
+  },
+  {
+    "id": "ood-cross_entity_ranking-en-01",
+    "text": "Rank all entities by their current recorded values.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.cross_entity_ranking"
+  },
+  {
+    "id": "ood-cross_entity_ranking-en-02",
+    "text": "Which entity has a larger latest value than {entity}?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.cross_entity_ranking"
+  },
+  {
+    "id": "ood-cross_entity_ranking-en-03",
+    "text": "Compare {entity}'s semantic property with every other entity's property.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.cross_entity_ranking"
+  },
+  {
+    "id": "ood-cross_entity_ranking-en-04",
+    "text": "Identify the entity with the largest change across the complete registry.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.cross_entity_ranking"
+  },
+  {
+    "id": "ood-cross_entity_ranking-zh-01",
+    "text": "按照当前记录值给所有实体排序。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.cross_entity_ranking"
+  },
+  {
+    "id": "ood-cross_entity_ranking-zh-02",
+    "text": "哪个实体的最新值比{entity}更大？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.cross_entity_ranking"
+  },
+  {
+    "id": "ood-cross_entity_ranking-zh-03",
+    "text": "比较{entity}与其他所有实体的语义属性。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.cross_entity_ranking"
+  },
+  {
+    "id": "ood-cross_entity_ranking-zh-04",
+    "text": "在整个登记表中找出变化最大的实体。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.cross_entity_ranking"
+  },
+  {
+    "id": "ood-counterfactual-en-01",
+    "text": "What would {entity}'s outcome be if its saved semantic parameter were doubled?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.counterfactual"
+  },
+  {
+    "id": "ood-counterfactual-en-02",
+    "text": "Suppose the last event never occurred: what current value would {entity} have?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.counterfactual"
+  },
+  {
+    "id": "ood-counterfactual-en-03",
+    "text": "Run {entity}'s procedure using an invented input of 999 instead of the recorded event.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.counterfactual"
+  },
+  {
+    "id": "ood-counterfactual-en-04",
+    "text": "How would {entity}'s history differ if the remembered procedure had been replaced?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.counterfactual"
+  },
+  {
+    "id": "ood-counterfactual-zh-01",
+    "text": "如果把{entity}保存的语义参数翻倍，结果会怎样？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.counterfactual"
+  },
+  {
+    "id": "ood-counterfactual-zh-02",
+    "text": "假设最后一次事件没有发生，{entity}当前值会是多少？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.counterfactual"
+  },
+  {
+    "id": "ood-counterfactual-zh-03",
+    "text": "用虚构输入999代替记录事件，运行{entity}的过程。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.counterfactual"
+  },
+  {
+    "id": "ood-counterfactual-zh-04",
+    "text": "如果更换记住的过程，{entity}的历史会有什么不同？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.counterfactual"
+  },
+  {
+    "id": "ood-external_mutation-en-01",
+    "text": "Delete every saved event for {entity}.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.external_mutation"
+  },
+  {
+    "id": "ood-external_mutation-en-02",
+    "text": "Overwrite {entity}'s current value with zero.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.external_mutation"
+  },
+  {
+    "id": "ood-external_mutation-en-03",
+    "text": "Send {entity}'s saved instructions to another user.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.external_mutation"
+  },
+  {
+    "id": "ood-external_mutation-en-04",
+    "text": "Replace {entity}'s remembered procedure with a newly uploaded program.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.external_mutation"
+  },
+  {
+    "id": "ood-external_mutation-zh-01",
+    "text": "删除{entity}的全部已存事件。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.external_mutation"
+  },
+  {
+    "id": "ood-external_mutation-zh-02",
+    "text": "把{entity}当前值覆盖成零。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.external_mutation"
+  },
+  {
+    "id": "ood-external_mutation-zh-03",
+    "text": "将{entity}保存的操作说明发送给另一个用户。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.external_mutation"
+  },
+  {
+    "id": "ood-external_mutation-zh-04",
+    "text": "用新上传的程序替换{entity}记住的过程。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.external_mutation"
+  },
+  {
+    "id": "ood-invent_procedure-en-01",
+    "text": "Invent a better procedure for {entity} than the one in memory.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.invent_procedure"
+  },
+  {
+    "id": "ood-invent_procedure-en-02",
+    "text": "Design new processing steps for {entity} without using its saved method.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.invent_procedure"
+  },
+  {
+    "id": "ood-invent_procedure-en-03",
+    "text": "Optimize {entity}'s workflow and return a replacement program.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.invent_procedure"
+  },
+  {
+    "id": "ood-invent_procedure-en-04",
+    "text": "Create a previously unseen recipe for transforming {entity}'s value.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.invent_procedure"
+  },
+  {
+    "id": "ood-invent_procedure-zh-01",
+    "text": "为{entity}发明一个比记忆里更好的过程。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.invent_procedure"
+  },
+  {
+    "id": "ood-invent_procedure-zh-02",
+    "text": "不用已有方法，为{entity}设计新的处理步骤。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.invent_procedure"
+  },
+  {
+    "id": "ood-invent_procedure-zh-03",
+    "text": "优化{entity}的工作流程，并返回替代程序。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.invent_procedure"
+  },
+  {
+    "id": "ood-invent_procedure-zh-04",
+    "text": "创造一个从未保存过的配方来转换{entity}的值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.invent_procedure"
+  },
+  {
+    "id": "ood-ambiguous_operation-en-01",
+    "text": "Do the other thing for {entity}.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.ambiguous_operation"
+  },
+  {
+    "id": "ood-ambiguous_operation-en-02",
+    "text": "Give me whichever result for {entity} you think I meant.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.ambiguous_operation"
+  },
+  {
+    "id": "ood-ambiguous_operation-en-03",
+    "text": "Use that information about {entity}, somehow.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.ambiguous_operation"
+  },
+  {
+    "id": "ood-ambiguous_operation-en-04",
+    "text": "For {entity}, repeat the unspecified operation from elsewhere.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.ambiguous_operation"
+  },
+  {
+    "id": "ood-ambiguous_operation-zh-01",
+    "text": "对{entity}做另外那件事。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.ambiguous_operation"
+  },
+  {
+    "id": "ood-ambiguous_operation-zh-02",
+    "text": "给我你觉得我想要的那个{entity}结果。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.ambiguous_operation"
+  },
+  {
+    "id": "ood-ambiguous_operation-zh-03",
+    "text": "以某种方式用一下{entity}的那些信息。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.ambiguous_operation"
+  },
+  {
+    "id": "ood-ambiguous_operation-zh-04",
+    "text": "对{entity}重复别处提过但这里未说明的操作。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.ambiguous_operation"
+  },
+  {
+    "id": "ood-multiple_outputs-en-01",
+    "text": "Return both {entity}'s latest value and its stored procedure as separate answers.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.multiple_outputs"
+  },
+  {
+    "id": "ood-multiple_outputs-en-02",
+    "text": "List {entity}'s semantic property together with every historical event value.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.multiple_outputs"
+  },
+  {
+    "id": "ood-multiple_outputs-en-03",
+    "text": "Give {entity}'s current value, historical value and percentage change in one table.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.multiple_outputs"
+  },
+  {
+    "id": "ood-multiple_outputs-en-04",
+    "text": "Show {entity}'s saved method and also predict the next measurement.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.multiple_outputs"
+  },
+  {
+    "id": "ood-multiple_outputs-zh-01",
+    "text": "分别返回{entity}最新值和保存的过程这两个答案。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.multiple_outputs"
+  },
+  {
+    "id": "ood-multiple_outputs-zh-02",
+    "text": "列出{entity}语义属性，以及每一个历史事件值。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.multiple_outputs"
+  },
+  {
+    "id": "ood-multiple_outputs-zh-03",
+    "text": "用同一张表给出{entity}当前值、历史值和百分比变化。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.multiple_outputs"
+  },
+  {
+    "id": "ood-multiple_outputs-zh-04",
+    "text": "显示{entity}保存的方法，同时预测下一次测量。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.multiple_outputs"
+  },
+  {
+    "id": "ood-unavailable_uncertainty-en-01",
+    "text": "Give a ninety-five percent measurement confidence interval for {entity}'s current value.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.unavailable_uncertainty"
+  },
+  {
+    "id": "ood-unavailable_uncertainty-en-02",
+    "text": "How likely is it that {entity}'s recorded observation is a sensor error?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.unavailable_uncertainty"
+  },
+  {
+    "id": "ood-unavailable_uncertainty-en-03",
+    "text": "Estimate the standard error of {entity}'s latest event value.",
+    "operation": null,
+    "language": "en",
+    "family": "ood.unavailable_uncertainty"
+  },
+  {
+    "id": "ood-unavailable_uncertainty-en-04",
+    "text": "What probability distribution describes the unknown true value behind {entity}'s observation?",
+    "operation": null,
+    "language": "en",
+    "family": "ood.unavailable_uncertainty"
+  },
+  {
+    "id": "ood-unavailable_uncertainty-zh-01",
+    "text": "给出{entity}当前值的百分之九十五测量置信区间。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.unavailable_uncertainty"
+  },
+  {
+    "id": "ood-unavailable_uncertainty-zh-02",
+    "text": "{entity}这次记录属于传感器错误的概率有多大？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.unavailable_uncertainty"
+  },
+  {
+    "id": "ood-unavailable_uncertainty-zh-03",
+    "text": "估计{entity}最新事件值的标准误。",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.unavailable_uncertainty"
+  },
+  {
+    "id": "ood-unavailable_uncertainty-zh-04",
+    "text": "{entity}观测背后未知真值的概率分布是什么？",
+    "operation": null,
+    "language": "zh",
+    "family": "ood.unavailable_uncertainty"
+  }
+]

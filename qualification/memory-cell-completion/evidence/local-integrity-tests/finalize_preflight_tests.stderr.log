@@ -1,0 +1,24 @@
+test_cli_failure_writes_failed_gate_receipt (__main__.SourceAndReceiptTests.test_cli_failure_writes_failed_gate_receipt) ... ok
+test_exact_source_and_full_raw_inventory_pass_then_after_freeze_passes (__main__.SourceAndReceiptTests.test_exact_source_and_full_raw_inventory_pass_then_after_freeze_passes) ... ok
+test_later_adapter_document_is_frozen_without_claiming_native_coverage (__main__.SourceAndReceiptTests.test_later_adapter_document_is_frozen_without_claiming_native_coverage) ... ok
+test_longrun_requires_its_own_source_freeze (__main__.SourceAndReceiptTests.test_longrun_requires_its_own_source_freeze) ... ok
+test_missing_required_report_fails_even_with_consistent_archive (__main__.SourceAndReceiptTests.test_missing_required_report_fails_even_with_consistent_archive) ... ok
+test_wrong_command_log_identity_is_rejected (__main__.SourceAndReceiptTests.test_wrong_command_log_identity_is_rejected) ... ok
+test_wrong_native_commit_or_packer_source_is_rejected (__main__.SourceAndReceiptTests.test_wrong_native_commit_or_packer_source_is_rejected) ... ok
+test_wrong_tested_tree_is_rejected (__main__.SourceAndReceiptTests.test_wrong_tested_tree_is_rejected) ... ok
+test_corrupted_or_missing_chunk_is_rejected (__main__.TransportTests.test_corrupted_or_missing_chunk_is_rejected) ... ok
+test_duplicate_json_offset_gap_and_chunk_path_escape_are_rejected (__main__.TransportTests.test_duplicate_json_offset_gap_and_chunk_path_escape_are_rejected) ... ok
+test_escaping_absolute_and_noncanonical_member_paths_are_rejected (__main__.TransportTests.test_escaping_absolute_and_noncanonical_member_paths_are_rejected) ... ok
+test_exact_stream_preserves_colons_empty_files_and_negative_scientific_outcomes (__main__.TransportTests.test_exact_stream_preserves_colons_empty_files_and_negative_scientific_outcomes) ... ok
+test_links_and_special_tar_members_are_rejected (__main__.TransportTests.test_links_and_special_tar_members_are_rejected) ... ok
+test_member_corruption_is_rejected_even_when_transport_hashes_match (__main__.TransportTests.test_member_corruption_is_rejected_even_when_transport_hashes_match) ... ok
+test_missing_member_and_duplicate_member_are_rejected (__main__.TransportTests.test_missing_member_and_duplicate_member_are_rejected) ... ok
+test_pax_metadata_bounds_reject_before_unbounded_processing (__main__.TransportTests.test_pax_metadata_bounds_reject_before_unbounded_processing) ... ok
+test_symlinked_chunk_is_rejected (__main__.TransportTests.test_symlinked_chunk_is_rejected) ... ok
+test_unlisted_nonzero_tar_tail_is_rejected (__main__.TransportTests.test_unlisted_nonzero_tar_tail_is_rejected) ... ok
+test_xz_trailing_data_is_rejected_even_when_transport_hashes_match (__main__.TransportTests.test_xz_trailing_data_is_rejected_even_when_transport_hashes_match) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 1.157s
+
+OK

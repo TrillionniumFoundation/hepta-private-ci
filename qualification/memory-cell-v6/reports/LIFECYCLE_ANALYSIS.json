@@ -1,0 +1,2461 @@
+{
+  "aggregate": {
+    "learning": {
+      "all_model_source_artifact_files_bytes": {
+        "count": 5,
+        "max": 888457,
+        "median": 887237,
+        "min": 881989,
+        "sum": 4432622
+      },
+      "clean_refit_exact_arrays_seeds": 5,
+      "cohorts": {
+        "composition": {
+          "correct": 155,
+          "rows": 155
+        },
+        "initial": {
+          "correct": 120,
+          "rows": 120
+        },
+        "procedure": {
+          "correct": 160,
+          "rows": 160
+        },
+        "replay": {
+          "correct": 160,
+          "rows": 160
+        },
+        "surviving": {
+          "correct": 155,
+          "rows": 155
+        },
+        "transfer": {
+          "correct": 40,
+          "rows": 40
+        }
+      },
+      "current_three_cells_bytes": {
+        "count": 5,
+        "max": 55042,
+        "median": 54840,
+        "min": 54837,
+        "sum": 274399
+      },
+      "current_three_cells_to_compressed_source_ratio": {
+        "count": 5,
+        "max": 43.96325878594249,
+        "median": 43.8712,
+        "min": 43.73205741626794,
+        "sum": 219.23899736351618
+      },
+      "exact_source_codec_bytes": {
+        "count": 5,
+        "max": 1254,
+        "median": 1252,
+        "min": 1249,
+        "sum": 6258
+      },
+      "parent_cpu_seconds": {
+        "count": 5,
+        "max": 2.0434087199999995,
+        "median": 1.962607835,
+        "min": 1.6505327019999998,
+        "sum": 9.383242282
+      },
+      "raw_old_accuracy_gain_percentage_points": 7.5,
+      "raw_old_total": 120,
+      "raw_old_with_replay": {
+        "count": 5,
+        "max": 24,
+        "median": 24,
+        "min": 24,
+        "sum": 120
+      },
+      "raw_old_without_replay": {
+        "count": 5,
+        "max": 24,
+        "median": 23,
+        "min": 19,
+        "sum": 111
+      },
+      "replay_strict_improvement_seeds": 3,
+      "semantic": {
+        "all_retained_version_bytes": {
+          "count": 5,
+          "max": 68787,
+          "median": 68782,
+          "min": 68578,
+          "sum": 343712
+        },
+        "current_model_bytes": {
+          "count": 5,
+          "max": 18060,
+          "median": 18058,
+          "min": 18058,
+          "sum": 90293
+        },
+        "immutable_source_ledger_bytes": {
+          "count": 5,
+          "max": 4923,
+          "median": 4923,
+          "min": 4923,
+          "sum": 24615
+        },
+        "maintenance_ledger_bytes": {
+          "count": 5,
+          "max": 8658,
+          "median": 8656,
+          "min": 8653,
+          "sum": 43277
+        },
+        "revocation_bytes": {
+          "count": 5,
+          "max": 19,
+          "median": 19,
+          "min": 19,
+          "sum": 95
+        },
+        "training_cpu_seconds": {
+          "count": 5,
+          "max": 0.20015193600000014,
+          "median": 0.1763640190000002,
+          "min": 0.16226549399999968,
+          "sum": 0.8989022460000022
+        }
+      },
+      "semantic_fit_wall_seconds": {
+        "count": 5,
+        "max": 0.20025889101088978,
+        "median": 0.17645030398853123,
+        "min": 0.16228418599348515,
+        "sum": 0.8994978269765852
+      },
+      "semantic_four_generation_fits": {
+        "count": 5,
+        "max": 4,
+        "median": 4,
+        "min": 4,
+        "sum": 20
+      },
+      "wall_seconds": {
+        "count": 5,
+        "max": 2.0450414730003104,
+        "median": 1.9640779789915541,
+        "min": 1.650696038006572,
+        "sum": 9.391754245007178
+      }
+    },
+    "lifecycle": {
+      "actual_cell_fits": {
+        "count": 5,
+        "max": 4,
+        "median": 4,
+        "min": 4,
+        "sum": 20
+      },
+      "application_bundle_copied_bytes": {
+        "count": 5,
+        "max": 1069984,
+        "median": 1069893,
+        "min": 1069839,
+        "sum": 5349497
+      },
+      "directory_bytes_before_receipt": {
+        "count": 5,
+        "max": 1457568,
+        "median": 1457465,
+        "min": 1457397,
+        "sum": 7287349
+      },
+      "explicit_source_replay_payload_bytes": {
+        "count": 5,
+        "max": 2778,
+        "median": 2778,
+        "min": 2778,
+        "sum": 13890
+      },
+      "migration_count": {
+        "count": 5,
+        "max": 7,
+        "median": 7,
+        "min": 7,
+        "sum": 35
+      },
+      "migration_wall_seconds": {
+        "count": 5,
+        "max": 0.3195939309807727,
+        "median": 0.13188132400682662,
+        "min": 0.12408143698121421,
+        "sum": 0.8388127049838658
+      },
+      "parent_cpu_seconds": {
+        "count": 5,
+        "max": 0.4848786789999995,
+        "median": 0.4484357929999998,
+        "min": 0.4214688520000003,
+        "sum": 2.274216227
+      },
+      "parent_plus_children_cpu_seconds": {
+        "count": 5,
+        "max": 7.505515997,
+        "median": 7.339846678999999,
+        "min": 6.910246905999999,
+        "sum": 36.339732227000006
+      },
+      "passed_checks": 270,
+      "passed_studies": 5,
+      "process_starts": {
+        "count": 5,
+        "max": 8,
+        "median": 8,
+        "min": 8,
+        "sum": 40
+      },
+      "reaped_child_cpu_seconds": {
+        "count": 5,
+        "max": 7.060054999999998,
+        "median": 6.8549679999999995,
+        "min": 6.436275,
+        "sum": 34.065516
+      },
+      "recovery_wall_seconds": {
+        "count": 5,
+        "max": 0.3231435699999565,
+        "median": 0.13779789699765388,
+        "min": 0.13335468999866862,
+        "sum": 0.9369682879914762
+      },
+      "rpc": {
+        "calls": {
+          "count": 5,
+          "max": 50,
+          "median": 50,
+          "min": 50,
+          "sum": 250
+        },
+        "read_attempts": {
+          "count": 5,
+          "max": 30,
+          "median": 30,
+          "min": 30,
+          "sum": 150
+        },
+        "received_bytes": {
+          "count": 5,
+          "max": 19296,
+          "median": 19291,
+          "min": 19284,
+          "sum": 96452
+        },
+        "sent_bytes": {
+          "count": 5,
+          "max": 19306,
+          "median": 19306,
+          "min": 19306,
+          "sum": 96530
+        },
+        "validation_attempts": {
+          "count": 5,
+          "max": 20,
+          "median": 20,
+          "min": 20,
+          "sum": 100
+        }
+      },
+      "rpc_body_bytes": {
+        "count": 5,
+        "max": 38602,
+        "median": 38597,
+        "min": 38590,
+        "sum": 192982
+      },
+      "snapshot_training_cpu_seconds": {
+        "count": 5,
+        "max": 0.34193575399999876,
+        "median": 0.31534516199999985,
+        "min": 0.29738189499999734,
+        "sum": 1.5960077119999978
+      },
+      "source_replay_wall_seconds": {
+        "count": 5,
+        "max": 0.017520451991003938,
+        "median": 0.013412220985628664,
+        "min": 0.011333157992339693,
+        "sum": 0.07116088598559145
+      },
+      "total_checks": 270,
+      "wall_seconds": {
+        "count": 5,
+        "max": 2.1232517400057986,
+        "median": 1.7272464559937362,
+        "min": 1.6619388700055424,
+        "sum": 9.21650001501257
+      }
+    },
+    "outer_execution": {
+      "learning": {
+        "parent_cpu_seconds": {
+          "count": 5,
+          "max": 2.0486249580000004,
+          "median": 1.9676217630000004,
+          "min": 1.6540142469999999,
+          "sum": 9.404152553
+        },
+        "retained_bytes": {
+          "count": 5,
+          "max": 1016779,
+          "median": 1015587,
+          "min": 1010272,
+          "sum": 5074399
+        },
+        "wall_seconds": {
+          "count": 5,
+          "max": 2.050259465991985,
+          "median": 1.9690937389968894,
+          "min": 1.6541912440006854,
+          "sum": 9.412685568997404
+        }
+      },
+      "lifecycle": {
+        "parent_cpu_seconds": {
+          "count": 5,
+          "max": 0.4894071980000003,
+          "median": 0.45287294699999947,
+          "min": 0.42723336299999914,
+          "sum": 2.300407910999999
+        },
+        "retained_bytes": {
+          "count": 5,
+          "max": 1556647,
+          "median": 1556529,
+          "min": 1556467,
+          "sum": 7782738
+        },
+        "wall_seconds": {
+          "count": 5,
+          "max": 2.128828564003925,
+          "median": 1.73402150599577,
+          "min": 1.6687790479918476,
+          "sum": 9.248416510992683
+        }
+      }
+    }
+  },
+  "audit_summary": {
+    "checks": 1735,
+    "current_migration_files_hash_verified": 240,
+    "failed": [],
+    "learning_files_hash_verified": 135,
+    "migration_manifests_verified": 35,
+    "passed": 1735
+  },
+  "evidence_keys": {
+    "calibration": "seed-N/learning/semantic-selected.cell.json#/payload/calibration; frozen v6/learning.py calibrates keys[:3]",
+    "clean_rebuild": "seed-N/learning/semantic-generation-4.cell.json#/payload/arrays + diagnostic-clean-reference.cell.json#/payload/arrays; REPORT.json#/deletion_receipt",
+    "learning_cost": "seed-N/learning/REPORT.json#/cost; /ledger; MANIFEST.json#/files",
+    "learning_reads": "seed-N/learning/REPORT.json#/{initial,replay,surviving,procedure,transfer}/reads + source-ledger.json",
+    "lifecycle_checks": "seed-N/lifecycle/LIFECYCLE.json#/checks",
+    "migration": "seed-N/lifecycle/LIFECYCLE.json#/migrations; current full successor directories",
+    "outer_execution_cost": "EXECUTION.json#/runs and root totals",
+    "propagation_gap": "seed-N/lifecycle/LIFECYCLE.json#/source_update/unobserved_writer_change_can_serve_old_value; /source_deliveries",
+    "publication": "seed-N/lifecycle/LIFECYCLE.json#/publication; /checks names failpoint.active_pointer, failpoint.reopen_old_version, cas.one_committed_successor",
+    "recovery": "seed-N/lifecycle/LIFECYCLE.json#/recovery; /trials name restart-recovered",
+    "replay_control": "seed-N/learning/REPORT.json#/no_replay; /append_receipt/training; /ledger",
+    "rpc_full_ledger": "seed-N/lifecycle/LIFECYCLE.json#/trials/*/readout/transport + /trials/*/counters; total /cost/rpc"
+  },
+  "input_directory": "/workspace/scratch/528d510b462f/v6-formal-extensions",
+  "input_hashes": {
+    "EXECUTION.json": {
+      "bytes": 5327,
+      "sha256": "29f281fa602b17535b7b80e1bb4fd358b6d2f5652de00b7d4fe753b95b2df86a"
+    },
+    "SOURCE.json": {
+      "bytes": 2181,
+      "sha256": "5e2405c9a491417d7d7d07878c64e815af8c18d237e853b9284c38e3543af180"
+    },
+    "seed-1103/learning/MANIFEST.json": {
+      "bytes": 3455,
+      "sha256": "98bc3fa9a536af6533d1121bd12dc09b2665ebe1677d9a8830ab9357155ab1ca"
+    },
+    "seed-1103/learning/REPORT.json": {
+      "bytes": 124867,
+      "sha256": "2a17d4a286469f40133fc204fa4a8a03d6cd7d32d8b1175e23abbc695f698fb1"
+    },
+    "seed-1103/learning/diagnostic-clean-reference.cell.json": {
+      "bytes": 17431,
+      "sha256": "dd0cc6f0e38045f17ad19e1c559c74b429796d5ea2cc026d21a61c6de85775d2"
+    },
+    "seed-1103/learning/semantic-generation-1.cell.json": {
+      "bytes": 16447,
+      "sha256": "d3d53e012a6ed5e16a3b3eec79db1b97e9e8e1e489d729bd8df252ee9648deb1"
+    },
+    "seed-1103/learning/semantic-generation-2.cell.json": {
+      "bytes": 17367,
+      "sha256": "936b9fe07cfafe9ac7045b62bd8c464b9d4daa48a798ec7775ab8e9e505e45e5"
+    },
+    "seed-1103/learning/semantic-generation-3.cell.json": {
+      "bytes": 17537,
+      "sha256": "01a04ceb34f87a3b4412972a55a90bbaf908a942267b9d226fefdc6175511408"
+    },
+    "seed-1103/learning/semantic-generation-4.cell.json": {
+      "bytes": 17431,
+      "sha256": "58fa02420cdbe52bb10a5a721ec1a62d32e589279a5bc4751f5054fa9a32baeb"
+    },
+    "seed-1103/learning/semantic-selected.cell.json": {
+      "bytes": 18058,
+      "sha256": "fe8a9d7ea8af30570c9522ce9f282506f0604a424b8be825ca63d717f69f2d88"
+    },
+    "seed-1103/learning/source-ledger.json": {
+      "bytes": 11393,
+      "sha256": "28181413bde8f9c97ab54b91c04161400d838a4d8fa2e7361ac85e08dcb68629"
+    },
+    "seed-1103/lifecycle/LIFECYCLE.json": {
+      "bytes": 99070,
+      "sha256": "f6d306b92e76a277359e4ac89ec1c76a1944fe04e0ece62ab0cb6e7063702fda"
+    },
+    "seed-1109/learning/MANIFEST.json": {
+      "bytes": 3455,
+      "sha256": "019e08b1d27fbab937e19918235611739fc27352131931b5bb932d4b67246dc3"
+    },
+    "seed-1109/learning/REPORT.json": {
+      "bytes": 124895,
+      "sha256": "6f580dc4a74e94d4054c827a185e49c7a862ae0463b7b30a1f60049a65b75275"
+    },
+    "seed-1109/learning/diagnostic-clean-reference.cell.json": {
+      "bytes": 17432,
+      "sha256": "76ff996011c66be01484a3ccbb6092508f312e55a1b4b15a44fd26bdd73979d9"
+    },
+    "seed-1109/learning/semantic-generation-1.cell.json": {
+      "bytes": 16449,
+      "sha256": "545777fbf5cc576f75d96ce916b3965c96a1db292190d0a2ad6a72c0a97bdbf5"
+    },
+    "seed-1109/learning/semantic-generation-2.cell.json": {
+      "bytes": 17369,
+      "sha256": "df343fe31afd4d7b09de636e4887e8c712160dc30fa56549889e080b8a6bf8b7"
+    },
+    "seed-1109/learning/semantic-generation-3.cell.json": {
+      "bytes": 17536,
+      "sha256": "2e3d7b2273b84612c77669d99d5fdaf1f490fd56e7733360928f1442ffe0c403"
+    },
+    "seed-1109/learning/semantic-generation-4.cell.json": {
+      "bytes": 17433,
+      "sha256": "10c7b62c1585eed8021bef9c9cc28a2bed4cff718a128c9808af0c9131eed45c"
+    },
+    "seed-1109/learning/semantic-selected.cell.json": {
+      "bytes": 18060,
+      "sha256": "a00de40438abec22202be3be740d5cf70ee79ad2789d177edaf1e560aa7feba9"
+    },
+    "seed-1109/learning/source-ledger.json": {
+      "bytes": 11393,
+      "sha256": "390e8651dd98bc4eefebf15125722aa585901f9edc1dbc92dbb508854558c98e"
+    },
+    "seed-1109/lifecycle/LIFECYCLE.json": {
+      "bytes": 99079,
+      "sha256": "3ba2ac6432549fc3b481e564f4a22a442bb1c00ae03fbe5e32c4f1684fcabfe5"
+    },
+    "seed-1117/learning/MANIFEST.json": {
+      "bytes": 3455,
+      "sha256": "d769c6b0aa60532258bc8bec74307e5a2bfa8f7db6d406b0585caa9bf36a908c"
+    },
+    "seed-1117/learning/REPORT.json": {
+      "bytes": 124967,
+      "sha256": "c8cc9953c58ac1cf18e01656e05b35ce956073956d97d0ecee3fa4119c57722c"
+    },
+    "seed-1117/learning/diagnostic-clean-reference.cell.json": {
+      "bytes": 17433,
+      "sha256": "6388897e7413511a6ced4cba7a37138820d8663aedd223109b7e4821e62cf12c"
+    },
+    "seed-1117/learning/semantic-generation-1.cell.json": {
+      "bytes": 16448,
+      "sha256": "cbf9ff1dc78343845af44cc6b8acc4f388703c7d748114c0e6af8ac291b6c247"
+    },
+    "seed-1117/learning/semantic-generation-2.cell.json": {
+      "bytes": 17368,
+      "sha256": "3c48eda198c1467afea611ba7ed3fb06e1069b75758357c2c2ee11c193abf237"
+    },
+    "seed-1117/learning/semantic-generation-3.cell.json": {
+      "bytes": 17536,
+      "sha256": "b21886e1f89c2f6de664af76604766a213bf028f1bb961021d49b774a93661cd"
+    },
+    "seed-1117/learning/semantic-generation-4.cell.json": {
+      "bytes": 17432,
+      "sha256": "2d660513d8e49121bf02ee76acd05d30d72f8c55fbce9ede6b2bbd4d575f1c06"
+    },
+    "seed-1117/learning/semantic-selected.cell.json": {
+      "bytes": 18059,
+      "sha256": "d7dc7867834ea5e778f7782b4ca1cc7ffc939b39ff84e81e927e447a31637c57"
+    },
+    "seed-1117/learning/source-ledger.json": {
+      "bytes": 11393,
+      "sha256": "e86783591eadcc7c6094cf1ad305c312be17c19b7fd7ef4126fa9a611ced532c"
+    },
+    "seed-1117/lifecycle/LIFECYCLE.json": {
+      "bytes": 99064,
+      "sha256": "df0a2e463b16c14719650159e3c699ce7b420a64e0c84b5689951b049d86d2af"
+    },
+    "seed-1123/learning/MANIFEST.json": {
+      "bytes": 3455,
+      "sha256": "3d5d638f8d4e12c5e49cc023c8ec12e77ba49d98e3d64c26cb6f8529396bfd3d"
+    },
+    "seed-1123/learning/REPORT.json": {
+      "bytes": 124828,
+      "sha256": "f5178454268ed4d307a227ee2b01b7f9cd4a0df9c97bb215a6daf0c88411e8fb"
+    },
+    "seed-1123/learning/diagnostic-clean-reference.cell.json": {
+      "bytes": 17431,
+      "sha256": "e5e65bdbfb68b47c4c40de644c3188b622bc241e105eaf5b4876846e8e76517d"
+    },
+    "seed-1123/learning/semantic-generation-1.cell.json": {
+      "bytes": 16449,
+      "sha256": "6da15e786ce1f708534028dabccb534f1a89c3fc9f348ba8492f68bb5a9674eb"
+    },
+    "seed-1123/learning/semantic-generation-2.cell.json": {
+      "bytes": 17365,
+      "sha256": "f7a5a880f834cafb711ef45034f73d5b5108aac31460653e1858e00fbec4a293"
+    },
+    "seed-1123/learning/semantic-generation-3.cell.json": {
+      "bytes": 17536,
+      "sha256": "3364f7da97fbd66fbb560c12767e24a8dda6cd47000f5d67af88e1a96bb99caa"
+    },
+    "seed-1123/learning/semantic-generation-4.cell.json": {
+      "bytes": 17431,
+      "sha256": "7bf808a6998f39c6b779773c62992a060a1727c3e511db04134abfbb9beb0373"
+    },
+    "seed-1123/learning/semantic-selected.cell.json": {
+      "bytes": 18058,
+      "sha256": "84d3384b4399f27e25488122b94fea9f1408d739e62ff8227d277532b427f119"
+    },
+    "seed-1123/learning/source-ledger.json": {
+      "bytes": 11393,
+      "sha256": "7ab706430d3406a45344ececb6f146da957208c65d4ae3b3bc03d4221a1cd3d4"
+    },
+    "seed-1123/lifecycle/LIFECYCLE.json": {
+      "bytes": 99085,
+      "sha256": "79a2df02a722a7f2c2dbb1c9d542f1c32a7a93c7c362f9e42dbe44869d67bfa8"
+    },
+    "seed-1129/learning/MANIFEST.json": {
+      "bytes": 3455,
+      "sha256": "188c3b008400fe1f3c006d336b10243e324832e7df4c11302c60401ecadcbc89"
+    },
+    "seed-1129/learning/REPORT.json": {
+      "bytes": 124945,
+      "sha256": "2bfc142da3b7a87eeb4843aced408518ab8941cc13da59bce9c17272149d333a"
+    },
+    "seed-1129/learning/diagnostic-clean-reference.cell.json": {
+      "bytes": 17431,
+      "sha256": "a6cb27d2a7a42402eefd48c2b167fa8c3ce04a746e88f78dc5ac3091da69a22e"
+    },
+    "seed-1129/learning/semantic-generation-1.cell.json": {
+      "bytes": 16242,
+      "sha256": "454bce4681b2d752517945a3cede9562317a53fe85a5efc2cdad872220ce1260"
+    },
+    "seed-1129/learning/semantic-generation-2.cell.json": {
+      "bytes": 17369,
+      "sha256": "ebbeb6f0af7013c0f7a51c7fc00ab39539cb84ad4139849b12902ef5548e5ecf"
+    },
+    "seed-1129/learning/semantic-generation-3.cell.json": {
+      "bytes": 17536,
+      "sha256": "c326502389c8665732c4d9bdf75a30ff190d19eb69c633b8567b104697617afc"
+    },
+    "seed-1129/learning/semantic-generation-4.cell.json": {
+      "bytes": 17431,
+      "sha256": "c538697376c6370152d72e3cec6ecc41951b571802383b8b57a6d07e68cb19e9"
+    },
+    "seed-1129/learning/semantic-selected.cell.json": {
+      "bytes": 18058,
+      "sha256": "ffb3dbba320e72ccc229647d4172dafb30c4ec8f5b96de4ef9ce60af3c91089b"
+    },
+    "seed-1129/learning/source-ledger.json": {
+      "bytes": 11393,
+      "sha256": "c92c17f31a78110d514cc329de695c5c6826fc00d319e095ff8965e049019319"
+    },
+    "seed-1129/lifecycle/LIFECYCLE.json": {
+      "bytes": 99091,
+      "sha256": "5f48e9c374af2def21632ccc3b480040e1fdabe8b570271de01145e4a2f3722b"
+    }
+  },
+  "limits": [
+    "Lifecycle is one machine, loopback HTTP and independent directories/inodes, not separate physical disks/hosts or a production TaskFlow owner integration.",
+    "Publication is single-writer SQLite CAS. A failpoint exception before pointer commit is tested; power-loss durability, multiwriter consensus and arbitrary network partitions are not.",
+    "All five seeds show old values can still be served before explicit source delivery. The coordinator replays source updates and distributes full bundles. Automatic distributed revocation is not demonstrated.",
+    "Lifecycle requests choose operations directly and therefore do not measure natural-language routing.",
+    "RPC counts include failed read attempts and old pinned clients; bytes are attempted JSON requests and received JSON response bodies, excluding HTTP/TCP framing. Migration bytes are application bytes, excluding filesystem metadata I/O.",
+    "Parent and reaped child CPU are separate cumulative scopes. Internal costs are nested within outer execution costs and must not be added twice. RSS high-water marks are neither aggregate concurrent memory nor steady-state model memory.",
+    "Five study seeds randomize small synthetic opaque key associations. Learning/read cohorts overlap and are written-support recall, not independent future-task generalization.",
+    "Cells train real NumPy tanh MLP association weights with explicit output catalogs; frozen linguistic encoder/head training is a separate experiment. These are not language-model memory finetunes or answers stored exclusively in parameters.",
+    "Replay vs no-replay shares initial parameters/catalog and 400 optimizer steps, but uses 12800 vs 3200 example presentations. The measured 7.5 percentage-point retention gain is not an equal-compute causal result.",
+    "The semantic cell calibration has three already-trained addresses per seed, selects threshold zero, and explicitly disclaims population risk guarantees. It is not independent held-out calibration.",
+    "Clean rebuilding is verified against an independently initialized deterministic same-data fit and by excluding revoked/superseded lineage. Statistical unlearning/privacy is not proved; immutable source/history artifacts remain retained.",
+    "Procedure inference selects among five pre-registered arithmetic opcodes. Cross-type arithmetic is independently recomputed here, but new program invention is not shown.",
+    "Serialized current cells are larger than the compressed exact source ledger on this small workload. Full retained files also include candidate artifacts, training history, source ledgers and diagnostics; no full-cost storage-compression win is shown.",
+    "Three historical copied source.sqlite files per seed were subsequently updated through explicit delivery, so historical migration hashes are checked as manifests and current immutable files are verified; current final successor source files are fully hash-verified.",
+    "The current_three_cells_bytes field sums semantic, procedure and new-domain semantic cell files. It is not a sum of the event/semantic/procedure type inventory; the event store remains separate.",
+    "This posthoc audit recomputes recorded results and hashes without rerunning models, opening main language evaluation data, changing repo source/tests or making commits."
+  ],
+  "per_seed": [
+    {
+      "learning": {
+        "calibration": {
+          "candidates": [
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.0
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.5
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.7
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.85
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.9
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.95
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.99
+            },
+            {
+              "accepted": 0,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 1.0
+            }
+          ],
+          "population_risk_guarantee": false,
+          "rows": 3,
+          "selected": {
+            "accepted": 3,
+            "errors": 0,
+            "observed_risk": 0.0,
+            "threshold": 0.0
+          }
+        },
+        "clean_rebuild_lineage_count": 31,
+        "clean_refit_arrays_exactly_equal": true,
+        "clean_refit_parameters": "283d69f090056ad6344cc07221974b57197b72b22d02a2aef4458b175fa1d828",
+        "cohorts": {
+          "composition": {
+            "correct": 31,
+            "rows": 31
+          },
+          "initial": {
+            "correct": 24,
+            "rows": 24
+          },
+          "procedure": {
+            "correct": 32,
+            "rows": 32
+          },
+          "replay": {
+            "correct": 32,
+            "rows": 32
+          },
+          "surviving": {
+            "correct": 31,
+            "rows": 31
+          },
+          "transfer": {
+            "correct": 8,
+            "rows": 8
+          }
+        },
+        "corrected_source_replaced": true,
+        "cost": {
+          "all_model_source_artifact_files_bytes": 888457,
+          "current_three_cells_bytes": 54837,
+          "current_three_cells_to_compressed_source_ratio": 43.90472377902322,
+          "diagnostic_clean_reference": {
+            "catalog_bytes": 289,
+            "parameter_bytes": 9508,
+            "serialized_bytes": 17431,
+            "support_bytes": 2729,
+            "training_cpu_seconds": 0.044083415999999875,
+            "training_steps": 400
+          },
+          "exact_source_codec_bytes": 1249,
+          "full_process_rss_measured": false,
+          "no_replay": {
+            "catalog_bytes": 249,
+            "parameter_bytes": 9376,
+            "serialized_bytes": 15263,
+            "support_bytes": 705,
+            "training_cpu_seconds": 0.03821967700000006,
+            "training_steps": 400
+          },
+          "parent_cpu_seconds": 1.6505327019999998,
+          "procedure": {
+            "all_retained_version_bytes": 22662,
+            "current_model_bytes": 22662,
+            "immutable_source_ledger_bytes": 5167,
+            "maintenance_ledger_bytes": 3461,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.05064170499999987
+          },
+          "semantic": {
+            "all_retained_version_bytes": 68782,
+            "current_model_bytes": 18058,
+            "immutable_source_ledger_bytes": 4923,
+            "maintenance_ledger_bytes": 8653,
+            "revocation_bytes": 19,
+            "training_cpu_seconds": 0.1763640190000002
+          },
+          "semantic_fit_wall_seconds": 0.17645030398853123,
+          "semantic_four_generation_fits": 4,
+          "structure_ancestor": {
+            "catalog_bytes": 478,
+            "cells": 4,
+            "full_process_rss_measured": false,
+            "loaded_parameter_bytes": 17660,
+            "parameter_bytes": 17660,
+            "reload_count": 0,
+            "reload_seconds": 0.0,
+            "route_bytes": 1588,
+            "serialized_bytes": 43319,
+            "serialized_cache_bytes": 31091,
+            "source_support_bytes": 2028,
+            "training_cpu_seconds": 0.10724146899999987,
+            "training_steps": 1200
+          },
+          "transfer": {
+            "all_retained_version_bytes": 14117,
+            "current_model_bytes": 14117,
+            "immutable_source_ledger_bytes": 1265,
+            "maintenance_ledger_bytes": 1690,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.03731748899999987
+          },
+          "wall_seconds": 1.650696038006572
+        },
+        "deleted_source_excluded": true,
+        "equal_examples_seen": false,
+        "equal_optimizer_steps": true,
+        "file_manifest_count": 27,
+        "no_replay_examples_seen": 3200,
+        "no_replay_serving_old_accepted": 0,
+        "raw_old_total": 24,
+        "raw_old_with_replay": 24,
+        "raw_old_without_replay": 23,
+        "replay_examples_seen": 12800,
+        "semantic_ledger_operations": {
+          "clean-replay-rebuild": 3,
+          "incremental-replay": 1,
+          "revoke": 1,
+          "write": 33
+        },
+        "semantic_training": [
+          {
+            "cpu_seconds": 0.04385988399999996,
+            "examples_seen": 9600,
+            "generation": 1,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "6fa3a855d17b4e291f0f91338ca8b87a7221e9e0977edb2336513eeea4973c91",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 24,
+            "wall_seconds": 0.04394977098854724
+          },
+          {
+            "cpu_seconds": 0.04384209800000005,
+            "examples_seen": 12800,
+            "generation": 2,
+            "operation": "incremental-replay",
+            "parameter_digest": "e2cd313b4fad2880b032f35db7605e8cfca31740be86a2311431b541553a38d6",
+            "parent_parameters": "6fa3a855d17b4e291f0f91338ca8b87a7221e9e0977edb2336513eeea4973c91",
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.04384075599955395
+          },
+          {
+            "cpu_seconds": 0.04486999300000005,
+            "examples_seen": 12800,
+            "generation": 3,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "8cdcc193bbb311d3e3b8350d850007d7709264ef39e13f778fd9ec99d22f0699",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.044869327000924386
+          },
+          {
+            "cpu_seconds": 0.04379204400000014,
+            "examples_seen": 12400,
+            "generation": 4,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "283d69f090056ad6344cc07221974b57197b72b22d02a2aef4458b175fa1d828",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 31,
+            "wall_seconds": 0.043790449999505654
+          }
+        ]
+      },
+      "lifecycle": {
+        "checks": 54,
+        "checks_passed": 54,
+        "cost": {
+          "actual_cell_fits": 4,
+          "application_bundle_copied_bytes": 1069839,
+          "attempted_snapshot_trainings": 2,
+          "completed_snapshot_cell_fits": 4,
+          "directory_bytes_before_receipt": 1457397,
+          "explicit_source_replay_payload_bytes": 2778,
+          "migration_count": 7,
+          "migration_wall_seconds": 0.3195939309807727,
+          "parent_cpu_seconds": 0.4848786789999995,
+          "parent_plus_children_cpu_seconds": 7.339846678999999,
+          "process_starts": 8,
+          "ready_processes": 8,
+          "reaped_child_cpu_seconds": 6.8549679999999995,
+          "recovery_wall_seconds": 0.20804058699286543,
+          "rpc": {
+            "calls": 50,
+            "read_attempts": 30,
+            "received_bytes": 19296,
+            "sent_bytes": 19306,
+            "validation_attempts": 20
+          },
+          "rpc_body_bytes": 38602,
+          "snapshot_training_cpu_seconds": 0.34193575399999876,
+          "source_replay_wall_seconds": 0.017520451991003938,
+          "wall_seconds": 2.1232517400057986
+        },
+        "explicit_propagation_gap_observed": true,
+        "final_sqlite": [
+          {
+            "active": [
+              3,
+              "c3c94c063345eac6e45604eea05a8af83c18f42abe4e7b49fa861e9101c35826"
+            ],
+            "cut": 65,
+            "directory": "writer",
+            "frontier": "21604e58746be0ff6ca342e0d2d8cb9f0a4fc42b0aeaef358f76d1649687e2dd",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "c3c94c063345eac6e45604eea05a8af83c18f42abe4e7b49fa861e9101c35826"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-0",
+            "frontier": "21604e58746be0ff6ca342e0d2d8cb9f0a4fc42b0aeaef358f76d1649687e2dd",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "c3c94c063345eac6e45604eea05a8af83c18f42abe4e7b49fa861e9101c35826"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-1",
+            "frontier": "21604e58746be0ff6ca342e0d2d8cb9f0a4fc42b0aeaef358f76d1649687e2dd",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "c3c94c063345eac6e45604eea05a8af83c18f42abe4e7b49fa861e9101c35826"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-2",
+            "frontier": "21604e58746be0ff6ca342e0d2d8cb9f0a4fc42b0aeaef358f76d1649687e2dd",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          }
+        ],
+        "migration_recovered": true,
+        "migrations": {
+          "currently_hash_verified_files": 48,
+          "listed_files": 51,
+          "manifests": 7,
+          "old_source_files_changed_after_delivered_updates": [
+            "seed-1103/lifecycle/replica-0/source.sqlite",
+            "seed-1103/lifecycle/replica-2/source.sqlite",
+            "seed-1103/lifecycle/migrated-semantic-node/source.sqlite"
+          ]
+        },
+        "mixed_release_rejected": true,
+        "old_nodes_rejected": 3,
+        "old_pins_rejected": 3,
+        "restart_recovered": true,
+        "rpc_trial_count": 15,
+        "status": "passed",
+        "three_node_rpc": {
+          "attempted_request_bytes": 2232,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 3,
+          "read_attempts": 3,
+          "received_response_bytes": 2680,
+          "rpc_attempts": 6,
+          "rpc_bytes": 4912,
+          "validation_attempts": 3
+        },
+        "two_node_rpc": {
+          "attempted_request_bytes": 2010,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 2,
+          "read_attempts": 3,
+          "received_response_bytes": 2387,
+          "rpc_attempts": 5,
+          "rpc_bytes": 4397,
+          "validation_attempts": 2
+        }
+      },
+      "outer_execution": [
+        {
+          "directory": "seed-1103/learning",
+          "parent_cpu_seconds": 1.6540142469999999,
+          "retained_bytes": 1016779,
+          "seed": 1103,
+          "status": "completed",
+          "study": "learning",
+          "wall_seconds": 1.6541912440006854
+        },
+        {
+          "directory": "seed-1103/lifecycle",
+          "parent_cpu_seconds": 0.4894071980000003,
+          "retained_bytes": 1556467,
+          "seed": 1103,
+          "status": "completed",
+          "study": "lifecycle",
+          "wall_seconds": 2.128828564003925
+        }
+      ],
+      "seed": 1103
+    },
+    {
+      "learning": {
+        "calibration": {
+          "candidates": [
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.0
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.5
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.7
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.85
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.9
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.95
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.99
+            },
+            {
+              "accepted": 0,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 1.0
+            }
+          ],
+          "population_risk_guarantee": false,
+          "rows": 3,
+          "selected": {
+            "accepted": 3,
+            "errors": 0,
+            "observed_risk": 0.0,
+            "threshold": 0.0
+          }
+        },
+        "clean_rebuild_lineage_count": 31,
+        "clean_refit_arrays_exactly_equal": true,
+        "clean_refit_parameters": "baba94b9e7e58cba46597907846b449823ce779c5225403e0bbf8c228bc7f43c",
+        "cohorts": {
+          "composition": {
+            "correct": 31,
+            "rows": 31
+          },
+          "initial": {
+            "correct": 24,
+            "rows": 24
+          },
+          "procedure": {
+            "correct": 32,
+            "rows": 32
+          },
+          "replay": {
+            "correct": 32,
+            "rows": 32
+          },
+          "surviving": {
+            "correct": 31,
+            "rows": 31
+          },
+          "transfer": {
+            "correct": 8,
+            "rows": 8
+          }
+        },
+        "corrected_source_replaced": true,
+        "cost": {
+          "all_model_source_artifact_files_bytes": 887237,
+          "current_three_cells_bytes": 54840,
+          "current_three_cells_to_compressed_source_ratio": 43.73205741626794,
+          "diagnostic_clean_reference": {
+            "catalog_bytes": 289,
+            "parameter_bytes": 9508,
+            "serialized_bytes": 17432,
+            "support_bytes": 2729,
+            "training_cpu_seconds": 0.05833327499999985,
+            "training_steps": 400
+          },
+          "exact_source_codec_bytes": 1254,
+          "full_process_rss_measured": false,
+          "no_replay": {
+            "catalog_bytes": 249,
+            "parameter_bytes": 9376,
+            "serialized_bytes": 15262,
+            "support_bytes": 705,
+            "training_cpu_seconds": 0.04376566500000045,
+            "training_steps": 400
+          },
+          "parent_cpu_seconds": 2.0434087199999995,
+          "procedure": {
+            "all_retained_version_bytes": 22663,
+            "current_model_bytes": 22663,
+            "immutable_source_ledger_bytes": 5167,
+            "maintenance_ledger_bytes": 3463,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.062417464000000145
+          },
+          "semantic": {
+            "all_retained_version_bytes": 68787,
+            "current_model_bytes": 18060,
+            "immutable_source_ledger_bytes": 4923,
+            "maintenance_ledger_bytes": 8658,
+            "revocation_bytes": 19,
+            "training_cpu_seconds": 0.20015193600000014
+          },
+          "semantic_fit_wall_seconds": 0.20025889101088978,
+          "semantic_four_generation_fits": 4,
+          "structure_ancestor": {
+            "catalog_bytes": 571,
+            "cells": 4,
+            "full_process_rss_measured": false,
+            "loaded_parameter_bytes": 17864,
+            "parameter_bytes": 17864,
+            "reload_count": 0,
+            "reload_seconds": 0.0,
+            "route_bytes": 1588,
+            "serialized_bytes": 43807,
+            "serialized_cache_bytes": 31457,
+            "source_support_bytes": 2028,
+            "training_cpu_seconds": 0.14293554899999883,
+            "training_steps": 1200
+          },
+          "transfer": {
+            "all_retained_version_bytes": 14117,
+            "current_model_bytes": 14117,
+            "immutable_source_ledger_bytes": 1265,
+            "maintenance_ledger_bytes": 1690,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.05071941999999918
+          },
+          "wall_seconds": 2.0450414730003104
+        },
+        "deleted_source_excluded": true,
+        "equal_examples_seen": false,
+        "equal_optimizer_steps": true,
+        "file_manifest_count": 27,
+        "no_replay_examples_seen": 3200,
+        "no_replay_serving_old_accepted": 0,
+        "raw_old_total": 24,
+        "raw_old_with_replay": 24,
+        "raw_old_without_replay": 24,
+        "replay_examples_seen": 12800,
+        "semantic_ledger_operations": {
+          "clean-replay-rebuild": 3,
+          "incremental-replay": 1,
+          "revoke": 1,
+          "write": 33
+        },
+        "semantic_training": [
+          {
+            "cpu_seconds": 0.04467332699999993,
+            "examples_seen": 9600,
+            "generation": 1,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "c05eb6929588dc307f4d47dfdb43eb53ebc013e9fe220ee301af11c596bd381d",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 24,
+            "wall_seconds": 0.04473742199479602
+          },
+          {
+            "cpu_seconds": 0.04131876300000048,
+            "examples_seen": 12800,
+            "generation": 2,
+            "operation": "incremental-replay",
+            "parameter_digest": "10bb832e5000c1181fdb78098f14d732b84a7a2cae9bf572acdfe1ba9c8fdb04",
+            "parent_parameters": "c05eb6929588dc307f4d47dfdb43eb53ebc013e9fe220ee301af11c596bd381d",
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.04134261200670153
+          },
+          {
+            "cpu_seconds": 0.0556572399999995,
+            "examples_seen": 12800,
+            "generation": 3,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "3918dfe00a2303a8de96955db0b7a1eeb42907582f0f588916c7f1d267f99b30",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.055670016998192295
+          },
+          {
+            "cpu_seconds": 0.058502606000000235,
+            "examples_seen": 12400,
+            "generation": 4,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "baba94b9e7e58cba46597907846b449823ce779c5225403e0bbf8c228bc7f43c",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 31,
+            "wall_seconds": 0.058508840011199936
+          }
+        ]
+      },
+      "lifecycle": {
+        "checks": 54,
+        "checks_passed": 54,
+        "cost": {
+          "actual_cell_fits": 4,
+          "application_bundle_copied_bytes": 1069984,
+          "attempted_snapshot_trainings": 2,
+          "completed_snapshot_cell_fits": 4,
+          "directory_bytes_before_receipt": 1457568,
+          "explicit_source_replay_payload_bytes": 2778,
+          "migration_count": 7,
+          "migration_wall_seconds": 0.1269619810191216,
+          "parent_cpu_seconds": 0.4484357929999998,
+          "parent_plus_children_cpu_seconds": 7.467450793000001,
+          "process_starts": 8,
+          "ready_processes": 8,
+          "reaped_child_cpu_seconds": 7.019015000000001,
+          "recovery_wall_seconds": 0.1346315440023318,
+          "rpc": {
+            "calls": 50,
+            "read_attempts": 30,
+            "received_bytes": 19290,
+            "sent_bytes": 19306,
+            "validation_attempts": 20
+          },
+          "rpc_body_bytes": 38596,
+          "snapshot_training_cpu_seconds": 0.3286833699999985,
+          "source_replay_wall_seconds": 0.011333157992339693,
+          "wall_seconds": 1.6823862640012521
+        },
+        "explicit_propagation_gap_observed": true,
+        "final_sqlite": [
+          {
+            "active": [
+              3,
+              "fddc03e497e9581bfe26a05468be60f25f0c3fe5225f048ac54fc52bf6ca1632"
+            ],
+            "cut": 65,
+            "directory": "writer",
+            "frontier": "45c38faa0b875257f0ba1531cf3d232de4f4e255068baa51ee281216f1071bcd",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "fddc03e497e9581bfe26a05468be60f25f0c3fe5225f048ac54fc52bf6ca1632"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-0",
+            "frontier": "45c38faa0b875257f0ba1531cf3d232de4f4e255068baa51ee281216f1071bcd",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "fddc03e497e9581bfe26a05468be60f25f0c3fe5225f048ac54fc52bf6ca1632"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-1",
+            "frontier": "45c38faa0b875257f0ba1531cf3d232de4f4e255068baa51ee281216f1071bcd",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "fddc03e497e9581bfe26a05468be60f25f0c3fe5225f048ac54fc52bf6ca1632"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-2",
+            "frontier": "45c38faa0b875257f0ba1531cf3d232de4f4e255068baa51ee281216f1071bcd",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          }
+        ],
+        "migration_recovered": true,
+        "migrations": {
+          "currently_hash_verified_files": 48,
+          "listed_files": 51,
+          "manifests": 7,
+          "old_source_files_changed_after_delivered_updates": [
+            "seed-1109/lifecycle/replica-0/source.sqlite",
+            "seed-1109/lifecycle/replica-2/source.sqlite",
+            "seed-1109/lifecycle/migrated-semantic-node/source.sqlite"
+          ]
+        },
+        "mixed_release_rejected": true,
+        "old_nodes_rejected": 3,
+        "old_pins_rejected": 3,
+        "restart_recovered": true,
+        "rpc_trial_count": 15,
+        "status": "passed",
+        "three_node_rpc": {
+          "attempted_request_bytes": 2232,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 3,
+          "read_attempts": 3,
+          "received_response_bytes": 2679,
+          "rpc_attempts": 6,
+          "rpc_bytes": 4911,
+          "validation_attempts": 3
+        },
+        "two_node_rpc": {
+          "attempted_request_bytes": 2010,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 2,
+          "read_attempts": 3,
+          "received_response_bytes": 2386,
+          "rpc_attempts": 5,
+          "rpc_bytes": 4396,
+          "validation_attempts": 2
+        }
+      },
+      "outer_execution": [
+        {
+          "directory": "seed-1109/learning",
+          "parent_cpu_seconds": 2.0486249580000004,
+          "retained_bytes": 1015587,
+          "seed": 1109,
+          "status": "completed",
+          "study": "learning",
+          "wall_seconds": 2.050259465991985
+        },
+        {
+          "directory": "seed-1109/lifecycle",
+          "parent_cpu_seconds": 0.45287294699999947,
+          "retained_bytes": 1556647,
+          "seed": 1109,
+          "status": "completed",
+          "study": "lifecycle",
+          "wall_seconds": 1.6877092249924317
+        }
+      ],
+      "seed": 1109
+    },
+    {
+      "learning": {
+        "calibration": {
+          "candidates": [
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.0
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.5
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.7
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.85
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.9
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.95
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.99
+            },
+            {
+              "accepted": 0,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 1.0
+            }
+          ],
+          "population_risk_guarantee": false,
+          "rows": 3,
+          "selected": {
+            "accepted": 3,
+            "errors": 0,
+            "observed_risk": 0.0,
+            "threshold": 0.0
+          }
+        },
+        "clean_rebuild_lineage_count": 31,
+        "clean_refit_arrays_exactly_equal": true,
+        "clean_refit_parameters": "321682ae3080e3f0990925cf4eb824470a2f4dfc91faea6113ef32c1c1409864",
+        "cohorts": {
+          "composition": {
+            "correct": 31,
+            "rows": 31
+          },
+          "initial": {
+            "correct": 24,
+            "rows": 24
+          },
+          "procedure": {
+            "correct": 32,
+            "rows": 32
+          },
+          "replay": {
+            "correct": 32,
+            "rows": 32
+          },
+          "surviving": {
+            "correct": 31,
+            "rows": 31
+          },
+          "transfer": {
+            "correct": 8,
+            "rows": 8
+          }
+        },
+        "corrected_source_replaced": true,
+        "cost": {
+          "all_model_source_artifact_files_bytes": 887934,
+          "current_three_cells_bytes": 54841,
+          "current_three_cells_to_compressed_source_ratio": 43.767757382282525,
+          "diagnostic_clean_reference": {
+            "catalog_bytes": 289,
+            "parameter_bytes": 9508,
+            "serialized_bytes": 17433,
+            "support_bytes": 2729,
+            "training_cpu_seconds": 0.048835446000000005,
+            "training_steps": 400
+          },
+          "exact_source_codec_bytes": 1253,
+          "full_process_rss_measured": false,
+          "no_replay": {
+            "catalog_bytes": 249,
+            "parameter_bytes": 9376,
+            "serialized_bytes": 15264,
+            "support_bytes": 705,
+            "training_cpu_seconds": 0.03638816099999964,
+            "training_steps": 400
+          },
+          "parent_cpu_seconds": 1.735232954999999,
+          "procedure": {
+            "all_retained_version_bytes": 22662,
+            "current_model_bytes": 22662,
+            "immutable_source_ledger_bytes": 5167,
+            "maintenance_ledger_bytes": 3461,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.05317683599999867
+          },
+          "semantic": {
+            "all_retained_version_bytes": 68784,
+            "current_model_bytes": 18059,
+            "immutable_source_ledger_bytes": 4923,
+            "maintenance_ledger_bytes": 8656,
+            "revocation_bytes": 19,
+            "training_cpu_seconds": 0.16226549399999968
+          },
+          "semantic_fit_wall_seconds": 0.16228418599348515,
+          "semantic_four_generation_fits": 4,
+          "structure_ancestor": {
+            "catalog_bytes": 416,
+            "cells": 4,
+            "full_process_rss_measured": false,
+            "loaded_parameter_bytes": 17524,
+            "parameter_bytes": 17524,
+            "reload_count": 0,
+            "reload_seconds": 0.0,
+            "route_bytes": 1588,
+            "serialized_bytes": 42955,
+            "serialized_cache_bytes": 30816,
+            "source_support_bytes": 2028,
+            "training_cpu_seconds": 0.10888072199999854,
+            "training_steps": 1200
+          },
+          "transfer": {
+            "all_retained_version_bytes": 14120,
+            "current_model_bytes": 14120,
+            "immutable_source_ledger_bytes": 1265,
+            "maintenance_ledger_bytes": 1693,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.04351793700000073
+          },
+          "wall_seconds": 1.7355605750053655
+        },
+        "deleted_source_excluded": true,
+        "equal_examples_seen": false,
+        "equal_optimizer_steps": true,
+        "file_manifest_count": 27,
+        "no_replay_examples_seen": 3200,
+        "no_replay_serving_old_accepted": 0,
+        "raw_old_total": 24,
+        "raw_old_with_replay": 24,
+        "raw_old_without_replay": 24,
+        "replay_examples_seen": 12800,
+        "semantic_ledger_operations": {
+          "clean-replay-rebuild": 3,
+          "incremental-replay": 1,
+          "revoke": 1,
+          "write": 33
+        },
+        "semantic_training": [
+          {
+            "cpu_seconds": 0.03972307699999966,
+            "examples_seen": 9600,
+            "generation": 1,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "73b0dc84115a49f8509c033ba9d87eb09b6568a96c1eceb62a95c3b20dacc184",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 24,
+            "wall_seconds": 0.039737892991979606
+          },
+          {
+            "cpu_seconds": 0.04058658900000012,
+            "examples_seen": 12800,
+            "generation": 2,
+            "operation": "incremental-replay",
+            "parameter_digest": "ae532a7d710597226858683370f581da1ff32c6e1ea82758234fd7ae76664c30",
+            "parent_parameters": "73b0dc84115a49f8509c033ba9d87eb09b6568a96c1eceb62a95c3b20dacc184",
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.04058489999442827
+          },
+          {
+            "cpu_seconds": 0.04097524500000027,
+            "examples_seen": 12800,
+            "generation": 3,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "d0ca26355438dfdd7bdfbe42ae057a4466243ec22f935cc6f68f570ad26dd613",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.040974636998726055
+          },
+          {
+            "cpu_seconds": 0.040980582999999626,
+            "examples_seen": 12400,
+            "generation": 4,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "321682ae3080e3f0990925cf4eb824470a2f4dfc91faea6113ef32c1c1409864",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 31,
+            "wall_seconds": 0.04098675600835122
+          }
+        ]
+      },
+      "lifecycle": {
+        "checks": 54,
+        "checks_passed": 54,
+        "cost": {
+          "actual_cell_fits": 4,
+          "application_bundle_copied_bytes": 1069893,
+          "attempted_snapshot_trainings": 2,
+          "completed_snapshot_cell_fits": 4,
+          "directory_bytes_before_receipt": 1457465,
+          "explicit_source_replay_payload_bytes": 2778,
+          "migration_count": 7,
+          "migration_wall_seconds": 0.12408143698121421,
+          "parent_cpu_seconds": 0.47397190599999917,
+          "parent_plus_children_cpu_seconds": 6.910246905999999,
+          "process_starts": 8,
+          "ready_processes": 8,
+          "reaped_child_cpu_seconds": 6.436275,
+          "recovery_wall_seconds": 0.3231435699999565,
+          "rpc": {
+            "calls": 50,
+            "read_attempts": 30,
+            "received_bytes": 19284,
+            "sent_bytes": 19306,
+            "validation_attempts": 20
+          },
+          "rpc_body_bytes": 38590,
+          "snapshot_training_cpu_seconds": 0.31534516199999985,
+          "source_replay_wall_seconds": 0.011612300004344434,
+          "wall_seconds": 2.0216766850062413
+        },
+        "explicit_propagation_gap_observed": true,
+        "final_sqlite": [
+          {
+            "active": [
+              3,
+              "acb593a6573af739bdf6a6c4d19d1442a684d416003b1197bb64644479ad466d"
+            ],
+            "cut": 65,
+            "directory": "writer",
+            "frontier": "546846477580b305733e32d9b9445795156f957a1ae8d92633860d388bd4a374",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "acb593a6573af739bdf6a6c4d19d1442a684d416003b1197bb64644479ad466d"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-0",
+            "frontier": "546846477580b305733e32d9b9445795156f957a1ae8d92633860d388bd4a374",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "acb593a6573af739bdf6a6c4d19d1442a684d416003b1197bb64644479ad466d"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-1",
+            "frontier": "546846477580b305733e32d9b9445795156f957a1ae8d92633860d388bd4a374",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "acb593a6573af739bdf6a6c4d19d1442a684d416003b1197bb64644479ad466d"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-2",
+            "frontier": "546846477580b305733e32d9b9445795156f957a1ae8d92633860d388bd4a374",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          }
+        ],
+        "migration_recovered": true,
+        "migrations": {
+          "currently_hash_verified_files": 48,
+          "listed_files": 51,
+          "manifests": 7,
+          "old_source_files_changed_after_delivered_updates": [
+            "seed-1117/lifecycle/replica-0/source.sqlite",
+            "seed-1117/lifecycle/replica-2/source.sqlite",
+            "seed-1117/lifecycle/migrated-semantic-node/source.sqlite"
+          ]
+        },
+        "mixed_release_rejected": true,
+        "old_nodes_rejected": 3,
+        "old_pins_rejected": 3,
+        "restart_recovered": true,
+        "rpc_trial_count": 15,
+        "status": "passed",
+        "three_node_rpc": {
+          "attempted_request_bytes": 2232,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 3,
+          "read_attempts": 3,
+          "received_response_bytes": 2676,
+          "rpc_attempts": 6,
+          "rpc_bytes": 4908,
+          "validation_attempts": 3
+        },
+        "two_node_rpc": {
+          "attempted_request_bytes": 2010,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 2,
+          "read_attempts": 3,
+          "received_response_bytes": 2385,
+          "rpc_attempts": 5,
+          "rpc_bytes": 4395,
+          "validation_attempts": 2
+        }
+      },
+      "outer_execution": [
+        {
+          "directory": "seed-1117/learning",
+          "parent_cpu_seconds": 1.7389737249999992,
+          "retained_bytes": 1016356,
+          "seed": 1117,
+          "status": "completed",
+          "study": "learning",
+          "wall_seconds": 1.7393035460117972
+        },
+        {
+          "directory": "seed-1117/lifecycle",
+          "parent_cpu_seconds": 0.4804624440000005,
+          "retained_bytes": 1556529,
+          "seed": 1117,
+          "status": "completed",
+          "study": "lifecycle",
+          "wall_seconds": 2.0290781680087093
+        }
+      ],
+      "seed": 1117
+    },
+    {
+      "learning": {
+        "calibration": {
+          "candidates": [
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.0
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.5
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.7
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.85
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.9
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.95
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.99
+            },
+            {
+              "accepted": 0,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 1.0
+            }
+          ],
+          "population_risk_guarantee": false,
+          "rows": 3,
+          "selected": {
+            "accepted": 3,
+            "errors": 0,
+            "observed_risk": 0.0,
+            "threshold": 0.0
+          }
+        },
+        "clean_rebuild_lineage_count": 31,
+        "clean_refit_arrays_exactly_equal": true,
+        "clean_refit_parameters": "bfbdd16c50b7d6894582c500a2d86f447d68086802088b5ad8a46b16872f4759",
+        "cohorts": {
+          "composition": {
+            "correct": 31,
+            "rows": 31
+          },
+          "initial": {
+            "correct": 24,
+            "rows": 24
+          },
+          "procedure": {
+            "correct": 32,
+            "rows": 32
+          },
+          "replay": {
+            "correct": 32,
+            "rows": 32
+          },
+          "surviving": {
+            "correct": 31,
+            "rows": 31
+          },
+          "transfer": {
+            "correct": 8,
+            "rows": 8
+          }
+        },
+        "corrected_source_replaced": true,
+        "cost": {
+          "all_model_source_artifact_files_bytes": 881989,
+          "current_three_cells_bytes": 55042,
+          "current_three_cells_to_compressed_source_ratio": 43.96325878594249,
+          "diagnostic_clean_reference": {
+            "catalog_bytes": 289,
+            "parameter_bytes": 9508,
+            "serialized_bytes": 17431,
+            "support_bytes": 2729,
+            "training_cpu_seconds": 0.05771954499999943,
+            "training_steps": 400
+          },
+          "exact_source_codec_bytes": 1252,
+          "full_process_rss_measured": false,
+          "no_replay": {
+            "catalog_bytes": 249,
+            "parameter_bytes": 9376,
+            "serialized_bytes": 15263,
+            "support_bytes": 705,
+            "training_cpu_seconds": 0.036499664999999126,
+            "training_steps": 400
+          },
+          "parent_cpu_seconds": 1.9914600700000005,
+          "procedure": {
+            "all_retained_version_bytes": 22662,
+            "current_model_bytes": 22662,
+            "immutable_source_ledger_bytes": 5167,
+            "maintenance_ledger_bytes": 3461,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.07272368199999946
+          },
+          "semantic": {
+            "all_retained_version_bytes": 68781,
+            "current_model_bytes": 18058,
+            "immutable_source_ledger_bytes": 4923,
+            "maintenance_ledger_bytes": 8654,
+            "revocation_bytes": 19,
+            "training_cpu_seconds": 0.16430261700000237
+          },
+          "semantic_fit_wall_seconds": 0.16431923299387563,
+          "semantic_four_generation_fits": 4,
+          "structure_ancestor": {
+            "catalog_bytes": 447,
+            "cells": 4,
+            "full_process_rss_measured": false,
+            "loaded_parameter_bytes": 17592,
+            "parameter_bytes": 17592,
+            "reload_count": 0,
+            "reload_seconds": 0.0,
+            "route_bytes": 1588,
+            "serialized_bytes": 43119,
+            "serialized_cache_bytes": 30939,
+            "source_support_bytes": 2028,
+            "training_cpu_seconds": 0.16687572499999703,
+            "training_steps": 1200
+          },
+          "transfer": {
+            "all_retained_version_bytes": 14322,
+            "current_model_bytes": 14322,
+            "immutable_source_ledger_bytes": 1265,
+            "maintenance_ledger_bytes": 1692,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.06074771699999992
+          },
+          "wall_seconds": 1.9963781800033757
+        },
+        "deleted_source_excluded": true,
+        "equal_examples_seen": false,
+        "equal_optimizer_steps": true,
+        "file_manifest_count": 27,
+        "no_replay_examples_seen": 3200,
+        "no_replay_serving_old_accepted": 0,
+        "raw_old_total": 24,
+        "raw_old_with_replay": 24,
+        "raw_old_without_replay": 21,
+        "replay_examples_seen": 12800,
+        "semantic_ledger_operations": {
+          "clean-replay-rebuild": 3,
+          "incremental-replay": 1,
+          "revoke": 1,
+          "write": 33
+        },
+        "semantic_training": [
+          {
+            "cpu_seconds": 0.039617511000001215,
+            "examples_seen": 9600,
+            "generation": 1,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "7d8f1e429b304be3268e18bc28d5e37d91f23ba4acdc0cfa1bb3399322760421",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 24,
+            "wall_seconds": 0.03963082199334167
+          },
+          {
+            "cpu_seconds": 0.04130452400000095,
+            "examples_seen": 12800,
+            "generation": 2,
+            "operation": "incremental-replay",
+            "parameter_digest": "d315965b1e8c23e62ec8172b366f06246e0a33f0940618cf715c0c2881c21b50",
+            "parent_parameters": "7d8f1e429b304be3268e18bc28d5e37d91f23ba4acdc0cfa1bb3399322760421",
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.04130450400407426
+          },
+          {
+            "cpu_seconds": 0.04173801700000013,
+            "examples_seen": 12800,
+            "generation": 3,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "ee32117bcd28f07222e14915e8e01161a1919d3ad55babbbf2e2e8eba3e15d5d",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.04173736699158326
+          },
+          {
+            "cpu_seconds": 0.041642565000000076,
+            "examples_seen": 12400,
+            "generation": 4,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "bfbdd16c50b7d6894582c500a2d86f447d68086802088b5ad8a46b16872f4759",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 31,
+            "wall_seconds": 0.04164654000487644
+          }
+        ]
+      },
+      "lifecycle": {
+        "checks": 54,
+        "checks_passed": 54,
+        "cost": {
+          "actual_cell_fits": 4,
+          "application_bundle_copied_bytes": 1069918,
+          "attempted_snapshot_trainings": 2,
+          "completed_snapshot_cell_fits": 4,
+          "directory_bytes_before_receipt": 1457496,
+          "explicit_source_replay_payload_bytes": 2778,
+          "migration_count": 7,
+          "migration_wall_seconds": 0.13188132400682662,
+          "parent_cpu_seconds": 0.4454609970000014,
+          "parent_plus_children_cpu_seconds": 7.505515997,
+          "process_starts": 8,
+          "ready_processes": 8,
+          "reaped_child_cpu_seconds": 7.060054999999998,
+          "recovery_wall_seconds": 0.13335468999866862,
+          "rpc": {
+            "calls": 50,
+            "read_attempts": 30,
+            "received_bytes": 19291,
+            "sent_bytes": 19306,
+            "validation_attempts": 20
+          },
+          "rpc_body_bytes": 38597,
+          "snapshot_training_cpu_seconds": 0.3126615310000034,
+          "source_replay_wall_seconds": 0.01728275501227472,
+          "wall_seconds": 1.7272464559937362
+        },
+        "explicit_propagation_gap_observed": true,
+        "final_sqlite": [
+          {
+            "active": [
+              3,
+              "73b28677734adc33f9b5b90a56d0f0b408b522c97ecd1abe078039dc88aba80c"
+            ],
+            "cut": 65,
+            "directory": "writer",
+            "frontier": "db753b12b0ca3f06c20515e4cfaa56c737a72f68cd9bf3cd9666d4c9d4fed4d1",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "73b28677734adc33f9b5b90a56d0f0b408b522c97ecd1abe078039dc88aba80c"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-0",
+            "frontier": "db753b12b0ca3f06c20515e4cfaa56c737a72f68cd9bf3cd9666d4c9d4fed4d1",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "73b28677734adc33f9b5b90a56d0f0b408b522c97ecd1abe078039dc88aba80c"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-1",
+            "frontier": "db753b12b0ca3f06c20515e4cfaa56c737a72f68cd9bf3cd9666d4c9d4fed4d1",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "73b28677734adc33f9b5b90a56d0f0b408b522c97ecd1abe078039dc88aba80c"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-2",
+            "frontier": "db753b12b0ca3f06c20515e4cfaa56c737a72f68cd9bf3cd9666d4c9d4fed4d1",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          }
+        ],
+        "migration_recovered": true,
+        "migrations": {
+          "currently_hash_verified_files": 48,
+          "listed_files": 51,
+          "manifests": 7,
+          "old_source_files_changed_after_delivered_updates": [
+            "seed-1123/lifecycle/replica-0/source.sqlite",
+            "seed-1123/lifecycle/replica-2/source.sqlite",
+            "seed-1123/lifecycle/migrated-semantic-node/source.sqlite"
+          ]
+        },
+        "mixed_release_rejected": true,
+        "old_nodes_rejected": 3,
+        "old_pins_rejected": 3,
+        "restart_recovered": true,
+        "rpc_trial_count": 15,
+        "status": "passed",
+        "three_node_rpc": {
+          "attempted_request_bytes": 2232,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 3,
+          "read_attempts": 3,
+          "received_response_bytes": 2679,
+          "rpc_attempts": 6,
+          "rpc_bytes": 4911,
+          "validation_attempts": 3
+        },
+        "two_node_rpc": {
+          "attempted_request_bytes": 2010,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 2,
+          "read_attempts": 3,
+          "received_response_bytes": 2386,
+          "rpc_attempts": 5,
+          "rpc_bytes": 4396,
+          "validation_attempts": 2
+        }
+      },
+      "outer_execution": [
+        {
+          "directory": "seed-1123/learning",
+          "parent_cpu_seconds": 1.9949178599999993,
+          "retained_bytes": 1010272,
+          "seed": 1123,
+          "status": "completed",
+          "study": "learning",
+          "wall_seconds": 1.9998375739960466
+        },
+        {
+          "directory": "seed-1123/lifecycle",
+          "parent_cpu_seconds": 0.45043195899999944,
+          "retained_bytes": 1556581,
+          "seed": 1123,
+          "status": "completed",
+          "study": "lifecycle",
+          "wall_seconds": 1.73402150599577
+        }
+      ],
+      "seed": 1123
+    },
+    {
+      "learning": {
+        "calibration": {
+          "candidates": [
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.0
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.5
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.7
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.85
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.9
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.95
+            },
+            {
+              "accepted": 3,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 0.99
+            },
+            {
+              "accepted": 0,
+              "errors": 0,
+              "observed_risk": 0.0,
+              "threshold": 1.0
+            }
+          ],
+          "population_risk_guarantee": false,
+          "rows": 3,
+          "selected": {
+            "accepted": 3,
+            "errors": 0,
+            "observed_risk": 0.0,
+            "threshold": 0.0
+          }
+        },
+        "clean_rebuild_lineage_count": 31,
+        "clean_refit_arrays_exactly_equal": true,
+        "clean_refit_parameters": "2c90dfb31fa5decf99f393911834269d7be6f804c3862ea627941238426ca629",
+        "cohorts": {
+          "composition": {
+            "correct": 31,
+            "rows": 31
+          },
+          "initial": {
+            "correct": 24,
+            "rows": 24
+          },
+          "procedure": {
+            "correct": 32,
+            "rows": 32
+          },
+          "replay": {
+            "correct": 32,
+            "rows": 32
+          },
+          "surviving": {
+            "correct": 31,
+            "rows": 31
+          },
+          "transfer": {
+            "correct": 8,
+            "rows": 8
+          }
+        },
+        "corrected_source_replaced": true,
+        "cost": {
+          "all_model_source_artifact_files_bytes": 887005,
+          "current_three_cells_bytes": 54839,
+          "current_three_cells_to_compressed_source_ratio": 43.8712,
+          "diagnostic_clean_reference": {
+            "catalog_bytes": 289,
+            "parameter_bytes": 9508,
+            "serialized_bytes": 17431,
+            "support_bytes": 2729,
+            "training_cpu_seconds": 0.04736042699999743,
+            "training_steps": 400
+          },
+          "exact_source_codec_bytes": 1250,
+          "full_process_rss_measured": false,
+          "no_replay": {
+            "catalog_bytes": 249,
+            "parameter_bytes": 9376,
+            "serialized_bytes": 15265,
+            "support_bytes": 705,
+            "training_cpu_seconds": 0.041720606999998466,
+            "training_steps": 400
+          },
+          "parent_cpu_seconds": 1.962607835,
+          "procedure": {
+            "all_retained_version_bytes": 22662,
+            "current_model_bytes": 22662,
+            "immutable_source_ledger_bytes": 5167,
+            "maintenance_ledger_bytes": 3461,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.05160515400000065
+          },
+          "semantic": {
+            "all_retained_version_bytes": 68578,
+            "current_model_bytes": 18058,
+            "immutable_source_ledger_bytes": 4923,
+            "maintenance_ledger_bytes": 8656,
+            "revocation_bytes": 19,
+            "training_cpu_seconds": 0.19581817999999984
+          },
+          "semantic_fit_wall_seconds": 0.1961852129898034,
+          "semantic_four_generation_fits": 4,
+          "structure_ancestor": {
+            "catalog_bytes": 540,
+            "cells": 4,
+            "full_process_rss_measured": false,
+            "loaded_parameter_bytes": 17796,
+            "parameter_bytes": 17796,
+            "reload_count": 0,
+            "reload_seconds": 0.0,
+            "route_bytes": 1588,
+            "serialized_bytes": 43635,
+            "serialized_cache_bytes": 31327,
+            "source_support_bytes": 2028,
+            "training_cpu_seconds": 0.11346016299999917,
+            "training_steps": 1200
+          },
+          "transfer": {
+            "all_retained_version_bytes": 14119,
+            "current_model_bytes": 14119,
+            "immutable_source_ledger_bytes": 1265,
+            "maintenance_ledger_bytes": 1693,
+            "revocation_bytes": 2,
+            "training_cpu_seconds": 0.041264034000001004
+          },
+          "wall_seconds": 1.9640779789915541
+        },
+        "deleted_source_excluded": true,
+        "equal_examples_seen": false,
+        "equal_optimizer_steps": true,
+        "file_manifest_count": 27,
+        "no_replay_examples_seen": 3200,
+        "no_replay_serving_old_accepted": 0,
+        "raw_old_total": 24,
+        "raw_old_with_replay": 24,
+        "raw_old_without_replay": 19,
+        "replay_examples_seen": 12800,
+        "semantic_ledger_operations": {
+          "clean-replay-rebuild": 3,
+          "incremental-replay": 1,
+          "revoke": 1,
+          "write": 33
+        },
+        "semantic_training": [
+          {
+            "cpu_seconds": 0.04516934299999775,
+            "examples_seen": 9600,
+            "generation": 1,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "deff3338630b79eed612c9286a0c8b32f97501f8927d32826d25df9b920c8deb",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 24,
+            "wall_seconds": 0.04538630000024568
+          },
+          {
+            "cpu_seconds": 0.04747860300000184,
+            "examples_seen": 12800,
+            "generation": 2,
+            "operation": "incremental-replay",
+            "parameter_digest": "f659f17376f663a2c4f0790750a256b72cad40f36e8f1536f13e940a530523d5",
+            "parent_parameters": "deff3338630b79eed612c9286a0c8b32f97501f8927d32826d25df9b920c8deb",
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.047478028005571105
+          },
+          {
+            "cpu_seconds": 0.05161173900000193,
+            "examples_seen": 12800,
+            "generation": 3,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "b9861595b688d33db35bc8953b22d33466bf2a3e5a4423f03cdc279c9d57f3e8",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 32,
+            "wall_seconds": 0.05161166099424008
+          },
+          {
+            "cpu_seconds": 0.05155849499999832,
+            "examples_seen": 12400,
+            "generation": 4,
+            "operation": "clean-replay-rebuild",
+            "parameter_digest": "2c90dfb31fa5decf99f393911834269d7be6f804c3862ea627941238426ca629",
+            "parent_parameters": null,
+            "statistical_unlearning_proved": false,
+            "valid_rows": 31,
+            "wall_seconds": 0.05170922398974653
+          }
+        ]
+      },
+      "lifecycle": {
+        "checks": 54,
+        "checks_passed": 54,
+        "cost": {
+          "actual_cell_fits": 4,
+          "application_bundle_copied_bytes": 1069863,
+          "attempted_snapshot_trainings": 2,
+          "completed_snapshot_cell_fits": 4,
+          "directory_bytes_before_receipt": 1457423,
+          "explicit_source_replay_payload_bytes": 2778,
+          "migration_count": 7,
+          "migration_wall_seconds": 0.1362940319959307,
+          "parent_cpu_seconds": 0.4214688520000003,
+          "parent_plus_children_cpu_seconds": 7.116671852000007,
+          "process_starts": 8,
+          "ready_processes": 8,
+          "reaped_child_cpu_seconds": 6.6952030000000065,
+          "recovery_wall_seconds": 0.13779789699765388,
+          "rpc": {
+            "calls": 50,
+            "read_attempts": 30,
+            "received_bytes": 19291,
+            "sent_bytes": 19306,
+            "validation_attempts": 20
+          },
+          "rpc_body_bytes": 38597,
+          "snapshot_training_cpu_seconds": 0.29738189499999734,
+          "source_replay_wall_seconds": 0.013412220985628664,
+          "wall_seconds": 1.6619388700055424
+        },
+        "explicit_propagation_gap_observed": true,
+        "final_sqlite": [
+          {
+            "active": [
+              3,
+              "0d475380267ac7e354cf55db928d577b286a2583d2e90013f231f9c75d5f309a"
+            ],
+            "cut": 65,
+            "directory": "writer",
+            "frontier": "08f536ebc3a4abe8ddb6f6f6a815d1ae36a7503aa2383e8a9aedc3fcda6195b6",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "0d475380267ac7e354cf55db928d577b286a2583d2e90013f231f9c75d5f309a"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-0",
+            "frontier": "08f536ebc3a4abe8ddb6f6f6a815d1ae36a7503aa2383e8a9aedc3fcda6195b6",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "0d475380267ac7e354cf55db928d577b286a2583d2e90013f231f9c75d5f309a"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-1",
+            "frontier": "08f536ebc3a4abe8ddb6f6f6a815d1ae36a7503aa2383e8a9aedc3fcda6195b6",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          },
+          {
+            "active": [
+              3,
+              "0d475380267ac7e354cf55db928d577b286a2583d2e90013f231f9c75d5f309a"
+            ],
+            "cut": 65,
+            "directory": "successor-replica-2",
+            "frontier": "08f536ebc3a4abe8ddb6f6f6a815d1ae36a7503aa2383e8a9aedc3fcda6195b6",
+            "record_count": 65,
+            "revoked_count": 0,
+            "transition_count": 3
+          }
+        ],
+        "migration_recovered": true,
+        "migrations": {
+          "currently_hash_verified_files": 48,
+          "listed_files": 51,
+          "manifests": 7,
+          "old_source_files_changed_after_delivered_updates": [
+            "seed-1129/lifecycle/replica-0/source.sqlite",
+            "seed-1129/lifecycle/replica-2/source.sqlite",
+            "seed-1129/lifecycle/migrated-semantic-node/source.sqlite"
+          ]
+        },
+        "mixed_release_rejected": true,
+        "old_nodes_rejected": 3,
+        "old_pins_rejected": 3,
+        "restart_recovered": true,
+        "rpc_trial_count": 15,
+        "status": "passed",
+        "three_node_rpc": {
+          "attempted_request_bytes": 2232,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 3,
+          "read_attempts": 3,
+          "received_response_bytes": 2679,
+          "rpc_attempts": 6,
+          "rpc_bytes": 4911,
+          "validation_attempts": 3
+        },
+        "two_node_rpc": {
+          "attempted_request_bytes": 2010,
+          "byte_accounting": "attempted JSON request bodies plus received response bodies; excludes HTTP/TCP overhead",
+          "node_count": 2,
+          "read_attempts": 3,
+          "received_response_bytes": 2386,
+          "rpc_attempts": 5,
+          "rpc_bytes": 4396,
+          "validation_attempts": 2
+        }
+      },
+      "outer_execution": [
+        {
+          "directory": "seed-1129/learning",
+          "parent_cpu_seconds": 1.9676217630000004,
+          "retained_bytes": 1015405,
+          "seed": 1129,
+          "status": "completed",
+          "study": "learning",
+          "wall_seconds": 1.9690937389968894
+        },
+        {
+          "directory": "seed-1129/lifecycle",
+          "parent_cpu_seconds": 0.42723336299999914,
+          "retained_bytes": 1556514,
+          "seed": 1129,
+          "status": "completed",
+          "study": "lifecycle",
+          "wall_seconds": 1.6687790479918476
+        }
+      ],
+      "seed": 1129
+    }
+  ],
+  "schema": "hepta.memory.v6.lifecycle-learning-audit.v1",
+  "seeds": [
+    1103,
+    1109,
+    1117,
+    1123,
+    1129
+  ],
+  "source_commit": "856c77f8f29e84e0fdcae43e1c2171aaaaac14ee",
+  "whole_extension_execution_scope": {
+    "all_completed": true,
+    "completion_is_not_quality_pass": true,
+    "linux_peak_child_rss_kib": 37136,
+    "linux_peak_parent_rss_kib": 37136,
+    "parent_cpu_seconds": 20.649293417,
+    "parent_plus_lifecycle_child_cpu_seconds": 54.714809417,
+    "retained_bytes_before_report": 17686203,
+    "rss_scope": "process high-water marks, not concurrent aggregate or steady-state model memory",
+    "schema": "hepta.memory.v6.extensions-execution.v1",
+    "source": {
+      "files": {
+        "qualification/memory-cell-v6/run_extensions.py": "789aa266bf4b4bb5bc4c69b7329358930ceda5422b410a193c5cea3a198bc950",
+        "qualification/memory-cell-v6/v6/__init__.py": "e48c0b6136220a43e666e0616e415b365f4041f4ce1211846d9a144d7073bfed",
+        "qualification/memory-cell-v6/v6/artifacts.py": "209c8d8581b02217cc4705111f7a060c78845ea804fb46364d4456d651882fbd",
+        "qualification/memory-cell-v6/v6/cells.py": "e0b2f7dbf3f280ebf6618c68c60b7799bb945eaf76cc603b6bfcfc3d33de2024",
+        "qualification/memory-cell-v6/v6/contracts.py": "42be7b9d9f0e3afe86c5ad52c58d8d4b8a5ba8972846c0702fc1e42c3b62834f",
+        "qualification/memory-cell-v6/v6/encoder.py": "5660dc13f9ee7f1b7239e61edae9b51eee6a8870f0b4ef351d5d0f35e87d18ab",
+        "qualification/memory-cell-v6/v6/evolution.py": "c60be48c2713fc97cea803894fc0df6e9b0a6655edbdcd0d35f2e97a753e939d",
+        "qualification/memory-cell-v6/v6/learning.py": "602e4976ba819a102271b669ff9c1972a07054e832051a560c49ef068c18d470",
+        "qualification/memory-cell-v6/v6/lifecycle.py": "dc5ea910465ba2aa1139764dac104c924786c16d2e7231999429e5f1b177f548",
+        "qualification/memory-cell-v6/v6/network.py": "af3a667031fe9e185aa59ff2fa9cd01ee763107ab3bdee67ddb1e7094cfaa6d6",
+        "qualification/memory-cell-v6/v6/router.py": "369c86fc1e6cb6d64823f6602c535d36cc292de4f6c834dff15d617fa24e35f0",
+        "qualification/memory-cell-v6/v6/runtime.py": "f4ceaa5b80b372385f902d63afb1151aada0d2c79eae786747a668f13dc8801a",
+        "qualification/memory-cell-v6/v6/store.py": "81d8917a49a9a2ed79cb8ae9f52f843123fb304e7addcada80b561e88c4a41a1",
+        "qualification/memory-cell-v6/v6/study_data.py": "882f4e38eb90a11fa6cea582f60efea961037656ed5b3b2e48ac6863f08ec4b8",
+        "qualification/memory-cell-v6/v6/training_language.py": "18c5d7254c99b1f39f3f426e0f1cda389670cf35c19aaebf4c44ec0eaef9a668",
+        "qualification/memory-cell-v6/v6/transfer.py": "389e5a684af86b211830232ac37cc061b99f06c6a1bcc0608b2f0466d78b9692",
+        "qualification/memory-cell-v6/v6/values.py": "5b3d658ce921ec7e91778fa58507091257bba151eb773f515fdf0ad6097dedfb"
+      },
+      "plan_sha256": "98980b2ef3805de5199eafd1fb95a16dde82a5ad2806797f039a864fd110de34",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "python": "3.12.14",
+      "seeds": [
+        1103,
+        1109,
+        1117,
+        1123,
+        1129
+      ],
+      "source_commit": "856c77f8f29e84e0fdcae43e1c2171aaaaac14ee"
+    },
+    "wall_seconds": 27.85580166200816
+  }
+}

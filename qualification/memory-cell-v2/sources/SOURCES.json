@@ -1,0 +1,102 @@
+{
+  "schema": "memory-cell-v2.sources.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "license": "Apache-2.0",
+  "license_files": [
+    "LICENSE",
+    "NOTICE"
+  ],
+  "files": [
+    {
+      "source_id": "MODULES.json",
+      "sha256": "be10ee569a0a12c94631e0d5f25e5ee627b337369e8bccf5b75f236c98d444a5",
+      "bytes": 60117,
+      "license": "Apache-2.0",
+      "baseline_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "source_path": "docs/modules/MODULES.json",
+      "source_kind": "git_blob",
+      "git_blob_sha": "e4a5965a06b0af917130bd929158e714684a91bc",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f8c9419df6ddeb36ff8b522a50219981fb8d9345/docs/modules/MODULES.json"
+    },
+    {
+      "source_id": "config.schema.json",
+      "sha256": "f946f00a381b86f64452320c2999a39bd1d49ad13204e64e98fddbd7c9cdb2b1",
+      "bytes": 188335,
+      "license": "Apache-2.0",
+      "baseline_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "source_path": "codex-rs/core/config.schema.json",
+      "source_kind": "git_blob",
+      "git_blob_sha": "72c3f93671cd4167d93e0a76074057588f4e5634",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f8c9419df6ddeb36ff8b522a50219981fb8d9345/codex-rs/core/config.schema.json"
+    },
+    {
+      "source_id": "github-history.json",
+      "sha256": "176238bbc41e923ed08c44331cb925467c5232b9119716a23da729db132c9272",
+      "bytes": 36808,
+      "license": "Apache-2.0",
+      "baseline_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "source_path": "github-history.json",
+      "source_kind": "normalized_api_snapshot",
+      "git_blob_sha": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/{fixed_commit_sha}",
+      "transformation": "Retain exact SHA, API-created_at timestamp, first message line, sorted changed-path list and canonical URL; remove patch bodies and personal author fields.",
+      "commits": [
+        "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+        "287b93caaafeb97bdc3ce11199c798ad567f5159",
+        "afb7ec4b7023d65f7591a9f149d7fffef72d228c",
+        "250a543e7802f1711258bd697813b2fc249e0e64",
+        "5f7096afdff2a5a50c03eed2ec2576fd7dcb827a",
+        "f1a1d71e0f573174a6423cfd799c75b7c6500d18",
+        "55ca33c34553bfb16e5e9d764b4ed237341c4570",
+        "08d08671dfbd538551010177ca72ac994fab093d",
+        "7ae598dc1afcd384d5e1c1b9ec986547944aafd1",
+        "fefeedc49f4385354ef47bd4cfde336a5ca1d93c",
+        "87bb35d51e514cdc2fe96792259b089193f015ac",
+        "997e7beef8151160065df36b024bc8da5c989e93",
+        "a126987b84737dbc2ee2592442a314117bddb4a2",
+        "7ddbfac88525196e7a4b31387ceae194958275f5",
+        "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
+        "dea90e96c2cca066f986c1263ebd0e6980aabc8b",
+        "26949264669d974cfe52343aecf86d68f31ed195",
+        "f075c337dd940ccc6d252ff0e6d941ef73933deb",
+        "1e1c4e97b11f180106eb232871ad82e9df9ae824",
+        "113a8c444e2861d84ddc17e6207896d0b0c6e5a5",
+        "7602f667e2812b74f85ef53988bd3fafd7f504e5",
+        "a218f469530f9afc53fbd6758109f79a29912548",
+        "727d138927794b6f83053a529b885571e8504c47",
+        "e5516c0ca178de69fd84d658dd51ac9359e301b9"
+      ]
+    },
+    {
+      "source_id": "LICENSE",
+      "sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+      "bytes": 10926,
+      "license": "Apache-2.0",
+      "baseline_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "source_path": "LICENSE",
+      "source_kind": "git_blob",
+      "git_blob_sha": "4606e72e042564097e8780d66c1d4dcb611869bd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f8c9419df6ddeb36ff8b522a50219981fb8d9345/LICENSE"
+    },
+    {
+      "source_id": "NOTICE",
+      "sha256": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+      "bytes": 242,
+      "license": "Apache-2.0",
+      "baseline_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "source_path": "NOTICE",
+      "source_kind": "git_blob",
+      "git_blob_sha": "2805899d56d0332d175cfc613c67d45d6f006db7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f8c9419df6ddeb36ff8b522a50219981fb8d9345/NOTICE"
+    }
+  ],
+  "limitations": [
+    "Three task families share this repository; these are not three independent external domains.",
+    "Git events are a fixed API sample across repository commits, not a verified first-parent ancestry or complete current repository state.",
+    "Schema programs validate standalone primitive fragments, not complete product configuration or runtime policy.",
+    "Generated held procedure inputs are probe inputs; source rules and history observations remain real and fixed.",
+    "The fixed execution engine and graph scaffold are supplied, not learned code synthesis or learned topology.",
+    "Changing a partition seed is not a new real data source or independent time window."
+  ]
+}

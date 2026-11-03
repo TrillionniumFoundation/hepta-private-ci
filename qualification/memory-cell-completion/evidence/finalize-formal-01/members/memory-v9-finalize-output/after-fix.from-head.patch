@@ -1,0 +1,13 @@
+diff --git a/codex-rs/hepta-agentd/src/memory_cell_migration_v9_taskflow_support.rs b/codex-rs/hepta-agentd/src/memory_cell_migration_v9_taskflow_support.rs
+index 55799d1c100eb2d04e788cdba8cc0240f00f3c67..a5feab4206c5636f07e2fa61d0e34f8a1579aadb 100644
+--- a/codex-rs/hepta-agentd/src/memory_cell_migration_v9_taskflow_support.rs
++++ b/codex-rs/hepta-agentd/src/memory_cell_migration_v9_taskflow_support.rs
+@@ -48,7 +48,7 @@ impl Effect {
+         store.register_taskflow_definition(&definition, &fence, now_ms()).await.expect("registered graph");
+         store.create_taskflow_run(run, &definition.workflow_id, definition.version, definition.definition_digest(), "migration-thread", now_ms()).await.expect("run");
+         let claimed = store.claim_taskflow_run(run, &fence, now_ms(), 240_000).await.expect("claim run");
+-        store.apply_taskflow_command(&TaskFlowCommand::new(run, &format!("{run}:start"), fence.clone(), claimed.revision,
++        store.apply_taskflow_command(&TaskFlowCommand::new(run, format!("{run}:start"), fence.clone(), claimed.revision,
+             TaskFlowTransition::Start, now_ms()).expect("start command")).await.expect("start run");
+         let intent = AuthorizedEffectIntent {
+             run_id: run.into(), step_id: "transfer".into(), attempt: 1, operation_id: "memory.migrate".into(),

@@ -1,0 +1,468 @@
+{
+  "clean_parameter_rebuild_equal": true,
+  "independent_future_task_evaluation": false,
+  "ledger_decision_chain_digest": "cb5c8e81503be9efce249d4ea07fb096a3816869411fea6928806f2c28aef569",
+  "ledger_decision_event_digest": "ca6d3a6539e60190f611dbf4300cb21cb273635b2c68c3b3be5d898be34008d1",
+  "natural_language_evaluation": false,
+  "readback": [
+    {
+      "correct": 24,
+      "independent_future_task_evaluation": false,
+      "queries": 24,
+      "routing": "explicit trusted integration resolver",
+      "source_cut": "6b1a411a3cf47c0e4e0edd9a2b1a0c51edb3aaf4fab97e0abbb65748ba4b93da"
+    },
+    {
+      "correct": 32,
+      "independent_future_task_evaluation": false,
+      "queries": 32,
+      "routing": "explicit trusted integration resolver",
+      "source_cut": "e463b6bc34f9e02d8e993fc716d31e31449cf08d2b2aac4b4efb99ec7f80adb9"
+    },
+    {
+      "correct": 32,
+      "independent_future_task_evaluation": false,
+      "queries": 32,
+      "routing": "explicit trusted integration resolver",
+      "source_cut": "05b7607d73207473f02639f76c5bb77a5c61f12c405187f013c861e75fe4be7a"
+    },
+    {
+      "correct": 28,
+      "independent_future_task_evaluation": false,
+      "queries": 28,
+      "routing": "explicit trusted integration resolver",
+      "source_cut": "0f9529b7c27cec8380b1846e95f80fe7d8866b5340be400083919c4fcffbc5a4"
+    }
+  ],
+  "replay_rejected_after_correction": true,
+  "replay_rejected_after_withdrawal": true,
+  "schema": "hepta.memory.v7.actual-training-integration.v1",
+  "seed_nonce": "1793129513891162505",
+  "training": [
+    {
+      "authority": false,
+      "calibration_population_risk_established": false,
+      "catalog_contains_explicit_values": true,
+      "cpu_seconds": 0.11871028199999999,
+      "fit_calls": 2,
+      "fixed_threshold": 0.5,
+      "language_model_finetuning": false,
+      "mode": "clean",
+      "schema": "hepta.memory.training-receipt.v1",
+      "source_export_bytes": 9567,
+      "types": {
+        "procedure": {
+          "catalog_bytes": 312,
+          "current_source_ids": [
+            "b513cf8ba5241398a3b2e15e03d97b25e4ef47d2a50b2aa9876b54250abc4e08",
+            "ec0773243d6b05614859578a22e9306da83b7cf0e634b95fd55d4fe12363c92e",
+            "e8872d25d1cb96f1606a2ff3e67b6a739193213186ded7734adff5f9cd48e9b8",
+            "67dc1a13c62783b9335483ecc7b84053c5f7d3207e3b97f328c4a0f1a3178f16",
+            "1c928fab2453da8367919ccfeca2a87f8a872c36a2b137f347206ac94c1e27f7",
+            "1d44fdc83c2bbc28463b1ad4ad3b1423baf35b700c6e21c658b23df0f1fe2876",
+            "1b9a2f51f398082751854cc2a287caef7e982c3332d866163175b1455bb3c185"
+          ],
+          "independent_future_task_evaluation": false,
+          "native_bytes": 73041,
+          "native_digest": "4983a2995b5ce7d0ecb64f7ccde9b9466cd8466835f431173524ed31eded3a27",
+          "numeric_parameter_bytes": 14364,
+          "original_bytes": 22037,
+          "original_digest": "79f45b4b1bb078111006b742cc5b68a66c057c81f2ab98cfe0be368bb91f14de",
+          "parameter_digest": "0a107e40948bf65f56ccebbc8537899b1decd3bbf96f8b07609712c0132db618",
+          "training": {
+            "catalog_contains_explicit_values": true,
+            "catalog_digest": "97b82dba6f60983d78863701adabe726975224a69045eadaf52fa4cfc684c72e",
+            "catalog_fixed_by_caller": false,
+            "cpu_seconds": 0.05760552499999999,
+            "dataset_digest": "7a307a081b7cb98e13862234b3b876cdda187034969b66c96c4c6480c2ae32f6",
+            "examples_seen": 4200,
+            "final_cross_entropy": 3.2952588988059754e-06,
+            "inherited_hidden_units": 0,
+            "initial_cross_entropy": 1.897310994832564,
+            "initial_parameters": "d4a00015c26e84689de86066940411f8c22aa28b34d809b212de9639464c78e8",
+            "kind": "actual-numpy-tanh-mlp-adam",
+            "language_model_finetuning": false,
+            "parent_parameters": null,
+            "rows": 7,
+            "seed": 91317,
+            "source_bound": true,
+            "steps": 600,
+            "training_accuracy": 1.0,
+            "wall_seconds": 0.05760628899997755
+          },
+          "written_address_diagnostic": {
+            "correct": 7,
+            "rows": 7
+          }
+        },
+        "semantic": {
+          "catalog_bytes": 354,
+          "current_source_ids": [
+            "827c126c1d2454f33c8bc7d7204a3593bcf8b13e66cde6186f0674778c203de9",
+            "b8f821f2f6a8be895d1f55b38ef328b9b6b9a2b5864574e23351021bc857bae5",
+            "85140be8c729c6d71e5a5388b0670e524387d61c4646282d47933ea8ac0328b6",
+            "b5626c236723082fcb533e61196490305d9428f5451c3dea9213f7640f581776",
+            "16916cc5d2d6c0cc215e46e890e003697a68700d07c82d9a478ee86ef2946177",
+            "04419f944c54022c4f0dd1bf33ee5392f77c18b7909957ddd697113776a16787",
+            "017c7d626edf2cc61215734fd77b126d40a8aa1d8f819204a7bb4608409bf804"
+          ],
+          "independent_future_task_evaluation": false,
+          "native_bytes": 73025,
+          "native_digest": "769360d9de23257f604c2d2fd18c33850d4eda891d77c1c3570838c8cbf623fc",
+          "numeric_parameter_bytes": 14364,
+          "original_bytes": 22078,
+          "original_digest": "aea50b9f8ec34937f6a87c2645aeae8bb2f258ac81665cb2d6d3231b0b5d08e1",
+          "parameter_digest": "b6f410f0d8f9e41e743bdde5069285ecde0a4179a1ee328181e3c023bee2f7e6",
+          "training": {
+            "catalog_contains_explicit_values": true,
+            "catalog_digest": "1e1baad238607c251bbae5832bc87a21b35baaa0d39021973883d24f392bb17e",
+            "catalog_fixed_by_caller": false,
+            "cpu_seconds": 0.04896676700000001,
+            "dataset_digest": "f7d3c2be18bc82afc04925ed689ad730d515a4f5b014bb5682554f7c9bb92b76",
+            "examples_seen": 4200,
+            "final_cross_entropy": 2.832357693546503e-06,
+            "inherited_hidden_units": 0,
+            "initial_cross_entropy": 1.8903357077560392,
+            "initial_parameters": "d4a00015c26e84689de86066940411f8c22aa28b34d809b212de9639464c78e8",
+            "kind": "actual-numpy-tanh-mlp-adam",
+            "language_model_finetuning": false,
+            "parent_parameters": null,
+            "rows": 7,
+            "seed": 91317,
+            "source_bound": true,
+            "steps": 600,
+            "training_accuracy": 1.0,
+            "wall_seconds": 0.04896670800007996
+          },
+          "written_address_diagnostic": {
+            "correct": 7,
+            "rows": 7
+          }
+        }
+      },
+      "wall_seconds": 0.11871296499998607
+    },
+    {
+      "authority": false,
+      "calibration_population_risk_established": false,
+      "catalog_contains_explicit_values": true,
+      "cpu_seconds": 0.118353443,
+      "fit_calls": 2,
+      "fixed_threshold": 0.5,
+      "language_model_finetuning": false,
+      "mode": "replay",
+      "schema": "hepta.memory.training-receipt.v1",
+      "source_export_bytes": 12113,
+      "types": {
+        "procedure": {
+          "catalog_bytes": 403,
+          "current_source_ids": [
+            "b513cf8ba5241398a3b2e15e03d97b25e4ef47d2a50b2aa9876b54250abc4e08",
+            "ec0773243d6b05614859578a22e9306da83b7cf0e634b95fd55d4fe12363c92e",
+            "e8872d25d1cb96f1606a2ff3e67b6a739193213186ded7734adff5f9cd48e9b8",
+            "67dc1a13c62783b9335483ecc7b84053c5f7d3207e3b97f328c4a0f1a3178f16",
+            "1c928fab2453da8367919ccfeca2a87f8a872c36a2b137f347206ac94c1e27f7",
+            "1d44fdc83c2bbc28463b1ad4ad3b1423baf35b700c6e21c658b23df0f1fe2876",
+            "6da0141ab4d164b456af6eae2d8d3d069fc50cd54ee0ebf10c6f6bc33201e1f1",
+            "e18f3bc5759e7c1f33b58e1e2a10921bf41df08d1e93d76be9c4b0fa0b71abaa",
+            "1b9a2f51f398082751854cc2a287caef7e982c3332d866163175b1455bb3c185"
+          ],
+          "independent_future_task_evaluation": false,
+          "native_bytes": 76125,
+          "native_digest": "217776ec4b25ca21581ff852287df0e3fdce0527b082332a77d7c732c3e2bf21",
+          "numeric_parameter_bytes": 14884,
+          "original_bytes": 23285,
+          "original_digest": "f07839a413bb70fa28cd81af6af4e61083c027633efef39190d5f70d7d5f0746",
+          "parameter_digest": "9a8c81b94d2b5a64ca1381abe8e00069e5ba2ee0f3054f090a238ab485f624bc",
+          "training": {
+            "catalog_contains_explicit_values": true,
+            "catalog_digest": "ebf68be463247e25dfbefad11b355feadbd579868edf7b14cc523fd9ecd21b20",
+            "catalog_fixed_by_caller": false,
+            "cpu_seconds": 0.05059122399999999,
+            "dataset_digest": "e1be34816b2a8b617f73d9ec0c1d7a38b53c5925b7ab57c2e39373982454f1d5",
+            "examples_seen": 5400,
+            "final_cross_entropy": 4.704946375973631e-06,
+            "inherited_hidden_units": 64,
+            "initial_cross_entropy": 0.7276135680770082,
+            "initial_parameters": "06147cfcea1e59dc9873f9d8b934c8d947987f3e68956f1715d2f3ff959285b0",
+            "kind": "actual-numpy-tanh-mlp-adam",
+            "language_model_finetuning": false,
+            "parent_parameters": "0a107e40948bf65f56ccebbc8537899b1decd3bbf96f8b07609712c0132db618",
+            "rows": 9,
+            "seed": 91317,
+            "source_bound": true,
+            "steps": 600,
+            "training_accuracy": 1.0,
+            "wall_seconds": 0.05073778799999218
+          },
+          "written_address_diagnostic": {
+            "correct": 9,
+            "rows": 9
+          }
+        },
+        "semantic": {
+          "catalog_bytes": 459,
+          "current_source_ids": [
+            "827c126c1d2454f33c8bc7d7204a3593bcf8b13e66cde6186f0674778c203de9",
+            "b8f821f2f6a8be895d1f55b38ef328b9b6b9a2b5864574e23351021bc857bae5",
+            "85140be8c729c6d71e5a5388b0670e524387d61c4646282d47933ea8ac0328b6",
+            "b5626c236723082fcb533e61196490305d9428f5451c3dea9213f7640f581776",
+            "16916cc5d2d6c0cc215e46e890e003697a68700d07c82d9a478ee86ef2946177",
+            "04419f944c54022c4f0dd1bf33ee5392f77c18b7909957ddd697113776a16787",
+            "049d9d9c58c9c5c1eb848a4de0a4b2b6b5c0f26c7949510ac83cf07453b75bde",
+            "25f68ef91df9a692a5e55f36e4198e4882d7298f7196803dcffd2f67ab20b560",
+            "017c7d626edf2cc61215734fd77b126d40a8aa1d8f819204a7bb4608409bf804"
+          ],
+          "independent_future_task_evaluation": false,
+          "native_bytes": 76152,
+          "native_digest": "3d525f849949949efc2abcc0467d2f5335e57bf7673c170971c0b177327712ab",
+          "numeric_parameter_bytes": 14884,
+          "original_bytes": 23340,
+          "original_digest": "5b6ba84feef7eb153f85fe5b1d124a6f5103bfd24c1302c9572e4ba17392176c",
+          "parameter_digest": "7a69bc987c1a2d635e41c7b557c63f451906cb63f6258b798860aff718c0eeeb",
+          "training": {
+            "catalog_contains_explicit_values": true,
+            "catalog_digest": "4d6074d600af7ff170fb3fee941b5b8a8cde2ac0c7dd91a771d1c0b2d457fb63",
+            "catalog_fixed_by_caller": false,
+            "cpu_seconds": 0.05028676400000001,
+            "dataset_digest": "31192466b3afe5954b860b8209a423391cb009f4026a0770fe04132d44a9091e",
+            "examples_seen": 5400,
+            "final_cross_entropy": 4.034547311549577e-06,
+            "inherited_hidden_units": 64,
+            "initial_cross_entropy": 0.7700170492561207,
+            "initial_parameters": "89ffdd2c5085866612f41c70eaf429b96e23ea31964e6691754620594b1cf06a",
+            "kind": "actual-numpy-tanh-mlp-adam",
+            "language_model_finetuning": false,
+            "parent_parameters": "b6f410f0d8f9e41e743bdde5069285ecde0a4179a1ee328181e3c023bee2f7e6",
+            "rows": 9,
+            "seed": 91317,
+            "source_bound": true,
+            "steps": 600,
+            "training_accuracy": 1.0,
+            "wall_seconds": 0.05031071099995188
+          },
+          "written_address_diagnostic": {
+            "correct": 9,
+            "rows": 9
+          }
+        }
+      },
+      "wall_seconds": 0.11852633199998763
+    },
+    {
+      "authority": false,
+      "calibration_population_risk_established": false,
+      "catalog_contains_explicit_values": true,
+      "cpu_seconds": 0.111386768,
+      "fit_calls": 2,
+      "fixed_threshold": 0.5,
+      "language_model_finetuning": false,
+      "mode": "clean",
+      "schema": "hepta.memory.training-receipt.v1",
+      "source_export_bytes": 12124,
+      "types": {
+        "procedure": {
+          "catalog_bytes": 403,
+          "current_source_ids": [
+            "b513cf8ba5241398a3b2e15e03d97b25e4ef47d2a50b2aa9876b54250abc4e08",
+            "ec0773243d6b05614859578a22e9306da83b7cf0e634b95fd55d4fe12363c92e",
+            "e8872d25d1cb96f1606a2ff3e67b6a739193213186ded7734adff5f9cd48e9b8",
+            "67dc1a13c62783b9335483ecc7b84053c5f7d3207e3b97f328c4a0f1a3178f16",
+            "1c928fab2453da8367919ccfeca2a87f8a872c36a2b137f347206ac94c1e27f7",
+            "1d44fdc83c2bbc28463b1ad4ad3b1423baf35b700c6e21c658b23df0f1fe2876",
+            "6da0141ab4d164b456af6eae2d8d3d069fc50cd54ee0ebf10c6f6bc33201e1f1",
+            "e18f3bc5759e7c1f33b58e1e2a10921bf41df08d1e93d76be9c4b0fa0b71abaa",
+            "1b9a2f51f398082751854cc2a287caef7e982c3332d866163175b1455bb3c185"
+          ],
+          "independent_future_task_evaluation": false,
+          "native_bytes": 76064,
+          "native_digest": "2519396dd7209ea8eff1db5543186f8620e028824c0247b3ecf6d97bc9359d0f",
+          "numeric_parameter_bytes": 14884,
+          "original_bytes": 23221,
+          "original_digest": "b6bd8751f56992c494174f531a5778e04814c1a2b1455373d3479e0b648d101a",
+          "parameter_digest": "c7c9052e06c8271d9a8165c5c8aff07adb064295d33adf8b9b6b0f5c8053b642",
+          "training": {
+            "catalog_contains_explicit_values": true,
+            "catalog_digest": "ebf68be463247e25dfbefad11b355feadbd579868edf7b14cc523fd9ecd21b20",
+            "catalog_fixed_by_caller": false,
+            "cpu_seconds": 0.05019875600000001,
+            "dataset_digest": "e1be34816b2a8b617f73d9ec0c1d7a38b53c5925b7ab57c2e39373982454f1d5",
+            "examples_seen": 5400,
+            "final_cross_entropy": 4.29137427470962e-06,
+            "inherited_hidden_units": 0,
+            "initial_cross_entropy": 2.2836932486225616,
+            "initial_parameters": "68ae89be28ffa98817d538be04faadb56f50870a07cff357823b7d9d18a18fe5",
+            "kind": "actual-numpy-tanh-mlp-adam",
+            "language_model_finetuning": false,
+            "parent_parameters": null,
+            "rows": 9,
+            "seed": 91317,
+            "source_bound": true,
+            "steps": 600,
+            "training_accuracy": 1.0,
+            "wall_seconds": 0.05019785000001775
+          },
+          "written_address_diagnostic": {
+            "correct": 9,
+            "rows": 9
+          }
+        },
+        "semantic": {
+          "catalog_bytes": 470,
+          "current_source_ids": [
+            "f6f54626e15cc707ad725b5967ef431f61d135fac3fbf8a520e26cd587567104",
+            "b8f821f2f6a8be895d1f55b38ef328b9b6b9a2b5864574e23351021bc857bae5",
+            "85140be8c729c6d71e5a5388b0670e524387d61c4646282d47933ea8ac0328b6",
+            "b5626c236723082fcb533e61196490305d9428f5451c3dea9213f7640f581776",
+            "16916cc5d2d6c0cc215e46e890e003697a68700d07c82d9a478ee86ef2946177",
+            "04419f944c54022c4f0dd1bf33ee5392f77c18b7909957ddd697113776a16787",
+            "049d9d9c58c9c5c1eb848a4de0a4b2b6b5c0f26c7949510ac83cf07453b75bde",
+            "25f68ef91df9a692a5e55f36e4198e4882d7298f7196803dcffd2f67ab20b560",
+            "017c7d626edf2cc61215734fd77b126d40a8aa1d8f819204a7bb4608409bf804"
+          ],
+          "independent_future_task_evaluation": false,
+          "native_bytes": 76178,
+          "native_digest": "fe9d4a08eafe1e702e49ba9a5b0414b3729f46336900c68867e878597816a3aa",
+          "numeric_parameter_bytes": 14884,
+          "original_bytes": 23281,
+          "original_digest": "f08a8bfb063ba1810514d177eaf215754abc1ca91ab29689460025ead1a2787e",
+          "parameter_digest": "b5022b855465248e88d768a87be27f5f92b4200d2986c7b295e7b35f8044307d",
+          "training": {
+            "catalog_contains_explicit_values": true,
+            "catalog_digest": "7e5d5e3e17409543e2b744e97ced3f9bc6425aa63c792d1cfce90c1ef93f0826",
+            "catalog_fixed_by_caller": false,
+            "cpu_seconds": 0.049470052,
+            "dataset_digest": "6ca4455a3333daf6892c6016fd99c7a314288f781cdfe1767f43104186919534",
+            "examples_seen": 5400,
+            "final_cross_entropy": 4.2776317734100295e-06,
+            "inherited_hidden_units": 0,
+            "initial_cross_entropy": 2.242539415113373,
+            "initial_parameters": "68ae89be28ffa98817d538be04faadb56f50870a07cff357823b7d9d18a18fe5",
+            "kind": "actual-numpy-tanh-mlp-adam",
+            "language_model_finetuning": false,
+            "parent_parameters": null,
+            "rows": 9,
+            "seed": 91317,
+            "source_bound": true,
+            "steps": 600,
+            "training_accuracy": 1.0,
+            "wall_seconds": 0.049470048999978644
+          },
+          "written_address_diagnostic": {
+            "correct": 9,
+            "rows": 9
+          }
+        }
+      },
+      "wall_seconds": 0.1113894339999888
+    },
+    {
+      "authority": false,
+      "calibration_population_risk_established": false,
+      "catalog_contains_explicit_values": true,
+      "cpu_seconds": 0.143949306,
+      "fit_calls": 2,
+      "fixed_threshold": 0.5,
+      "language_model_finetuning": false,
+      "mode": "clean",
+      "schema": "hepta.memory.training-receipt.v1",
+      "source_export_bytes": 11758,
+      "types": {
+        "procedure": {
+          "catalog_bytes": 403,
+          "current_source_ids": [
+            "b513cf8ba5241398a3b2e15e03d97b25e4ef47d2a50b2aa9876b54250abc4e08",
+            "ec0773243d6b05614859578a22e9306da83b7cf0e634b95fd55d4fe12363c92e",
+            "e8872d25d1cb96f1606a2ff3e67b6a739193213186ded7734adff5f9cd48e9b8",
+            "67dc1a13c62783b9335483ecc7b84053c5f7d3207e3b97f328c4a0f1a3178f16",
+            "1c928fab2453da8367919ccfeca2a87f8a872c36a2b137f347206ac94c1e27f7",
+            "1d44fdc83c2bbc28463b1ad4ad3b1423baf35b700c6e21c658b23df0f1fe2876",
+            "6da0141ab4d164b456af6eae2d8d3d069fc50cd54ee0ebf10c6f6bc33201e1f1",
+            "e18f3bc5759e7c1f33b58e1e2a10921bf41df08d1e93d76be9c4b0fa0b71abaa",
+            "1b9a2f51f398082751854cc2a287caef7e982c3332d866163175b1455bb3c185"
+          ],
+          "independent_future_task_evaluation": false,
+          "native_bytes": 76064,
+          "native_digest": "0497a569d1634c8dd45588e1bf635c9bff0f3aecca8bb02bb8cfbec2cdc3748b",
+          "numeric_parameter_bytes": 14884,
+          "original_bytes": 23221,
+          "original_digest": "1effe78c4c662cc63b3afb54b3c270666f83882991de221c7d9c66c587a608f9",
+          "parameter_digest": "c7c9052e06c8271d9a8165c5c8aff07adb064295d33adf8b9b6b0f5c8053b642",
+          "training": {
+            "catalog_contains_explicit_values": true,
+            "catalog_digest": "ebf68be463247e25dfbefad11b355feadbd579868edf7b14cc523fd9ecd21b20",
+            "catalog_fixed_by_caller": false,
+            "cpu_seconds": 0.06774507500000002,
+            "dataset_digest": "e1be34816b2a8b617f73d9ec0c1d7a38b53c5925b7ab57c2e39373982454f1d5",
+            "examples_seen": 5400,
+            "final_cross_entropy": 4.29137427470962e-06,
+            "inherited_hidden_units": 0,
+            "initial_cross_entropy": 2.2836932486225616,
+            "initial_parameters": "68ae89be28ffa98817d538be04faadb56f50870a07cff357823b7d9d18a18fe5",
+            "kind": "actual-numpy-tanh-mlp-adam",
+            "language_model_finetuning": false,
+            "parent_parameters": null,
+            "rows": 9,
+            "seed": 91317,
+            "source_bound": true,
+            "steps": 600,
+            "training_accuracy": 1.0,
+            "wall_seconds": 0.06781463500010432
+          },
+          "written_address_diagnostic": {
+            "correct": 9,
+            "rows": 9
+          }
+        },
+        "semantic": {
+          "catalog_bytes": 417,
+          "current_source_ids": [
+            "f6f54626e15cc707ad725b5967ef431f61d135fac3fbf8a520e26cd587567104",
+            "b8f821f2f6a8be895d1f55b38ef328b9b6b9a2b5864574e23351021bc857bae5",
+            "85140be8c729c6d71e5a5388b0670e524387d61c4646282d47933ea8ac0328b6",
+            "b5626c236723082fcb533e61196490305d9428f5451c3dea9213f7640f581776",
+            "16916cc5d2d6c0cc215e46e890e003697a68700d07c82d9a478ee86ef2946177",
+            "04419f944c54022c4f0dd1bf33ee5392f77c18b7909957ddd697113776a16787",
+            "049d9d9c58c9c5c1eb848a4de0a4b2b6b5c0f26c7949510ac83cf07453b75bde",
+            "017c7d626edf2cc61215734fd77b126d40a8aa1d8f819204a7bb4608409bf804"
+          ],
+          "independent_future_task_evaluation": false,
+          "native_bytes": 74572,
+          "native_digest": "0aa75a71cb80152522eebeb987c477048627830f33fbd135e1656c8b7b49471a",
+          "numeric_parameter_bytes": 14624,
+          "original_bytes": 22688,
+          "original_digest": "2cead67f87972430311f7f9465675a834812e10390846c7a9047619ad9cffe34",
+          "parameter_digest": "dc2871b58fdb506b036cb2feaedd7279a14522a668f0ef5a53b8f7e11240152f",
+          "training": {
+            "catalog_contains_explicit_values": true,
+            "catalog_digest": "d1de58b06904650ecf638191f95028872941c8dd94526583411410b0d00ee533",
+            "catalog_fixed_by_caller": false,
+            "cpu_seconds": 0.06362292499999998,
+            "dataset_digest": "684a32753f9d72be405cc535efb23d78b92462dc26c866177fb72dd009b4b9b3",
+            "examples_seen": 4800,
+            "final_cross_entropy": 3.4541652947759847e-06,
+            "inherited_hidden_units": 0,
+            "initial_cross_entropy": 2.076390339640069,
+            "initial_parameters": "1d0cfba355dce9bdd1bf4ae7bd184181eec6360e694bc65aa1c08f5cdb4c1333",
+            "kind": "actual-numpy-tanh-mlp-adam",
+            "language_model_finetuning": false,
+            "parent_parameters": null,
+            "rows": 8,
+            "seed": 91317,
+            "source_bound": true,
+            "steps": 600,
+            "training_accuracy": 1.0,
+            "wall_seconds": 0.06477227100003802
+          },
+          "written_address_diagnostic": {
+            "correct": 8,
+            "rows": 8
+          }
+        }
+      },
+      "wall_seconds": 0.1451772059999712
+    }
+  ],
+  "training_code_digest": "9c780a13541f43ca6f4c044644a0f43d8b10e7ef89fd7d3288312db42714b15a",
+  "training_receipt_not_an_outcome": true
+}

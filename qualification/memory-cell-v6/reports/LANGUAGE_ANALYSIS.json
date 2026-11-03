@@ -1,0 +1,607 @@
+{
+  "schema": "hepta.memory.v6.language-analysis.v1",
+  "verdict": "record audits pass; primary scientific quality gate fails",
+  "freeze_sha256": "a3dc02766d061d9d3031fda5117889de84d53e2a2843edfa324001ee9432d477",
+  "source_commit": "856c77f8f29e84e0fdcae43e1c2171aaaaac14ee",
+  "evidence": {
+    "records.jsonl": {
+      "sha256": "29b82275adb010bbca2c466b51e399f7ae58927c56f8406a4dc21da3e14cbab7",
+      "bytes": 56755110
+    },
+    "AUDIT.json": {
+      "sha256": "ebbf498c2431d33e39c589516a2c861a9361951b76a63c3273f9f4c23751b45c",
+      "bytes": 548054
+    },
+    "SOURCE_AUDIT.json": {
+      "sha256": "ac572aee6802d1b927bce88cc6677b77a0612d77a81aff81808e51956f35e958",
+      "bytes": 1266
+    },
+    "COSTS.json": {
+      "sha256": "d2957bf5f40990c8acc18de5818a61cf14b3d0402b5099c5af1da33989b55935",
+      "bytes": 106024
+    }
+  },
+  "audits": {
+    "record_audit_passed": true,
+    "record_checks": 835791,
+    "source_audit_passed": true,
+    "source_checks": 253893,
+    "source_records": 1800,
+    "primary_quality_gate": false
+  },
+  "population": {
+    "executions": 25920,
+    "case_arms": 90,
+    "cases": 15,
+    "seeds": [
+      1103,
+      1109,
+      1117,
+      1123,
+      1129
+    ],
+    "domains": [
+      "engineering",
+      "laboratory",
+      "logistics"
+    ],
+    "distinct_templates": 288,
+    "known_templates": 192,
+    "ood_templates": 96,
+    "known_families": 24,
+    "ood_families": 12,
+    "templates_with_different_outcomes_across_cases": 0,
+    "distinct_selected_weights_file_digests": 1,
+    "interpretation": "Cases vary source values and nonce entities; repeated deterministic routing outcomes do not increase language sample size."
+  },
+  "gates": {
+    "known_correct_acceptance_minimum": 0.8,
+    "ood_router_acceptance_maximum": 0.05,
+    "observed_known_correct": 128,
+    "observed_known_wrong_route": 3,
+    "observed_known_rejected": 61,
+    "observed_known_correct_route_downstream_failures": 0,
+    "observed_ood_routed": 13,
+    "observed_ood_rejected": 83,
+    "primary_case_passes": 0,
+    "cases": 15,
+    "known_wilson95_descriptive": [
+      0.597294457887554,
+      0.729500493423528
+    ],
+    "ood_wilson95_descriptive": [
+      0.0808770644581112,
+      0.21801138502144396
+    ]
+  },
+  "language": {
+    "en": {
+      "known_templates": 96,
+      "correct_acceptances": 69,
+      "router_rejections": 26,
+      "wrong_operation_acceptances": 1,
+      "correct_route_downstream_failures": 0,
+      "ood_templates": 48,
+      "ood_routed": 6,
+      "known_correct_rate": 0.71875,
+      "ood_routed_rate": 0.125
+    },
+    "zh": {
+      "known_templates": 96,
+      "correct_acceptances": 59,
+      "router_rejections": 35,
+      "wrong_operation_acceptances": 2,
+      "correct_route_downstream_failures": 0,
+      "ood_templates": 48,
+      "ood_routed": 7,
+      "known_correct_rate": 0.6145833333333334,
+      "ood_routed_rate": 0.14583333333333334
+    }
+  },
+  "operations": {
+    "current": {
+      "known_templates": 32,
+      "correct_acceptances": 23,
+      "router_rejections": 8,
+      "wrong_operation_acceptances": 1,
+      "correct_route_downstream_failures": 0,
+      "correct_rate": 0.71875
+    },
+    "history": {
+      "known_templates": 32,
+      "correct_acceptances": 21,
+      "router_rejections": 11,
+      "wrong_operation_acceptances": 0,
+      "correct_route_downstream_failures": 0,
+      "correct_rate": 0.65625
+    },
+    "semantic": {
+      "known_templates": 32,
+      "correct_acceptances": 26,
+      "router_rejections": 6,
+      "wrong_operation_acceptances": 0,
+      "correct_route_downstream_failures": 0,
+      "correct_rate": 0.8125
+    },
+    "procedure": {
+      "known_templates": 32,
+      "correct_acceptances": 13,
+      "router_rejections": 18,
+      "wrong_operation_acceptances": 1,
+      "correct_route_downstream_failures": 0,
+      "correct_rate": 0.40625
+    },
+    "change": {
+      "known_templates": 32,
+      "correct_acceptances": 15,
+      "router_rejections": 16,
+      "wrong_operation_acceptances": 1,
+      "correct_route_downstream_failures": 0,
+      "correct_rate": 0.46875
+    },
+    "apply": {
+      "known_templates": 32,
+      "correct_acceptances": 30,
+      "router_rejections": 2,
+      "wrong_operation_acceptances": 0,
+      "correct_route_downstream_failures": 0,
+      "correct_rate": 0.9375
+    }
+  },
+  "ood_families": {
+    "ood.forecast": {
+      "templates": 8,
+      "routed": 0,
+      "routed_rate": 0.0
+    },
+    "ood.causal_attribution": {
+      "templates": 8,
+      "routed": 1,
+      "routed_rate": 0.125
+    },
+    "ood.unsupported_statistics": {
+      "templates": 8,
+      "routed": 0,
+      "routed_rate": 0.0
+    },
+    "ood.new_arithmetic": {
+      "templates": 8,
+      "routed": 2,
+      "routed_rate": 0.25
+    },
+    "ood.historical_pair": {
+      "templates": 8,
+      "routed": 4,
+      "routed_rate": 0.5
+    },
+    "ood.cross_entity_ranking": {
+      "templates": 8,
+      "routed": 1,
+      "routed_rate": 0.125
+    },
+    "ood.counterfactual": {
+      "templates": 8,
+      "routed": 3,
+      "routed_rate": 0.375
+    },
+    "ood.external_mutation": {
+      "templates": 8,
+      "routed": 0,
+      "routed_rate": 0.0
+    },
+    "ood.invent_procedure": {
+      "templates": 8,
+      "routed": 1,
+      "routed_rate": 0.125
+    },
+    "ood.ambiguous_operation": {
+      "templates": 8,
+      "routed": 0,
+      "routed_rate": 0.0
+    },
+    "ood.multiple_outputs": {
+      "templates": 8,
+      "routed": 1,
+      "routed_rate": 0.125
+    },
+    "ood.unavailable_uncertainty": {
+      "templates": 8,
+      "routed": 0,
+      "routed_rate": 0.0
+    }
+  },
+  "known_wrong_routes": [
+    {
+      "id": "known-current-en-13",
+      "language": "en",
+      "gold": "current",
+      "actual": "history",
+      "query": "Read the value at the head of {entity}'s event history."
+    },
+    {
+      "id": "known-procedure-zh-12",
+      "language": "zh",
+      "gold": "procedure",
+      "actual": "apply",
+      "query": "按记忆列出{entity}现有工作流程的步骤。"
+    },
+    {
+      "id": "known-change-zh-11",
+      "language": "zh",
+      "gold": "change",
+      "actual": "history",
+      "query": "读取{entity}现在和20250101的值，然后返回现在减当时。"
+    }
+  ],
+  "family_block_intervals": {
+    "known": {
+      "templates": 192,
+      "families": 24,
+      "template_mean": 0.6666666666666666,
+      "percentile95": [
+        0.546875,
+        0.7760416666666666
+      ],
+      "resamples": 2000,
+      "interpretation": "descriptive family-block resampling; no population guarantee"
+    },
+    "unsupported": {
+      "templates": 96,
+      "families": 12,
+      "template_mean": 0.13541666666666666,
+      "percentile95": [
+        0.052083333333333336,
+        0.22916666666666666
+      ],
+      "resamples": 2000,
+      "interpretation": "descriptive family-block resampling; no population guarantee"
+    }
+  },
+  "arms": {
+    "exact_same_router": {
+      "executions": 4320,
+      "per_case_known_correct": 128,
+      "per_case_known": 192,
+      "known_correct_rate": 0.6666666666666666,
+      "per_case_ood_routed": 13,
+      "per_case_ood_final_answers": 13,
+      "per_case_ood": 96,
+      "ood_routed_rate": 0.13541666666666666,
+      "cases_passing_all_language_gates": 0,
+      "read_wall_seconds_sum": 11.60481141404307,
+      "mean_read_ms": 2.686298938435896,
+      "median_read_ms": 2.0597639959305525,
+      "p95_read_ms": 10.452318994794041,
+      "mean_assigned_routing_ms": 6.286829562948157,
+      "rpc_bytes": 5372711,
+      "transport_counts": {
+        "rpc_attempts": 6585,
+        "read_attempts": 3435,
+        "validation_attempts": 3150,
+        "attempted_request_bytes": 2563375,
+        "received_response_bytes": 2809336
+      }
+    },
+    "parameter_actual": {
+      "executions": 4320,
+      "per_case_known_correct": 128,
+      "per_case_known": 192,
+      "known_correct_rate": 0.6666666666666666,
+      "per_case_ood_routed": 13,
+      "per_case_ood_final_answers": 13,
+      "per_case_ood": 96,
+      "ood_routed_rate": 0.13541666666666666,
+      "cases_passing_all_language_gates": 0,
+      "read_wall_seconds_sum": 20.93253021054261,
+      "mean_read_ms": 4.84549310429227,
+      "median_read_ms": 2.727929997490719,
+      "p95_read_ms": 19.142896999255754,
+      "mean_assigned_routing_ms": 6.286829562948157,
+      "rpc_bytes": 5479207,
+      "transport_counts": {
+        "rpc_attempts": 6585,
+        "read_attempts": 3435,
+        "validation_attempts": 3150,
+        "attempted_request_bytes": 2563375,
+        "received_response_bytes": 2915832
+      }
+    },
+    "parameter_no_procedure": {
+      "executions": 4320,
+      "per_case_known_correct": 85,
+      "per_case_known": 192,
+      "known_correct_rate": 0.4427083333333333,
+      "per_case_ood_routed": 13,
+      "per_case_ood_final_answers": 11,
+      "per_case_ood": 96,
+      "ood_routed_rate": 0.13541666666666666,
+      "cases_passing_all_language_gates": 0,
+      "read_wall_seconds_sum": 13.2798917380278,
+      "mean_read_ms": 3.0740490134323615,
+      "median_read_ms": 0.06049600779078901,
+      "p95_read_ms": 9.103434000280686,
+      "mean_assigned_routing_ms": 6.286829562948157,
+      "rpc_bytes": 3660866,
+      "transport_counts": {
+        "rpc_attempts": 4215,
+        "read_attempts": 2745,
+        "validation_attempts": 1470,
+        "attempted_request_bytes": 1745010,
+        "received_response_bytes": 1915856
+      }
+    },
+    "parameter_no_semantic": {
+      "executions": 4320,
+      "per_case_known_correct": 72,
+      "per_case_known": 192,
+      "known_correct_rate": 0.375,
+      "per_case_ood_routed": 13,
+      "per_case_ood_final_answers": 9,
+      "per_case_ood": 96,
+      "ood_routed_rate": 0.13541666666666666,
+      "cases_passing_all_language_gates": 0,
+      "read_wall_seconds_sum": 9.940328644763213,
+      "mean_read_ms": 2.3010020011025953,
+      "median_read_ms": 0.042974992538802326,
+      "p95_read_ms": 8.370296010980383,
+      "mean_assigned_routing_ms": 6.286829562948157,
+      "rpc_bytes": 2757162,
+      "transport_counts": {
+        "rpc_attempts": 3270,
+        "read_attempts": 2025,
+        "validation_attempts": 1245,
+        "attempted_request_bytes": 1334640,
+        "received_response_bytes": 1422522
+      }
+    },
+    "parameter_oracle": {
+      "executions": 4320,
+      "per_case_known_correct": 192,
+      "per_case_known": 192,
+      "known_correct_rate": 1.0,
+      "per_case_ood_routed": 0,
+      "per_case_ood_final_answers": 0,
+      "per_case_ood": 96,
+      "ood_routed_rate": 0.0,
+      "cases_passing_all_language_gates": 15,
+      "read_wall_seconds_sum": 26.774388966718107,
+      "mean_read_ms": 6.19777522377734,
+      "median_read_ms": 5.017260991735384,
+      "p95_read_ms": 20.235212010447867,
+      "mean_assigned_routing_ms": 0.0,
+      "rpc_bytes": 6806823,
+      "transport_counts": {
+        "rpc_attempts": 8160,
+        "read_attempts": 4320,
+        "validation_attempts": 3840,
+        "attempted_request_bytes": 3186975,
+        "received_response_bytes": 3619848
+      }
+    },
+    "parameter_shuffled": {
+      "executions": 4320,
+      "per_case_known_correct": 59,
+      "per_case_known": 192,
+      "known_correct_rate": 0.3072916666666667,
+      "per_case_ood_routed": 13,
+      "per_case_ood_final_answers": 13,
+      "per_case_ood": 96,
+      "ood_routed_rate": 0.13541666666666666,
+      "cases_passing_all_language_gates": 0,
+      "read_wall_seconds_sum": 20.11801452616055,
+      "mean_read_ms": 4.656947806981609,
+      "median_read_ms": 2.9233005043352023,
+      "p95_read_ms": 18.3924430020852,
+      "mean_assigned_routing_ms": 6.286829562948157,
+      "rpc_bytes": 5475700,
+      "transport_counts": {
+        "rpc_attempts": 6585,
+        "read_attempts": 3435,
+        "validation_attempts": 3150,
+        "attempted_request_bytes": 2559940,
+        "received_response_bytes": 2915760
+      }
+    }
+  },
+  "paired_primary_minus_exact_success_count": 0,
+  "required_snapshot_storage": {
+    "basis": "Logical source SQLite, owner SQLite and snapshot/model files copied before node startup; excludes logs, journals, filesystem block overhead, common encoder/router and evidence files. Exact deployments exclude parameter objects.",
+    "summary": {
+      "parameter": {
+        "case_count": 15,
+        "copies_per_case": 3,
+        "total_45_copy_bytes": 7590135,
+        "three_copy_mean_bytes": 506009,
+        "three_copy_min_bytes": 505800,
+        "three_copy_max_bytes": 506268
+      },
+      "exact": {
+        "case_count": 15,
+        "copies_per_case": 3,
+        "total_45_copy_bytes": 4890696,
+        "three_copy_mean_bytes": 326046.4,
+        "three_copy_min_bytes": 325842,
+        "three_copy_max_bytes": 326292
+      }
+    },
+    "by_case": [
+      {
+        "seed": 1103,
+        "domain": "engineering",
+        "parameter_three_copy_bytes": 505968,
+        "exact_three_copy_bytes": 326007
+      },
+      {
+        "seed": 1103,
+        "domain": "laboratory",
+        "parameter_three_copy_bytes": 506256,
+        "exact_three_copy_bytes": 326277
+      },
+      {
+        "seed": 1103,
+        "domain": "logistics",
+        "parameter_three_copy_bytes": 505809,
+        "exact_three_copy_bytes": 325854
+      },
+      {
+        "seed": 1109,
+        "domain": "engineering",
+        "parameter_three_copy_bytes": 505974,
+        "exact_three_copy_bytes": 325995
+      },
+      {
+        "seed": 1109,
+        "domain": "laboratory",
+        "parameter_three_copy_bytes": 506268,
+        "exact_three_copy_bytes": 326289
+      },
+      {
+        "seed": 1109,
+        "domain": "logistics",
+        "parameter_three_copy_bytes": 505800,
+        "exact_three_copy_bytes": 325842
+      },
+      {
+        "seed": 1117,
+        "domain": "engineering",
+        "parameter_three_copy_bytes": 505959,
+        "exact_three_copy_bytes": 326001
+      },
+      {
+        "seed": 1117,
+        "domain": "laboratory",
+        "parameter_three_copy_bytes": 506235,
+        "exact_three_copy_bytes": 326292
+      },
+      {
+        "seed": 1117,
+        "domain": "logistics",
+        "parameter_three_copy_bytes": 505818,
+        "exact_three_copy_bytes": 325860
+      },
+      {
+        "seed": 1123,
+        "domain": "engineering",
+        "parameter_three_copy_bytes": 505965,
+        "exact_three_copy_bytes": 326001
+      },
+      {
+        "seed": 1123,
+        "domain": "laboratory",
+        "parameter_three_copy_bytes": 506232,
+        "exact_three_copy_bytes": 326283
+      },
+      {
+        "seed": 1123,
+        "domain": "logistics",
+        "parameter_three_copy_bytes": 505815,
+        "exact_three_copy_bytes": 325857
+      },
+      {
+        "seed": 1129,
+        "domain": "engineering",
+        "parameter_three_copy_bytes": 505956,
+        "exact_three_copy_bytes": 325998
+      },
+      {
+        "seed": 1129,
+        "domain": "laboratory",
+        "parameter_three_copy_bytes": 506265,
+        "exact_three_copy_bytes": 326292
+      },
+      {
+        "seed": 1129,
+        "domain": "logistics",
+        "parameter_three_copy_bytes": 505815,
+        "exact_three_copy_bytes": 325848
+      }
+    ],
+    "parameter_to_exact_ratio": 1.551953955019899
+  },
+  "memory_training": {
+    "models": 30,
+    "parameter_array_bytes": 515520,
+    "explicit_catalog_bytes": 31911,
+    "support_map_bytes": 97950,
+    "fit_steps": 18000,
+    "examples_seen": 432000,
+    "fit_cpu_seconds": 2.9461354539999993,
+    "serialized_cell_artifact_bytes": 899813,
+    "source_sqlite_bytes": 1351680
+  },
+  "formal_router_training": {
+    "fit_count": 120,
+    "wall_seconds": 50.85253377100162,
+    "cpu_seconds": 50.831156670999995,
+    "training_rows": 416,
+    "selection_rows": 102,
+    "unique_base_bytes": 151055411
+  },
+  "formal_router_all_retained_file_bytes": 36490930,
+  "evaluation_cost": {
+    "wall_seconds": 121.47822083201027,
+    "parent_cpu_seconds": 26.465981108,
+    "all_child_cpu_seconds": 128.51353799999998,
+    "per_arm_or_per_reader_cpu_measured": false,
+    "parent_peak_resident_kib_linux": 789120,
+    "encoders": {
+      "fe7932ac0aba4b1d9fe3edaea863b822b5c40922acab24ac56050e0b6ed7853d": {
+        "base_bytes": 127538960,
+        "cache_artifact": {
+          "bytes": 862051,
+          "sha256": "d61d987e2347907d94d7e889b137664afa74b28006188e1afa1b0471c9ca5a16"
+        },
+        "encoding_cpu_seconds": 1.7694538990000002,
+        "encoding_wall_seconds": 1.7701507559977472,
+        "load_cpu_seconds": 1.143344528,
+        "load_wall_seconds": 1.162261485005729,
+        "normalized_text_utf8_bytes": 17599,
+        "numeric_array_bytes": 884736,
+        "unique_texts_encoded": 288
+      }
+    },
+    "routers": {
+      "1103": {
+        "artifact_bytes": 386639,
+        "load_cpu_seconds": 0.007020844999999998,
+        "load_wall_seconds": 0.007016203002422117
+      },
+      "1109": {
+        "artifact_bytes": 386639,
+        "load_cpu_seconds": 0.006470464000000398,
+        "load_wall_seconds": 0.006468621999374591
+      },
+      "1117": {
+        "artifact_bytes": 386639,
+        "load_cpu_seconds": 0.0056790150000001205,
+        "load_wall_seconds": 0.005677414999809116
+      },
+      "1123": {
+        "artifact_bytes": 386639,
+        "load_cpu_seconds": 0.004700683000000261,
+        "load_wall_seconds": 0.004699261000496335
+      },
+      "1129": {
+        "artifact_bytes": 386639,
+        "load_cpu_seconds": 0.006269520999999667,
+        "load_wall_seconds": 0.00626855599693954
+      }
+    },
+    "preparation_wall_seconds": 6.759306291001849,
+    "preparation_cpu_seconds": 5.423935653999999,
+    "parameter_to_exact_mean_read_latency_ratio": 1.8037802997136165
+  },
+  "interpretation_zh": [
+    "主门槛两项同时失败：已知覆盖66.67%低于80%，近域不支持路由错误13.54%高于5%；15个case及英中分组都没有通过。",
+    "61个合法请求被拒绝，3个合法请求错路由。正确路由后的本轮下游失败为0；最大缺口在语言意图/能力边界，而不是这些已写地址的读回。",
+    "procedure13/32与change15/32是覆盖最低的类型；近域错误主要在两个历史时点之差4/8、反事实3/8、新算术2/8。OOD是本冻结六操作合同不支持，不代表所有问题在更丰富系统中都不可计算。",
+    "oracle使用金标准operation和拒绝标签，192/192只能说明给定正确调度时本轮已写数据与组合可用，不能当成实际语言质量或泛化率。",
+    "同路由exact与parameter成功数差0。去语义/去过程/地址打乱使正确率下降，支持读取依赖实际细胞；不能证明参数比精确数据结构更优。",
+    "参数读者本次约1.804倍read+validate平均延迟、1.552倍三副本必要快照文件量；无已观察到的准确率提升。不将该单环境结果外推为所有参数记忆不可能获益。",
+    "所有非oracle比较分摊同一6.286830ms/query路由预算；这是批量编码/缓存后的摊销，不是未缓存端到端单请求延迟。",
+    "CPU只测得实验parent总量与所有node总量，未按arm/reader拆分，不能声称精确的CPU成本优势比。",
+    "两个审计通过意味着记录和源重算一致，不等于科学质量门槛通过。family-block区间仅描述assistant合成家族的敏感性，不给总体风险保证。",
+    "当前小cell是实际训练的tanh MLP地址关联器，值/程序catalog仍显式序列化并计费；不等同于语言模型微调压缩，也未证明通用memory系统自发涌现。",
+    "作者同时贡献held、传输和runner；审计计算不导入执行器/grader，但不能称独立第三方审计。未用正式held结果重新训练、改变门槛或改执行代码。"
+  ]
+}

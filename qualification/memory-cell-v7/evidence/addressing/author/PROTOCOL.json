@@ -1,0 +1,339 @@
+{
+  "schema": "independent.memory-v7-eval-protocol.v1",
+  "authored_date": "2026-10-27",
+  "counts": {
+    "calibration": {
+      "total": 420,
+      "known": 180,
+      "near_domain_ood": 240,
+      "operations": {
+        "current": 30,
+        "history": 30,
+        "semantic": 30,
+        "procedure": 30,
+        "change": 30,
+        "apply": 30,
+        "reject": 240
+      },
+      "languages": {
+        "zh": 210,
+        "en": 210
+      },
+      "ood_families": {
+        "cal.relative_comparison": 20,
+        "cal.sequence_summary": 20,
+        "cal.past_attributes": 20,
+        "cal.past_rule": 20,
+        "cal.future_estimate": 20,
+        "cal.explain_cause": 20,
+        "cal.override_attribute": 20,
+        "cal.override_observation": 20,
+        "cal.new_formula": 20,
+        "cal.multiple_entities": 20,
+        "cal.record_mutation": 20,
+        "cal.combined_deliverable": 20
+      }
+    },
+    "held_intents": {
+      "total": 360,
+      "known": 240,
+      "near_domain_ood": 120,
+      "operations": {
+        "current": 40,
+        "history": 40,
+        "semantic": 40,
+        "procedure": 40,
+        "change": 40,
+        "apply": 40,
+        "reject": 120
+      },
+      "languages": {
+        "zh": 180,
+        "en": 180
+      },
+      "ood_families": {
+        "held.baseline_fraction": 10,
+        "held.multi_observation_statistics": 10,
+        "held.retroactive_settings": 10,
+        "held.retired_program": 10,
+        "held.projected_next": 10,
+        "held.driver_inference": 10,
+        "held.parameter_trial": 10,
+        "held.synthetic_input": 10,
+        "held.unregistered_transform": 10,
+        "held.cross_owner_question": 10,
+        "held.persist_change": 10,
+        "held.joined_readout": 10
+      }
+    },
+    "held_entities": {
+      "total": 80,
+      "unique_new_alias": 40,
+      "ambiguous_alias": 20,
+      "unknown_name": 20,
+      "languages": {
+        "zh": 40,
+        "en": 40
+      }
+    },
+    "held_total": 440,
+    "total_rows": 860
+  },
+  "operations": {
+    "current": "Read the numeric value in the latest recorded event for one specified entity.",
+    "history": "Read the latest event value on or before the request.at cutoff for one specified entity.",
+    "semantic": "Read the entire currently saved semantic attribute set for one specified entity.",
+    "procedure": "Read the currently saved procedure/program for one specified entity.",
+    "change": "Return latest event value minus last event value on or before request.since, retaining the sign; no percentage or ratio.",
+    "apply": "Execute the entity's saved program with its latest event value and current saved semantic parameters.",
+    "reject": "The main requested action is outside these six operations, or entity resolution is ambiguous/unknown."
+  },
+  "primary_criteria": {
+    "known_operation_accuracy_min": 0.8,
+    "near_domain_ood_false_accept_rate_max": 0.05,
+    "calibration_known_required_correct": 144,
+    "calibration_ood_max_false_accepts": 12,
+    "held_known_required_correct": 192,
+    "held_ood_max_false_accepts": 6,
+    "denominators": "Use 180/240 for calibration known/OOD and 240/120 for held intent known/OOD. Keep the 80 entity rows separate.",
+    "known_correct": "Exactly the expected operation. A rejection or a different supported operation is incorrect.",
+    "ood_false_accept": "Any non-reject intent decision is false acceptance; a later empty retrieval or execution failure must not be relabeled as a learned rejection.",
+    "report": "Report intent-gate and complete-runtime outcomes separately, including all six operations, both languages, every OOD family, counts, and denominators."
+  },
+  "address_assessment": {
+    "unique_rows": "Report accepted/correct-operation/correct-canonical-owner and correct executed result separately for all 40 cases.",
+    "ambiguous_rows": "All 20 are expected to reject: two owners explicitly share the exact same in-scope alias.",
+    "unknown_rows": "All 20 are expected to reject: no canonical owner or alias equals the typed request entity.",
+    "wrong_owner": "Report every wrong-owner resolution as an addressing error even when a coincidentally equal result is returned.",
+    "reliability_diagnostic": "Report any accepted ambiguous/unknown owner and any accepted unique request routed to the wrong owner. These are errors regardless of pooled accuracy.",
+    "no_missing_entity_cases": true
+  },
+  "schema_description": {
+    "calibration_json": "JSON array. Each row has id/text/operation/language/family, with literal {entity}, {at}, {since} slots only.",
+    "held_json": "Object with schema, intent_rows (same five-field schema), entity_rows, and intent_fixture.",
+    "entity_rows": "Each row retains id/text/operation/language/family and adds text_template, substitutions, complete request, complete registry, abstract memory_fixture, and expected.",
+    "request_fields": [
+      "at",
+      "entity",
+      "max_cells",
+      "max_hops",
+      "query_id",
+      "schema",
+      "scope",
+      "since",
+      "text"
+    ],
+    "request_schema": "hepta.memory.request.v1",
+    "registry_schema": "hepta.memory.v7.owner-registry.v1",
+    "registry_fields": [
+      "schema",
+      "scope",
+      "source_cut",
+      "entities"
+    ],
+    "registry_entity_fields": [
+      "entity",
+      "aliases"
+    ],
+    "scope": "agent:memory-v7-eval",
+    "source_cut": "Lowercase 64-hex SHA-256 of the canonical JSON containing scope, registry entries, and abstract facts before adding source_cut. This is a synthetic fixture snapshot identifier.",
+    "date_representation": "Both at and since are required integers, excluding bool, in 0 <= value < 2**53. A used date is YYYYMMDD; an unused date is 0. Always since <= at. History uses the actual at cutoff; change uses the actual since cutoff and at = fixture.current_cutoff.",
+    "canonical_entity_constraint": "Every canonical entity is nonempty ASCII and at most 128 bytes. Unique cases include lengths 127 and 128.",
+    "entity_expected": "operation is runtime gold; intent_operation is the supported action before owner resolution; canonical_entity and result are null for rejection."
+  },
+  "runner_instructions": [
+    "Freeze model weights, representation construction, score formula, registry resolver, and candidate handling before reading these independent labeled artifacts.",
+    "The calibration split may select a previously declared confidence/abstention threshold. It must not train, rewrite data, alter the score family, or add token/family-specific rules.",
+    "Freeze the selected threshold and all model/runtime hashes before evaluating held.json once. Keep held failures out of selection.",
+    "For an intent row, substitute its language-specific entity/at/since from the associated default fixture and use its id as query_id. Start with date_defaults_by_operation; set at from the actual fixture cutoff when {at} occurs and since from the actual fixture cutoff when {since} occurs. Both fields are mandatory integers. Unused slots are 0, except that a positive since with otherwise unused at requires at = fixture.current_cutoff. Enforce 0 <= since <= at < 2**53 with bool excluded. Include schema/scope/entity/text/max_hops/max_cells.",
+    "Use the same substituted alias in request.entity and request.text; all default fixture aliases resolve uniquely. For entity rows, use the supplied complete request unchanged.",
+    "Materialize every entity in an entity row registry and its corresponding abstract memory facts in an isolated fixture. Do not reuse a registry from a preceding case.",
+    "Translate the abstract affine_then_upper_cap procedure into the host's supported saved-program encoding without changing its mathematical behavior. Current event, attributes, and program are read from actual memory cells.",
+    "Bind all generated memory cells and the owner registry to the fixture scope/source_cut. If the host computes its own snapshot cut, replace the synthetic cut consistently and log that fixture-only conversion.",
+    "Check the resolved canonical owner and the executed result, not merely the presence of a nonempty plan or candidate list.",
+    "If the host cannot represent a declared fixture program or field, report a fixture incompatibility explicitly; do not silently substitute another answer or relabel the case.",
+    "Keep all rows and fixed labels in reported denominators. Report structural/fixture errors distinctly rather than dropping rows."
+  ],
+  "calibration_fixture": {
+    "registry": {
+      "schema": "hepta.memory.v7.owner-registry.v1",
+      "scope": "agent:memory-v7-eval",
+      "source_cut": "f8987efae89122d84c026dbc4b74a92ddfba96082504ae9a1c91895b51f0cd01",
+      "entities": [
+        {
+          "entity": "v7held.calibration.anchor_29",
+          "aliases": [
+            "栖川记录点17",
+            "Solena record point 17"
+          ]
+        }
+      ]
+    },
+    "memory_fixture": {
+      "fixture_schema": "independent.abstract-memory-fixture.v1",
+      "scope": "agent:memory-v7-eval",
+      "source_cut": "f8987efae89122d84c026dbc4b74a92ddfba96082504ae9a1c91895b51f0cd01",
+      "entities": [
+        {
+          "entity": "v7held.calibration.anchor_29",
+          "events": [
+            {
+              "date": 20260112,
+              "value": 102
+            },
+            {
+              "date": 20260304,
+              "value": 111
+            },
+            {
+              "date": 20260521,
+              "value": 116
+            },
+            {
+              "date": 20260919,
+              "value": 92
+            }
+          ],
+          "current_semantic": {
+            "factor": 4,
+            "bias": 2,
+            "limit": 220
+          },
+          "current_procedure": {
+            "fixture_kind": "affine_then_upper_cap",
+            "expression": "min(event_value * factor + bias, limit)",
+            "ordered_steps": [
+              "multiply event_value by current factor",
+              "add current bias",
+              "take the smaller of the result and current limit"
+            ]
+          }
+        }
+      ]
+    },
+    "substitutions": {
+      "zh": {
+        "entity": "栖川记录点17",
+        "at": 20260615,
+        "since": 20260315
+      },
+      "en": {
+        "entity": "Solena record point 17",
+        "at": 20260615,
+        "since": 20260315
+      }
+    },
+    "request_defaults": {
+      "schema": "hepta.memory.request.v1",
+      "scope": "agent:memory-v7-eval",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "current_cutoff": 20261027,
+    "date_defaults_by_operation": {
+      "current": {
+        "at": 0,
+        "since": 0
+      },
+      "history": {
+        "at": 20260615,
+        "since": 0
+      },
+      "semantic": {
+        "at": 0,
+        "since": 0
+      },
+      "procedure": {
+        "at": 0,
+        "since": 0
+      },
+      "change": {
+        "at": 20261027,
+        "since": 20260315
+      },
+      "apply": {
+        "at": 0,
+        "since": 0
+      },
+      "reject": {
+        "at": 0,
+        "since": 0
+      }
+    },
+    "expected_by_operation": {
+      "current": 92,
+      "history": 116,
+      "semantic": {
+        "factor": 4,
+        "bias": 2,
+        "limit": 220
+      },
+      "procedure": {
+        "fixture_kind": "affine_then_upper_cap",
+        "expression": "min(event_value * factor + bias, limit)",
+        "ordered_steps": [
+          "multiply event_value by current factor",
+          "add current bias",
+          "take the smaller of the result and current limit"
+        ]
+      },
+      "change": -19,
+      "apply": 220
+    }
+  },
+  "schema_compatibility_revision": {
+    "attempt": 2,
+    "preserved_previous_attempt": "previous-attempt-01",
+    "change": "Required integer at/since fields replace null; add complete operation date defaults and strict date range/order validation. Original prompt wording and gold are unchanged."
+  },
+  "independence_statement": {
+    "basis": "The author used only the six-operation interface contract, the parent-provided request/registry schemas, and repository-root AGENTS.md.",
+    "did_not_access": [
+      "qualification/memory-cell-v7/addressing source code",
+      "training data, model parameters, selection artifacts, development results",
+      "any V6/V7 previous evaluation data, decisions, or failures"
+    ],
+    "models_executed": false,
+    "wording": "Calibration and held wording were composed in separate source modules. Held uses inspection, archival reconstruction, maintenance, and handover contexts, with family identifiers distinct from calibration. No prompts were selected by model response.",
+    "scope_of_independence": "Independent authorship within this collaborative task; not a third-party audit. Semantic proximity between splits is intentional because both test the same six-operation boundary.",
+    "statistical_limit": "Fixed-sample descriptive results only. Passing these thresholds is not a guarantee about a population, all natural language, or all future entities."
+  },
+  "gold_review": {
+    "known": "Each known request has one main action that matches exactly one supported operation; complete attribute retrieval and saved-program retrieval are distinct from execution.",
+    "ood": "All 12 families request an explicit semantic change from a supported neighborhood: relative change, history statistics, historical attributes, historical programs, future prediction, causes, parameter substitution, synthetic event input, new arithmetic, cross-entity operations, writes, or multiple answer components.",
+    "compound_requests": "Combined-deliverable negatives are one coherent requested output containing multiple answer components, not arbitrary appended questions.",
+    "ambiguity": "Address ambiguity is explicit in the supplied registry. Unknown names have zero exact canonical/alias matches. No gold depends on guessed missing entities.",
+    "manual_direction_check": "Change wording was reviewed for the latest-minus-cutoff direction. Two phrasings were clarified before any model use."
+  },
+  "structural_validation": {
+    "passed": true,
+    "checks": [
+      "exact split/operation/language/family counts",
+      "unique IDs across 860 rows",
+      "no duplicate intent text within or across splits",
+      "only literal supported slots",
+      "known-operation date slots",
+      "complete typed request and registry field sets",
+      "strict integer non-bool date bounds and since <= at for all 860 requests",
+      "all operation date defaults",
+      "scope/source_cut shape",
+      "128-byte ASCII canonical bound",
+      "exact alias match multiplicities",
+      "address expected operation/result consistency",
+      "language balance"
+    ],
+    "not_performed": [
+      "model evaluation",
+      "training",
+      "threshold selection",
+      "implementation inspection"
+    ]
+  },
+  "source_files": [
+    "calibration_source.py",
+    "held_source.py",
+    "build_eval.py"
+  ]
+}

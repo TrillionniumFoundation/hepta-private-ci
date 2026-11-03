@@ -1,0 +1,421 @@
+{
+  "configuration": {
+    "dimension": 16,
+    "seed": 43,
+    "shard_count": 2,
+    "steps": 180,
+    "threshold": 0.9,
+    "total_hidden": 24
+  },
+  "fit_receipt": {
+    "authority": false,
+    "clean_parameters": true,
+    "cpu_ns": 67823383,
+    "fit_calls": 4,
+    "independent_future_task_evaluation": false,
+    "language_model_finetuning": false,
+    "partition_uses_targets": false,
+    "source_export_bytes": 12522,
+    "source_ledger_bytes": null,
+    "types": {
+      "procedure": {
+        "catalog_bytes": 244,
+        "lineage_bytes": 805,
+        "native_digest": "7cb55cd780838939fe9fc2e33ce73be2b3e082bcfe7d3286bc764c66bc97d742",
+        "raw_payload_bytes": 13436,
+        "resident_parameters_bytes": 1944,
+        "route_bytes": 829,
+        "serialized_bytes": 15641,
+        "shards": [
+          {
+            "catalog_bytes": 122,
+            "lineage_bytes": 403,
+            "native_bytes": 6708,
+            "native_digest": "2dd5fcee03747a110d8e21052b2ecec1f89acf5eb2b63ec9a957daeb96187237",
+            "original_bytes": 3780,
+            "parameter_bytes": 972,
+            "parameter_digest": "13e5561ef8d77ae4fb41473d6ec37f765278acb04a2f98bf011c0acb4cdd9e79",
+            "source_ids": [
+              "5705ddd371fba60b54bcd5943c5b0f6ad54f0e8ec554b413cbeff456b0cb24b0",
+              "6f76e296ba2824490b6586b5acf12066ea7515ec6baef46c423b1078b3abeb5f",
+              "7d94b32f5eaf8469bc38c33629cd2554cce5431c7e08ef44e336c80bb2b332a7",
+              "a3a67db8e137adf7ad54604a07f411b22a37e6f0b500815ab28e911c976cc53a",
+              "c580765d7537db1ce66257fb21b73b31b06e88f076d35f95c174a690c25dedf2",
+              "deef27e048013ce24efce084265a1a7fa08121b2e841015efd46d866b6815f08"
+            ],
+            "support_bytes": 817,
+            "training": {
+              "catalog_contains_explicit_values": true,
+              "catalog_digest": "c65fef463af781529e3160c6dca6c507b2d45ccaf39dcad9946c6f9ff17f37e6",
+              "catalog_fixed_by_caller": false,
+              "cpu_seconds": 0.014290248999999977,
+              "dataset_digest": "e3e845be028b99ae86fdc3d239b0c3edc96d863c56971f768e5e71cc81cc25b9",
+              "examples_seen": 1080,
+              "final_cross_entropy": 0.00043387091189742887,
+              "inherited_hidden_units": 0,
+              "initial_cross_entropy": 1.0768681975009018,
+              "initial_parameters": "e97f6cbae1af064705e8872dc75c97af7e6e47523c3f41912acfc7f4f9b7e577",
+              "kind": "actual-numpy-tanh-mlp-adam",
+              "language_model_finetuning": false,
+              "parent_parameters": null,
+              "rows": 6,
+              "seed": 43,
+              "source_bound": true,
+              "steps": 180,
+              "training_accuracy": 1.0,
+              "wall_seconds": 0.014289029990322888
+            }
+          },
+          {
+            "catalog_bytes": 122,
+            "lineage_bytes": 403,
+            "native_bytes": 6728,
+            "native_digest": "725c4702fbfe3e3a090be3f2385cadf0b0c6d2a0499de95f75ec5e97bacb3132",
+            "original_bytes": 3779,
+            "parameter_bytes": 972,
+            "parameter_digest": "d0a8ce2a85335b1ba93134844a16dafd00c5751cd74bd1b4f7669ed41d4c8031",
+            "source_ids": [
+              "73282a1bad4eca4a9487807fdfda75b17c7ea09fca19b9179574c929d6690b1e",
+              "ca5aec3e3a819363858f6ba59874b3a0fc355c9be78dcfafc6ec2004a74513ab",
+              "dab3819bbc32ba2877d20b150b3b888d8d6e8c0bd70b03ba85c933a900878b18",
+              "e1236de1817d3643eeeac0f554e899592236f002a5402a1fe6ef2d6b4fac39bb",
+              "e1869dceab379a9151c582760a42c03fcf8dd1eb0a7003a1f2f952985a7bcf2f",
+              "e435e11ff24515b78ff3c40ea0836b6e67b6ff10311bbe8b79d0bd1a6e55d783"
+            ],
+            "support_bytes": 817,
+            "training": {
+              "catalog_contains_explicit_values": true,
+              "catalog_digest": "c65fef463af781529e3160c6dca6c507b2d45ccaf39dcad9946c6f9ff17f37e6",
+              "catalog_fixed_by_caller": false,
+              "cpu_seconds": 0.014270188999999989,
+              "dataset_digest": "90f15f105b9f1713292342778126ff9c6e3a3e6e5e465446ce765b4b90aa0688",
+              "examples_seen": 1080,
+              "final_cross_entropy": 0.0005653789309628637,
+              "inherited_hidden_units": 0,
+              "initial_cross_entropy": 1.0826738805331895,
+              "initial_parameters": "cbfe54f529c40e58e1951288bf6ad100ee2c14e60cbc5c9da64193d084fc9e50",
+              "kind": "actual-numpy-tanh-mlp-adam",
+              "language_model_finetuning": false,
+              "parent_parameters": null,
+              "rows": 6,
+              "seed": 44,
+              "source_bound": true,
+              "steps": 180,
+              "training_accuracy": 1.0,
+              "wall_seconds": 0.014269972001784481
+            }
+          }
+        ]
+      },
+      "semantic": {
+        "catalog_bytes": 182,
+        "lineage_bytes": 805,
+        "native_digest": "b04e2b8b1990b94a49b6f1e0f518e3380b9823a7eb11741bac95f91e1941feac",
+        "raw_payload_bytes": 13416,
+        "resident_parameters_bytes": 1944,
+        "route_bytes": 829,
+        "serialized_bytes": 15608,
+        "shards": [
+          {
+            "catalog_bytes": 91,
+            "lineage_bytes": 403,
+            "native_bytes": 6712,
+            "native_digest": "dc4e0ccdacd95403110f5c7cb93acfc0ce7fca6b843b441cce685280ab94b269",
+            "original_bytes": 3744,
+            "parameter_bytes": 972,
+            "parameter_digest": "f3cdd6a62d77bfc27051f8b8bf0948652b0d593cb3810c5d1af4152abd193aa0",
+            "source_ids": [
+              "0587ed3e783f102690ecbeeaebe331100eb83b1f2234b85ccb3ca1b4efeac0ef",
+              "1dd6c4a1d0e0641532f87975a1f461d5abcbf1013bdbcbae0dd52e14cd511230",
+              "83819f62f4a85edd1fd0d6f73d6204991a6d10e69c19efbcc45fa6db3f122092",
+              "88e73bb79932690a01478b897ad47af30ffd1c326348af9f6c2590bc49e86a27",
+              "8ab7496b948b91c6df01dd243b522e137ebe917edc3df398635eae24f3f00122",
+              "fd28d5fbe1713a2cc6ca03f638ba18a073138a697d6c933d8bc4c9f64900e0bb"
+            ],
+            "support_bytes": 817,
+            "training": {
+              "catalog_contains_explicit_values": true,
+              "catalog_digest": "71bf2b02b1dfd14aaef4d4a761e5cde8787e1b2a5597d105a43c15185b93a6f3",
+              "catalog_fixed_by_caller": false,
+              "cpu_seconds": 0.01437261100000009,
+              "dataset_digest": "044a7821dc025ab9837c63d41d777113c0fb29511fd5ceb22c7fa5646f2be525",
+              "examples_seen": 1080,
+              "final_cross_entropy": 0.000745433154944646,
+              "inherited_hidden_units": 0,
+              "initial_cross_entropy": 1.095760838993799,
+              "initial_parameters": "e97f6cbae1af064705e8872dc75c97af7e6e47523c3f41912acfc7f4f9b7e577",
+              "kind": "actual-numpy-tanh-mlp-adam",
+              "language_model_finetuning": false,
+              "parent_parameters": null,
+              "rows": 6,
+              "seed": 43,
+              "source_bound": true,
+              "steps": 180,
+              "training_accuracy": 1.0,
+              "wall_seconds": 0.014371633995324373
+            }
+          },
+          {
+            "catalog_bytes": 91,
+            "lineage_bytes": 403,
+            "native_bytes": 6704,
+            "native_digest": "b71cff6b3e3811f5c0d1333c22e2c6664cd510826fe2b19bfa346146b36e91be",
+            "original_bytes": 3746,
+            "parameter_bytes": 972,
+            "parameter_digest": "bd8f707fd48d09f557e47ef95ba1b7c9edd4ad1f053d268eee7df48754cfb7dc",
+            "source_ids": [
+              "320e09b06f8510ae769ffd8bd9d539e86803e9e7173ea568710f2c8ec53b20c2",
+              "421964d02d857321cbf45fd05e65c0fe4e67b0dddd73ab0a00b2228f681551da",
+              "5c6d49fc9343492f7ac114a72b1daebecee6e0baeb21403f86df98bd63cba9c2",
+              "63363b8e8e0c9785d5196d28aec64c2d125ebc0a5241f7b971096cb5f43f30bd",
+              "c3fc9a3ca5078433eb36c3fba5037a00c8f7c544cc18bc7b2f9fa22ebf430e31",
+              "d778a5296a3d3745770ba35870e33c05b8079647f103bdadf0b569fda9b150a8"
+            ],
+            "support_bytes": 817,
+            "training": {
+              "catalog_contains_explicit_values": true,
+              "catalog_digest": "20d56b9b4782feb0b80217642680c9e8358dd366aa04b8e3b64b27e56ab809a3",
+              "catalog_fixed_by_caller": false,
+              "cpu_seconds": 0.01486932800000007,
+              "dataset_digest": "37e36a7061639a369a3aac0c069ded0bad147f0cefe425029edcdb51e1ddab25",
+              "examples_seen": 1080,
+              "final_cross_entropy": 0.0005916832242849563,
+              "inherited_hidden_units": 0,
+              "initial_cross_entropy": 1.1100136262667981,
+              "initial_parameters": "cbfe54f529c40e58e1951288bf6ad100ee2c14e60cbc5c9da64193d084fc9e50",
+              "kind": "actual-numpy-tanh-mlp-adam",
+              "language_model_finetuning": false,
+              "parent_parameters": null,
+              "rows": 6,
+              "seed": 44,
+              "source_bound": true,
+              "steps": 180,
+              "training_accuracy": 1.0,
+              "wall_seconds": 0.014867563004372641
+            }
+          }
+        ]
+      }
+    },
+    "wall_ns": 67825926
+  },
+  "independent_evaluation": false,
+  "schema": "hepta.memory.population-fixture.v2",
+  "synthetic_fixture": true,
+  "types": {
+    "procedure": {
+      "native_digest": "7cb55cd780838939fe9fc2e33ce73be2b3e082bcfe7d3286bc764c66bc97d742",
+      "rows": [
+        {
+          "entity": "fresh-cell-0",
+          "source_id": "e1869dceab379a9151c582760a42c03fcf8dd1eb0a7003a1f2f952985a7bcf2f",
+          "value": {
+            "bias": 0,
+            "limit": 90,
+            "opcode": "affine"
+          }
+        },
+        {
+          "entity": "fresh-cell-1",
+          "source_id": "c580765d7537db1ce66257fb21b73b31b06e88f076d35f95c174a690c25dedf2",
+          "value": {
+            "bias": 1,
+            "limit": 90,
+            "opcode": "multiply"
+          }
+        },
+        {
+          "entity": "fresh-cell-10",
+          "source_id": "ca5aec3e3a819363858f6ba59874b3a0fc355c9be78dcfafc6ec2004a74513ab",
+          "value": {
+            "bias": 1,
+            "limit": 90,
+            "opcode": "multiply"
+          }
+        },
+        {
+          "entity": "fresh-cell-11",
+          "source_id": "5705ddd371fba60b54bcd5943c5b0f6ad54f0e8ec554b413cbeff456b0cb24b0",
+          "value": {
+            "bias": 2,
+            "limit": 90,
+            "opcode": "clamp"
+          }
+        },
+        {
+          "entity": "fresh-cell-2",
+          "source_id": "dab3819bbc32ba2877d20b150b3b888d8d6e8c0bd70b03ba85c933a900878b18",
+          "value": {
+            "bias": 2,
+            "limit": 90,
+            "opcode": "clamp"
+          }
+        },
+        {
+          "entity": "fresh-cell-3",
+          "source_id": "e435e11ff24515b78ff3c40ea0836b6e67b6ff10311bbe8b79d0bd1a6e55d783",
+          "value": {
+            "bias": 0,
+            "limit": 90,
+            "opcode": "affine"
+          }
+        },
+        {
+          "entity": "fresh-cell-4",
+          "source_id": "a3a67db8e137adf7ad54604a07f411b22a37e6f0b500815ab28e911c976cc53a",
+          "value": {
+            "bias": 1,
+            "limit": 90,
+            "opcode": "multiply"
+          }
+        },
+        {
+          "entity": "fresh-cell-5",
+          "source_id": "deef27e048013ce24efce084265a1a7fa08121b2e841015efd46d866b6815f08",
+          "value": {
+            "bias": 2,
+            "limit": 90,
+            "opcode": "clamp"
+          }
+        },
+        {
+          "entity": "fresh-cell-6",
+          "source_id": "73282a1bad4eca4a9487807fdfda75b17c7ea09fca19b9179574c929d6690b1e",
+          "value": {
+            "bias": 0,
+            "limit": 90,
+            "opcode": "affine"
+          }
+        },
+        {
+          "entity": "fresh-cell-7",
+          "source_id": "7d94b32f5eaf8469bc38c33629cd2554cce5431c7e08ef44e336c80bb2b332a7",
+          "value": {
+            "bias": 1,
+            "limit": 90,
+            "opcode": "multiply"
+          }
+        },
+        {
+          "entity": "fresh-cell-8",
+          "source_id": "e1236de1817d3643eeeac0f554e899592236f002a5402a1fe6ef2d6b4fac39bb",
+          "value": {
+            "bias": 2,
+            "limit": 90,
+            "opcode": "clamp"
+          }
+        },
+        {
+          "entity": "fresh-cell-9",
+          "source_id": "6f76e296ba2824490b6586b5acf12066ea7515ec6baef46c423b1078b3abeb5f",
+          "value": {
+            "bias": 0,
+            "limit": 90,
+            "opcode": "affine"
+          }
+        }
+      ]
+    },
+    "semantic": {
+      "native_digest": "b04e2b8b1990b94a49b6f1e0f518e3380b9823a7eb11741bac95f91e1941feac",
+      "rows": [
+        {
+          "entity": "fresh-cell-0",
+          "source_id": "320e09b06f8510ae769ffd8bd9d539e86803e9e7173ea568710f2c8ec53b20c2",
+          "value": {
+            "factor": 1,
+            "label": "kind-0"
+          }
+        },
+        {
+          "entity": "fresh-cell-1",
+          "source_id": "8ab7496b948b91c6df01dd243b522e137ebe917edc3df398635eae24f3f00122",
+          "value": {
+            "factor": 2,
+            "label": "kind-1"
+          }
+        },
+        {
+          "entity": "fresh-cell-10",
+          "source_id": "d778a5296a3d3745770ba35870e33c05b8079647f103bdadf0b569fda9b150a8",
+          "value": {
+            "factor": 3,
+            "label": "kind-2"
+          }
+        },
+        {
+          "entity": "fresh-cell-11",
+          "source_id": "1dd6c4a1d0e0641532f87975a1f461d5abcbf1013bdbcbae0dd52e14cd511230",
+          "value": {
+            "factor": 4,
+            "label": "kind-3"
+          }
+        },
+        {
+          "entity": "fresh-cell-2",
+          "source_id": "5c6d49fc9343492f7ac114a72b1daebecee6e0baeb21403f86df98bd63cba9c2",
+          "value": {
+            "factor": 3,
+            "label": "kind-2"
+          }
+        },
+        {
+          "entity": "fresh-cell-3",
+          "source_id": "421964d02d857321cbf45fd05e65c0fe4e67b0dddd73ab0a00b2228f681551da",
+          "value": {
+            "factor": 4,
+            "label": "kind-3"
+          }
+        },
+        {
+          "entity": "fresh-cell-4",
+          "source_id": "fd28d5fbe1713a2cc6ca03f638ba18a073138a697d6c933d8bc4c9f64900e0bb",
+          "value": {
+            "factor": 1,
+            "label": "kind-0"
+          }
+        },
+        {
+          "entity": "fresh-cell-5",
+          "source_id": "83819f62f4a85edd1fd0d6f73d6204991a6d10e69c19efbcc45fa6db3f122092",
+          "value": {
+            "factor": 2,
+            "label": "kind-1"
+          }
+        },
+        {
+          "entity": "fresh-cell-6",
+          "source_id": "c3fc9a3ca5078433eb36c3fba5037a00c8f7c544cc18bc7b2f9fa22ebf430e31",
+          "value": {
+            "factor": 3,
+            "label": "kind-2"
+          }
+        },
+        {
+          "entity": "fresh-cell-7",
+          "source_id": "88e73bb79932690a01478b897ad47af30ffd1c326348af9f6c2590bc49e86a27",
+          "value": {
+            "factor": 4,
+            "label": "kind-3"
+          }
+        },
+        {
+          "entity": "fresh-cell-8",
+          "source_id": "63363b8e8e0c9785d5196d28aec64c2d125ebc0a5241f7b971096cb5f43f30bd",
+          "value": {
+            "factor": 1,
+            "label": "kind-0"
+          }
+        },
+        {
+          "entity": "fresh-cell-9",
+          "source_id": "0587ed3e783f102690ecbeeaebe331100eb83b1f2234b85ccb3ca1b4efeac0ef",
+          "value": {
+            "factor": 2,
+            "label": "kind-1"
+          }
+        }
+      ]
+    }
+  }
+}

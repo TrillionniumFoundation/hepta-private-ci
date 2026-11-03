@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40551265189,
+  "job_id": 122356498801,
+  "group": "source-owner",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40551265189/job/122356498801",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--lib",
+      "-p",
+      "codex-hepta-memory",
+      "-p",
+      "codex-hepta-cognitive-store"
+    ],
+    "complete_workspace_test": false,
+    "exit_code": 100,
+    "final_tracked_changes": "",
+    "group": "source-owner",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 125800,
+      "sha256": "4c386a5182ba7df7c8774ac278bd6bbf0b651c95f405e12a66fe66db512c827f"
+    },
+    "mode": "test",
+    "passed": false,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 1,
+      "groups": [
+        "typed-native",
+        "source-owner"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "typed-native-and-source-owner",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "57bc21ee610ee68476e0a64a271874b88552dfc9",
+    "source_tree": "231b389722156c00b153601d5a6c136912f6c7a5",
+    "wall_seconds": 269.628533376
+  },
+  "test_summaries": [
+    "  TRY 1 FAIL [   0.204s] (───────) codex-hepta-memory cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection",
+    "  TRY 2 FAIL [   0.204s] (127/301) codex-hepta-memory cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection",
+    "     Summary [  21.489s] 301 tests run: 300 passed, 1 failed, 7 skipped",
+    "  TRY 2 FAIL [   0.204s] (127/301) codex-hepta-memory cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection"
+  ],
+  "log_representation": "Exact UTF-8 decoded provider job log; distinct from the execution.log whose identity is in the CI receipt."
+}

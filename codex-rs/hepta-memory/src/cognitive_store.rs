@@ -343,6 +343,16 @@ impl CognitiveStore {
         })
     }
 
+    /// Consume this handle and wait for its shared connection pool to close.
+    ///
+    /// This handle retains its owner open guard while the pool closes. Other
+    /// clones share the pool and can no longer use it after closure; they must
+    /// still be dropped to release their references to the open guard. Await
+    /// this method to completion before attempting recovery.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }

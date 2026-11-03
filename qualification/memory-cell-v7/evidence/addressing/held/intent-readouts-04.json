@@ -1,0 +1,1502 @@
+[
+  {
+    "id": "held-reject-zh-001",
+    "text": "交接单需要相对涨跌幅：{entity}最新读数比{since}的基准高或低百分之几？",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.baseline_fraction",
+    "normalized_text": "交接单需要相对涨跌幅:entity最新读数比date的基准高或低百分之几?",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.7156544641111425,
+      "margin": 0.43904852165504576,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.7156544641111425,
+      "margin": 0.43904852165504576,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "change",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-002",
+    "text": "把{entity}在{since}的数当作100，最新数应表示成多少？",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.baseline_fraction",
+    "normalized_text": "把entity在date的数当作100,最新数应表示成多少?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8554866238924047,
+      "margin": 0.7894434265570405,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8554866238924047,
+      "margin": 0.7894434265570405,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-003",
+    "text": "{entity}末次观测与{since}封存读数相比的倍数是多少？",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.baseline_fraction",
+    "normalized_text": "entity末次观测与date封存读数相比的倍数是多少?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.4888741805123617,
+      "margin": 0.16947924158421507,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.4888741805123617,
+      "margin": 0.16947924158421507,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-004",
+    "text": "请将{entity}从{since}到末笔记录的净变动除以起点值。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.baseline_fraction",
+    "normalized_text": "请将entity从date到末笔记录的净变动除以起点值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-005",
+    "text": "档案图的纵轴是百分比，请给出{entity}最新值相对{since}值的变化百分数。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.baseline_fraction",
+    "normalized_text": "档案图的纵轴是百分比,请给出entity最新值相对date值的变化百分数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-001",
+    "text": "The handover form asks for relative movement: what percent above or below its {since} baseline is {entity}'s newest reading?",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.baseline_fraction",
+    "normalized_text": "the handover form asks for relative movement: what percent above or below its date baseline is entity's newest reading?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-002",
+    "text": "Treat {entity}'s number at {since} as 100; what would its latest number be on that index?",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.baseline_fraction",
+    "normalized_text": "treat entity's number at date as 100; what would its latest number be on that index?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9902445604389953,
+      "margin": 0.9853181170999696,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9902445604389953,
+      "margin": 0.9853181170999696,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-003",
+    "text": "What multiple of its archived reading at {since} is {entity}'s final observation?",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.baseline_fraction",
+    "normalized_text": "what multiple of its archived reading at date is entity's final observation?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6194023623056338,
+      "margin": 0.4138952039876346,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6194023623056338,
+      "margin": 0.4138952039876346,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-004",
+    "text": "Divide {entity}'s net movement from {since} to its last entry by the starting value.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.baseline_fraction",
+    "normalized_text": "divide entity's net movement from date to its last entry by the starting value.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-005",
+    "text": "The archive chart uses percentages; express {entity}'s latest value change relative to its value at {since}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.baseline_fraction",
+    "normalized_text": "the archive chart uses percentages; express entity's latest value change relative to its value at date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.918303238606527,
+      "margin": 0.8487785545938887,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.918303238606527,
+      "margin": 0.8487785545938887,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-006",
+    "text": "巡检统计要取{entity}自{since}以来观测数字的中位数。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "巡检统计要取entity自date以来观测数字的中位数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-007",
+    "text": "请将{entity}截至{at}全部已存观测求和。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "请将entity截至date全部已存观测求和。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.4327356392737691,
+      "margin": 0.07898845309648972,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.4327356392737691,
+      "margin": 0.07898845309648972,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-008",
+    "text": "修复记录要引用{entity}最近四笔读数的算术平均数。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "修复记录要引用entity最近四笔读数的算术平均数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-009",
+    "text": "在{entity}截至{at}的观测中，数值跨度也就是最大值减最小值是多少？",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "在entity截至date的观测中,数值跨度也就是最大值减最小值是多少?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-010",
+    "text": "把{entity}自{since}后的全部读数按大小排列，取第二大的数。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "把entity自date后的全部读数按大小排列,取第二大的数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9546176973312396,
+      "margin": 0.9349902681818771,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9546176973312396,
+      "margin": 0.9349902681818771,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-006",
+    "text": "The inspection summary needs the median of {entity}'s observation values since {since}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "the inspection summary needs the median of entity's observation values since date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-007",
+    "text": "Sum all archived observations of {entity} through {at}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "sum all archived observations of entity through date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9518334784245318,
+      "margin": 0.9310203700661164,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9518334784245318,
+      "margin": 0.9310203700661164,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-008",
+    "text": "The restoration record calls for the arithmetic mean of {entity}'s last four readings.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "the restoration record calls for the arithmetic mean of entity's last four readings.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-009",
+    "text": "Among {entity}'s observations through {at}, what is the range, maximum minus minimum?",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "among entity's observations through date, what is the range, maximum minus minimum?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:unregistered-arithmetic",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-010",
+    "text": "Order all readings of {entity} since {since} by value and select the second largest.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.multi_observation_statistics",
+    "normalized_text": "order all readings of entity since date by value and select the second largest.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9958179183606454,
+      "margin": 0.9933534170663644,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9958179183606454,
+      "margin": 0.9933534170663644,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-011",
+    "text": "修复旧交接单时，需要{entity}在{at}那天的全份属性卡。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retroactive_settings",
+    "normalized_text": "修复旧交接单时,需要entity在date那天的全份属性卡。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9782360792700324,
+      "margin": 0.9625211936083995,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9782360792700324,
+      "margin": 0.9625211936083995,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-012",
+    "text": "请查阅{entity}截至{at}已登记的整组参数值。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retroactive_settings",
+    "normalized_text": "请查阅entity截至date已登记的整组参数值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6079803102963481,
+      "margin": 0.45801481478412587,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6079803102963481,
+      "margin": 0.45801481478412587,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-013",
+    "text": "我在追溯配置变更，取{entity}在{at}时仍在使用的属性版本。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retroactive_settings",
+    "normalized_text": "我在追溯配置变更,取entity在date时仍在使用的属性版本。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9062973535752713,
+      "margin": 0.8598121664694451,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9062973535752713,
+      "margin": 0.8598121664694451,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-014",
+    "text": "把{entity}的参数档案回拨到{at}，展示那个版本的完整内容。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retroactive_settings",
+    "normalized_text": "把entity的参数档案回拨到date,展示那个版本的完整内容。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7576803164661924,
+      "margin": 0.5781616899024912,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7576803164661924,
+      "margin": 0.5781616899024912,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-015",
+    "text": "{entity}当前属性之前的旧档中，截至{at}最新的一版是什么？",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retroactive_settings",
+    "normalized_text": "entity当前属性之前的旧档中,截至date最新的一版是什么?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8131832737017254,
+      "margin": 0.7233209919362401,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8131832737017254,
+      "margin": 0.7233209919362401,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-011",
+    "text": "Restoring the old handover sheet requires {entity}'s complete attribute card from {at}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retroactive_settings",
+    "normalized_text": "restoring the old handover sheet requires entity's complete attribute card from date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9838805520891349,
+      "margin": 0.9758713405029439,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9838805520891349,
+      "margin": 0.9758713405029439,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-012",
+    "text": "Inspect the full group of parameter values registered for {entity} by {at}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retroactive_settings",
+    "normalized_text": "inspect the full group of parameter values registered for entity by date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7942497544004852,
+      "margin": 0.7331059425989079,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7942497544004852,
+      "margin": 0.7331059425989079,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-013",
+    "text": "I am tracing configuration revisions; fetch the property version in use for {entity} at {at}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retroactive_settings",
+    "normalized_text": "i am tracing configuration revisions; fetch the property version in use for entity at date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.917933782226963,
+      "margin": 0.851119531449811,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.917933782226963,
+      "margin": 0.851119531449811,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-014",
+    "text": "Roll {entity}'s parameter archive back to {at} and show that version in full.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retroactive_settings",
+    "normalized_text": "roll entity's parameter archive back to date and show that version in full.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9446159957137475,
+      "margin": 0.9097797463903601,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9446159957137475,
+      "margin": 0.9097797463903601,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-015",
+    "text": "In {entity}'s older attribute archive, what was the newest version available through {at}?",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retroactive_settings",
+    "normalized_text": "in entity's older attribute archive, what was the newest version available through date?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.90843311828623,
+      "margin": 0.8507163480621043,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.90843311828623,
+      "margin": 0.8507163480621043,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-016",
+    "text": "旧维修手册对应{at}，请取{entity}那时的已存规则正文。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retired_program",
+    "normalized_text": "旧维修手册对应date,请取entity那时的已存规则正文。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8184816356783835,
+      "margin": 0.7591915111719079,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8184816356783835,
+      "margin": 0.7591915111719079,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-017",
+    "text": "查阅{entity}在{at}封存版本里的处理脚本。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retired_program",
+    "normalized_text": "查阅entity在date封存版本里的处理脚本。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5974678205807861,
+      "margin": 0.2743080188388708,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5974678205807861,
+      "margin": 0.2743080188388708,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-018",
+    "text": "程序复盘需要{entity}截至{at}绑定的步骤序列。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retired_program",
+    "normalized_text": "程序复盘需要entity截至date绑定的步骤序列。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6925349260761062,
+      "margin": 0.42143012964591503,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6925349260761062,
+      "margin": 0.42143012964591503,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-019",
+    "text": "请展示{entity}历史程序档案在{at}这个日期的内容。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retired_program",
+    "normalized_text": "请展示entity历史程序档案在date这个日期的内容。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:historical-property-or-program"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:historical-property-or-program",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-020",
+    "text": "把{entity}的规则记录退回{at}时的版本并读出那份定义。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.retired_program",
+    "normalized_text": "把entity的规则记录退回date时的版本并读出那份定义。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7462855467924243,
+      "margin": 0.5963468935467963,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7462855467924243,
+      "margin": 0.5963468935467963,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-016",
+    "text": "The old repair manual is dated {at}; retrieve the rule text held for {entity} then.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retired_program",
+    "normalized_text": "the old repair manual is dated date; retrieve the rule text held for entity then.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7487262399166025,
+      "margin": 0.5436805446628952,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7487262399166025,
+      "margin": 0.5436805446628952,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-017",
+    "text": "Inspect the processing script in {entity}'s archive version sealed at {at}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retired_program",
+    "normalized_text": "inspect the processing script in entity's archive version sealed at date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5039852075413755,
+      "margin": 0.133012624244832,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5039852075413755,
+      "margin": 0.133012624244832,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-018",
+    "text": "The program review needs the step sequence attached to {entity} through {at}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retired_program",
+    "normalized_text": "the program review needs the step sequence attached to entity through date.",
+    "hypothesis": {
+      "raw_operation": "procedure",
+      "score": 0.5787596838938385,
+      "margin": 0.27676216526575387,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "procedure",
+      "score": 0.5787596838938385,
+      "margin": 0.27676216526575387,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-019",
+    "text": "Show the contents of {entity}'s historical program file at the date {at}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retired_program",
+    "normalized_text": "show the contents of entity's historical program file at the date date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:historical-property-or-program"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:historical-property-or-program",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-020",
+    "text": "Rewind {entity}'s rule record to its {at} version and read that definition.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.retired_program",
+    "normalized_text": "rewind entity's rule record to its date version and read that definition.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8451303844645326,
+      "margin": 0.7246773920800855,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8451303844645326,
+      "margin": 0.7246773920800855,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-021",
+    "text": "下一班尚未上报，请根据已存观测推测{entity}下一班的读数。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.projected_next",
+    "normalized_text": "下一班尚未上报,请根据已存观测推测entity下一班的读数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5890269547696512,
+      "margin": 0.25568285851657835,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5890269547696512,
+      "margin": 0.25568285851657835,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-022",
+    "text": "给{entity}做一笔未来观测估计，时间定在七天以后。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.projected_next",
+    "normalized_text": "给entity做一笔未来观测估计,时间定在七天以后。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-023",
+    "text": "计划表需填{entity}下一个周期预计出现的数值。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.projected_next",
+    "normalized_text": "计划表需填entity下一个周期预计出现的数值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.963893515548908,
+      "margin": 0.9316495026722569,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.963893515548908,
+      "margin": 0.9316495026722569,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-024",
+    "text": "假定{entity}近期走势继续，推算再过两次记录后的数字。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.projected_next",
+    "normalized_text": "假定entity近期走势继续,推算再过两次记录后的数字。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:counterfactual"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:counterfactual",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-025",
+    "text": "请用现有档案估计{entity}明年同期的读数。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.projected_next",
+    "normalized_text": "请用现有档案估计entity明年同期的读数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-021",
+    "text": "The next shift has not reported; infer {entity}'s next-shift reading from the saved observations.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.projected_next",
+    "normalized_text": "the next shift has not reported; infer entity's next-shift reading from the saved observations.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7468361374416923,
+      "margin": 0.5082559093394646,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7468361374416923,
+      "margin": 0.5082559093394646,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-022",
+    "text": "Estimate a future observation for {entity} seven days from now.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.projected_next",
+    "normalized_text": "estimate a future observation for entity seven days from now.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-023",
+    "text": "The planning sheet needs the number expected for {entity} in the next cycle.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.projected_next",
+    "normalized_text": "the planning sheet needs the number expected for entity in the next cycle.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9970562020865582,
+      "margin": 0.9957558569381707,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9970562020865582,
+      "margin": 0.9957558569381707,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-024",
+    "text": "Assuming {entity}'s recent trajectory continues, project its value two records ahead.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.projected_next",
+    "normalized_text": "assuming entity's recent trajectory continues, project its value two records ahead.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:counterfactual"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:counterfactual",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-025",
+    "text": "Use the existing archive to estimate {entity}'s reading at this time next year.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.projected_next",
+    "normalized_text": "use the existing archive to estimate entity's reading at this time next year.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-026",
+    "text": "故障复盘需要判断{entity}末次读数发生变动的起因。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.driver_inference",
+    "normalized_text": "故障复盘需要判断entity末次读数发生变动的起因。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5270554559432339,
+      "margin": 0.13722062715523042,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5270554559432339,
+      "margin": 0.13722062715523042,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-027",
+    "text": "请说明导致{entity}当前存档数字的主要原因。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.driver_inference",
+    "normalized_text": "请说明导致entity当前存档数字的主要原因。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-028",
+    "text": "巡检负责人想知道{entity}自{since}以来增减背后的驱动因素。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.driver_inference",
+    "normalized_text": "巡检负责人想知道entity自date以来增减背后的驱动因素。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8030602834253636,
+      "margin": 0.6161552833836837,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8030602834253636,
+      "margin": 0.6161552833836837,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-029",
+    "text": "依据已有观测，推断{entity}最近数值异常的成因。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.driver_inference",
+    "normalized_text": "依据已有观测,推断entity最近数值异常的成因。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:prediction-or-missing-data",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-zh-030",
+    "text": "{entity}末次数字为何与早先水平不同？给出原因分析。",
+    "operation": "reject",
+    "language": "zh",
+    "family": "held.driver_inference",
+    "normalized_text": "entity末次数字为何与早先水平不同?给出原因分析。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-026",
+    "text": "The incident review needs the cause of the movement in {entity}'s final reading.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.driver_inference",
+    "normalized_text": "the incident review needs the cause of the movement in entity's final reading.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-027",
+    "text": "Explain the main reason behind {entity}'s currently archived number.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.driver_inference",
+    "normalized_text": "explain the main reason behind entity's currently archived number.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-028",
+    "text": "The inspection lead wants the factors driving {entity}'s increase or decrease since {since}.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.driver_inference",
+    "normalized_text": "the inspection lead wants the factors driving entity's increase or decrease since date.",
+    "hypothesis": {
+      "raw_operation": "change",
+      "score": 0.7168304548526818,
+      "margin": 0.4397761203136672,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "change",
+      "score": 0.7168304548526818,
+      "margin": 0.4397761203136672,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "change",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-029",
+    "text": "Infer the cause of {entity}'s recent unusual value from the available observations.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.driver_inference",
+    "normalized_text": "infer the cause of entity's recent unusual value from the available observations.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-reject-en-030",
+    "text": "Why is {entity}'s final figure different from its earlier level? Provide a causal analysis.",
+    "operation": "reject",
+    "language": "en",
+    "family": "held.driver_inference",
+    "normalized_text": "why is entity's final figure different from its earlier level? provide a causal analysis.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:explanation-or-external",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  }
+]

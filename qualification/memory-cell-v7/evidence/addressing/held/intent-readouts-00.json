@@ -1,0 +1,1502 @@
+[
+  {
+    "id": "held-current-zh-001",
+    "text": "交接班单中{entity}这一格，填它末条记录上的数字。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "交接班单中entity这一格,填它末条记录上的数字。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.4500212169406261,
+      "margin": 0.10387370303605731,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.4500212169406261,
+      "margin": 0.10387370303605731,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-002",
+    "text": "仪器档案里的{entity}，最后留下的读数是多少？",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "仪器档案里的entity,最后留下的读数是多少?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.4544941863868324,
+      "margin": 0.1411043985822868,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.4544941863868324,
+      "margin": 0.1411043985822868,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-003",
+    "text": "我要抄录{entity}最晚存入的那个观测数。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "我要抄录entity最晚存入的那个观测数。",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.4689892294512519,
+      "margin": 0.07364657521250112,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.4689892294512519,
+      "margin": 0.07364657521250112,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-004",
+    "text": "巡检员离开前需要{entity}最近报存的数值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "巡检员离开前需要entity最近报存的数值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5031204329822359,
+      "margin": 0.19234061494081123,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5031204329822359,
+      "margin": 0.19234061494081123,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-005",
+    "text": "请从{entity}已有的数据条目中取时间最靠后的值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "请从entity已有的数据条目中取时间最靠后的值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.4551018731309934,
+      "margin": 0.25037427207155294,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.4551018731309934,
+      "margin": 0.25037427207155294,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-006",
+    "text": "{entity}最近有存档的数字，报一个就好。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "entity最近有存档的数字,报一个就好。",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6281242698040068,
+      "margin": 0.28747737700455206,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6281242698040068,
+      "margin": 0.28747737700455206,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-007",
+    "text": "展柜标签待补，所需内容是{entity}最新留档的读数。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "展柜标签待补,所需内容是entity最新留档的读数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.607756041475748,
+      "margin": 0.26902486357611155,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.607756041475748,
+      "margin": 0.26902486357611155,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-008",
+    "text": "在{entity}的观测簿末尾，数值那格写着多少？",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "在entity的观测簿末尾,数值那格写着多少?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5287285025597169,
+      "margin": 0.19824351232117415,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5287285025597169,
+      "margin": 0.19824351232117415,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-009",
+    "text": "现存日志中{entity}的末笔数是多少？",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "现存日志中entity的末笔数是多少?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.5343152432929189,
+      "margin": 0.19056668405342841,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.5343152432929189,
+      "margin": 0.19056668405342841,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-010",
+    "text": "为移交记录取值：{entity}最近一次已经保存的观测数字。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "为移交记录取值:entity最近一次已经保存的观测数字。",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.8436179947010576,
+      "margin": 0.7559833177354943,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.8436179947010576,
+      "margin": 0.7559833177354943,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-011",
+    "text": "请把{entity}最后接收到的数值读给我。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "请把entity最后接收到的数值读给我。",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.8388200624564157,
+      "margin": 0.7368375359116621,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.8388200624564157,
+      "margin": 0.7368375359116621,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-012",
+    "text": "维修单要引用{entity}最近入库的一次读数。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "维修单要引用entity最近入库的一次读数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7697944378697863,
+      "margin": 0.6227269693611791,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7697944378697863,
+      "margin": 0.6227269693611791,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-013",
+    "text": "{entity}数值档案中最新的一项，请取它的值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "entity数值档案中最新的一项,请取它的值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5313609228824394,
+      "margin": 0.09506194751548636,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5313609228824394,
+      "margin": 0.09506194751548636,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-014",
+    "text": "现在查{entity}的观测记录，最靠近末尾的那条数字是什么？",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "现在查entity的观测记录,最靠近末尾的那条数字是什么?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.7577641887528455,
+      "margin": 0.5818190428358677,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.7577641887528455,
+      "margin": 0.5818190428358677,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-015",
+    "text": "给值班人员报一下{entity}现有的末次记录数。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "给值班人员报一下entity现有的末次记录数。",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.5892931119889763,
+      "margin": 0.361448389900472,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.5892931119889763,
+      "margin": 0.361448389900472,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-016",
+    "text": "请查看{entity}最后一次存档时留下了什么数值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "请查看entity最后一次存档时留下了什么数值。",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.7444861990853695,
+      "margin": 0.5988999260534686,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.7444861990853695,
+      "margin": 0.5988999260534686,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-017",
+    "text": "我在抄日志，{entity}当前最新的已存数字是多少？",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "我在抄日志,entity当前最新的已存数字是多少?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6559139310157954,
+      "margin": 0.42296269025515193,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6559139310157954,
+      "margin": 0.42296269025515193,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-018",
+    "text": "取{entity}最新那一笔观测的原始数值。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "取entity最新那一笔观测的原始数值。",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6478333157125998,
+      "margin": 0.3756542590500563,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6478333157125998,
+      "margin": 0.3756542590500563,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-019",
+    "text": "入库回执需要{entity}末次保存的读数。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "入库回执需要entity末次保存的读数。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.633658483685347,
+      "margin": 0.493696156628756,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.633658483685347,
+      "margin": 0.493696156628756,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-zh-020",
+    "text": "{entity}最新一项记录中的数字，麻烦读一下。",
+    "operation": "current",
+    "language": "zh",
+    "family": "held.handoff_number",
+    "normalized_text": "entity最新一项记录中的数字,麻烦读一下。",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.8906961304429644,
+      "margin": 0.8180459229038548,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.8906961304429644,
+      "margin": 0.8180459229038548,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-001",
+    "text": "Put {entity}'s last filed number in the shift handover box.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "put entity's last filed number in the shift handover box.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7951241168979971,
+      "margin": 0.6674267238930081,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7951241168979971,
+      "margin": 0.6674267238930081,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-002",
+    "text": "In the instrument archive, what is the final reading filed under {entity}?",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "in the instrument archive, what is the final reading filed under entity?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6849575944059303,
+      "margin": 0.46141212300481904,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6849575944059303,
+      "margin": 0.46141212300481904,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-003",
+    "text": "I am transcribing the value from {entity}'s newest saved observation.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "i am transcribing the value from entity's newest saved observation.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.7325571131252496,
+      "margin": 0.5796159383300601,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.7325571131252496,
+      "margin": 0.5796159383300601,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-004",
+    "text": "The caretaker needs the most recently lodged number for {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "the caretaker needs the most recently lodged number for entity.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.7448376675714723,
+      "margin": 0.5386104395997762,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.7448376675714723,
+      "margin": 0.5386104395997762,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-005",
+    "text": "Select the value from the chronologically last data entry belonging to {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "select the value from the chronologically last data entry belonging to entity.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.47660208330162235,
+      "margin": 0.14364985671782032,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.47660208330162235,
+      "margin": 0.14364985671782032,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-006",
+    "text": "What is the freshest archived figure for {entity}?",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "what is the freshest archived figure for entity?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.743507287251882,
+      "margin": 0.5097909747623373,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.743507287251882,
+      "margin": 0.5097909747623373,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-007",
+    "text": "The exhibit label needs the number in {entity}'s newest log entry.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "the exhibit label needs the number in entity's newest log entry.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.7468228338209434,
+      "margin": 0.5140595624048172,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.7468228338209434,
+      "margin": 0.5140595624048172,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-008",
+    "text": "At the end of {entity}'s observation ledger, what does the value field say?",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "at the end of entity's observation ledger, what does the value field say?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.44881979191798943,
+      "margin": 0.1145288486167717,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.44881979191798943,
+      "margin": 0.1145288486167717,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-009",
+    "text": "Read the number from the final saved item in {entity}'s log.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "read the number from the final saved item in entity's log.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.8416709159876002,
+      "margin": 0.7540652571082076,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.8416709159876002,
+      "margin": 0.7540652571082076,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-010",
+    "text": "For the handover note, supply {entity}'s most recently stored observation value.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "for the handover note, supply entity's most recently stored observation value.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.8671260330394157,
+      "margin": 0.75809684855491,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.8671260330394157,
+      "margin": 0.75809684855491,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-011",
+    "text": "What numeric value was last received and saved for {entity}?",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "what numeric value was last received and saved for entity?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6890174268655878,
+      "margin": 0.5114559497497769,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6890174268655878,
+      "margin": 0.5114559497497769,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-012",
+    "text": "The maintenance ticket needs {entity}'s latest archived measurement.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "the maintenance ticket needs entity's latest archived measurement.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5063172845006833,
+      "margin": 0.16863666427337293,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5063172845006833,
+      "margin": 0.16863666427337293,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-013",
+    "text": "Take the value from the newest item in the numeric record for {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "take the value from the newest item in the numeric record for entity.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.5598606767621251,
+      "margin": 0.19387658174070577,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.5598606767621251,
+      "margin": 0.19387658174070577,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-014",
+    "text": "In the observations already recorded for {entity}, what is the last number?",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "in the observations already recorded for entity, what is the last number?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.8974248246666486,
+      "margin": 0.8232149783863183,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.8974248246666486,
+      "margin": 0.8232149783863183,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-015",
+    "text": "Tell the duty officer the final figure currently logged under {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "tell the duty officer the final figure currently logged under entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7493226679444397,
+      "margin": 0.5545716729784748,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7493226679444397,
+      "margin": 0.5545716729784748,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-016",
+    "text": "What number did {entity}'s most recent archive entry preserve?",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "what number did entity's most recent archive entry preserve?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.9226682994560349,
+      "margin": 0.8788482129206732,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.9226682994560349,
+      "margin": 0.8788482129206732,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-017",
+    "text": "I am copying the log; which saved figure is the newest for {entity}?",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "i am copying the log; which saved figure is the newest for entity?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.7477853358522071,
+      "margin": 0.5400394334412282,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.7477853358522071,
+      "margin": 0.5400394334412282,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-018",
+    "text": "Read out the raw number in the latest observation of {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "read out the raw number in the latest observation of entity.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.7086557297322351,
+      "margin": 0.4388891308321047,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.7086557297322351,
+      "margin": 0.4388891308321047,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-019",
+    "text": "The intake receipt calls for {entity}'s most recently saved reading.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "the intake receipt calls for entity's most recently saved reading.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.8256544399661744,
+      "margin": 0.7285489267501375,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.8256544399661744,
+      "margin": 0.7285489267501375,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-current-en-020",
+    "text": "Please read the number contained in the last recorded item for {entity}.",
+    "operation": "current",
+    "language": "en",
+    "family": "held.handoff_number",
+    "normalized_text": "please read the number contained in the last recorded item for entity.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.9185759678011105,
+      "margin": 0.8750725478748986,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.9185759678011105,
+      "margin": 0.8750725478748986,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "current",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-001",
+    "text": "把档案封存点设在{at}，{entity}封存前含当日的末笔数是多少？",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "把档案封存点设在date,entity封存前含当日的末笔数是多少?",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.7411948822654776,
+      "margin": 0.5795667351263601,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.7411948822654776,
+      "margin": 0.5795667351263601,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "history",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-002",
+    "text": "维修追溯要用{entity}截至{at}最后留档的观测数字。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "维修追溯要用entity截至date最后留档的观测数字。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.47286813912196995,
+      "margin": 0.14855877769975695,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.47286813912196995,
+      "margin": 0.14855877769975695,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-003",
+    "text": "请填{entity}在{at}截止时的值；若当日无记录，沿用之前最近的一次。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "请填entity在date截止时的值;若当日无记录,沿用之前最近的一次。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.7001108073559001,
+      "margin": 0.5267914962092907,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.7001108073559001,
+      "margin": 0.5267914962092907,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-004",
+    "text": "复原{at}的交接单时，{entity}数值栏应填当时已有的哪个数？",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "复原date的交接单时,entity数值栏应填当时已有的哪个数?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5702766893786647,
+      "margin": 0.24335363397556375,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5702766893786647,
+      "margin": 0.24335363397556375,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-005",
+    "text": "将{at}之后的条目暂时排除，读取{entity}余下末条的数值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "将date之后的条目暂时排除,读取entity余下末条的数值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5933467990562878,
+      "margin": 0.2697933440797829,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5933467990562878,
+      "margin": 0.2697933440797829,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-006",
+    "text": "{entity}截至{at}的存档里，最后一次观测报了多少？",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "entity截至date的存档里,最后一次观测报了多少?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6434845690810582,
+      "margin": 0.3981099017986949,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6434845690810582,
+      "margin": 0.3981099017986949,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-007",
+    "text": "请用不晚于{at}的资料确定{entity}当时的末次读数。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "请用不晚于date的资料确定entity当时的末次读数。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.8383931494957058,
+      "margin": 0.75790001057362,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.8383931494957058,
+      "margin": 0.75790001057362,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "history",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-008",
+    "text": "我在复核一份日期为{at}的底稿，需要{entity}到那天为止的最新数字。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "我在复核一份日期为date的底稿,需要entity到那天为止的最新数字。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.6270576544291846,
+      "margin": 0.3203318253956139,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.6270576544291846,
+      "margin": 0.3203318253956139,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-009",
+    "text": "取{entity}在{at}这个档案截点上的记录值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "取entity在date这个档案截点上的记录值。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.6608185800302141,
+      "margin": 0.4223784096557629,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.6608185800302141,
+      "margin": 0.4223784096557629,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-010",
+    "text": "检索{entity}时把最晚日期卡在{at}，给出最后可用的数字。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "检索entity时把最晚日期卡在date,给出最后可用的数字。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.5877362830161313,
+      "margin": 0.30428820762467856,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.5877362830161313,
+      "margin": 0.30428820762467856,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-011",
+    "text": "{at}当日结束前，{entity}已保存的最终读数是多少？",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "date当日结束前,entity已保存的最终读数是多少?",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.6955700680897813,
+      "margin": 0.5265065767310255,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.6955700680897813,
+      "margin": 0.5265065767310255,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-012",
+    "text": "旧值班簿缺一项：{entity}截至{at}最后记载的数值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "旧值班簿缺一项:entity截至date最后记载的数值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.40417403386719286,
+      "margin": 0.010073473022367163,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.40417403386719286,
+      "margin": 0.010073473022367163,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-013",
+    "text": "请读取{entity}在{at}时已经入档的最后一项数字。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "请读取entity在date时已经入档的最后一项数字。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.507997257187259,
+      "margin": 0.13155310172939372,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.507997257187259,
+      "margin": 0.13155310172939372,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-014",
+    "text": "从{entity}观测档案中，取日期不超过{at}的最近值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "从entity观测档案中,取日期不超过date的最近值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.49893786585360655,
+      "margin": 0.07805680982862923,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.49893786585360655,
+      "margin": 0.07805680982862923,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-015",
+    "text": "在{at}封存的那份视图中，{entity}最新可见的读数是什么？",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "在date封存的那份视图中,entity最新可见的读数是什么?",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.5699367927733815,
+      "margin": 0.2727108794636311,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.5699367927733815,
+      "margin": 0.2727108794636311,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-016",
+    "text": "我要{entity}到{at}为止最末一笔记录里的数。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "我要entity到date为止最末一笔记录里的数。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.5401927105896013,
+      "margin": 0.2461342565757304,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.5401927105896013,
+      "margin": 0.2461342565757304,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-017",
+    "text": "追溯至{at}，{entity}当时的有效记录值是多少？采用那时已有的最新条目。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "追溯至date,entity当时的有效记录值是多少?采用那时已有的最新条目。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.6082173605658256,
+      "margin": 0.3775435921616344,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.6082173605658256,
+      "margin": 0.3775435921616344,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-018",
+    "text": "请按{at}的档案边界查{entity}，返回边界内时间最后的数值。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "请按date的档案边界查entity,返回边界内时间最后的数值。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.7285400462246349,
+      "margin": 0.592973207865748,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.7285400462246349,
+      "margin": 0.592973207865748,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "history",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-019",
+    "text": "如果只看已于{at}及以前存档的观测，{entity}最后一个数字是多少？",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "如果只看已于date及以前存档的观测,entity最后一个数字是多少?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:counterfactual"
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 1.0,
+      "margin": 1.0,
+      "score_kind": "explicit registered-capability boundary",
+      "capability_reason": "unregistered-capability:counterfactual",
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-zh-020",
+    "text": "填写{entity}的旧档数值，以{at}为截止日取最近一笔。",
+    "operation": "history",
+    "language": "zh",
+    "family": "held.archive_freeze",
+    "normalized_text": "填写entity的旧档数值,以date为截止日取最近一笔。",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.4943415567947486,
+      "margin": 0.08015637772970796,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.4943415567947486,
+      "margin": 0.08015637772970796,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  }
+]

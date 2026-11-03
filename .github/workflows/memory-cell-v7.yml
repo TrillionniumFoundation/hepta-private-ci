@@ -1,0 +1,111 @@
+name: Memory cell V7 owner integration
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v7-owner-integration-20261027
+    paths:
+      - .github/workflows/memory-cell-v7.yml
+      - qualification/memory-cell-v7/VERIFY_REQUEST.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      groups: ${{ steps.request.outputs.groups }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - id: request
+        run: python3 qualification/memory-cell-v7/ci_verify.py plan
+
+  scoped-rust:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        group: ${{ fromJSON(needs.plan.outputs.groups) }}
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v7-target
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.131
+      - uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+          restore-keys: |
+            memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v7-rust-1.95-${{ matrix.group }}-
+      - name: Prepare pinned real training and language runtime
+        if: matrix.group == 'daemon'
+        run: |
+          python3 qualification/memory-cell-v7/prepare_language_ci.py "$RUNNER_TEMP/memory-v7-language"
+          cat "$RUNNER_TEMP/memory-v7-language/github.env" >> "$GITHUB_ENV"
+      - name: Test actual product dependency graph
+        env:
+          MEMORY_TEST_GROUP: ${{ matrix.group }}
+        run: python3 qualification/memory-cell-v7/ci_verify.py test
+      - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        if: always()
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v7-rust-1.95-${{ matrix.group }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always() && matrix.group == 'daemon'
+        with:
+          name: memory-v7-runtime-preparation-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-v7-language/PREPARATION.json
+          if-no-files-found: warn
+          retention-days: 30
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v7-${{ matrix.group }}-${{ github.sha }}
+          path: memory-v7-ci-output/
+          if-no-files-found: error
+          retention-days: 30
+
+  bazel-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Refresh and verify dependency lock
+        run: python3 qualification/memory-cell-v7/ci_verify.py lock
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v7-bazel-lock-${{ github.sha }}
+          path: memory-v7-ci-output/
+          if-no-files-found: error
+          retention-days: 30

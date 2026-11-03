@@ -1,0 +1,80 @@
+{
+  "files": {
+    "co2.json": {
+      "bytes": 14378,
+      "sha256": "6ada62f6c17586fe0269e02fed21193bff34b6bee4947d27f0e93ce706ad92bc"
+    },
+    "co2_mm_mlo.txt": {
+      "bytes": 59678,
+      "sha256": "0ce4e7749217b4af2cca8e0bdf263856ad59b0a2946d4e98c7b22ccfbff21cad"
+    },
+    "gistemp_global.csv": {
+      "bytes": 12886,
+      "sha256": "4c64eda288bce32b8d76926278f346ecea1e53506df8ee72a3d5accb0657c416"
+    },
+    "sunspots.json": {
+      "bytes": 50506,
+      "sha256": "dda81af2dd257f5370f2565e3abf5b7e0ec125b228cf4e2604fb095058d52884"
+    },
+    "sunspots_monthly_v2.txt": {
+      "bytes": 126654,
+      "sha256": "9c1ffab9af28ac25a63eb5e4ddf64ca9bbe6f5d9c825525808419eb751dbad5d"
+    },
+    "temperature.json": {
+      "bytes": 26218,
+      "sha256": "f269ca1a4c61c8d5de5567d589bef70c17bb347749198d45eae6ab58f6c1616e"
+    }
+  },
+  "retrieved_at_utc": "2026-10-26T13:53:15.340878+00:00",
+  "schema": "memory-cell-v3.primary-numeric-sources.v1",
+  "sources": {
+    "co2": {
+      "caveat": "The combined Scripps/NOAA record includes interpolated months; late-2022 to mid-2023 observations used Maunakea. This experiment reproduces published values, not independent measurement truth.",
+      "columns": 12,
+      "credit": "Xin Lan, NOAA/GML, and Ralph Keeling, Scripps Institution of Oceanography",
+      "filename": "co2_mm_mlo.txt",
+      "first_year": 1959,
+      "last_year": 2025,
+      "license_note": "NOAA public scientific data; retain NOAA and Scripps credits and source-header use instructions.",
+      "matrix_file": "co2.json",
+      "observations": 804,
+      "page": "https://gml.noaa.gov/ccgg/trends/data.html",
+      "rows": 67,
+      "scale": 100,
+      "unit": "ppm",
+      "url": "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt"
+    },
+    "sunspots": {
+      "caveat": "SILSO version 2.0 includes the publisher's historical revisions and February 1824 interpolation. The frozen snapshot, not a later live file, controls reproduction.",
+      "columns": 12,
+      "credit": "WDC-SILSO, Royal Observatory of Belgium, Brussels, DOI: 10.24414/qnza-ac80",
+      "filename": "sunspots_monthly_v2.txt",
+      "first_year": 1749,
+      "last_year": 2025,
+      "license_note": "CC BY-NC 4.0; research data asset only, not relicensed as repository code. https://creativecommons.org/licenses/by-nc/4.0/",
+      "matrix_file": "sunspots.json",
+      "observations": 3324,
+      "page": "https://www.sidc.be/SILSO/infosnmtot",
+      "rows": 277,
+      "scale": 10,
+      "unit": "monthly mean sunspot number",
+      "url": "https://www.sidc.be/SILSO/DATA/SN_m_tot_V2.0.txt"
+    },
+    "temperature": {
+      "caveat": "Published anomalies, not absolute temperatures. No forecasting or climate inference is claimed by this memory experiment.",
+      "columns": 12,
+      "credit": "GISTEMP Team, 2026, GISS Surface Temperature Analysis version 4, NASA Goddard Institute for Space Studies",
+      "filename": "gistemp_global.csv",
+      "first_year": 1880,
+      "last_year": 2025,
+      "license_note": "NASA public scientific data; retain GISTEMP citation. A source snapshot can later be revised by its publisher.",
+      "matrix_file": "temperature.json",
+      "observations": 1752,
+      "page": "https://data.giss.nasa.gov/gistemp/",
+      "rows": 146,
+      "scale": 100,
+      "unit": "degrees Celsius anomaly",
+      "url": "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts%2BdSST.csv"
+    }
+  }
+}

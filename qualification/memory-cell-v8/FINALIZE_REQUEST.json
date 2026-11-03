@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.memory.v8.finalize-request.v1",
+  "tested_commit": "75256635aae979f34b4ec830764b7dbfa24c389d",
+  "format_base": "0b0b041b6dd8121050c335cb3be73bb1d8cb7904",
+  "packages": [
+    "codex-hepta-cognitive-types",
+    "codex-hepta-neuron",
+    "codex-hepta-memory",
+    "codex-hepta-cognitive-store",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-agent-protocol",
+    "codex-hepta-agentd",
+    "codex-hepta-context-compiler",
+    "codex-hepta-infer-worker-host",
+    "codex-hepta-plasticity"
+  ],
+  "verification_receipt": {
+    "path": "qualification/memory-cell-v8/evidence/ci/run-03/receipt.json",
+    "bytes": 36593,
+    "sha256": "aa4d3bd1a35114b941ff8abecbb33097938bc0da3a8fca985f2826799f8f8b16"
+  }
+}

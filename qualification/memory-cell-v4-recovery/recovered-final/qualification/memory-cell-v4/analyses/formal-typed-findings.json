@@ -1,0 +1,2463 @@
+{
+  "arms": {
+    "full_rank": {
+      "parameter": {
+        "event_procedure_chain": {
+          "absolute_tolerance": 0.005,
+          "accepted_queries": 640,
+          "correct_provenance_all_seeds": true,
+          "fields_used": [
+            "quantity",
+            "unit_price_pence"
+          ],
+          "literal_float64_exact_count": 10,
+          "literal_float64_exact_fraction": 0.015625,
+          "mae": 2.7964103255229134e-12,
+          "max_absolute_error": 4.3655745685100555e-11,
+          "mse": 1.3269017348488313e-23,
+          "queries": 640,
+          "requested_queries": 640,
+          "tests_text_composition": false,
+          "within_absolute_tolerance_count": 640,
+          "within_absolute_tolerance_fraction": 1.0
+        },
+        "events": {
+          "accepted": 1600,
+          "exact": 1600,
+          "exact_fraction": 1.0,
+          "fields": {
+            "country": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "invoice_no": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "quantity": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_mae": 0.0,
+              "accepted_mse": 0.0,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "stock_code": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "unit_price_pence": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_mae": 0.0,
+              "accepted_mse": 0.0,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            }
+          },
+          "queries": 1600
+        }
+      },
+      "residual_exact": {
+        "event_procedure_chain": {
+          "absolute_tolerance": 0.005,
+          "accepted_queries": 640,
+          "correct_provenance_all_seeds": true,
+          "fields_used": [
+            "quantity",
+            "unit_price_pence"
+          ],
+          "literal_float64_exact_count": 10,
+          "literal_float64_exact_fraction": 0.015625,
+          "mae": 2.7964103255229134e-12,
+          "max_absolute_error": 4.3655745685100555e-11,
+          "mse": 1.3269017348488313e-23,
+          "queries": 640,
+          "requested_queries": 640,
+          "tests_text_composition": false,
+          "within_absolute_tolerance_count": 640,
+          "within_absolute_tolerance_fraction": 1.0
+        },
+        "events": {
+          "accepted": 1600,
+          "exact": 1600,
+          "exact_fraction": 1.0,
+          "fields": {
+            "country": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "invoice_no": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "quantity": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_mae": 0.0,
+              "accepted_mse": 0.0,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "stock_code": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "unit_price_pence": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_mae": 0.0,
+              "accepted_mse": 0.0,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            }
+          },
+          "queries": 1600
+        }
+      }
+    },
+    "rank_2": {
+      "parameter": {
+        "event_procedure_chain": {
+          "absolute_tolerance": 0.005,
+          "accepted_queries": 640,
+          "correct_provenance_all_seeds": true,
+          "fields_used": [
+            "quantity",
+            "unit_price_pence"
+          ],
+          "literal_float64_exact_count": 10,
+          "literal_float64_exact_fraction": 0.015625,
+          "mae": 2.7964103255229134e-12,
+          "max_absolute_error": 4.3655745685100555e-11,
+          "mse": 1.3269017348488313e-23,
+          "queries": 640,
+          "requested_queries": 640,
+          "tests_text_composition": false,
+          "within_absolute_tolerance_count": 640,
+          "within_absolute_tolerance_fraction": 1.0
+        },
+        "events": {
+          "accepted": 1561,
+          "exact": 640,
+          "exact_fraction": 0.4,
+          "fields": {
+            "country": {
+              "abstained": 35,
+              "accepted": 285,
+              "accepted_wrong": 285,
+              "coverage": 0.890625,
+              "exact": 0,
+              "exact_fraction": 0.0,
+              "queries": 320
+            },
+            "invoice_no": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 320,
+              "coverage": 1.0,
+              "exact": 0,
+              "exact_fraction": 0.0,
+              "queries": 320
+            },
+            "quantity": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_mae": 0.0,
+              "accepted_mse": 0.0,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "stock_code": {
+              "abstained": 4,
+              "accepted": 316,
+              "accepted_wrong": 316,
+              "coverage": 0.9875,
+              "exact": 0,
+              "exact_fraction": 0.0,
+              "queries": 320
+            },
+            "unit_price_pence": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_mae": 0.0,
+              "accepted_mse": 0.0,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            }
+          },
+          "queries": 1600
+        }
+      },
+      "residual_exact": {
+        "event_procedure_chain": {
+          "absolute_tolerance": 0.005,
+          "accepted_queries": 640,
+          "correct_provenance_all_seeds": true,
+          "fields_used": [
+            "quantity",
+            "unit_price_pence"
+          ],
+          "literal_float64_exact_count": 10,
+          "literal_float64_exact_fraction": 0.015625,
+          "mae": 2.7964103255229134e-12,
+          "max_absolute_error": 4.3655745685100555e-11,
+          "mse": 1.3269017348488313e-23,
+          "queries": 640,
+          "requested_queries": 640,
+          "tests_text_composition": false,
+          "within_absolute_tolerance_count": 640,
+          "within_absolute_tolerance_fraction": 1.0
+        },
+        "events": {
+          "accepted": 1600,
+          "exact": 1600,
+          "exact_fraction": 1.0,
+          "fields": {
+            "country": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "invoice_no": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "quantity": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_mae": 0.0,
+              "accepted_mse": 0.0,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "stock_code": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            },
+            "unit_price_pence": {
+              "abstained": 0,
+              "accepted": 320,
+              "accepted_mae": 0.0,
+              "accepted_mse": 0.0,
+              "accepted_wrong": 0,
+              "coverage": 1.0,
+              "exact": 320,
+              "exact_fraction": 1.0,
+              "queries": 320
+            }
+          },
+          "queries": 1600
+        }
+      }
+    }
+  },
+  "cost_scope": {
+    "full_work_includes_both_rank_arms_ordinary_controls_and_nonlinear_negative": true,
+    "incremental_state_ratios_exclude_shared_runtime_and_retained_raw_source": true,
+    "shared_source_and_runtime_are_not_silently_zero": true,
+    "source_and_shared_runtime": {
+      "canonical_source_retained_bytes": 128918,
+      "inference_python_source_bytes": 62932,
+      "raw_source_archive_retained_bytes": 23715478,
+      "shared_runtime": "Python and NumPy are common infrastructure, not included in incremental serialized state; process cost is reported separately.",
+      "traditional_event_decoder_python_source_bytes": 63017
+    },
+    "transfer_research_bytes_including_summary": 4686547,
+    "unified_run_bytes_including_manifest": 869652897
+  },
+  "denominators": {
+    "confidence_interval_claimed": false,
+    "demonstrations_per_learned_program": 24,
+    "distinct_event_training_datasets": 1,
+    "distinct_procedural_chains": 5,
+    "event_chain_queries_all_seeds_per_arm_per_mode": 640,
+    "event_chain_queries_per_seed_per_arm_per_mode": 128,
+    "event_model_unique_artifact_hash_counts_across_seeds": {
+      "full_rank": {
+        "country": 1,
+        "invoice_no": 1,
+        "quantity": 1,
+        "stock_code": 1,
+        "unit_price_pence": 1
+      },
+      "rank_2": {
+        "country": 1,
+        "invoice_no": 1,
+        "quantity": 1,
+        "stock_code": 1,
+        "unit_price_pence": 1
+      }
+    },
+    "event_queries_all_seeds_per_arm_per_mode": 1600,
+    "event_queries_per_field_per_seed": 64,
+    "event_queries_per_seed_per_arm_per_mode": 320,
+    "extrapolation_input_queries": 160,
+    "fresh_processes_repeat_same_per_seed_inputs_in_two_arms_and_two_modes": true,
+    "interpolation_input_queries": 480,
+    "learned_affine_programs_per_seed": 3,
+    "new_demonstration_pairs_for_main_programs": 360,
+    "novel_procedure_input_queries": 640,
+    "reason": "One held retail sample; overlapping address samples and deterministic event models are not five independent domains.",
+    "unique_event_chain_addresses": 419,
+    "unique_original_function_inputs": 640,
+    "unique_queried_event_field_coordinates": 1317,
+    "unique_queried_event_ids_per_field": {
+      "country": 259,
+      "invoice_no": 258,
+      "quantity": 267,
+      "stock_code": 272,
+      "unit_price_pence": 261
+    }
+  },
+  "evidence": {
+    "analysis_generator_sha256": "17ea5e92bd15468674502fcd7bef2a2c3f66b17e1f3394918468ed227599c81c",
+    "audit": "validation/formal-transfer-audit.json",
+    "audit_checks": 7023,
+    "audit_passed": true,
+    "audit_sha256": "bcc79ec6b80c71f74323f31c2721d2efededa21357107540140537ce235d90e0",
+    "manifest_sha256": "ec975d0e9afc53903ba2d26129446e263d06ebea0abb8b9e729e556546eca3ff",
+    "run": "results/20261026-v4-frozen",
+    "source_commit": "6206dfba0a3219534dd1a0274431bf48fd23673c",
+    "training_or_threshold_changes_by_analysis": 0,
+    "transfer_summary_sha256": "bd855f1780f4e02c680b02590dc7bb70a459670bd4c4970a99106fdcf7095536"
+  },
+  "limits": [
+    "Formal held records share the UCI retail source family used for development; only one event training dataset is evaluated.",
+    "Full-rank parameter exactness is reported on the declared hidden read samples, not asserted as a proof of lossless reconstruction for every unqueried value.",
+    "Lossless model-plus-residual and conventional codec roundtrips cover all 640 selected records; the original entire workbook is not reconstructed.",
+    "The 1e-7 affine tolerance is not literal float64 equality. Ordinary OLS passes the same tolerance.",
+    "The event-to-program chain uses the two numeric fields; it cannot establish successful text-field composition.",
+    "Rank-2 valid UTF-8 outputs may be wrong. Type validation does not establish factual correctness.",
+    "Maintenance version rejection is qualified in a separate experiment, not implied by these static transfer readers."
+  ],
+  "per_seed": [
+    {
+      "event_procedure_chain": {
+        "absolute_tolerance": 0.005,
+        "exact_float64": 0.0,
+        "mae": 3.874234266731946e-12,
+        "max_absolute_error": 1.0913936421275139e-11,
+        "mse": 1.722276469247067e-23,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "event_reads": {
+        "full_rank": {
+          "parameter": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        },
+        "rank_2": {
+          "parameter": {
+            "exact": 128,
+            "exact_fraction": 0.4,
+            "fields": {
+              "country": {
+                "accepted": 59,
+                "coverage": 0.921875,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 63,
+                "coverage": 0.984375,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        }
+      },
+      "extrapolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.40625,
+        "mae": 1.1596057447604835e-11,
+        "max_absolute_error": 5.820766091346741e-11,
+        "mse": 3.192917164454687e-22,
+        "queries": 32,
+        "within_absolute_tolerance": 1.0
+      },
+      "interpolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.17708333333333334,
+        "mae": 4.749682129083037e-12,
+        "max_absolute_error": 1.4551915228366852e-11,
+        "mse": 3.423113592356399e-23,
+        "queries": 96,
+        "within_absolute_tolerance": 1.0
+      },
+      "nearest_demo": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 10344.32630842772,
+        "max_absolute_error": 54914.72692421594,
+        "mse": 307021681.8154659,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "nonlinear_negative": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 207542.89879034949,
+        "max_absolute_error": 1310358.6003026017,
+        "mse": 139981475028.66092,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "ordinary_ols": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0078125,
+        "mae": 1.722977316376273e-11,
+        "max_absolute_error": 7.275957614183426e-11,
+        "mse": 5.537086637860838e-22,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_procedure": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.234375,
+        "mae": 6.461275958713486e-12,
+        "max_absolute_error": 5.820766091346741e-11,
+        "mse": 1.0549628105404016e-22,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_vs_ols_max_difference": 5.820766091346741e-11,
+      "queries_per_field": {
+        "country": 64,
+        "invoice_no": 64,
+        "quantity": 64,
+        "stock_code": 64,
+        "unit_price_pence": 64
+      },
+      "seed": 401,
+      "work": {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "traditional_codec_search_wall_seconds": 0.10505191500124056,
+        "wall_seconds": 0.9191152810017229
+      }
+    },
+    {
+      "event_procedure_chain": {
+        "absolute_tolerance": 0.005,
+        "exact_float64": 0.0625,
+        "mae": 8.846395838091325e-13,
+        "max_absolute_error": 3.637978807091713e-12,
+        "mse": 1.240678646755534e-24,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "event_reads": {
+        "full_rank": {
+          "parameter": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        },
+        "rank_2": {
+          "parameter": {
+            "exact": 128,
+            "exact_fraction": 0.4,
+            "fields": {
+              "country": {
+                "accepted": 58,
+                "coverage": 0.90625,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        }
+      },
+      "extrapolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0625,
+        "mae": 2.0236257114447653e-11,
+        "max_absolute_error": 4.3655745685100555e-11,
+        "mse": 5.409761206096801e-22,
+        "queries": 32,
+        "within_absolute_tolerance": 1.0
+      },
+      "interpolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.3229166666666667,
+        "mae": 2.733517116363752e-12,
+        "max_absolute_error": 1.4551915228366852e-11,
+        "mse": 1.6910897474015133e-23,
+        "queries": 96,
+        "within_absolute_tolerance": 1.0
+      },
+      "nearest_demo": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 13042.99383603961,
+        "max_absolute_error": 69666.90220232593,
+        "mse": 433466005.4528953,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "nonlinear_negative": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 216593.96030866,
+        "max_absolute_error": 1343169.5757313792,
+        "mse": 142681485546.32156,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "ordinary_ols": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 2.8979929567185536e-11,
+        "max_absolute_error": 8.731149137020111e-11,
+        "mse": 1.4520172417136133e-21,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_procedure": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.2578125,
+        "mae": 7.109202115884727e-12,
+        "max_absolute_error": 4.3655745685100555e-11,
+        "mse": 1.4792720325793138e-22,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_vs_ols_max_difference": 1.0186340659856796e-10,
+      "queries_per_field": {
+        "country": 64,
+        "invoice_no": 64,
+        "quantity": 64,
+        "stock_code": 64,
+        "unit_price_pence": 64
+      },
+      "seed": 409,
+      "work": {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "traditional_codec_search_wall_seconds": 0.09288263700000243,
+        "wall_seconds": 0.9581913760011957
+      }
+    },
+    {
+      "event_procedure_chain": {
+        "absolute_tolerance": 0.005,
+        "exact_float64": 0.0,
+        "mae": 1.9884094371036554e-12,
+        "max_absolute_error": 4.3655745685100555e-11,
+        "mse": 1.8269444274179633e-23,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "event_reads": {
+        "full_rank": {
+          "parameter": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        },
+        "rank_2": {
+          "parameter": {
+            "exact": 128,
+            "exact_fraction": 0.4,
+            "fields": {
+              "country": {
+                "accepted": 59,
+                "coverage": 0.921875,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        }
+      },
+      "extrapolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.15625,
+        "mae": 1.9099388737231493e-11,
+        "max_absolute_error": 4.3655745685100555e-11,
+        "mse": 5.492479267352104e-22,
+        "queries": 32,
+        "within_absolute_tolerance": 1.0
+      },
+      "interpolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.1875,
+        "mae": 3.991473818132363e-12,
+        "max_absolute_error": 1.8189894035458565e-11,
+        "mse": 2.9386082668699536e-23,
+        "queries": 96,
+        "within_absolute_tolerance": 1.0
+      },
+      "nearest_demo": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 7554.454222803316,
+        "max_absolute_error": 39764.251549219625,
+        "mse": 169315422.49386576,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "nonlinear_negative": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 237299.75615721894,
+        "max_absolute_error": 1320061.2612090865,
+        "mse": 186037825321.0382,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "ordinary_ols": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.078125,
+        "mae": 7.116307543242328e-12,
+        "max_absolute_error": 2.9103830456733704e-11,
+        "mse": 9.92348206811496e-23,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_procedure": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.1796875,
+        "mae": 7.768452547907145e-12,
+        "max_absolute_error": 4.3655745685100555e-11,
+        "mse": 1.5935154368532724e-22,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_vs_ols_max_difference": 6.548361852765083e-11,
+      "queries_per_field": {
+        "country": 64,
+        "invoice_no": 64,
+        "quantity": 64,
+        "stock_code": 64,
+        "unit_price_pence": 64
+      },
+      "seed": 419,
+      "work": {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "traditional_codec_search_wall_seconds": 0.08573559800061048,
+        "wall_seconds": 0.9184601329980069
+      }
+    },
+    {
+      "event_procedure_chain": {
+        "absolute_tolerance": 0.005,
+        "exact_float64": 0.0,
+        "mae": 2.9194424655543116e-12,
+        "max_absolute_error": 5.4569682106375694e-12,
+        "mse": 9.441592184664411e-24,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "event_reads": {
+        "full_rank": {
+          "parameter": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        },
+        "rank_2": {
+          "parameter": {
+            "exact": 128,
+            "exact_fraction": 0.4,
+            "fields": {
+              "country": {
+                "accepted": 55,
+                "coverage": 0.859375,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 63,
+                "coverage": 0.984375,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        }
+      },
+      "extrapolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.09375,
+        "mae": 2.9103830456733704e-11,
+        "max_absolute_error": 8.731149137020111e-11,
+        "mse": 1.2176098616780567e-21,
+        "queries": 32,
+        "within_absolute_tolerance": 1.0
+      },
+      "interpolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.16666666666666666,
+        "mae": 5.675242683208144e-12,
+        "max_absolute_error": 2.1827872842550278e-11,
+        "mse": 5.855700280443187e-23,
+        "queries": 96,
+        "within_absolute_tolerance": 1.0
+      },
+      "nearest_demo": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 16471.904352855367,
+        "max_absolute_error": 77992.22598316424,
+        "mse": 705113815.4753954,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "nonlinear_negative": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 254242.65940866666,
+        "max_absolute_error": 1307917.9592382284,
+        "mse": 191964398505.206,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "ordinary_ols": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.1875,
+        "mae": 8.997646377961743e-12,
+        "max_absolute_error": 5.820766091346741e-11,
+        "mse": 2.1854845217617453e-22,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_procedure": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.1484375,
+        "mae": 1.1532389626589534e-11,
+        "max_absolute_error": 8.731149137020111e-11,
+        "mse": 3.483202175228381e-22,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_vs_ols_max_difference": 1.1641532182693481e-10,
+      "queries_per_field": {
+        "country": 64,
+        "invoice_no": 64,
+        "quantity": 64,
+        "stock_code": 64,
+        "unit_price_pence": 64
+      },
+      "seed": 421,
+      "work": {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "traditional_codec_search_wall_seconds": 0.10513820499909343,
+        "wall_seconds": 1.0166156769992085
+      }
+    },
+    {
+      "event_procedure_chain": {
+        "absolute_tolerance": 0.005,
+        "exact_float64": 0.015625,
+        "mae": 4.315325874415521e-12,
+        "max_absolute_error": 7.389644451905042e-12,
+        "mse": 2.0170606944371323e-23,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "event_reads": {
+        "full_rank": {
+          "parameter": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        },
+        "rank_2": {
+          "parameter": {
+            "exact": 128,
+            "exact_fraction": 0.4,
+            "fields": {
+              "country": {
+                "accepted": 54,
+                "coverage": 0.84375,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 62,
+                "coverage": 0.96875,
+                "exact": 0,
+                "exact_fraction": 0.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          },
+          "residual_exact": {
+            "exact": 320,
+            "exact_fraction": 1.0,
+            "fields": {
+              "country": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "invoice_no": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "quantity": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "stock_code": {
+                "accepted": 64,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              },
+              "unit_price_pence": {
+                "accepted": 64,
+                "accepted_mae": 0.0,
+                "accepted_mse": 0.0,
+                "coverage": 1.0,
+                "exact": 64,
+                "exact_fraction": 1.0,
+                "queries": 64
+              }
+            },
+            "queries": 320
+          }
+        }
+      },
+      "extrapolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.125,
+        "mae": 2.887645678129047e-11,
+        "max_absolute_error": 5.820766091346741e-11,
+        "mse": 1.1266199942972237e-21,
+        "queries": 32,
+        "within_absolute_tolerance": 1.0
+      },
+      "interpolation": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.1875,
+        "mae": 6.5002817943119835e-12,
+        "max_absolute_error": 2.1827872842550278e-11,
+        "mse": 7.100195799257456e-23,
+        "queries": 96,
+        "within_absolute_tolerance": 1.0
+      },
+      "nearest_demo": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 12732.479682231964,
+        "max_absolute_error": 69514.09753452239,
+        "mse": 461400714.79701376,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "nonlinear_negative": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0,
+        "mae": 233277.996900891,
+        "max_absolute_error": 1330278.9856387118,
+        "mse": 179918620732.50317,
+        "queries": 128,
+        "within_absolute_tolerance": 0.0
+      },
+      "ordinary_ols": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.0078125,
+        "mae": 7.867040352493859e-11,
+        "max_absolute_error": 2.6193447411060333e-10,
+        "mse": 1.1558734810177155e-20,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_procedure": {
+        "absolute_tolerance": 1e-07,
+        "exact_float64": 0.171875,
+        "mae": 1.2094325541056605e-11,
+        "max_absolute_error": 5.820766091346741e-11,
+        "mse": 3.3490646706873684e-22,
+        "queries": 128,
+        "within_absolute_tolerance": 1.0
+      },
+      "parameter_vs_ols_max_difference": 3.055902197957039e-10,
+      "queries_per_field": {
+        "country": 64,
+        "invoice_no": 64,
+        "quantity": 64,
+        "stock_code": 64,
+        "unit_price_pence": 64
+      },
+      "seed": 431,
+      "work": {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "traditional_codec_search_wall_seconds": 0.09237812799983658,
+        "wall_seconds": 0.9419826619996456
+      }
+    }
+  ],
+  "procedures": {
+    "extrapolation": {
+      "absolute_tolerance": 1e-07,
+      "literal_float64_exact_count": 27,
+      "literal_float64_exact_fraction": 0.16875,
+      "mae": 2.178239810746163e-11,
+      "max_absolute_error": 8.731149137020111e-11,
+      "mse": 7.507491239531279e-22,
+      "queries": 160,
+      "within_absolute_tolerance_count": 160,
+      "within_absolute_tolerance_fraction": 1.0
+    },
+    "interpolation": {
+      "absolute_tolerance": 1e-07,
+      "literal_float64_exact_count": 100,
+      "literal_float64_exact_fraction": 0.20833333333333334,
+      "mae": 4.730039508219856e-12,
+      "max_absolute_error": 2.1827872842550278e-11,
+      "mse": 4.201741537265702e-23,
+      "queries": 480,
+      "within_absolute_tolerance_count": 480,
+      "within_absolute_tolerance_fraction": 1.0
+    },
+    "memorized_example_nearest_neighbor": {
+      "absolute_tolerance": 1e-07,
+      "literal_float64_exact_count": 0,
+      "literal_float64_exact_fraction": 0.0,
+      "mae": 12029.231680471596,
+      "max_absolute_error": 77992.22598316424,
+      "mse": 415263528.00692725,
+      "queries": 640,
+      "within_absolute_tolerance_count": 0,
+      "within_absolute_tolerance_fraction": 0.0
+    },
+    "nonlinear_negative": {
+      "absolute_tolerance": 1e-07,
+      "literal_float64_exact_count": 0,
+      "literal_float64_exact_fraction": 0.0,
+      "mae": 229791.4543131572,
+      "max_absolute_error": 1343169.5757313792,
+      "mse": 168116761026.74597,
+      "queries": 640,
+      "within_absolute_tolerance_count": 0,
+      "within_absolute_tolerance_fraction": 0.0
+    },
+    "ordinary_ols": {
+      "absolute_tolerance": 1e-07,
+      "literal_float64_exact_count": 36,
+      "literal_float64_exact_fraction": 0.05625,
+      "mae": 2.8198812035418187e-11,
+      "max_absolute_error": 2.6193447411060333e-10,
+      "mse": 2.7764487977068353e-21,
+      "queries": 640,
+      "within_absolute_tolerance_count": 640,
+      "within_absolute_tolerance_fraction": 1.0
+    },
+    "parameter": {
+      "absolute_tolerance": 1e-07,
+      "literal_float64_exact_count": 127,
+      "literal_float64_exact_fraction": 0.1984375,
+      "mae": 8.9931291580303e-12,
+      "max_absolute_error": 8.731149137020111e-11,
+      "mse": 2.1920034251777475e-22,
+      "queries": 640,
+      "within_absolute_tolerance_count": 640,
+      "within_absolute_tolerance_fraction": 1.0
+    }
+  },
+  "qualification": {
+    "advantage_over_ordinary_ols_established": false,
+    "affine_and_ordinary_ols_both_meet_declared_tolerance": true,
+    "declared_new_type_exact_hidden_read_threshold": 0.95,
+    "fresh_process_count": 20,
+    "fresh_requests_with_source_or_target_payload": 0,
+    "full_rank_parameter_seeds_meeting_threshold": 5,
+    "natural_language_routing_or_learned_graph_result_inferred_here": false,
+    "new_algorithm_family_discovery_established": false,
+    "new_memory_type_relative_to_v3_not_unseen_type_at_formal_time": true,
+    "rank2_parameter_seeds_meeting_threshold": 0,
+    "storage_advantage_over_strong_exact_baseline": false,
+    "universal_memory_system_established_by_typed_transfer": false
+  },
+  "schema": "memory-cell-v4.formal-typed-findings.v1",
+  "seeds": [
+    401,
+    409,
+    419,
+    421,
+    431
+  ],
+  "source": {
+    "canonical_source_bytes": 128918,
+    "events": 640,
+    "explicit_address_fields_not_parameter_recall_targets": [
+      "record_id",
+      "source_row",
+      "invoice_at"
+    ],
+    "file": "retail-held.json",
+    "name": "UCI Online Retail",
+    "raw_source_archive_bytes": 23715478,
+    "sha256": "cda1f67028c64b00912cd546b24ba5f1fce4afcf4c1ef482bd49756bae37d53d",
+    "target_fields": [
+      "quantity",
+      "unit_price_pence",
+      "stock_code",
+      "country",
+      "invoice_no"
+    ],
+    "time_address_range": [
+      "2011-05-24T15:58:00",
+      "2011-12-09T12:50:00"
+    ],
+    "written_typed_facts": 3200
+  },
+  "storage_per_seed": [
+    {
+      "address_schema_binding_bytes": 36879,
+      "arm": "full_rank",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 7.682464861158724,
+      "complete_exact_serving_ratio": 8.890204412062335,
+      "event_exact_bytes": 86133,
+      "event_exact_plus_programs_and_chain_bytes": 87853,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 89639,
+      "event_exact_saving_fraction": -8.926587530252391,
+      "event_exact_storage_ratio": 9.926587530252391,
+      "event_parameter_bytes": 84195,
+      "event_parameter_plus_programs_and_chain_bytes": 85915,
+      "parameter_weights_bytes": 47316,
+      "residual_binding_bytes": 627,
+      "residual_bytes": 1311,
+      "seed": 401,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11668,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9882
+    },
+    {
+      "address_schema_binding_bytes": 36877,
+      "arm": "rank_2",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 4.843675008570449,
+      "complete_exact_serving_ratio": 5.538352560210484,
+      "event_exact_bytes": 53010,
+      "event_exact_plus_programs_and_chain_bytes": 54730,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 56516,
+      "event_exact_saving_fraction": -5.109254350581998,
+      "event_exact_storage_ratio": 6.109254350581998,
+      "event_parameter_bytes": 47541,
+      "event_parameter_plus_programs_and_chain_bytes": 49261,
+      "parameter_weights_bytes": 10664,
+      "residual_binding_bytes": 629,
+      "residual_bytes": 4840,
+      "seed": 401,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11668,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9882
+    },
+    {
+      "address_schema_binding_bytes": 36879,
+      "arm": "full_rank",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 7.682464861158724,
+      "complete_exact_serving_ratio": 8.890204412062335,
+      "event_exact_bytes": 86133,
+      "event_exact_plus_programs_and_chain_bytes": 87853,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 89639,
+      "event_exact_saving_fraction": -8.926587530252391,
+      "event_exact_storage_ratio": 9.926587530252391,
+      "event_parameter_bytes": 84195,
+      "event_parameter_plus_programs_and_chain_bytes": 85915,
+      "parameter_weights_bytes": 47316,
+      "residual_binding_bytes": 627,
+      "residual_bytes": 1311,
+      "seed": 409,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11668,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9882
+    },
+    {
+      "address_schema_binding_bytes": 36877,
+      "arm": "rank_2",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 4.843675008570449,
+      "complete_exact_serving_ratio": 5.538352560210484,
+      "event_exact_bytes": 53010,
+      "event_exact_plus_programs_and_chain_bytes": 54730,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 56516,
+      "event_exact_saving_fraction": -5.109254350581998,
+      "event_exact_storage_ratio": 6.109254350581998,
+      "event_parameter_bytes": 47541,
+      "event_parameter_plus_programs_and_chain_bytes": 49261,
+      "parameter_weights_bytes": 10664,
+      "residual_binding_bytes": 629,
+      "residual_bytes": 4840,
+      "seed": 409,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11668,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9882
+    },
+    {
+      "address_schema_binding_bytes": 36879,
+      "arm": "full_rank",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 7.683781930396022,
+      "complete_exact_serving_ratio": 8.892004048582995,
+      "event_exact_bytes": 86133,
+      "event_exact_plus_programs_and_chain_bytes": 87853,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 89639,
+      "event_exact_saving_fraction": -8.926587530252391,
+      "event_exact_storage_ratio": 9.926587530252391,
+      "event_parameter_bytes": 84195,
+      "event_parameter_plus_programs_and_chain_bytes": 85915,
+      "parameter_weights_bytes": 47316,
+      "residual_binding_bytes": 627,
+      "residual_bytes": 1311,
+      "seed": 419,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11666,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9880
+    },
+    {
+      "address_schema_binding_bytes": 36877,
+      "arm": "rank_2",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 4.844505400308589,
+      "complete_exact_serving_ratio": 5.5394736842105265,
+      "event_exact_bytes": 53010,
+      "event_exact_plus_programs_and_chain_bytes": 54730,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 56516,
+      "event_exact_saving_fraction": -5.109254350581998,
+      "event_exact_storage_ratio": 6.109254350581998,
+      "event_parameter_bytes": 47541,
+      "event_parameter_plus_programs_and_chain_bytes": 49261,
+      "parameter_weights_bytes": 10664,
+      "residual_binding_bytes": 629,
+      "residual_bytes": 4840,
+      "seed": 419,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11666,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9880
+    },
+    {
+      "address_schema_binding_bytes": 36879,
+      "arm": "full_rank",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 7.68255056564964,
+      "complete_exact_serving_ratio": 8.89110413925716,
+      "event_exact_bytes": 86133,
+      "event_exact_plus_programs_and_chain_bytes": 87853,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 89640,
+      "event_exact_saving_fraction": -8.926587530252391,
+      "event_exact_storage_ratio": 9.926587530252391,
+      "event_parameter_bytes": 84195,
+      "event_parameter_plus_programs_and_chain_bytes": 85915,
+      "parameter_weights_bytes": 47316,
+      "residual_binding_bytes": 627,
+      "residual_bytes": 1311,
+      "seed": 421,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11668,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9881
+    },
+    {
+      "address_schema_binding_bytes": 36877,
+      "arm": "rank_2",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 4.843760713061364,
+      "complete_exact_serving_ratio": 5.5389130654792025,
+      "event_exact_bytes": 53010,
+      "event_exact_plus_programs_and_chain_bytes": 54730,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 56517,
+      "event_exact_saving_fraction": -5.109254350581998,
+      "event_exact_storage_ratio": 6.109254350581998,
+      "event_parameter_bytes": 47541,
+      "event_parameter_plus_programs_and_chain_bytes": 49261,
+      "parameter_weights_bytes": 10664,
+      "residual_binding_bytes": 629,
+      "residual_bytes": 4840,
+      "seed": 421,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11668,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9881
+    },
+    {
+      "address_schema_binding_bytes": 36879,
+      "arm": "full_rank",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 7.680832833518979,
+      "complete_exact_serving_ratio": 8.89110413925716,
+      "event_exact_bytes": 86133,
+      "event_exact_plus_programs_and_chain_bytes": 87853,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 89643,
+      "event_exact_saving_fraction": -8.926587530252391,
+      "event_exact_storage_ratio": 9.926587530252391,
+      "event_parameter_bytes": 84195,
+      "event_parameter_plus_programs_and_chain_bytes": 85915,
+      "parameter_weights_bytes": 47316,
+      "residual_binding_bytes": 627,
+      "residual_bytes": 1311,
+      "seed": 431,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11671,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9881
+    },
+    {
+      "address_schema_binding_bytes": 36877,
+      "arm": "rank_2",
+      "best_traditional_event_bytes": 8677,
+      "best_traditional_event_codec": "columns_lzma",
+      "category_answer_dictionary_bytes": 0,
+      "complete_exact_serving_and_replay_ratio": 4.842772684431496,
+      "complete_exact_serving_ratio": 5.5389130654792025,
+      "event_exact_bytes": 53010,
+      "event_exact_plus_programs_and_chain_bytes": 54730,
+      "event_exact_programs_chain_and_program_demo_replay_bytes": 56520,
+      "event_exact_saving_fraction": -5.109254350581998,
+      "event_exact_storage_ratio": 6.109254350581998,
+      "event_parameter_bytes": 47541,
+      "event_parameter_plus_programs_and_chain_bytes": 49261,
+      "parameter_weights_bytes": 10664,
+      "residual_binding_bytes": 629,
+      "residual_bytes": 4840,
+      "seed": 431,
+      "target_byte_strings_stored_in_parameter_metadata": 0,
+      "timestamp_address_bytes_included": 14081,
+      "traditional_event_ols_chain_and_same_demo_replay_bytes": 11671,
+      "traditional_event_ordinary_ols_and_same_chain_bytes": 9881
+    }
+  ],
+  "traditional_event_codecs": {
+    "columns_lzma": 8677,
+    "columns_raw": 63257,
+    "columns_zlib": 13712,
+    "records_lzma": 9357,
+    "records_raw": 62886,
+    "records_zlib": 13741
+  },
+  "work": {
+    "main_learned_program_solves": 15,
+    "max_observed_reader_process_peak_rss_bytes_including_shared_runtime": 159506432,
+    "negative_family_solves": 5,
+    "ordinary_ols_solves": 15,
+    "per_seed": [
+      {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "seed": 401,
+        "traditional_codec_search_wall_seconds": 0.10505191500124056,
+        "wall_seconds": 0.9191152810017229
+      },
+      {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "seed": 409,
+        "traditional_codec_search_wall_seconds": 0.09288263700000243,
+        "wall_seconds": 0.9581913760011957
+      },
+      {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "seed": 419,
+        "traditional_codec_search_wall_seconds": 0.08573559800061048,
+        "wall_seconds": 0.9184601329980069
+      },
+      {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "seed": 421,
+        "traditional_codec_search_wall_seconds": 0.10513820499909343,
+        "wall_seconds": 1.0166156769992085
+      },
+      {
+        "affine_least_squares_solves_including_ordinary_and_negative": 7,
+        "affine_work_proxy_including_ordinary_and_negative": 1008,
+        "event_svd_calls": 10,
+        "event_svd_work_proxy": 609280,
+        "fresh_processes": 4,
+        "seed": 431,
+        "traditional_codec_search_wall_seconds": 0.09237812799983658,
+        "wall_seconds": 0.9419826619996456
+      }
+    ],
+    "runtime_receipts": [
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.118832,
+        "process_peak_rss_bytes_including_shared_runtime": 158855168,
+        "process_wall_seconds": 0.1380901119991904,
+        "read_wall_seconds": 0.03270768800211954,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 401,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.117755,
+        "process_peak_rss_bytes_including_shared_runtime": 158855168,
+        "process_wall_seconds": 0.1348579610021261,
+        "read_wall_seconds": 0.03715100399858784,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 401,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.138325,
+        "process_peak_rss_bytes_including_shared_runtime": 158593024,
+        "process_wall_seconds": 0.15660829300031764,
+        "read_wall_seconds": 0.03669378999984474,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 401,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.125356,
+        "process_peak_rss_bytes_including_shared_runtime": 158593024,
+        "process_wall_seconds": 0.1411030369999935,
+        "read_wall_seconds": 0.03541434699945967,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 401,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.12609599999999999,
+        "process_peak_rss_bytes_including_shared_runtime": 159379456,
+        "process_wall_seconds": 0.1445356250005716,
+        "read_wall_seconds": 0.04015079400051036,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 409,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.117657,
+        "process_peak_rss_bytes_including_shared_runtime": 159379456,
+        "process_wall_seconds": 0.1357135809994361,
+        "read_wall_seconds": 0.035089086999505525,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 409,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.13932399999999998,
+        "process_peak_rss_bytes_including_shared_runtime": 159379456,
+        "process_wall_seconds": 0.15916754899808438,
+        "read_wall_seconds": 0.04482899300273857,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 409,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.151995,
+        "process_peak_rss_bytes_including_shared_runtime": 159379456,
+        "process_wall_seconds": 0.17148835999978473,
+        "read_wall_seconds": 0.05139617000168073,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 409,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.11257299999999999,
+        "process_peak_rss_bytes_including_shared_runtime": 159449088,
+        "process_wall_seconds": 0.13859403599781217,
+        "read_wall_seconds": 0.032402118002210045,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 419,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.19469899999999998,
+        "process_peak_rss_bytes_including_shared_runtime": 159449088,
+        "process_wall_seconds": 0.22386176399959368,
+        "read_wall_seconds": 0.05792829799975152,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 419,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.11632799999999999,
+        "process_peak_rss_bytes_including_shared_runtime": 159449088,
+        "process_wall_seconds": 0.1327143310008978,
+        "read_wall_seconds": 0.03113609999854816,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 419,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.10618899999999999,
+        "process_peak_rss_bytes_including_shared_runtime": 159449088,
+        "process_wall_seconds": 0.12234446999718784,
+        "read_wall_seconds": 0.03391948400167166,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 419,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.145752,
+        "process_peak_rss_bytes_including_shared_runtime": 159506432,
+        "process_wall_seconds": 0.1679749510003603,
+        "read_wall_seconds": 0.05015706300036982,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 421,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.119976,
+        "process_peak_rss_bytes_including_shared_runtime": 159506432,
+        "process_wall_seconds": 0.13693308800066006,
+        "read_wall_seconds": 0.033307672001683386,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 421,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.16097399999999998,
+        "process_peak_rss_bytes_including_shared_runtime": 159506432,
+        "process_wall_seconds": 0.1778676940011792,
+        "read_wall_seconds": 0.03433718399901409,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 421,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.144628,
+        "process_peak_rss_bytes_including_shared_runtime": 159506432,
+        "process_wall_seconds": 0.1641097419997095,
+        "read_wall_seconds": 0.049639143002423225,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 421,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.12136399999999999,
+        "process_peak_rss_bytes_including_shared_runtime": 159506432,
+        "process_wall_seconds": 0.1436746809995384,
+        "read_wall_seconds": 0.03079529000024195,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 431,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "full_rank",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.129324,
+        "process_peak_rss_bytes_including_shared_runtime": 159506432,
+        "process_wall_seconds": 0.1706232850010565,
+        "read_wall_seconds": 0.041150978999212384,
+        "resident_parameter_numpy_bytes": 73608,
+        "seed": 431,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 0,
+        "mode": "parameter",
+        "process_cpu_seconds_including_imports": 0.128614,
+        "process_peak_rss_bytes_including_shared_runtime": 159506432,
+        "process_wall_seconds": 0.15033068699995056,
+        "read_wall_seconds": 0.032627027001581155,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 431,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      },
+      {
+        "arm": "rank_2",
+        "event_runtime_exact_array_bytes": 92160,
+        "mode": "residual_exact",
+        "process_cpu_seconds_including_imports": 0.12098099999999999,
+        "process_peak_rss_bytes_including_shared_runtime": 159506432,
+        "process_wall_seconds": 0.13990546300192364,
+        "read_wall_seconds": 0.038249077999353176,
+        "resident_parameter_numpy_bytes": 36956,
+        "seed": 431,
+        "source_paths_in_request": 0,
+        "target_values_in_request": 0
+      }
+    ],
+    "sum_recorded_fresh_process_cpu_seconds": 2.636742,
+    "sum_recorded_fresh_process_wall_seconds": 3.050498709999374,
+    "timings_are_sealed_historical_receipts_not_independent_retiming": true,
+    "totals": {
+      "affine_least_squares_solves_including_ordinary_and_negative": 35,
+      "affine_work_proxy_including_ordinary_and_negative": 5040,
+      "event_svd_calls": 50,
+      "event_svd_work_proxy": 3046400,
+      "fresh_processes": 20
+    },
+    "transfer_stage_wall_seconds": 4.79837612999836,
+    "work_proxy_is_not_measured_flops": true
+  }
+}

@@ -1,0 +1,20 @@
+test_changed_proxy_route_or_selected_count_is_rejected (__main__.SelectionWireTests.test_changed_proxy_route_or_selected_count_is_rejected) ... ok
+test_json_wire_proxy_keys_preserve_reproducible_selection (__main__.SelectionWireTests.test_json_wire_proxy_keys_preserve_reproducible_selection) ... ERROR
+
+======================================================================
+ERROR: test_json_wire_proxy_keys_preserve_reproducible_selection (__main__.SelectionWireTests.test_json_wire_proxy_keys_preserve_reproducible_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-v9/learning/selection_wire_tests.py", line 63, in test_json_wire_proxy_keys_preserve_reproducible_selection
+    checked, cost = selection(self.root, self.code, self.export, self.prefix, self.result)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-v9/learning/structure_evidence.py", line 35, in selection
+    require(result[key] == expected[key], "prefix-only selection cannot be reproduced")
+  File "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-v9/learning/evidence.py", line 17, in require
+    raise ValueError(message)
+ValueError: prefix-only selection cannot be reproduced
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.030s
+
+FAILED (errors=1)

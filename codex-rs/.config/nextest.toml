@@ -103,6 +103,37 @@ test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
+# These opt-in memory qualification tests retain complete paired native reads
+# and eleven fresh-process training trials. Serialize measurement arms and do
+# not retry into their create-only evidence paths. This bounded experiment
+# watchdog does not change worker, request, child-process, or product deadlines.
+[test-groups.hepta_memory_qualification]
+max-threads = 1
+
+# First matching override wins per setting, so this must precede the general
+# memory watchdog. Two continual waits can consume 2 * 1260s to accommodate
+# the unfinished formal-04 byte stage. Structure retains the cap introduced
+# after formal-03;
+# numerical budgets and scientific gates are unchanged. Leave cleanup and
+# receipt headroom around these bounded parent waits.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(actual_memory_cell_v9_observed_structure_budget_and_actions)'
+test-group = 'hepta_memory_qualification'
+slow-timeout = { period = "1m", terminate-after = 64 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(actual_memory_cell_v9_continual_causal_parameter_memory)'
+test-group = 'hepta_memory_qualification'
+slow-timeout = { period = "1m", terminate-after = 45 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(memory_cell_) & test(actual_)'
+test-group = 'hepta_memory_qualification'
+slow-timeout = { period = "1m", terminate-after = 20 }
+retries = 0
+
 # Measure all four growth/reopen points and 256 real atomic domain commits.
 # This full storage experiment preserves operation leases, child deadlines and
 # the product latency acceptance threshold.

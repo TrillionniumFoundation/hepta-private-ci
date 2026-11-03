@@ -1,0 +1,1502 @@
+[
+  {
+    "id": "held-history-en-001",
+    "text": "Freeze the archive at {at}; what is the final included number for {entity}?",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "freeze the archive at date; what is the final included number for entity?",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7100594283783691,
+      "margin": 0.4797829072943309,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7100594283783691,
+      "margin": 0.4797829072943309,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-002",
+    "text": "The maintenance trace needs {entity}'s last observation filed by {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "the maintenance trace needs entity's last observation filed by date.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6107014545071215,
+      "margin": 0.41064251924526546,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6107014545071215,
+      "margin": 0.41064251924526546,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-003",
+    "text": "Fill in {entity}'s value at {at}, carrying forward the nearest earlier record when that date has no entry.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "fill in entity's value at date, carrying forward the nearest earlier record when that date has no entry.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.5853398500538697,
+      "margin": 0.19744697002754918,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.5853398500538697,
+      "margin": 0.19744697002754918,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-004",
+    "text": "To reconstruct the {at} handover sheet, what figure for {entity} was available at the time?",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "to reconstruct the date handover sheet, what figure for entity was available at the time?",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.8419314971161433,
+      "margin": 0.6921161257729717,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.8419314971161433,
+      "margin": 0.6921161257729717,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "history",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-005",
+    "text": "Set aside entries after {at} and read the last remaining value for {entity}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "set aside entries after date and read the last remaining value for entity.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.39098995930609093,
+      "margin": 0.05353417020276946,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.39098995930609093,
+      "margin": 0.05353417020276946,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-006",
+    "text": "In the archive through {at}, what did {entity}'s final observation report?",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "in the archive through date, what did entity's final observation report?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.4432326132684291,
+      "margin": 0.06355798741680568,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.4432326132684291,
+      "margin": 0.06355798741680568,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-007",
+    "text": "Use records no later than {at} to identify the last reading then held for {entity}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "use records no later than date to identify the last reading then held for entity.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.7024535563841375,
+      "margin": 0.5133542884070544,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.7024535563841375,
+      "margin": 0.5133542884070544,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-008",
+    "text": "I am reviewing a worksheet dated {at} and need the newest figure for {entity} known by that day.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "i am reviewing a worksheet dated date and need the newest figure for entity known by that day.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.8488959986003171,
+      "margin": 0.7685287444339509,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.8488959986003171,
+      "margin": 0.7685287444339509,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "history",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-009",
+    "text": "Fetch the recorded figure for {entity} at the archive boundary {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "fetch the recorded figure for entity at the archive boundary date.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.9257809813745795,
+      "margin": 0.8716968046572473,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.9257809813745795,
+      "margin": 0.8716968046572473,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "history",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-010",
+    "text": "Cap the lookup date at {at} and give the last available number for {entity}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "cap the lookup date at date and give the last available number for entity.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.505931673513297,
+      "margin": 0.23826493705472968,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.505931673513297,
+      "margin": 0.23826493705472968,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-011",
+    "text": "By the close of {at}, what was the final saved reading for {entity}?",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "by the close of date, what was the final saved reading for entity?",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.8762731592546058,
+      "margin": 0.8121342908740699,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.8762731592546058,
+      "margin": 0.8121342908740699,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "history",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-012",
+    "text": "One item is missing from the old duty log: {entity}'s last value recorded through {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "one item is missing from the old duty log: entity's last value recorded through date.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.39779117437488737,
+      "margin": 0.07796923390769384,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.39779117437488737,
+      "margin": 0.07796923390769384,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-013",
+    "text": "Read the final number for {entity} that had already been archived at {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "read the final number for entity that had already been archived at date.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.6113799847581364,
+      "margin": 0.3505551460935845,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.6113799847581364,
+      "margin": 0.3505551460935845,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-014",
+    "text": "From {entity}'s observation archive, select the newest value dated no later than {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "from entity's observation archive, select the newest value dated no later than date.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.45479674793039193,
+      "margin": 0.17781001766772536,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.45479674793039193,
+      "margin": 0.17781001766772536,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-015",
+    "text": "In a view sealed at {at}, what reading would appear last for {entity}?",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "in a view sealed at date, what reading would appear last for entity?",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.5115730125833535,
+      "margin": 0.182353384516873,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.5115730125833535,
+      "margin": 0.182353384516873,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-016",
+    "text": "I want the number in {entity}'s final record up to {at}.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "i want the number in entity's final record up to date.",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6447036002883446,
+      "margin": 0.4215591576343404,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6447036002883446,
+      "margin": 0.4215591576343404,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-017",
+    "text": "Trace back to {at} and return {entity}'s figure from the most recent entry available then.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "trace back to date and return entity's figure from the most recent entry available then.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.6146993893219781,
+      "margin": 0.3547551607932734,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.6146993893219781,
+      "margin": 0.3547551607932734,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-018",
+    "text": "Look up {entity} within an archive boundary of {at} and read the chronologically final value inside it.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "look up entity within an archive boundary of date and read the chronologically final value inside it.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.7352861708966607,
+      "margin": 0.5486030228704669,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.7352861708966607,
+      "margin": 0.5486030228704669,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "history",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-019",
+    "text": "Among observations filed on or before {at}, what is the last number for {entity}?",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "among observations filed on or before date, what is the last number for entity?",
+    "hypothesis": {
+      "raw_operation": "current",
+      "score": 0.6155888565478308,
+      "margin": 0.4065593724481932,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "current",
+      "score": 0.6155888565478308,
+      "margin": 0.4065593724481932,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-history-en-020",
+    "text": "Complete {entity}'s old-record value field using the latest entry at the {at} closing date.",
+    "operation": "history",
+    "language": "en",
+    "family": "held.archive_freeze",
+    "normalized_text": "complete entity's old-record value field using the latest entry at the date closing date.",
+    "hypothesis": {
+      "raw_operation": "history",
+      "score": 0.662103698670988,
+      "margin": 0.4443553041292429,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "history",
+      "score": 0.662103698670988,
+      "margin": 0.4443553041292429,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-001",
+    "text": "维护人员要查看{entity}这张属性卡的全部现存内容。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "维护人员要查看entity这张属性卡的全部现存内容。",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.5061219994235167,
+      "margin": 0.049811939182827336,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.5061219994235167,
+      "margin": 0.049811939182827336,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-002",
+    "text": "请把{entity}当前参数档案里的字段名和值整份读出。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "请把entity当前参数档案里的字段名和值整份读出。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6414742818617866,
+      "margin": 0.42124678007062966,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6414742818617866,
+      "margin": 0.42124678007062966,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-003",
+    "text": "交接材料需要{entity}正在保存的完整属性包。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "交接材料需要entity正在保存的完整属性包。",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.7729960282084812,
+      "margin": 0.5481076960658847,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.7729960282084812,
+      "margin": 0.5481076960658847,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "semantic",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-004",
+    "text": "{entity}配置页目前有哪些设置？给我整页对应的属性值。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "entity配置页目前有哪些设置?给我整页对应的属性值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8246924760895545,
+      "margin": 0.6634035148344573,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8246924760895545,
+      "margin": 0.6634035148344573,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-005",
+    "text": "我要核验{entity}的属性记录，请呈现当前的全部字段。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "我要核验entity的属性记录,请呈现当前的全部字段。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5687469011655615,
+      "margin": 0.34478881813907786,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5687469011655615,
+      "margin": 0.34478881813907786,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-006",
+    "text": "查看{entity}目前登记的factor、bias、limit等所有属性值。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "查看entity目前登记的factor、bias、limit等所有属性值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5657662750279155,
+      "margin": 0.13763455002210684,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5657662750279155,
+      "margin": 0.13763455002210684,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-007",
+    "text": "请取出{entity}整份现行参数卡。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "请取出entity整份现行参数卡。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6964984976216038,
+      "margin": 0.5103187815600879,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6964984976216038,
+      "margin": 0.5103187815600879,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-008",
+    "text": "库房核查要用{entity}目前已登记的完整参数清单。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "库房核查要用entity目前已登记的完整参数清单。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7661540325675382,
+      "margin": 0.6170805518940158,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7661540325675382,
+      "margin": 0.6170805518940158,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-009",
+    "text": "读一下{entity}现在那组配置数据，全部属性都要。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "读一下entity现在那组配置数据,全部属性都要。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6964563531518101,
+      "margin": 0.44340064865683737,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6964563531518101,
+      "margin": 0.44340064865683737,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-010",
+    "text": "{entity}现存属性记录的完整键值内容是什么？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "entity现存属性记录的完整键值内容是什么?",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.9509448885798849,
+      "margin": 0.9029284128920112,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.9509448885798849,
+      "margin": 0.9029284128920112,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "semantic",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-011",
+    "text": "请把{entity}当前保存的全部参数作为一个整体返回。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "请把entity当前保存的全部参数作为一个整体返回。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6500085175823751,
+      "margin": 0.461702210980612,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6500085175823751,
+      "margin": 0.461702210980612,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-012",
+    "text": "值班手册附页要引用{entity}现有的整份属性信息。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "值班手册附页要引用entity现有的整份属性信息。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5800611674574266,
+      "margin": 0.16678521368117916,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5800611674574266,
+      "margin": 0.16678521368117916,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-013",
+    "text": "打开{entity}当前配置的所有属性及其取值。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "打开entity当前配置的所有属性及其取值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9810508845107154,
+      "margin": 0.96817145445319,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9810508845107154,
+      "margin": 0.96817145445319,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-014",
+    "text": "请展示{entity}参数档案的现行完整版本。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "请展示entity参数档案的现行完整版本。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7808578093825914,
+      "margin": 0.6877044933202607,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7808578093825914,
+      "margin": 0.6877044933202607,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-015",
+    "text": "我需要查阅{entity}全部已存属性的当前取值。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "我需要查阅entity全部已存属性的当前取值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.459322413883222,
+      "margin": 0.10779130505096463,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.459322413883222,
+      "margin": 0.10779130505096463,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-016",
+    "text": "{entity}这份配置登记表，现有内容请完整列出。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "entity这份配置登记表,现有内容请完整列出。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8626638175148015,
+      "margin": 0.782310568313041,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8626638175148015,
+      "margin": 0.782310568313041,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-017",
+    "text": "为移交核验，读取{entity}当前的整组参数值。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "为移交核验,读取entity当前的整组参数值。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5633177526444825,
+      "margin": 0.19324764129979127,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5633177526444825,
+      "margin": 0.19324764129979127,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-018",
+    "text": "请提供{entity}现在保留的属性清单及每项保存值。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "请提供entity现在保留的属性清单及每项保存值。",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.7303085687986552,
+      "margin": 0.4783024254164132,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.7303085687986552,
+      "margin": 0.4783024254164132,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "semantic",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-019",
+    "text": "{entity}当前配置中的完整属性对象是什么？",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "entity当前配置中的完整属性对象是什么?",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.7894979347565699,
+      "margin": 0.582102531768649,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.7894979347565699,
+      "margin": 0.582102531768649,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "semantic",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-zh-020",
+    "text": "把{entity}现行参数记录原有的各字段和值取出来。",
+    "operation": "semantic",
+    "language": "zh",
+    "family": "held.configuration_card",
+    "normalized_text": "把entity现行参数记录原有的各字段和值取出来。",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.48783306093814527,
+      "margin": 0.15764714153598186,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.48783306093814527,
+      "margin": 0.15764714153598186,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-001",
+    "text": "The maintenance crew needs every current entry on {entity}'s attribute card.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "the maintenance crew needs every current entry on entity's attribute card.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9880268295992382,
+      "margin": 0.9801758214025661,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9880268295992382,
+      "margin": 0.9801758214025661,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-002",
+    "text": "Read the field names and values from {entity}'s entire present parameter file.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "read the field names and values from entity's entire present parameter file.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5050416192243683,
+      "margin": 0.07139463365014831,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5050416192243683,
+      "margin": 0.07139463365014831,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-003",
+    "text": "The handover pack requires the complete attribute bundle saved for {entity} now.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "the handover pack requires the complete attribute bundle saved for entity now.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9133437855483918,
+      "margin": 0.8310422075790755,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9133437855483918,
+      "margin": 0.8310422075790755,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-004",
+    "text": "What settings are on {entity}'s configuration page? Include the whole stored property set.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "what settings are on entity's configuration page? include the whole stored property set.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.4405990582032508,
+      "margin": 0.08623939054838564,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.4405990582032508,
+      "margin": 0.08623939054838564,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-005",
+    "text": "For verification, display all fields in {entity}'s current attribute record.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "for verification, display all fields in entity's current attribute record.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7217875190494257,
+      "margin": 0.444593327687461,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7217875190494257,
+      "margin": 0.444593327687461,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-006",
+    "text": "Look up all saved properties of {entity}, including factor, bias, limit, and any others.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "look up all saved properties of entity, including factor, bias, limit, and any others.",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.7557239673866344,
+      "margin": 0.5116745545128915,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.7557239673866344,
+      "margin": 0.5116745545128915,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "semantic",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-007",
+    "text": "Retrieve the whole parameter card presently assigned to {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "retrieve the whole parameter card presently assigned to entity.",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.8955413624039249,
+      "margin": 0.8013870325680963,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.8955413624039249,
+      "margin": 0.8013870325680963,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "semantic",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-008",
+    "text": "The storehouse check calls for the complete list of parameters now registered to {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "the storehouse check calls for the complete list of parameters now registered to entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8697507052767314,
+      "margin": 0.7987898072159698,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8697507052767314,
+      "margin": 0.7987898072159698,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-009",
+    "text": "Read {entity}'s present configuration data with every attribute included.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "read entity's present configuration data with every attribute included.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.7567456443411549,
+      "margin": 0.5427380933317422,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.7567456443411549,
+      "margin": 0.5427380933317422,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-010",
+    "text": "What are the complete key-value contents of {entity}'s existing property record?",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "what are the complete key-value contents of entity's existing property record?",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.6297773726650748,
+      "margin": 0.27003949301693964,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.6297773726650748,
+      "margin": 0.27003949301693964,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-011",
+    "text": "Return all of {entity}'s currently saved parameters as one bundle.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "return all of entity's currently saved parameters as one bundle.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.8228088351050054,
+      "margin": 0.669047155325001,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.8228088351050054,
+      "margin": 0.669047155325001,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-012",
+    "text": "The duty manual appendix needs the full existing attribute information for {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "the duty manual appendix needs the full existing attribute information for entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9545125656117465,
+      "margin": 0.9116988610869002,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9545125656117465,
+      "margin": 0.9116988610869002,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-013",
+    "text": "Open all attributes and their assigned values in {entity}'s current configuration.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "open all attributes and their assigned values in entity's current configuration.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9687324134157944,
+      "margin": 0.9389072235143405,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9687324134157944,
+      "margin": 0.9389072235143405,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-014",
+    "text": "Display the entire present version of {entity}'s parameter file.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "display the entire present version of entity's parameter file.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9514279091758111,
+      "margin": 0.9344471218586354,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9514279091758111,
+      "margin": 0.9344471218586354,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-015",
+    "text": "I need to inspect the current values of every stored property belonging to {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "i need to inspect the current values of every stored property belonging to entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.6613685894805176,
+      "margin": 0.47636295345737734,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.6613685894805176,
+      "margin": 0.47636295345737734,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-016",
+    "text": "List the complete current contents of the configuration registration sheet for {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "list the complete current contents of the configuration registration sheet for entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.9509610931614719,
+      "margin": 0.9153697958054461,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.9509610931614719,
+      "margin": 0.9153697958054461,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-017",
+    "text": "For the transfer check, read the whole current parameter group for {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "for the transfer check, read the whole current parameter group for entity.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5852540090568882,
+      "margin": 0.19152371973715515,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5852540090568882,
+      "margin": 0.19152371973715515,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-018",
+    "text": "Supply {entity}'s existing attribute list with each stored value.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "supply entity's existing attribute list with each stored value.",
+    "hypothesis": {
+      "raw_operation": "reject",
+      "score": 0.5216867365189461,
+      "margin": 0.1501026206828402,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "reject",
+      "score": 0.5216867365189461,
+      "margin": 0.1501026206828402,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-019",
+    "text": "What is the complete property object in {entity}'s current configuration?",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "what is the complete property object in entity's current configuration?",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.7168113528697957,
+      "margin": 0.4346946252241137,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.7168113528697957,
+      "margin": 0.4346946252241137,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": "semantic",
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  },
+  {
+    "id": "held-semantic-en-020",
+    "text": "Retrieve every field and value in the parameter record presently held for {entity}.",
+    "operation": "semantic",
+    "language": "en",
+    "family": "held.configuration_card",
+    "normalized_text": "retrieve every field and value in the parameter record presently held for entity.",
+    "hypothesis": {
+      "raw_operation": "semantic",
+      "score": 0.564147263242502,
+      "margin": 0.19300662277726832,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null
+    },
+    "decision": {
+      "raw_operation": "semantic",
+      "score": 0.564147263242502,
+      "margin": 0.19300662277726832,
+      "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+      "capability_reason": null,
+      "operation": null,
+      "threshold": 0.7098737782192688,
+      "required_margin": 0.0
+    }
+  }
+]

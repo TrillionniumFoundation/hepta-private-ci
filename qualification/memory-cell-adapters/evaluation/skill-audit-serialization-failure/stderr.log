@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/evaluation/audit_skill_longrun.py", line 311, in <module>
+    main()
+  File "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/evaluation/audit_skill_longrun.py", line 304, in main
+    write_bounded_report(args.output, report)
+  File "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/evaluation/audit_longrun_resume.py", line 166, in write_bounded_report
+    raise ValueError("Audit detail part exceeds byte limit")
+ValueError: Audit detail part exceeds byte limit

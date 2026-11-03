@@ -1,0 +1,795 @@
+{
+  "archive": {
+    "bytes": 4991278,
+    "sha256": "befee0f1f6345ec4916444bfc2b8236fce1d269ce5ceabf3dce042a8145d664d"
+  },
+  "artifact_id": 12783958338,
+  "extraction": "Concatenate parts in index order; verify ZIP and member SHA256; preserve original member paths.",
+  "files": {
+    "_temp/memory-v8-runtime/PREPARATION.json": {
+      "bytes": 4295,
+      "sha256": "66114f668b07939fbd9ce15acf97cf367002bed8a39f4707bf796c0a2058ab45"
+    },
+    "_temp/memory-v8-runtime/V8_PREPARATION.json": {
+      "bytes": 1358,
+      "sha256": "e0cac99d436b43dbca35ed3bc1d87fd61f9bc0780a10c0914c16f11a5abc3be3"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/baseline-native-held.json": {
+      "bytes": 434273,
+      "sha256": "2d2dd620cec1d12944a6d637d328be7743512a7458cae72da273058f106064e0"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/candidate-native-held.json": {
+      "bytes": 469454,
+      "sha256": "45358e03e6bf1da0b3ca5dcc927aa28b46269b246d893cf3a5bca0b9cea6f557"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/execution.log": {
+      "bytes": 180813,
+      "sha256": "7580d4011c2f9a09e3984134f3e231212c3196a9390af724463d7c60a470b1ba"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/generated.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/legacy-language.json": {
+      "bytes": 22362,
+      "sha256": "e00fbb634913522e65a55ef5c2c54b7b483c1ce4588522e933be04f3d8df260d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/legacy-population.json": {
+      "bytes": 31291,
+      "sha256": "509fb5d57a63453d07d4779d1caf60baa94ee30b04749ce630f377e756155906"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/legacy-training.json": {
+      "bytes": 22396,
+      "sha256": "9ae8524e5c49f6eaef234d9776c8490726a8c71857eb5eec2b222ede1446dbe7"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/network-process.json": {
+      "bytes": 4439,
+      "sha256": "0ffa67ffcebb13fa5edf531015e8155d57275f61348060529b2ae677fb142e24"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/MANIFEST.json": {
+      "bytes": 3219,
+      "sha256": "8cdc0614fb600400d21330d5423bf6b7f40d325b70baf35134c65513bf585911"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/SELECTION_LOCK.json": {
+      "bytes": 542356,
+      "sha256": "9471ae41ea9fbce76a4a073df63fcfc9033469317f3fd1b523c6414dd3fe72bc"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner-execution.json": {
+      "bytes": 560,
+      "sha256": "111f316a8623ed8d6687f73414a42477a3c3368370705d184bfdf08abe9a1018"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/CONFIG.json": {
+      "bytes": 370,
+      "sha256": "506f2940e65bfe59106a646094e1c381539911710906774c2d35d4e01e0d3b0b"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/FIT_LOCK.json": {
+      "bytes": 242,
+      "sha256": "62ceaf48d13021c35ea59e0ed0a69d2c8ac1bc4da04702c6d3875b1b58f3a090"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "16a611b3d3a3f0507013dd0ae2f88bd2585eb6301fb1e492035630c3e3f295eb"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/PROGRESS.jsonl": {
+      "bytes": 1800,
+      "sha256": "4617b99a8105a48fcf6cd66f145ed610b1fca8782d1a7311f19b4bd51daa1477"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/START.json": {
+      "bytes": 601,
+      "sha256": "8df720abc82ad098f4e06bcf095224794f06833d84edfbe9e6996265729ad971"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/TRIAL.json": {
+      "bytes": 654115,
+      "sha256": "8ca7e6578df837b959b4675356bc45e1bb4e55975d873ac2c3be5caf85c46be9"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/before-retention.json": {
+      "bytes": 61021,
+      "sha256": "0de0d0b005bc78e026f6e0abf921dd66b213328fd00c073a2c3e615c2d9fa818"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/completed-prefix.json": {
+      "bytes": 217761,
+      "sha256": "63a0faa8e4b9c8e5c7921cbcb269fc0b726e7fd08a0b257060578b097b2ddaaa"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/future.json": {
+      "bytes": 181416,
+      "sha256": "91528bf1f4e497c9ef165c412c103032c8c14a3d5c44d6cf224defa2a65d6d7f"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/owner-acquisition.json": {
+      "bytes": 42112,
+      "sha256": "6920bc900ed97cae337d34614adeebf0cf64a1ccbc5ba1525677f932e53b9689"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/retention.json": {
+      "bytes": 61021,
+      "sha256": "c934e0412be274ba741234893064028df28c8bed7f2268947c9a4bff80545e48"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/direct-owner/selection.json": {
+      "bytes": 61021,
+      "sha256": "96af40b739e6778c30c876b32cf0789ed074307ed9a02b49ef5ff05c1a8121fb"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1-execution.json": {
+      "bytes": 550,
+      "sha256": "a1ed47b49c03b561c0f18e5dee79ea5db41a1167091b91786d075e4dd8616c07"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/CONFIG.json": {
+      "bytes": 291,
+      "sha256": "3231a9abeeaf6d3d7df0dd4834a1c337d57930a2553674d3fbdcf6528475bbbc"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "af4e61afd882e1fc0f38852d3ef95db54d9b1eaef2780f65d3324ed67288fc8a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "f4bd570a207e2a89fa8dd392c8cec7b3d8494a2eacc4c479afd932b00b699fb0"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "d5469c002edea751f6006c9bace959c8b109f2e1603f4bf8a6c009be1526b1e4"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "7f453c792a30dd43ba3e14c0f01bfa89dce85e8b3386922e027e9727b89c7007"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/START.json": {
+      "bytes": 522,
+      "sha256": "9eb9213dd72a6ba7e93872874f2d5176901bb0ad4a25ca1eb8955a4cfd5a8c35"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/TRIAL.json": {
+      "bytes": 650590,
+      "sha256": "e3a46643ecc13ec1b678efd89d0a1d288be22f58d629793ee28a3ce0934b62ea"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/before-retention.json": {
+      "bytes": 61651,
+      "sha256": "b66b7ba679e495d3127495339e62704ed3c82e34d14b739d8625fc13805ffe96"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/bootstrap-fit.json": {
+      "bytes": 286627,
+      "sha256": "4e914b106899f4cf232d81251284a7e723b0b2ce7d40b8834e82e42086e8a93d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/candidate-fit.json": {
+      "bytes": 318800,
+      "sha256": "c8ce94c6ef919bfaee9120b6dec27890f2350b773dc958c1d088d30871f91100"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/completed-prefix.json": {
+      "bytes": 200847,
+      "sha256": "6ad1bda4a5f30943e7dc30babffb86eb85c0c5c2d610ea22352f30cf9e82772f"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/future.json": {
+      "bytes": 147900,
+      "sha256": "e72f129379ddb83d4a44837a5954ebac1e02ed794f36de530f3dc5ecd2afd19d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/retention.json": {
+      "bytes": 50773,
+      "sha256": "b96b8a7d657bb79a21716cd96737f41bd131f894e6be7d90d2b8f253fec8a3e9"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-1/selection.json": {
+      "bytes": 50783,
+      "sha256": "4eca48b14e634a7fdc6db780faefcb6393dfdd339683c0f9c4f100a32c02dc4d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2-execution.json": {
+      "bytes": 550,
+      "sha256": "199ffd72995d9e40a85a68357ad5a0956fc2d4ebeac459cb9b6dd342c0e099f5"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "528269eed6641962b5dc13a7f2319a6790af28dc2936d65a5dc7d42e3cf664dd"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "9f414acca75313ea3d3162e272acefb17084343adcd2ca35f1acb43268e106b1"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "02863e2dc617c15ac3ff9a21541b4668650bc3ab57f25661591436ebde042925"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "f750d5aeb508bc8f6cad8d165451f92c0e0b178991217fa8f48e22b13a8179c1"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "fa28850ff5a872807b6b2f7fae3d010382da768d3036a7801667dd159f2d8b81"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/START.json": {
+      "bytes": 584,
+      "sha256": "b87ea5ed20b65670c20829c6bf5e3a71b5dd08a2a9a19a5a0cc389566944b110"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/TRIAL.json": {
+      "bytes": 718647,
+      "sha256": "4dd74893a5ce5bd05850a06e14163d01bf304d927337e54a601e6491e118599b"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/before-retention.json": {
+      "bytes": 61647,
+      "sha256": "42684fd5ae395d15091441c986786c73a7209aaeb75da615991e7136d16c8552"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/bootstrap-fit.json": {
+      "bytes": 286585,
+      "sha256": "b156ebb625106b432620354ceb59267ab17a0864ea456badd71edbf180944390"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/candidate-fit.json": {
+      "bytes": 290772,
+      "sha256": "174fab70ffb3277dfb154971680a09762d6436115ee933c2ce2efc812dd6314e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/completed-prefix.json": {
+      "bytes": 200847,
+      "sha256": "2f02dc62f30d8da859d9a22069993d2687ed164c5790d61c3518309b7e3aa5ae"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/future.json": {
+      "bytes": 184747,
+      "sha256": "6d2fc44b7123aa8f6af547ac7e104f107054c4339d28ce7f163239f2f3b856ea"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/retention.json": {
+      "bytes": 63090,
+      "sha256": "7ba413899adf03f90f4ad7e8f132e39501da8b3c6a61999828456979c8330f0c"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-2/selection.json": {
+      "bytes": 63088,
+      "sha256": "c1bbb91454a4367b8b516c583eb45ca2e85b53ab61dc2d4b69f3842f98424211"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3-execution.json": {
+      "bytes": 550,
+      "sha256": "9a13b34a23f843e139d3e7f6e7566b5b1e16d124e285e644fdb44ed16edea863"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "a9ba2654fa2775d5b92d8d9a933ee408aaa9fa9498fb75bde347e00407c5f138"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "c332ae67643507c1c7009886f9035070b79894e0d78ea66bdf3badf3fa565fdd"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "e518fbc837e75e06d912f8313ad9e671be26439537ac2d7c965b810850a8f8aa"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "e31bac1446d03ce1bb2f51b29a63cadaacd9ba0f9f897d49b46ec602eacc949d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "0fb774f1a928a9036a6fc017c85ce070e92465c5267f6387879a5ca2082f0909"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/START.json": {
+      "bytes": 584,
+      "sha256": "097dc75379cfa821363a7e01745d24808242a93c27eeff20a95c4fb805e92c9a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/TRIAL.json": {
+      "bytes": 721682,
+      "sha256": "91346750bd465927d2abdc6699bcd8757e803ba49c26a838f42087a1037c0c52"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/before-retention.json": {
+      "bytes": 61653,
+      "sha256": "18e523ff4f0154b156f834b56885854a3fc31f0740e3337f6e4aa8cf8bed4571"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/bootstrap-fit.json": {
+      "bytes": 286627,
+      "sha256": "75eaf1b8db242e491743a6015327ed88d0c18be53aa2ab88903a3373896d45cb"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/candidate-fit.json": {
+      "bytes": 284400,
+      "sha256": "5389a1d67b963903610930a57582d4547476e49386f7a6b1993446a9d7d462b5"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/completed-prefix.json": {
+      "bytes": 200851,
+      "sha256": "2efd44d2e952a54195bc962a8ae5ad806d87d260c1fed85968780880c2df905b"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/future.json": {
+      "bytes": 184734,
+      "sha256": "ade0626e53d0e9ccc6de9c9b309340cac07e980da120583f7fd51464d59e99cb"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/retention.json": {
+      "bytes": 63080,
+      "sha256": "826bfce30d191d94fa2992f9872406b02b96f9366fa5a6678e275b9e66b1fe25"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-3/selection.json": {
+      "bytes": 63087,
+      "sha256": "a53ec65a226a9b479fdcd72456234c1e5c9430a2c500c9c2b3852cce76c826e2"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4-execution.json": {
+      "bytes": 550,
+      "sha256": "ee901036803695cd3fa109754f165485d4e575f5055aab48cdf0a7d5419d43b5"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "ca18783b42d622f355db88addcb5ace798ccefcc271bbe2d1c51840894a3677e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "0849fc1c3da148d1269d2007a1d88bfeb46970cfdb54dbd4128d4c48939f00c4"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "6fb91097bbb03e3d7252d0c99b2532ffd0824fa9788655d2cad5d2be7c22e045"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "4cc0bbfd1a35a1b4bf225286eea6a134677552688c78ca04321504157391db2a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "74e26765979e31429dbeeb6cb4cc28b319cf99edb809bd385c1e591b8e51fe47"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/START.json": {
+      "bytes": 584,
+      "sha256": "113285628fa7e6d726867eaf47ed6b8a32547dab98b8aa64b227b7a79e5fe784"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/TRIAL.json": {
+      "bytes": 724698,
+      "sha256": "83191c5ef6b46eac30ae0dda1c1674e773eb055505d65336afab83fec9c5eb91"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/before-retention.json": {
+      "bytes": 61645,
+      "sha256": "95888cc6adbdad24d9604a948dc16b314987aeca18705fc3ea6fddb1f3ea822a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/bootstrap-fit.json": {
+      "bytes": 286591,
+      "sha256": "b9e0c9585b19792b17970f85193f9f9ec923175b1720455d04bdc3509685fcc7"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/candidate-fit.json": {
+      "bytes": 286613,
+      "sha256": "9ab2236a9b6a21f5b23fb0ced7dcc35cd7f535d17d7e2d91acff421ec31455e1"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/completed-prefix.json": {
+      "bytes": 200849,
+      "sha256": "31a7ef45be9d6f6aebd8475d9665cd4564539ac56d39cb8f897c5c050fe65bbc"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/future.json": {
+      "bytes": 184737,
+      "sha256": "4d5edfd0abc5a1cf3be4876673e7e646e52fcd62ed72e01c04909eea6182204f"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/retention.json": {
+      "bytes": 63082,
+      "sha256": "a20e76b1c882607f0dd7fc2512228c257231023b6553df9c2f7830365dd0bd77"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-4/selection.json": {
+      "bytes": 63080,
+      "sha256": "be8d42a361f80d74b4adfa721edcf66e2bad822d0b1d6a6a9f69bb03017015e3"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5-execution.json": {
+      "bytes": 550,
+      "sha256": "f1c373ba958d07a705a23482dc38db88feecbfe4027e24f323d1799252676cd9"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "b265daf2bd7e0aeaca169f6069aeac45d77c32a2ffb37fcff63c078027671c05"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "44775f9dba1dfdfa924787bcb0d461ebe2977b05c7ce8295981fc9c4c1127b3b"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "97754df44e06884f5a900105601fc84ac8673a1a12318cca221e079c8788b19c"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "ea217ccfe4b5af832b357e3c1c7c3332119aede472dd3e9865874aced2d7e278"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "2e8a5adc73b9d08ac71e1547bac29a2d658134f2a406ec1547c0c2cbec39d11e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/START.json": {
+      "bytes": 584,
+      "sha256": "e4334736fd22e7fcbb1d1d8f9d62c7b9dc4aab1753d01f5b72792e1aafa9ed4a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/TRIAL.json": {
+      "bytes": 727771,
+      "sha256": "95524568b7adea44420af7854daba20fdfdba040089753f5317b29d021233db0"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/before-retention.json": {
+      "bytes": 61649,
+      "sha256": "eaf73388e2c736e953de574f3c9b23608a5030269fafcfb2783ee6904841d2f6"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/bootstrap-fit.json": {
+      "bytes": 286611,
+      "sha256": "19aa57abc74cc96de6753bb80b357894d149c678ac18a38e8e6e8457eb3ad58e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/candidate-fit.json": {
+      "bytes": 290561,
+      "sha256": "1f5319bedc17cc4670aba5a67cb5b226cd7c5291e8fcd0d375f6c1815336ecb5"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/completed-prefix.json": {
+      "bytes": 200847,
+      "sha256": "386596434814a2bd253e498b2e98e6307246de2c037221f434dcae69efe84a71"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/future.json": {
+      "bytes": 184744,
+      "sha256": "80fd57b3094858ac8df80c928d8ece6fa956daf9df65a80990074a14ff9d97f2"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/retention.json": {
+      "bytes": 63094,
+      "sha256": "1bd8756763902018d0a07c7891411f593a64fa412001663f256da71dff05a107"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-5/selection.json": {
+      "bytes": 63078,
+      "sha256": "a0090206b9dc0c5a50b4abc5ea78d40ffe34634e9ad0c8ef1cb2afc0e5a03a2f"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6-execution.json": {
+      "bytes": 550,
+      "sha256": "ecc7a4e6b5d1241a84ede1fbbc023d053f4f0ddf1f42cf8b8b460e6bc0001b67"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "cd284002490c6b890f515e25f7c4a3df3a363bfdfdb25d5386a30adef210cf8e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "5f39362821e19b0a1dd73e933f2216fb782758f0ba45a5cd0641a9342bd74867"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "c55e36ad26ba8ab0ed433bb81888248c5793476f2a5031d32cccb6cf2a7cc219"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "40e36b48e515753fb83f5813a8cbb344e5e68b0c7290a4794d0c7035e6a26807"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "6a98aa25019244209d244943b7902ac5e2b8c262e445dd4c5f468cfbafcc06d5"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/START.json": {
+      "bytes": 584,
+      "sha256": "d94c5ae72e36c3ade7174433ca58a0f24578816d626198a3c4a740cead504df3"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/TRIAL.json": {
+      "bytes": 730809,
+      "sha256": "c3134e9bfd0d31319ab326e8ade3392ffc4a7a0069c961be287f6c716f3e4872"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/before-retention.json": {
+      "bytes": 61641,
+      "sha256": "c0e044882380958638673fe629ae85612412acf07f7a3d8cbf39d38741252f4a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/bootstrap-fit.json": {
+      "bytes": 286609,
+      "sha256": "dbb5e453ce67587ecf56a4d3c495d06d33f9652e35c413a27d1014b1f3eb2853"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/candidate-fit.json": {
+      "bytes": 295505,
+      "sha256": "af27d547d4e1fae62d0b86c611639a1bb942ffc336c745b8d00330b095485d01"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/completed-prefix.json": {
+      "bytes": 200843,
+      "sha256": "3f3901897434717dbffacc69aa2fbbf9054b2bd1276a489eab995a0230f9c71d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/future.json": {
+      "bytes": 184743,
+      "sha256": "c7cd743cc0ffd7c7a3a63b1d30dd230ca389e804046fa4ba6a64ba7e39313f2a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/retention.json": {
+      "bytes": 63097,
+      "sha256": "2c1a289d0b1e9b90869f14a14b0053b59492a5181a5b301a2043c20784d66d5e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-6/selection.json": {
+      "bytes": 63084,
+      "sha256": "6f5df8180a72de41f26198dff87bf6722f503e4b45b7945df515c1f0badd5500"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7-execution.json": {
+      "bytes": 550,
+      "sha256": "841eb3b7bd14dadd12ca261181897a70993bd98efd68317ea1146bfa56a1a13e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "01010a95bcbff2f9e3bee21acdc2a1baf87ca845cac9d66834aba49e0eb7ac71"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "3cb1aacc3537be0eec658c37fd3dd24d5fd6288b697e6b17f3bfcb16cd9279a6"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "eb0a0df0ebd29715f8f80de3b5ebe13356a210aafbdf988c28b5f623c68f39c7"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "65dcf77f9d5ceeec95c3e437ec9b2b224b64820e19e3499cf86a8b22fbc0750d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "7a3e4726db285ba96bb6ecf928a40b23ebd5ce4254f38d0a1007ad4efb503908"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/START.json": {
+      "bytes": 584,
+      "sha256": "38faf45cefbf63956c141d18ec9a37e554fafc9a33c790836fdbb9c268dcb520"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/TRIAL.json": {
+      "bytes": 733841,
+      "sha256": "4e706fe31546c9abfdd407aced0ddd79a33ae3cdd1e3f732c2022067368ab7aa"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/before-retention.json": {
+      "bytes": 61651,
+      "sha256": "ad3196aecfa9e142673120534ca973b132e100fb058be4dfb00a6aa8ceef923d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/bootstrap-fit.json": {
+      "bytes": 286593,
+      "sha256": "b892898f9f5f89e147f16cc2a4fce8f94dfa13aec0cc9e94ffec1acb12fd9c8d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/candidate-fit.json": {
+      "bytes": 300510,
+      "sha256": "78edb7fdbb71f02d9d6bd109f280bed6d908e8e6d8d94b4804f369d16ab6adee"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/completed-prefix.json": {
+      "bytes": 200847,
+      "sha256": "88b83d819bd3e8fad4eb8c3068383cfff25eb2ad777635ea9144c7a03caa26c3"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/future.json": {
+      "bytes": 184733,
+      "sha256": "1dcdcc0f34f26ef8be6c979f2988e5118939cfe1225640229991de4165ea6843"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/retention.json": {
+      "bytes": 63090,
+      "sha256": "f99894e86cd800f7b2fb4b03b7e1852e0a4b7adfadc4fe06f04a755834023a25"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-7/selection.json": {
+      "bytes": 63082,
+      "sha256": "0bd5b0f9433d7e30fa41e36668a7d30c91c4b81597f0519dc58aaf24dd3463bd"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8-execution.json": {
+      "bytes": 550,
+      "sha256": "d3de4c925af5509e6bcee7a49eb929c7badae7b01bd6827b451392b137f438b2"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "1ed4d010db3fce3e39ab4cab11fcda0d9fb1996bb833b7140ea233860b77b2c4"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "92b13debe1069f248a92a4e2a59dd2b2334cf13be9ed2f7248cd907f54f734b8"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "c16102c7da533a773f5fbe8d6365a341dfcb9a6617fbebf02244740870c50d7e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "2fb8f541a3c3cd69e30c68f3bc4b09fcbcb4743f2de667cdfa7cfc3499178102"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "e9745a53590a25ac2bd45f4decf2374665cd6faa755b5f479a19322706352a4a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/START.json": {
+      "bytes": 584,
+      "sha256": "1abfd0447787289bc10d23e49b6114e90210a4b19b4a45df65de5a4d19902157"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/TRIAL.json": {
+      "bytes": 736880,
+      "sha256": "a43fc0f754ee85ee94d81767a3a0e241bf68aa2d6fd854b2a80b8206b1977ed1"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/before-retention.json": {
+      "bytes": 61649,
+      "sha256": "b3d0d25d052ec6209cada16f026a8795e3bd3ecdc64c75273d2c2418835f9e76"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/bootstrap-fit.json": {
+      "bytes": 286627,
+      "sha256": "73a784aa84c647665461f50d1d2efbb50835ed6f34d9586b2ab879dd4e59790a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/candidate-fit.json": {
+      "bytes": 306462,
+      "sha256": "46e09e7335b8c7a841b21a54775b5b9b48bc4fea3cdc2e5f0cc7b5a3e3f4c373"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/completed-prefix.json": {
+      "bytes": 200837,
+      "sha256": "54b4233ca9f70b48fff887dbee2acbe2ddbfcb42e64a67ea609c1cb8a8da17e1"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/future.json": {
+      "bytes": 184735,
+      "sha256": "c1a95ffad99de98da3efb21dcf12f9eeb19032dc8cec2b987043ba602930546d"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/retention.json": {
+      "bytes": 63094,
+      "sha256": "b01c2698af40523f84a50c2f973a990fbc4e4047e468e42deb47cdaa0f571b65"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/fixed-8/selection.json": {
+      "bytes": 63089,
+      "sha256": "e0d79ee9b3dfe4090d12b9b7152911d20237addf2944f021f21576fc10866d47"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess-execution.json": {
+      "bytes": 568,
+      "sha256": "199a1a8822f956c267ba185b4c76ca979337cf78efa3e7e3b35dff396e192dca"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/CONFIG.json": {
+      "bytes": 373,
+      "sha256": "508cee257a1df56107439472121ac776eead234bfa53ac094f24f400bb617624"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "357e776b99a39a23763dcd34ad288692011f03efb492f2c5820bd2418c88d9aa"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "e97fe04e6f23fa13fcd8468cc1e0d2568a02fe721e8a7b3a74efcb9a53873e26"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "58bdf1fcb72938e5d3b36bc09fa0fb4be0287b3aa73b48069f17f0f90476f15a"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "db382f28fe3005fe918aca3424c1e825475f1d7d6abc592ec4b906a64c677407"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/START.json": {
+      "bytes": 604,
+      "sha256": "62475bd0e12ea6b38e449dbef77e2913c17490876daee11228265f914b65c240"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/TRIAL.json": {
+      "bytes": 742957,
+      "sha256": "bc29f3198d0f7b251a733295bfe32f9b56e957af8dc8ceacd6861108cb8b905b"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/before-retention.json": {
+      "bytes": 61647,
+      "sha256": "717f9c6887b85d47bc0bcc692b798ac00f8397954252fb93088312bfd4010661"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/bootstrap-fit.json": {
+      "bytes": 286609,
+      "sha256": "6e72b14d9276b322a61e0ff9db3ec2d88eca1ed0634a4ed28b284f33db46b70c"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/candidate-fit.json": {
+      "bytes": 328905,
+      "sha256": "a41a727040eb94615c3f960900effaf80d6eef7918a8184f19555e685229452b"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/completed-prefix.json": {
+      "bytes": 200837,
+      "sha256": "fd6707a352667996d3c53928f85c80187bee965bb2aa2fc476c977286f34ccee"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/future.json": {
+      "bytes": 184741,
+      "sha256": "0e4cee5a04987e5ec5ce846bc9495662c8c46e7f3a687c4b073b2e54145d2459"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/retention.json": {
+      "bytes": 63096,
+      "sha256": "b14f521439a5c1964e20cf2b71c8db7ac034966cbcc753ab3bec02b317899365"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/learned-coaccess/selection.json": {
+      "bytes": 63086,
+      "sha256": "4e9d1a63b7cbcee5cd1ef4874481fb727b9c277c9a050250143de2f787500140"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector-execution.json": {
+      "bytes": 590,
+      "sha256": "b6d4bb894dedf53925eed8316732a9574ac4d6883606abbd802eaf47d6958b3e"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/CONFIG.json": {
+      "bytes": 393,
+      "sha256": "b63d3f530204de9cef1d47e10c81164a29cfc2e8309502b1d76515bfa5359be1"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "7f14727be5c960822213d040bc4da635f19f88d162710ba3438e0dff27d6ae22"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/OWNER_EXPORT.json": {
+      "bytes": 42376,
+      "sha256": "963d553f8987aeaee435b4cd6c30cbda3e2e63d06020d2a6d73532dc7223a1ec"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "5dd0828cdc62a9b3db6da72d74be9860a54615781ee45b94c87316627abf497c"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "d637494a5b48b8733f13c9ff4f06e910e137c03d2af5a91f2fafa691c8a076ce"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/START.json": {
+      "bytes": 624,
+      "sha256": "7e9cb4da9def3185cc9a51b00a7e15424e1d821ce5e341bc6185b36c7e687409"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/TRIAL.json": {
+      "bytes": 730848,
+      "sha256": "e2b28157a08d98a82f1b49d735d5dfa0012b0db117982854c0d003059b2537d3"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/before-retention.json": {
+      "bytes": 61653,
+      "sha256": "5dd69a6475e0fa32cea5315760304661f14b710f3b7e38dff3a35bfc2a302253"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/bootstrap-fit.json": {
+      "bytes": 286613,
+      "sha256": "36e269dc97aa1cbeda055b1f533e82d23a1efd0bd3339b6d976dcdd4f2a3a7f0"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/candidate-fit.json": {
+      "bytes": 295507,
+      "sha256": "7cdc0951040c7e6779d2133294fa206f7744e9ef09638fda2ad9de0cb5cf6f4f"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/completed-prefix.json": {
+      "bytes": 200843,
+      "sha256": "85e90d03016ad52d4daebc68f6e0de2522284bb8e3f1ee04309263791889dff8"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/future.json": {
+      "bytes": 184731,
+      "sha256": "a2e48e8ef457a48bd561753f6a4a93794a136acd9477c70486c32fc833d04428"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/retention.json": {
+      "bytes": 63091,
+      "sha256": "bb9379b1151036d6aab405591e62a9fc7c021e21d153ce6a5e016235d56edb7f"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.artifacts/lightweight-prefix-selector/selection.json": {
+      "bytes": 63086,
+      "sha256": "5c1264741e5b95bb61d4c6eeb3b174890c1befcc382561ee6dc58333053cd502"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-learning.json": {
+      "bytes": 8340081,
+      "sha256": "9a99c5e66c065a612ab96bfcca1adcce58f2906d7d6368b08fdb5db768c77833"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/prospective-score.json": {
+      "bytes": 166070,
+      "sha256": "85bbac95dcca5b14ffe9d47d051c55d3e2969d32998358f279015790d6e338af"
+    },
+    "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/receipt.json": {
+      "bytes": 35889,
+      "sha256": "b7046931234e246dd5149faf886015b032e130e466086b429dba32dbb903022a"
+    }
+  },
+  "original_receipt_inventory_verified": true,
+  "parts": [
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-000.bin",
+      "sha256": "423f3db68877e08f48d6239b787d5ba9a1ff25ccdbfe7759c07ab50feedff754"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-001.bin",
+      "sha256": "de64cf8133e86a5022428b374748eacad2a4b3e037c2c435f702574c0908c835"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-002.bin",
+      "sha256": "cc76f042ed5a7b344c4ed8912821ba78e1316990e1faef0dba11f089459c53c1"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-003.bin",
+      "sha256": "d2780607bd06290ece1b6c877a934e75990619c7387c2df8d9b49cea78b2bfff"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-004.bin",
+      "sha256": "0fb18e5b308a8d4f001ebe8d1e4c17a8aff0e929465a65faa0bef92039f7ff06"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-005.bin",
+      "sha256": "9026c67fffba69f34b6ed3d6c1b6078f51bf37adca326d2b037c616b7c1991f0"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-006.bin",
+      "sha256": "369383f36c7230f3961999d0613fc3be4c5714997ca84fe843ac6dd0bf792b76"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-007.bin",
+      "sha256": "018b7da637c3291f3bd0f81eed8932d29bff51be7c7f61ec5d6e42d803870c25"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-008.bin",
+      "sha256": "635b2670b21eb34c6c672d3866f7c766531931828964862e310ff10a5a1511f9"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-009.bin",
+      "sha256": "26a8485c21c52a91c91a77b776a26ab68c7568ce744f06dff497d15a9d039809"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-010.bin",
+      "sha256": "c2a7ede0d1bffa7eb1af4734b3f0fa4090598e03af58039067c09b662464f5b4"
+    },
+    {
+      "bytes": 400000,
+      "path": "artifact.zip.part-011.bin",
+      "sha256": "ffee0a66f061e23eec0c826795067d1e94745aad46f1b311a6814cb754456fe4"
+    },
+    {
+      "bytes": 191278,
+      "path": "artifact.zip.part-012.bin",
+      "sha256": "3e7801c4d06ef20cd2013c3560b588dfa1c1276b0bcf1ecd4aa61a1ae9bf4268"
+    }
+  ],
+  "product_receipt_member": "hepta-private-ci/hepta-private-ci/memory-v8-ci-output/receipt.json",
+  "run_id": 40612088249,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40612088249",
+  "schema": "hepta.memory.v8.original-ci-artifact.v1",
+  "source_commit": "1f52f23f2dc9cf1ecc863c61e52cce8e53f35330"
+}

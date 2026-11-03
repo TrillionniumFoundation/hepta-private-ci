@@ -55,6 +55,10 @@ WORKFLOW_REFERENCE_SCRIPTS = (
 WORKFLOW_REFERENCE_RE = re.compile(
     r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
+WORKFLOW_REFERENCE_PREFIX_RE = re.compile(
+    r"(?<![A-Za-z0-9_./:\\-])(?P<prefix>(?:[A-Za-z0-9_.-]+/)+)$"
+)
+
 FILES = {
     "current": "docs/CURRENT.json",
     "system": "docs/governance/DOCUMENT_SYSTEM.json",
@@ -193,6 +197,13 @@ def verify_exact_workflow_references() -> None:
             continue
         for match in WORKFLOW_REFERENCE_RE.finditer(text):
             workflow = match.group("path")
+            prefix_match = WORKFLOW_REFERENCE_PREFIX_RE.search(text[: match.start()])
+            if prefix_match is not None:
+                prefix = prefix_match.group("prefix")
+                if not {".", ".."}.intersection(prefix.rstrip("/").split("/")):
+                    # A nested repository path names that workflow, not a root one.
+                    # URLs and document-relative links retain the root-path check.
+                    workflow = prefix + workflow
             if not (ROOT / workflow).is_file():
                 line = text.count("\n", 0, match.start()) + 1
                 missing.append(f"{path.relative_to(ROOT)}:{line}: {workflow}")

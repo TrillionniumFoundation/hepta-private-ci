@@ -1,0 +1,218 @@
+{
+  "actual_head_fits": 84,
+  "calibration_opened_during_fitting": false,
+  "encoder_bytes": 127538960,
+  "encoder_digest": "fe7932ac0aba4b1d9fe3edaea863b822b5c40922acab24ac56050e0b6ed7853d",
+  "held_opened_during_fitting": false,
+  "public_selection_is_iterated_development": true,
+  "runs": [
+    {
+      "actual_head_fits": 42,
+      "all_candidates_retained": 6,
+      "contract_comparison": null,
+      "original_receipt": {
+        "bytes": 19577,
+        "sha256": "157efd836c48d2620e245df730c24b24f2e3733ac4e3e8de134be3839c6f8b98"
+      },
+      "selected": {
+        "C": 32.0,
+        "candidate": 2,
+        "identity": {
+          "base_bytes": 127538960,
+          "deployment_bytes_excluding_base": 42176,
+          "manifest_sha256": "abab53562908ccad82df2f19e7dade259fac89cd07da41d3164d6f158ed8cb81"
+        },
+        "kind": "semantic",
+        "selection_metrics": {
+          "by_operation": {
+            "apply": {
+              "correct": 8,
+              "rows": 8
+            },
+            "change": {
+              "correct": 6,
+              "rows": 8
+            },
+            "current": {
+              "correct": 5,
+              "rows": 8
+            },
+            "history": {
+              "correct": 4,
+              "rows": 8
+            },
+            "procedure": {
+              "correct": 7,
+              "rows": 8
+            },
+            "semantic": {
+              "correct": 6,
+              "rows": 8
+            }
+          },
+          "known": 48,
+          "known_abstained": 12,
+          "known_correct": 36,
+          "known_correct_coverage": 0.75,
+          "known_wrong_accepted": 0,
+          "ood": 64,
+          "ood_acceptance_rate": 0.046875,
+          "ood_accepted": 3
+        }
+      },
+      "selected_candidate": 2,
+      "source_commit": "f365efbdf138e6e09c3e6642ed5c1ba2e1e84c7d",
+      "source_files_verified_against_git": 41,
+      "source_inventory_sha256": "53f7815a851dbc69fb5067efa676dd230ffd0d1a4d86ddf2dc520c4706f4308f",
+      "stage": "selection-01",
+      "total_cpu_seconds": 20.167838799000002,
+      "total_wall_seconds": 20.276440393001394
+    },
+    {
+      "actual_head_fits": 42,
+      "all_candidates_retained": 6,
+      "contract_comparison": {
+        "after_contract_with_same_frozen_policy": {
+          "by_operation": {
+            "apply": {
+              "correct": 8,
+              "rows": 8
+            },
+            "change": {
+              "correct": 8,
+              "rows": 8
+            },
+            "current": {
+              "correct": 8,
+              "rows": 8
+            },
+            "history": {
+              "correct": 8,
+              "rows": 8
+            },
+            "procedure": {
+              "correct": 8,
+              "rows": 8
+            },
+            "semantic": {
+              "correct": 8,
+              "rows": 8
+            }
+          },
+          "known": 48,
+          "known_abstained": 0,
+          "known_correct": 48,
+          "known_correct_coverage": 1.0,
+          "known_wrong_accepted": 0,
+          "ood": 64,
+          "ood_acceptance_rate": 0.015625,
+          "ood_accepted": 1
+        },
+        "explicit_contract_rejections": {
+          "known": 0,
+          "ood": 56
+        },
+        "interpretation": "Diagnostic contract ablation on the same rows; not an independently admitted raw-model policy.",
+        "raw_learned_argmax_known_correct": 48,
+        "raw_learned_argmax_ood_routes": 25,
+        "raw_learned_with_same_frozen_policy": {
+          "by_operation": {
+            "apply": {
+              "correct": 8,
+              "rows": 8
+            },
+            "change": {
+              "correct": 8,
+              "rows": 8
+            },
+            "current": {
+              "correct": 8,
+              "rows": 8
+            },
+            "history": {
+              "correct": 8,
+              "rows": 8
+            },
+            "procedure": {
+              "correct": 8,
+              "rows": 8
+            },
+            "semantic": {
+              "correct": 8,
+              "rows": 8
+            }
+          },
+          "known": 48,
+          "known_abstained": 0,
+          "known_correct": 48,
+          "known_correct_coverage": 1.0,
+          "known_wrong_accepted": 0,
+          "ood": 64,
+          "ood_acceptance_rate": 0.296875,
+          "ood_accepted": 19
+        },
+        "weights_and_thresholds_identical": true
+      },
+      "original_receipt": {
+        "bytes": 27096,
+        "sha256": "03f0dfd30b74671c2eca944efb56ccf542b2431682610104cce317b2b4ce1e8d"
+      },
+      "selected": {
+        "C": 2.0,
+        "candidate": 3,
+        "identity": {
+          "base_bytes": 127538960,
+          "deployment_bytes_excluding_base": 787634,
+          "manifest_sha256": "bf59ceaff39aabdfbe062075ff5194cc1f29a2882bb787898aeae25d5009bc6c"
+        },
+        "kind": "hybrid",
+        "selection_metrics": {
+          "by_operation": {
+            "apply": {
+              "correct": 8,
+              "rows": 8
+            },
+            "change": {
+              "correct": 8,
+              "rows": 8
+            },
+            "current": {
+              "correct": 8,
+              "rows": 8
+            },
+            "history": {
+              "correct": 8,
+              "rows": 8
+            },
+            "procedure": {
+              "correct": 8,
+              "rows": 8
+            },
+            "semantic": {
+              "correct": 8,
+              "rows": 8
+            }
+          },
+          "known": 48,
+          "known_abstained": 0,
+          "known_correct": 48,
+          "known_correct_coverage": 1.0,
+          "known_wrong_accepted": 0,
+          "ood": 64,
+          "ood_acceptance_rate": 0.015625,
+          "ood_accepted": 1
+        }
+      },
+      "selected_candidate": 3,
+      "source_commit": "20f389d14891321ba071f39710839e2cb61e9e90",
+      "source_files_verified_against_git": 43,
+      "source_inventory_sha256": "c206caf1ab074e9282813897ed817a81341b96239e9e45f0dd1dab79aebcde5c",
+      "stage": "selection-02",
+      "total_cpu_seconds": 57.716754655,
+      "total_wall_seconds": 71.62924997599839
+    }
+  ],
+  "schema": "hepta.memory.v9.frozen-training-summary.v1",
+  "total_cpu_seconds": 77.884593454,
+  "total_wall_seconds": 91.90569036899979
+}

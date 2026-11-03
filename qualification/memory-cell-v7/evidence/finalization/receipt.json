@@ -1,0 +1,185 @@
+{
+  "after_tracked_tree": "d214d3bcbba1f67407066ad2c89b6f0c9fd4d3c2",
+  "artifacts": {
+    "AFTER_FILES.json": {
+      "bytes": 23476,
+      "sha256": "365b279f5c01db22623acec9fb1a9665b8788271649de8538451c1373afb822d"
+    },
+    "PATCH.tar.xz": {
+      "bytes": 106364,
+      "sha256": "f258f4707b9f553e786012d611c2ff1fb24cb76a8f80f3597942db0b9811e9ac"
+    },
+    "PATCH_INDEX.json": {
+      "bytes": 7589,
+      "sha256": "7a5fde00680bfb7711aca5bcf198abae4fa9ce0a6d0556e7ab010b4dccd08a54"
+    },
+    "SHA256SUMS": {
+      "bytes": 570,
+      "sha256": "63e5e0318d702f57bba9331d0b29e22f1b4a7df4621c53e90e32fee2928bbbb1"
+    },
+    "SOURCE.json": {
+      "bytes": 886,
+      "sha256": "73f0a67daffe095a80d2d5684f8d1e6aee628379e2027b98e84314ea3b0139bd"
+    },
+    "execution.log": {
+      "bytes": 172346,
+      "sha256": "e52c22af3a8c60b5347beedacaa36f2dfed3b9e3ede130b415178ba86b5815fb"
+    },
+    "generated.patch": {
+      "bytes": 699971,
+      "sha256": "e1dcea2dd1fcdb3370c6e010de326ed11bbaee2f2433ce907e3121d6eb085b36"
+    },
+    "generated.patch.xz": {
+      "bytes": 101016,
+      "sha256": "3d7e2b7f21fadf1bf15e6265aada197b28c2b3e3845e33f1ac20865387f19a22"
+    }
+  },
+  "automatic_commit": false,
+  "cargo_target_dir": "/home/runner/.cache/codex-ci/cargo-target",
+  "clippy_compiles_test_targets": true,
+  "executions": [
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "0b0b041b6dd8121050c335cb3be73bb1d8cb7904",
+        "59b45ccd863cab0fd1ea96f3b4b025715aa814f8"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0017685330000176691
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0011012569999877542
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+        "HEAD",
+        "--",
+        "codex-rs",
+        "justfile",
+        "scripts/format.py",
+        "scripts/just-shell.py",
+        "qualification/memory-cell-v7/addressing",
+        "qualification/memory-cell-v6/v6",
+        "qualification/memory-cell-v7/training.py",
+        "qualification/memory-cell-v7/training_worker.py",
+        "qualification/memory-cell-v7/native_export.py",
+        "qualification/memory-cell-v7/population_training.py",
+        "qualification/memory-cell-v7/population_worker.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0011563230000035674
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 330.967953186
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "0b0b041b6dd8121050c335cb3be73bb1d8cb7904"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 2.6377792010000007
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--",
+        "qualification/memory-cell-v7/addressing",
+        "qualification/memory-cell-v6/v6",
+        "qualification/memory-cell-v7/training.py",
+        "qualification/memory-cell-v7/training_worker.py",
+        "qualification/memory-cell-v7/native_export.py",
+        "qualification/memory-cell-v7/population_training.py",
+        "qualification/memory-cell-v7/population_worker.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0045539889999872685
+    }
+  ],
+  "final_tracked_changes": "M codex-rs/hepta-agent-protocol/src/lib.rs\n M codex-rs/hepta-agent-protocol/src/memory_cells_tests.rs\n M codex-rs/hepta-agentd/src/client.rs\n M codex-rs/hepta-agentd/src/client_traffic.rs\n M codex-rs/hepta-agentd/src/client_traffic_tests.rs\n M codex-rs/hepta-agentd/src/config.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/memory_cell_address_worker.rs\n M codex-rs/hepta-agentd/src/memory_cell_address_worker_config.rs\n M codex-rs/hepta-agentd/src/memory_cell_address_worker_test_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_address_worker_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_address_worker_wire.rs\n M codex-rs/hepta-agentd/src/memory_cell_bundle.rs\n M codex-rs/hepta-agentd/src/memory_cell_client.rs\n M codex-rs/hepta-agentd/src/memory_cell_context_test_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_context_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_control_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_execution.rs\n M codex-rs/hepta-agentd/src/memory_cell_language_runtime_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_learning.rs\n M codex-rs/hepta-agentd/src/memory_cell_learning_test_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_learning_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_network.rs\n M codex-rs/hepta-agentd/src/memory_cell_network_bindings.rs\n M codex-rs/hepta-agentd/src/memory_cell_network_organ.rs\n M codex-rs/hepta-agentd/src/memory_cell_network_test_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_network_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_network_transport.rs\n M codex-rs/hepta-agentd/src/memory_cell_population_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_release.rs\n M codex-rs/hepta-agentd/src/memory_cell_release_test_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_release_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_release_trust_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_runtime.rs\n M codex-rs/hepta-agentd/src/memory_cell_runtime_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_snapshot.rs\n M codex-rs/hepta-agentd/src/memory_cell_temporal_runtime_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_test_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_time_view.rs\n M codex-rs/hepta-agentd/src/memory_cell_time_view_tests.rs\n M codex-rs/hepta-agentd/src/memory_cell_training.rs\n M codex-rs/hepta-agentd/src/memory_cell_training_test_support.rs\n M codex-rs/hepta-agentd/src/memory_cell_training_tests.rs\n M codex-rs/hepta-agentd/src/state.rs\n M codex-rs/hepta-agentd/src/state_control.rs\n M codex-rs/hepta-agentd/src/test_support.rs\n M codex-rs/hepta-cognitive-store/src/durable.rs\n M codex-rs/hepta-cognitive-store/src/lib.rs\n M codex-rs/hepta-cognitive-types/src/memory_cell_values.rs\n M codex-rs/hepta-cognitive-types/src/memory_cell_values_tests.rs\n M codex-rs/hepta-context-compiler/src/memory_cell.rs\n M codex-rs/hepta-context-compiler/src/memory_cell_tests.rs\n M codex-rs/hepta-infer-worker-host/src/native_agent_output.rs\n M codex-rs/hepta-infer-worker-host/src/native_agent_output_tests.rs\n M codex-rs/hepta-infer-worker-host/src/native_app_server.rs\n M codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs\n M codex-rs/hepta-infer-worker-host/src/native_memory_cell.rs\n M codex-rs/hepta-infer-worker-host/src/native_memory_cell_tests.rs\n M codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs\n M codex-rs/hepta-learning-artifacts/src/owner_service.rs\n M codex-rs/hepta-learning-artifacts/src/selection.rs\n M codex-rs/hepta-memory/src/memory_cell_owner.rs\n M codex-rs/hepta-memory/src/memory_cell_owner_tests.rs\n M codex-rs/hepta-memory/src/memory_cell_write.rs\n M codex-rs/hepta-neuron/BUILD.bazel\n M codex-rs/hepta-neuron/src/associative_memory.rs\n M codex-rs/hepta-neuron/src/associative_memory_port.rs\n M codex-rs/hepta-neuron/src/associative_memory_tests.rs\n M codex-rs/hepta-neuron/src/lib.rs\n M codex-rs/hepta-neuron/src/memory_population.rs\n M codex-rs/hepta-neuron/src/memory_population_cache.rs\n M codex-rs/hepta-neuron/src/memory_population_cost.rs\n M codex-rs/hepta-neuron/src/memory_population_tests.rs\n M codex-rs/hepta-plasticity/src/memory_budget.rs\n M codex-rs/hepta-plasticity/src/memory_budget_tests.rs",
+  "initial_tracked_changes": "",
+  "passed": true,
+  "request": {
+    "format_base": "0b0b041b6dd8121050c335cb3be73bb1d8cb7904",
+    "packages": [
+      "codex-hepta-cognitive-types",
+      "codex-hepta-neuron",
+      "codex-hepta-memory",
+      "codex-hepta-cognitive-store",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-agent-protocol",
+      "codex-hepta-agentd",
+      "codex-hepta-context-compiler",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-plasticity"
+    ],
+    "schema": "hepta.memory.v7.finalize-request.v1",
+    "tested_commit": "59b45ccd863cab0fd1ea96f3b4b025715aa814f8"
+  },
+  "schema": "hepta.memory.v7.finalize-receipt.v1",
+  "source_commit": "8df5702d07e54af92706d4b2f2fb6ac86864f44a",
+  "source_gate_paths": [
+    "codex-rs",
+    "justfile",
+    "scripts/format.py",
+    "scripts/just-shell.py",
+    "qualification/memory-cell-v7/addressing",
+    "qualification/memory-cell-v6/v6",
+    "qualification/memory-cell-v7/training.py",
+    "qualification/memory-cell-v7/training_worker.py",
+    "qualification/memory-cell-v7/native_export.py",
+    "qualification/memory-cell-v7/population_training.py",
+    "qualification/memory-cell-v7/population_worker.py"
+  ],
+  "source_tree": "55c7a97922b34b6026f2c1bca90389ef5a55657a",
+  "tested_commit": "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+  "tested_source_gate_passed": true,
+  "tested_tree": "4d7e6d4180e9a8e1a003065eecfccded3b2c9103",
+  "tests_executed": false,
+  "wall_seconds": 333.641508156
+}

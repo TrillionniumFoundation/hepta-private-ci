@@ -1,7 +1,9 @@
 //! Source-aware context compiler.
 //!
 //! Trusted instructions and untrusted evidence remain separate sections. The
-//! compiler accepts digests, never raw secrets, and cannot call a model.
+//! legacy compiler accepts digests and cannot call a model. Typed memory
+//! realization accepts bounded values only as untrusted evidence; current
+//! source authority remains the consumer's independently revalidated duty.
 
 #![forbid(unsafe_code)]
 
@@ -14,6 +16,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod candidate_bound;
+mod memory_cell;
 mod requirements;
 mod v2;
 mod wire;
@@ -21,6 +24,9 @@ mod wire;
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
 pub use candidate_bound::compile_candidate_bound_with_requirements;
+pub use memory_cell::MAX_MEMORY_CELL_EVIDENCE_BYTES_V1;
+pub use memory_cell::MemoryCellEvidenceV1;
+pub use memory_cell::realize_memory_cell_evidence_v1;
 pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;

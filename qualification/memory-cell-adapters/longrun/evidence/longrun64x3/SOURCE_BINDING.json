@@ -1,0 +1,76 @@
+{
+  "all_frozen_files_match_committed_blobs": true,
+  "files": {
+    "qualification/memory-cell-adapters/longrun/LONGRUN_PROTOCOL.json": {
+      "bytes": 4634,
+      "sha256": "3f7a09a1158b3e40cd33157e0da727deda13fa6654950b01449d419c6cb9a007"
+    },
+    "qualification/memory-cell-adapters/longrun/RESUME_PLAN.json": {
+      "bytes": 1007,
+      "sha256": "ffcd460069fa162914ab0885d04ad6923adb6d271b2d56aebbdce678963d2aef"
+    },
+    "qualification/memory-cell-adapters/longrun/fit_worker.py": {
+      "bytes": 5248,
+      "sha256": "bc6d5cc7fc277646aa6f01bfd8125732ce44661c2ee6688ee2d3793bd0b8875a"
+    },
+    "qualification/memory-cell-adapters/longrun/manager.py": {
+      "bytes": 20610,
+      "sha256": "1999e2a1d7b0006ef73a37d9569d1f3b1e9d170956e3613d6e2d20903822dfe8"
+    },
+    "qualification/memory-cell-adapters/longrun/owner_read.py": {
+      "bytes": 5239,
+      "sha256": "c526cf81aae88052fb814ce4ae2d38a18a89860e3b1159f795028e4b294c7655"
+    },
+    "qualification/memory-cell-adapters/longrun/resume.py": {
+      "bytes": 17623,
+      "sha256": "03f3b90e1497ded6a02311153013228ba35ee8b42f8fa49686e43fefc557628b"
+    },
+    "qualification/memory-cell-adapters/owner.py": {
+      "bytes": 8499,
+      "sha256": "b8de2d15177ac10f93f3d7a8ad87cc8ad6d05612093af0131e374275c8e281a9"
+    },
+    "qualification/memory-cell-adapters/reader.py": {
+      "bytes": 18876,
+      "sha256": "d49ada7a931b664b694d4086f24833cbb9b8839704298569c4e831d4a1e98970"
+    },
+    "qualification/memory-cell-adapters/runtime_contract.py": {
+      "bytes": 2140,
+      "sha256": "5e1412097321484f1891562eecdfba4eb0ec1683d841a1dac4e28a47bab27f55"
+    },
+    "qualification/memory-cell-adapters/tensor_cell.py": {
+      "bytes": 19726,
+      "sha256": "2421dc985a74b7b4edb80029a2b486d599ab8cf4409263e894aeb15878c289b4"
+    },
+    "qualification/memory-cell-v9/learning/resource_cleanup.py": {
+      "bytes": 4597,
+      "sha256": "9eb4ed0868da1fe01a568369d9243607ee9bb7de8d4a6c10527c3a9ee7a812d5"
+    },
+    "qualification/memory-cell-v9/learning/resource_monitor.py": {
+      "bytes": 14324,
+      "sha256": "541811a934c1ab6319d3d925599fa12fd8e5beadb0a4a4d87cf6a2a7cb22d7bf"
+    },
+    "qualification/memory-cell-v9/learning/resource_samples.py": {
+      "bytes": 7857,
+      "sha256": "626447e8fbf4f6f81403ac63dc587a0ec970c41deebddc59c658f213754edc87"
+    }
+  },
+  "local_source_tree": "831ec889e2686cace7fc17914694055975ae5b25",
+  "native_ci_coverage_claimed": false,
+  "numeric_protocol_changed_for_publication": false,
+  "original_run_and_resume_freezes": {
+    "run-01": {
+      "bytes": 4901,
+      "path": "qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-01.json",
+      "sha256": "5820c14e3302b9b5325e7b86cb240a9a31e1af9e5a9777e0c8cf59be96c9ac9e"
+    },
+    "run-02-resume": {
+      "bytes": 1237,
+      "path": "qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-02-resume.json",
+      "sha256": "00f43abccebea41532a3539a6fa1ab1c4882c44cb855c24d1fef1323250357ce"
+    }
+  },
+  "remote_source_commit": "19ae2bea00ec3ed9e4a4d745a30ff939ed952e02",
+  "remote_source_tree": "831ec889e2686cace7fc17914694055975ae5b25",
+  "schema": "hepta.memory.adapter-longrun-source-binding.v1",
+  "source_publication_after_execution": true
+}

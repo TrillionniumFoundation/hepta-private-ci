@@ -1,0 +1,21 @@
+{
+  "manifest": {
+    "bytes": 164264,
+    "sha256": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86"
+  },
+  "native_fixture": {
+    "bytes": 87539,
+    "path": "native-fixture.json",
+    "sha256": "4a991281be123a958f1d0f6f3d5a53c48f3b6bb393abe7ebe6a031cb498098c1"
+  },
+  "parts": [
+    {
+      "bytes": 286019,
+      "path": "weights.part-000.bin",
+      "sha256": "6dd8a3ae3ee86738ad4d92f843092701d1a6091d9057afa90ba9d05b65a491c7"
+    }
+  ],
+  "readiness": "qualification-shadow-only; independent admission failed",
+  "schema": "hepta.memory.v8.model-transport.v1",
+  "source_commit": "7e194d9f0858e805a0cab502215a1f64ddc0ea00"
+}

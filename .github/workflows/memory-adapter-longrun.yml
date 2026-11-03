@@ -1,0 +1,87 @@
+name: Memory adapter clean lifecycle cost replication
+
+on:
+  push:
+    branches:
+      - research/memory-cell-completion-20261028
+    paths:
+      - qualification/memory-cell-adapters/longrun/LONGRUN_REQUEST.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-adapter-longrun-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  clean-cost-replication:
+    runs-on: ubuntu-24.04
+    # Leave room for pinned dependency preparation and evidence transport.
+    # Runner loss or a hard job timeout can still prevent final upload.
+    timeout-minutes: 120
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - name: Record runner-local job start before checkout and Python setup
+        run: |
+          python3 - <<'PYCODE'
+          import json, os, pathlib, time
+          marker = pathlib.Path(os.environ['RUNNER_TEMP']) / 'memory-adapter-longrun-job-start.json'
+          marker.write_text(json.dumps({'monotonic_ns': time.monotonic_ns(), 'unix_ns': time.time_ns(),
+              'boot_id': pathlib.Path('/proc/sys/kernel/random/boot_id').read_text(),
+              'scope': 'runner-local start marker; checkout/setup-python CPU is not measured'}, sort_keys=True) + '\n')
+          PYCODE
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Restore fixed inputs, install pinned CPU dependencies, and run full 64 by 3 lifecycle
+        run: |
+          python -I -B qualification/memory-cell-adapters/longrun/ci_run.py \
+            --output "$GITHUB_WORKSPACE/memory-adapter-longrun-output" \
+            --job-start-marker "$RUNNER_TEMP/memory-adapter-longrun-job-start.json"
+      - name: Package all successful and failed evidence into one filename-safe artifact
+        if: always()
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib, json, os, pathlib, shutil, tarfile, time
+          began, cpu = time.monotonic_ns(), time.process_time_ns()
+          root = pathlib.Path(os.environ['GITHUB_WORKSPACE'])
+          output = root / 'memory-adapter-longrun-output'
+          output.mkdir(exist_ok=True)
+          marker = pathlib.Path(os.environ['RUNNER_TEMP']) / 'memory-adapter-longrun-job-start.json'
+          if marker.exists() and not (output / 'JOB_START.json').exists():
+              shutil.copyfile(marker, output / 'JOB_START.json')
+          (output / 'PACKAGING_SCOPE.json').write_text(json.dumps({
+              'all_outcomes_retained': True, 'runner_loss_can_prevent_final_artifact_upload': True,
+              'archive_upload_is_not_a_native_runtime_test': True}, sort_keys=True) + '\n')
+          archive = root / 'memory-adapter-longrun-output.tar.xz'
+          with tarfile.open(archive, 'w:xz') as bundle:
+              bundle.add(output, arcname='memory-adapter-longrun-output')
+          sha = hashlib.sha256()
+          with archive.open('rb') as source:
+              while block := source.read(1048576):
+                  sha.update(block)
+          receipt = {'archive': archive.name, 'bytes': archive.stat().st_size, 'sha256': sha.hexdigest(),
+              'packaging_wall_ns': time.monotonic_ns()-began, 'packaging_cpu_ns': time.process_time_ns()-cpu,
+              'upload_cost_scope': 'recorded in GitHub Actions platform logs; not included in maintenance monitor'}
+          (root / 'memory-adapter-longrun-packaging.json').write_text(json.dumps(receipt, sort_keys=True) + '\n')
+          print(json.dumps(receipt, sort_keys=True))
+          PYCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-adapter-longrun-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            memory-adapter-longrun-output.tar.xz
+            memory-adapter-longrun-packaging.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

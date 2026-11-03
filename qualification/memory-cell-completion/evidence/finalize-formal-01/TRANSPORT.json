@@ -1,0 +1,58 @@
+{
+  "decoded_job_log": {
+    "identity": {
+      "bytes": 1931875,
+      "sha256": "debd5eb83ba326f25b271a619bf36da00f685eb916912194108d18d780aaf9c2"
+    },
+    "join_order": "ascending zero-padded part number",
+    "parts": [
+      {
+        "bytes": 400000,
+        "path": "job.log.0000.part",
+        "sha256": "e3d14de48f931dffa8b1df9747282e3ec30bd4662f61a62a504260541673be0b"
+      },
+      {
+        "bytes": 400000,
+        "path": "job.log.0001.part",
+        "sha256": "860c4701c990773eb381f9e9d7023154b25c091d74843aeb45d1f0ff50577009"
+      },
+      {
+        "bytes": 400000,
+        "path": "job.log.0002.part",
+        "sha256": "bf20e41eb91f3157284d55f8e2056054eaaada03f410e96c68290b4d8019ff06"
+      },
+      {
+        "bytes": 400000,
+        "path": "job.log.0003.part",
+        "sha256": "18fd390ffb0795da9803fc4a00a220d0f3556e9510b6aa92b0103d1b78421dba"
+      },
+      {
+        "bytes": 331875,
+        "path": "job.log.0004.part",
+        "sha256": "3cee937248d50bf3fb3b90f3bd1b6cc75b5337928d21ffbd1da6097dab56b67e"
+      }
+    ]
+  },
+  "lossless_reassembly_verified": true,
+  "maximum_part_bytes": 400000,
+  "original_zip": {
+    "identity": {
+      "bytes": 565627,
+      "sha256": "d342f64c9d96b38c3bd737eab24adbc0e0f7820c8aebb1ade904bb4116541214"
+    },
+    "join_order": "ascending zero-padded part number",
+    "parts": [
+      {
+        "bytes": 400000,
+        "path": "artifact.zip.0000.part",
+        "sha256": "83b360efbce8a7c9604054f05e90cdc175006e378c0eda95bd8502a0afe5dc7b"
+      },
+      {
+        "bytes": 165627,
+        "path": "artifact.zip.0001.part",
+        "sha256": "bb80c7842c7ee383e0e2d18e3990b4f392875f0cf8d557d8f1efa0f0a72d8506"
+      }
+    ]
+  },
+  "schema": "hepta.memory.finalizer-retention-transport.v1"
+}

@@ -1,0 +1,3144 @@
+{
+  "schema": "hepta.memory.v8.language-suite.v1",
+  "split": "calibration",
+  "entities": [
+    {
+      "entity": "meter:v8-calibration-00",
+      "aliases": [
+        "Cedar gauge 1",
+        "雪松计1号",
+        "Shared station",
+        "共用站"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 4
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 12
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 30
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 2,
+            "label": "calibration-owner-value-0"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "identity",
+            "bias": -5,
+            "limit": 25
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-01",
+      "aliases": [
+        "Harbor valve 2",
+        "港湾阀2号",
+        "Shared station",
+        "共用站"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 5
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 13
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 31
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 3,
+            "label": "calibration-owner-value-1"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "add_bias",
+            "bias": -4,
+            "limit": 26
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-02",
+      "aliases": [
+        "Quartz meter 3",
+        "石英表3号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 6
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 14
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 32
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 4,
+            "label": "calibration-owner-value-2"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "multiply",
+            "bias": -3,
+            "limit": 27
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-03",
+      "aliases": [
+        "Delta probe 4",
+        "三角探头4号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 7
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 15
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 33
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 2,
+            "label": "calibration-owner-value-3"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "affine",
+            "bias": -2,
+            "limit": 28
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-04",
+      "aliases": [
+        "Willow pump 5",
+        "柳叶泵5号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 8
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 16
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 34
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 3,
+            "label": "calibration-owner-value-4"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "clamp",
+            "bias": -1,
+            "limit": 29
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-05",
+      "aliases": [
+        "Maple sensor 6",
+        "枫木传感器6号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 9
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 17
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 35
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 4,
+            "label": "calibration-owner-value-5"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "identity",
+            "bias": 0,
+            "limit": 30
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-06",
+      "aliases": [
+        "Cedar gauge 7",
+        "雪松计7号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 10
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 18
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 36
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 2,
+            "label": "calibration-owner-value-6"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "add_bias",
+            "bias": 1,
+            "limit": 31
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-07",
+      "aliases": [
+        "Harbor valve 8",
+        "港湾阀8号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 11
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 19
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 37
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 3,
+            "label": "calibration-owner-value-7"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "multiply",
+            "bias": 2,
+            "limit": 32
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-08",
+      "aliases": [
+        "Quartz meter 9",
+        "石英表9号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 12
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 20
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 38
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 4,
+            "label": "calibration-owner-value-8"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "affine",
+            "bias": 3,
+            "limit": 33
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-09",
+      "aliases": [
+        "Delta probe 10",
+        "三角探头10号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 13
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 21
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 39
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 2,
+            "label": "calibration-owner-value-9"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "clamp",
+            "bias": 4,
+            "limit": 34
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-10",
+      "aliases": [
+        "Willow pump 11",
+        "柳叶泵11号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 14
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 22
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 40
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 3,
+            "label": "calibration-owner-value-10"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "identity",
+            "bias": 5,
+            "limit": 35
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-calibration-11",
+      "aliases": [
+        "Maple sensor 12",
+        "枫木传感器12号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 15
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 23
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 41
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 4,
+            "label": "calibration-owner-value-11"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "add_bias",
+            "bias": 6,
+            "limit": 36
+          }
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "id": "calibration-0000",
+      "family": "calibration.known.current.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "Show the newest raw observation kept for Cedar gauge 1.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0001",
+      "family": "calibration.known.current.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "For the inspection record: Show the newest raw observation kept for Maple sensor 6.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0002",
+      "family": "calibration.known.current.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "What value did Harbor valve 2 record most recently?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0003",
+      "family": "calibration.known.current.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "For the inspection record: What value did Cedar gauge 7 record most recently?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0004",
+      "family": "calibration.known.current.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-02",
+      "text": "I need Quartz meter 3's last measurement, before any stored recipe is applied.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0005",
+      "family": "calibration.known.current.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "For the inspection record: I need Harbor valve 8's last measurement, before any stored recipe is applied.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0006",
+      "family": "calibration.known.current.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "Look up the current entry in Delta probe 4's observation log.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0007",
+      "family": "calibration.known.current.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "For the inspection record: Look up the current entry in Quartz meter 9's observation log.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0008",
+      "family": "calibration.known.current.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Return the latest event value available for Willow pump 5.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0009",
+      "family": "calibration.known.current.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "For the inspection record: Return the latest event value available for Delta probe 10.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0010",
+      "family": "calibration.known.current.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "取出雪松计1号最近一次保存的原始观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0011",
+      "family": "calibration.known.current.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "用于检查记录：取出枫木传感器6号最近一次保存的原始观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0012",
+      "family": "calibration.known.current.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "港湾阀2号最后记录的数值是多少？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0013",
+      "family": "calibration.known.current.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "用于检查记录：雪松计7号最后记录的数值是多少？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0014",
+      "family": "calibration.known.current.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-02",
+      "text": "请查石英表3号的最新读数，暂时不要执行保存的程序。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0015",
+      "family": "calibration.known.current.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "用于检查记录：请查港湾阀8号的最新读数，暂时不要执行保存的程序。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0016",
+      "family": "calibration.known.current.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "我要三角探头4号观测日志中当前最后一条的值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0017",
+      "family": "calibration.known.current.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "用于检查记录：我要石英表9号观测日志中当前最后一条的值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0018",
+      "family": "calibration.known.current.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "返回柳叶泵5号最近的事件值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0019",
+      "family": "calibration.known.current.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "用于检查记录：返回三角探头10号最近的事件值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0020",
+      "family": "calibration.known.history.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "At the reporting cutoff of 2025-02-01, retrieve the final observation already filed under Harbor valve 2.",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0021",
+      "family": "calibration.known.history.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "For the inspection record: At the reporting cutoff of 2025-02-01, retrieve the final observation already filed under Cedar gauge 7.",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0022",
+      "family": "calibration.known.history.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-02",
+      "text": "Find Quartz meter 3's last observation no later than 2025-02-01.",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0023",
+      "family": "calibration.known.history.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "For the inspection record: Find Harbor valve 8's last observation no later than 2025-02-01.",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0024",
+      "family": "calibration.known.history.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "Look back to 2025-02-01 and retrieve the reading then on file for Delta probe 4.",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0025",
+      "family": "calibration.known.history.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "For the inspection record: Look back to 2025-02-01 and retrieve the reading then on file for Quartz meter 9.",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0026",
+      "family": "calibration.known.history.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "As of 2025-02-01, what was the most recent raw value of Willow pump 5?",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0027",
+      "family": "calibration.known.history.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "For the inspection record: As of 2025-02-01, what was the most recent raw value of Delta probe 10?",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0028",
+      "family": "calibration.known.history.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "Use the 2025-02-01 cutoff to recover Maple sensor 6's archived observation.",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0029",
+      "family": "calibration.known.history.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-10",
+      "text": "For the inspection record: Use the 2025-02-01 cutoff to recover Willow pump 11's archived observation.",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0030",
+      "family": "calibration.known.history.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "截至2025-02-01，港湾阀2号保存的最后一个读数是多少？",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0031",
+      "family": "calibration.known.history.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "用于检查记录：截至2025-02-01，雪松计7号保存的最后一个读数是多少？",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0032",
+      "family": "calibration.known.history.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-02",
+      "text": "找出石英表3号不晚于2025-02-01的最近观测。",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0033",
+      "family": "calibration.known.history.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "用于检查记录：找出港湾阀8号不晚于2025-02-01的最近观测。",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0034",
+      "family": "calibration.known.history.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "回到2025-02-01这个截止点，取当时档案里的三角探头4号读数。",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0035",
+      "family": "calibration.known.history.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "用于检查记录：回到2025-02-01这个截止点，取当时档案里的石英表9号读数。",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0036",
+      "family": "calibration.known.history.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "请查柳叶泵5号在2025-02-01时已存的原始数值。",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0037",
+      "family": "calibration.known.history.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "用于检查记录：请查三角探头10号在2025-02-01时已存的原始数值。",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0038",
+      "family": "calibration.known.history.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "按2025-02-01截断历史记录，返回枫木传感器6号的末条观测。",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0039",
+      "family": "calibration.known.history.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-10",
+      "text": "用于检查记录：按2025-02-01截断历史记录，返回柳叶泵11号的末条观测。",
+      "at": 1738368000,
+      "since": 1738368000,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0040",
+      "family": "calibration.known.semantic.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-02",
+      "text": "Which semantic multiplier is stored for Quartz meter 3?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0041",
+      "family": "calibration.known.semantic.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "For the inspection record: Which semantic multiplier is stored for Harbor valve 8?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0042",
+      "family": "calibration.known.semantic.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "Retrieve Delta probe 4's saved semantic parameters without computing a result.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0043",
+      "family": "calibration.known.semantic.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "For the inspection record: Retrieve Quartz meter 9's saved semantic parameters without computing a result.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0044",
+      "family": "calibration.known.semantic.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Show the remembered coefficient and label belonging to Willow pump 5.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0045",
+      "family": "calibration.known.semantic.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "For the inspection record: Show the remembered coefficient and label belonging to Delta probe 10.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0046",
+      "family": "calibration.known.semantic.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "Read Maple sensor 6's semantic entry itself.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0047",
+      "family": "calibration.known.semantic.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-10",
+      "text": "For the inspection record: Read Willow pump 11's semantic entry itself.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0048",
+      "family": "calibration.known.semantic.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "I want the stored factor of Cedar gauge 7, not a transformed observation.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0049",
+      "family": "calibration.known.semantic.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-11",
+      "text": "For the inspection record: I want the stored factor of Maple sensor 12, not a transformed observation.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0050",
+      "family": "calibration.known.semantic.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-02",
+      "text": "石英表3号保存的语义乘数是什么？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0051",
+      "family": "calibration.known.semantic.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "用于检查记录：港湾阀8号保存的语义乘数是什么？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0052",
+      "family": "calibration.known.semantic.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "调出三角探头4号的语义参数，先不计算结果。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0053",
+      "family": "calibration.known.semantic.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "用于检查记录：调出石英表9号的语义参数，先不计算结果。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0054",
+      "family": "calibration.known.semantic.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "显示柳叶泵5号记住的系数和标签。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0055",
+      "family": "calibration.known.semantic.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "用于检查记录：显示三角探头10号记住的系数和标签。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0056",
+      "family": "calibration.known.semantic.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "读取枫木传感器6号的语义记录本身。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0057",
+      "family": "calibration.known.semantic.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-10",
+      "text": "用于检查记录：读取柳叶泵11号的语义记录本身。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0058",
+      "family": "calibration.known.semantic.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "请给出雪松计7号已存的因子，不要变换观测值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0059",
+      "family": "calibration.known.semantic.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-11",
+      "text": "用于检查记录：请给出枫木传感器12号已存的因子，不要变换观测值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0060",
+      "family": "calibration.known.procedure.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "Retrieve the saved procedure for Delta probe 4 without running it.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0061",
+      "family": "calibration.known.procedure.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "For the inspection record: Retrieve the saved procedure for Quartz meter 9 without running it.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0062",
+      "family": "calibration.known.procedure.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Which sequence of stored instructions belongs to Willow pump 5?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0063",
+      "family": "calibration.known.procedure.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "For the inspection record: Which sequence of stored instructions belongs to Delta probe 10?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0064",
+      "family": "calibration.known.procedure.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "Show Maple sensor 6's remembered calculation recipe itself.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0065",
+      "family": "calibration.known.procedure.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-10",
+      "text": "For the inspection record: Show Willow pump 11's remembered calculation recipe itself.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0066",
+      "family": "calibration.known.procedure.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "Inspect the operation, bias and limit kept in Cedar gauge 7's program.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0067",
+      "family": "calibration.known.procedure.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-11",
+      "text": "For the inspection record: Inspect the operation, bias and limit kept in Maple sensor 12's program.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0068",
+      "family": "calibration.known.procedure.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "Tell me the stored steps for processing Harbor valve 8, leaving them unexecuted.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0069",
+      "family": "calibration.known.procedure.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "For the inspection record: Tell me the stored steps for processing Cedar gauge 1, leaving them unexecuted.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0070",
+      "family": "calibration.known.procedure.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "取出三角探头4号保存的过程，但不要运行。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0071",
+      "family": "calibration.known.procedure.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "用于检查记录：取出石英表9号保存的过程，但不要运行。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0072",
+      "family": "calibration.known.procedure.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "柳叶泵5号记住的步骤是什么？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0073",
+      "family": "calibration.known.procedure.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "用于检查记录：三角探头10号记住的步骤是什么？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0074",
+      "family": "calibration.known.procedure.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "显示枫木传感器6号的计算配方本身。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0075",
+      "family": "calibration.known.procedure.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-10",
+      "text": "用于检查记录：显示柳叶泵11号的计算配方本身。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0076",
+      "family": "calibration.known.procedure.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "查看雪松计7号程序中保存的操作、偏置和限值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0077",
+      "family": "calibration.known.procedure.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-11",
+      "text": "用于检查记录：查看枫木传感器12号程序中保存的操作、偏置和限值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0078",
+      "family": "calibration.known.procedure.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "给我港湾阀8号已存的处理步骤，暂不执行。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0079",
+      "family": "calibration.known.procedure.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "用于检查记录：给我雪松计1号已存的处理步骤，暂不执行。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0080",
+      "family": "calibration.known.change.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Subtract Willow pump 5's reading at 2025-02-01 from its latest reading.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0081",
+      "family": "calibration.known.change.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "For the inspection record: Subtract Delta probe 10's reading at 2025-02-01 from its latest reading.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0082",
+      "family": "calibration.known.change.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "How much has Maple sensor 6's raw value changed since 2025-02-01, in the original units?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0083",
+      "family": "calibration.known.change.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-10",
+      "text": "For the inspection record: How much has Willow pump 11's raw value changed since 2025-02-01, in the original units?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0084",
+      "family": "calibration.known.change.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "Return current minus the observation of Cedar gauge 7 on file by 2025-02-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0085",
+      "family": "calibration.known.change.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-11",
+      "text": "For the inspection record: Return current minus the observation of Maple sensor 12 on file by 2025-02-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0086",
+      "family": "calibration.known.change.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "Calculate the signed difference between Harbor valve 8's latest value and its 2025-02-01 baseline.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0087",
+      "family": "calibration.known.change.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "For the inspection record: Calculate the signed difference between Cedar gauge 1's latest value and its 2025-02-01 baseline.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0088",
+      "family": "calibration.known.change.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "Compare Quartz meter 9 now with 2025-02-01 by subtraction only.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0089",
+      "family": "calibration.known.change.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "For the inspection record: Compare Harbor valve 2 now with 2025-02-01 by subtraction only.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0090",
+      "family": "calibration.known.change.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "用柳叶泵5号最新读数减去2025-02-01时已存的读数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0091",
+      "family": "calibration.known.change.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "用于检查记录：用三角探头10号最新读数减去2025-02-01时已存的读数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0092",
+      "family": "calibration.known.change.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "从2025-02-01至今，枫木传感器6号原始值增加或减少了多少，保留原单位？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0093",
+      "family": "calibration.known.change.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-10",
+      "text": "用于检查记录：从2025-02-01至今，柳叶泵11号原始值增加或减少了多少，保留原单位？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0094",
+      "family": "calibration.known.change.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "返回雪松计7号当前值减去截至2025-02-01的观测值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0095",
+      "family": "calibration.known.change.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-11",
+      "text": "用于检查记录：返回枫木传感器12号当前值减去截至2025-02-01的观测值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0096",
+      "family": "calibration.known.change.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "计算港湾阀8号最新值相对2025-02-01基线的有符号差额。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0097",
+      "family": "calibration.known.change.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "用于检查记录：计算雪松计1号最新值相对2025-02-01基线的有符号差额。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0098",
+      "family": "calibration.known.change.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "把石英表9号现在与2025-02-01的数值做减法比较。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0099",
+      "family": "calibration.known.change.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "用于检查记录：把港湾阀2号现在与2025-02-01的数值做减法比较。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0100",
+      "family": "calibration.known.apply.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "Execute Maple sensor 6's stored procedure on its latest observation using the saved semantic parameters.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0101",
+      "family": "calibration.known.apply.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-10",
+      "text": "For the inspection record: Execute Willow pump 11's stored procedure on its latest observation using the saved semantic parameters.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0102",
+      "family": "calibration.known.apply.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "Run the remembered recipe for Cedar gauge 7 and return its output on the current recorded value.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0103",
+      "family": "calibration.known.apply.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-11",
+      "text": "For the inspection record: Run the remembered recipe for Maple sensor 12 and return its output on the current recorded value.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0104",
+      "family": "calibration.known.apply.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "Combine Harbor valve 8's newest event, semantic factor and procedure to compute the result.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0105",
+      "family": "calibration.known.apply.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "For the inspection record: Combine Cedar gauge 1's newest event, semantic factor and procedure to compute the result.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0106",
+      "family": "calibration.known.apply.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "Process Quartz meter 9's latest sample with the procedure already stored for it.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0107",
+      "family": "calibration.known.apply.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "For the inspection record: Process Harbor valve 2's latest sample with the procedure already stored for it.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0108",
+      "family": "calibration.known.apply.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "Use the saved parameters and saved program to transform Delta probe 10's latest observation.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0109",
+      "family": "calibration.known.apply.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-02",
+      "text": "For the inspection record: Use the saved parameters and saved program to transform Quartz meter 3's latest observation.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0110",
+      "family": "calibration.known.apply.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "把枫木传感器6号最新观测送入已存过程，并使用已存语义参数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0111",
+      "family": "calibration.known.apply.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-10",
+      "text": "用于检查记录：把柳叶泵11号最新观测送入已存过程，并使用已存语义参数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0112",
+      "family": "calibration.known.apply.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "执行雪松计7号记住的配方，给出当前记录值对应的输出。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0113",
+      "family": "calibration.known.apply.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-11",
+      "text": "用于检查记录：执行枫木传感器12号记住的配方，给出当前记录值对应的输出。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0114",
+      "family": "calibration.known.apply.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "组合港湾阀8号的最新事件、语义因子和过程，算出结果。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0115",
+      "family": "calibration.known.apply.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "用于检查记录：组合雪松计1号的最新事件、语义因子和过程，算出结果。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0116",
+      "family": "calibration.known.apply.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "使用石英表9号已有的过程处理最新样本。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0117",
+      "family": "calibration.known.apply.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "用于检查记录：使用港湾阀2号已有的过程处理最新样本。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0118",
+      "family": "calibration.known.apply.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "用保存的参数和程序变换三角探头10号最新的观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0119",
+      "family": "calibration.known.apply.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-02",
+      "text": "用于检查记录：用保存的参数和程序变换石英表3号最新的观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "calibration-0120",
+      "family": "calibration.unsupported.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "What percentage did Cedar gauge 1 change since 2025-02-01?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0121",
+      "family": "calibration.unsupported.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "What percentage did Delta probe 4 change since 2025-02-01?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0122",
+      "family": "calibration.unsupported.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "Divide Harbor valve 2's current reading by its 2025-02-01 reading.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0123",
+      "family": "calibration.unsupported.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Divide Willow pump 5's current reading by its 2025-02-01 reading.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0124",
+      "family": "calibration.unsupported.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-02",
+      "text": "Explain why Quartz meter 3 changed since 2025-02-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0125",
+      "family": "calibration.unsupported.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "Explain why Maple sensor 6 changed since 2025-02-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0126",
+      "family": "calibration.unsupported.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "Forecast the next observation of Delta probe 4.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0127",
+      "family": "calibration.unsupported.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "Forecast the next observation of Cedar gauge 7.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0128",
+      "family": "calibration.unsupported.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Run Willow pump 5's program on a hypothetical input of 33.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0129",
+      "family": "calibration.unsupported.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "Run Harbor valve 8's program on a hypothetical input of 33.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0130",
+      "family": "calibration.unsupported.en.5",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "What is the square of Maple sensor 6's stored factor?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0131",
+      "family": "calibration.unsupported.en.5",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "What is the square of Quartz meter 9's stored factor?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0132",
+      "family": "calibration.unsupported.en.6",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "Replace the saved procedure of Cedar gauge 7 with a new one.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0133",
+      "family": "calibration.unsupported.en.6",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "Replace the saved procedure of Delta probe 10 with a new one.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0134",
+      "family": "calibration.unsupported.en.7",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "Average all readings of Harbor valve 8 since 2025-02-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0135",
+      "family": "calibration.unsupported.en.7",
+      "language": "en",
+      "entity": "meter:v8-calibration-10",
+      "text": "Average all readings of Willow pump 11 since 2025-02-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0136",
+      "family": "calibration.unsupported.en.8",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "Recover the semantic parameters Quartz meter 9 had on 2025-02-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0137",
+      "family": "calibration.unsupported.en.8",
+      "language": "en",
+      "entity": "meter:v8-calibration-11",
+      "text": "Recover the semantic parameters Maple sensor 12 had on 2025-02-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0138",
+      "family": "calibration.unsupported.en.9",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "Calculate Delta probe 10's change between two past dates, 2025-02-01 and 2025-05-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0139",
+      "family": "calibration.unsupported.en.9",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "Calculate Cedar gauge 1's change between two past dates, 2025-02-01 and 2025-05-01.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0140",
+      "family": "calibration.unsupported.en.10",
+      "language": "en",
+      "entity": "meter:v8-calibration-10",
+      "text": "Show the maximum historical observation of Willow pump 11.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0141",
+      "family": "calibration.unsupported.en.10",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "Show the maximum historical observation of Harbor valve 2.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0142",
+      "family": "calibration.unsupported.en.11",
+      "language": "en",
+      "entity": "meter:v8-calibration-11",
+      "text": "How often has Maple sensor 12's procedure run?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0143",
+      "family": "calibration.unsupported.en.11",
+      "language": "en",
+      "entity": "meter:v8-calibration-02",
+      "text": "How often has Quartz meter 3's procedure run?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0144",
+      "family": "calibration.unsupported.en.12",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "Convert the latest reading of Cedar gauge 1 to another unit.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0145",
+      "family": "calibration.unsupported.en.12",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "Convert the latest reading of Delta probe 4 to another unit.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0146",
+      "family": "calibration.unsupported.en.13",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "Give a confidence interval for the next value of Harbor valve 2.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0147",
+      "family": "calibration.unsupported.en.13",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Give a confidence interval for the next value of Willow pump 5.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0148",
+      "family": "calibration.unsupported.en.14",
+      "language": "en",
+      "entity": "meter:v8-calibration-02",
+      "text": "Merge every stored event of Quartz meter 3 into a prose account.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0149",
+      "family": "calibration.unsupported.en.14",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "Merge every stored event of Maple sensor 6 into a prose account.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0150",
+      "family": "calibration.unsupported.en.15",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "Return the reciprocal of Delta probe 4's factor.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0151",
+      "family": "calibration.unsupported.en.15",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "Return the reciprocal of Cedar gauge 7's factor.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0152",
+      "family": "calibration.unsupported.en.16",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Compare Willow pump 5's program with a program that was never saved.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0153",
+      "family": "calibration.unsupported.en.16",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "Compare Harbor valve 8's program with a program that was never saved.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0154",
+      "family": "calibration.unsupported.en.17",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "Delete the oldest event of Maple sensor 6.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0155",
+      "family": "calibration.unsupported.en.17",
+      "language": "en",
+      "entity": "meter:v8-calibration-08",
+      "text": "Delete the oldest event of Quartz meter 9.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0156",
+      "family": "calibration.unsupported.en.18",
+      "language": "en",
+      "entity": "meter:v8-calibration-06",
+      "text": "Tell me who caused the last change in Cedar gauge 7.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0157",
+      "family": "calibration.unsupported.en.18",
+      "language": "en",
+      "entity": "meter:v8-calibration-09",
+      "text": "Tell me who caused the last change in Delta probe 10.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0158",
+      "family": "calibration.unsupported.en.19",
+      "language": "en",
+      "entity": "meter:v8-calibration-07",
+      "text": "Simulate Harbor valve 8's recipe repeatedly for ten steps.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0159",
+      "family": "calibration.unsupported.en.19",
+      "language": "en",
+      "entity": "meter:v8-calibration-10",
+      "text": "Simulate Willow pump 11's recipe repeatedly for ten steps.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0160",
+      "family": "calibration.unknown.en.0",
+      "language": "en",
+      "entity": "meter:v8-unknown-calibration-0",
+      "text": "Show the newest raw observation kept for Unregistered unit 0.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0161",
+      "family": "calibration.unknown.en.1",
+      "language": "en",
+      "entity": "meter:v8-unknown-calibration-1",
+      "text": "What value did Unregistered unit 1 record most recently?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0162",
+      "family": "calibration.unknown.en.2",
+      "language": "en",
+      "entity": "meter:v8-unknown-calibration-2",
+      "text": "I need Unregistered unit 2's last measurement, before any stored recipe is applied.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0163",
+      "family": "calibration.unknown.en.3",
+      "language": "en",
+      "entity": "meter:v8-unknown-calibration-3",
+      "text": "Look up the current entry in Unregistered unit 3's observation log.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0164",
+      "family": "calibration.unknown.en.4",
+      "language": "en",
+      "entity": "meter:v8-unknown-calibration-4",
+      "text": "Return the latest event value available for Unregistered unit 4.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0165",
+      "family": "calibration.unknown.en.5",
+      "language": "en",
+      "entity": "meter:v8-unknown-calibration-5",
+      "text": "Show the newest raw observation kept for Unregistered unit 5.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0166",
+      "family": "calibration.unknown.en.6",
+      "language": "en",
+      "entity": "meter:v8-unknown-calibration-6",
+      "text": "What value did Unregistered unit 6 record most recently?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0167",
+      "family": "calibration.unknown.en.7",
+      "language": "en",
+      "entity": "meter:v8-unknown-calibration-7",
+      "text": "I need Unregistered unit 7's last measurement, before any stored recipe is applied.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0168",
+      "family": "calibration.ambiguous.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "Show the newest raw observation kept for Shared station.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0169",
+      "family": "calibration.ambiguous.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "What value did Shared station record most recently?",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0170",
+      "family": "calibration.ambiguous.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "I need Shared station's last measurement, before any stored recipe is applied.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0171",
+      "family": "calibration.ambiguous.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "Look up the current entry in Shared station's observation log.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0172",
+      "family": "calibration.ambiguous.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "Return the latest event value available for Shared station.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0173",
+      "family": "calibration.ambiguous.en.5",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "Show the newest raw observation kept for Shared station.",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0174",
+      "family": "calibration.time-conflict.en.0",
+      "language": "en",
+      "entity": "meter:v8-calibration-00",
+      "text": "At the reporting cutoff of 2025-02-01, retrieve the final observation already filed under Cedar gauge 1.",
+      "at": 1738371600,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0175",
+      "family": "calibration.time-conflict.en.1",
+      "language": "en",
+      "entity": "meter:v8-calibration-01",
+      "text": "How much has Harbor valve 2's raw value changed since 2025-02-01, in the original units?",
+      "at": 1751414400,
+      "since": 1738371600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0176",
+      "family": "calibration.time-conflict.en.2",
+      "language": "en",
+      "entity": "meter:v8-calibration-02",
+      "text": "Look back to 2025-02-01 and retrieve the reading then on file for Quartz meter 3.",
+      "at": 1738454400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0177",
+      "family": "calibration.time-conflict.en.3",
+      "language": "en",
+      "entity": "meter:v8-calibration-03",
+      "text": "Calculate the signed difference between Delta probe 4's latest value and its 2025-02-01 baseline.",
+      "at": 1751414400,
+      "since": 1738454400,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0178",
+      "family": "calibration.time-conflict.en.4",
+      "language": "en",
+      "entity": "meter:v8-calibration-04",
+      "text": "Use the 2025-02-01 cutoff to recover Willow pump 5's archived observation.",
+      "at": 1738281600,
+      "since": 1738281600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0179",
+      "family": "calibration.time-conflict.en.5",
+      "language": "en",
+      "entity": "meter:v8-calibration-05",
+      "text": "Subtract Maple sensor 6's reading at 2025-02-01 from its latest reading.",
+      "at": 1751414400,
+      "since": 1738281600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0180",
+      "family": "calibration.unsupported.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "雪松计1号自2025-02-01以来变化了百分之几？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0181",
+      "family": "calibration.unsupported.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "三角探头4号自2025-02-01以来变化了百分之几？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0182",
+      "family": "calibration.unsupported.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "把港湾阀2号当前读数除以2025-02-01读数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0183",
+      "family": "calibration.unsupported.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "把柳叶泵5号当前读数除以2025-02-01读数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0184",
+      "family": "calibration.unsupported.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-02",
+      "text": "解释石英表3号自2025-02-01以来变化的原因。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0185",
+      "family": "calibration.unsupported.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "解释枫木传感器6号自2025-02-01以来变化的原因。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0186",
+      "family": "calibration.unsupported.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "预测三角探头4号下一次观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0187",
+      "family": "calibration.unsupported.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "预测雪松计7号下一次观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0188",
+      "family": "calibration.unsupported.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "用虚构输入33运行柳叶泵5号的程序。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0189",
+      "family": "calibration.unsupported.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "用虚构输入33运行港湾阀8号的程序。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0190",
+      "family": "calibration.unsupported.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "枫木传感器6号保存的因子的平方是多少？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0191",
+      "family": "calibration.unsupported.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "石英表9号保存的因子的平方是多少？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0192",
+      "family": "calibration.unsupported.zh.6",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "将雪松计7号的已存过程替换成新的。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0193",
+      "family": "calibration.unsupported.zh.6",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "将三角探头10号的已存过程替换成新的。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0194",
+      "family": "calibration.unsupported.zh.7",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "求港湾阀8号从2025-02-01以来全部读数的平均值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0195",
+      "family": "calibration.unsupported.zh.7",
+      "language": "zh",
+      "entity": "meter:v8-calibration-10",
+      "text": "求柳叶泵11号从2025-02-01以来全部读数的平均值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0196",
+      "family": "calibration.unsupported.zh.8",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "找回石英表9号在2025-02-01使用的历史语义参数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0197",
+      "family": "calibration.unsupported.zh.8",
+      "language": "zh",
+      "entity": "meter:v8-calibration-11",
+      "text": "找回枫木传感器12号在2025-02-01使用的历史语义参数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0198",
+      "family": "calibration.unsupported.zh.9",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "计算三角探头10号在两个过去日期2025-02-01和2025-05-01之间的变化。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0199",
+      "family": "calibration.unsupported.zh.9",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "计算雪松计1号在两个过去日期2025-02-01和2025-05-01之间的变化。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0200",
+      "family": "calibration.unsupported.zh.10",
+      "language": "zh",
+      "entity": "meter:v8-calibration-10",
+      "text": "给出柳叶泵11号历史观测的最大值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0201",
+      "family": "calibration.unsupported.zh.10",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "给出港湾阀2号历史观测的最大值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0202",
+      "family": "calibration.unsupported.zh.11",
+      "language": "zh",
+      "entity": "meter:v8-calibration-11",
+      "text": "枫木传感器12号的过程执行过多少次？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0203",
+      "family": "calibration.unsupported.zh.11",
+      "language": "zh",
+      "entity": "meter:v8-calibration-02",
+      "text": "石英表3号的过程执行过多少次？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0204",
+      "family": "calibration.unsupported.zh.12",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "将雪松计1号最新读数换算为另一种单位。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0205",
+      "family": "calibration.unsupported.zh.12",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "将三角探头4号最新读数换算为另一种单位。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0206",
+      "family": "calibration.unsupported.zh.13",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "给出港湾阀2号下一次值的置信区间。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0207",
+      "family": "calibration.unsupported.zh.13",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "给出柳叶泵5号下一次值的置信区间。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0208",
+      "family": "calibration.unsupported.zh.14",
+      "language": "zh",
+      "entity": "meter:v8-calibration-02",
+      "text": "把石英表3号的全部事件合成一段文字叙事。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0209",
+      "family": "calibration.unsupported.zh.14",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "把枫木传感器6号的全部事件合成一段文字叙事。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0210",
+      "family": "calibration.unsupported.zh.15",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "返回三角探头4号因子的倒数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0211",
+      "family": "calibration.unsupported.zh.15",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "返回雪松计7号因子的倒数。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0212",
+      "family": "calibration.unsupported.zh.16",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "把柳叶泵5号程序与从未保存的另一程序比较。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0213",
+      "family": "calibration.unsupported.zh.16",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "把港湾阀8号程序与从未保存的另一程序比较。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0214",
+      "family": "calibration.unsupported.zh.17",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "删除枫木传感器6号最早的事件。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0215",
+      "family": "calibration.unsupported.zh.17",
+      "language": "zh",
+      "entity": "meter:v8-calibration-08",
+      "text": "删除石英表9号最早的事件。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0216",
+      "family": "calibration.unsupported.zh.18",
+      "language": "zh",
+      "entity": "meter:v8-calibration-06",
+      "text": "谁导致了雪松计7号最后的变化？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0217",
+      "family": "calibration.unsupported.zh.18",
+      "language": "zh",
+      "entity": "meter:v8-calibration-09",
+      "text": "谁导致了三角探头10号最后的变化？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0218",
+      "family": "calibration.unsupported.zh.19",
+      "language": "zh",
+      "entity": "meter:v8-calibration-07",
+      "text": "模拟港湾阀8号的配方，连续迭代十步。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0219",
+      "family": "calibration.unsupported.zh.19",
+      "language": "zh",
+      "entity": "meter:v8-calibration-10",
+      "text": "模拟柳叶泵11号的配方，连续迭代十步。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "calibration-0220",
+      "family": "calibration.unknown.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-unknown-calibration-0",
+      "text": "取出未登记单元0最近一次保存的原始观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0221",
+      "family": "calibration.unknown.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-unknown-calibration-1",
+      "text": "未登记单元1最后记录的数值是多少？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0222",
+      "family": "calibration.unknown.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-unknown-calibration-2",
+      "text": "请查未登记单元2的最新读数，暂时不要执行保存的程序。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0223",
+      "family": "calibration.unknown.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-unknown-calibration-3",
+      "text": "我要未登记单元3观测日志中当前最后一条的值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0224",
+      "family": "calibration.unknown.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-unknown-calibration-4",
+      "text": "返回未登记单元4最近的事件值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0225",
+      "family": "calibration.unknown.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-unknown-calibration-5",
+      "text": "取出未登记单元5最近一次保存的原始观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0226",
+      "family": "calibration.unknown.zh.6",
+      "language": "zh",
+      "entity": "meter:v8-unknown-calibration-6",
+      "text": "未登记单元6最后记录的数值是多少？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0227",
+      "family": "calibration.unknown.zh.7",
+      "language": "zh",
+      "entity": "meter:v8-unknown-calibration-7",
+      "text": "请查未登记单元7的最新读数，暂时不要执行保存的程序。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "calibration-0228",
+      "family": "calibration.ambiguous.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "取出共用站最近一次保存的原始观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0229",
+      "family": "calibration.ambiguous.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "共用站最后记录的数值是多少？",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0230",
+      "family": "calibration.ambiguous.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "请查共用站的最新读数，暂时不要执行保存的程序。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0231",
+      "family": "calibration.ambiguous.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "我要共用站观测日志中当前最后一条的值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0232",
+      "family": "calibration.ambiguous.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "返回共用站最近的事件值。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0233",
+      "family": "calibration.ambiguous.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "取出共用站最近一次保存的原始观测。",
+      "at": 1751414400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "calibration-0234",
+      "family": "calibration.time-conflict.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-calibration-00",
+      "text": "截至2025-02-01，雪松计1号保存的最后一个读数是多少？",
+      "at": 1738371600,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0235",
+      "family": "calibration.time-conflict.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-calibration-01",
+      "text": "从2025-02-01至今，港湾阀2号原始值增加或减少了多少，保留原单位？",
+      "at": 1751414400,
+      "since": 1738371600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0236",
+      "family": "calibration.time-conflict.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-calibration-02",
+      "text": "回到2025-02-01这个截止点，取当时档案里的石英表3号读数。",
+      "at": 1738454400,
+      "since": 1738368000,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0237",
+      "family": "calibration.time-conflict.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-calibration-03",
+      "text": "计算三角探头4号最新值相对2025-02-01基线的有符号差额。",
+      "at": 1751414400,
+      "since": 1738454400,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0238",
+      "family": "calibration.time-conflict.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-calibration-04",
+      "text": "按2025-02-01截断历史记录，返回柳叶泵5号的末条观测。",
+      "at": 1738281600,
+      "since": 1738281600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "calibration-0239",
+      "family": "calibration.time-conflict.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-calibration-05",
+      "text": "用枫木传感器6号最新读数减去2025-02-01时已存的读数。",
+      "at": 1751414400,
+      "since": 1738281600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    }
+  ]
+}

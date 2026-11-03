@@ -1,0 +1,180 @@
+"""Fixed tiny ZIPs and fake HTTP endpoints; never access an actual CI run."""
+
+from contextlib import redirect_stdout
+import io
+import json
+from pathlib import Path
+import stat
+import sys
+import tempfile
+import unittest
+from unittest import mock
+from urllib.error import HTTPError
+import warnings
+import zipfile
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import authenticate_ci_artifact as auth
+from evidence_transport import canonical, identity
+
+
+class Reply(io.BytesIO):
+    def __init__(self, data, *, status=200, headers=None):
+        super().__init__(data)
+        self.status = status
+        self.headers = {} if headers is None else headers
+
+
+class Endpoint:
+    def __init__(self, service, anonymous):
+        self.service, self.anonymous = service, anonymous
+
+    def open(self, request, timeout):
+        self.service.requests.append((self.anonymous, request))
+        if self.anonymous:
+            if self.service.storage_error:
+                raise HTTPError(request.full_url, self.service.storage_error, "DO_NOT_PRINT", {}, None)
+            return Reply(self.service.payload, headers={"Content-Length": str(len(self.service.payload))})
+        suffix = request.full_url.removeprefix(auth.API)
+        if suffix.endswith("/zip"):
+            raise HTTPError(request.full_url, 302, "redirect", {"Location": self.service.redirect}, None)
+        return Reply(canonical(self.service.metadata[suffix]))
+
+
+class Service:
+    def __init__(self, root):
+        self.root, self.requests = root, []
+        self.redirect = "https://artifact.example.invalid/file.zip?sig=DO_NOT_PRINT"
+        self.storage_error = None
+        self.members = {"INDEX.json": b'{"synthetic":true}\n', "receipt.json": b'{"synthetic":true}\n',
+                        "memory-v9-evidence.tar.xz": b"synthetic archive bytes"}
+        self.manifest = {"schema": "hepta.memory.completion.transport.v1",
+            "source": {"commit": "a" * 40, "tree": "b" * 40, "run_id": 123, "job_id": 456},
+            "index": {"path": "INDEX.json", **identity(self.members["INDEX.json"])},
+            "receipt": {"path": "receipt.json", **identity(self.members["receipt.json"])},
+            "archive": {"path": "memory-v9-evidence.tar.xz", **identity(self.members["memory-v9-evidence.tar.xz"])},
+            "chunks": []}
+        self.metadata = {
+            "/actions/runs/123": {"id": 123, "status": "completed", "conclusion": "success",
+                "head_sha": "a" * 40, "head_commit": {"tree_id": "b" * 40}, "path": auth.WORKFLOW},
+            "/actions/jobs/456": {"id": 456, "run_id": 123, "head_sha": "a" * 40,
+                "status": "completed", "conclusion": "success", "name": "verify"},
+            "/actions/artifacts/789": {"id": 789, "expired": False,
+                "name": "memory-v9-verification-" + "a" * 40,
+                "workflow_run": {"id": 123, "head_sha": "a" * 40}}}
+        self.client = auth.GitHubClient("fixture-token", api_opener=Endpoint(self, False),
+                                       download_opener=Endpoint(self, True))
+        self.pack()
+
+    def pack(self, extra=(), symlink=False):
+        output = io.BytesIO()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                for name, data in [*self.members.items(), *extra]:
+                    member = zipfile.ZipInfo(name)
+                    member.create_system = 3
+                    member.external_attr = ((stat.S_IFLNK if symlink and name == "INDEX.json" else stat.S_IFREG) | 0o644) << 16
+                    archive.writestr(member, data)
+        self.payload = output.getvalue()
+        expected = identity(self.payload)
+        self.metadata["/actions/artifacts/789"].update(size_in_bytes=expected["bytes"], digest="sha256:" + expected["sha256"])
+        self.origin = {"schema": "hepta.memory.completion.github-origin.v1", "repo": auth.REPOSITORY,
+                       "artifact_id": 789, "zip": expected}
+        (self.root / "TRANSPORT.json").write_bytes(canonical(self.manifest))
+        (self.root / "GITHUB_ORIGIN.json").write_bytes(canonical(self.origin))
+
+    def authenticate(self):
+        return auth.authenticate(self.root / "TRANSPORT.json", self.root / "GITHUB_ORIGIN.json", self.client)
+
+
+class AuthenticationTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory(prefix="hepta-artifact-auth-")
+        self.addCleanup(self.temporary.cleanup)
+        self.service = Service(Path(self.temporary.name))
+
+    def test_exact_github_artifact_authenticated_without_forwarding_token(self):
+        result = self.service.authenticate()
+        self.assertTrue(result["passed"])
+        self.assertTrue(result["github_run_authenticated_here"])
+        self.assertEqual(set(result["verified_zip_members"]), set(self.service.members))
+        for anonymous, request in self.service.requests:
+            headers = {key.lower(): value for key, value in request.header_items()}
+            if anonymous:
+                self.assertNotIn("authorization", headers)
+            else:
+                self.assertEqual(headers["authorization"], "Bearer fixture-token")
+        self.assertEqual(sum(anonymous for anonymous, _ in self.service.requests), 1)
+        self.assertNotIn("DO_NOT_PRINT", canonical(result).decode())
+        self.assertNotIn("fixture-token", canonical(result).decode())
+
+    def test_unfinished_failed_or_wrong_workflow_run_never_downloads(self):
+        for changes in ({"status": "in_progress"}, {"conclusion": "failure"}, {"path": "other.yml"},
+                        {"head_sha": "c" * 40}):
+            with self.subTest(changes=changes):
+                service = Service(self.service.root)
+                service.metadata["/actions/runs/123"].update(changes)
+                with self.assertRaises(ValueError):
+                    service.authenticate()
+                self.assertFalse(any(anonymous for anonymous, _ in service.requests))
+
+    def test_wrong_job_or_artifact_run_name_digest_is_rejected(self):
+        for endpoint, changes in (("/actions/jobs/456", {"run_id": 99}),
+                                  ("/actions/artifacts/789", {"workflow_run": {"id": 99, "head_sha": "a" * 40}}),
+                                  ("/actions/artifacts/789", {"name": "wrong artifact"}),
+                                  ("/actions/artifacts/789", {"digest": "sha256:" + "0" * 64})):
+            with self.subTest(endpoint=endpoint, changes=changes):
+                service = Service(self.service.root)
+                service.metadata[endpoint].update(changes)
+                with self.assertRaises(ValueError):
+                    service.authenticate()
+                self.assertFalse(any(anonymous for anonymous, _ in service.requests))
+
+    def test_download_corruption_and_inner_member_drift_are_rejected(self):
+        data = bytearray(self.service.payload)
+        data[5] ^= 1
+        self.service.payload = bytes(data)
+        with self.assertRaisesRegex(ValueError, "downloaded ZIP digest"):
+            self.service.authenticate()
+        self.service.members["receipt.json"] = b'{"changed":true}\n'
+        self.service.pack()
+        with self.assertRaises(ValueError):
+            self.service.authenticate()
+
+    def test_extra_duplicate_escaping_and_linked_zip_entries_are_rejected(self):
+        for options in ({"extra": [("extra", b"x")]}, {"extra": [("INDEX.json", b"x")]},
+                        {"extra": [("../outside", b"x")]}, {"symlink": True}):
+            with self.subTest(options=options):
+                self.service.pack(**options)
+                with self.assertRaises(ValueError):
+                    self.service.authenticate()
+
+    def test_unsafe_or_second_redirect_is_rejected(self):
+        self.service.redirect = "http://artifact.example.invalid/file?sig=DO_NOT_PRINT"
+        with self.assertRaises(ValueError):
+            self.service.authenticate()
+        self.service.redirect = "https://artifact.example.invalid/file?sig=DO_NOT_PRINT"
+        self.service.storage_error = 302
+        with self.assertRaises(ValueError):
+            self.service.authenticate()
+
+    def test_failure_receipt_and_console_never_include_signed_url_or_token(self):
+        self.service.storage_error = 403
+        output = self.service.root / "failed.json"
+        arguments = ["authenticate_ci_artifact.py", "--transport", str(self.service.root / "TRANSPORT.json"),
+                     "--origin", str(self.service.root / "GITHUB_ORIGIN.json"), "--output", str(output)]
+        console = io.StringIO()
+        with mock.patch.object(sys, "argv", arguments), mock.patch.object(auth, "GitHubClient", return_value=self.service.client), redirect_stdout(console):
+            self.assertEqual(auth.main(), 1)
+        receipt = json.loads(output.read_bytes())
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["stage"], "anonymous_zip_download")
+        retained = output.read_text() + console.getvalue()
+        self.assertNotIn("DO_NOT_PRINT", retained)
+        self.assertNotIn("fixture-token", retained)
+        self.assertNotIn("artifact.example.invalid", retained)
+
+
+if __name__ == "__main__":
+    unittest.main()

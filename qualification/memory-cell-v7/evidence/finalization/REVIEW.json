@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.memory.v7.finalization-review.v1",
+  "run_id": 40605424672,
+  "run_source_commit": "8df5702d07e54af92706d4b2f2fb6ac86864f44a",
+  "tested_commit": "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+  "reconstructed_run_after_tree": "d214d3bcbba1f67407066ad2c89b6f0c9fd4d3c2",
+  "all_changed_files_byte_identical": true,
+  "frozen_runtime_python_byte_identical": true,
+  "changed_files": 75,
+  "tests_rerun": false,
+  "fix_exit_code": 0,
+  "fmt_exit_code": 0,
+  "remaining_clippy_warnings_preserved": true,
+  "automatic_fixes_reviewed": [
+    "two redundant clone removals in protocol tests",
+    "return-let removal in address-worker resolver",
+    "nested-if collapse in native cancellation",
+    "method-reference substitution and immutable serialization borrow in population tests"
+  ],
+  "other_changes": "rustfmt and Bazel attribute ordering",
+  "raw_patch_storage": "generated.patch.xz and original artifact.zip; uncompressed patch is reconstructed rather than added as an oversized Git blob",
+  "integration_base": "bad9b4adbb3a57bcc5ad2e29a6289645bb60f051"
+}

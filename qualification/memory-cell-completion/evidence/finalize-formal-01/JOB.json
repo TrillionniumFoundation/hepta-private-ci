@@ -1,0 +1,132 @@
+{
+  "id": 123027755943,
+  "run_id": 40748270215,
+  "workflow_name": "Memory cell completion final fix and format",
+  "head_branch": "research/memory-cell-completion-20261028",
+  "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40748270215",
+  "run_attempt": 1,
+  "node_id": "CR_kwDOTrgxoM8AAAAcpQaTpw",
+  "head_sha": "d4193c842bba8113719ef36f451cbc9061e34a7f",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/123027755943",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40748270215/job/123027755943",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-10-28T18:46:44Z",
+  "started_at": "2026-10-28T18:46:47Z",
+  "completed_at": "2026-10-28T19:16:43Z",
+  "name": "finalize",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-10-28T18:46:48Z",
+      "completed_at": "2026-10-28T18:46:49Z"
+    },
+    {
+      "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-10-28T18:46:49Z",
+      "completed_at": "2026-10-28T19:09:12Z"
+    },
+    {
+      "name": "Run ./.github/actions/setup-ci",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-10-28T19:09:12Z",
+      "completed_at": "2026-10-28T19:09:16Z"
+    },
+    {
+      "name": "Run dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-10-28T19:09:16Z",
+      "completed_at": "2026-10-28T19:09:25Z"
+    },
+    {
+      "name": "Run actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-10-28T19:09:25Z",
+      "completed_at": "2026-10-28T19:09:25Z"
+    },
+    {
+      "name": "Authenticate the exact completed native CI artifact",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-10-28T19:09:25Z",
+      "completed_at": "2026-10-28T19:09:27Z"
+    },
+    {
+      "name": "Verify every retained native file and independent adapter source proof",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-10-28T19:09:27Z",
+      "completed_at": "2026-10-28T19:09:28Z"
+    },
+    {
+      "name": "Verify successful exact-source CI receipt, fix and format without tests",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-10-28T19:09:28Z",
+      "completed_at": "2026-10-28T19:16:30Z"
+    },
+    {
+      "name": "Verify independent research bytes after fix and format",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-10-28T19:16:30Z",
+      "completed_at": "2026-10-28T19:16:30Z"
+    },
+    {
+      "name": "Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-10-28T19:16:30Z",
+      "completed_at": "2026-10-28T19:16:40Z"
+    },
+    {
+      "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-10-28T19:16:40Z",
+      "completed_at": "2026-10-28T19:16:41Z"
+    },
+    {
+      "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22,
+      "started_at": "2026-10-28T19:16:41Z",
+      "completed_at": "2026-10-28T19:16:41Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 23,
+      "started_at": "2026-10-28T19:16:41Z",
+      "completed_at": "2026-10-28T19:16:41Z"
+    }
+  ],
+  "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/123027755943",
+  "labels": [
+    "ubuntu-24.04"
+  ],
+  "runner_id": 1000277344,
+  "runner_name": "GitHub Actions 1000277344",
+  "runner_group_id": 0,
+  "runner_group_name": "GitHub Actions"
+}

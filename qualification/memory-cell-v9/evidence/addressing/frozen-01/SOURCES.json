@@ -1,0 +1,76 @@
+{
+  "all_source_snapshots_verified_against_recorded_git_commit": true,
+  "calibration_input": {
+    "bytes": 112697,
+    "categories": {
+      "ambiguous_alias": 8,
+      "known": 144,
+      "time_conflict": 12,
+      "unknown_entity": 12,
+      "unsupported": 96
+    },
+    "entities": 12,
+    "rows": 272,
+    "sha256": "2a78710313c56fec8d7a0d7c38757a80578abf0d4883f007c859ec3c1c23d247"
+  },
+  "calibration_policy": "only raised frozen selected thresholds; fixed margins, candidate and weights",
+  "development_history": "two public development runs; first retained as failure, 42 actual fits each",
+  "execution_sources": {
+    "admission-01": {
+      "source_commit": "00d386c9b45b59fa84841871d48e07baf0bef384",
+      "source_files_verified_against_git": 43,
+      "source_inventory_sha256": "c206caf1ab074e9282813897ed817a81341b96239e9e45f0dd1dab79aebcde5c"
+    },
+    "held-01": {
+      "source_commit": "00d386c9b45b59fa84841871d48e07baf0bef384",
+      "source_files_verified_against_git": 43,
+      "source_inventory_sha256": "c206caf1ab074e9282813897ed817a81341b96239e9e45f0dd1dab79aebcde5c"
+    },
+    "selection-01": {
+      "source_commit": "f365efbdf138e6e09c3e6642ed5c1ba2e1e84c7d",
+      "source_files_verified_against_git": 41,
+      "source_inventory_sha256": "53f7815a851dbc69fb5067efa676dd230ffd0d1a4d86ddf2dc520c4706f4308f"
+    },
+    "selection-02": {
+      "source_commit": "20f389d14891321ba071f39710839e2cb61e9e90",
+      "source_files_verified_against_git": 43,
+      "source_inventory_sha256": "c206caf1ab074e9282813897ed817a81341b96239e9e45f0dd1dab79aebcde5c"
+    }
+  },
+  "frozen_baseline_manifest_sha256": {
+    "v7": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+    "v8": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86"
+  },
+  "held_input": {
+    "bytes": 108349,
+    "categories": {
+      "ambiguous_alias": 8,
+      "known": 144,
+      "time_conflict": 12,
+      "unknown_entity": 12,
+      "unsupported": 96
+    },
+    "entities": 12,
+    "rows": 272,
+    "sha256": "6fd373b11089db17b8b6ac0a015725d8a0397cf7ba69169132cb136456622f0a"
+  },
+  "held_scope": "120 classifier wordings, 272 native requests with two entity replicas per known/unsupported wording; no iid guarantee",
+  "input_lock": {
+    "bytes": 1643,
+    "sha256": "6b812b781682afcdb80cd7c27337f0b44043f3dd4bf0aa1ec8532f23b481d71a"
+  },
+  "model_manifest": {
+    "bytes": 161921,
+    "sha256": "36bf40924f93fdc47ab569b02132adb1edef659338d4b82ea1bd695fdfdb40bf"
+  },
+  "native_fixture": {
+    "bytes": 99564,
+    "sha256": "cb1dabcd85fe5dd7ec1b3e4246d6b4cb51c25d408bc2d295ce155088b4cac357"
+  },
+  "schema": "hepta.memory.v9.frozen-addressing-sources.v1",
+  "source_model_thresholds_changed_after_held": false,
+  "transport": {
+    "bytes": 1214,
+    "sha256": "17ec222a4c2dce17d4f4f6c9d2aafd3c7119c63af6bdd54effa05b39127ac979"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "all_passed": true,
+  "gates": [
+    {
+      "bytes": 1360,
+      "passed": true,
+      "path": "members/memory-v9-completion-preflight/GITHUB_AUTHENTICATION.json",
+      "schema": "hepta.memory.completion.github-authentication.v1",
+      "sha256": "14d9bba81209bdc107fcaa6dd73639e959f7026c60cb91f1e5b2b76656e5b292"
+    },
+    {
+      "bytes": 76050,
+      "passed": true,
+      "path": "members/memory-v9-completion-preflight/receipt.json",
+      "schema": "hepta.memory.completion.preflight.v1",
+      "sha256": "059c42949e1ce703b95a71c9fbc4a76efe419e7ef5421cd973cdac1b3a23d979"
+    },
+    {
+      "bytes": 102945,
+      "passed": true,
+      "path": "members/memory-v9-finalize-output/receipt.json",
+      "schema": "hepta.memory.v9.finalize-receipt.v1",
+      "sha256": "ed75fc6ae5c60a0f2b321a09471da87587a935e1c7a589ab535f96443f531883"
+    },
+    {
+      "bytes": 409,
+      "passed": true,
+      "path": "members/memory-v9-finalize-output/COMPLETION_FREEZE.json",
+      "schema": "hepta.memory.completion.preflight-after.v1",
+      "sha256": "a57ec8e43e7b635846aa6e6dbcdde3105c5593f4dba121d99791c2596a307d4d"
+    }
+  ],
+  "research_quality_pass_inferred_from_ci": false,
+  "schema": "hepta.memory.finalizer-raw-gates.v1"
+}

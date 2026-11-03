@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40555778949,
+  "job_id": 122371741028,
+  "group": "daemon",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40555778949/job/122371741028",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--lib",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "commands": [
+      [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--lib",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd"
+        ],
+        "exit_code": 101,
+        "wall_seconds": 471.36822194999996
+      }
+    ],
+    "exit_code": 101,
+    "final_tracked_changes": "",
+    "group": "daemon",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 121436,
+      "sha256": "a58ae822944d1e162a95e71c08df6312c92b59b7014945008d8120c7f89a4637"
+    },
+    "mode": "test",
+    "passed": false,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 3,
+      "groups": [
+        "source-owner",
+        "population",
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "trained-owner-network-and-population",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "f0e6641fd3ae80806f97efff92ea66d7b8fd07e3",
+    "source_tree": "efbbf01f1a71ee9bafc0733bb0a2fbae522059ac",
+    "wall_seconds": 471.36832430900006
+  },
+  "test_summaries": [
+    "error[E0277]: the trait bound `codex_hepta_types::StableId: serde::Serialize` is not satisfied",
+    "error[E0277]: the trait bound `codex_hepta_types::StableId: serde::Serialize` is not satisfied"
+  ],
+  "log_representation": "Exact UTF-8 decoded provider job log; distinct from the execution.log whose identity is in the CI receipt."
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40557617321,
+  "job_id": 122377951552,
+  "group": "daemon",
+  "status": "completed",
+  "conclusion": "failure",
+  "source_commit": "2eb615fe8e75ee548004d8823a1ddf2d7f548aec",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40557617321/job/122377951552",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-context-compiler",
+      "-p",
+      "codex-hepta-infer-worker-host"
+    ],
+    "commands": [
+      [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-context-compiler",
+          "-p",
+          "codex-hepta-infer-worker-host"
+        ],
+        "exit_code": 101,
+        "wall_seconds": 484.80765653799995
+      }
+    ],
+    "exit_code": 101,
+    "final_tracked_changes": "",
+    "group": "daemon",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 124429,
+      "sha256": "4a6ba13ed14eb59b2f5fdc520f2a69f0017cedf5667a83b9f6c56076513880bb"
+    },
+    "mode": "test",
+    "passed": false,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 4,
+      "groups": [
+        "population",
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "typed-memory-model-context-consumer",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "2eb615fe8e75ee548004d8823a1ddf2d7f548aec",
+    "source_tree": "3a6f91dc1197b54d9b78e94f1128cd83f1b2d25e",
+    "wall_seconds": 484.80777776
+  },
+  "test_summaries": [
+    "error: no rules expected `[`",
+    "error: could not compile `codex-hepta-agentd` (lib test) due to 1 previous error",
+    "error: command `/home/runner/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agent-protocol --package codex-hepta-agentd --package codex-hepta-context-compiler --package codex-hepta-infer-worker-host --locked` exited with code 101",
+    "error: recipe `test` failed on line 89 with exit code 101"
+  ],
+  "test_counts": null,
+  "provider_log": {
+    "name": "122377951552.log",
+    "bytes": 307773,
+    "sha256": "641ab5544ddd86d3bc315cfb36531c5871d30c3da05f9d460bb70ea2006bece1"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt.",
+  "tests_executed": false,
+  "ignored_profile_executed": false,
+  "failure_phase": "lib test compilation",
+  "primary_error": "memory_cell_training_test_support.rs:70:84: no rules expected `[` in json! array-index expression",
+  "preparation_step_passed": true
+}

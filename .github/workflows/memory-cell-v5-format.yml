@@ -1,0 +1,37 @@
+name: Memory cell V5 source formatting
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v5-20261027
+    paths:
+      - .github/workflows/memory-cell-v5-format.yml
+      - qualification/memory-cell-v5/FORMAT_REQUEST.json
+
+permissions:
+  contents: read
+
+jobs:
+  format-snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 64
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+          enable-cache: false
+      - name: Run repository formatter and verify unchanged syntax
+        run: python3 qualification/memory-cell-v5/maintenance/format_snapshot.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-v5-format-${{ github.sha }}
+          path: v5-format-output/
+          if-no-files-found: error
+          retention-days: 14

@@ -45,12 +45,19 @@ use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
+#[path = "memory_cell_client.rs"]
+mod memory_cells;
+#[path = "client_traffic.rs"]
+mod traffic;
+pub use traffic::AgentdTrafficSnapshotV1;
+
 pub struct AgentdClient {
     socket_path: PathBuf,
     expected_agent_id: AgentId,
     spawn_generation: u64,
     next_request_id: AtomicU64,
     timeout: Duration,
+    traffic: traffic::ClientTraffic,
 }
 
 impl AgentdClient {
@@ -71,7 +78,14 @@ impl AgentdClient {
             spawn_generation,
             next_request_id: AtomicU64::new(1),
             timeout: Duration::from_secs(2),
+            traffic: traffic::ClientTraffic::default(),
         })
+    }
+
+    /// Counts bytes observed at the control transport, including partial I/O
+    /// before failure or cancellation. No payload content is retained here.
+    pub fn traffic_snapshot(&self) -> AgentdTrafficSnapshotV1 {
+        self.traffic.snapshot()
     }
 
     pub async fn capabilities(&self) -> Result<AgentdCapabilitySet, AgentdError> {
@@ -716,6 +730,7 @@ impl AgentdClient {
     }
 
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
+        self.traffic.attempts.fetch_add(1, Ordering::Relaxed);
         let expected_request_id = request.request_id;
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
@@ -728,9 +743,26 @@ impl AgentdClient {
                 "agentd request exceeded frame bound".to_string(),
             ));
         }
-        timeout(self.timeout, writer.write_all(&bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
+        timeout(self.timeout, async {
+            let mut remaining = bytes.as_slice();
+            while !remaining.is_empty() {
+                let written = writer.write(remaining).await?;
+                if written == 0 {
+                    return Err(std::io::Error::from(std::io::ErrorKind::WriteZero));
+                }
+                self.traffic
+                    .transmitted
+                    .fetch_add(written as u64, Ordering::Relaxed);
+                remaining = &remaining[written..];
+            }
+            Ok::<(), std::io::Error>(())
+        })
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
+        let reader = traffic::MeteredRead {
+            reader,
+            received: &self.traffic.received,
+        };
         let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
         let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
@@ -785,3 +817,7 @@ fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
         ))),
     }
 }
+
+#[cfg(test)]
+#[path = "client_traffic_tests.rs"]
+mod traffic_tests;

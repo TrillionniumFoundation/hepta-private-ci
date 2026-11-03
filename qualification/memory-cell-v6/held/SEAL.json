@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.memory.v6.held-seal.v1",
+  "authored_by": "independent-evaluation-assistant",
+  "created_before_model_selection": true,
+  "training_wording_read": false,
+  "templates": 288,
+  "known": 192,
+  "unsupported": 96,
+  "language_counts": {
+    "en": 144,
+    "zh": 144
+  },
+  "family_count": 36,
+  "files": {
+    "author_corpus.py": {
+      "bytes": 27871,
+      "sha256": "cfb2b42e5a79e8a3090b921904e3c7522a6c7a9de49d76f88c3bf091a8ac8920"
+    },
+    "queries.json": {
+      "bytes": 62338,
+      "sha256": "c4ea9cdf79c9f768401b258188bde740fb0eeb376f5b90334d2972f4b7da03b3"
+    },
+    "CONTRACT.md": {
+      "bytes": 4737,
+      "sha256": "4f3d932bff8b1e716682b64a8dbbaed3176f8f4ed36804341f2c0290f7797caf"
+    },
+    "PROTOCOL.json": {
+      "bytes": 2114,
+      "sha256": "a001a1bac3a70896c1fa75da54c95917f4028abb83da67a7d9fe857117ea18be"
+    }
+  },
+  "prepublication_semantic_review": "Signed-delta phrasing clarified; router acceptance fixed as the primary unsupported gate; source formatting preserved AST; all before model selection or held execution."
+}

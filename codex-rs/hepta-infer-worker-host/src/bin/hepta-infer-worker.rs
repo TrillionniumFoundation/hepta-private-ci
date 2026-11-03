@@ -9,6 +9,7 @@ use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeIntelligenceRunBinding;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
+use codex_hepta_infer_worker_host::native_app_server::load_native_memory_request_v1;
 use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
 
@@ -22,6 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut request_id = None;
     let mut maximum_in_flight = None;
     let mut context_query = None;
+    let mut memory_request_file = None;
     let mut final_use_authority_config = None;
     let mut intelligence_run_id = None;
     let mut intelligence_revision = None;
@@ -33,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--memory-request-file ABSOLUTE_JSON] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
             );
             return Ok(());
         }
@@ -49,6 +51,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--request-id" => request_id = Some(value),
             "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
             "--context-query" => context_query = Some(value),
+            "--memory-request-file" => {
+                if memory_request_file.is_some() {
+                    return Err("duplicate --memory-request-file".into());
+                }
+                memory_request_file = Some(PathBuf::from(value));
+            }
             "--final-use-authority-config" => {
                 final_use_authority_config = Some(PathBuf::from(value))
             }
@@ -66,7 +74,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let final_use_authorizer = UnixFinalUseAuthorizer::open(
         &final_use_authority_config.ok_or("--final-use-authority-config is required")?,
     )?;
-    let driver = AppServerModelDriver::new(NativeWorkerConfig {
+    let mut driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: socket.ok_or("--agentd-socket is required")?,
         agent_id: agent_id.ok_or("--agent-id is required")?,
         generation: generation.ok_or("--generation is required")?,
@@ -74,6 +82,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         timeout: Duration::from_millis(timeout_ms),
     })?
     .with_turn_start_authorizer(Arc::new(final_use_authorizer));
+    if let Some(path) = memory_request_file {
+        driver = driver.with_memory_request(load_native_memory_request_v1(&path)?)?;
+    }
     let journal = journal.ok_or("--journal is required")?;
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());

@@ -1,0 +1,52 @@
+{
+  "api_credentials_forwarded_to_download_host": false,
+  "collector_head_sha": "ccdb7ea7cb9c4adecf6f6607ea1570cb81ae0f78",
+  "collector_source_sha256": "9f730401ffb39eb6c0201d95a66414fb671da45dde32aa1f8adef2911f1d84b0",
+  "context": {
+    "context_byte_cap": 96000,
+    "error_pattern_matches": 88,
+    "redacted": true,
+    "retained_context_lines_before_byte_cap": 480,
+    "selection": "first 200 and last 400 context entries, then byte cap",
+    "total_lines": 170046
+  },
+  "download_hostname": "productionresultssa12.blob.core.windows.net",
+  "files": {
+    "ERROR_CONTEXT.txt": {
+      "bytes": 48782,
+      "sha256": "d7aee03b26522fe8445439faba7ba5266a7d6fc87c77c37bb3b944086ca6fbe5"
+    },
+    "cargo-deny-job-122077331825.log.gz": {
+      "bytes": 1557321,
+      "sha256": "9a48d175590a3f4b23acaf6f56fccf530384d7df2058204b80086ad0bac20636"
+    }
+  },
+  "job": {
+    "completed_at": "2026-10-27T08:04:37Z",
+    "conclusion": "failure",
+    "head_sha": "332d8156d081e22405450dd607023689f68f03e1",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40470653139/job/122077331825",
+    "id": 122077331825,
+    "name": "cargo-deny / cargo-deny",
+    "run_attempt": 1,
+    "run_id": 40470653139,
+    "started_at": "2026-10-27T08:02:49Z",
+    "status": "completed"
+  },
+  "phase": "complete",
+  "raw_log": {
+    "bytes": 19295233,
+    "sha256": "6e331a7e7ee4fb769e2b70679eee407752fbca22cd98c736575c3bd26bd686f8"
+  },
+  "raw_log_preserved_in_gzip": true,
+  "read_only": true,
+  "redirects_followed_automatically": false,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.memory.v5.ci-log-collection.v1",
+  "signed_download_url_retained": false,
+  "success": true,
+  "target_head_sha": "332d8156d081e22405450dd607023689f68f03e1",
+  "target_job_id": 122077331825,
+  "target_run_id": 40470653139,
+  "wall_seconds": 4.958281071000016
+}

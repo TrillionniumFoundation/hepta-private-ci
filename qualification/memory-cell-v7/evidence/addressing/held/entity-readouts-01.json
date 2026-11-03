@@ -1,0 +1,1789 @@
+[
+  {
+    "id": "held-address-unique-en-021",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "semantic",
+      "intent_operation": "semantic",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.021.nacre_readout",
+      "result": {
+        "factor": 4,
+        "bias": -1,
+        "limit": 220
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-021",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Nacre berth 17",
+      "text": "I need all the properties and values currently stored for Nacre berth 17.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-021",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Nacre berth 17",
+      "text": "I need all the properties and values currently stored for Nacre berth 17.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.021.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-021",
+      "request_digest": "6ac2efe9110355d8413bfc3a936966441cbcced1ce6c0536b1e4fe3c5dd74d1e",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3242f3b17f4890ae7a35ce37c579e08c38f07b50667a3e70fd00704a50d9a0fd",
+      "source_cut": "167a6db75ec8ac4a3b74128788b3e958ba37f6beb037b9c3cd0987276c07b0a5",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-021",
+      "request_digest": "571147a49a1c7bd19eb89bfe9097ce4801226d1623fa2d1d5177d668fe4218b8",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3242f3b17f4890ae7a35ce37c579e08c38f07b50667a3e70fd00704a50d9a0fd",
+      "source_cut": "167a6db75ec8ac4a3b74128788b3e958ba37f6beb037b9c3cd0987276c07b0a5",
+      "decision": {
+        "raw_operation": "reject",
+        "score": 0.5383195863291449,
+        "margin": 0.13636897469086762,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-022",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "procedure",
+      "intent_operation": "procedure",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.022.nacre_readout",
+      "result": {
+        "fixture_kind": "affine_then_upper_cap",
+        "expression": "min(event_value * factor + bias, limit)",
+        "ordered_steps": [
+          "multiply event_value by current factor",
+          "add current bias",
+          "take the smaller of the result and current limit"
+        ]
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-022",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Velora rack Q4",
+      "text": "Open the full contents of the rule program retained for Velora rack Q4.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-022",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Velora rack Q4",
+      "text": "Open the full contents of the rule program retained for Velora rack Q4.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.022.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-022",
+      "request_digest": "938c2cc9b7494ac7119962621d8c0ef22725c7414469318c131fe994517167f9",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "dc177af335a8d697803c0ea2f2d28fda3c0d932fe4512265096629efdd988809",
+      "source_cut": "b0dcddbb7f2b13804759c6ea6f0d756926c2565e0c7e6eaa851a2953c9d1ae29",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-022",
+      "request_digest": "e07474fd06c69aecf40ab6966705709ff51d97212cf7c46a135d5fa181815cd3",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "dc177af335a8d697803c0ea2f2d28fda3c0d932fe4512265096629efdd988809",
+      "source_cut": "b0dcddbb7f2b13804759c6ea6f0d756926c2565e0c7e6eaa851a2953c9d1ae29",
+      "decision": {
+        "raw_operation": "procedure",
+        "score": 0.5780515319674305,
+        "margin": 0.1738041340670322,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-023",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "change",
+      "intent_operation": "change",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.023.nacre_readout",
+      "result": -12,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-023",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Morrow gauge 083",
+      "text": "Calculate the net gap obtained by subtracting the value held for Morrow gauge 083 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-023",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Morrow gauge 083",
+      "text": "Calculate the net gap obtained by subtracting the value held for Morrow gauge 083 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.023.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-023",
+      "request_digest": "c1887f6501f5cdb42aea1914b81673c8174428726080d9da5900849231194fb9",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3f03bf13e447c77c1f5b5c4ee85c8fc9915b295ba437bbcb3fc56e95b85c898b",
+      "source_cut": "59e64f00032bb96aceab802182f216af9b10cd594e7ed20e8a15dca18d954bc2",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-023",
+      "request_digest": "8ce6b74a3b79bf77fcb81516bd67541fd68cbb42efb165672ab111a5fa2138c7",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-023",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.023.nacre_readout",
+        "text": "Calculate the net gap obtained by subtracting the value held for Morrow gauge 083 through 20260315 from its latest recorded value.",
+        "at": 20261027,
+        "since": 20260315,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "change",
+        "required_cells": [
+          "event"
+        ],
+        "read_hops": 2,
+        "source_cut": "59e64f00032bb96aceab802182f216af9b10cd594e7ed20e8a15dca18d954bc2",
+        "registry_digest": "3f03bf13e447c77c1f5b5c4ee85c8fc9915b295ba437bbcb3fc56e95b85c898b"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3f03bf13e447c77c1f5b5c4ee85c8fc9915b295ba437bbcb3fc56e95b85c898b",
+      "source_cut": "59e64f00032bb96aceab802182f216af9b10cd594e7ed20e8a15dca18d954bc2",
+      "decision": {
+        "raw_operation": "change",
+        "score": 0.8134639585794069,
+        "margin": 0.6559218547791588,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "change",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-024",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "apply",
+      "intent_operation": "apply",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.024.nacre_readout",
+      "result": 76,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-024",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Tallow bay west",
+      "text": "Have the saved program for Tallow bay west process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-024",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Tallow bay west",
+      "text": "Have the saved program for Tallow bay west process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.024.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-024",
+      "request_digest": "dc37da45e01482e1b609bcf6cd0b6e38f3c1ee78cad6328bd904db0d52fcec3c",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "1fa854820e8e217dfd3da3994fc7783d0f4d15b52f218b2b883eef6a508dd136",
+      "source_cut": "aab7b8c2a45b66fd8a5035704e17c3fc071c7e89d56c3c6f306a4f65b244b812",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-024",
+      "request_digest": "6c67e2b4c149a0f93053d27198da85358a84302d9666555ab7199878a6353cf5",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-024",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.024.nacre_readout",
+        "text": "Have the saved program for Tallow bay west process its newest number with its current parameters and return the output.",
+        "at": 0,
+        "since": 0,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "apply",
+        "required_cells": [
+          "event",
+          "semantic",
+          "procedure"
+        ],
+        "read_hops": 3,
+        "source_cut": "aab7b8c2a45b66fd8a5035704e17c3fc071c7e89d56c3c6f306a4f65b244b812",
+        "registry_digest": "1fa854820e8e217dfd3da3994fc7783d0f4d15b52f218b2b883eef6a508dd136"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "1fa854820e8e217dfd3da3994fc7783d0f4d15b52f218b2b883eef6a508dd136",
+      "source_cut": "aab7b8c2a45b66fd8a5035704e17c3fc071c7e89d56c3c6f306a4f65b244b812",
+      "decision": {
+        "raw_operation": "apply",
+        "score": 0.9101662261033051,
+        "margin": 0.8285305655499373,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "apply",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-025",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "current",
+      "intent_operation": "current",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.025.nacre_readout",
+      "result": 72,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-025",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Islet ledger node 6",
+      "text": "Read the numeric value in the most recently archived entry for Islet ledger node 6.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-025",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Islet ledger node 6",
+      "text": "Read the numeric value in the most recently archived entry for Islet ledger node 6.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.025.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-025",
+      "request_digest": "9d03fb9cfb0be51d5a5d958e454829301a2d3bd639a944884bb130337fd079f0",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3f9e94543618e909d7d5bfae1911b776b1299005d90d43fde9845e6b840bfba7",
+      "source_cut": "f9d077233dadae66a367f7ab21cc294029af0dc94f46262a220fecf577033db8",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-025",
+      "request_digest": "0e441f81b2c23a702f913760239e521db6ee9369ec603e0393c078c8fccf097b",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-025",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.025.nacre_readout",
+        "text": "Read the numeric value in the most recently archived entry for Islet ledger node 6.",
+        "at": 0,
+        "since": 0,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "current",
+        "required_cells": [
+          "event"
+        ],
+        "read_hops": 1,
+        "source_cut": "f9d077233dadae66a367f7ab21cc294029af0dc94f46262a220fecf577033db8",
+        "registry_digest": "3f9e94543618e909d7d5bfae1911b776b1299005d90d43fde9845e6b840bfba7"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3f9e94543618e909d7d5bfae1911b776b1299005d90d43fde9845e6b840bfba7",
+      "source_cut": "f9d077233dadae66a367f7ab21cc294029af0dc94f46262a220fecf577033db8",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.9246549554494516,
+        "margin": 0.8848936895776855,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "current",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-026",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "history",
+      "intent_operation": "history",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.026.nacre_readout",
+      "result": 51,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-026",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Kestrel slot P12",
+      "text": "From the archive for Kestrel slot P12, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-026",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Kestrel slot P12",
+      "text": "From the archive for Kestrel slot P12, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.026.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-026",
+      "request_digest": "394677d14ba14a8d85084bdc6239985cb734f5ea747d94f23c0641ad797baed2",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "e203d2b0b7216be80b24d2c0bf612f6f47f62f77a6b6eaa7d06ac1b527399128",
+      "source_cut": "82d680ac53219e983729b1493b673f658729440cb4c0f422b3280afb54c202bc",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-026",
+      "request_digest": "9aa7db4f52b9796d5a7681a076ac66325a2227655a1fce821a673a2d6d07bb15",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "e203d2b0b7216be80b24d2c0bf612f6f47f62f77a6b6eaa7d06ac1b527399128",
+      "source_cut": "82d680ac53219e983729b1493b673f658729440cb4c0f422b3280afb54c202bc",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.5750342311713634,
+        "margin": 0.27279327767760253,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-027",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "semantic",
+      "intent_operation": "semantic",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.027.nacre_readout",
+      "result": {
+        "factor": 2,
+        "bias": -1,
+        "limit": 220
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-027",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Anise chamber 034",
+      "text": "I need all the properties and values currently stored for Anise chamber 034.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-027",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Anise chamber 034",
+      "text": "I need all the properties and values currently stored for Anise chamber 034.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.027.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-027",
+      "request_digest": "99b5898effbf515910a28d8fb723cd10fe16ba8273e6b8b0a015357931fa380b",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "02aa871ce161216663c7289cec2b7041cbfd2e0071614f48d3dcf90a4d41c36a",
+      "source_cut": "4a85bc4160b396c1ac7b63000cfa608966db7e76e260197c3952ba117dbbf8f8",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-027",
+      "request_digest": "162aec4dc7a211d5903915add097ee94ba8d6aec7f275acdc50326e218ca81fa",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "02aa871ce161216663c7289cec2b7041cbfd2e0071614f48d3dcf90a4d41c36a",
+      "source_cut": "4a85bc4160b396c1ac7b63000cfa608966db7e76e260197c3952ba117dbbf8f8",
+      "decision": {
+        "raw_operation": "reject",
+        "score": 0.5383195863291449,
+        "margin": 0.13636897469086762,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-028",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "procedure",
+      "intent_operation": "procedure",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.028.nacre_readout",
+      "result": {
+        "fixture_kind": "affine_then_upper_cap",
+        "expression": "min(event_value * factor + bias, limit)",
+        "ordered_steps": [
+          "multiply event_value by current factor",
+          "add current bias",
+          "take the smaller of the result and current limit"
+        ]
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-028",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Sable test stand L8",
+      "text": "Open the full contents of the rule program retained for Sable test stand L8.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-028",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Sable test stand L8",
+      "text": "Open the full contents of the rule program retained for Sable test stand L8.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.028.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-028",
+      "request_digest": "45b9f4a6a8600b7fce13447ff0bb2ae507da2abee0b53b5734e2e48cab9060a9",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "2dc9987b3ae004588471b848ab1a5a8232a4423ff58a451976a0184b40f446f7",
+      "source_cut": "75830090598f2631091f1a883b5f0622467f7e7ff4c63357b740bfb1c55216a4",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-028",
+      "request_digest": "e26e8e78690a83ae75f5f45e35a150c591e562b8da6b9f9314c174febec4acba",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "2dc9987b3ae004588471b848ab1a5a8232a4423ff58a451976a0184b40f446f7",
+      "source_cut": "75830090598f2631091f1a883b5f0622467f7e7ff4c63357b740bfb1c55216a4",
+      "decision": {
+        "raw_operation": "procedure",
+        "score": 0.5780515319674305,
+        "margin": 0.1738041340670322,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-029",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "change",
+      "intent_operation": "change",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.029.nacre_readout",
+      "result": -17,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-029",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Fennel platform-21",
+      "text": "Calculate the net gap obtained by subtracting the value held for Fennel platform-21 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-029",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Fennel platform-21",
+      "text": "Calculate the net gap obtained by subtracting the value held for Fennel platform-21 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.029.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-029",
+      "request_digest": "baa032ee2ac2ad1babfdb6698eccaa5320e8aac15f459ee3f8546381e0a6417b",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "490cfcfa6bd4eeb8b51b4dbdff0ce3cdf7d6bd6ca1493eccb8522546492012cb",
+      "source_cut": "d1f977d1e1175d7ad79682639ff73152afe03d3ab51f2645a7d802d6c27f11be",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-029",
+      "request_digest": "9b0c4201d01b0844308d65e39895009e945c7810cb64a9cb67186420cf893a53",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-029",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.029.nacre_readout",
+        "text": "Calculate the net gap obtained by subtracting the value held for Fennel platform-21 through 20260315 from its latest recorded value.",
+        "at": 20261027,
+        "since": 20260315,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "change",
+        "required_cells": [
+          "event"
+        ],
+        "read_hops": 2,
+        "source_cut": "d1f977d1e1175d7ad79682639ff73152afe03d3ab51f2645a7d802d6c27f11be",
+        "registry_digest": "490cfcfa6bd4eeb8b51b4dbdff0ce3cdf7d6bd6ca1493eccb8522546492012cb"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "490cfcfa6bd4eeb8b51b4dbdff0ce3cdf7d6bd6ca1493eccb8522546492012cb",
+      "source_cut": "d1f977d1e1175d7ad79682639ff73152afe03d3ab51f2645a7d802d6c27f11be",
+      "decision": {
+        "raw_operation": "change",
+        "score": 0.8134639585794069,
+        "margin": 0.6559218547791588,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "change",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-030",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "apply",
+      "intent_operation": "apply",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.030.nacre_readout",
+      "result": 130,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-030",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Rill cabinet R05",
+      "text": "Have the saved program for Rill cabinet R05 process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-030",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Rill cabinet R05",
+      "text": "Have the saved program for Rill cabinet R05 process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.030.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-030",
+      "request_digest": "6cf778beec93ea900415f2605b1b6c0795a517bde99b4e203f71dab384db9428",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "efd610f1ea69279a12fc014dc6fa7fd3198113f07a21ce56628e3f8394248a41",
+      "source_cut": "d37785aa9db7965e7057cd0408e343beec7fb007066bc675f1e3265460dd089f",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-030",
+      "request_digest": "5d9b616c4532de7653a551dd37e9c49d9be2a4b4a67110d1ab26bd3a30e793c4",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-030",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.030.nacre_readout",
+        "text": "Have the saved program for Rill cabinet R05 process its newest number with its current parameters and return the output.",
+        "at": 0,
+        "since": 0,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "apply",
+        "required_cells": [
+          "event",
+          "semantic",
+          "procedure"
+        ],
+        "read_hops": 3,
+        "source_cut": "d37785aa9db7965e7057cd0408e343beec7fb007066bc675f1e3265460dd089f",
+        "registry_digest": "efd610f1ea69279a12fc014dc6fa7fd3198113f07a21ce56628e3f8394248a41"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "efd610f1ea69279a12fc014dc6fa7fd3198113f07a21ce56628e3f8394248a41",
+      "source_cut": "d37785aa9db7965e7057cd0408e343beec7fb007066bc675f1e3265460dd089f",
+      "decision": {
+        "raw_operation": "apply",
+        "score": 0.9101662261033051,
+        "margin": 0.8285305655499373,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "apply",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-031",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "current",
+      "intent_operation": "current",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.031.nacre_readout",
+      "result": 65,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-031",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Cairn meter 118",
+      "text": "Read the numeric value in the most recently archived entry for Cairn meter 118.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-031",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Cairn meter 118",
+      "text": "Read the numeric value in the most recently archived entry for Cairn meter 118.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.031.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-031",
+      "request_digest": "a6a344677987ffebf3fdc4aab4b61f6be13f1132d3a745134a1161bdd26c76c6",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "21d7e65fe8b5eb565680c6336db98b9a6ae4dfad3ff55a6b89852e73cb73a186",
+      "source_cut": "29150d55f79bd0f974d61d8ace5ad0cc567c396f2bd42f161e72e69c308107ce",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-031",
+      "request_digest": "e3ab0e2b7237cbf4e4dfc2e0a5a248ed5214dc3b940b36561a232e18a9fc27fa",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-031",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.031.nacre_readout",
+        "text": "Read the numeric value in the most recently archived entry for Cairn meter 118.",
+        "at": 0,
+        "since": 0,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "current",
+        "required_cells": [
+          "event"
+        ],
+        "read_hops": 1,
+        "source_cut": "29150d55f79bd0f974d61d8ace5ad0cc567c396f2bd42f161e72e69c308107ce",
+        "registry_digest": "21d7e65fe8b5eb565680c6336db98b9a6ae4dfad3ff55a6b89852e73cb73a186"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "21d7e65fe8b5eb565680c6336db98b9a6ae4dfad3ff55a6b89852e73cb73a186",
+      "source_cut": "29150d55f79bd0f974d61d8ace5ad0cc567c396f2bd42f161e72e69c308107ce",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.9246549554494516,
+        "margin": 0.8848936895776855,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "current",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-032",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "history",
+      "intent_operation": "history",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.032.nacre_readout",
+      "result": 36,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-032",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Juniper panel B7",
+      "text": "From the archive for Juniper panel B7, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-032",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Juniper panel B7",
+      "text": "From the archive for Juniper panel B7, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.032.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-032",
+      "request_digest": "36226cdfd65e9c9e023f1045ef2686292b5fc227ba6d87434a5f6461ed2c9cee",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "a502c830b071e51879014267bfc1789dfdf8d818aa8cea518029c76da0d80c76",
+      "source_cut": "0b660f7e7e082237f45cb41a4e88d0acc3f44db55b25dd5660dfbbe4565f3360",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-032",
+      "request_digest": "85c7a0ff085b40bb9851f477f857f1e74f081fd1b147800b0d2b7caaa3eaad82",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "a502c830b071e51879014267bfc1789dfdf8d818aa8cea518029c76da0d80c76",
+      "source_cut": "0b660f7e7e082237f45cb41a4e88d0acc3f44db55b25dd5660dfbbe4565f3360",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.5750342311713634,
+        "margin": 0.27279327767760253,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-033",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "semantic",
+      "intent_operation": "semantic",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.033.nacre_readout",
+      "result": {
+        "factor": 4,
+        "bias": -1,
+        "limit": 220
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-033",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Opal archive desk 42",
+      "text": "I need all the properties and values currently stored for Opal archive desk 42.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-033",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Opal archive desk 42",
+      "text": "I need all the properties and values currently stored for Opal archive desk 42.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.033.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-033",
+      "request_digest": "41a0625681a78f18af1ecd06e6f35eb9d41d4ea19659f6d7894bc820650fa5e7",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "80df13699c50b03aabdb1c97bc8f1a34acb5dd8b3353f499169f179b59501743",
+      "source_cut": "4a01f15e452328b0ed55e443227d5940908090dcc72bfd7b9b1e5377e419dac0",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-033",
+      "request_digest": "d804e7a99e0b2342d543913cda0e652a7b63720321d2821bda685d1c58848d55",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "80df13699c50b03aabdb1c97bc8f1a34acb5dd8b3353f499169f179b59501743",
+      "source_cut": "4a01f15e452328b0ed55e443227d5940908090dcc72bfd7b9b1e5377e419dac0",
+      "decision": {
+        "raw_operation": "reject",
+        "score": 0.5383195863291449,
+        "margin": 0.13636897469086762,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-034",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "procedure",
+      "intent_operation": "procedure",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.034.nacre_readout",
+      "result": {
+        "fixture_kind": "affine_then_upper_cap",
+        "expression": "min(event_value * factor + bias, limit)",
+        "ordered_steps": [
+          "multiply event_value by current factor",
+          "add current bias",
+          "take the smaller of the result and current limit"
+        ]
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-034",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Linden channel D03",
+      "text": "Open the full contents of the rule program retained for Linden channel D03.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-034",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Linden channel D03",
+      "text": "Open the full contents of the rule program retained for Linden channel D03.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.034.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-034",
+      "request_digest": "83cde01a54e0093ec76268fd6e8482da787a640429f7fde3e9bb0220b7054102",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "d8dac7e64b2b766a3fddefa3a2ffe66edebdd4d29c76d2184afc3d1607ab90a7",
+      "source_cut": "a32830307d9e945d83b270277866c3fa4de0d1834964778c628509127450e018",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-034",
+      "request_digest": "a2c60f25c3716992960c7a39afb316b2a58ccaf9acc98ef25e0cf7b122ccdf8e",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "d8dac7e64b2b766a3fddefa3a2ffe66edebdd4d29c76d2184afc3d1607ab90a7",
+      "source_cut": "a32830307d9e945d83b270277866c3fa4de0d1834964778c628509127450e018",
+      "decision": {
+        "raw_operation": "procedure",
+        "score": 0.5780515319674305,
+        "margin": 0.1738041340670322,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-035",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "change",
+      "intent_operation": "change",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.035.nacre_readout",
+      "result": -9,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-035",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Plover counter 091",
+      "text": "Calculate the net gap obtained by subtracting the value held for Plover counter 091 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-035",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Plover counter 091",
+      "text": "Calculate the net gap obtained by subtracting the value held for Plover counter 091 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.035.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-035",
+      "request_digest": "33b943128aa710fbd2eca635712e4fc556cf910d6a66f9269ac1118a3c6bf065",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3e5e6d67d3e2570c5176c7f3cbdd213e52a41f275d9f9faee6a619ea84092164",
+      "source_cut": "c285869b8a7ab33bc231839dc9bd9ab3f4ebf10768eda81ee9d722fca1a0fb57",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-035",
+      "request_digest": "c37934e3039b4f8d881c4e347106e3b5e2672562a263b2eb464c6bcf35ab367a",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-035",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.035.nacre_readout",
+        "text": "Calculate the net gap obtained by subtracting the value held for Plover counter 091 through 20260315 from its latest recorded value.",
+        "at": 20261027,
+        "since": 20260315,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "change",
+        "required_cells": [
+          "event"
+        ],
+        "read_hops": 2,
+        "source_cut": "c285869b8a7ab33bc231839dc9bd9ab3f4ebf10768eda81ee9d722fca1a0fb57",
+        "registry_digest": "3e5e6d67d3e2570c5176c7f3cbdd213e52a41f275d9f9faee6a619ea84092164"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3e5e6d67d3e2570c5176c7f3cbdd213e52a41f275d9f9faee6a619ea84092164",
+      "source_cut": "c285869b8a7ab33bc231839dc9bd9ab3f4ebf10768eda81ee9d722fca1a0fb57",
+      "decision": {
+        "raw_operation": "change",
+        "score": 0.8134639585794069,
+        "margin": 0.6559218547791588,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "change",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-036",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "apply",
+      "intent_operation": "apply",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.036.nacre_readout",
+      "result": 121,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-036",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Bracken vessel G2",
+      "text": "Have the saved program for Bracken vessel G2 process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-036",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Bracken vessel G2",
+      "text": "Have the saved program for Bracken vessel G2 process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.036.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-036",
+      "request_digest": "2cff884b12fdae50d61632f1c09e15eb0c1ba7c1c5c22f793e809f5b4e6b03f5",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "cba976be5d26e4491987ed774ed6dcc5acfe3ca68bbf729b90a57401c4f96951",
+      "source_cut": "9806e4af8010392df771450b9e0d36a158003f1d82cfd8a141179dd4accc461e",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-036",
+      "request_digest": "8173fb3466c88d45cae0f33c44403719ebe606bdd26e55e88f98363da317e1db",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-036",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.036.nacre_readout",
+        "text": "Have the saved program for Bracken vessel G2 process its newest number with its current parameters and return the output.",
+        "at": 0,
+        "since": 0,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "apply",
+        "required_cells": [
+          "event",
+          "semantic",
+          "procedure"
+        ],
+        "read_hops": 3,
+        "source_cut": "9806e4af8010392df771450b9e0d36a158003f1d82cfd8a141179dd4accc461e",
+        "registry_digest": "cba976be5d26e4491987ed774ed6dcc5acfe3ca68bbf729b90a57401c4f96951"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "cba976be5d26e4491987ed774ed6dcc5acfe3ca68bbf729b90a57401c4f96951",
+      "source_cut": "9806e4af8010392df771450b9e0d36a158003f1d82cfd8a141179dd4accc461e",
+      "decision": {
+        "raw_operation": "apply",
+        "score": 0.9101662261033051,
+        "margin": 0.8285305655499373,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "apply",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-037",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "current",
+      "intent_operation": "current",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.037.nacre_readout",
+      "result": 45,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-037",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Sorrel post 64",
+      "text": "Read the numeric value in the most recently archived entry for Sorrel post 64.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-037",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Sorrel post 64",
+      "text": "Read the numeric value in the most recently archived entry for Sorrel post 64.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.037.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-037",
+      "request_digest": "4d79fd35cdb4add8d7a8a9c56d1155dd470c0d6d9cca83363508ded024bb77c1",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "e19b4e4e800b0f8743cebd45c4222f5cd9ee1b4bc88e42d7526f5e9e6022f850",
+      "source_cut": "259f9f6e518a6a5fdd6d8ffd0bc50b41ac868e9f6c32baba98287cceacaeaddf",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-037",
+      "request_digest": "71557b69ff14d4bff5a100ba4eccfd620c4b0c2b9d59e6380a1e94866ab1ad1c",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-en-037",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.037.nacre_readout",
+        "text": "Read the numeric value in the most recently archived entry for Sorrel post 64.",
+        "at": 0,
+        "since": 0,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "current",
+        "required_cells": [
+          "event"
+        ],
+        "read_hops": 1,
+        "source_cut": "259f9f6e518a6a5fdd6d8ffd0bc50b41ac868e9f6c32baba98287cceacaeaddf",
+        "registry_digest": "e19b4e4e800b0f8743cebd45c4222f5cd9ee1b4bc88e42d7526f5e9e6022f850"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "e19b4e4e800b0f8743cebd45c4222f5cd9ee1b4bc88e42d7526f5e9e6022f850",
+      "source_cut": "259f9f6e518a6a5fdd6d8ffd0bc50b41ac868e9f6c32baba98287cceacaeaddf",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.9246549554494516,
+        "margin": 0.8848936895776855,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "current",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-038",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "history",
+      "intent_operation": "history",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.038.nacre_readout",
+      "result": 104,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-038",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Tern basin X11",
+      "text": "From the archive for Tern basin X11, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-038",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Tern basin X11",
+      "text": "From the archive for Tern basin X11, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.038.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-038",
+      "request_digest": "f944c586f3334aac8a4ece5664006e412fc7bc5d7439af43719e80869f3a4f0a",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "4bd538add113a303c31c53327d8615f113edce816ddec60af281c0011492df50",
+      "source_cut": "2f6417e7207ef35eea0017fdbe6fc41e4485fbdffacaa54b8478e8683d2c85ed",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-038",
+      "request_digest": "852b1368f52f172ffa2b150508f96e6c074f525d669cad0dde8a4c61624f1f9c",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "4bd538add113a303c31c53327d8615f113edce816ddec60af281c0011492df50",
+      "source_cut": "2f6417e7207ef35eea0017fdbe6fc41e4485fbdffacaa54b8478e8683d2c85ed",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.5750342311713634,
+        "margin": 0.27279327767760253,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-039",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "semantic",
+      "intent_operation": "semantic",
+      "resolution": "unique",
+      "canonical_entity": "v7held.boundary.039.qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+      "result": {
+        "factor": 2,
+        "bias": -1,
+        "limit": 220
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-039",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Umber field shelf 307",
+      "text": "I need all the properties and values currently stored for Umber field shelf 307.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-039",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Umber field shelf 307",
+      "text": "I need all the properties and values currently stored for Umber field shelf 307.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.boundary.039.qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-039",
+      "request_digest": "dfee2f733407d53bff20e98b2ccc7e01d40eb509e3ebd71816d52d43420b10e3",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "956f7c67b601cdb9213c8b59222d18127674a83a4086eda3c0214777c5144cbf",
+      "source_cut": "d5539a8d8cbbb429b52e992dbb745027c9527f7137d32dbe40ca7adc50026f3e",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-039",
+      "request_digest": "9a42c5a18cd7b421132654ec7237f42a08d4226cddbe335705a8891ac1d3e54b",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "956f7c67b601cdb9213c8b59222d18127674a83a4086eda3c0214777c5144cbf",
+      "source_cut": "d5539a8d8cbbb429b52e992dbb745027c9527f7137d32dbe40ca7adc50026f3e",
+      "decision": {
+        "raw_operation": "reject",
+        "score": 0.5383195863291449,
+        "margin": 0.13636897469086762,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-en-040",
+    "language": "en",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "procedure",
+      "intent_operation": "procedure",
+      "resolution": "unique",
+      "canonical_entity": "v7held.boundary.040.qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+      "result": {
+        "fixture_kind": "affine_then_upper_cap",
+        "expression": "min(event_value * factor + bias, limit)",
+        "ordered_steps": [
+          "multiply event_value by current factor",
+          "add current bias",
+          "take the smaller of the result and current limit"
+        ]
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-en-040",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Willow docket station 29",
+      "text": "Open the full contents of the rule program retained for Willow docket station 29.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-en-040",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Willow docket station 29",
+      "text": "Open the full contents of the rule program retained for Willow docket station 29.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.boundary.040.qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-040",
+      "request_digest": "1d2ff0e887bad065b51a25c13bcc1d37e900df2e4dedb6bd09ed505a3559973f",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "b19ae79097e5fd877a6481f708fdc3913cd2453af7c2287efdd5493394fade37",
+      "source_cut": "1d2e22dce51dea0eeff66b498421bf5c1e6c91db9c6e0313fa905d68af389868",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-en-040",
+      "request_digest": "dedfc05cd12fcb167f403f64041086a7796291a677493df84914431d7f78790a",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "b19ae79097e5fd877a6481f708fdc3913cd2453af7c2287efdd5493394fade37",
+      "source_cut": "1d2e22dce51dea0eeff66b498421bf5c1e6c91db9c6e0313fa905d68af389868",
+      "decision": {
+        "raw_operation": "procedure",
+        "score": 0.5780515319674305,
+        "margin": 0.1738041340670322,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  }
+]

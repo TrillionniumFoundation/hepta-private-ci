@@ -1,0 +1,271 @@
+{
+  "complete_workspace_test": false,
+  "executions": [
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v8-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/memory-cell-v8/addressing",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        6
+      ],
+      "test_discovery_nonempty": true,
+      "wall_seconds": 1.6201285540000185
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v8-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/memory-cell-v8/learning",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        12
+      ],
+      "test_discovery_nonempty": true,
+      "wall_seconds": 0.3227711639999882
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 403.10450888699995
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 331.8358651049999
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ],
+      "exit_code": 100,
+      "wall_seconds": 107.96478598700003
+    }
+  ],
+  "files": {
+    "baseline-native-held.json": {
+      "bytes": 434721,
+      "sha256": "761387975ef6869e89075cc46d36fabf9bea1e7540e2c4fd363b41a115182219"
+    },
+    "execution.log": {
+      "bytes": 267168,
+      "sha256": "ebda02d190f9caa1b30757924c297066eafa91373e00e644a5be062dc688d9bb"
+    },
+    "generated.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "legacy-language.json": {
+      "bytes": 22369,
+      "sha256": "8dd5406796e475ca8884277d0f5e0b4219049d34d4f7e47525841c7a953939d7"
+    },
+    "legacy-population.json": {
+      "bytes": 31288,
+      "sha256": "6324ccdca944e455ca7ba290f0c068be8f02e1776b00d980332b7ceefe275130"
+    },
+    "legacy-training.json": {
+      "bytes": 22372,
+      "sha256": "88f6aadd63ba68dd131f6219155fe10676249f2dbe34f129c9aefcf4286f1efc"
+    },
+    "network-process.json": {
+      "bytes": 4445,
+      "sha256": "647b355bd81dbcd5b866f622320db5cd475b4582880400cbade306d5fa8e67fe"
+    },
+    "prospective-learning.artifacts/MANIFEST.json": {
+      "bytes": 3219,
+      "sha256": "eb358b6d4485786418d4ec0479ecd53e4be81eacb1868b4ca2b3af327b9e6511"
+    },
+    "prospective-learning.artifacts/fixed-1-execution.json": {
+      "bytes": 550,
+      "sha256": "794f7967d1ea5e46c66800553793b234615d344d05e09f374d354801342cba2f"
+    },
+    "prospective-learning.artifacts/fixed-1/CONFIG.json": {
+      "bytes": 291,
+      "sha256": "d79f16bf0d2c72d50d9a31931c7d8fd360c8523c6f9398103cbc16c9bb6ed201"
+    },
+    "prospective-learning.artifacts/fixed-1/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "5fd9e0150f229b69814d8b2f05fc3609fe0e1625ab2c61145f5287030543a3a6"
+    },
+    "prospective-learning.artifacts/fixed-1/OWNER_EXPORT.json": {
+      "bytes": 42381,
+      "sha256": "75a4ad022e639fd4e24f5f4751f6f0675c65b46ad3e7e5c847074e1e237d27de"
+    },
+    "prospective-learning.artifacts/fixed-1/PROGRESS.jsonl": {
+      "bytes": 2023,
+      "sha256": "cef780161b70b93ad69ad3898be2acb24311eb5f47dd5e1df5a9990768dda6dc"
+    },
+    "prospective-learning.artifacts/fixed-1/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "9ffaf80c8366c8b808a5fd5b0f2cddc50dc09de3be03179f8d4baa2fe7dc6bd3"
+    },
+    "prospective-learning.artifacts/fixed-1/START.json": {
+      "bytes": 522,
+      "sha256": "dd98fc70702982d9e85b489257631d262f51831844c63f28e44154a26760ea37"
+    },
+    "prospective-learning.artifacts/fixed-1/TRIAL.json": {
+      "bytes": 650593,
+      "sha256": "400956c9317b655e322d1ffbcbbcea8d40b2de67c6a8936670296b9983ed4195"
+    },
+    "prospective-learning.artifacts/fixed-1/before-retention.json": {
+      "bytes": 61642,
+      "sha256": "63b40adb0d9161d7b3b9a94625a14dcd27b9461a672bf6f51f2940b094e51716"
+    },
+    "prospective-learning.artifacts/fixed-1/bootstrap-fit.json": {
+      "bytes": 287263,
+      "sha256": "a1ccc79e89cb334d28499c263ce0a62667df3c1c74a6ff39f692206ed24ec0d1"
+    },
+    "prospective-learning.artifacts/fixed-1/candidate-fit.json": {
+      "bytes": 320463,
+      "sha256": "40fba2978666c7641ec1b8566ceffa374324aadf41e057f17494138bfb4d5bf8"
+    },
+    "prospective-learning.artifacts/fixed-1/completed-prefix.json": {
+      "bytes": 200851,
+      "sha256": "58a9bcbf3dedb3a0b728f98b3d3445fba76a2c025f2783328b3b83d0268a48f7"
+    },
+    "prospective-learning.artifacts/fixed-1/future.json": {
+      "bytes": 147905,
+      "sha256": "2e673177c48e28339b3573f027c67e718d51444814e3557a806f992a50d9ad31"
+    },
+    "prospective-learning.artifacts/fixed-1/retention.json": {
+      "bytes": 50784,
+      "sha256": "8f3fa9949f11ededa6b7513165a95d1cc233117baec5ff7d93b2cd24e3e4b30e"
+    },
+    "prospective-learning.artifacts/fixed-1/selection.json": {
+      "bytes": 50778,
+      "sha256": "8c012d89561aeb7a75ce56a74dca7bbb716ab2825006b9e7b3ca1923213eb089"
+    },
+    "prospective-learning.artifacts/fixed-2/CONFIG.json": {
+      "bytes": 353,
+      "sha256": "f396659e64749af07ae911c66382b1466f8b8c48c2b01f9c27bb66af0c526738"
+    },
+    "prospective-learning.artifacts/fixed-2/FIT_LOCK.json": {
+      "bytes": 357,
+      "sha256": "ef1455041afba0c8f33dc09862b297267f9ca5185ae52368dd857d51761c2987"
+    },
+    "prospective-learning.artifacts/fixed-2/OWNER_EXPORT.json": {
+      "bytes": 42381,
+      "sha256": "709c0263e1eef633dc3827afb8e79a54e9e20fa502f32b1da402b68098cee255"
+    },
+    "prospective-learning.artifacts/fixed-2/PROGRESS.jsonl": {
+      "bytes": 1589,
+      "sha256": "8f8b337ecf12f8fda43ae3bd496af2f656fafa029fb50363ca48a3bdf0ebb3de"
+    },
+    "prospective-learning.artifacts/fixed-2/ROUTING_TRACE.json": {
+      "bytes": 11525,
+      "sha256": "005d9511e06b95d4feba9d404e253109638291b30a30b2fc879f7708b1845e07"
+    },
+    "prospective-learning.artifacts/fixed-2/START.json": {
+      "bytes": 584,
+      "sha256": "61d39ade1fcaeb3e0d25ff16cc1621bccf387d323c6eb526d040b10e4f47df09"
+    },
+    "prospective-learning.artifacts/fixed-2/before-retention.json": {
+      "bytes": 61640,
+      "sha256": "ecd69d00fb677375a9a590e706291f4b57f4e8590231eaf053abe8567366e863"
+    },
+    "prospective-learning.artifacts/fixed-2/bootstrap-fit.json": {
+      "bytes": 287281,
+      "sha256": "562f1352b86dc38570651032fe4f5f46d3734ee0dbf5f0f11cc6aa62b2104e60"
+    },
+    "prospective-learning.artifacts/fixed-2/candidate-fit.json": {
+      "bytes": 291731,
+      "sha256": "8a7482621d4730663a73bfdb4b65f000c9a49d77492041c45c39c798f5db0015"
+    },
+    "prospective-learning.artifacts/fixed-2/completed-prefix.json": {
+      "bytes": 200853,
+      "sha256": "c4cabc1c0c6bffe1a679b4155c614cb4277d537458f6f5a77eb83b28f121d5ba"
+    },
+    "prospective-learning.artifacts/fixed-2/selection.json": {
+      "bytes": 63077,
+      "sha256": "24d600650f26223ce6eb78a8831941385cf020a61815facc4d84bc579f88df67"
+    }
+  },
+  "final_tracked_changes": "",
+  "initial_tracked_changes": "",
+  "missing_required_receipts": [
+    "candidate-native-held.json",
+    "prospective-learning.json",
+    "prospective-score.json"
+  ],
+  "passed": false,
+  "request": {
+    "addressing_admission": false,
+    "attempt": 1,
+    "candidate_manifest": {
+      "bytes": 164264,
+      "path": "qualification/memory-cell-v8/fixtures/address-model/manifest.json",
+      "sha256": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86"
+    },
+    "frozen_addressing_source_commit": "7e194d9f0858e805a0cab502215a1f64ddc0ea00",
+    "held_quality_gate": false,
+    "native_baseline_and_candidate_required_even_when_admission_failed": true,
+    "native_fixture": {
+      "bytes": 87539,
+      "path": "qualification/memory-cell-v8/fixtures/address-model/native-fixture.json",
+      "sha256": "4a991281be123a958f1d0f6f3d5a53c48f3b6bb393abe7ebe6a031cb498098c1"
+    },
+    "native_rows_per_arm": 240,
+    "preserve_all_failed_and_negative_results": true,
+    "prospective_actual_arms": 11,
+    "purpose": "Compile actual V8 product integrations; exercise owner restart and durable migration, paired native language readbacks, real prospective training and independent evidence scoring.",
+    "schema": "hepta.memory.v8.verification-request.v1",
+    "tests_before_final_fix_and_format": true
+  },
+  "research_gates_implied_by_test_success": false,
+  "schema": "hepta.memory.v8.product-ci-receipt.v1",
+  "source_commit": "92097d22a47d85e9e118c9685b7c915fa3dc49ae",
+  "source_tree": "faf3a5117e9413dc54d20a879e7a97e3c6740a99",
+  "wall_seconds": 844.848326532
+}

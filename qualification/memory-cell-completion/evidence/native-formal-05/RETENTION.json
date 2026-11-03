@@ -1,0 +1,56 @@
+{
+  "archive": {
+    "chunk_count": 33,
+    "chunks_concatenate_to_original_archive": true,
+    "identity": {
+      "bytes": 9770832,
+      "sha256": "64b08e784c8261a6e2a05a61e860fa8da1fe0a877d5fc5cb7027509b9ac2c460"
+    },
+    "original_integrity_report": "INTEGRITY.json",
+    "path": "memory-v9-evidence.tar.xz",
+    "raw_members_previously_verified": 467,
+    "raw_members_reverified_during_copy": false
+  },
+  "attempt": "formal-05",
+  "copied_original_bytes": 10581121,
+  "copied_original_regular_files": 52,
+  "finalization_authority": false,
+  "inventory_note": "LOCAL_FILES.json is an unchanged original local acquisition inventory. It includes artifact.zip, which remains outside this repository directory; it is not a publication inventory. COPY_VERIFICATION.json separately maps copied source bytes to destination bytes.",
+  "native_ci_passed": false,
+  "new_files": [
+    "RETENTION.json",
+    "README.md",
+    "COPY_VERIFICATION.json"
+  ],
+  "original_bytes_modified": false,
+  "repository_directory": "qualification/memory-cell-completion/evidence/native-formal-05",
+  "rescoring_executed": false,
+  "run": {
+    "conclusion": "failure",
+    "id": 40675343830,
+    "status": "completed",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40675343830"
+  },
+  "schema": "hepta.memory.completion.failed-attempt-retention.v1",
+  "scientific_results_changed": false,
+  "source": {
+    "commit": "63d10b79637e17cac8f2dd30456eb5091b83b341",
+    "job_id": 122794965367,
+    "run_id": 40675343830,
+    "tree": "48453f0eb5e5e549371c0ecd87a219d3fe911973"
+  },
+  "source_directory": "/workspace/scratch/76e2020e4b36/native-ci-artifacts/formal-05",
+  "tests_executed": false,
+  "training_or_inference_executed": false,
+  "zip": {
+    "github_artifact_id": 12816802285,
+    "identity": {
+      "bytes": 9812062,
+      "sha256": "e1c03b906df23f52d7088a0c471f0d594fddc3976a569ab47b3ff0b7e43cba12"
+    },
+    "matches_retained_github_api_size_and_sha256": true,
+    "repository_copy_created": false,
+    "retained_local_path": "/workspace/scratch/76e2020e4b36/native-ci-artifacts/formal-05/artifact.zip",
+    "signed_url_retained": false
+  }
+}

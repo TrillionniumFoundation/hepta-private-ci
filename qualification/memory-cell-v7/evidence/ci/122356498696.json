@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40551265189,
+  "job_id": 122356498696,
+  "group": "typed-native",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40551265189/job/122356498696",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--lib",
+      "-p",
+      "codex-hepta-cognitive-types",
+      "-p",
+      "codex-hepta-neuron"
+    ],
+    "complete_workspace_test": false,
+    "exit_code": 0,
+    "final_tracked_changes": "",
+    "group": "typed-native",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 28771,
+      "sha256": "63667274969dfddc2546836aa3ae847362d059068105c835e62a372d52c96e59"
+    },
+    "mode": "test",
+    "passed": true,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 1,
+      "groups": [
+        "typed-native",
+        "source-owner"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "typed-native-and-source-owner",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "57bc21ee610ee68476e0a64a271874b88552dfc9",
+    "source_tree": "231b389722156c00b153601d5a6c136912f6c7a5",
+    "wall_seconds": 32.149924035999994
+  },
+  "test_summaries": [
+    "     Summary [   0.823s] 128 tests run: 128 passed, 0 skipped"
+  ],
+  "log_representation": "Exact UTF-8 decoded provider job log; distinct from the execution.log whose identity is in the CI receipt."
+}

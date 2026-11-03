@@ -1,0 +1,306 @@
+{
+  "complete_workspace_test": false,
+  "executions": [
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/addressing",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        16
+      ],
+      "raw_output": {
+        "bytes": 115,
+        "sha256": "7f274de4157c37080902ac1a17153ad150d6a94bb1d7f7b5aa807aebcc1a2f98"
+      },
+      "raw_output_path": "commands/01.log",
+      "test_discovery_nonempty": true,
+      "wall_seconds": 1.1571735160000003
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/learning",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        21
+      ],
+      "raw_output": {
+        "bytes": 120,
+        "sha256": "4dfac68a47bb46b3f7ad5953fa8e99fe57538e9e9da01813d4d6cd0bb6905930"
+      },
+      "raw_output_path": "commands/02.log",
+      "test_discovery_nonempty": true,
+      "wall_seconds": 6.619592221999994
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 17105,
+        "sha256": "73682627828123fb9130f33585668c94851bd2876c17c84832448f1aea44ba10"
+      },
+      "raw_output_path": "commands/03.log",
+      "wall_seconds": 130.580331359
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "exit_code": 100,
+      "raw_output": {
+        "bytes": 219730,
+        "sha256": "2ef644137f4cf261987184ff7e61109a0320caa0c4443b9a9d4573f2b069d465"
+      },
+      "raw_output_path": "commands/04.log",
+      "wall_seconds": 255.26090837099997
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_) & test(v9)"
+      ],
+      "exit_code": 100,
+      "raw_output": {
+        "bytes": 26529,
+        "sha256": "fd24c0ddcb8c75b3b15141f017f7913c18b844c399f3a6d2f3fc530f95b10356"
+      },
+      "raw_output_path": "commands/05.log",
+      "wall_seconds": 79.03177636399994
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/evaluation/native_evidence.py",
+        "--reports",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output",
+        "--output",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/native-language-audit.json"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_output_path": "commands/06.log",
+      "wall_seconds": 0.071662397999944
+    }
+  ],
+  "files": {
+    "baseline-v7-native-held.json": {
+      "bytes": 1214038,
+      "sha256": "daebaee6a86025f6c2ee1263372ffde75246868f05b9756dbce40b8ee29cdf8e"
+    },
+    "baseline-v8-native-held.json": {
+      "bytes": 1303013,
+      "sha256": "3bc76c8bddfe2b954a208116e604966ea880cf5cbcc8a7b2d6f7a3bec5b8bd8a"
+    },
+    "candidate-v9-native-held.json": {
+      "bytes": 1318934,
+      "sha256": "d53fb4a926e6595154f397d4cda0cbf2187cca4b3b1f74b8da3a8022c5b40e99"
+    },
+    "commands/01.log": {
+      "bytes": 115,
+      "sha256": "7f274de4157c37080902ac1a17153ad150d6a94bb1d7f7b5aa807aebcc1a2f98"
+    },
+    "commands/02.log": {
+      "bytes": 120,
+      "sha256": "4dfac68a47bb46b3f7ad5953fa8e99fe57538e9e9da01813d4d6cd0bb6905930"
+    },
+    "commands/03.log": {
+      "bytes": 17105,
+      "sha256": "73682627828123fb9130f33585668c94851bd2876c17c84832448f1aea44ba10"
+    },
+    "commands/04.log": {
+      "bytes": 219730,
+      "sha256": "2ef644137f4cf261987184ff7e61109a0320caa0c4443b9a9d4573f2b069d465"
+    },
+    "commands/05.log": {
+      "bytes": 26529,
+      "sha256": "fd24c0ddcb8c75b3b15141f017f7913c18b844c399f3a6d2f3fc530f95b10356"
+    },
+    "commands/06.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "continual-learning.artifacts/MANIFEST.json": {
+      "bytes": 2924,
+      "sha256": "4598aa6bd527ccb04caa2806e1ef368a4731c2179a550580b2a724f51eead7a7"
+    },
+    "continual-learning.artifacts/PROTOCOL.json": {
+      "bytes": 3519,
+      "sha256": "b6154507a2773fcd0896c7c77ac90bc1b08d3c4460042e3b796637c49efa3feb"
+    },
+    "continual-learning.artifacts/catalog-config.json": {
+      "bytes": 161,
+      "sha256": "5689897e26f38d3cfafbadb36b1b82c9c41a7d3cc5703da783b4e0fc51a8e860"
+    },
+    "continual-learning.artifacts/catalog-resources.json": {
+      "bytes": 4457,
+      "sha256": "c1a9d640cd02e477fb8e50c7a033759975d532e3844d05ad0b5861a3009a721d"
+    },
+    "continual-learning.artifacts/catalog-samples.jsonl": {
+      "bytes": 3872,
+      "sha256": "70a201a20263a5855ee2d5ac16f7778af6112f8c1d161276e5b4a9cb52c725ca"
+    },
+    "continual-learning.artifacts/catalog-stderr.log": {
+      "bytes": 634,
+      "sha256": "e78482b2b69e8c98db7d547648fc795085448326b3ded1c3e6190477447f742b"
+    },
+    "continual-learning.artifacts/catalog-stdout.log": {
+      "bytes": 286,
+      "sha256": "a60904d29afc94b78e71d2a6f9e510c3be4668a32863886a1681b6b00f9a73a1"
+    },
+    "execution.log": {
+      "bytes": 265183,
+      "sha256": "ffb35a4dfe957316b3b97f2e2b8f6aa53c7655c5c5892ba5076fbab713f7c15c"
+    },
+    "generated.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "legacy-network-process.json": {
+      "bytes": 4439,
+      "sha256": "eb16c77537a3f4af163d1833f04798b5834f66fbe08902cca162cb23e37f1e6b"
+    },
+    "migration-process.artifacts/migration-received-receiver.json": {
+      "bytes": 3183,
+      "sha256": "3976dc48256a2e6f71729c55bc68fd47fbbe0a1373f7ee28512562e358fc8f0b"
+    },
+    "migration-process.artifacts/receiver-received/LOCK": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "migration-process.artifacts/source-v1.bin": {
+      "bytes": 600421,
+      "sha256": "6092b2098cbd95b1f69806703ec323bd93a24ec66d577405fbaa2192e754d1c4"
+    },
+    "migration-process.artifacts/source-v1.manifest.json": {
+      "bytes": 3572,
+      "sha256": "d33bee774e9d3b6c7538f16f1e6fcf14de3f3aeac63980a4a2d695ed3c3b93d0"
+    },
+    "migration-process.artifacts/source-v2.bin": {
+      "bytes": 600483,
+      "sha256": "c85cf04bc3c8385a2eaf40015589e57aad0b6439f3b645963d6acadeb6efdd0b"
+    },
+    "migration-process.artifacts/source-v2.manifest.json": {
+      "bytes": 3634,
+      "sha256": "0a2a07ca60eca343e70746a2ebc9bd43223de0d73944cbdf8868d508f6b23fca"
+    },
+    "native-language-audit.json": {
+      "bytes": 5330,
+      "sha256": "d1ed17dc99dd15352f4d2e9ca979fbbc1390825072bf045b5800040d4e3b0b3f"
+    },
+    "structure-learning.artifacts/MANIFEST.json": {
+      "bytes": 3960,
+      "sha256": "44d29e3e65678b5bd87a300d94fbb1e41b1c4c13611aa791ef42e1876fb7740c"
+    },
+    "structure-learning.artifacts/PROTOCOL.json": {
+      "bytes": 3633,
+      "sha256": "e85d456a004f481537b83dc26a92978da845d7d1ef0a42dcc6276f687b91f3e7"
+    },
+    "structure-learning.artifacts/child-config.json": {
+      "bytes": 128,
+      "sha256": "129e546b2202184222e6c38dc9afa36a086ae8dbe676f08862dc2f1afdef2874"
+    },
+    "structure-learning.artifacts/resources.json": {
+      "bytes": 4441,
+      "sha256": "aba70bb81a86abf7a49246e7e52819b3215b719a0ff02097629b92c7d9794053"
+    },
+    "structure-learning.artifacts/samples.jsonl": {
+      "bytes": 3873,
+      "sha256": "b8588c6a56ae85a0aacfbc5943be013668d51c0ea227c976257181efc091bd8d"
+    },
+    "structure-learning.artifacts/stderr.log": {
+      "bytes": 643,
+      "sha256": "2a2c5f4c3247ef3bedd475eb3ab57ba069b1bb4e42d960f81a367647d82572c7"
+    },
+    "structure-learning.artifacts/stdout.log": {
+      "bytes": 308,
+      "sha256": "4bc4bd01fc588fa8f875b41629e8af030f0e0a87297703a4d7ec1357c82b4a22"
+    }
+  },
+  "final_tracked_changes": "",
+  "initial_tracked_changes": "",
+  "missing_required_receipts": [
+    "continual-learning.json",
+    "structure-learning.json",
+    "migration-process.json",
+    "continual-learning-score.json",
+    "structure-learning-score.json"
+  ],
+  "passed": false,
+  "request": {
+    "attempt": "formal-02",
+    "mode": "formal",
+    "purpose": "Verify frozen experiments after Digest32 test serialization, same-receiver transaction serialization, and independent sampled-wall audit repairs; preserve all prior attempts and negative scientific outcomes.",
+    "schema": "hepta.memory.v9.verification-request.v1",
+    "tests_before_final_fix_and_format": true
+  },
+  "research_gates_implied_by_test_success": false,
+  "schema": "hepta.memory.v9.product-ci-receipt.v1",
+  "source_commit": "371890909481dec3229449d4ae0330f7ba01646d",
+  "source_tree": "136e4fc3a74d2b1845fcfb4bd1245faa0e09de21",
+  "tests_before_final_fix_and_format": true,
+  "wall_seconds": 472.72370979699997
+}

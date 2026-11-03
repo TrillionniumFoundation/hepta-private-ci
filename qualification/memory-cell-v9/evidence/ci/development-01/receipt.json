@@ -1,0 +1,154 @@
+{
+  "complete_workspace_test": false,
+  "executions": [
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/addressing",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        16
+      ],
+      "raw_output": {
+        "bytes": 115,
+        "sha256": "623c246a5bbcad6aec3e5eefb077fe4772a3aaf9152aea3406eb9e8b77e64036"
+      },
+      "raw_output_path": "commands/01.log",
+      "test_discovery_nonempty": true,
+      "wall_seconds": 1.2951089740000157
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v9-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v9/learning",
+        "-p",
+        "*_tests.py"
+      ],
+      "exit_code": 0,
+      "observed_unittest_counts": [
+        10
+      ],
+      "raw_output": {
+        "bytes": 109,
+        "sha256": "b50b57af0815ede2b3a61684060083f51ca1f0624c95f583d0f84370cb6d3bf4"
+      },
+      "raw_output_path": "commands/02.log",
+      "test_discovery_nonempty": true,
+      "wall_seconds": 5.673247114000048
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "exit_code": 0,
+      "raw_output": {
+        "bytes": 97196,
+        "sha256": "076e35df2b65631edfda3b3449c29128490297e1e1b29b0e78eb924492accf9c"
+      },
+      "raw_output_path": "commands/03.log",
+      "wall_seconds": 467.356957849
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "exit_code": 101,
+      "raw_output": {
+        "bytes": 49095,
+        "sha256": "cd2b34e087db22a276e567cfa4c0207e48a06ae7588e1a36799ec0628e13589c"
+      },
+      "raw_output_path": "commands/04.log",
+      "wall_seconds": 208.12693659399997
+    }
+  ],
+  "files": {
+    "commands/01.log": {
+      "bytes": 115,
+      "sha256": "623c246a5bbcad6aec3e5eefb077fe4772a3aaf9152aea3406eb9e8b77e64036"
+    },
+    "commands/02.log": {
+      "bytes": 109,
+      "sha256": "b50b57af0815ede2b3a61684060083f51ca1f0624c95f583d0f84370cb6d3bf4"
+    },
+    "commands/03.log": {
+      "bytes": 97196,
+      "sha256": "076e35df2b65631edfda3b3449c29128490297e1e1b29b0e78eb924492accf9c"
+    },
+    "commands/04.log": {
+      "bytes": 49095,
+      "sha256": "cd2b34e087db22a276e567cfa4c0207e48a06ae7588e1a36799ec0628e13589c"
+    },
+    "execution.log": {
+      "bytes": 147529,
+      "sha256": "1c5c1d61a76f7d42354d3a0020cc0c3925faa2697c9c3ee0227bc34c1be61d40"
+    },
+    "generated.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "final_tracked_changes": "",
+  "initial_tracked_changes": "",
+  "missing_required_receipts": [
+    "legacy-network-process.json"
+  ],
+  "passed": false,
+  "request": {
+    "attempt": "development-01",
+    "mode": "development",
+    "purpose": "Compile and run ordinary relevant-crate tests before new formal model/held experiments; not scientific acceptance.",
+    "schema": "hepta.memory.v9.verification-request.v1",
+    "tests_before_final_fix_and_format": true
+  },
+  "research_gates_implied_by_test_success": false,
+  "schema": "hepta.memory.v9.product-ci-receipt.v1",
+  "source_commit": "10b6d3e99cc5bd850dcb7ec31f8c4a5596926e4d",
+  "source_tree": "8e5c51a075fb699c00da687d30c0396254c830ed",
+  "tests_before_final_fix_and_format": true,
+  "wall_seconds": 682.4537819669999
+}

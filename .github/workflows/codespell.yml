@@ -25,6 +25,9 @@ jobs:
         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
         with:
           ignore_words_file: .codespellignore
+          # The action passes --skip explicitly, overriding .codespellrc.
+          # Omit only these exact encoded evidence payloads; prose stays checked.
+          skip: ./.git,./qualification/memory-cell-v5/evidence/v5-formal/evidence.tar.gz.part006,./qualification/memory-cell-v5/evidence/v5-formal/evidence.tar.gz.part013,./qualification/memory-cell-v5/evidence/v5-formal/evidence.tar.gz.part022,./qualification/memory-cell-v5/evidence/v5-formal/evidence.tar.gz.part040,./qualification/memory-cell-v5/evidence/v5a-development/evidence.tar.gz.part016,./qualification/memory-cell-v4-recovery/ORIGINAL_FORMAL_MANIFEST.json
 
       - name: Check for a clean worktree
         if: always() && !cancelled()

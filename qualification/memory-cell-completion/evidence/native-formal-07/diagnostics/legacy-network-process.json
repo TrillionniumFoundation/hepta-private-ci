@@ -1,0 +1,140 @@
+{
+  "accounting_scope": "application RPC bytes and attempts, including failure, recovery and migration; handshake counts exclude harness trailer, stderr and shutdown; not exclusive wire cost",
+  "anchor_bytes": 315,
+  "app_server_readiness": "explicit control-only fixture seam",
+  "elapsed_before_shutdown_ns": "2815335777",
+  "failed_attempt": {
+    "elapsed_micros": 69040,
+    "received_bytes": 6280,
+    "rpc_attempts": 13,
+    "transmitted_bytes": 1833
+  },
+  "fault": "parent killed and reaped a real owner process before a successor opened the same SQLite and artifact roots",
+  "initial_admission": {
+    "cost": {
+      "elapsed_micros": 251066,
+      "received_bytes": 25137,
+      "rpc_attempts": 48,
+      "transmitted_bytes": 7350
+    },
+    "version": {
+      "deployment_digest": "0c99b04989e9b283e5d93f86fca4870b7e8885fc7637c5bdab36dc05f5df1d11",
+      "generation": 1
+    }
+  },
+  "migration": {
+    "cost": {
+      "elapsed_micros": 313763,
+      "received_bytes": 25137,
+      "rpc_attempts": 48,
+      "transmitted_bytes": 7350
+    },
+    "version": {
+      "deployment_digest": "adb660c08ca1ca4bebc6ef23ceeba5b05514debfbb980aeccde215b868c6ef36",
+      "generation": 2
+    }
+  },
+  "network_cost_after_composition_reopen": {
+    "elapsed_micros": 594426,
+    "received_bytes": 53165,
+    "rpc_attempts": 100,
+    "transmitted_bytes": 15928
+  },
+  "network_cost_before_composition_reopen": {
+    "elapsed_micros": 1249052,
+    "received_bytes": 112608,
+    "rpc_attempts": 213,
+    "transmitted_bytes": 33689
+  },
+  "parameter_profile": "single-class native integration fixture; no training-effectiveness claim",
+  "parent_and_initial_node_pids": [
+    24108,
+    24111,
+    24123,
+    24137
+  ],
+  "predecessor": {
+    "artifact_generation": 1,
+    "bundle": "deeb0c94fd0583724905c988158bc559167d59a37bd42ea80c9f4ba742026b01",
+    "cut": "ddd97783417b3ddec60982c762e01ac5890e545fbd2096041b2a6875981ee57e",
+    "owner": "00000000-0000-4000-9000-000000000002",
+    "pid": 24137,
+    "release": {
+      "created_at": 1793208233,
+      "generation": 1,
+      "head_digest": "7036257c3258b8a97a1fa513a2c229191718b2ec1610585795804a23524df1cd",
+      "head_generation": 1,
+      "head_issued_at": 1793208233,
+      "predecessor_head_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "root": "/tmp/.tmpeND2TF/.tmpvi5em8"
+    },
+    "scope": "cognitive:00000000-0000-4000-9000-000000000002:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+    "spawn_generation": 1
+  },
+  "predecessor_handshake_bytes": {
+    "received": 855,
+    "transmitted": 9
+  },
+  "predecessor_setup_control_traffic": {
+    "received_bytes": 1004,
+    "rpc_attempts": 2,
+    "transmitted_bytes": 298
+  },
+  "remaining_handshake_bytes": [
+    {
+      "received": 855,
+      "transmitted": 9
+    },
+    {
+      "received": 855,
+      "transmitted": 9
+    },
+    {
+      "received": 331,
+      "transmitted": 9
+    }
+  ],
+  "remaining_setup_control_traffic": [
+    {
+      "received_bytes": 1004,
+      "rpc_attempts": 2,
+      "transmitted_bytes": 298
+    },
+    {
+      "received_bytes": 460,
+      "rpc_attempts": 1,
+      "transmitted_bytes": 84
+    },
+    {
+      "received_bytes": 460,
+      "rpc_attempts": 1,
+      "transmitted_bytes": 84
+    }
+  ],
+  "schema": "hepta.memory.v8.process-network-receipt.v1",
+  "scope": "same-host OS processes; existing read-only federation discovery; no database transfer or cross-machine replication",
+  "stale_spawn_control_traffic": {
+    "received_bytes": 265,
+    "rpc_attempts": 1,
+    "transmitted_bytes": 413
+  },
+  "successful_node_readbacks": 6,
+  "successor": {
+    "artifact_generation": 1,
+    "bundle": "deeb0c94fd0583724905c988158bc559167d59a37bd42ea80c9f4ba742026b01",
+    "cut": "ddd97783417b3ddec60982c762e01ac5890e545fbd2096041b2a6875981ee57e",
+    "owner": "00000000-0000-4000-9000-000000000002",
+    "pid": 24182,
+    "release": {
+      "created_at": 1793208233,
+      "generation": 1,
+      "head_digest": "7036257c3258b8a97a1fa513a2c229191718b2ec1610585795804a23524df1cd",
+      "head_generation": 1,
+      "head_issued_at": 1793208233,
+      "predecessor_head_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "root": "/tmp/.tmpeND2TF/.tmpvi5em8"
+    },
+    "scope": "cognitive:00000000-0000-4000-9000-000000000002:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+    "spawn_generation": 4
+  }
+}

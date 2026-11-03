@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.memory.v7.acceptance-status.v1",
+  "overall": "bounded_research_implementation; six_research_gates_not_all_passed",
+  "tested_commit": "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+  "tested_tree": "4d7e6d4180e9a8e1a003065eecfccded3b2c9103",
+  "ci_run_id": 40568534089,
+  "runtime_evidence": "evidence/ci/ci10-runtime-REVIEW.json",
+  "acceptance": [
+    {
+      "order": 1,
+      "name": "typed requests and reliable semantic addressing",
+      "engineering": "Typed request/readout, bound addressing worker, owner registry and bounded context consumer implemented.",
+      "status": "reliable_semantic_addressing_gate_failed",
+      "held": {
+        "known_correct_accept": 80,
+        "known_total": 240,
+        "known_abstain": 160,
+        "known_wrong_accept": 0,
+        "ood_wrong_accept": 4,
+        "ood_total": 120,
+        "original_native_runtime_rows": 440,
+        "original_native_runtime_rows_executed": 0
+      },
+      "public_protocol_reads": 14,
+      "population_risk_established": false,
+      "evidence": "evidence/addressing/REVIEW.json"
+    },
+    {
+      "order": 2,
+      "name": "event, semantic and procedure cells",
+      "engineering": "Real SQLite writes, native parameter reads and cross-type apply verified through Agentd sockets.",
+      "status": "validated_within_bounded_value_profile",
+      "successful_training_lifecycle_readbacks": 116,
+      "event_values": "bounded integers",
+      "semantic_values": "factor and label",
+      "procedure_values": "registered identity/add_bias/multiply/affine/clamp with bias and limit",
+      "arbitrary_natural_language_memory": false,
+      "arbitrary_programs": false,
+      "evidence": "evidence/ci/ci10-runtime/training-receipt.json"
+    },
+    {
+      "order": 3,
+      "name": "training, replay, calibration and clean reconstruction",
+      "engineering": "Actual MLP fitting, replay after addition, rejection of replay after correction/withdrawal, clean reconstruction, parameter digest reproducibility and ledger decision.",
+      "status": "engineering_path_validated_future_task_and_forgetting_gates_not_established",
+      "fits_executed": 10,
+      "fits_with_saved_cost_receipts": 8,
+      "explicit_value_catalog_retained": true,
+      "source_ledger_retained": true,
+      "parametric_only_compression_established": false,
+      "llm_or_lora_finetuning": false,
+      "independent_future_task_gain_established": false,
+      "long_term_forgetting_control_established": false,
+      "probability_calibration_established": false,
+      "evidence": "evidence/ci/ci10-runtime-REVIEW.json"
+    },
+    {
+      "order": 4,
+      "name": "split, merge, sleep and budget competition",
+      "engineering": "Manual 1-to-2-to-1 population, signed release, sleep/wake, zero-budget and stale-source-cut rejection verified.",
+      "status": "lifecycle_validated_positive_full_cost_advantage_not_established",
+      "actual_fits": 8,
+      "successful_readbacks": 288,
+      "autonomous_population_selection_verified": false,
+      "partial_cost_gate_passed": false,
+      "complete_costs_measured": false,
+      "structural_net_benefit_established": false,
+      "fixed_inventory": "frozen 1..8 shards; comparator selection cost exempted",
+      "evidence": [
+        "evidence/ci/ci10-runtime/population-receipt.json",
+        "evidence/population-review.json"
+      ]
+    },
+    {
+      "order": 5,
+      "name": "multiple-node reads, migration and coherent release",
+      "engineering": "Fleet grants, full version vector, real control sockets, prepared-node read-route migration, failure closure and explicit recovery.",
+      "status": "same_host_protocol_validated_cross_machine_gate_not_established",
+      "network_tests_passed": 5,
+      "node_test_scope": "multiple owners and sockets in one Rust test process on one host",
+      "database_replication_implemented": false,
+      "model_shipping_implemented": false,
+      "cross_machine_consensus_verified": false,
+      "communication_measurement": "application request/response bytes, attempts and elapsed; not exclusive wire cost",
+      "evidence": "evidence/ci/ci10-daemon-artifact.zip"
+    },
+    {
+      "order": 6,
+      "name": "new domains, combinations and learned specialization",
+      "engineering": "New entity typed reads, deterministic support partition and registered cross-type combinations.",
+      "status": "learned_specialization_and_new_task_family_transfer_not_established",
+      "routing": "deterministic SHA256 address-rank partition",
+      "learned_expert_allocation": false,
+      "independent_new_domain_task_evaluation": false,
+      "self_organized_general_memory_established": false,
+      "evidence": "evidence/ci/ci10-runtime-REVIEW.json"
+    }
+  ],
+  "finalization": {
+    "published_product_source": true,
+    "fix_executed": true,
+    "fmt_executed": true,
+    "request_file": "FINALIZE_REQUEST.json",
+    "provenance": "FINAL_DELIVERY.json",
+    "ci10_evidence_published_at": "bad9b4adbb3a57bcc5ad2e29a6289645bb60f051",
+    "finalizer_run": 40605424672,
+    "tests_rerun_after_fix_or_fmt": false
+  }
+}

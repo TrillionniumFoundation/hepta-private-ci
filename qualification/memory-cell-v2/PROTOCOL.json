@@ -1,0 +1,180 @@
+{
+  "accounting": {
+    "addressing": "version index and label/rule catalogs charged; neither is parameter memory",
+    "comparable_budgets": "single rank rounded up to match or exceed fixed multi plus learned router",
+    "growth_cost_unit": "declared accuracy utility; these are assumed resource prices, not measured currency",
+    "model_base": "report full cold base and shared incremental artifacts separately",
+    "retained_sources": "sources, replay, rejected candidates and migration charged explicitly",
+    "timing": "one machine CPU batches; no tail-latency or production throughput claim"
+  },
+  "baseline_repository_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "boundaries": [
+    "research only, no production promotion",
+    "pretrained MiniLM is frozen; trainable small heads are not transformer weight fine-tuning",
+    "canonical key reads and task cues do not establish open-ended conversational memory",
+    "composition task schemas, interpreter and ports are supplied",
+    "no validated local unlearning: tainted descendants require clean reinitialization",
+    "exact maps and kNN are strong separately measured baselines",
+    "negative results and failed runs must be preserved"
+  ],
+  "development_seeds": [
+    8001,
+    8003
+  ],
+  "external_v2_profile": {
+    "input_dim": 65,
+    "learning_rate": 0.03,
+    "neighbor_candidates": [
+      1,
+      5
+    ],
+    "rank": 32,
+    "split_fractions": [
+      0.6,
+      0.2,
+      0.2
+    ],
+    "steps": 600
+  },
+  "frozen_before_formal_execution": true,
+  "gates": {
+    "fixed_multi_advantage": {
+      "actual_routing_required": true,
+      "full_storage_cost_required": true,
+      "mean_accuracy_gain_min": 0.02,
+      "oracle_gap_required": true,
+      "paired_interval_lower_min": 0.0,
+      "total_deployed_parameter_budget_matched": true
+    },
+    "maintenance": {
+      "fresh_consolidation_excludes_revoked_sources": true,
+      "interface_tombstones_are_not_weight_unlearning": true,
+      "lineage_revocation_and_stale_restore_block_required": true,
+      "replay_retention_and_correction_required": true
+    },
+    "single_parameter_memory": {
+      "artifact_reload_exact": true,
+      "capacity_and_distortion_required": true,
+      "fresh_process_source_reads": false,
+      "record_value_accuracy_min": 0.95
+    },
+    "structural_evolution": {
+      "accuracy_gain_min": 0.02,
+      "aggregate_interval_supplements_not_replaces_seed_gate": true,
+      "all_fixed_arms": [
+        "fixed-single",
+        "fixed-domain",
+        "fixed-hash"
+      ],
+      "each_seed_requires_adopted_split_or_merge": true,
+      "net_gain_at_declared_h_min": 0.0,
+      "require_all_seeds_to_meet_gate": true,
+      "same_optimizer_work_causal_isolation": "not established by priced cost alone"
+    },
+    "transfer": {
+      "independent_external_sources": 3,
+      "pattern_classification_alone_establishes_general_memory": false,
+      "same_learning_and_read_interface_required": true,
+      "written_recall_separate_from_unseen_input_prediction": true
+    },
+    "typed_composition": {
+      "accuracy_drop_after_edge_removal_min": 0.1,
+      "accuracy_drop_after_valid_permutation_min": 0.1,
+      "autonomous_topology_established_by_supplied_edges": false,
+      "each_task_reported_separately": true,
+      "given_port_edge_ablations_required": true
+    }
+  },
+  "growth_v2_profile": {
+    "byte_price": 1e-06,
+    "cost_horizons": [
+      1,
+      100,
+      10000,
+      1000000
+    ],
+    "feature_dim": 128,
+    "learning_rate": 0.03,
+    "max_retention_regression": 0.02,
+    "min_selection_gain": 0.01,
+    "num_classes": 64,
+    "query_budget": 10000,
+    "rank_budget": 16,
+    "read_second_price": 1.0,
+    "revocations": 16,
+    "snapshots": [
+      [
+        128,
+        128
+      ],
+      [
+        1024,
+        256
+      ],
+      [
+        1024,
+        1024
+      ]
+    ],
+    "steps": 300,
+    "training_second_price": 0.01,
+    "trigger_error": 0.05
+  },
+  "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "model_sha256": "b941bf19f1f1283680f449fa6a7336bb5600bdcd5f84d10ddc5cd72218a0fd21",
+  "pretrained_inference_contract": {
+    "development_issue": "original quantized encoder changed 4 of 190 semantic predictions after regrouping; old failed run and diagnosis preserved",
+    "invariance": "query features must not depend on grouping or other requests",
+    "native_batch_size": 1,
+    "parameter_hyperparameters_changed": false,
+    "tokenization": "independent per text"
+  },
+  "real_v2_profile": {
+    "composition_edges": "given_typed_ports",
+    "feature_dim": 384,
+    "fresh_process": true,
+    "learning_rate": 0.03,
+    "max_training_events": 8192,
+    "rank_per_type": 8,
+    "router_learning_rate": 0.03,
+    "router_margin": 0.25,
+    "router_steps": 600,
+    "router_threshold": 0.8,
+    "steps": 600
+  },
+  "routing_v2_profile": {
+    "learning_rate": 0.03,
+    "margin": 0.25,
+    "steps": 600,
+    "threshold": 0.8
+  },
+  "schema": "memory-cell-v2.protocol.v1",
+  "seed_semantics": {
+    "external": "repeated grouped data splits of three fixed datasets; not fifteen domains",
+    "growth": "independent synthetic association streams and optimization seeds",
+    "real": "repeated fixed repository source with query partitions and initialization changes; not independent source domains",
+    "routing": "known cue and synonym fixtures; seed varies keys and initialization, not independent language domains"
+  },
+  "seeds": [
+    211,
+    223,
+    227,
+    229,
+    233
+  ],
+  "stages": [
+    "routing",
+    "real",
+    "growth",
+    "external"
+  ],
+  "statistics": {
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 1947,
+    "confidence": 0.95,
+    "five_seeds_limit": "small repeated-trial interval, not a population guarantee",
+    "growth_primary": "mean_update_accuracy",
+    "inference_unit": "seed conditional on each fixed workload; external domain count is three",
+    "real_primary": "macro average of semantic/episodic/procedural hidden task accuracies"
+  }
+}

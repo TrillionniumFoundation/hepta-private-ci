@@ -1,0 +1,1656 @@
+[
+  {
+    "id": "held-address-unique-zh-001",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "current",
+      "intent_operation": "current",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.001.nacre_readout",
+      "result": 56,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-001",
+      "scope": "agent:memory-v7-eval",
+      "entity": "苇岚观测点 07",
+      "text": "请读出苇岚观测点 07最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-001",
+      "scope": "agent:memory-v7-eval",
+      "entity": "苇岚观测点 07",
+      "text": "请读出苇岚观测点 07最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.001.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-001",
+      "request_digest": "9ac7923d9b7e08605cdaf327b05d8663267dd385bb5d389f45d208cec4635b77",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "2a89406fb1812bb8aa9e8733c76be46c6de8721d74a3b6eccc23496d3a97f412",
+      "source_cut": "f5eb3a13791b86dec2c906d105233f609979c53223a2a4a127edac0fa2027f71",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-001",
+      "request_digest": "572e0c16d30e38aa3df7b4a22051c6690a7d4a5b442450c746613a10ad921e12",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "2a89406fb1812bb8aa9e8733c76be46c6de8721d74a3b6eccc23496d3a97f412",
+      "source_cut": "f5eb3a13791b86dec2c906d105233f609979c53223a2a4a127edac0fa2027f71",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.6762463264700838,
+        "margin": 0.4830456624402206,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-002",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "history",
+      "intent_operation": "history",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.002.nacre_readout",
+      "result": 111,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-002",
+      "scope": "agent:memory-v7-eval",
+      "entity": "石栖计量柜-18",
+      "text": "从石栖计量柜-18档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-002",
+      "scope": "agent:memory-v7-eval",
+      "entity": "石栖计量柜-18",
+      "text": "从石栖计量柜-18档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.002.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-002",
+      "request_digest": "105455eaf1dacd1755e348e6b55555e3b3ded05bd5f5e1e05e44f33c93bf192b",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "877d02b7fcda4f371cb76b3f56b24dc3396ea84161e336ae3776325639f2930d",
+      "source_cut": "3513f408546a2f515b039d9dc4f9c47304ee8f6328029f736d5be7ae842ced59",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-002",
+      "request_digest": "0959611c953196e124aed365dd7b25b9ae94f6aa4ae97cbc346b6c02de595248",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "877d02b7fcda4f371cb76b3f56b24dc3396ea84161e336ae3776325639f2930d",
+      "source_cut": "3513f408546a2f515b039d9dc4f9c47304ee8f6328029f736d5be7ae842ced59",
+      "decision": {
+        "raw_operation": "history",
+        "score": 0.5032258700448343,
+        "margin": 0.2463062720352699,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-003",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "semantic",
+      "intent_operation": "semantic",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.003.nacre_readout",
+      "result": {
+        "factor": 2,
+        "bias": -1,
+        "limit": 220
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-003",
+      "scope": "agent:memory-v7-eval",
+      "entity": "澄羽台账点_204",
+      "text": "我需要澄羽台账点_204当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-003",
+      "scope": "agent:memory-v7-eval",
+      "entity": "澄羽台账点_204",
+      "text": "我需要澄羽台账点_204当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.003.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-003",
+      "request_digest": "de9d88b8cd8db5ecc3df4b26ba78b6c26174f5cb9edebc09dc5c8140ebbe48bd",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "29db657c49680b37aec8197a9abdde7061b0b1096793f30db7ccd9fed715c6c2",
+      "source_cut": "b0ea85ef423e58931a0fe4c249e61e57550401966cbf66f121279409e9d265b3",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-003",
+      "request_digest": "061d884c09ab1098aca8fcbed18ba6d7960342475b6dbfffc8a56ebcd4c973ba",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "29db657c49680b37aec8197a9abdde7061b0b1096793f30db7ccd9fed715c6c2",
+      "source_cut": "b0ea85ef423e58931a0fe4c249e61e57550401966cbf66f121279409e9d265b3",
+      "decision": {
+        "raw_operation": "reject",
+        "score": 0.5335078826819737,
+        "margin": 0.19616292040622474,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-004",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "procedure",
+      "intent_operation": "procedure",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.004.nacre_readout",
+      "result": {
+        "fixture_kind": "affine_then_upper_cap",
+        "expression": "min(event_value * factor + bias, limit)",
+        "ordered_steps": [
+          "multiply event_value by current factor",
+          "add current bias",
+          "take the smaller of the result and current limit"
+        ]
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-004",
+      "scope": "agent:memory-v7-eval",
+      "entity": "杉洛温箱（南侧）",
+      "text": "请调阅杉洛温箱（南侧）留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-004",
+      "scope": "agent:memory-v7-eval",
+      "entity": "杉洛温箱（南侧）",
+      "text": "请调阅杉洛温箱（南侧）留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.004.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-004",
+      "request_digest": "af2825660a80691d6cf6024336dabbe0f5a7c2747f3f12b9c20dd436523f76fb",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "752b89d5dc17019d80b7095208df1f2bdf06faf711375d35c62c83db8316a564",
+      "source_cut": "17daedc5635df3d8561d6357215a74e4041c2d0a24ee8828370fe14f8946d249",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-004",
+      "request_digest": "a0d5c6b34adee3e665602315a6b8d745d16e12fa99b1c15f6f02e3096ba7c6ba",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "752b89d5dc17019d80b7095208df1f2bdf06faf711375d35c62c83db8316a564",
+      "source_cut": "17daedc5635df3d8561d6357215a74e4041c2d0a24ee8828370fe14f8946d249",
+      "decision": {
+        "raw_operation": "procedure",
+        "score": 0.6407381489962928,
+        "margin": 0.3020548729456201,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-005",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "change",
+      "intent_operation": "change",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.005.nacre_readout",
+      "result": -10,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-005",
+      "scope": "agent:memory-v7-eval",
+      "entity": "绛溪仓位 3B",
+      "text": "算出绛溪仓位 3B最新记录值减去截至20260315记录值的净差。",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-005",
+      "scope": "agent:memory-v7-eval",
+      "entity": "绛溪仓位 3B",
+      "text": "算出绛溪仓位 3B最新记录值减去截至20260315记录值的净差。",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.005.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-005",
+      "request_digest": "def914f7daf947cadb99c5c48eb279f7bf903a6f139e96892b2a82e4b4b1dc8f",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "5d6b88e5a4c3d09511cd929c2d51eeddeb6446ab7526f0af39df39885c3ebae6",
+      "source_cut": "311950a8e8f63fd6ecbb05da4751a5aeb5d208d8a08156a829ce4b5cbf01bfeb",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-005",
+      "request_digest": "23703b87722d875b147c05acfde57121f43db864317ae2934c2df75888a4b7c1",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "5d6b88e5a4c3d09511cd929c2d51eeddeb6446ab7526f0af39df39885c3ebae6",
+      "source_cut": "311950a8e8f63fd6ecbb05da4751a5aeb5d208d8a08156a829ce4b5cbf01bfeb",
+      "decision": {
+        "raw_operation": "change",
+        "score": 0.556955163078121,
+        "margin": 0.12210903992408273,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-006",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "apply",
+      "intent_operation": "apply",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.006.nacre_readout",
+      "result": 130,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-006",
+      "scope": "agent:memory-v7-eval",
+      "entity": "沐峤档案架·09",
+      "text": "让沐峤档案架·09已存程序用当前参数处理其最新数值，返回运算结果。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-006",
+      "scope": "agent:memory-v7-eval",
+      "entity": "沐峤档案架·09",
+      "text": "让沐峤档案架·09已存程序用当前参数处理其最新数值，返回运算结果。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.006.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-006",
+      "request_digest": "1ea114be9c7225ac90a606875cb808c3768da17a43a17826f6aa57b0c5aebef3",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "c1aa63221b2f055e10cc7323e4a5d8d0bd46b7655b28b46e5cf0c8e7fac80c4d",
+      "source_cut": "0d0460522b56d80939d9f6cb4890f3fe6165c45ee869c7a0b7a2447e7e947fb2",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-006",
+      "request_digest": "86947bafd96493be1230334183e26d1d69e031cb30fa0cda184f3a440c38153e",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-zh-006",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.006.nacre_readout",
+        "text": "让沐峤档案架·09已存程序用当前参数处理其最新数值，返回运算结果。",
+        "at": 0,
+        "since": 0,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "apply",
+        "required_cells": [
+          "event",
+          "semantic",
+          "procedure"
+        ],
+        "read_hops": 3,
+        "source_cut": "0d0460522b56d80939d9f6cb4890f3fe6165c45ee869c7a0b7a2447e7e947fb2",
+        "registry_digest": "c1aa63221b2f055e10cc7323e4a5d8d0bd46b7655b28b46e5cf0c8e7fac80c4d"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "c1aa63221b2f055e10cc7323e4a5d8d0bd46b7655b28b46e5cf0c8e7fac80c4d",
+      "source_cut": "0d0460522b56d80939d9f6cb4890f3fe6165c45ee869c7a0b7a2447e7e947fb2",
+      "decision": {
+        "raw_operation": "apply",
+        "score": 0.7847842120803217,
+        "margin": 0.6045215758461012,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "apply",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-007",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "current",
+      "intent_operation": "current",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.007.nacre_readout",
+      "result": 36,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-007",
+      "scope": "agent:memory-v7-eval",
+      "entity": "折光采样槽/11",
+      "text": "请读出折光采样槽/11最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-007",
+      "scope": "agent:memory-v7-eval",
+      "entity": "折光采样槽/11",
+      "text": "请读出折光采样槽/11最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.007.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-007",
+      "request_digest": "5e8f3fd4da6c96c5b97176c5303760da1daa3ae5b423c06be21812a67ea28e50",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "853c38b3841335a2650d9318f959878dd0501917992c27979ae8a5edba560595",
+      "source_cut": "e3137bce324b0efd9dd624952c06ffe866d36538549c0da4ab058347f1fcfa42",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-007",
+      "request_digest": "9d5c0e54d8ef40dbdd3ae715c13d6b3041eb3139ea521c70046f6f3b668b8280",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "853c38b3841335a2650d9318f959878dd0501917992c27979ae8a5edba560595",
+      "source_cut": "e3137bce324b0efd9dd624952c06ffe866d36538549c0da4ab058347f1fcfa42",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.6451744570046011,
+        "margin": 0.3654618541526853,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-008",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "history",
+      "intent_operation": "history",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.008.nacre_readout",
+      "result": 96,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-008",
+      "scope": "agent:memory-v7-eval",
+      "entity": "乌桐读数席 A2",
+      "text": "从乌桐读数席 A2档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-008",
+      "scope": "agent:memory-v7-eval",
+      "entity": "乌桐读数席 A2",
+      "text": "从乌桐读数席 A2档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.008.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-008",
+      "request_digest": "5d6a80835b09a424f59a51fe33e168857dc0abe74782a38a0df5a2b72d0049f8",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "214b6e4e5154b3ce3681526864c88f7b706d3cd7b9a20a7d08f77d45e653cdc4",
+      "source_cut": "f2d2d9bc7a86469cc6644273064c0f4e93a408a77a073274c443b944adad9cdf",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-008",
+      "request_digest": "6097967660ca5c2ab2b486ecdc100235e684f0c45d8ec2f00fa8c80e104b7cdc",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "214b6e4e5154b3ce3681526864c88f7b706d3cd7b9a20a7d08f77d45e653cdc4",
+      "source_cut": "f2d2d9bc7a86469cc6644273064c0f4e93a408a77a073274c443b944adad9cdf",
+      "decision": {
+        "raw_operation": "history",
+        "score": 0.6714767155250583,
+        "margin": 0.4984058322684254,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-009",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "semantic",
+      "intent_operation": "semantic",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.009.nacre_readout",
+      "result": {
+        "factor": 4,
+        "bias": -1,
+        "limit": 220
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-009",
+      "scope": "agent:memory-v7-eval",
+      "entity": "璟河编号 060",
+      "text": "我需要璟河编号 060当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-009",
+      "scope": "agent:memory-v7-eval",
+      "entity": "璟河编号 060",
+      "text": "我需要璟河编号 060当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.009.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-009",
+      "request_digest": "0d079fb019720d564d27e9131990f4cd7270e0aca56c98b6698dd54ddc0bfb40",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "95b5d6862dd26dc4ef024d2a0d5f20f2d0eb413a4864d703c120cbd47153091b",
+      "source_cut": "c5210cd887cf86fd8e3fc5e8b05193e5394bf2c8ffe19ae5535cbc434a9ceb7e",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-009",
+      "request_digest": "1dcf1222820f15a107c9bf69435ff7e8f6044bf00d84886db52766bf816b6270",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "95b5d6862dd26dc4ef024d2a0d5f20f2d0eb413a4864d703c120cbd47153091b",
+      "source_cut": "c5210cd887cf86fd8e3fc5e8b05193e5394bf2c8ffe19ae5535cbc434a9ceb7e",
+      "decision": {
+        "raw_operation": "reject",
+        "score": 0.5600484511150678,
+        "margin": 0.20289423923101219,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-010",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "procedure",
+      "intent_operation": "procedure",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.010.nacre_readout",
+      "result": {
+        "fixture_kind": "affine_then_upper_cap",
+        "expression": "min(event_value * factor + bias, limit)",
+        "ordered_steps": [
+          "multiply event_value by current factor",
+          "add current bias",
+          "take the smaller of the result and current limit"
+        ]
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-010",
+      "scope": "agent:memory-v7-eval",
+      "entity": "霁石通道-西",
+      "text": "请调阅霁石通道-西留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-010",
+      "scope": "agent:memory-v7-eval",
+      "entity": "霁石通道-西",
+      "text": "请调阅霁石通道-西留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.010.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-010",
+      "request_digest": "aa98e3e83ad36a9ebff8dee4f178532e956d89afea806df2d3c854ae88ecc091",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "974962620e326be6b9749fcc46bb851e2f49b888733308c1a357f75744f1afb2",
+      "source_cut": "c8ed16cdf0478c022c647b157975a8321bf0e238d6e9b8a853b298ce241b9ed4",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-010",
+      "request_digest": "3672f35c1b9ccb22b2bd339fc9abba9ee751466cccc6a9e25f9211c1a8c49009",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "974962620e326be6b9749fcc46bb851e2f49b888733308c1a357f75744f1afb2",
+      "source_cut": "c8ed16cdf0478c022c647b157975a8321bf0e238d6e9b8a853b298ce241b9ed4",
+      "decision": {
+        "raw_operation": "procedure",
+        "score": 0.6407381489962928,
+        "margin": 0.3020548729456201,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-011",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "change",
+      "intent_operation": "change",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.011.nacre_readout",
+      "result": -15,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-011",
+      "scope": "agent:memory-v7-eval",
+      "entity": "鹭湾托盘 T17",
+      "text": "算出鹭湾托盘 T17最新记录值减去截至20260315记录值的净差。",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-011",
+      "scope": "agent:memory-v7-eval",
+      "entity": "鹭湾托盘 T17",
+      "text": "算出鹭湾托盘 T17最新记录值减去截至20260315记录值的净差。",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.011.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-011",
+      "request_digest": "dae639792ca6cdf26f248bcf6b33f5d9c9e5e3c1126bbc2a39b03067f2eba9ac",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "787920276c76e271f4bdb48e155d0b07cfd60469569c20ec421e49533b1c9326",
+      "source_cut": "aacd2b10029a2b7b39e27cebbee08c00b1f75763f2ea525a257ac29296b26b58",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-011",
+      "request_digest": "a5e185c8c48b4239a488553b30423d8dce7b79fff36c68ad07fee7deb3a19e90",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "787920276c76e271f4bdb48e155d0b07cfd60469569c20ec421e49533b1c9326",
+      "source_cut": "aacd2b10029a2b7b39e27cebbee08c00b1f75763f2ea525a257ac29296b26b58",
+      "decision": {
+        "raw_operation": "change",
+        "score": 0.5849055344761517,
+        "margin": 0.18179769009693358,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-012",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "apply",
+      "intent_operation": "apply",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.012.nacre_readout",
+      "result": 103,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-012",
+      "scope": "agent:memory-v7-eval",
+      "entity": "筠漪测台 88",
+      "text": "让筠漪测台 88已存程序用当前参数处理其最新数值，返回运算结果。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-012",
+      "scope": "agent:memory-v7-eval",
+      "entity": "筠漪测台 88",
+      "text": "让筠漪测台 88已存程序用当前参数处理其最新数值，返回运算结果。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.012.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-012",
+      "request_digest": "4ba521697ef733dff4f51a249e85de79653526fb10592338060cec1a4c248ed1",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "c40c2c605ff71ea9411bfabc6c3dda19d828a1c588ab6e2cceaea78d0a0ad24c",
+      "source_cut": "0adefaaf4ed63b50895037721ee1e407a5ea0ae2d80b82b632fc4768c556e805",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-012",
+      "request_digest": "1c7c21ecc775288f76cdc5403d5e68b06ba55cbf2d70c21630f8015b8d83e5af",
+      "status": "accepted",
+      "reason": null,
+      "request": {
+        "query_id": "held-address-unique-zh-012",
+        "scope": "agent:memory-v7-eval",
+        "entity": "v7held.owner.012.nacre_readout",
+        "text": "让筠漪测台 88已存程序用当前参数处理其最新数值，返回运算结果。",
+        "at": 0,
+        "since": 0,
+        "max_hops": 8,
+        "max_cells": 8
+      },
+      "plan": {
+        "operation": "apply",
+        "required_cells": [
+          "event",
+          "semantic",
+          "procedure"
+        ],
+        "read_hops": 3,
+        "source_cut": "0adefaaf4ed63b50895037721ee1e407a5ea0ae2d80b82b632fc4768c556e805",
+        "registry_digest": "c40c2c605ff71ea9411bfabc6c3dda19d828a1c588ab6e2cceaea78d0a0ad24c"
+      },
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "c40c2c605ff71ea9411bfabc6c3dda19d828a1c588ab6e2cceaea78d0a0ad24c",
+      "source_cut": "0adefaaf4ed63b50895037721ee1e407a5ea0ae2d80b82b632fc4768c556e805",
+      "decision": {
+        "raw_operation": "apply",
+        "score": 0.8145316868007433,
+        "margin": 0.6518329438309055,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": "apply",
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-013",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "current",
+      "intent_operation": "current",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.013.nacre_readout",
+      "result": 29,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-013",
+      "scope": "agent:memory-v7-eval",
+      "entity": "蔚汀计数盒_4",
+      "text": "请读出蔚汀计数盒_4最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-013",
+      "scope": "agent:memory-v7-eval",
+      "entity": "蔚汀计数盒_4",
+      "text": "请读出蔚汀计数盒_4最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.013.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-013",
+      "request_digest": "0ad3980b46bb7ff5e491aff3d752d555e6060c504d890ad1a41a29d92f3954cd",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "c5ed5b1091ed950f3fd0ae44092109472f1ae0f3de766a18f8f69860a7863168",
+      "source_cut": "1e3601303fc15a1296259fdff0389ff37c077848ede71889696f35b9715771aa",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-013",
+      "request_digest": "435865f5e2bc0086fce2fda9a2d6af141cb64f18e0fea234dfe3fb50acada263",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "c5ed5b1091ed950f3fd0ae44092109472f1ae0f3de766a18f8f69860a7863168",
+      "source_cut": "1e3601303fc15a1296259fdff0389ff37c077848ede71889696f35b9715771aa",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.7065597191704277,
+        "margin": 0.45200490546166416,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-014",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "history",
+      "intent_operation": "history",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.014.nacre_readout",
+      "result": 81,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-014",
+      "scope": "agent:memory-v7-eval",
+      "entity": "祈岚阀组 02",
+      "text": "从祈岚阀组 02档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-014",
+      "scope": "agent:memory-v7-eval",
+      "entity": "祈岚阀组 02",
+      "text": "从祈岚阀组 02档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.014.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-014",
+      "request_digest": "5c2b10ce4035826205fd18e7bfe83e29b40e2376c352a3cf40ec908310b940c2",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "b5ded5b91c8a03332ca71455d47f367aed1a861b6c045fbddedf01e6bffad313",
+      "source_cut": "3dc90206c04397e9322ada9776d0c68026941c26ad37ccc61614a587664ddb0e",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-014",
+      "request_digest": "bca90d67117655334f89921026a17c2bbea20b93a2c410bd1c1e69744c07083d",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "b5ded5b91c8a03332ca71455d47f367aed1a861b6c045fbddedf01e6bffad313",
+      "source_cut": "3dc90206c04397e9322ada9776d0c68026941c26ad37ccc61614a587664ddb0e",
+      "decision": {
+        "raw_operation": "history",
+        "score": 0.6383954001870391,
+        "margin": 0.4468531139570685,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-015",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "semantic",
+      "intent_operation": "semantic",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.015.nacre_readout",
+      "result": {
+        "factor": 2,
+        "bias": -1,
+        "limit": 220
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-015",
+      "scope": "agent:memory-v7-eval",
+      "entity": "梅隅液位柱-16",
+      "text": "我需要梅隅液位柱-16当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-015",
+      "scope": "agent:memory-v7-eval",
+      "entity": "梅隅液位柱-16",
+      "text": "我需要梅隅液位柱-16当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.015.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-015",
+      "request_digest": "053616036aa39ff8467a6b3570b53dd4860eb1952294edc69a8fe2f0f4857407",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "e2548041b9ce8509b277a724f7fe6f57692dac3e0d0166ab498d010e31fa3a43",
+      "source_cut": "40eb9e7457b2f865da738b09d69f427b45f489858813fcf9f0040f26d18708e2",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-015",
+      "request_digest": "a9f59c2097a5211dd24ecb38ef02f1128bc2d8ddb0c97db41a81c8082e186746",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "e2548041b9ce8509b277a724f7fe6f57692dac3e0d0166ab498d010e31fa3a43",
+      "source_cut": "40eb9e7457b2f865da738b09d69f427b45f489858813fcf9f0040f26d18708e2",
+      "decision": {
+        "raw_operation": "reject",
+        "score": 0.5685908101260108,
+        "margin": 0.2579228174878012,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-016",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "procedure",
+      "intent_operation": "procedure",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.016.nacre_readout",
+      "result": {
+        "fixture_kind": "affine_then_upper_cap",
+        "expression": "min(event_value * factor + bias, limit)",
+        "ordered_steps": [
+          "multiply event_value by current factor",
+          "add current bias",
+          "take the smaller of the result and current limit"
+        ]
+      },
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-016",
+      "scope": "agent:memory-v7-eval",
+      "entity": "荷砚观测窗 051",
+      "text": "请调阅荷砚观测窗 051留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-016",
+      "scope": "agent:memory-v7-eval",
+      "entity": "荷砚观测窗 051",
+      "text": "请调阅荷砚观测窗 051留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.016.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-016",
+      "request_digest": "8c4073adf592726e28336d1516f8a8a2f172683cbc85f8d8634dd1b52d3b9479",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "b0b62d8aa6bdc22388f7794b3ab8b2c06b7526a84768ccb83f97bf564c8908cb",
+      "source_cut": "54ee2b6842c155cbfd6776f80d3269b3a3250b08973a39a7867d1808dc922c49",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-016",
+      "request_digest": "2004f03f0b0e7e8063733fcc4f7b3029034bb77755d61329b8961a2e98104104",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "b0b62d8aa6bdc22388f7794b3ab8b2c06b7526a84768ccb83f97bf564c8908cb",
+      "source_cut": "54ee2b6842c155cbfd6776f80d3269b3a3250b08973a39a7867d1808dc922c49",
+      "decision": {
+        "raw_operation": "procedure",
+        "score": 0.49610721762248816,
+        "margin": 0.047685312737407504,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-017",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "change",
+      "intent_operation": "change",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.017.nacre_readout",
+      "result": -7,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-017",
+      "scope": "agent:memory-v7-eval",
+      "entity": "乔湾存储槽 S6",
+      "text": "算出乔湾存储槽 S6最新记录值减去截至20260315记录值的净差。",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-017",
+      "scope": "agent:memory-v7-eval",
+      "entity": "乔湾存储槽 S6",
+      "text": "算出乔湾存储槽 S6最新记录值减去截至20260315记录值的净差。",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.017.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-017",
+      "request_digest": "226d4811a7ce2b1569a464941fba9e0b3ae7bdb806ba839015aa8c5b5c645243",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "348364bad8dc976580c1f19956774269e6cd605cc6c361be1a3c7d669b5c48b8",
+      "source_cut": "3c4b318db5aac2ae4e27f9436fdec1b4d61f8530945edf09e892d05bfb514c9b",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-017",
+      "request_digest": "b79718d43f26c71409d213f05b36ea1228bb00185b13ecc809f5abfda2e1026b",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "348364bad8dc976580c1f19956774269e6cd605cc6c361be1a3c7d669b5c48b8",
+      "source_cut": "3c4b318db5aac2ae4e27f9436fdec1b4d61f8530945edf09e892d05bfb514c9b",
+      "decision": {
+        "raw_operation": "change",
+        "score": 0.6262001195041261,
+        "margin": 0.26520519718234675,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-018",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "apply",
+      "intent_operation": "apply",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.018.nacre_readout",
+      "result": 130,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-018",
+      "scope": "agent:memory-v7-eval",
+      "entity": "缃溪转运台 32",
+      "text": "让缃溪转运台 32已存程序用当前参数处理其最新数值，返回运算结果。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-018",
+      "scope": "agent:memory-v7-eval",
+      "entity": "缃溪转运台 32",
+      "text": "让缃溪转运台 32已存程序用当前参数处理其最新数值，返回运算结果。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.018.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-018",
+      "request_digest": "6026f98870b544115105520c1906973df34397fa36bf93eb3d473dd21558490d",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "95bb9d9ba9e6cd07fa0169eca341658974797f0ae295c36ce6403284cb29aacf",
+      "source_cut": "36ba3d5a8b9f7461a1198a796a12ea80855895f7452d497df0e566ab2f55c333",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-018",
+      "request_digest": "924e7dbeb18caa859a7082dc6f02a84bf8fc2d0e84d4b47aa8a0a3e03b04a49c",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "95bb9d9ba9e6cd07fa0169eca341658974797f0ae295c36ce6403284cb29aacf",
+      "source_cut": "36ba3d5a8b9f7461a1198a796a12ea80855895f7452d497df0e566ab2f55c333",
+      "decision": {
+        "raw_operation": "apply",
+        "score": 0.7038266118412264,
+        "margin": 0.4408395290260237,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-019",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "current",
+      "intent_operation": "current",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.019.nacre_readout",
+      "result": 92,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-019",
+      "scope": "agent:memory-v7-eval",
+      "entity": "墨屿刻度站 K9",
+      "text": "请读出墨屿刻度站 K9最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-019",
+      "scope": "agent:memory-v7-eval",
+      "entity": "墨屿刻度站 K9",
+      "text": "请读出墨屿刻度站 K9最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.019.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-019",
+      "request_digest": "01598803f83fbf7636c0122e34f21ea9505fe1142aa1552d9abf0f16176089b6",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "90b0a2e41d7dfcd1b981e846652ecc40e134da51b2315b9f3daecd51786f3931",
+      "source_cut": "9085a38ea6ced1e4c8330a489b7a193fde000cf71a1815969d1c43a1b0b829d9",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-019",
+      "request_digest": "f38f434ef794c366bcf771f599f59d6c0b5961a4f4f0c7044b3400586aee8589",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "90b0a2e41d7dfcd1b981e846652ecc40e134da51b2315b9f3daecd51786f3931",
+      "source_cut": "9085a38ea6ced1e4c8330a489b7a193fde000cf71a1815969d1c43a1b0b829d9",
+      "decision": {
+        "raw_operation": "current",
+        "score": 0.48596072442444743,
+        "margin": 0.1337102765815193,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unique-zh-020",
+    "language": "zh",
+    "family": "held.owner_unique",
+    "expected": {
+      "operation": "history",
+      "intent_operation": "history",
+      "resolution": "unique",
+      "canonical_entity": "v7held.owner.020.nacre_readout",
+      "result": 66,
+      "reason": "Exactly one same-scope registry entity contains the request entity as a declared alias."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unique-zh-020",
+      "scope": "agent:memory-v7-eval",
+      "entity": "洛棠检验柜 76",
+      "text": "从洛棠检验柜 76档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unique-zh-020",
+      "scope": "agent:memory-v7-eval",
+      "entity": "洛棠检验柜 76",
+      "text": "从洛棠检验柜 76档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": "v7held.owner.020.nacre_readout",
+      "error": null
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-020",
+      "request_digest": "57cd0dfa3ad79f99127dbbc2c8d712ff49834e662f4a3103dca35ba9c6c36181",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "d3bd78166d1670841e6deee6af1eef376b042486c30f85f42b097591dd7ad2c5",
+      "source_cut": "c3d7c592c53c1aa00a496036e8ea5b83e99c2489d8b7eeff874f99ff204e51a8",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unique-zh-020",
+      "request_digest": "f5fc6f15678d506f604b25cb416d585b2786c19743fd8d49431fd22d8c94fa7f",
+      "status": "rejected",
+      "reason": "unsupported-or-low-confidence-intent",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "d3bd78166d1670841e6deee6af1eef376b042486c30f85f42b097591dd7ad2c5",
+      "source_cut": "c3d7c592c53c1aa00a496036e8ea5b83e99c2489d8b7eeff874f99ff204e51a8",
+      "decision": {
+        "raw_operation": "history",
+        "score": 0.6199746266618219,
+        "margin": 0.4183489065106739,
+        "score_kind": "factorized intent/shape ranking score; not calibrated posterior",
+        "capability_reason": null,
+        "operation": null,
+        "threshold": 0.7098737782192688,
+        "required_margin": 0.0
+      },
+      "authority": false
+    }
+  }
+]

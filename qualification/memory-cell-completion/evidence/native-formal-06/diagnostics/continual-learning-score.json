@@ -1,0 +1,4749 @@
+{
+  "schema": "hepta.memory.v9.continual-score.v1",
+  "integrity": "verified",
+  "input_sha256": "724468247b5825c9ba033c3c45a9f72e5e347fe49ddf860da916625bf2eb54a4",
+  "fixture_sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502",
+  "children": [
+    {
+      "representation": "catalog",
+      "stages": [
+        {
+          "stage": 0,
+          "id": "stage-0",
+          "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4",
+          "owner_current_entities": 9,
+          "future": {
+            "paired_gains": {
+              "zero": {
+                "reads": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 144,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 144,
+                "correct_decision_gain": 24
+              },
+              "frozen": {
+                "reads": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 144,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 144,
+                "correct_decision_gain": 24
+              }
+            },
+            "written_support_and_authored_task_composition_only": true
+          },
+          "retention_before_after": null,
+          "interventions": {
+            "zero": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 0,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 0,
+                "tasks": 8,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              }
+            },
+            "frozen": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 0,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 0,
+                "tasks": 8,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              }
+            },
+            "trained": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "clean": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            }
+          },
+          "model_audit": {
+            "semantic": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 7460,
+                  "catalog_bytes": 307,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 39280,
+                  "native_digest": "de8715381e4a015059f109be108e615af3ed96d1c5b66ff15c2b6ed7b82dbf22",
+                  "parameter_digest": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e"
+                },
+                "frozen": {
+                  "parameter_bytes": 7460,
+                  "catalog_bytes": 307,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 39280,
+                  "native_digest": "de8715381e4a015059f109be108e615af3ed96d1c5b66ff15c2b6ed7b82dbf22",
+                  "parameter_digest": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e"
+                },
+                "trained": {
+                  "parameter_bytes": 7460,
+                  "catalog_bytes": 307,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 39403,
+                  "native_digest": "4f527b4eb5150fe54feb7f7f072bc3df3ab7a907bbc701a4c61814dbe4712632",
+                  "parameter_digest": "89cae24edb47c967336e6e24a85b01bcddb27438f02972048b8c643359cd7386"
+                },
+                "clean": {
+                  "parameter_bytes": 7460,
+                  "catalog_bytes": 307,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 39403,
+                  "native_digest": "94101c9dfa573890b107cffcaf35bc6c3aa72ba62b101c66d33f792aeab019bb",
+                  "parameter_digest": "89cae24edb47c967336e6e24a85b01bcddb27438f02972048b8c643359cd7386"
+                }
+              },
+              "source_value_bytes": 297,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": false,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            },
+            "procedure": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 7460,
+                  "catalog_bytes": 374,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 39348,
+                  "native_digest": "eac122e477b6851fb9b0b9024e7ac3efaf644aee869b076979532c532b56fbb7",
+                  "parameter_digest": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e"
+                },
+                "frozen": {
+                  "parameter_bytes": 7460,
+                  "catalog_bytes": 374,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 39348,
+                  "native_digest": "eac122e477b6851fb9b0b9024e7ac3efaf644aee869b076979532c532b56fbb7",
+                  "parameter_digest": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e"
+                },
+                "trained": {
+                  "parameter_bytes": 7460,
+                  "catalog_bytes": 374,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 39495,
+                  "native_digest": "7464cd201f706f02fd23a75259388f92de75ed2ae22942f308265baa949ecee0",
+                  "parameter_digest": "76953890b9b2ccc49810584f124f5aa74c4459445e64623c94fd6cc33c84f18c"
+                },
+                "clean": {
+                  "parameter_bytes": 7460,
+                  "catalog_bytes": 374,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 39495,
+                  "native_digest": "0d7d35ef33bb972c4bf7950a50a24338405836b6723cb313e905c87c29f68a8c",
+                  "parameter_digest": "76953890b9b2ccc49810584f124f5aa74c4459445e64623c94fd6cc33c84f18c"
+                }
+              },
+              "source_value_bytes": 364,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": false,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            }
+          },
+          "native_costs": {
+            "zero-future": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7726726,
+                "catalog_bytes": 307,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39280,
+                "read_count": 96,
+                "read_wall_ns": 15768524,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 307,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39280,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 4045951
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7741228,
+                "catalog_bytes": 374,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39348,
+                "read_count": 48,
+                "read_wall_ns": 9988363,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 374,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39348,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 4053373
+              }
+            ],
+            "zero-retention": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7726726,
+                "catalog_bytes": 307,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39280,
+                "read_count": 128,
+                "read_wall_ns": 23883683,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 307,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39280,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 8102349
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7741228,
+                "catalog_bytes": 374,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39348,
+                "read_count": 64,
+                "read_wall_ns": 16035511,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 374,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39348,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 8107487
+              }
+            ],
+            "frozen-future": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7781528,
+                "catalog_bytes": 307,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39280,
+                "read_count": 96,
+                "read_wall_ns": 16387488,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 307,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39280,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 4084830
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7632695,
+                "catalog_bytes": 374,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39348,
+                "read_count": 48,
+                "read_wall_ns": 10105980,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 374,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39348,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 4078691
+              }
+            ],
+            "frozen-retention": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7781528,
+                "catalog_bytes": 307,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39280,
+                "read_count": 128,
+                "read_wall_ns": 24449708,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 307,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39280,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 8153506
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7632695,
+                "catalog_bytes": 374,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39348,
+                "read_count": 64,
+                "read_wall_ns": 16162338,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 374,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39348,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 8152414
+              }
+            ],
+            "trained-future": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7823491,
+                "catalog_bytes": 307,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39403,
+                "read_count": 96,
+                "read_wall_ns": 17648485,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 307,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39403,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 4760980
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7672054,
+                "catalog_bytes": 374,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39495,
+                "read_count": 96,
+                "read_wall_ns": 15156726,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 374,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39495,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 4098671
+              }
+            ],
+            "trained-retention": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7823491,
+                "catalog_bytes": 307,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39403,
+                "read_count": 128,
+                "read_wall_ns": 25913026,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 307,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39403,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 8860583
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7672054,
+                "catalog_bytes": 374,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39495,
+                "read_count": 128,
+                "read_wall_ns": 22907109,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 374,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39495,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 8200657
+              }
+            ],
+            "clean-future": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7788128,
+                "catalog_bytes": 307,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39403,
+                "read_count": 96,
+                "read_wall_ns": 16971000,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 307,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39403,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 4177750
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7690151,
+                "catalog_bytes": 374,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39495,
+                "read_count": 96,
+                "read_wall_ns": 15116772,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 374,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39495,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 4022507
+              }
+            ],
+            "clean-retention": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7788128,
+                "catalog_bytes": 307,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39403,
+                "read_count": 128,
+                "read_wall_ns": 25336554,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 307,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39403,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 8247517
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 7690151,
+                "catalog_bytes": 374,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 7460,
+                "raw_payload_bytes": 39495,
+                "read_count": 128,
+                "read_wall_ns": 22864684,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 374,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 7460,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 39495,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 8118904
+              }
+            ]
+          },
+          "whole_worker_wall_ns": 418859218,
+          "source_ledger_logical_bytes": 4935640,
+          "artifact_owner_logical_bytes": 432854,
+          "causal_read_decision_and_retention_gate_passed": true
+        },
+        {
+          "stage": 1,
+          "id": "stage-1",
+          "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c",
+          "owner_current_entities": 17,
+          "future": {
+            "paired_gains": {
+              "zero": {
+                "reads": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 144,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 144,
+                "correct_decision_gain": 24
+              },
+              "frozen": {
+                "reads": {
+                  "retained": 49,
+                  "lost": 0,
+                  "gained": 95,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 95,
+                "correct_decision_gain": 24
+              }
+            },
+            "written_support_and_authored_task_composition_only": true
+          },
+          "retention_before_after": {
+            "reads": {
+              "retained": 48,
+              "lost": 0,
+              "gained": 0,
+              "still_wrong": 0
+            },
+            "decisions": {
+              "retained": 8,
+              "lost": 0,
+              "gained": 0,
+              "still_wrong": 0
+            }
+          },
+          "interventions": {
+            "zero": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 0,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 0,
+                "tasks": 8,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              }
+            },
+            "frozen": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 49,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 79,
+                  "ok": 65
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 24,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 25,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "trained": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "clean": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            }
+          },
+          "model_audit": {
+            "semantic": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 8516,
+                  "catalog_bytes": 575,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 46628,
+                  "native_digest": "95ba47769c472351e4c996c6dd37196e48287c5b9b0906c624a155a817e0db59",
+                  "parameter_digest": "64a9e29a2adffd3600fa319433835264d0a8af42f7cc7059cbddefc527cc2c80"
+                },
+                "frozen": {
+                  "parameter_bytes": 8516,
+                  "catalog_bytes": 575,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 46763,
+                  "native_digest": "72d1e70f07aff4011dadd97a89ef96d2d66d43e3e9282c29ebfdfc0468f341f9",
+                  "parameter_digest": "00328ce321a4eda8625266374dfb15d911b08b8881b50612c4257c2461ad2dd5"
+                },
+                "trained": {
+                  "parameter_bytes": 8516,
+                  "catalog_bytes": 575,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 46507,
+                  "native_digest": "8bd7b3d38df0ecca4baed7826c736e72c2e758b5935e17fa9efcfe66d5c8cb6e",
+                  "parameter_digest": "aabe1dae51fadfec1e07a349a8b58a270f1b3edba53b0b7aed6736b68fe5a1f9"
+                },
+                "clean": {
+                  "parameter_bytes": 8516,
+                  "catalog_bytes": 575,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 46521,
+                  "native_digest": "235fb837246ed26d7c9f9006380b72a876f3a107f3cd54c88565e087b6151d23",
+                  "parameter_digest": "f01932c166305cd4afb7964b2e7e581f5ce3c8b26e4cb557c5bdccb38d155218"
+                }
+              },
+              "source_value_bytes": 557,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": false,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            },
+            "procedure": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 8516,
+                  "catalog_bytes": 706,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 46760,
+                  "native_digest": "5b5c0e00f0ab8e297b2d684533762369dfd9ecdd14ed6b04e15c78c20f605ba1",
+                  "parameter_digest": "64a9e29a2adffd3600fa319433835264d0a8af42f7cc7059cbddefc527cc2c80"
+                },
+                "frozen": {
+                  "parameter_bytes": 8516,
+                  "catalog_bytes": 706,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 46935,
+                  "native_digest": "6dc0b0a818bd51fc304624eb678817abd755cd6fa30a7232a7eefd7a68ad1677",
+                  "parameter_digest": "751189f39ba9b8340b10683d5e7b7d0b857a4530dd4c556351e0273cd2d2a39a"
+                },
+                "trained": {
+                  "parameter_bytes": 8516,
+                  "catalog_bytes": 706,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 46629,
+                  "native_digest": "fb5bb013cf76d064b0f34fb85d906dbe6d11dceaddf9581efb9cece864314f8d",
+                  "parameter_digest": "ab15ee0ec83194b4096dd974256d835102f5fcfca0b4409b59a1e2c43539a581"
+                },
+                "clean": {
+                  "parameter_bytes": 8516,
+                  "catalog_bytes": 706,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 46600,
+                  "native_digest": "944ccac805f93181924408cfa917491660a996c7506d0c138efd794184209a5f",
+                  "parameter_digest": "550bd738bcd8e8c71d1c1f283b8caa53afe6a05b264ae6fbacba350b4a5e018f"
+                }
+              },
+              "source_value_bytes": 688,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": false,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            }
+          },
+          "native_costs": {
+            "zero-future": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9223172,
+                "catalog_bytes": 575,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46628,
+                "read_count": 96,
+                "read_wall_ns": 17356997,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 575,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46628,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 4779293
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 11874841,
+                "catalog_bytes": 706,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46760,
+                "read_count": 48,
+                "read_wall_ns": 11201759,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 706,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46760,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 4866363
+              }
+            ],
+            "zero-retention": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9223172,
+                "catalog_bytes": 575,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46628,
+                "read_count": 128,
+                "read_wall_ns": 26323987,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 575,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46628,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 9557154
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 11874841,
+                "catalog_bytes": 706,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46760,
+                "read_count": 64,
+                "read_wall_ns": 18111627,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 706,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46760,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 9709261
+              }
+            ],
+            "frozen-future": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9242200,
+                "catalog_bytes": 575,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46763,
+                "read_count": 96,
+                "read_wall_ns": 17934180,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 575,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46763,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 4824671
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9190062,
+                "catalog_bytes": 706,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46935,
+                "read_count": 71,
+                "read_wall_ns": 13552839,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 706,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46935,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 4909368
+              }
+            ],
+            "frozen-retention": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9242200,
+                "catalog_bytes": 575,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46763,
+                "read_count": 128,
+                "read_wall_ns": 27123650,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 575,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46763,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 9648240
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9190062,
+                "catalog_bytes": 706,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46935,
+                "read_count": 103,
+                "read_wall_ns": 22265024,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 706,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46935,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 9807309
+              }
+            ],
+            "trained-future": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9221570,
+                "catalog_bytes": 575,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46507,
+                "read_count": 96,
+                "read_wall_ns": 18125106,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 575,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46507,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 4815707
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9173548,
+                "catalog_bytes": 706,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46629,
+                "read_count": 96,
+                "read_wall_ns": 16392833,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 706,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46629,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 4779252
+              }
+            ],
+            "trained-retention": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9221570,
+                "catalog_bytes": 575,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46507,
+                "read_count": 128,
+                "read_wall_ns": 27444191,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 575,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46507,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 9633647
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9173548,
+                "catalog_bytes": 706,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46629,
+                "read_count": 128,
+                "read_wall_ns": 25031988,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 706,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46629,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 9617633
+              }
+            ],
+            "clean-future": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9256763,
+                "catalog_bytes": 575,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46521,
+                "read_count": 96,
+                "read_wall_ns": 17995463,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 575,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46521,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 4822737
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9129160,
+                "catalog_bytes": 706,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46600,
+                "read_count": 96,
+                "read_wall_ns": 16104313,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 706,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46600,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 4783809
+              }
+            ],
+            "clean-retention": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9256763,
+                "catalog_bytes": 575,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46521,
+                "read_count": 128,
+                "read_wall_ns": 27170384,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 575,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46521,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 9652256
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 9129160,
+                "catalog_bytes": 706,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 8516,
+                "raw_payload_bytes": 46600,
+                "read_count": 128,
+                "read_wall_ns": 24693797,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 706,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 8516,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 46600,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 9580668
+              }
+            ]
+          },
+          "whole_worker_wall_ns": 462240786,
+          "source_ledger_logical_bytes": 4935640,
+          "artifact_owner_logical_bytes": 954782,
+          "causal_read_decision_and_retention_gate_passed": true
+        },
+        {
+          "stage": 2,
+          "id": "stage-2",
+          "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed",
+          "owner_current_entities": 25,
+          "future": {
+            "paired_gains": {
+              "zero": {
+                "reads": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 144,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 144,
+                "correct_decision_gain": 24
+              },
+              "frozen": {
+                "reads": {
+                  "retained": 56,
+                  "lost": 0,
+                  "gained": 88,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 5,
+                  "lost": 0,
+                  "gained": 19,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 88,
+                "correct_decision_gain": 19
+              }
+            },
+            "written_support_and_authored_task_composition_only": true
+          },
+          "retention_before_after": {
+            "reads": {
+              "retained": 48,
+              "lost": 0,
+              "gained": 0,
+              "still_wrong": 0
+            },
+            "decisions": {
+              "retained": 8,
+              "lost": 0,
+              "gained": 0,
+              "still_wrong": 0
+            }
+          },
+          "interventions": {
+            "zero": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 0,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 0,
+                "tasks": 8,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              }
+            },
+            "frozen": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 56,
+                "tasks": 24,
+                "correct_decisions": 5,
+                "statuses": {
+                  "abstain": 39,
+                  "ok": 105
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 24,
+                    "tasks": 8,
+                    "correct_decisions": 2
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 32,
+                    "tasks": 8,
+                    "correct_decisions": 3
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "trained": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "clean": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            }
+          },
+          "model_audit": {
+            "semantic": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 9572,
+                  "catalog_bytes": 842,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 53964,
+                  "native_digest": "32100ef83f4d59459fce24f9ddc051f2f7c3c23cbbd0cfc8045f71a902d3d38d",
+                  "parameter_digest": "3f7cbcc390f0c4d7ffe5a20d2b2e15d141ef48cd4495feb0df700f8be6a55af9"
+                },
+                "frozen": {
+                  "parameter_bytes": 9572,
+                  "catalog_bytes": 842,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 53874,
+                  "native_digest": "31fea3eb5769707c4b18ccb03140a9a3afdbd0469acaa09f622a6b9ccc6e2d42",
+                  "parameter_digest": "4a8278c204e9edd182a31b90a56f05b8be1a71ec8322d1a8e0124fd533cc61cc"
+                },
+                "trained": {
+                  "parameter_bytes": 9572,
+                  "catalog_bytes": 842,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 53552,
+                  "native_digest": "e255e8e60fdd7c0987b230c5ac5e21328e7218a8ec5f5ff16f3edd23c3ef9a2e",
+                  "parameter_digest": "a30d6efb1383683b99cca175fc1fd2de8481fd17fd3dc513b14d44dce24b235f"
+                },
+                "clean": {
+                  "parameter_bytes": 9572,
+                  "catalog_bytes": 842,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 53477,
+                  "native_digest": "697be4f2b1ac49f8b391b6915c83ce4b0fac2d384a4164922e90715bfbd51d40",
+                  "parameter_digest": "a21ca94d5d0a3f5d0b4ab3ea91a82b48f303ac4ddf8d306f7f37177c84dfdf2c"
+                }
+              },
+              "source_value_bytes": 816,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": false,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            },
+            "procedure": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 9572,
+                  "catalog_bytes": 1043,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 54166,
+                  "native_digest": "addd4f16bb742fe9012a0bcf85a53c1083713f7782865f57bee08cac8575a6ce",
+                  "parameter_digest": "3f7cbcc390f0c4d7ffe5a20d2b2e15d141ef48cd4495feb0df700f8be6a55af9"
+                },
+                "frozen": {
+                  "parameter_bytes": 9572,
+                  "catalog_bytes": 1043,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 54067,
+                  "native_digest": "64aeeaaa037056e5ae838be4ab5b31026662f6a15c05a27e988a900909060463",
+                  "parameter_digest": "e5a1f0f2b7678d5f7a57232cb7572e0ac8fee86c57b1f9bdccaad789bfe2f46b"
+                },
+                "trained": {
+                  "parameter_bytes": 9572,
+                  "catalog_bytes": 1043,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 53707,
+                  "native_digest": "78c791e777c69b7859d9f91ccbef5e1fd97b63a63e167664c99c114545f0c2f6",
+                  "parameter_digest": "162d16aa6aa7a55f221c2c093a25e646ed3bfa12658e93639546577efd3a7e80"
+                },
+                "clean": {
+                  "parameter_bytes": 9572,
+                  "catalog_bytes": 1043,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 53665,
+                  "native_digest": "5c6ec075a436f5131e9a4c1167eb09282201a7ae3246c88f72b3e6cea7e28aac",
+                  "parameter_digest": "e25bfc7dac3c4799bdeb706a12e499a72403e8527635438070b7237ae8effe49"
+                }
+              },
+              "source_value_bytes": 1017,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": false,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            }
+          },
+          "native_costs": {
+            "zero-future": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10635261,
+                "catalog_bytes": 842,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53964,
+                "read_count": 96,
+                "read_wall_ns": 18510721,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 842,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53964,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 5486975
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10571025,
+                "catalog_bytes": 1043,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 54166,
+                "read_count": 48,
+                "read_wall_ns": 12132575,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 1043,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 54166,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 5567896
+              }
+            ],
+            "zero-retention": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10635261,
+                "catalog_bytes": 842,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53964,
+                "read_count": 128,
+                "read_wall_ns": 28427549,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 842,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53964,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 11016203
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10571025,
+                "catalog_bytes": 1043,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 54166,
+                "read_count": 64,
+                "read_wall_ns": 19851510,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 1043,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 54166,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 11098927
+              }
+            ],
+            "frozen-future": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10652598,
+                "catalog_bytes": 842,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53874,
+                "read_count": 96,
+                "read_wall_ns": 19027492,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 842,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53874,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 5493194
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10610285,
+                "catalog_bytes": 1043,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 54067,
+                "read_count": 80,
+                "read_wall_ns": 15517381,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 1043,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 54067,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 5546004
+              }
+            ],
+            "frozen-retention": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10652598,
+                "catalog_bytes": 842,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53874,
+                "read_count": 128,
+                "read_wall_ns": 29093482,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 842,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53874,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 11009683
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10610285,
+                "catalog_bytes": 1043,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 54067,
+                "read_count": 112,
+                "read_wall_ns": 25001272,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 1043,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 54067,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 11136845
+              }
+            ],
+            "trained-future": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10563905,
+                "catalog_bytes": 842,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53552,
+                "read_count": 96,
+                "read_wall_ns": 19090808,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 842,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53552,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 5516500
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10549483,
+                "catalog_bytes": 1043,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53707,
+                "read_count": 96,
+                "read_wall_ns": 17053587,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 1043,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53707,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 5452654
+              }
+            ],
+            "trained-retention": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10563905,
+                "catalog_bytes": 842,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53552,
+                "read_count": 128,
+                "read_wall_ns": 29129046,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 842,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53552,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 11006951
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10549483,
+                "catalog_bytes": 1043,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53707,
+                "read_count": 128,
+                "read_wall_ns": 26570962,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 1043,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53707,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 11010575
+              }
+            ],
+            "clean-future": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10711395,
+                "catalog_bytes": 842,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53477,
+                "read_count": 96,
+                "read_wall_ns": 19393130,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 842,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53477,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 5500855
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10674529,
+                "catalog_bytes": 1043,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53665,
+                "read_count": 96,
+                "read_wall_ns": 17044775,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 1043,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53665,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 5443760
+              }
+            ],
+            "clean-retention": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10711395,
+                "catalog_bytes": 842,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53477,
+                "read_count": 128,
+                "read_wall_ns": 29310012,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 842,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53477,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 10986758
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 10674529,
+                "catalog_bytes": 1043,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 9572,
+                "raw_payload_bytes": 53665,
+                "read_count": 128,
+                "read_wall_ns": 26399303,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 1043,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 9572,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 53665,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 10970275
+              }
+            ]
+          },
+          "whole_worker_wall_ns": 488963939,
+          "source_ledger_logical_bytes": 5095384,
+          "artifact_owner_logical_bytes": 1564603,
+          "causal_read_decision_and_retention_gate_passed": true
+        }
+      ],
+      "resources": {
+        "receipt": {
+          "all_sample_points_complete": true,
+          "child_exit_rusage": {
+            "ru_inblock": 272,
+            "ru_majflt": 0,
+            "ru_maxrss": 124652,
+            "ru_minflt": 24938,
+            "ru_nivcsw": 2926,
+            "ru_nvcsw": 3030859,
+            "ru_oublock": 44288,
+            "ru_stime": 26.06117,
+            "ru_utime": 494.126804
+          },
+          "child_pid": 42902,
+          "child_proc_visible_pid": 42902,
+          "child_reaped_monotonic_ns": 2307853060631,
+          "child_spawned_monotonic_ns": 1811446715876,
+          "cleanup": {
+            "observed_tree_stopped": true,
+            "requested": false,
+            "residual_identity_errors": [],
+            "residual_live": [],
+            "signals": []
+          },
+          "command": [
+            "/home/runner/.cache/codex-ci/cargo-target/debug/deps/codex_hepta_agentd-373ca314b2636b98",
+            "--ignored",
+            "--exact",
+            "memory_cell_v9_continual_tests::memory_cell_v9_continual_child",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "coverage_gaps": [
+            "No atomic whole-tree snapshot; per-process smaps reads and filesystem scans are sequential.",
+            "Short-lived or detached descendants never observed cannot be reconstructed from samples.",
+            "Memory/file changes between samples and before the first sample are not exact integrals.",
+            "RSS sums count shared pages per process; PSS is retained separately.",
+            "Only registered regular file data stocks are measured; filesystem metadata and remote storage are not.",
+            "Final receipt serialization/fsync and monitor exit follow the last sample; parent must measure that tail."
+          ],
+          "exit_code": 0,
+          "full_cost_exact": false,
+          "integrals": {
+            "storage_allocated_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 496395929604,
+              "sampled_byte_ns_estimate": 5948062637708914688,
+              "trapezoid_numerator_byte_ns": 11896125275417829376,
+              "unobserved_interval_ns": 11475873
+            },
+            "storage_logical_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 496395929604,
+              "sampled_byte_ns_estimate": 5771262751696909312,
+              "trapezoid_numerator_byte_ns": 11542525503393818624,
+              "unobserved_interval_ns": 11475873
+            },
+            "tree_pss_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 496395929604,
+              "sampled_byte_ns_estimate": 55837694108706197504,
+              "trapezoid_numerator_byte_ns": 111675388217412395008,
+              "unobserved_interval_ns": 11475873
+            },
+            "tree_rss_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 496395929604,
+              "sampled_byte_ns_estimate": 71972526022981603328,
+              "trapezoid_numerator_byte_ns": 143945052045963206656,
+              "unobserved_interval_ns": 11475873
+            }
+          },
+          "launch_error": null,
+          "maximum_observed_gap_ns": 222365675,
+          "monitor_error": null,
+          "monitor_pid": 42901,
+          "monitor_proc_visible_pid": 42901,
+          "monitor_rusage_before_final_receipt": {
+            "ru_inblock": 0,
+            "ru_majflt": 0,
+            "ru_maxrss": 64944,
+            "ru_minflt": 2386,
+            "ru_nivcsw": 237,
+            "ru_nvcsw": 2376,
+            "ru_oublock": 4448,
+            "ru_stime": 12.741494,
+            "ru_utime": 9.143925
+          },
+          "observations_ended_monotonic_ns": 2307853608503,
+          "observed_process_identities": [
+            {
+              "pid": 42901,
+              "start_ticks": 181141
+            },
+            {
+              "pid": 42902,
+              "start_ticks": 181144
+            },
+            {
+              "pid": 42907,
+              "start_ticks": 181171
+            },
+            {
+              "pid": 42919,
+              "start_ticks": 188077
+            },
+            {
+              "pid": 42928,
+              "start_ticks": 205175
+            }
+          ],
+          "passed": true,
+          "peaks_of_sequential_sample_sums": {
+            "storage_allocated_bytes": 15802368,
+            "storage_logical_bytes": 15259616,
+            "tree_pss_bytes": 141315072,
+            "tree_rss_bytes": 185049088
+          },
+          "requested_interval_ms": 200,
+          "roots": [
+            "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/continual-learning.artifacts/catalog",
+            "/tmp/hm9-YaAuyJ"
+          ],
+          "ru_maxrss_unit": "KiB on this Linux profile",
+          "rusage_scope": "Kernel wait4 accounting for the directly waited command; not a per-descendant sum.",
+          "sample_count": 2373,
+          "sample_error_count": 0,
+          "samples": {
+            "bytes": 2208125,
+            "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/continual-learning.artifacts/catalog-samples.jsonl",
+            "sha256": "849e3f4ee4eec05cfd3e8f713487a8962a80f317e0bb2b3230cc8e1b04ba9634"
+          },
+          "sampling_gaps": {
+            "after_last_sample_ns": 684407,
+            "before_first_sample_ns": 10791466,
+            "included_in_unobserved_intervals": true
+          },
+          "schema": "hepta.memory.v9.sampled-lifecycle.v1",
+          "started_monotonic_ns": 1811446203026,
+          "stderr": {
+            "bytes": 0,
+            "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/continual-learning.artifacts/catalog-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 191,
+            "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/continual-learning.artifacts/catalog-stdout.log",
+            "sha256": "0385ee4fca62ae1198925e7aaedafbde3bc3edb7413c7c5057657b0ac1f3c2f1"
+          },
+          "termination_signal": null,
+          "timed_out_or_sample_cap": false,
+          "wall_ns_through_observation_close": 496407405477
+        },
+        "raw_samples_recomputed": true,
+        "observation_wall_coverage_verified": true,
+        "parent_supervision_wall_ns": 496462313432,
+        "parent_wall_beyond_observation_close_ns": 54907955,
+        "complete_continuous_cost_established": false,
+        "runtime_storage_roots_verified": true
+      },
+      "gate_passed": true
+    },
+    {
+      "representation": "byte",
+      "stages": [
+        {
+          "stage": 0,
+          "id": "stage-0",
+          "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4",
+          "owner_current_entities": 9,
+          "future": {
+            "paired_gains": {
+              "zero": {
+                "reads": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 144,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 144,
+                "correct_decision_gain": 24
+              },
+              "frozen": {
+                "reads": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 144,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 144,
+                "correct_decision_gain": 24
+              }
+            },
+            "written_support_and_authored_task_composition_only": true
+          },
+          "retention_before_after": null,
+          "interventions": {
+            "zero": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 0,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 0,
+                "tasks": 8,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              }
+            },
+            "frozen": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 0,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 0,
+                "tasks": 8,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              }
+            },
+            "trained": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "clean": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            }
+          },
+          "model_audit": {
+            "semantic": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 741896,
+                  "native_digest": "f4f11775d39fc9920ed68fe8efa613da3bc9cee27adbb83f5b465f5ee6419b19",
+                  "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3"
+                },
+                "frozen": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 741896,
+                  "native_digest": "32f45335d623a905783cd453bde0b8a3c5a7065071ad993d7d6bf4a4869114a8",
+                  "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3"
+                },
+                "trained": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 706810,
+                  "native_digest": "d1957c856440a40bafed9c94ff546fba1b42cfc1d60038b770f75cb51a325d15",
+                  "parameter_digest": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b"
+                },
+                "clean": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 706810,
+                  "native_digest": "a48319d235230e332729d60da6d32f49c52abd1a8ce8430bdca58b08d4d407ab",
+                  "parameter_digest": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b"
+                }
+              },
+              "source_value_bytes": 297,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": true,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            },
+            "procedure": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 741897,
+                  "native_digest": "8080fb5d789bc0afd11dbf1f6caeacb1608289af288d2c8d00dddb257e3111fb",
+                  "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3"
+                },
+                "frozen": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 741897,
+                  "native_digest": "db0552590df39b2ab10b91cc42d7b1a54f545a0effd7720cbedb16bbe6076e78",
+                  "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3"
+                },
+                "trained": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 705431,
+                  "native_digest": "9aeb8ca764202312dce37902f5ab9679fa90df534e455260a0218a26e9112d07",
+                  "parameter_digest": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd"
+                },
+                "clean": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 1225,
+                  "lineage_bytes": 604,
+                  "native_bytes": 705431,
+                  "native_digest": "17406518de4c6dfaded51f03dfcc52b6acde22ebb2cec8b65168824b9377c294",
+                  "parameter_digest": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd"
+                }
+              },
+              "source_value_bytes": 364,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": true,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            }
+          },
+          "native_costs": {
+            "zero-future": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 143056633,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 741896,
+                "read_count": 96,
+                "read_wall_ns": 122786514,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 741896,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 74094372
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 142501130,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 741897,
+                "read_count": 48,
+                "read_wall_ns": 99090325,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 741897,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 74476075
+              }
+            ],
+            "zero-retention": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 143056633,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 741896,
+                "read_count": 128,
+                "read_wall_ns": 213765748,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 741896,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 148355544
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 142501130,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 741897,
+                "read_count": 64,
+                "read_wall_ns": 181653009,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 741897,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 148855064
+              }
+            ],
+            "frozen-future": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 138700913,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 741896,
+                "read_count": 96,
+                "read_wall_ns": 123233624,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 741896,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 74270676
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 139191400,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 741897,
+                "read_count": 48,
+                "read_wall_ns": 98886571,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 741897,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 74088583
+              }
+            ],
+            "frozen-retention": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 138700913,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 741896,
+                "read_count": 128,
+                "read_wall_ns": 213819506,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 741896,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 148416205
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 139191400,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 741897,
+                "read_count": 64,
+                "read_wall_ns": 183007996,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 741897,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 150002195
+              }
+            ],
+            "trained-future": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 132722589,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 706810,
+                "read_count": 96,
+                "read_wall_ns": 124845161,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 706810,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 71305555
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 132943271,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 705431,
+                "read_count": 96,
+                "read_wall_ns": 121527014,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 705431,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 70604603
+              }
+            ],
+            "trained-retention": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 132722589,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 706810,
+                "read_count": 128,
+                "read_wall_ns": 213957203,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 706810,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 142231665
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 132943271,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 705431,
+                "read_count": 128,
+                "read_wall_ns": 211463750,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 705431,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 143212768
+              }
+            ],
+            "clean-future": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 132672525,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 706810,
+                "read_count": 96,
+                "read_wall_ns": 125061349,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 706810,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 71059391
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 132660017,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 705431,
+                "read_count": 96,
+                "read_wall_ns": 121519555,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 705431,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 1,
+                "wake_wall_ns": 70647012
+              }
+            ],
+            "clean-retention": [
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 132672525,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 706810,
+                "read_count": 128,
+                "read_wall_ns": 215905175,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 706810,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 143562925
+              },
+              {
+                "aggregate_support_bytes": 1225,
+                "artifact_load_wall_ns": 132660017,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 604,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 705431,
+                "read_count": 128,
+                "read_wall_ns": 210203592,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 604,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 1225,
+                "route_bytes": 622,
+                "serialized_bytes": 705431,
+                "shard_lineage_bytes": 604,
+                "shard_support_bytes": 1225,
+                "wake_count": 2,
+                "wake_wall_ns": 141764395
+              }
+            ]
+          },
+          "whole_worker_wall_ns": 2149084935,
+          "source_ledger_logical_bytes": 4935640,
+          "artifact_owner_logical_bytes": 7242553,
+          "causal_read_decision_and_retention_gate_passed": true
+        },
+        {
+          "stage": 1,
+          "id": "stage-1",
+          "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c",
+          "owner_current_entities": 17,
+          "future": {
+            "paired_gains": {
+              "zero": {
+                "reads": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 144,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 144,
+                "correct_decision_gain": 24
+              },
+              "frozen": {
+                "reads": {
+                  "retained": 49,
+                  "lost": 0,
+                  "gained": 95,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 95,
+                "correct_decision_gain": 24
+              }
+            },
+            "written_support_and_authored_task_composition_only": true
+          },
+          "retention_before_after": {
+            "reads": {
+              "retained": 48,
+              "lost": 0,
+              "gained": 0,
+              "still_wrong": 0
+            },
+            "decisions": {
+              "retained": 8,
+              "lost": 0,
+              "gained": 0,
+              "still_wrong": 0
+            }
+          },
+          "interventions": {
+            "zero": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 0,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 0,
+                "tasks": 8,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              }
+            },
+            "frozen": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 49,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 95,
+                  "ok": 49
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 24,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 25,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "trained": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "clean": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            }
+          },
+          "model_audit": {
+            "semantic": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 743520,
+                  "native_digest": "615e3769f723b0005af8ed5f05aee2ca341557fbcb3b331ea46026d36e492679",
+                  "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3"
+                },
+                "frozen": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 708434,
+                  "native_digest": "ce61ebad9ce96401803bc13c4c30d0d11a0d1f906176141374380e9f71b27db8",
+                  "parameter_digest": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b"
+                },
+                "trained": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 707932,
+                  "native_digest": "62f3dadf3407e247686641cea6466f8047c4993c703ecb2d65322abc0ebb3eaa",
+                  "parameter_digest": "95a419a89d9f6c5e5a8ce35b14ad4d7978f8718df63d8bd9ccdf28bb5254f61f"
+                },
+                "clean": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 701423,
+                  "native_digest": "f2a8c64a20f308db2d054e026143e5a4c1538fd0ad89833e47387590da42584f",
+                  "parameter_digest": "80886a6eb61c7dba807164efdff9f9c3efdb220049697d3687fc2dad031500a6"
+                }
+              },
+              "source_value_bytes": 557,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": true,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            },
+            "procedure": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 743521,
+                  "native_digest": "01cc928c7216283f9ce34bf24492ee08e36624972d8b6cf3f44fec3dff787c4e",
+                  "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3"
+                },
+                "frozen": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 707055,
+                  "native_digest": "0e6e34d2033988a4b30d50a7814634de6e322b05046bce5667ebd0ff3d378fa6",
+                  "parameter_digest": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd"
+                },
+                "trained": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 706376,
+                  "native_digest": "65a57f73186793c5381197cbde1a008bc3cfa99ec8346aca093483e9b5267c8e",
+                  "parameter_digest": "960e9651dd8c6e30cf9e99241746dfc1dae72933b101a9c7933b439ccbb8ad1b"
+                },
+                "clean": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 2313,
+                  "lineage_bytes": 1140,
+                  "native_bytes": 700932,
+                  "native_digest": "f6894bb118c6cca649f1e5c60a3fb2900d4d2ad9ef8dc5a01ad90a3b02837d4f",
+                  "parameter_digest": "f9b92346b6fa8fd41c07ce0dfb692fc2cb1c7a87429659a00621e64ebd15766a"
+                }
+              },
+              "source_value_bytes": 688,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": true,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            }
+          },
+          "native_costs": {
+            "zero-future": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 139436696,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 743520,
+                "read_count": 96,
+                "read_wall_ns": 124644206,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 743520,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 74427802
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 138861363,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 743521,
+                "read_count": 48,
+                "read_wall_ns": 102747319,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 743521,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 77569296
+              }
+            ],
+            "zero-retention": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 139436696,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 743520,
+                "read_count": 128,
+                "read_wall_ns": 215770920,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 743520,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 148808312
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 138861363,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 743521,
+                "read_count": 64,
+                "read_wall_ns": 186324250,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 743521,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 152490557
+              }
+            ],
+            "frozen-future": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 133400496,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 708434,
+                "read_count": 96,
+                "read_wall_ns": 122349311,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 708434,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 70992004
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 132671512,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 707055,
+                "read_count": 67,
+                "read_wall_ns": 107023133,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 707055,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 70933016
+              }
+            ],
+            "frozen-retention": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 133400496,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 708434,
+                "read_count": 128,
+                "read_wall_ns": 211271735,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 708434,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 141895026
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 132671512,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 707055,
+                "read_count": 99,
+                "read_wall_ns": 194852609,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 707055,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 141874446
+              }
+            ],
+            "trained-future": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 133665754,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 707932,
+                "read_count": 96,
+                "read_wall_ns": 125903578,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 707932,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 71228499
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 133289350,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 706376,
+                "read_count": 96,
+                "read_wall_ns": 122128597,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 706376,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 71144863
+              }
+            ],
+            "trained-retention": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 133665754,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 707932,
+                "read_count": 128,
+                "read_wall_ns": 215164459,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 707932,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 142505540
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 133289350,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 706376,
+                "read_count": 128,
+                "read_wall_ns": 210316710,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 706376,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 142411789
+              }
+            ],
+            "clean-future": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 132249857,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 701423,
+                "read_count": 96,
+                "read_wall_ns": 124935000,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 701423,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 70448157
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 132421174,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 700932,
+                "read_count": 96,
+                "read_wall_ns": 121936109,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 700932,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 1,
+                "wake_wall_ns": 70450050
+              }
+            ],
+            "clean-retention": [
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 132249857,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 701423,
+                "read_count": 128,
+                "read_wall_ns": 213848156,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 701423,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 141243631
+              },
+              {
+                "aggregate_support_bytes": 2313,
+                "artifact_load_wall_ns": 132421174,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1140,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 700932,
+                "read_count": 128,
+                "read_wall_ns": 209421731,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1140,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 2313,
+                "route_bytes": 1174,
+                "serialized_bytes": 700932,
+                "shard_lineage_bytes": 1140,
+                "shard_support_bytes": 2313,
+                "wake_count": 2,
+                "wake_wall_ns": 140872804
+              }
+            ]
+          },
+          "whole_worker_wall_ns": 2266973141,
+          "source_ledger_logical_bytes": 4935640,
+          "artifact_owner_logical_bytes": 14430333,
+          "causal_read_decision_and_retention_gate_passed": true
+        },
+        {
+          "stage": 2,
+          "id": "stage-2",
+          "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed",
+          "owner_current_entities": 25,
+          "future": {
+            "paired_gains": {
+              "zero": {
+                "reads": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 144,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 144,
+                "correct_decision_gain": 24
+              },
+              "frozen": {
+                "reads": {
+                  "retained": 56,
+                  "lost": 0,
+                  "gained": 88,
+                  "still_wrong": 0
+                },
+                "decisions": {
+                  "retained": 0,
+                  "lost": 0,
+                  "gained": 24,
+                  "still_wrong": 0
+                },
+                "correct_read_gain": 88,
+                "correct_decision_gain": 24
+              }
+            },
+            "written_support_and_authored_task_composition_only": true
+          },
+          "retention_before_after": {
+            "reads": {
+              "retained": 48,
+              "lost": 0,
+              "gained": 0,
+              "still_wrong": 0
+            },
+            "decisions": {
+              "retained": 8,
+              "lost": 0,
+              "gained": 0,
+              "still_wrong": 0
+            }
+          },
+          "interventions": {
+            "zero": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 0,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 0,
+                "tasks": 8,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              }
+            },
+            "frozen": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 56,
+                "tasks": 24,
+                "correct_decisions": 0,
+                "statuses": {
+                  "abstain": 88,
+                  "ok": 56
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 0,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 24,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 32,
+                    "tasks": 8,
+                    "correct_decisions": 0
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "trained": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            },
+            "clean": {
+              "future": {
+                "reads": 144,
+                "correct_reads": 144,
+                "tasks": 24,
+                "correct_decisions": 24,
+                "statuses": {
+                  "ok": 144
+                },
+                "families": {
+                  "local-new-domain": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "bridge-old-new": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  },
+                  "interleaved-programs": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              },
+              "retention": {
+                "reads": 48,
+                "correct_reads": 48,
+                "tasks": 8,
+                "correct_decisions": 8,
+                "statuses": {
+                  "ok": 48
+                },
+                "families": {
+                  "earlier-written-facts": {
+                    "reads": 48,
+                    "correct_reads": 48,
+                    "tasks": 8,
+                    "correct_decisions": 8
+                  }
+                }
+              }
+            }
+          },
+          "model_audit": {
+            "semantic": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 745144,
+                  "native_digest": "5ee8cc8df1dc33d33f232cccacdb150e51922f7cfc0165e73930723287cb6705",
+                  "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3"
+                },
+                "frozen": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 709556,
+                  "native_digest": "88c0c9b27435d43d174e4c113a6c86f3f925da698fd7d92a6e955c6146a68783",
+                  "parameter_digest": "95a419a89d9f6c5e5a8ce35b14ad4d7978f8718df63d8bd9ccdf28bb5254f61f"
+                },
+                "trained": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 707478,
+                  "native_digest": "3ea67930b912dfd078fd1880390e527c0451e7921d26e64fecb1c0ad27f3bd54",
+                  "parameter_digest": "4cae4c11098db2b916bbf78ca875eaf79c5084782b02ed004256f5ef933c8319"
+                },
+                "clean": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 702472,
+                  "native_digest": "b46d2e4ba6d724e7f142735f86c0eb4c2e4a4c3c5d6932809d401891f2e7cbbd",
+                  "parameter_digest": "bad0e5a659f3b490d997d0ed771afc159fac1c3dcf48be1945c624c2dbcbf3cc"
+                }
+              },
+              "source_value_bytes": 816,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": true,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            },
+            "procedure": {
+              "interventions": {
+                "zero": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 745145,
+                  "native_digest": "0f77e7743c776bb46e441c95a575e2f1d36edfeeeb30df0db143b073d93c960e",
+                  "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3"
+                },
+                "frozen": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 708000,
+                  "native_digest": "982f08bf2bd8e2bdcaa0cd6c412458e05d3d65a469067f7e0358385c746c230c",
+                  "parameter_digest": "960e9651dd8c6e30cf9e99241746dfc1dae72933b101a9c7933b439ccbb8ad1b"
+                },
+                "trained": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 704654,
+                  "native_digest": "f5ff810b1809222a4ab117b7dcc7baf0039b0ce11dfff0720cad1460d5afeae6",
+                  "parameter_digest": "9f4f2f0504c690cb51c5d74da3ce0a921f22ad3ea831bf8d51baa5762f42c29c"
+                },
+                "clean": {
+                  "parameter_bytes": 143552,
+                  "catalog_bytes": 0,
+                  "support_bytes": 3401,
+                  "lineage_bytes": 1676,
+                  "native_bytes": 702120,
+                  "native_digest": "0a8c7c35404d4f360bfe504b1fc93b44125f6d41b8fdfdb99065cd9a8bf8a4f5",
+                  "parameter_digest": "5d899d8fc96b64697b98ade67471b3b43745f2a5949f53ab9357bf55a2488df6"
+                }
+              },
+              "source_value_bytes": 1017,
+              "clean_rebuild_exact_f32_equal": true,
+              "frozen_parent_exact_compatible_bits": true,
+              "byte_model_has_no_value_catalog": true,
+              "selected_native_smaller_than_source_values": false,
+              "selected_parameters_smaller_than_source_values": false
+            }
+          },
+          "native_costs": {
+            "zero-future": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 139467940,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 745144,
+                "read_count": 96,
+                "read_wall_ns": 126257367,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 745144,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 76901964
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 139357505,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 745145,
+                "read_count": 48,
+                "read_wall_ns": 99088260,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 745145,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 74338878
+              }
+            ],
+            "zero-retention": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 139467940,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 745144,
+                "read_count": 128,
+                "read_wall_ns": 220183332,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 745144,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 154324361
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 139357505,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 745145,
+                "read_count": 64,
+                "read_wall_ns": 184286309,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 745145,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 151279012
+              }
+            ],
+            "frozen-future": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 133543997,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 709556,
+                "read_count": 96,
+                "read_wall_ns": 121876961,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 709556,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 71035349
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 133180534,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 708000,
+                "read_count": 66,
+                "read_wall_ns": 106078990,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 708000,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 71203711
+              }
+            ],
+            "frozen-retention": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 133543997,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 709556,
+                "read_count": 128,
+                "read_wall_ns": 210659044,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 709556,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 142044848
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 133180534,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 708000,
+                "read_count": 98,
+                "read_wall_ns": 194321356,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 708000,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 142663195
+              }
+            ],
+            "trained-future": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 133759176,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 707478,
+                "read_count": 96,
+                "read_wall_ns": 124960026,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 707478,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 71334539
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 133308410,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 704654,
+                "read_count": 96,
+                "read_wall_ns": 122351485,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 704654,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 71182982
+              }
+            ],
+            "trained-retention": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 133759176,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 707478,
+                "read_count": 128,
+                "read_wall_ns": 213950931,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 707478,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 142393361
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 133308410,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 704654,
+                "read_count": 128,
+                "read_wall_ns": 210302446,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 704654,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 142226841
+              }
+            ],
+            "clean-future": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 132277167,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 702472,
+                "read_count": 96,
+                "read_wall_ns": 124946227,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 702472,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 70762378
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 132242635,
+                "catalog_bytes": 0,
+                "eviction_count": 0,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 702120,
+                "read_count": 96,
+                "read_wall_ns": 121111228,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 702120,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 1,
+                "wake_wall_ns": 70458562
+              }
+            ],
+            "clean-retention": [
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 132277167,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 702472,
+                "read_count": 128,
+                "read_wall_ns": 213733226,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 702472,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 141509946
+              },
+              {
+                "aggregate_support_bytes": 3401,
+                "artifact_load_wall_ns": 132242635,
+                "catalog_bytes": 0,
+                "eviction_count": 1,
+                "lineage_bytes": 1676,
+                "parameter_bytes": 143552,
+                "raw_payload_bytes": 702120,
+                "read_count": 128,
+                "read_wall_ns": 209326585,
+                "resident_budget_bytes": 262144,
+                "resident_catalog_bytes": 0,
+                "resident_lineage_bytes": 1676,
+                "resident_parameter_bytes": 143552,
+                "resident_shards": 1,
+                "resident_support_bytes": 3401,
+                "route_bytes": 1726,
+                "serialized_bytes": 702120,
+                "shard_lineage_bytes": 1676,
+                "shard_support_bytes": 3401,
+                "wake_count": 2,
+                "wake_wall_ns": 141745910
+              }
+            ]
+          },
+          "whole_worker_wall_ns": 2798973061,
+          "source_ledger_logical_bytes": 5095384,
+          "artifact_owner_logical_bytes": 21637429,
+          "causal_read_decision_and_retention_gate_passed": true
+        }
+      ],
+      "resources": {
+        "receipt": {
+          "all_sample_points_complete": true,
+          "child_exit_rusage": {
+            "ru_inblock": 0,
+            "ru_majflt": 0,
+            "ru_maxrss": 170532,
+            "ru_minflt": 318084,
+            "ru_nivcsw": 3098,
+            "ru_nvcsw": 3017048,
+            "ru_oublock": 126592,
+            "ru_stime": 26.016994,
+            "ru_utime": 516.25529
+          },
+          "child_pid": 42957,
+          "child_proc_visible_pid": 42957,
+          "child_reaped_monotonic_ns": 2826768983902,
+          "child_spawned_monotonic_ns": 2307897384281,
+          "cleanup": {
+            "observed_tree_stopped": true,
+            "requested": false,
+            "residual_identity_errors": [],
+            "residual_live": [],
+            "signals": []
+          },
+          "command": [
+            "/home/runner/.cache/codex-ci/cargo-target/debug/deps/codex_hepta_agentd-373ca314b2636b98",
+            "--ignored",
+            "--exact",
+            "memory_cell_v9_continual_tests::memory_cell_v9_continual_child",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "coverage_gaps": [
+            "No atomic whole-tree snapshot; per-process smaps reads and filesystem scans are sequential.",
+            "Short-lived or detached descendants never observed cannot be reconstructed from samples.",
+            "Memory/file changes between samples and before the first sample are not exact integrals.",
+            "RSS sums count shared pages per process; PSS is retained separately.",
+            "Only registered regular file data stocks are measured; filesystem metadata and remote storage are not.",
+            "Final receipt serialization/fsync and monitor exit follow the last sample; parent must measure that tail."
+          ],
+          "exit_code": 0,
+          "full_cost_exact": false,
+          "integrals": {
+            "storage_allocated_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 518861598911,
+              "sampled_byte_ns_estimate": 21574577073288607744,
+              "trapezoid_numerator_byte_ns": 43149154146577215488,
+              "unobserved_interval_ns": 11185869
+            },
+            "storage_logical_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 518861598911,
+              "sampled_byte_ns_estimate": 21386129146565190819,
+              "trapezoid_numerator_byte_ns": 42772258293130381638,
+              "unobserved_interval_ns": 11185869
+            },
+            "tree_pss_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 518861598911,
+              "sampled_byte_ns_estimate": 76540013986324415488,
+              "trapezoid_numerator_byte_ns": 153080027972648830976,
+              "unobserved_interval_ns": 11185869
+            },
+            "tree_rss_bytes": {
+              "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+              "exact_continuous_integral": false,
+              "observed_interval_ns": 518861598911,
+              "sampled_byte_ns_estimate": 93807659992882903040,
+              "trapezoid_numerator_byte_ns": 187615319985765806080,
+              "unobserved_interval_ns": 11185869
+            }
+          },
+          "launch_error": null,
+          "maximum_observed_gap_ns": 215588200,
+          "monitor_error": null,
+          "monitor_pid": 42956,
+          "monitor_proc_visible_pid": 42956,
+          "monitor_rusage_before_final_receipt": {
+            "ru_inblock": 0,
+            "ru_majflt": 0,
+            "ru_maxrss": 67120,
+            "ru_minflt": 2382,
+            "ru_nivcsw": 244,
+            "ru_nvcsw": 2494,
+            "ru_oublock": 4664,
+            "ru_stime": 13.065514,
+            "ru_utime": 9.476698
+          },
+          "observations_ended_monotonic_ns": 2826769691394,
+          "observed_process_identities": [
+            {
+              "pid": 42956,
+              "start_ticks": 230786
+            },
+            {
+              "pid": 42957,
+              "start_ticks": 230789
+            },
+            {
+              "pid": 42962,
+              "start_ticks": 230817
+            },
+            {
+              "pid": 42970,
+              "start_ticks": 238726
+            },
+            {
+              "pid": 42985,
+              "start_ticks": 256722
+            }
+          ],
+          "passed": true,
+          "peaks_of_sequential_sample_sums": {
+            "storage_allocated_bytes": 57958400,
+            "storage_logical_bytes": 57402896,
+            "tree_pss_bytes": 191442944,
+            "tree_rss_bytes": 235905024
+          },
+          "requested_interval_ms": 200,
+          "roots": [
+            "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/continual-learning.artifacts/byte",
+            "/tmp/hm9-KWtaeu"
+          ],
+          "ru_maxrss_unit": "KiB on this Linux profile",
+          "rusage_scope": "Kernel wait4 accounting for the directly waited command; not a per-descendant sum.",
+          "sample_count": 2482,
+          "sample_error_count": 0,
+          "samples": {
+            "bytes": 2319392,
+            "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/continual-learning.artifacts/byte-samples.jsonl",
+            "sha256": "7484f443a99496a164b65899e52507059be5a1140ced9ccd6c6a4530e5d73029"
+          },
+          "sampling_gaps": {
+            "after_last_sample_ns": 798399,
+            "before_first_sample_ns": 10387470,
+            "included_in_unobserved_intervals": true
+          },
+          "schema": "hepta.memory.v9.sampled-lifecycle.v1",
+          "started_monotonic_ns": 2307896906614,
+          "stderr": {
+            "bytes": 0,
+            "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/continual-learning.artifacts/byte-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 191,
+            "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/continual-learning.artifacts/byte-stdout.log",
+            "sha256": "fd66475a0d16ec16de82d5ea256a2520fdd3f44c8acf179f3acf6ac3d2fc7743"
+          },
+          "termination_signal": null,
+          "timed_out_or_sample_cap": false,
+          "wall_ns_through_observation_close": 518872784780
+        },
+        "raw_samples_recomputed": true,
+        "observation_wall_coverage_verified": true,
+        "parent_supervision_wall_ns": 518913438893,
+        "parent_wall_beyond_observation_close_ns": 40654113,
+        "complete_continuous_cost_established": false,
+        "runtime_storage_roots_verified": true
+      },
+      "gate_passed": true
+    }
+  ],
+  "actual_worker_processes": 6,
+  "actual_fit_calls": 36,
+  "parent_wall_ns_before_final_receipt": 1015389713271,
+  "causal_parameter_gate_passed": true,
+  "system_compression_established": false,
+  "full_cost_net_gain_established": false,
+  "exact_rss_byte_time_available": false,
+  "three_stages_are_independent_trials": false,
+  "novel_address_or_open_world_program_discovery_established": false,
+  "natural_language_addressing_evaluated": false,
+  "evidence_grants_authority": false
+}

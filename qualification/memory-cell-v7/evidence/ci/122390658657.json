@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40561223524,
+  "job_id": 122390658657,
+  "group": "daemon",
+  "status": "completed",
+  "conclusion": "failure",
+  "source_commit": "bef886f1b2c9e0fe7c9ed386d67a0ef46686af22",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40561223524/job/122390658657",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-context-compiler",
+      "-p",
+      "codex-hepta-infer-worker-host"
+    ],
+    "commands": [
+      [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-context-compiler",
+          "-p",
+          "codex-hepta-infer-worker-host"
+        ],
+        "exit_code": 100,
+        "wall_seconds": 325.388745838
+      }
+    ],
+    "exit_code": 100,
+    "final_tracked_changes": "",
+    "group": "daemon",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 125788,
+      "sha256": "37154902b9c79f85181e19fd09097809b5c3da3a350ba9e4c1144cb6f68c4747"
+    },
+    "mode": "test",
+    "passed": false,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 6,
+      "groups": [
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "typed-memory-temporal-test-macro-binding",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "bef886f1b2c9e0fe7c9ed386d67a0ef46686af22",
+    "source_tree": "e56c0d7bd81920e145a28e5cea60a2b05c82ecba",
+    "wall_seconds": 325.388856724
+  },
+  "test_summaries": [
+    "Summary [  84.970s] 341 tests run: 334 passed (2 slow, 1 flaky), 7 failed, 9 skipped"
+  ],
+  "test_counts": {
+    "run": 341,
+    "passed": 334,
+    "failed": 7,
+    "skipped": 9,
+    "slow": 2,
+    "flaky": 1,
+    "binaries": 21
+  },
+  "provider_log": {
+    "name": "122390658657.log",
+    "bytes": 277277,
+    "sha256": "ff56f3af9349c7230d203d6edd3e87f961c65b34def93faf3500a03a85cff66d"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt.",
+  "tests_executed": true,
+  "ignored_profile_executed": false,
+  "failure_phase": "ordinary_tests",
+  "failure_count": 7,
+  "failures": [
+    {
+      "test": "memory_cell_context_tests::memory_prediction_reaches_real_untrusted_context_and_final_use_races_stop_before_effect",
+      "error": "Agentd test App Server exited before readiness: Codex executable path is not configured"
+    },
+    {
+      "test": "memory_cell_learning::tests::memory_outcome_cannot_move_to_another_candidate_episode_or_unsigned_observation",
+      "error": "Durable(Semantic(MissingAbstainCandidate))",
+      "location": "hepta-agentd/src/memory_cell_learning_tests.rs:45"
+    },
+    {
+      "test": "memory_cell_learning::tests::memory_training_ledger_retains_signed_candidate_and_independent_outcome_after_recovery",
+      "error": "Durable(Semantic(MissingAbstainCandidate))",
+      "location": "hepta-agentd/src/memory_cell_learning_tests.rs:19"
+    },
+    {
+      "test": "memory_cell_network::tests::live_federation_revocation_and_real_fleet_rotation_require_new_route_admission",
+      "error": "successor state: Protocol(prompt pipeline durable owners failed to open: RegistryOpen(StateLocked))",
+      "location": "hepta-agentd/src/memory_cell_network_test_support.rs:179"
+    },
+    {
+      "test": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation",
+      "binary": "codex-hepta-agentd::cognitive_store_product_writer",
+      "error": "SQLite recovery is indeterminate: the complete immutable file identity was not established"
+    },
+    {
+      "test": "native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start",
+      "error": "physical turn start",
+      "location": "hepta-infer-worker-host/src/native_app_server_tests.rs:411"
+    },
+    {
+      "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+      "error": "Agentd test App Server exited before readiness: Codex executable path is not configured"
+    }
+  ],
+  "flaky_tests": [
+    {
+      "test": "memory_cell_address_worker::tests::malicious_python_decisions_are_rejected_and_the_process_is_not_reused",
+      "classification": "new V7 test; first attempt failed, second attempt passed",
+      "error": "accepted malformed worker case unsolicited",
+      "location": "hepta-agentd/src/memory_cell_address_worker_tests.rs:51"
+    }
+  ]
+}

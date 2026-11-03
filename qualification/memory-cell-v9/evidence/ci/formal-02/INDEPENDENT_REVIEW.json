@@ -1,0 +1,234 @@
+{
+  "facts_values_sources_recomputed": true,
+  "gate_thresholds": {
+    "all_boundary_cases_correct_required": true,
+    "known_correct_coverage_minimum": 0.8,
+    "known_wrong_native_accepts_maximum": 0,
+    "unsupported_route_acceptance_rate_maximum": 0.05
+  },
+  "limits": [
+    "Owner snapshot consistency is not independent owner authority or signature validation.",
+    "Request-byte sum derives from retained worker cost fields; original complete request wire bytes were not retained here.",
+    "Two entity repetitions per wording are not independent language observations.",
+    "Scientific gates fail; CI/native execution success cannot imply serving admission.",
+    "No continuous resource integration or complete wall-cost claim is audited by this native-only review.",
+    "No future-task parameter-learning, retention, adaptive structural net benefit or migration conclusion is established by this review.",
+    "The original CI receipt has passed=false and lacks continual-learning.json, structure-learning.json, migration-process.json and their two learning score receipts; native result validity does not convert the overall CI attempt into a pass."
+  ],
+  "local_equivalent_commit": "db13028278680a9a263d3d8657186b0c6d6ee14f",
+  "local_equivalent_tree_verified": true,
+  "method": [
+    "Read the archived original native reports with a standalone Python standard-library script. No project evaluator, model, training module or Rust binary was imported or executed.",
+    "Match each original report and native-language-audit.json byte length and SHA-256 to both ARCHIVE.json and the original receipt.json inventory; match original receipt.json bytes to ARCHIVE.json.",
+    "Verify pinned held.json and native-fixture.json SHA-256, independently reconstruct the fixture from held entity records, and match every native case and typed request in order.",
+    "Build per-entity/type chronological fact lists directly from held writes. Calculate current/history/change/semantic/procedure/apply expected values, then map the actual owner snapshot records back to those facts to check exact source IDs and current source membership.",
+    "Check every returned typed value and dependency set, query ID, snapshot digest and generation. Recount success, abstention, wrong accepts and boundary outcomes without trusting report native_correct flags.",
+    "Read every retained direct/control response frame and verify UTF-8 length, trailing newline, SHA-256, query/model/source-cut binding, direct/control operation agreement and readout correspondence. Parsed worker requests are normalized objects: dates can use YYYYMMDD and rejected responses can omit them. Only non-time parsed identity fields are matched to typed requests.",
+    "Recount raw response bytes. Sum request_body_bytes plus newline from retained worker cost fields and match process-reported request total. This does not reconstruct original complete request wire bytes.",
+    "Recalculate frozen quality gates and compare the independent counts to both native report summaries and the existing native-language-audit.json. All three gates remain false."
+  ],
+  "native_language_unit": {
+    "distinct_known_wordings": 72,
+    "distinct_unsupported_wordings": 48,
+    "entity_repetitions_per_wording": 2,
+    "known_native_rows": 144,
+    "unsupported_native_rows": 96
+  },
+  "raw_artifact_identity": {
+    "native-language-audit.json": {
+      "bytes": 5330,
+      "sha256": "d1ed17dc99dd15352f4d2e9ca979fbbc1390825072bf045b5800040d4e3b0b3f"
+    },
+    "receipt.json": {
+      "bytes": 10178,
+      "sha256": "34801c0e324497723fa560d6c3a37484b4aa02094b274df78482045320d6faa9"
+    }
+  },
+  "raw_files_match_archive_and_receipt": true,
+  "reports": [
+    {
+      "arm": "frozen-v7",
+      "bytes": 1214038,
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 52,
+          "negative_routes": 0,
+          "routing_correct": 52,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 90,
+          "negative_routes": 6,
+          "routing_correct": 90,
+          "rows": 96,
+          "wrong_native_accepts": 6
+        }
+      },
+      "host_time_abstentions": 0,
+      "known_correct_coverage": 0.3611111111111111,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "quality_gate_passed": false,
+      "raw_response_bytes_recounted": 549875,
+      "retained_frames": 544,
+      "sha256": "daebaee6a86025f6c2ee1263372ffde75246868f05b9756dbce40b8ee29cdf8e",
+      "time_conflict_worker_accepted_before_host_rejection": 2,
+      "unsupported_acceptance_rate": 0.0625,
+      "worker_reported_request_bytes_recounted": 870634
+    },
+    {
+      "arm": "frozen-v8-shadow",
+      "bytes": 1303013,
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 78,
+          "negative_routes": 0,
+          "routing_correct": 78,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 86,
+          "negative_routes": 10,
+          "routing_correct": 86,
+          "rows": 96,
+          "wrong_native_accepts": 10
+        }
+      },
+      "host_time_abstentions": 0,
+      "known_correct_coverage": 0.5416666666666666,
+      "model_digest": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86",
+      "quality_gate_passed": false,
+      "raw_response_bytes_recounted": 601969,
+      "retained_frames": 544,
+      "sha256": "3bc76c8bddfe2b954a208116e604966ea880cf5cbcc8a7b2d6f7a3bec5b8bd8a",
+      "time_conflict_worker_accepted_before_host_rejection": 6,
+      "unsupported_acceptance_rate": 0.10416666666666667,
+      "worker_reported_request_bytes_recounted": 870634
+    },
+    {
+      "arm": "candidate-v9-shadow",
+      "bytes": 1318934,
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 94,
+          "negative_routes": 0,
+          "routing_correct": 94,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 88,
+          "negative_routes": 8,
+          "routing_correct": 88,
+          "rows": 96,
+          "wrong_native_accepts": 8
+        }
+      },
+      "host_time_abstentions": 0,
+      "known_correct_coverage": 0.6527777777777778,
+      "model_digest": "36bf40924f93fdc47ab569b02132adb1edef659338d4b82ea1bd695fdfdb40bf",
+      "quality_gate_passed": false,
+      "raw_response_bytes_recounted": 619724,
+      "retained_frames": 544,
+      "sha256": "d53fb4a926e6595154f397d4cda0cbf2187cca4b3b1f74b8da3a8022c5b40e99",
+      "time_conflict_worker_accepted_before_host_rejection": 7,
+      "unsupported_acceptance_rate": 0.08333333333333333,
+      "worker_reported_request_bytes_recounted": 870634
+    }
+  ],
+  "review_models_executed": 0,
+  "review_repo_evaluators_imported": 0,
+  "review_rust_tests_executed": 0,
+  "review_training_executed": 0,
+  "reviewer": "v9_evidence_review",
+  "run_id": 40638178106,
+  "schema": "hepta.memory.v9.independent-native-review.v1",
+  "source_commit": "371890909481dec3229449d4ae0330f7ba01646d",
+  "source_tree": "136e4fc3a74d2b1845fcfb4bd1245faa0e09de21",
+  "verified_non_native_scope": {
+    "continual_quality": false,
+    "migration": false,
+    "ordinary_test_results": false,
+    "resource_metrics": false,
+    "structure_quality": false
+  }
+}

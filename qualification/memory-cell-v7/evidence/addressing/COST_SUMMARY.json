@@ -1,0 +1,766 @@
+{
+  "accounting": [
+    "Run totals include candidate fitting, development encoding, selection and any calibration; do not add nested head/candidate costs again.",
+    "CPU is recorded Python process_time; wall is recorded perf_counter. Final report serialization, source preservation after training, archiving, environment installation, downloads and human work are excluded.",
+    "36 head fits are three executions of six candidates with two heads each, not 36 independent language models or independent replications.",
+    "Base encoder is frozen and its pretraining cost is unmeasured. No full-system cost claim is made."
+  ],
+  "actual_head_fit_calls": 36,
+  "head_fit_only_cpu_seconds": 22.076897637000005,
+  "head_fit_only_wall_seconds": 22.084654057005537,
+  "held_cpu_seconds_including_load": 3.78300729,
+  "held_wall_seconds_including_load": 3.786307893009507,
+  "run_count": 3,
+  "runs": [
+    {
+      "calibration_cost": {
+        "cpu_seconds": 1.602495278000001,
+        "encoded_rows": 240,
+        "head_fit_calls": 0,
+        "wall_seconds": 1.6025768230028916
+      },
+      "calibration_outcome": {
+        "ascending_order_index_1_based": 119,
+        "bound_requires_independent_exchangeable_calibration": true,
+        "calibration_sha256": "4d43619b1e426926d4d40fcc55422e975691d555687cba5b99905b08bb7e4e46",
+        "candidate_selection_performed": false,
+        "delta": 0.05,
+        "head_parameters_updated": false,
+        "known_rows": 120,
+        "limitation": "Author-written synthetic families are not a representative iid human request population; the tolerance calculation is conditional on that additional assumption.",
+        "margin_unchanged": 0.0,
+        "metrics": {
+          "known_correct": 61,
+          "known_correct_rate": 0.5083333333333333,
+          "known_rows": 120,
+          "known_wrong_accepted": 0,
+          "known_wrong_rate": 0.0,
+          "language_known_correct_rates": {
+            "en": 0.65,
+            "zh": 0.36666666666666664
+          },
+          "ood_acceptance_rate": 0.008333333333333333,
+          "ood_accepted": 1,
+          "ood_rows": 120
+        },
+        "ood_rows": 120,
+        "policy_only_tightened": true,
+        "population_risk_established": false,
+        "prior_threshold": 0.5,
+        "risk_target": 0.05,
+        "rows": 240,
+        "schema": "hepta.memory.v7.independent-calibration.v1",
+        "selected_ood_score": 0.7682243878278111,
+        "threshold": 0.7682243878278112
+      },
+      "candidate_inclusive_receipts": [
+        {
+          "C": 2.0,
+          "candidate": 0,
+          "cpu_seconds": 0.39384347399999964,
+          "kind": "semantic",
+          "wall_seconds": 0.39550659801170696
+        },
+        {
+          "C": 8.0,
+          "candidate": 1,
+          "cpu_seconds": 0.5550219540000008,
+          "kind": "semantic",
+          "wall_seconds": 0.5550669650110649
+        },
+        {
+          "C": 32.0,
+          "candidate": 2,
+          "cpu_seconds": 0.7441267919999994,
+          "kind": "semantic",
+          "wall_seconds": 0.7441941300057806
+        },
+        {
+          "C": 2.0,
+          "candidate": 3,
+          "cpu_seconds": 1.3335092450000001,
+          "kind": "hybrid",
+          "wall_seconds": 1.333607710999786
+        },
+        {
+          "C": 8.0,
+          "candidate": 4,
+          "cpu_seconds": 1.8179014070000008,
+          "kind": "hybrid",
+          "wall_seconds": 1.8180167090031318
+        },
+        {
+          "C": 32.0,
+          "candidate": 5,
+          "cpu_seconds": 2.2730256210000004,
+          "kind": "hybrid",
+          "wall_seconds": 2.273240928989253
+        }
+      ],
+      "encoding": {
+        "cpu_seconds": 3.999501919,
+        "encoded_rows": 750,
+        "numeric_feature_bytes": 2304000,
+        "wall_seconds": 4.000597695005126
+      },
+      "head_cpu_seconds": 6.608646217000002,
+      "head_fit_calls": 12,
+      "head_receipts": [
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 0,
+          "cpu_seconds": 0.20194693200000025,
+          "head": "intent",
+          "iterations": [
+            63
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.20361895399400964,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 0,
+          "cpu_seconds": 0.1566281010000008,
+          "head": "shape",
+          "iterations": [
+            85
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.15664023699355312,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 1,
+          "cpu_seconds": 0.29356739600000026,
+          "head": "intent",
+          "iterations": [
+            106
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.293604332007817,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 1,
+          "cpu_seconds": 0.22988353300000064,
+          "head": "shape",
+          "iterations": [
+            123
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.22991214699868578,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 2,
+          "cpu_seconds": 0.41463732699999944,
+          "head": "intent",
+          "iterations": [
+            152
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.4146970879955916,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 2,
+          "cpu_seconds": 0.30068361300000035,
+          "head": "shape",
+          "iterations": [
+            167
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.3006978110061027,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 3,
+          "cpu_seconds": 0.8008039169999996,
+          "head": "intent",
+          "iterations": [
+            61
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.8008744020044105,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 3,
+          "cpu_seconds": 0.4073571779999998,
+          "head": "shape",
+          "iterations": [
+            76
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.40739163900434505,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 4,
+          "cpu_seconds": 1.1172250050000017,
+          "head": "intent",
+          "iterations": [
+            86
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 1.1173126740031876,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 4,
+          "cpu_seconds": 0.5588244249999992,
+          "head": "shape",
+          "iterations": [
+            107
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.5588530719978735,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 5,
+          "cpu_seconds": 1.4240880899999997,
+          "head": "intent",
+          "iterations": [
+            111
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 1.4242180559958797,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 5,
+          "cpu_seconds": 0.7030007000000005,
+          "head": "shape",
+          "iterations": [
+            130
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.7031558809976559,
+          "warnings": []
+        }
+      ],
+      "head_wall_seconds": 6.610976292999112,
+      "recorded_retained_bytes_before_final_report": 7598830,
+      "run": "v7-addressing-development-01",
+      "run_cpu_seconds_before_final_report": 14.090132628000001,
+      "run_wall_seconds_before_final_report": 14.128604195997468,
+      "selected_manifest_sha256": "b4b4f4ffb766de4ded76901039c29baf772ceab8589a7cf1f26e786fb56ebc3d",
+      "source_commit": "0b0b041b6dd8121050c335cb3be73bb1d8cb7904",
+      "source_committed_at_execution": false,
+      "training_receipt_sha256": "87e54afc719a7b185f5487b93879cb56b5e9fe7326613d97e48c3b9ed602ea94"
+    },
+    {
+      "calibration_cost": null,
+      "calibration_outcome": null,
+      "candidate_inclusive_receipts": [
+        {
+          "C": 2.0,
+          "candidate": 0,
+          "cpu_seconds": 0.3737906630000003,
+          "kind": "semantic",
+          "wall_seconds": 0.37560951701016165
+        },
+        {
+          "C": 8.0,
+          "candidate": 1,
+          "cpu_seconds": 0.760894188,
+          "kind": "semantic",
+          "wall_seconds": 0.7610447719926015
+        },
+        {
+          "C": 32.0,
+          "candidate": 2,
+          "cpu_seconds": 1.0511174620000006,
+          "kind": "semantic",
+          "wall_seconds": 1.0513049400033196
+        },
+        {
+          "C": 2.0,
+          "candidate": 3,
+          "cpu_seconds": 1.5940756449999984,
+          "kind": "hybrid",
+          "wall_seconds": 1.5942455219919793
+        },
+        {
+          "C": 8.0,
+          "candidate": 4,
+          "cpu_seconds": 2.281021636,
+          "kind": "hybrid",
+          "wall_seconds": 2.281739560989081
+        },
+        {
+          "C": 32.0,
+          "candidate": 5,
+          "cpu_seconds": 2.4401433170000004,
+          "kind": "hybrid",
+          "wall_seconds": 2.440830481995363
+        }
+      ],
+      "encoding": {
+        "cpu_seconds": 4.158379867999999,
+        "encoded_rows": 750,
+        "numeric_feature_bytes": 2304000,
+        "wall_seconds": 4.161186922006891
+      },
+      "head_cpu_seconds": 7.887231149000003,
+      "head_fit_calls": 12,
+      "head_receipts": [
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 0,
+          "cpu_seconds": 0.18104939900000083,
+          "head": "intent",
+          "iterations": [
+            63
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.1826374819938792,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 0,
+          "cpu_seconds": 0.14921478400000154,
+          "head": "shape",
+          "iterations": [
+            85
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.1492270510061644,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 1,
+          "cpu_seconds": 0.44633231699999953,
+          "head": "intent",
+          "iterations": [
+            106
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.4464567370014265,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 1,
+          "cpu_seconds": 0.2733257190000007,
+          "head": "shape",
+          "iterations": [
+            123
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.2733734930079663,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 2,
+          "cpu_seconds": 0.5720269400000006,
+          "head": "intent",
+          "iterations": [
+            152
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.5721686339966254,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 2,
+          "cpu_seconds": 0.43408613000000074,
+          "head": "shape",
+          "iterations": [
+            167
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.43413856299594045,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 3,
+          "cpu_seconds": 0.9719472010000008,
+          "head": "intent",
+          "iterations": [
+            61
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.9720474369969452,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 3,
+          "cpu_seconds": 0.4549233699999995,
+          "head": "shape",
+          "iterations": [
+            76
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.45496247500705067,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 4,
+          "cpu_seconds": 1.4294695819999994,
+          "head": "intent",
+          "iterations": [
+            86
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 1.429749709990574,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 4,
+          "cpu_seconds": 0.6833905229999999,
+          "head": "shape",
+          "iterations": [
+            107
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.6834519810072379,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 5,
+          "cpu_seconds": 1.6650688690000006,
+          "head": "intent",
+          "iterations": [
+            111
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 1.6655531249998603,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 5,
+          "cpu_seconds": 0.6263963149999991,
+          "head": "shape",
+          "iterations": [
+            130
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.6265954670088831,
+          "warnings": []
+        }
+      ],
+      "head_wall_seconds": 7.890362155012554,
+      "recorded_retained_bytes_before_final_report": 6824414,
+      "run": "v7-addressing-development-02",
+      "run_cpu_seconds_before_final_report": 14.023068353,
+      "run_wall_seconds_before_final_report": 14.063858531008009,
+      "selected_manifest_sha256": "7e92e5646324bec060ae0b4effa02a143e297e08f50947c9590c837d5d19e590",
+      "source_commit": "0b0b041b6dd8121050c335cb3be73bb1d8cb7904",
+      "source_committed_at_execution": false,
+      "training_receipt_sha256": "86d2dec1e7e55be1ef2bce31bdb4553eb9e771a382077af5ebae586bf3c57417"
+    },
+    {
+      "calibration_cost": {
+        "cpu_seconds": 3.084486825999999,
+        "encoded_rows": 420,
+        "head_fit_calls": 0,
+        "wall_seconds": 3.0922747410077136
+      },
+      "calibration_outcome": {
+        "ascending_order_index_1_based": 234,
+        "bound_requires_independent_exchangeable_calibration": true,
+        "calibration_sha256": "61b8c1a49d9dbd99c363d85750889cb53dd0d09fc903b389d2a74f07d72c2db0",
+        "candidate_selection_performed": false,
+        "delta": 0.05,
+        "external_input_sha256": "5af8c7f9eef01ecc6e8702aabc3e5caccf5ff12a92747ee319cff72f91d01ef5",
+        "head_parameters_updated": false,
+        "known_rows": 180,
+        "limitation": "Author-written synthetic families are not a representative iid human request population; the tolerance calculation is conditional on that additional assumption.",
+        "margin_unchanged": 0.0,
+        "metrics": {
+          "known_correct": 69,
+          "known_correct_rate": 0.38333333333333336,
+          "known_rows": 180,
+          "known_wrong_accepted": 1,
+          "known_wrong_rate": 0.005555555555555556,
+          "language_known_correct_rates": {
+            "en": 0.4888888888888889,
+            "zh": 0.2777777777777778
+          },
+          "ood_acceptance_rate": 0.025,
+          "ood_accepted": 6,
+          "ood_rows": 240
+        },
+        "ood_rows": 240,
+        "policy_only_tightened": true,
+        "population_risk_established": false,
+        "prior_threshold": 0.5,
+        "risk_target": 0.05,
+        "rows": 420,
+        "schema": "hepta.memory.v7.independent-calibration.v1",
+        "selected_ood_score": 0.7098737782192687,
+        "threshold": 0.7098737782192688
+      },
+      "candidate_inclusive_receipts": [
+        {
+          "C": 2.0,
+          "candidate": 0,
+          "cpu_seconds": 0.4026385320000001,
+          "kind": "semantic",
+          "wall_seconds": 0.40406600100686774
+        },
+        {
+          "C": 8.0,
+          "candidate": 1,
+          "cpu_seconds": 0.5768585670000004,
+          "kind": "semantic",
+          "wall_seconds": 0.5769094139977824
+        },
+        {
+          "C": 32.0,
+          "candidate": 2,
+          "cpu_seconds": 0.993393019,
+          "kind": "semantic",
+          "wall_seconds": 0.9935049499908928
+        },
+        {
+          "C": 2.0,
+          "candidate": 3,
+          "cpu_seconds": 1.439839988000001,
+          "kind": "hybrid",
+          "wall_seconds": 1.43998850499338
+        },
+        {
+          "C": 8.0,
+          "candidate": 4,
+          "cpu_seconds": 2.138160975,
+          "kind": "hybrid",
+          "wall_seconds": 2.138423620010144
+        },
+        {
+          "C": 32.0,
+          "candidate": 5,
+          "cpu_seconds": 2.6254086930000007,
+          "kind": "hybrid",
+          "wall_seconds": 2.6257975769985933
+        }
+      ],
+      "encoding": {
+        "cpu_seconds": 4.35475138,
+        "encoded_rows": 750,
+        "numeric_feature_bytes": 2304000,
+        "wall_seconds": 4.35536588600371
+      },
+      "head_cpu_seconds": 7.581020271,
+      "head_fit_calls": 12,
+      "head_receipts": [
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 0,
+          "cpu_seconds": 0.20061634700000042,
+          "head": "intent",
+          "iterations": [
+            63
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.20200080500217155,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 0,
+          "cpu_seconds": 0.16304491400000032,
+          "head": "shape",
+          "iterations": [
+            85
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.16307824999967124,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 1,
+          "cpu_seconds": 0.3107680429999995,
+          "head": "intent",
+          "iterations": [
+            106
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.3107815419934923,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 1,
+          "cpu_seconds": 0.23290916200000034,
+          "head": "shape",
+          "iterations": [
+            123
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.23295536199293565,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 2,
+          "cpu_seconds": 0.6128175510000009,
+          "head": "intent",
+          "iterations": [
+            152
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.6128735240054084,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 2,
+          "cpu_seconds": 0.3394758189999987,
+          "head": "shape",
+          "iterations": [
+            167
+          ],
+          "kind": "semantic",
+          "wall_seconds": 0.33951368799898773,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 3,
+          "cpu_seconds": 0.844517505999999,
+          "head": "intent",
+          "iterations": [
+            61
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.844582810997963,
+          "warnings": []
+        },
+        {
+          "C": 2.0,
+          "actual_fit": true,
+          "candidate": 3,
+          "cpu_seconds": 0.4415053800000006,
+          "head": "shape",
+          "iterations": [
+            76
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.4415490609972039,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 4,
+          "cpu_seconds": 1.3135016889999989,
+          "head": "intent",
+          "iterations": [
+            86
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 1.3136305270018056,
+          "warnings": []
+        },
+        {
+          "C": 8.0,
+          "actual_fit": true,
+          "candidate": 4,
+          "cpu_seconds": 0.6584074720000004,
+          "head": "shape",
+          "iterations": [
+            107
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.6585094860056415,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 5,
+          "cpu_seconds": 1.7454679800000008,
+          "head": "intent",
+          "iterations": [
+            111
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 1.7456967570033157,
+          "warnings": []
+        },
+        {
+          "C": 32.0,
+          "actual_fit": true,
+          "candidate": 5,
+          "cpu_seconds": 0.7179884080000001,
+          "head": "shape",
+          "iterations": [
+            130
+          ],
+          "kind": "hybrid",
+          "wall_seconds": 0.7181437959952746,
+          "warnings": []
+        }
+      ],
+      "head_wall_seconds": 7.583315608993871,
+      "recorded_retained_bytes_before_final_report": 8443051,
+      "run": "v7-addressing-formal-01",
+      "run_cpu_seconds_before_final_report": 16.925837519,
+      "run_wall_seconds_before_final_report": 16.95398972601106,
+      "selected_manifest_sha256": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "source_commit": "f445e938a11a050006a721ff2b6c1a1b2b41d4e0",
+      "source_committed_at_execution": true,
+      "training_receipt_sha256": "0ff5568749400871a026e65704117b7e2edc7fec997be200a1503fba7b388624"
+    }
+  ],
+  "schema": "hepta.memory.v7.language-cost-audit.v1",
+  "shared_frozen_encoder_bytes": 127538960,
+  "training_inclusive_cpu_seconds": 45.039038500000004,
+  "training_inclusive_wall_seconds": 45.146452453016536
+}

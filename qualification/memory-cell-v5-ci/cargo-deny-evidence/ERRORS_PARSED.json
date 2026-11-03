@@ -1,0 +1,250 @@
+{
+  "errors": [
+    {
+      "line": 155473,
+      "category": "unmaintained",
+      "title": "anymap2 is unmaintained",
+      "package_line": "23 \u2502 anymap2 0.13.0 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0319",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0319",
+        "\u251c Solution: No safe upgrade is available!"
+      ]
+    },
+    {
+      "line": 155490,
+      "category": "unmaintained",
+      "title": "`basic-toml` is unmaintained",
+      "package_line": "94 \u2502 basic-toml 0.1.10 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0374",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0374",
+        "\u251c Solution: No safe upgrade is available!"
+      ]
+    },
+    {
+      "line": 155868,
+      "category": "vulnerability",
+      "title": "Multiple timing variability issues in operations intended to be constant-time",
+      "package_line": "385 \u2502 crypto-bigint 0.5.5 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0387",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0387",
+        "\u251c Solution: Upgrade to >=0.7.6 (try `cargo update -p crypto-bigint`)"
+      ]
+    },
+    {
+      "line": 156238,
+      "category": "vulnerability",
+      "title": "Sending custom to-device messages may panics",
+      "package_line": "735 \u2502 matrix-sdk-crypto 0.18.0 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0318",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0318",
+        "\u251c Solution: Upgrade to >=0.19.0 (try `cargo update -p matrix-sdk-crypto`)"
+      ]
+    },
+    {
+      "line": 156261,
+      "category": "vulnerability",
+      "title": "`Debug` impls for client session values expose TLS secrets",
+      "package_line": "968 \u2502 rustls 0.23.45 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0346",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0346",
+        "\u251c Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+      ]
+    },
+    {
+      "line": 157159,
+      "category": "vulnerability",
+      "title": "Buffered application data sent to outer server after ECH rejection",
+      "package_line": "968 \u2502 rustls 0.23.45 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0347",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0347",
+        "\u251c Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+      ]
+    },
+    {
+      "line": 158071,
+      "category": "vulnerability",
+      "title": "Brotli certificate decompression can allocate up to 1 GiB before authentication",
+      "package_line": "968 \u2502 rustls 0.23.45 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0348",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0348",
+        "\u251c Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+      ]
+    },
+    {
+      "line": 158970,
+      "category": "vulnerability",
+      "title": "Unauthenticated ServerHello can downgrade later connections to classical key exchange",
+      "package_line": "968 \u2502 rustls 0.23.45 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0349",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0349",
+        "\u251c Solution: Upgrade to >=0.23.46 (try `cargo update -p rustls`)"
+      ]
+    },
+    {
+      "line": 159883,
+      "category": "vulnerability",
+      "title": "Certificate verification may accept distrusted intermediates",
+      "package_line": "973 \u2502 rustls-webpki 0.103.15 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0382",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0382",
+        "\u251c Solution: Upgrade to >=0.103.16, <0.104.0-alpha.1 OR >=0.104.0-alpha.8 (try `cargo update -p rustls-webpki`)"
+      ]
+    },
+    {
+      "line": 160777,
+      "category": "unmaintained",
+      "title": "unsafe-libyaml is unmaintained",
+      "package_line": "1202 \u2502 unsafe-libyaml 0.2.11 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2024-0449",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2024-0449",
+        "\u251c Solution: No safe upgrade is available!"
+      ]
+    },
+    {
+      "line": 161136,
+      "category": "vulnerability",
+      "title": "Bundled root certificates allow trust in distrusted emSign intermediates",
+      "package_line": "1242 \u2502 webpki-root-certs 1.0.5 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0383",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0383",
+        "\u251c Solution: Upgrade to >=1.0.10 (try `cargo update -p webpki-root-certs`)"
+      ]
+    },
+    {
+      "line": 161528,
+      "category": "vulnerability",
+      "title": "Bundled root certificates allow trust in distrusted emSign intermediates",
+      "package_line": "1243 \u2502 webpki-roots 1.0.9 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0381",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0381",
+        "\u251c Solution: Upgrade to >=1.0.10 (try `cargo update -p webpki-roots`)"
+      ]
+    },
+    {
+      "line": 162366,
+      "category": "unmaintained",
+      "title": "`zbus_names` is unmaintained",
+      "package_line": "1329 \u2502 zbus_names 3.0.0 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0371",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0371",
+        "\u251c Solution: No safe upgrade is available!"
+      ]
+    },
+    {
+      "line": 162747,
+      "category": "vulnerability",
+      "title": "Insecure Preservation of SUID/SGID Bits during ZIP Extraction Leading to Potential Privilege Escalation",
+      "package_line": "1339 \u2502 zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0367",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0367",
+        "\u251c Solution: Upgrade to >=9.0.0 (try `cargo update -p zip`)"
+      ]
+    },
+    {
+      "line": 163086,
+      "category": "vulnerability",
+      "title": "zip: `ZipArchive::extract` creates symbolic links whose attacker-controlled targets are outside the destination directory",
+      "package_line": "1339 \u2502 zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0368",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0368",
+        "\u251c Solution: Upgrade to >=9.0.0 (try `cargo update -p zip`)"
+      ]
+    },
+    {
+      "line": 163425,
+      "category": "vulnerability",
+      "title": "ZipStreamReader::extract() and ZipArchive::extract() apply Unix permissions through symlinks without confining the target",
+      "package_line": "1339 \u2502 zip 2.4.2 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0369",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0369",
+        "\u251c Solution: Upgrade to >=9.0.0 (try `cargo update -p zip`)"
+      ]
+    },
+    {
+      "line": 163764,
+      "category": "vulnerability",
+      "title": "Data from an abandoned stream leaks into the next stream on a reused context",
+      "package_line": "1345 \u2502 zstd 0.13.3 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0391",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0391",
+        "\u251c Solution: Upgrade to >=0.14.3 (try `cargo update -p zstd`)"
+      ]
+    },
+    {
+      "line": 164554,
+      "category": "vulnerability",
+      "title": "`Seekable::decompress` sets a `Vec` length beyond its capacity for offsets past the end",
+      "package_line": "1346 \u2502 zstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0398",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0398",
+        "\u251c Solution: Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)"
+      ]
+    },
+    {
+      "line": 165342,
+      "category": "vulnerability",
+      "title": "Uninitialized memory exposed when streaming decompression of a legacy frame fails",
+      "package_line": "1346 \u2502 zstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0403",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0403",
+        "\u251c Solution: Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)"
+      ]
+    },
+    {
+      "line": 166138,
+      "category": "vulnerability",
+      "title": "WebAssembly allocator shim corrupts memory on allocation failure",
+      "package_line": "1347 \u2502 zstd-sys 2.0.16+zstd.1.5.7 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0410",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0410",
+        "\u251c Solution: Upgrade to >=2.1.2 (try `cargo update -p zstd-sys`)"
+      ]
+    },
+    {
+      "line": 166928,
+      "category": "unmaintained",
+      "title": "`zvariant` is unmaintained",
+      "package_line": "1352 \u2502 zvariant 4.2.0 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0370",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0370",
+        "\u251c Solution: No safe upgrade is available!"
+      ]
+    },
+    {
+      "line": 167311,
+      "category": "unmaintained",
+      "title": "`zvariant_derive` is unmaintained",
+      "package_line": "1353 \u2502 zvariant_derive 4.2.0 registry+https://github.com/rust-lang/crates.io-index",
+      "details": [
+        "\u251c ID: RUSTSEC-2026-0372",
+        "\u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0372",
+        "\u251c Solution: No safe upgrade is available!"
+      ]
+    }
+  ],
+  "counts": {
+    "unmaintained": 6,
+    "vulnerability": 16
+  }
+}

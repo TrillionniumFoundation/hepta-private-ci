@@ -1,0 +1,3496 @@
+{
+  "entities": [
+    {
+      "aliases": [
+        "Canopy lamp",
+        "冠层灯",
+        "Shared calibration channel",
+        "共用calibration通道"
+      ],
+      "entity": "unit:v9-calibration-00",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": -22
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -43
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": -10
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": -3,
+            "label": "calibration-attribute-0"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": -9,
+            "limit": 61,
+            "opcode": "identity"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Orchard tray",
+        "果园盘",
+        "Shared calibration channel",
+        "共用calibration通道"
+      ],
+      "entity": "unit:v9-calibration-01",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": -19
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -47
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": -3
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": -2,
+            "label": "calibration-attribute-1"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": -7,
+            "limit": 74,
+            "opcode": "add_bias"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Fern chamber",
+        "蕨室"
+      ],
+      "entity": "unit:v9-calibration-02",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": -16
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -51
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 4
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": -1,
+            "label": "calibration-attribute-2"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": -5,
+            "limit": 87,
+            "opcode": "multiply"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Moss panel",
+        "苔板"
+      ],
+      "entity": "unit:v9-calibration-03",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": -13
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -55
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 11
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": 0,
+            "label": "calibration-attribute-3"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": -3,
+            "limit": 100,
+            "opcode": "affine"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Copper lathe",
+        "铜车床"
+      ],
+      "entity": "unit:v9-calibration-04",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": -10
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -59
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 18
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": 1,
+            "label": "calibration-attribute-4"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": -1,
+            "limit": 113,
+            "opcode": "clamp"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Bronze jig",
+        "青铜夹具"
+      ],
+      "entity": "unit:v9-calibration-05",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": -7
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -63
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 25
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": 2,
+            "label": "calibration-attribute-5"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": 1,
+            "limit": 126,
+            "opcode": "identity"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Iron spindle",
+        "铁主轴"
+      ],
+      "entity": "unit:v9-calibration-06",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": -4
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -67
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 32
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": 3,
+            "label": "calibration-attribute-6"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": 3,
+            "limit": 139,
+            "opcode": "add_bias"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Cobalt press",
+        "钴压机"
+      ],
+      "entity": "unit:v9-calibration-07",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": -1
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -71
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 39
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": -3,
+            "label": "calibration-attribute-7"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": 5,
+            "limit": 152,
+            "opcode": "multiply"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Heron crate",
+        "鹭箱"
+      ],
+      "entity": "unit:v9-calibration-08",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": 2
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -75
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 46
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": -2,
+            "label": "calibration-attribute-8"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": 7,
+            "limit": 165,
+            "opcode": "affine"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Kestrel pallet",
+        "隼托盘"
+      ],
+      "entity": "unit:v9-calibration-09",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": 5
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -79
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 53
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": -1,
+            "label": "calibration-attribute-9"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": 9,
+            "limit": 178,
+            "opcode": "clamp"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Otter dock",
+        "獭码头"
+      ],
+      "entity": "unit:v9-calibration-10",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": 8
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -83
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 60
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": 0,
+            "label": "calibration-attribute-10"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": 11,
+            "limit": 191,
+            "opcode": "identity"
+          }
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "Badger trolley",
+        "獾推车"
+      ],
+      "entity": "unit:v9-calibration-11",
+      "records": [
+        {
+          "effective_at": 1719792000,
+          "kind": "event",
+          "value": 11
+        },
+        {
+          "effective_at": 1751328000,
+          "kind": "event",
+          "value": -87
+        },
+        {
+          "effective_at": 1772323200,
+          "kind": "event",
+          "value": 67
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "semantic",
+          "value": {
+            "factor": 1,
+            "label": "calibration-attribute-11"
+          }
+        },
+        {
+          "effective_at": 1719792000,
+          "kind": "procedure",
+          "value": {
+            "bias": 13,
+            "limit": 204,
+            "opcode": "add_bias"
+          }
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-0",
+      "id": "v9-calibration-0000",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Read the most recently logged raw number for Canopy lamp."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-0",
+      "id": "v9-calibration-0001",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Read the most recently logged raw number for Bronze jig."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-1",
+      "id": "v9-calibration-0002",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Fetch the present observation stored under Orchard tray."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-1",
+      "id": "v9-calibration-0003",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Fetch the present observation stored under Iron spindle."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-2",
+      "id": "v9-calibration-0004",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Which value closes the event log for Fern chamber?"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-2",
+      "id": "v9-calibration-0005",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Which value closes the event log for Cobalt press?"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-3",
+      "id": "v9-calibration-0006",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Give me the last observed sample of Moss panel, unchanged."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-3",
+      "id": "v9-calibration-0007",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Give me the last observed sample of Heron crate, unchanged."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-4",
+      "id": "v9-calibration-0008",
+      "language": "en",
+      "since": 1756857600,
+      "text": "For Copper lathe, return its newest saved measurement only."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-4",
+      "id": "v9-calibration-0009",
+      "language": "en",
+      "since": 1756857600,
+      "text": "For Kestrel pallet, return its newest saved measurement only."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-5",
+      "id": "v9-calibration-0010",
+      "language": "en",
+      "since": 1756857600,
+      "text": "I need the current raw datum already remembered for Bronze jig."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-en-5",
+      "id": "v9-calibration-0011",
+      "language": "en",
+      "since": 1756857600,
+      "text": "I need the current raw datum already remembered for Otter dock."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-0",
+      "id": "v9-calibration-0012",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查一下铁主轴刚近一次落库的原始观测数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-0",
+      "id": "v9-calibration-0013",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查一下獾推车刚近一次落库的原始观测数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-1",
+      "id": "v9-calibration-0014",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "读取钴压机事件日志最后保存的数值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-1",
+      "id": "v9-calibration-0015",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "读取冠层灯事件日志最后保存的数值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-2",
+      "id": "v9-calibration-0016",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请原样取回鹭箱当前最新的测量值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-2",
+      "id": "v9-calibration-0017",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请原样取回果园盘当前最新的测量值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-3",
+      "id": "v9-calibration-0018",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "隼托盘记忆里的末次原始采样是多少？"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-3",
+      "id": "v9-calibration-0019",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "蕨室记忆里的末次原始采样是多少？"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-4",
+      "id": "v9-calibration-0020",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给我獭码头最近入档的读数本身。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-4",
+      "id": "v9-calibration-0021",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给我苔板最近入档的读数本身。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-5",
+      "id": "v9-calibration-0022",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查询獾推车目前保存的最后一笔观测，不加工。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "current",
+      "family": "v9-evaluator-calibration-known-current-zh-5",
+      "id": "v9-calibration-0023",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查询铜车床目前保存的最后一笔观测，不加工。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-0",
+      "id": "v9-calibration-0024",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Locate the newest raw record for Fern chamber at or before 2025-09-03."
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-0",
+      "id": "v9-calibration-0025",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Locate the newest raw record for Cobalt press at or before 2025-09-03."
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-1",
+      "id": "v9-calibration-0026",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Use 2025-09-03 as the last permitted observation date for Moss panel."
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-1",
+      "id": "v9-calibration-0027",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Use 2025-09-03 as the last permitted observation date for Heron crate."
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-2",
+      "id": "v9-calibration-0028",
+      "language": "en",
+      "since": 1756857600,
+      "text": "What was the last saved reading of Copper lathe when 2025-09-03 ended at midnight?"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-2",
+      "id": "v9-calibration-0029",
+      "language": "en",
+      "since": 1756857600,
+      "text": "What was the last saved reading of Kestrel pallet when 2025-09-03 ended at midnight?"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-3",
+      "id": "v9-calibration-0030",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Retrieve the raw value of Bronze jig available at the 2025-09-03 cutoff."
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-3",
+      "id": "v9-calibration-0031",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Retrieve the raw value of Otter dock available at the 2025-09-03 cutoff."
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-4",
+      "id": "v9-calibration-0032",
+      "language": "en",
+      "since": 1756857600,
+      "text": "At 2025-09-03, what number would the observation register for Iron spindle show?"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-4",
+      "id": "v9-calibration-0033",
+      "language": "en",
+      "since": 1756857600,
+      "text": "At 2025-09-03, what number would the observation register for Badger trolley show?"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-5",
+      "id": "v9-calibration-0034",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return the most recent Cobalt press observation whose timestamp does not exceed 2025-09-03."
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-en-5",
+      "id": "v9-calibration-0035",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return the most recent Canopy lamp observation whose timestamp does not exceed 2025-09-03."
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-0",
+      "id": "v9-calibration-0036",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "按2025-09-03零点为截止时刻，找鹭箱当时最后的原始记录。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-0",
+      "id": "v9-calibration-0037",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "按2025-09-03零点为截止时刻，找果园盘当时最后的原始记录。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-1",
+      "id": "v9-calibration-0038",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "隼托盘在2025-09-03及以前最后保存的数是多少？"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-1",
+      "id": "v9-calibration-0039",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "蕨室在2025-09-03及以前最后保存的数是多少？"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-2",
+      "id": "v9-calibration-0040",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "调出截至2025-09-03可见的獭码头最新观测。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-2",
+      "id": "v9-calibration-0041",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "调出截至2025-09-03可见的苔板最新观测。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-3",
+      "id": "v9-calibration-0042",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把獾推车记录的时间上限设为2025-09-03，只读最后一项。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-3",
+      "id": "v9-calibration-0043",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把铜车床记录的时间上限设为2025-09-03，只读最后一项。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-4",
+      "id": "v9-calibration-0044",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "返回冠层灯在2025-09-03零点已经存在的末次读数。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-4",
+      "id": "v9-calibration-0045",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "返回青铜夹具在2025-09-03零点已经存在的末次读数。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-5",
+      "id": "v9-calibration-0046",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查找时间不晚于2025-09-03的果园盘最近一条原始值。"
+    },
+    {
+      "at": 1756857600,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "history",
+      "family": "v9-evaluator-calibration-known-history-zh-5",
+      "id": "v9-calibration-0047",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查找时间不晚于2025-09-03的铁主轴最近一条原始值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-0",
+      "id": "v9-calibration-0048",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Read the semantic factor and descriptive label stored for Copper lathe."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-0",
+      "id": "v9-calibration-0049",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Read the semantic factor and descriptive label stored for Kestrel pallet."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-1",
+      "id": "v9-calibration-0050",
+      "language": "en",
+      "since": 1756857600,
+      "text": "What multiplier is in the semantic memory for Bronze jig?"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-1",
+      "id": "v9-calibration-0051",
+      "language": "en",
+      "since": 1756857600,
+      "text": "What multiplier is in the semantic memory for Otter dock?"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-2",
+      "id": "v9-calibration-0052",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Fetch the remembered semantic attributes of Iron spindle without applying them."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-2",
+      "id": "v9-calibration-0053",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Fetch the remembered semantic attributes of Badger trolley without applying them."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-3",
+      "id": "v9-calibration-0054",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Display the factor together with its label in Cobalt press's semantic cell."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-3",
+      "id": "v9-calibration-0055",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Display the factor together with its label in Canopy lamp's semantic cell."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-4",
+      "id": "v9-calibration-0056",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return Heron crate's saved semantic coefficient record as it stands."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-4",
+      "id": "v9-calibration-0057",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return Orchard tray's saved semantic coefficient record as it stands."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-5",
+      "id": "v9-calibration-0058",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Consult the stored semantic settings attached to Kestrel pallet."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-en-5",
+      "id": "v9-calibration-0059",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Consult the stored semantic settings attached to Fern chamber."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-0",
+      "id": "v9-calibration-0060",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "读取獭码头语义单元保存的因子及标签。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-0",
+      "id": "v9-calibration-0061",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "读取苔板语义单元保存的因子及标签。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-1",
+      "id": "v9-calibration-0062",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查询獾推车已有的语义系数记录。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-1",
+      "id": "v9-calibration-0063",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查询铜车床已有的语义系数记录。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-2",
+      "id": "v9-calibration-0064",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请取出冠层灯记住的乘数和描述标签。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-2",
+      "id": "v9-calibration-0065",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请取出青铜夹具记住的乘数和描述标签。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-3",
+      "id": "v9-calibration-0066",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "只查看果园盘保存的语义属性，先不用它们计算。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-3",
+      "id": "v9-calibration-0067",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "只查看铁主轴保存的语义属性，先不用它们计算。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-4",
+      "id": "v9-calibration-0068",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "蕨室的语义记忆中写了什么因子？"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-4",
+      "id": "v9-calibration-0069",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "钴压机的语义记忆中写了什么因子？"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-5",
+      "id": "v9-calibration-0070",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "原样调阅苔板已存的语义设置项。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "semantic",
+      "family": "v9-evaluator-calibration-known-semantic-zh-5",
+      "id": "v9-calibration-0071",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "原样调阅鹭箱已存的语义设置项。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-0",
+      "id": "v9-calibration-0072",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Read the procedure definition currently saved for Iron spindle."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-0",
+      "id": "v9-calibration-0073",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Read the procedure definition currently saved for Badger trolley."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-1",
+      "id": "v9-calibration-0074",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Fetch the stored opcode, bias and bound of Cobalt press without executing them."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-1",
+      "id": "v9-calibration-0075",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Fetch the stored opcode, bias and bound of Canopy lamp without executing them."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-2",
+      "id": "v9-calibration-0076",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Which processing recipe has Heron crate already remembered?"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-2",
+      "id": "v9-calibration-0077",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Which processing recipe has Orchard tray already remembered?"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-3",
+      "id": "v9-calibration-0078",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Show the dormant instruction set in Kestrel pallet's procedure cell."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-3",
+      "id": "v9-calibration-0079",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Show the dormant instruction set in Fern chamber's procedure cell."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-4",
+      "id": "v9-calibration-0080",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Inspect the saved algorithm record belonging to Otter dock."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-4",
+      "id": "v9-calibration-0081",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Inspect the saved algorithm record belonging to Moss panel."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-5",
+      "id": "v9-calibration-0082",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return the program parameters for Badger trolley; leave the sample untouched."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-en-5",
+      "id": "v9-calibration-0083",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return the program parameters for Copper lathe; leave the sample untouched."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-0",
+      "id": "v9-calibration-0084",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查看冠层灯过程单元已有的程序定义。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-0",
+      "id": "v9-calibration-0085",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查看青铜夹具过程单元已有的程序定义。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-1",
+      "id": "v9-calibration-0086",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "取出果园盘保存的操作码、偏置和限值，不执行。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-1",
+      "id": "v9-calibration-0087",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "取出铁主轴保存的操作码、偏置和限值，不执行。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-2",
+      "id": "v9-calibration-0088",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "蕨室事先记住了哪一份处理配方？"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-2",
+      "id": "v9-calibration-0089",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "钴压机事先记住了哪一份处理配方？"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-3",
+      "id": "v9-calibration-0090",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请读回苔板的过程记录本身。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-3",
+      "id": "v9-calibration-0091",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请读回鹭箱的过程记录本身。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-4",
+      "id": "v9-calibration-0092",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "我要核对铜车床已经存下的指令与参数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-4",
+      "id": "v9-calibration-0093",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "我要核对隼托盘已经存下的指令与参数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-5",
+      "id": "v9-calibration-0094",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "调阅青铜夹具的算法配置，保持其未运行状态。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "procedure",
+      "family": "v9-evaluator-calibration-known-procedure-zh-5",
+      "id": "v9-calibration-0095",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "调阅獭码头的算法配置，保持其未运行状态。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-0",
+      "id": "v9-calibration-0096",
+      "language": "en",
+      "since": 1756857600,
+      "text": "For Heron crate, compute newest observation minus the reading saved by 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-0",
+      "id": "v9-calibration-0097",
+      "language": "en",
+      "since": 1756857600,
+      "text": "For Orchard tray, compute newest observation minus the reading saved by 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-1",
+      "id": "v9-calibration-0098",
+      "language": "en",
+      "since": 1756857600,
+      "text": "What is the signed raw difference of Kestrel pallet relative to 2025-09-03?"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-1",
+      "id": "v9-calibration-0099",
+      "language": "en",
+      "since": 1756857600,
+      "text": "What is the signed raw difference of Fern chamber relative to 2025-09-03?"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-2",
+      "id": "v9-calibration-0100",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Subtract the 2025-09-03 baseline of Otter dock from its current recorded number."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-2",
+      "id": "v9-calibration-0101",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Subtract the 2025-09-03 baseline of Moss panel from its current recorded number."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-3",
+      "id": "v9-calibration-0102",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Measure the absolute-unit increase or decrease of Badger trolley since 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-3",
+      "id": "v9-calibration-0103",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Measure the absolute-unit increase or decrease of Copper lathe since 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-4",
+      "id": "v9-calibration-0104",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return the additive change from the 2025-09-03 record to the latest Canopy lamp record."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-4",
+      "id": "v9-calibration-0105",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return the additive change from the 2025-09-03 record to the latest Bronze jig record."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-5",
+      "id": "v9-calibration-0106",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Reconcile Orchard tray by taking its latest sample less the sample as of 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-en-5",
+      "id": "v9-calibration-0107",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Reconcile Iron spindle by taking its latest sample less the sample as of 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-0",
+      "id": "v9-calibration-0108",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "计算蕨室最新观测减去截至2025-09-03的末次观测。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-0",
+      "id": "v9-calibration-0109",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "计算钴压机最新观测减去截至2025-09-03的末次观测。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-1",
+      "id": "v9-calibration-0110",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "苔板与2025-09-03基线相比增减了几个原始单位？"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-1",
+      "id": "v9-calibration-0111",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "鹭箱与2025-09-03基线相比增减了几个原始单位？"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-2",
+      "id": "v9-calibration-0112",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给出铜车床自2025-09-03以来的带正负号读数差。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-2",
+      "id": "v9-calibration-0113",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给出隼托盘自2025-09-03以来的带正负号读数差。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-3",
+      "id": "v9-calibration-0114",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "用当前已存值扣掉青铜夹具在2025-09-03时的记录值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-3",
+      "id": "v9-calibration-0115",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "用当前已存值扣掉獭码头在2025-09-03时的记录值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-4",
+      "id": "v9-calibration-0116",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "求铁主轴最近读数相对2025-09-03旧读数的加法变化。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-4",
+      "id": "v9-calibration-0117",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "求獾推车最近读数相对2025-09-03旧读数的加法变化。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-5",
+      "id": "v9-calibration-0118",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请以最新减旧值的顺序对账钴压机与2025-09-03的差额。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "change",
+      "family": "v9-evaluator-calibration-known-change-zh-5",
+      "id": "v9-calibration-0119",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请以最新减旧值的顺序对账冠层灯与2025-09-03的差额。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-0",
+      "id": "v9-calibration-0120",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Use the saved recipe and semantic settings to process Otter dock's latest recorded input."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-0",
+      "id": "v9-calibration-0121",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Use the saved recipe and semantic settings to process Moss panel's latest recorded input."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-1",
+      "id": "v9-calibration-0122",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Execute the remembered program for Badger trolley on its current observation."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-1",
+      "id": "v9-calibration-0123",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Execute the remembered program for Copper lathe on its current observation."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-2",
+      "id": "v9-calibration-0124",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Calculate Canopy lamp's processed result from its stored event, factor and procedure."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-2",
+      "id": "v9-calibration-0125",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Calculate Bronze jig's processed result from its stored event, factor and procedure."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-3",
+      "id": "v9-calibration-0126",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Apply the existing transformation of Orchard tray to its newest logged sample."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-3",
+      "id": "v9-calibration-0127",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Apply the existing transformation of Iron spindle to its newest logged sample."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-4",
+      "id": "v9-calibration-0128",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Run Fern chamber's saved computation with its latest value and remembered semantic parameters."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-4",
+      "id": "v9-calibration-0129",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Run Cobalt press's saved computation with its latest value and remembered semantic parameters."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-5",
+      "id": "v9-calibration-0130",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return the output obtained by evaluating Moss panel's stored recipe on the current saved reading."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-en-5",
+      "id": "v9-calibration-0131",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return the output obtained by evaluating Heron crate's stored recipe on the current saved reading."
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-0",
+      "id": "v9-calibration-0132",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "用铜车床已存的语义参数和过程处理它最新的记录值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-0",
+      "id": "v9-calibration-0133",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "用隼托盘已存的语义参数和过程处理它最新的记录值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-1",
+      "id": "v9-calibration-0134",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "执行青铜夹具现有程序，输入使用当前已保存的观测。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-1",
+      "id": "v9-calibration-0135",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "执行獭码头现有程序，输入使用当前已保存的观测。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-2",
+      "id": "v9-calibration-0136",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把铁主轴的最新事件、语义因子与过程组合起来求结果。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-2",
+      "id": "v9-calibration-0137",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把獾推车的最新事件、语义因子与过程组合起来求结果。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-3",
+      "id": "v9-calibration-0138",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "让钴压机最后一次采样经过其已经记住的变换。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-3",
+      "id": "v9-calibration-0139",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "让冠层灯最后一次采样经过其已经记住的变换。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-4",
+      "id": "v9-calibration-0140",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "调用鹭箱保存的配方计算最新读数的输出。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-4",
+      "id": "v9-calibration-0141",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "调用果园盘保存的配方计算最新读数的输出。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-5",
+      "id": "v9-calibration-0142",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "用隼托盘已有的参数和指令对当前记忆值求值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "known",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": "apply",
+      "family": "v9-evaluator-calibration-known-apply-zh-5",
+      "id": "v9-calibration-0143",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "用蕨室已有的参数和指令对当前记忆值求值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-0",
+      "id": "v9-calibration-0144",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Compute the median of every observation saved for Canopy lamp."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-0",
+      "id": "v9-calibration-0145",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Compute the median of every observation saved for Bronze jig."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-1",
+      "id": "v9-calibration-0146",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Tell me the percentage growth of Orchard tray since 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-1",
+      "id": "v9-calibration-0147",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Tell me the percentage growth of Iron spindle since 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-2",
+      "id": "v9-calibration-0148",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Use the recipe of Fern chamber with a new input of 27 instead of its saved sample."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-2",
+      "id": "v9-calibration-0149",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Use the recipe of Cobalt press with a new input of 27 instead of its saved sample."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-3",
+      "id": "v9-calibration-0150",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return only the square root of the semantic factor stored for Moss panel."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-3",
+      "id": "v9-calibration-0151",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return only the square root of the semantic factor stored for Heron crate."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-4",
+      "id": "v9-calibration-0152",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Predict the next event value that Copper lathe will record."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-4",
+      "id": "v9-calibration-0153",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Predict the next event value that Kestrel pallet will record."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-5",
+      "id": "v9-calibration-0154",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Rewrite the saved bias of Bronze jig to zero."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-5",
+      "id": "v9-calibration-0155",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Rewrite the saved bias of Otter dock to zero."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-6",
+      "id": "v9-calibration-0156",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Explain the physical reason for the latest change of Iron spindle."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-6",
+      "id": "v9-calibration-0157",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Explain the physical reason for the latest change of Badger trolley."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-7",
+      "id": "v9-calibration-0158",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Find the smallest value ever recorded for Cobalt press."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-7",
+      "id": "v9-calibration-0159",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Find the smallest value ever recorded for Canopy lamp."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-8",
+      "id": "v9-calibration-0160",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Run Heron crate's saved procedure ten times recursively."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-8",
+      "id": "v9-calibration-0161",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Run Orchard tray's saved procedure ten times recursively."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-9",
+      "id": "v9-calibration-0162",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Give the semantic factor that Kestrel pallet had on 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-9",
+      "id": "v9-calibration-0163",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Give the semantic factor that Fern chamber had on 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-10",
+      "id": "v9-calibration-0164",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Count how many procedure invocations are recorded for Otter dock."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-10",
+      "id": "v9-calibration-0165",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Count how many procedure invocations are recorded for Moss panel."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-11",
+      "id": "v9-calibration-0166",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Use the history of Badger trolley to estimate its sampling frequency."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-11",
+      "id": "v9-calibration-0167",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Use the history of Copper lathe to estimate its sampling frequency."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-12",
+      "id": "v9-calibration-0168",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Translate the label of Canopy lamp into a new language."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-12",
+      "id": "v9-calibration-0169",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Translate the label of Bronze jig into a new language."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-13",
+      "id": "v9-calibration-0170",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Delete the newest raw observation stored for Orchard tray."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-13",
+      "id": "v9-calibration-0171",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Delete the newest raw observation stored for Iron spindle."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-14",
+      "id": "v9-calibration-0172",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Replace Fern chamber's procedure with an algorithm you invent."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-14",
+      "id": "v9-calibration-0173",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Replace Cobalt press's procedure with an algorithm you invent."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-15",
+      "id": "v9-calibration-0174",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Divide the newest observation of Moss panel by its 2025-09-03 baseline."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-15",
+      "id": "v9-calibration-0175",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Divide the newest observation of Heron crate by its 2025-09-03 baseline."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-16",
+      "id": "v9-calibration-0176",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Sort all remembered observations of Copper lathe in ascending order."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-16",
+      "id": "v9-calibration-0177",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Sort all remembered observations of Kestrel pallet in ascending order."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-17",
+      "id": "v9-calibration-0178",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Estimate the variance of the observation series for Bronze jig."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-17",
+      "id": "v9-calibration-0179",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Estimate the variance of the observation series for Otter dock."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-18",
+      "id": "v9-calibration-0180",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Apply Iron spindle's procedure using a semantic factor of 19 instead of the saved factor."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-18",
+      "id": "v9-calibration-0181",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Apply Badger trolley's procedure using a semantic factor of 19 instead of the saved factor."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-19",
+      "id": "v9-calibration-0182",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Explain why the stored procedure for Cobalt press was selected."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-19",
+      "id": "v9-calibration-0183",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Explain why the stored procedure for Canopy lamp was selected."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-20",
+      "id": "v9-calibration-0184",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return a confidence interval for the semantic factor of Heron crate."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-20",
+      "id": "v9-calibration-0185",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Return a confidence interval for the semantic factor of Orchard tray."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-21",
+      "id": "v9-calibration-0186",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Infer the missing observation halfway through the history of Kestrel pallet."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-21",
+      "id": "v9-calibration-0187",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Infer the missing observation halfway through the history of Fern chamber."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-22",
+      "id": "v9-calibration-0188",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Add the newest value of Otter dock to every value in its historical record."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-22",
+      "id": "v9-calibration-0189",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Add the newest value of Moss panel to every value in its historical record."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-23",
+      "id": "v9-calibration-0190",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Show the number of UTF-8 bytes in the semantic label of Badger trolley."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-en-23",
+      "id": "v9-calibration-0191",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Show the number of UTF-8 bytes in the semantic label of Copper lathe."
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-0",
+      "id": "v9-calibration-0192",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "计算冠层灯全部已存观测的中位数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-0",
+      "id": "v9-calibration-0193",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "计算青铜夹具全部已存观测的中位数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-1",
+      "id": "v9-calibration-0194",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "求果园盘自2025-09-03以来的百分比增长。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-1",
+      "id": "v9-calibration-0195",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "求铁主轴自2025-09-03以来的百分比增长。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-2",
+      "id": "v9-calibration-0196",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "使用蕨室的配方，但把输入改成新的27。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-2",
+      "id": "v9-calibration-0197",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "使用钴压机的配方，但把输入改成新的27。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-3",
+      "id": "v9-calibration-0198",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "只返回苔板已存语义因子的平方根。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-3",
+      "id": "v9-calibration-0199",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "只返回鹭箱已存语义因子的平方根。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-4",
+      "id": "v9-calibration-0200",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "预测铜车床接下来会记录的事件值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-4",
+      "id": "v9-calibration-0201",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "预测隼托盘接下来会记录的事件值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-5",
+      "id": "v9-calibration-0202",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把青铜夹具保存的偏置改写成零。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-5",
+      "id": "v9-calibration-0203",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把獭码头保存的偏置改写成零。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-6",
+      "id": "v9-calibration-0204",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "解释铁主轴最新变化的物理原因。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-6",
+      "id": "v9-calibration-0205",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "解释獾推车最新变化的物理原因。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-7",
+      "id": "v9-calibration-0206",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查找钴压机历史上记录过的最小值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-7",
+      "id": "v9-calibration-0207",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查找冠层灯历史上记录过的最小值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-8",
+      "id": "v9-calibration-0208",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "递归运行鹭箱的保存过程十遍。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-8",
+      "id": "v9-calibration-0209",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "递归运行果园盘的保存过程十遍。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-9",
+      "id": "v9-calibration-0210",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给出隼托盘在2025-09-03使用的历史语义因子。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-9",
+      "id": "v9-calibration-0211",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给出蕨室在2025-09-03使用的历史语义因子。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-10",
+      "id": "v9-calibration-0212",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "统计獭码头被调用执行过程的次数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-10",
+      "id": "v9-calibration-0213",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "统计苔板被调用执行过程的次数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-11",
+      "id": "v9-calibration-0214",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "根据獾推车历史推断采样频率。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-11",
+      "id": "v9-calibration-0215",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "根据铜车床历史推断采样频率。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-12",
+      "id": "v9-calibration-0216",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "将冠层灯的标签翻译成另一种语言。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-12",
+      "id": "v9-calibration-0217",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "将青铜夹具的标签翻译成另一种语言。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-13",
+      "id": "v9-calibration-0218",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "删除果园盘最新保存的原始观测。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-13",
+      "id": "v9-calibration-0219",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "删除铁主轴最新保存的原始观测。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-14",
+      "id": "v9-calibration-0220",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "为蕨室发明新算法并替换它的程序。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-14",
+      "id": "v9-calibration-0221",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "为钴压机发明新算法并替换它的程序。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-15",
+      "id": "v9-calibration-0222",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "用苔板最新读数除以2025-09-03基线。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-15",
+      "id": "v9-calibration-0223",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "用鹭箱最新读数除以2025-09-03基线。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-16",
+      "id": "v9-calibration-0224",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把铜车床记住的观测按升序排列。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-16",
+      "id": "v9-calibration-0225",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把隼托盘记住的观测按升序排列。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-17",
+      "id": "v9-calibration-0226",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "估算青铜夹具观测序列的方差。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-17",
+      "id": "v9-calibration-0227",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "估算獭码头观测序列的方差。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-06",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-18",
+      "id": "v9-calibration-0228",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "运行铁主轴过程，但用19替换原有语义因子。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-18",
+      "id": "v9-calibration-0229",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "运行獾推车过程，但用19替换原有语义因子。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-07",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-19",
+      "id": "v9-calibration-0230",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "解释为何给钴压机选择了这个过程。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-19",
+      "id": "v9-calibration-0231",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "解释为何给冠层灯选择了这个过程。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-08",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-20",
+      "id": "v9-calibration-0232",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "提供鹭箱语义因子的置信区间。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-20",
+      "id": "v9-calibration-0233",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "提供果园盘语义因子的置信区间。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-09",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-21",
+      "id": "v9-calibration-0234",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "推断隼托盘历史中点缺失的观测值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-21",
+      "id": "v9-calibration-0235",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "推断蕨室历史中点缺失的观测值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-10",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-22",
+      "id": "v9-calibration-0236",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把獭码头最新值分别加到每条历史记录上。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-22",
+      "id": "v9-calibration-0237",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "把苔板最新值分别加到每条历史记录上。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-11",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-23",
+      "id": "v9-calibration-0238",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给出獾推车语义标签所占的UTF-8字节数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unsupported",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unsupported-zh-23",
+      "id": "v9-calibration-0239",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给出铜车床语义标签所占的UTF-8字节数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-0",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-en-0",
+      "id": "v9-calibration-0240",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Read the most recently logged raw number for Unlisted calibration unit 0."
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-1",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-en-1",
+      "id": "v9-calibration-0241",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Fetch the present observation stored under Unlisted calibration unit 1."
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-2",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-en-2",
+      "id": "v9-calibration-0242",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Which value closes the event log for Unlisted calibration unit 2?"
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-3",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-en-3",
+      "id": "v9-calibration-0243",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Give me the last observed sample of Unlisted calibration unit 3, unchanged."
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-4",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-en-4",
+      "id": "v9-calibration-0244",
+      "language": "en",
+      "since": 1756857600,
+      "text": "For Unlisted calibration unit 4, return its newest saved measurement only."
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-5",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-en-5",
+      "id": "v9-calibration-0245",
+      "language": "en",
+      "since": 1756857600,
+      "text": "I need the current raw datum already remembered for Unlisted calibration unit 5."
+    },
+    {
+      "at": 1788220800,
+      "category": "ambiguous_alias",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-ambiguous-en-0",
+      "id": "v9-calibration-0246",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Read the most recently logged raw number for Shared calibration channel."
+    },
+    {
+      "at": 1788220800,
+      "category": "ambiguous_alias",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-ambiguous-en-1",
+      "id": "v9-calibration-0247",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Fetch the present observation stored under Shared calibration channel."
+    },
+    {
+      "at": 1788220800,
+      "category": "ambiguous_alias",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-ambiguous-en-2",
+      "id": "v9-calibration-0248",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Which value closes the event log for Shared calibration channel?"
+    },
+    {
+      "at": 1788220800,
+      "category": "ambiguous_alias",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-ambiguous-en-3",
+      "id": "v9-calibration-0249",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Give me the last observed sample of Shared calibration channel, unchanged."
+    },
+    {
+      "at": 1756861200,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-en-0",
+      "id": "v9-calibration-0250",
+      "language": "en",
+      "since": 1756857600,
+      "text": "Locate the newest raw record for Canopy lamp at or before 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-en-1",
+      "id": "v9-calibration-0251",
+      "language": "en",
+      "since": 1756864800,
+      "text": "What is the signed raw difference of Orchard tray relative to 2025-09-03?"
+    },
+    {
+      "at": 1756868400,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-en-2",
+      "id": "v9-calibration-0252",
+      "language": "en",
+      "since": 1756857600,
+      "text": "What was the last saved reading of Fern chamber when 2025-09-03 ended at midnight?"
+    },
+    {
+      "at": 1788220800,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-en-3",
+      "id": "v9-calibration-0253",
+      "language": "en",
+      "since": 1756872000,
+      "text": "Measure the absolute-unit increase or decrease of Moss panel since 2025-09-03."
+    },
+    {
+      "at": 1756875600,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-en-4",
+      "id": "v9-calibration-0254",
+      "language": "en",
+      "since": 1756857600,
+      "text": "At 2025-09-03, what number would the observation register for Copper lathe show?"
+    },
+    {
+      "at": 1788220800,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-en-5",
+      "id": "v9-calibration-0255",
+      "language": "en",
+      "since": 1756879200,
+      "text": "Reconcile Bronze jig by taking its latest sample less the sample as of 2025-09-03."
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-0",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-zh-0",
+      "id": "v9-calibration-0256",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查一下未登记calibration单元0刚近一次落库的原始观测数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-1",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-zh-1",
+      "id": "v9-calibration-0257",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "读取未登记calibration单元1事件日志最后保存的数值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-2",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-zh-2",
+      "id": "v9-calibration-0258",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请原样取回未登记calibration单元2当前最新的测量值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-3",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-zh-3",
+      "id": "v9-calibration-0259",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "未登记calibration单元3记忆里的末次原始采样是多少？"
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-4",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-zh-4",
+      "id": "v9-calibration-0260",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "给我未登记calibration单元4最近入档的读数本身。"
+    },
+    {
+      "at": 1788220800,
+      "category": "unknown_entity",
+      "entity": "unit:v9-unknown-calibration-5",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-unknown-zh-5",
+      "id": "v9-calibration-0261",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查询未登记calibration单元5目前保存的最后一笔观测，不加工。"
+    },
+    {
+      "at": 1788220800,
+      "category": "ambiguous_alias",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-ambiguous-zh-0",
+      "id": "v9-calibration-0262",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "查一下共用calibration通道刚近一次落库的原始观测数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "ambiguous_alias",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-ambiguous-zh-1",
+      "id": "v9-calibration-0263",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "读取共用calibration通道事件日志最后保存的数值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "ambiguous_alias",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-ambiguous-zh-2",
+      "id": "v9-calibration-0264",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "请原样取回共用calibration通道当前最新的测量值。"
+    },
+    {
+      "at": 1788220800,
+      "category": "ambiguous_alias",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-ambiguous-zh-3",
+      "id": "v9-calibration-0265",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "共用calibration通道记忆里的末次原始采样是多少？"
+    },
+    {
+      "at": 1756861200,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-00",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-zh-0",
+      "id": "v9-calibration-0266",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "按2025-09-03零点为截止时刻，找冠层灯当时最后的原始记录。"
+    },
+    {
+      "at": 1788220800,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-01",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-zh-1",
+      "id": "v9-calibration-0267",
+      "language": "zh",
+      "since": 1756864800,
+      "text": "果园盘与2025-09-03基线相比增减了几个原始单位？"
+    },
+    {
+      "at": 1756868400,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-02",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-zh-2",
+      "id": "v9-calibration-0268",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "调出截至2025-09-03可见的蕨室最新观测。"
+    },
+    {
+      "at": 1788220800,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-03",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-zh-3",
+      "id": "v9-calibration-0269",
+      "language": "zh",
+      "since": 1756872000,
+      "text": "用当前已存值扣掉苔板在2025-09-03时的记录值。"
+    },
+    {
+      "at": 1756875600,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-04",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-zh-4",
+      "id": "v9-calibration-0270",
+      "language": "zh",
+      "since": 1756857600,
+      "text": "返回铜车床在2025-09-03零点已经存在的末次读数。"
+    },
+    {
+      "at": 1788220800,
+      "category": "time_conflict",
+      "entity": "unit:v9-calibration-05",
+      "expected_operation": null,
+      "family": "v9-evaluator-calibration-time-conflict-zh-5",
+      "id": "v9-calibration-0271",
+      "language": "zh",
+      "since": 1756879200,
+      "text": "请以最新减旧值的顺序对账青铜夹具与2025-09-03的差额。"
+    }
+  ],
+  "schema": "hepta.memory.v9.language-suite.v1",
+  "split": "calibration"
+}

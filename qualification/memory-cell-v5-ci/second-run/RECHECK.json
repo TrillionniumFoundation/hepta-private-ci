@@ -1,0 +1,278 @@
+{
+  "after": {
+    "qualification/memory-cell-v5-ci/collect_log.py": {
+      "bytes": 8855,
+      "sha256": "6ed135e71503c339ecad4cda8868966cc6d82e9ef78db54a9a078dfa3618bcc3"
+    },
+    "qualification/memory-cell-v5-ci/probe_dependency.py": {
+      "bytes": 2867,
+      "sha256": "d94b1370d201eb20fe23a28b27e17142b796ada0b432bd9a3361c5f9ef0afa39"
+    },
+    "qualification/memory-cell-v5-ci/recheck.py": {
+      "bytes": 10341,
+      "sha256": "0cb23fd72a45a90449d07b9782f07a61943077b500338270cd9e4aa2384c8511"
+    },
+    "qualification/memory-cell-v5-ci/verify.py": {
+      "bytes": 5316,
+      "sha256": "2c88095ed5bfdfcc799d1edc1bd013712d14694011d424e4cb6f8b5d81a22d98"
+    },
+    "scripts/hepta-docs.py": {
+      "bytes": 79470,
+      "sha256": "1cc685324361dddf25638edb44ac021a3d075d04c0288fbfabc1980db57c9838"
+    },
+    "scripts/test_hepta_workflow_references.py": {
+      "bytes": 5312,
+      "sha256": "5bad0a24df9379d6a81f2b64870f1dc15b19c2ae9acd93cc07f12109b8103d51"
+    }
+  },
+  "all_ast_equal": true,
+  "all_v5_files_match_prior_after": true,
+  "all_v5_files_match_prior_before": true,
+  "all_v5_files_unchanged": true,
+  "ast_sha256_after": {
+    "qualification/memory-cell-v5-ci/collect_log.py": "06269e6b84e9f02006fdf7c86124f17be95724c4661d3351baa9308117e44aca",
+    "qualification/memory-cell-v5-ci/probe_dependency.py": "32e892ec1443ab74c518eebcc81cf1318a5a3d5722dd9636931ca7649f409ff7",
+    "qualification/memory-cell-v5-ci/recheck.py": "a5e741dcbf4153e56789f928c927ad62018ffdd348ac2e32754e055b168adb7e",
+    "qualification/memory-cell-v5-ci/verify.py": "fbfdebb3a061e4d3382838cd93778aaf6e8d6a6d06400a272b88e9d48a92b2c0",
+    "scripts/hepta-docs.py": "982d8d7a9fc6b90c96c2a4f354c9d176f302c1d07a5576ec1f91165b5f096db4",
+    "scripts/test_hepta_workflow_references.py": "8a8e1ad2b7caa003a511178f3f06efc4c154664b002e391d299a3a01ba603978"
+  },
+  "ast_sha256_before": {
+    "qualification/memory-cell-v5-ci/collect_log.py": "06269e6b84e9f02006fdf7c86124f17be95724c4661d3351baa9308117e44aca",
+    "qualification/memory-cell-v5-ci/probe_dependency.py": "32e892ec1443ab74c518eebcc81cf1318a5a3d5722dd9636931ca7649f409ff7",
+    "qualification/memory-cell-v5-ci/recheck.py": "a5e741dcbf4153e56789f928c927ad62018ffdd348ac2e32754e055b168adb7e",
+    "qualification/memory-cell-v5-ci/verify.py": "fbfdebb3a061e4d3382838cd93778aaf6e8d6a6d06400a272b88e9d48a92b2c0",
+    "scripts/hepta-docs.py": "982d8d7a9fc6b90c96c2a4f354c9d176f302c1d07a5576ec1f91165b5f096db4",
+    "scripts/test_hepta_workflow_references.py": "8a8e1ad2b7caa003a511178f3f06efc4c154664b002e391d299a3a01ba603978"
+  },
+  "before": {
+    "qualification/memory-cell-v5-ci/collect_log.py": {
+      "bytes": 8702,
+      "sha256": "9f730401ffb39eb6c0201d95a66414fb671da45dde32aa1f8adef2911f1d84b0"
+    },
+    "qualification/memory-cell-v5-ci/probe_dependency.py": {
+      "bytes": 2867,
+      "sha256": "d94b1370d201eb20fe23a28b27e17142b796ada0b432bd9a3361c5f9ef0afa39"
+    },
+    "qualification/memory-cell-v5-ci/recheck.py": {
+      "bytes": 10154,
+      "sha256": "9b8cbd480fd29c9d0bee0f84a7540d5367a2ff4efe5729f4deb725673c73900a"
+    },
+    "qualification/memory-cell-v5-ci/verify.py": {
+      "bytes": 5316,
+      "sha256": "2c88095ed5bfdfcc799d1edc1bd013712d14694011d424e4cb6f8b5d81a22d98"
+    },
+    "scripts/hepta-docs.py": {
+      "bytes": 79470,
+      "sha256": "1cc685324361dddf25638edb44ac021a3d075d04c0288fbfabc1980db57c9838"
+    },
+    "scripts/test_hepta_workflow_references.py": {
+      "bytes": 5312,
+      "sha256": "5bad0a24df9379d6a81f2b64870f1dc15b19c2ae9acd93cc07f12109b8103d51"
+    }
+  },
+  "changed_paths": [
+    "qualification/memory-cell-v5-ci/collect_log.py",
+    "qualification/memory-cell-v5-ci/recheck.py"
+  ],
+  "changes_limited_to_new_helper_formatter": true,
+  "commands": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "scripts/hepta-docs.py",
+        "verify",
+        "--profile",
+        "development"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stderr": {
+        "artifact_member": "command-01.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "artifact_member": "command-01.stdout.txt",
+        "bytes": 683,
+        "sha256": "079e958668a861388c9af0daaf22c4b2cc90f112ba6d715178b3d8955aa3e934"
+      },
+      "wall_seconds": 1.7467661130000067
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "332d8156d081e22405450dd607023689f68f03e1"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stderr": {
+        "artifact_member": "command-02.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "artifact_member": "command-02.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "wall_seconds": 1.1136051350000002
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "qualification/memory-cell-v5-ci/recheck.py",
+        "qualification/memory-cell-v5-ci/collect_log.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stderr": {
+        "artifact_member": "command-03.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "artifact_member": "command-03.stdout.txt",
+        "bytes": 20,
+        "sha256": "96a977f329ec3c59092d40e041a019b49dcf03ca04055e177aa0ccb8c27234df"
+      },
+      "wall_seconds": 0.04155155399999444
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "scripts/hepta-docs.py",
+        "scripts/test_hepta_workflow_references.py",
+        "qualification/memory-cell-v5-ci/verify.py",
+        "qualification/memory-cell-v5-ci/probe_dependency.py",
+        "qualification/memory-cell-v5-ci/recheck.py",
+        "qualification/memory-cell-v5-ci/collect_log.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stderr": {
+        "artifact_member": "command-04.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "artifact_member": "command-04.stdout.txt",
+        "bytes": 26,
+        "sha256": "ef7d13d02214e98ca902b05257cdbe6a8e84f3b4714508efdc19766460b54209"
+      },
+      "wall_seconds": 0.013306756999980962
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "scripts/hepta-docs.py",
+        "scripts/test_hepta_workflow_references.py",
+        "qualification/memory-cell-v5-ci/verify.py",
+        "qualification/memory-cell-v5-ci/probe_dependency.py",
+        "qualification/memory-cell-v5-ci/recheck.py",
+        "qualification/memory-cell-v5-ci/collect_log.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stderr": {
+        "artifact_member": "command-05.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "artifact_member": "command-05.stdout.txt",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "wall_seconds": 0.015491666000002624
+    }
+  ],
+  "commit": "ccdb7ea7cb9c4adecf6f6607ea1570cb81ae0f78",
+  "passed": true,
+  "prior_source_bytes_and_ast_match_after": true,
+  "prior_source_bytes_and_ast_match_before": true,
+  "prior_v5_inventory": {
+    "canonical_sha256": "6abaa1d6f4418e791810932b2309217bc7b4d09d047cdf1a04a3f03929b344e2",
+    "files": 217
+  },
+  "prior_verification": {
+    "archive": "qualification/memory-cell-v5-ci/first-run/source.zip",
+    "archive_identity": {
+      "bytes": 36223,
+      "sha256": "f1435184a1b45bd95b72335a9892b15f463743b953a558786792860d998cb775"
+    },
+    "archive_sha256": "f1435184a1b45bd95b72335a9892b15f463743b953a558786792860d998cb775",
+    "commit": "f49a000e36f8aba10aa937a91d8085cacd6f0c22",
+    "member": "VERIFY.json",
+    "prior_overall_passed": false,
+    "receipt_identity": {
+      "bytes": 42370,
+      "sha256": "52412f3a81de4f80ef489ad3b173dc755dac66a21fae7153de3002b23b8078c7"
+    },
+    "run_id": 40472305177
+  },
+  "request": {
+    "bytes": 471,
+    "path": "qualification/memory-cell-v5-ci/VERIFY_REQUEST.json",
+    "sha256": "0a156cd0a7e6dcd1ab73800f83f22945da576503da60b6d5898ec7fe4a5fc7b3"
+  },
+  "reused_test_results": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "scripts/test_hepta_workflow_references.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.12627507500000235
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "test_hepta_cleanup_consumers.CleanupConsumerTests.test_exact_workflow_reference_must_exist",
+        "test_hepta_cleanup_consumers.CleanupConsumerTests.test_exact_workflow_reference_accepts_existing_file",
+        "-v"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.15191858100000388
+    }
+  ],
+  "schema": "hepta.memory.v5.ci-fix-recheck.v1",
+  "unit_tests_executed": false,
+  "v5_inventory_after": {
+    "canonical_sha256": "6abaa1d6f4418e791810932b2309217bc7b4d09d047cdf1a04a3f03929b344e2",
+    "files": 217
+  },
+  "v5_inventory_before": {
+    "canonical_sha256": "6abaa1d6f4418e791810932b2309217bc7b4d09d047cdf1a04a3f03929b344e2",
+    "files": 217
+  },
+  "workflow_run_attempt": "1",
+  "workflow_run_id": "40473598389"
+}

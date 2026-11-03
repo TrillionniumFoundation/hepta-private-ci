@@ -14,10 +14,12 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+sha3 = "=0.10.9"
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }

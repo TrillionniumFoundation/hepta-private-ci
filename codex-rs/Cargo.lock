@@ -3447,6 +3447,7 @@ name = "codex-hepta-agent-protocol"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-automation",
+ "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
  "codex-hepta-fleet",
  "serde",
@@ -3509,14 +3510,17 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek",
  "http 1.4.0",
+ "pretty_assertions",
  "serde",
  "serde_json",
  "sha2 0.10.9",
  "sqlx",
  "tempfile",
  "thiserror 2.0.18",
+ "time",
  "tokio",
  "tokio-util",
+ "unicode-normalization",
  "wiremock",
 ]
 
@@ -3651,6 +3655,7 @@ dependencies = [
 name = "codex-hepta-context-compiler"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-hepta-wire",
@@ -3755,6 +3760,8 @@ dependencies = [
  "codex-app-server-protocol",
  "codex-hepta-agentd",
  "codex-hepta-codex-adapter",
+ "codex-hepta-cognitive-types",
+ "codex-hepta-context-compiler",
  "codex-hepta-contracts",
  "codex-hepta-infer-core",
  "codex-hepta-types",
@@ -3762,6 +3769,7 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek",
  "libc",
+ "pretty_assertions",
  "rustix 1.1.4",
  "serde",
  "serde_json",
@@ -4025,11 +4033,13 @@ dependencies = [
 name = "codex-hepta-neuron"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-cognitive-types",
  "codex-hepta-infer-core",
  "codex-hepta-types",
  "pretty_assertions",
  "serde",
  "serde_json",
+ "sha3",
 ]
 
 [[package]]

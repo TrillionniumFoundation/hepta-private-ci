@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.memory.adapter-study.v1",
+  "scope": "Authored inventory operations with 8 entities, 8 four-op workflows, arbitrary 4-bit facts, finite typed outputs and disjoint held wording/pair combinations. No naturalistic or universal-memory claim.",
+  "seeds": [
+    731,
+    732,
+    733
+  ],
+  "encoder": {
+    "repo": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+    "native_batch": 1,
+    "frozen": true
+  },
+  "model": {
+    "dimension": 384,
+    "rank": 4,
+    "memory_steps": 1200,
+    "structure_steps": 600,
+    "merge_steps": 600,
+    "router_steps": 800,
+    "joint_steps": 1200,
+    "batch_size": 32,
+    "lr": 0.01,
+    "torch_threads": 1
+  },
+  "selection": "No tuning on held expressions or outcomes. Router confidence selected from [0.4,0.5,0.6,0.7,0.8,0.9] on calibration: require zero unknown acceptances then maximize correct known acceptance; ties prefer higher threshold. If none qualify, reject all. Dynamic split uses only current training gradients and deterministic two-means; calibration must show strict gain over same-budget rank expansion and static experts to admit. Split admission also requires canonical-address accuracy at least as high as both controls. Merge requires no regression on both direct-expression calibration and canonical reads. These are candidate gates; graph/runtime superiority is assessed separately.",
+  "comparators": [
+    "learned/parameter",
+    "deterministic/parameter",
+    "oracle/parameter",
+    "learned/retrieval",
+    "deterministic/retrieval",
+    "oracle/retrieval",
+    "zero/oracle",
+    "headonly/oracle",
+    "joint/oracle"
+  ],
+  "comparator_contract": "deterministic/retrieval is also the same-information static planner: it constructs the fixed typed event-policy-program plan from the same registered records and runs the shared interpreter; this alias is not an additional independent arm. oracle/retrieval is a typed-address upper bound. headonly removes the residual adapter while retaining the trained head. joint is evaluated on compose only, has the same 21544 parameters as semantic+skill combined and equal per-task target exposure, with half objective weight for each task; separate cells process twice as many input feature presentations. No arm claims to be a general-purpose LLM planner.",
+  "structure": "After an authored prefix policy change adds 3 modulo 16 to the first four reserves, compare two private rank-4 adapters with one rank-8 adapter, the same frozen shared head and exactly equal trainable parameter count. Dynamic routes are gradient-derived, static routes alternate entity index. All choices are prefix-only. Same 1200 total minibatch update steps: child steps allocated proportional to partition row count, matching every record's expected exposure to the single rank-8 arm. Head setup and selector cost charged. Merge is behavior distillation, accepted only with no calibration regression; rejected candidates remain evidence. Sleep evicts parameters, wake loads identical checkpoint.",
+  "maintenance": "Correct first entity, measure corrected and untouched facts before/after replay. Delete second entity, rebuild from identical original initialization on retained sources; compare against independently repeated clean rebuild. Revocation denies reads before any model access. Do not claim general machine unlearning from a finite counterfactual check.",
+  "causality": "Freeze protocol and source/corpus digests before formal training. Held wording is independently authored; trainer never loads held file. Training process exits before evaluator opens held file and fresh owner loads artifacts. Reader receives query text/embedding and source authorizations, never expected values. Evaluator alone has ground truth. Fresh structure reader opens only a value-free structure-routing manifest and canonical vectors, and rereads saved child/merge/rank8 parameters; evaluator alone scores their values.",
+  "cost": "Preserve full wall/CPU/RSS, all candidate fits, optimizer/sample counts, base encoder bytes, all adapter/head/source/exception/routing/checkpoint bytes, replay/correction/delete/merge/search and reader process costs. Per-stage wall sums are not a parallel runtime metric. Shared head arithmetic count and physically duplicated serialization both reported. No claim of full-system superiority when baseline runtime is unavailable.",
+  "execution": "New adapters run in an explicit Python research owner with SQLite event/provenance state and bounded stop; native Hepta V9 tests separately verify existing byte/catalog profiles. These are separate integration levels, not one silently substituted production implementation.",
+  "publication_authority": false
+}

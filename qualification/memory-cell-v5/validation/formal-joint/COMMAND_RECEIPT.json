@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "evaluate_joint.py",
+    "--routers",
+    "ROUTERS.json",
+    "--assets",
+    "assets",
+    "--held",
+    "held/queries.en.json",
+    "--output",
+    "results/formal/joint",
+    "--freeze",
+    "FREEZE.json"
+  ],
+  "cwd": "/workspace/scratch/3df12f9191cd/hepta-memory-v5-targeted",
+  "source_commit": "21da14adf9910fa5218696f6451f517fa0ef46a7",
+  "selection_commit_verified_before_execution": "3426c50f2d867335b75c866320f4afb350dc7868",
+  "start_unix_ns": 1793087248942556415,
+  "freeze_sha256": "9e10b723c13a0243aa8d652a192809f73b8c4dc8e7ae41959625383e4ec80afa",
+  "selection_seal_sha256": "6c2ef25c56a3a4562bcbab00b0e408ebe8f13d24e577b3792c17d8abfcddbf3e",
+  "exit_code": 0,
+  "wall_seconds": 91.88665345699701,
+  "child_user_cpu_seconds": 85.148412,
+  "child_system_cpu_seconds": 6.708743,
+  "finish_unix_ns": 1793087340829485226
+}
