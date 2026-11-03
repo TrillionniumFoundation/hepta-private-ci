@@ -72,6 +72,7 @@ def committed_closure(commit, contract):
         "semantic_preflight.py",
         "bootstrap.py",
         "postseal/review.py",
+        "postseal/normal_exit.py",
         "capacity_amendment.py",
         "capacity_backpressure.py",
         "prepare_inputs.py",

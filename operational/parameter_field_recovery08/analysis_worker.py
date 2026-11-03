@@ -209,4 +209,11 @@ def run(module, original_flags, config):
     c.need(item["sha256"] == digest, "Actual report input pin differs")
     spec = c.bound(item)
     with installed(spec, config):
-        return module.main()
+        try:
+            return module.main()
+        except SystemExit as status:
+            # The original CLI exits normally from inside main(). Convert that
+            # result before the enclosing owned-child controller records errors.
+            if status.code is None or (type(status.code) is int and status.code == 0):
+                return 0
+            raise

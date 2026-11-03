@@ -1,0 +1,58 @@
+name: Parameter field postseal normal exit
+
+on:
+  push:
+    branches:
+      - dot/parameter-field-postseal-normal-exit-20261103
+    paths:
+      - operational/parameter_field_recovery08/**
+      - .github/workflows/parameter-field-postseal-normal-exit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  normal-exit-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            operational/parameter_field_recovery06
+            operational/parameter_field_recovery08
+      - name: Verify actual child ownership and strict legacy interpretation
+        shell: bash
+        run: |
+          set -o pipefail
+          git rev-parse HEAD > normal-exit-source.txt
+          python3 -B -m unittest \
+            operational.parameter_field_recovery08.test_normal_exit \
+            operational.parameter_field_recovery06.test_owned_children \
+            operational.parameter_field_recovery08.test_postseal.PostsealTests.test_wait4_requires_successful_owned_closure_and_exact_argv \
+            -v 2>&1 | tee normal-exit-tests.log
+      - name: Replay original immutable accounting without scientific decoding
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13070691262/zip > original-operations.zip
+          test ! -e /work/execution08
+          sudo mkdir -p /work
+          sudo chown "$(id -u):$(id -g)" /work
+          python3 -B operational/parameter_field_recovery08/postseal/replay_accounting.py \
+            --archive original-operations.zip --output accounting-replay.json
+      - name: Preserve actual result and source identity
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: parameter-field-normal-exit-${{ github.sha }}
+          path: |
+            normal-exit-source.txt
+            normal-exit-tests.log
+            accounting-replay.json
+          if-no-files-found: error
+          retention-days: 30
