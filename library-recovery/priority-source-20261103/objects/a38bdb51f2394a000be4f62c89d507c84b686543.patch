@@ -1,0 +1,1717 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index cd6650b68a..331c683ecc 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -3474,6 +3474,7 @@ dependencies = [
+  "codex-features",
+  "codex-hepta-agent-protocol",
+  "codex-hepta-authbus",
++ "codex-hepta-authbus-p1-3-qualification",
+  "codex-hepta-automation",
+  "codex-hepta-bellman-operator",
+  "codex-hepta-codex-adapter",
+@@ -3533,9 +3534,12 @@ version = "0.0.0"
+ dependencies = [
+  "codex-hepta-types",
+  "ed25519-dalek",
++ "nix 0.30.1",
+  "pretty_assertions",
++ "rustix 1.1.4",
+  "serde",
+  "serde_json",
++ "sha2 0.10.9",
+  "sqlx",
+  "tempfile",
+  "thiserror 2.0.18",
+@@ -3548,6 +3552,10 @@ version = "0.0.0"
+ dependencies = [
+  "codex-hepta-authbus",
+  "codex-hepta-types",
++ "ed25519-dalek",
++ "serde_json",
++ "tempfile",
++ "tokio",
+ ]
+ 
+ [[package]]
+@@ -3579,6 +3587,7 @@ version = "0.0.0"
+ dependencies = [
+  "codex-hepta-authbus",
+  "codex-hepta-contracts",
++ "codex-hepta-operations",
+  "codex-hepta-types",
+  "codex-http-client",
+  "ed25519-dalek",
+@@ -3701,6 +3710,7 @@ name = "codex-hepta-evidence"
+ version = "0.0.0"
+ dependencies = [
+  "codex-hepta-authbus",
++ "codex-hepta-authbus-p1-3-qualification",
+  "codex-hepta-contracts",
+  "codex-hepta-types",
+  "codex-state",
+diff --git a/codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs b/codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs
+index d10a674f7b..c466200bbd 100644
+--- a/codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs
++++ b/codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs
+@@ -17,6 +17,7 @@ use codex_hepta_authbus::SignedMessageClaims;
+ use codex_hepta_authbus::SignedSettlementEvidence;
+ use codex_hepta_authbus::SignedTrustedTimeAttestation;
+ use codex_hepta_authbus::TrustedTimeAttestationClaims;
++use codex_hepta_authbus::bootstrap_retryable;
+ use ed25519_dalek::Signer;
+ use ed25519_dalek::SigningKey;
+ use tempfile::TempDir;
+@@ -207,10 +208,9 @@ fn persisted_registration_rejects_forged_revoked_and_epoch_substitution() {
+ #[tokio::test]
+ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matrix() {
+     let (_root, database, checkpoint) = private_paths();
+-    let host =
+-        AuthBusAuthorityHost::bootstrap(&database, checkpoint.clone(), "qualification-owner")
+-            .await
+-            .expect("bootstrap authority host");
++    let host = bootstrap_retryable(&database, checkpoint.clone(), "qualification-owner")
++        .await
++        .expect("bootstrap authority host");
+     assert!(matches!(
+         AuthBusAuthorityHost::open(&database, checkpoint.clone(), "qualification-owner").await,
+         Err(AuthBusAuthorityError::OwnerAlreadyActive)
+diff --git a/codex-rs/hepta-authbus/src/archive_capacity.rs b/codex-rs/hepta-authbus/src/archive_capacity.rs
+index e55dacef10..9bff98a47f 100644
+--- a/codex-rs/hepta-authbus/src/archive_capacity.rs
++++ b/codex-rs/hepta-authbus/src/archive_capacity.rs
+@@ -177,7 +177,8 @@ impl AuthBusAuthorityStore {
+             "negative reservation archive row count",
+         )?;
+         let estimated_reservation_bytes = nonnegative_i64(
+-            row.try_get::<i64, _>("reservation_bytes").map_err(storage)?,
++            row.try_get::<i64, _>("reservation_bytes")
++                .map_err(storage)?,
+             "negative reservation archive byte count",
+         )?;
+         let oldest_archived_at_ms = row
+@@ -268,8 +269,10 @@ mod tests {
+             alert.kind == AuthBusArchiveAlertKind::ReservationRows
+                 && alert.severity == AuthBusArchiveAlertSeverity::Critical
+         }));
+-        assert!(alerts
+-            .iter()
+-            .any(|alert| alert.kind == AuthBusArchiveAlertKind::CompactionReviewDue));
++        assert!(
++            alerts
++                .iter()
++                .any(|alert| alert.kind == AuthBusArchiveAlertKind::CompactionReviewDue)
++        );
+     }
+ }
+diff --git a/codex-rs/hepta-authbus/src/authority_schema.rs b/codex-rs/hepta-authbus/src/authority_schema.rs
+index c71abb8589..f66bdca779 100644
+--- a/codex-rs/hepta-authbus/src/authority_schema.rs
++++ b/codex-rs/hepta-authbus/src/authority_schema.rs
+@@ -15,6 +15,10 @@ pub(crate) async fn verify_schema(
+     pool: &SqlitePool,
+     migrator: &Migrator,
+ ) -> Result<(), AuthBusAuthorityError> {
++    #[expect(
++        clippy::disallowed_methods,
++        reason = "isolated single-connection in-memory migration oracle contains no authority rows and never opens a persistent database"
++    )]
+     let reference = SqlitePoolOptions::new()
+         .max_connections(1)
+         .connect("sqlite::memory:")
+diff --git a/codex-rs/hepta-authbus/src/authority_schema_tests.rs b/codex-rs/hepta-authbus/src/authority_schema_tests.rs
+index 7c18a5a50c..1bf678671d 100644
+--- a/codex-rs/hepta-authbus/src/authority_schema_tests.rs
++++ b/codex-rs/hepta-authbus/src/authority_schema_tests.rs
+@@ -19,28 +19,32 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
+         for replace in [false, true] {
+             let path = root.path().join(format!("{name}-{replace}.sqlite"));
+             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
++            // Keep dependent DDL on one connection so a pooled connection's
++            // cached schema cannot mistake the dropped trigger for a live one.
++            let mut connection = store.pool.acquire().await.unwrap();
+             // These identifiers come from the freshly migrated reference.
+             // Quote and escape them before forming identifier-only DDL; no
+             // data or untrusted SQL fragments are interpolated.
+             let quoted_name = format!("\"{}\"", name.replace('"', "\"\""));
+             let quoted_table = format!("\"{}\"", table.replace('"', "\"\""));
+             sqlx::query(sqlx::AssertSqlSafe(format!("DROP TRIGGER {quoted_name}")))
+-                .execute(&store.pool)
++                .execute(&mut *connection)
+                 .await
+                 .unwrap();
+             if replace {
+                 sqlx::query(sqlx::AssertSqlSafe(format!(
+                     "CREATE TRIGGER {quoted_name} AFTER UPDATE ON {quoted_table} BEGIN SELECT 1; END"
+                 )))
+-                .execute(&store.pool)
++                .execute(&mut *connection)
+                 .await
+                 .unwrap();
+             }
+             let check: String = sqlx::query_scalar("PRAGMA quick_check")
+-                .fetch_one(&store.pool)
++                .fetch_one(&mut *connection)
+                 .await
+                 .unwrap();
+             assert_eq!(check, "ok");
++            drop(connection);
+             store.pool.close().await;
+             assert!(
+                 matches!(
+diff --git a/codex-rs/hepta-authbus/src/authority_store.rs b/codex-rs/hepta-authbus/src/authority_store.rs
+index 103ff6561d..29f05ca0f5 100644
+--- a/codex-rs/hepta-authbus/src/authority_store.rs
++++ b/codex-rs/hepta-authbus/src/authority_store.rs
+@@ -3,6 +3,7 @@ use std::time::Duration;
+ 
+ use codex_hepta_types::Digest32;
+ use codex_hepta_types::StableId;
++use sqlx::ConnectOptions;
+ use sqlx::Row;
+ use sqlx::Sqlite;
+ use sqlx::SqlitePool;
+@@ -35,7 +36,12 @@ impl AuthBusAuthorityStore {
+             .journal_mode(SqliteJournalMode::Wal)
+             .synchronous(SqliteSynchronous::Full)
+             .foreign_keys(true)
+-            .busy_timeout(Duration::from_secs(5));
++            .busy_timeout(Duration::from_secs(5))
++            .disable_statement_logging();
++        #[expect(
++            clippy::disallowed_methods,
++            reason = "independent AuthBus authority owner: fenced path, FULL/WAL, foreign keys, bounded pool; no rebuildable Codex state recovery"
++        )]
+         let pool = SqlitePoolOptions::new()
+             .max_connections(5)
+             .connect_with(options)
+@@ -79,6 +85,7 @@ impl AuthBusAuthorityStore {
+         Ok(Self { pool })
+     }
+ 
++    #[cfg(test)]
+     pub(crate) async fn observe_time(
+         &self,
+         time: TrustedTimeSample,
+@@ -527,7 +534,7 @@ pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
+ fn is_unique_violation(error: &sqlx::Error) -> bool {
+     error
+         .as_database_error()
+-        .is_some_and(|database| database.is_unique_violation())
++        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+ }
+ 
+ pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {
+diff --git a/codex-rs/hepta-authbus/src/authority_store_tests.rs b/codex-rs/hepta-authbus/src/authority_store_tests.rs
+index 568b2f9989..22f1eaa787 100644
+--- a/codex-rs/hepta-authbus/src/authority_store_tests.rs
++++ b/codex-rs/hepta-authbus/src/authority_store_tests.rs
+@@ -118,7 +118,7 @@ async fn authorization_is_revision_bound_and_explicit_deny_grants_no_authority()
+ }
+ 
+ #[tokio::test]
+-async fn trusted_time_floor_survives_reopen_and_failed_authorization() {
++async fn separately_observed_time_floor_survives_reopen_and_failed_authorization() {
+     let root = TempDir::new().expect("temp dir");
+     let path = root.path().join("authbus.sqlite");
+     let store = AuthBusAuthorityStore::open(&path)
+@@ -136,7 +136,7 @@ async fn trusted_time_floor_survives_reopen_and_failed_authorization() {
+         .expect("reopen authority store");
+     assert_eq!(
+         store.last_trusted_time().await.expect("read time"),
+-        Some(first)
++        Some(first.clone())
+     );
+     let missing = sample(11, 2_100);
+     assert!(matches!(
+@@ -151,6 +151,16 @@ async fn trusted_time_floor_survives_reopen_and_failed_authorization() {
+             .await,
+         Err(AuthBusAuthorityError::PolicyMissing)
+     ));
++    // A rejected mutation rolls back its own uncommitted time observation.
++    assert_eq!(
++        store.last_trusted_time().await.expect("read time"),
++        Some(first)
++    );
++    // An independently accepted observation is a separate committed mutation.
++    store
++        .observe_time(missing.clone())
++        .await
++        .expect("observe time separately");
+     assert_eq!(
+         store.last_trusted_time().await.expect("read time"),
+         Some(missing)
+diff --git a/codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs b/codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs
+index 161ff950b4..f33ca43ba3 100644
+--- a/codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs
++++ b/codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs
+@@ -28,6 +28,7 @@ use serde::Deserialize;
+ use serde::Serialize;
+ use sha2::Digest as ShaDigest;
+ use sha2::Sha256;
++use sqlx::ConnectOptions;
+ use sqlx::Row;
+ use sqlx::sqlite::SqliteConnectOptions;
+ use sqlx::sqlite::SqliteJournalMode;
+@@ -393,7 +394,12 @@ async fn checkpoint_sqlite(database: &Path) -> Result<()> {
+         .journal_mode(SqliteJournalMode::Wal)
+         .synchronous(SqliteSynchronous::Full)
+         .foreign_keys(true)
+-        .busy_timeout(Duration::from_secs(30));
++        .busy_timeout(Duration::from_secs(30))
++        .disable_statement_logging();
++    #[expect(
++        clippy::disallowed_methods,
++        reason = "offline backup retains the live AuthBus owner fence; this non-creating FULL/WAL single-connection pool only checks and checkpoints that database"
++    )]
+     let pool = SqlitePoolOptions::new()
+         .max_connections(1)
+         .connect_with(connect)
+diff --git a/codex-rs/hepta-authbus/src/bootstrap.rs b/codex-rs/hepta-authbus/src/bootstrap.rs
+index ea16b2bc94..f5781c3e54 100644
+--- a/codex-rs/hepta-authbus/src/bootstrap.rs
++++ b/codex-rs/hepta-authbus/src/bootstrap.rs
+@@ -10,6 +10,7 @@ use std::path::Path;
+ use std::path::PathBuf;
+ use std::time::Duration;
+ 
++use sqlx::ConnectOptions;
+ use sqlx::Row;
+ use sqlx::sqlite::SqliteConnectOptions;
+ use sqlx::sqlite::SqlitePoolOptions;
+@@ -20,15 +21,15 @@ use crate::AuthBusAuthorityStore;
+ use crate::owner_fence::OwnerFence;
+ 
+ const EXPECTED_AUTHBUS_MIGRATIONS: i64 = 7;
+-const AUTHORITATIVE_TABLES: &[&str] = &[
+-    "authbus_trusted_time",
+-    "authbus_policy",
+-    "authbus_policy_history",
+-    "authbus_policy_archive",
+-    "authbus_quota_registry",
+-    "authbus_quota_reservation",
+-    "authbus_quota_reservation_archive",
+-    "authbus_issuer_registry",
++const AUTHORITATIVE_ROW_COUNT_QUERIES: &[&str] = &[
++    "SELECT COUNT(*) FROM authbus_trusted_time",
++    "SELECT COUNT(*) FROM authbus_policy",
++    "SELECT COUNT(*) FROM authbus_policy_history",
++    "SELECT COUNT(*) FROM authbus_policy_archive",
++    "SELECT COUNT(*) FROM authbus_quota_registry",
++    "SELECT COUNT(*) FROM authbus_quota_reservation",
++    "SELECT COUNT(*) FROM authbus_quota_reservation_archive",
++    "SELECT COUNT(*) FROM authbus_issuer_registry",
+ ];
+ 
+ /// Open an already complete pair, create a new pair, or safely retry a failed
+@@ -74,7 +75,12 @@ async fn remove_pristine_database_orphan(
+         .create_if_missing(false)
+         .read_only(true)
+         .foreign_keys(true)
+-        .busy_timeout(Duration::from_secs(5));
++        .busy_timeout(Duration::from_secs(5))
++        .disable_statement_logging();
++    #[expect(
++        clippy::disallowed_methods,
++        reason = "owner-fenced pristine-bootstrap inspection is read-only, non-creating and single-connection; it cannot recover authoritative state"
++    )]
+     let pool = SqlitePoolOptions::new()
+         .max_connections(1)
+         .connect_with(options)
+@@ -107,9 +113,8 @@ async fn remove_pristine_database_orphan(
+         {
+             return Err(AuthBusAuthorityError::RollbackDetected);
+         }
+-        for table in AUTHORITATIVE_TABLES {
+-            let query = format!("SELECT COUNT(*) FROM {table}");
+-            let count: i64 = sqlx::query_scalar(&query)
++        for &query in AUTHORITATIVE_ROW_COUNT_QUERIES {
++            let count: i64 = sqlx::query_scalar(query)
+                 .fetch_one(&pool)
+                 .await
+                 .map_err(storage)?;
+@@ -259,7 +264,8 @@ fn storage_io(error: std::io::Error) -> AuthBusAuthorityError {
+     AuthBusAuthorityError::Storage(error.to_string())
+ }
+ 
+-#[cfg(all(test, unix))]
++#[cfg(test)]
++#[cfg(unix)]
+ mod tests {
+     use std::os::unix::fs::PermissionsExt;
+ 
+diff --git a/codex-rs/hepta-authbus/src/host.rs b/codex-rs/hepta-authbus/src/host.rs
+index ea1a146660..d76b15c2fe 100644
+--- a/codex-rs/hepta-authbus/src/host.rs
++++ b/codex-rs/hepta-authbus/src/host.rs
+@@ -192,8 +192,12 @@ impl AuthBusAuthorityHost {
+ 
+     /// Reconcile the independently retained checkpoint while excluding every
+     /// mutation and safety-relevant read from the authority frontier.
++    #[expect(
++        clippy::await_holding_invalid_type,
++        reason = "checkpoint reconciliation must exclude concurrent authority mutations and reads through SQLite and external checkpoint awaits"
++    )]
+     pub(crate) async fn sync_checkpoint(&self) -> Result<(), AuthBusAuthorityError> {
+-        let _guard = self.mutation_gate.lock().await;
++        let _serialization_guard = self.mutation_gate.lock().await;
+         self.sync_checkpoint_locked().await
+     }
+ 
+@@ -215,12 +219,16 @@ impl AuthBusAuthorityHost {
+         result
+     }
+ 
++    #[expect(
++        clippy::await_holding_invalid_type,
++        reason = "authority mutation and its before/after checkpoint publication must remain one serialized host operation"
++    )]
+     async fn mutate<T, F>(&self, operation: F) -> Result<T, AuthBusAuthorityError>
+     where
+         F: Future<Output = Result<T, AuthBusAuthorityError>>,
+     {
+         let started = Instant::now();
+-        let _guard = self.mutation_gate.lock().await;
++        let _serialization_guard = self.mutation_gate.lock().await;
+         let result = match self.sync_checkpoint_locked().await {
+             Ok(()) => self.finish_locked(operation.await).await,
+             Err(error) => Err(AuthBusAuthorityError::AuthorityUseBlocked(
+@@ -231,11 +239,15 @@ impl AuthBusAuthorityHost {
+         result
+     }
+ 
++    #[expect(
++        clippy::await_holding_invalid_type,
++        reason = "authoritative reads must remain excluded from concurrent mutation after checkpoint reconciliation"
++    )]
+     async fn read_authoritative<T, F>(&self, operation: F) -> Result<T, AuthBusAuthorityError>
+     where
+         F: Future<Output = Result<T, AuthBusAuthorityError>>,
+     {
+-        let _guard = self.mutation_gate.lock().await;
++        let _serialization_guard = self.mutation_gate.lock().await;
+         if let Err(error) = self.sync_checkpoint_locked().await {
+             self.metrics.record_authority_use_block();
+             return Err(AuthBusAuthorityError::AuthorityUseBlocked(
+@@ -270,13 +282,17 @@ impl AuthBusAuthorityHost {
+         }
+     }
+ 
++    #[expect(
++        clippy::await_holding_invalid_type,
++        reason = "bounded restart reconciliation and expiry sweep must remain serialized through checkpoint publication"
++    )]
+     pub(crate) async fn run_maintenance_mutations(
+         &self,
+         time: TrustedTimeSample,
+         limit: u32,
+     ) -> Result<(bool, ExpiredReservationSweep), AuthBusAuthorityError> {
+         let started = Instant::now();
+-        let _guard = self.mutation_gate.lock().await;
++        let _serialization_guard = self.mutation_gate.lock().await;
+         let result = match self.sync_checkpoint_locked().await {
+             Err(error) => Err(AuthBusAuthorityError::AuthorityUseBlocked(
+                 error.to_string(),
+@@ -928,6 +944,7 @@ fn write_private_atomic(
+     Err(AuthBusAuthorityError::UnsafeCheckpoint)
+ }
+ 
+-#[cfg(all(test, unix))]
++#[cfg(test)]
++#[cfg(unix)]
+ #[path = "host_tests.rs"]
+ mod tests;
+diff --git a/codex-rs/hepta-authbus/src/host_tests.rs b/codex-rs/hepta-authbus/src/host_tests.rs
+index 1270c5256f..123469d0a4 100644
+--- a/codex-rs/hepta-authbus/src/host_tests.rs
++++ b/codex-rs/hepta-authbus/src/host_tests.rs
+@@ -199,6 +199,10 @@ async fn worker_retains_host_and_owner_fence_until_worker_drop() {
+ }
+ 
+ #[tokio::test]
++#[expect(
++    clippy::await_holding_invalid_type,
++    reason = "this test serializes the process-global checkpoint failpoint through asynchronous fixture operations"
++)]
+ async fn checkpoint_stage_failures_are_classified_and_recoverable() {
+     let _serial = CHECKPOINT_TEST_LOCK
+         .get_or_init(|| tokio::sync::Mutex::new(()))
+@@ -253,6 +257,10 @@ async fn checkpoint_stage_failures_are_classified_and_recoverable() {
+ }
+ 
+ #[tokio::test]
++#[expect(
++    clippy::await_holding_invalid_type,
++    reason = "this test serializes the process-global checkpoint failpoint through asynchronous fixture operations"
++)]
+ async fn every_issuer_lifecycle_mutation_has_the_same_checkpoint_failure_contract() {
+     let _serial = CHECKPOINT_TEST_LOCK
+         .get_or_init(|| tokio::sync::Mutex::new(()))
+diff --git a/codex-rs/hepta-authbus/src/operations.rs b/codex-rs/hepta-authbus/src/operations.rs
+index 92101b3619..63f92854bb 100644
+--- a/codex-rs/hepta-authbus/src/operations.rs
++++ b/codex-rs/hepta-authbus/src/operations.rs
+@@ -5,7 +5,6 @@ use std::time::Duration;
+ 
+ use codex_hepta_types::StableId;
+ use serde::Serialize;
+-use sqlx::Acquire;
+ use sqlx::Row;
+ 
+ use crate::AuthBusAuthorityError;
+@@ -266,6 +265,7 @@ pub(crate) fn record_owner_acquisition_failure(error: &AuthBusAuthorityError) {
+     }
+ }
+ 
++#[cfg(feature = "legacy-preverified-replay")]
+ pub(crate) fn record_replay_rejection() {
+     REPLAY_REJECTIONS.fetch_add(1, Ordering::Relaxed);
+ }
+diff --git a/codex-rs/hepta-authbus/src/owner_fence.rs b/codex-rs/hepta-authbus/src/owner_fence.rs
+index df2ea9df1d..e44669e630 100644
+--- a/codex-rs/hepta-authbus/src/owner_fence.rs
++++ b/codex-rs/hepta-authbus/src/owner_fence.rs
+@@ -320,7 +320,8 @@ fn storage_io(error: std::io::Error) -> AuthBusAuthorityError {
+     AuthBusAuthorityError::Storage(error.to_string())
+ }
+ 
+-#[cfg(all(test, target_os = "linux"))]
++#[cfg(test)]
++#[cfg(target_os = "linux")]
+ mod tests {
+     use std::os::unix::fs::MetadataExt;
+     use std::os::unix::fs::PermissionsExt;
+diff --git a/codex-rs/hepta-authbus/src/quota_store.rs b/codex-rs/hepta-authbus/src/quota_store.rs
+index cd017fc2ea..e5d428f137 100644
+--- a/codex-rs/hepta-authbus/src/quota_store.rs
++++ b/codex-rs/hepta-authbus/src/quota_store.rs
+@@ -66,7 +66,7 @@ impl AuthBusAuthorityStore {
+         if let Err(error) = result {
+             if error
+                 .as_database_error()
+-                .is_some_and(|database| database.is_unique_violation())
++                .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+             {
+                 return Err(AuthBusAuthorityError::AlreadyExists);
+             }
+diff --git a/codex-rs/hepta-authbus/src/trust_store.rs b/codex-rs/hepta-authbus/src/trust_store.rs
+index 265f5dfd57..93f5e1391c 100644
+--- a/codex-rs/hepta-authbus/src/trust_store.rs
++++ b/codex-rs/hepta-authbus/src/trust_store.rs
+@@ -228,7 +228,7 @@ async fn insert_issuer(
+     .map_err(|error| {
+         if error
+             .as_database_error()
+-            .is_some_and(|database| database.is_unique_violation())
++            .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+         {
+             AuthBusAuthorityError::AlreadyExists
+         } else {
+diff --git a/codex-rs/hepta-authbus/tests/frontier_integrity.rs b/codex-rs/hepta-authbus/tests/frontier_integrity.rs
+index 36ada204b3..b2708188f8 100644
+--- a/codex-rs/hepta-authbus/tests/frontier_integrity.rs
++++ b/codex-rs/hepta-authbus/tests/frontier_integrity.rs
+@@ -1,10 +1,11 @@
++#![cfg(test)]
+ #![cfg(unix)]
+ 
+ use std::os::unix::fs::PermissionsExt;
+ use std::path::PathBuf;
+ use std::time::Duration;
+ 
+-use codex_hepta_authbus::AuthBusAuthorityHost;
++use codex_hepta_authbus::bootstrap_retryable;
+ use codex_hepta_types::Digest32;
+ use sqlx::sqlite::SqliteConnectOptions;
+ use sqlx::sqlite::SqliteJournalMode;
+@@ -38,7 +39,7 @@ fn private_paths() -> Paths {
+ async fn clean_accumulator_and_dirty_clear_are_guarded_by_sqlite() {
+     let paths = private_paths();
+     let owner_id = "frontier-integrity-owner";
+-    let host = AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), owner_id)
++    let host = bootstrap_retryable(&paths.database, paths.checkpoint.clone(), owner_id)
+         .await
+         .expect("bootstrap authority owner");
+     drop(host);
+@@ -50,6 +51,10 @@ async fn clean_accumulator_and_dirty_clear_are_guarded_by_sqlite() {
+         .synchronous(SqliteSynchronous::Full)
+         .foreign_keys(true)
+         .busy_timeout(Duration::from_secs(5));
++    #[expect(
++        clippy::disallowed_methods,
++        reason = "negative fixture deliberately opens the closed authority database to attempt forbidden frontier mutations"
++    )]
+     let pool = SqlitePoolOptions::new()
+         .max_connections(1)
+         .connect_with(options)
+diff --git a/codex-rs/hepta-authbus/tests/mutation_contract.rs b/codex-rs/hepta-authbus/tests/mutation_contract.rs
+index db60db1e2e..153bc541b6 100644
+--- a/codex-rs/hepta-authbus/tests/mutation_contract.rs
++++ b/codex-rs/hepta-authbus/tests/mutation_contract.rs
+@@ -1,10 +1,10 @@
++#![cfg(test)]
+ #![cfg(all(unix, not(any(target_os = "illumos", target_os = "solaris"))))]
+ 
+ use std::os::unix::fs::PermissionsExt;
+ use std::path::PathBuf;
+ 
+ use codex_hepta_authbus::AuthBusAuthorityError;
+-use codex_hepta_authbus::AuthBusAuthorityHost;
+ use codex_hepta_authbus::AuthBusMutationDisposition;
+ use codex_hepta_authbus::IssuerPurpose;
+ use codex_hepta_authbus::IssuerSpec;
+@@ -12,6 +12,7 @@ use codex_hepta_authbus::PolicyEffect;
+ use codex_hepta_authbus::PolicySpec;
+ use codex_hepta_authbus::SignedTrustedTimeAttestation;
+ use codex_hepta_authbus::TrustedTimeAttestationClaims;
++use codex_hepta_authbus::bootstrap_retryable;
+ use codex_hepta_types::Digest32;
+ use codex_hepta_types::Generation;
+ use codex_hepta_types::StableId;
+@@ -66,7 +67,7 @@ fn signed_time(
+ #[tokio::test]
+ async fn deterministic_rejection_does_not_claim_separately_observed_time_was_rolled_back() {
+     let paths = private_paths();
+-    let host = AuthBusAuthorityHost::bootstrap(
++    let host = bootstrap_retryable(
+         &paths.database,
+         paths.checkpoint.clone(),
+         "mutation-contract-owner",
+diff --git a/codex-rs/hepta-authbus/tests/owner_lock_compat.rs b/codex-rs/hepta-authbus/tests/owner_lock_compat.rs
+index fda33cac00..b48faddf43 100644
+--- a/codex-rs/hepta-authbus/tests/owner_lock_compat.rs
++++ b/codex-rs/hepta-authbus/tests/owner_lock_compat.rs
+@@ -1,3 +1,4 @@
++#![cfg(test)]
+ #![cfg(target_os = "linux")]
+ 
+ use std::fs::OpenOptions;
+@@ -13,6 +14,7 @@ use std::time::Instant;
+ 
+ use codex_hepta_authbus::AuthBusAuthorityError;
+ use codex_hepta_authbus::AuthBusAuthorityHost;
++use codex_hepta_authbus::bootstrap_retryable;
+ use tempfile::TempDir;
+ 
+ const CHILD_TIMEOUT: Duration = Duration::from_secs(10);
+@@ -124,10 +126,9 @@ fn run_legacy_probe(paths: &Paths, marker_name: &str) -> String {
+ async fn ofd_owner_survives_unrelated_close_and_blocks_new_and_legacy_owners() {
+     let paths = private_paths();
+     let owner_id = "descriptor-lifetime-owner";
+-    let owner =
+-        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), owner_id)
+-            .await
+-            .expect("bootstrap owner");
++    let owner = bootstrap_retryable(&paths.database, paths.checkpoint.clone(), owner_id)
++        .await
++        .expect("bootstrap owner");
+ 
+     let unrelated = OpenOptions::new()
+         .read(true)
+@@ -171,8 +172,7 @@ async fn legacy_posix_owner_blocks_new_ofd_owner_during_rolling_replacement() {
+     wait_for_path(&ready);
+ 
+     let blocked =
+-        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "new-ofd-owner")
+-            .await;
++        bootstrap_retryable(&paths.database, paths.checkpoint.clone(), "new-ofd-owner").await;
+     std::fs::write(&release, b"release").expect("release legacy POSIX holder");
+     wait_for_child(child, "legacy POSIX holder");
+     assert!(matches!(
+@@ -180,7 +180,7 @@ async fn legacy_posix_owner_blocks_new_ofd_owner_during_rolling_replacement() {
+         Err(AuthBusAuthorityError::OwnerAlreadyActive)
+     ));
+ 
+-    AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "new-ofd-owner")
++    bootstrap_retryable(&paths.database, paths.checkpoint.clone(), "new-ofd-owner")
+         .await
+         .expect("new OFD owner after legacy release");
+ }
+diff --git a/codex-rs/hepta-bao-adapter/README.md b/codex-rs/hepta-bao-adapter/README.md
+index 71d0acb378..81eef11bf8 100644
+--- a/codex-rs/hepta-bao-adapter/README.md
++++ b/codex-rs/hepta-bao-adapter/README.md
+@@ -109,6 +109,17 @@ consumer. If the consumer reports failure after entry, the outcome is
+ `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
+ `lease_lifecycle.rs` now provides a durable metadata-only lifecycle owner for issue/renew/revoke intents and observations. It enforces operation-id idempotency, semantic-conflict rejection, explicit Unknown states, restart recovery and provider-observation reconciliation. It deliberately does not dispatch provider mutation APIs: the OpenBao compatibility registry still marks dynamic lease issuance/renew/revoke as a blocking partial surface, so provider-native mutation remains fail-closed until that endpoint contract is qualified.
+ 
++The schema-1 lease registry validates metadata independently of lifecycle state.
++New `IssueApplied` observations still require `Active`; persisted unknown and
++revoked states must match their operation records. Resolving one operation does
++not clear another unresolved renewal or revocation. `Revoked` and `Expired`
++metadata cannot be reactivated by a late renewal, and unresolved revocation takes
++precedence over renewal. A rejected late observation returns `InvalidTransition`
++without recording that observation or changing the operation: the trusted
++reconciler must retain/escalate it rather than report completion or resend.
++The format is unchanged and stores no separate signed expiry observation; local
++state consistency is not cryptographic provider or protected-clock evidence.
++
+ ## Verification
+ 
+ Targeted tests cover a real loopback TLS exchange, exact request headers and
+diff --git a/codex-rs/hepta-bao-adapter/src/durable_authbus.rs b/codex-rs/hepta-bao-adapter/src/durable_authbus.rs
+index f436a689a4..a42e564268 100644
+--- a/codex-rs/hepta-bao-adapter/src/durable_authbus.rs
++++ b/codex-rs/hepta-bao-adapter/src/durable_authbus.rs
+@@ -83,9 +83,11 @@ impl BaoClient {
+     /// digest `durable_operation_payload_digest(request)`. A stale revision,
+     /// writer fence or owner generation is rejected before trusted-time,
+     /// reservation or network activity.
+-    pub async fn consume_kv_v2_with_durable_authbus_operation<
+-        E: BaoAuthBusEvidenceProvider,
+-    >(
++    #[expect(
++        clippy::too_many_arguments,
++        reason = "the existing sealed-operation API must retain separate owner handle, AuthBus admission and independent provider authority inputs"
++    )]
++    pub async fn consume_kv_v2_with_durable_authbus_operation<E: BaoAuthBusEvidenceProvider>(
+         &self,
+         operations: &DurableOperationStore,
+         operation: &EnteredAuthBusOperationHandle,
+diff --git a/codex-rs/hepta-bao-adapter/src/final_use_host.rs b/codex-rs/hepta-bao-adapter/src/final_use_host.rs
+index 7840a3aab9..4e6b1b26ee 100644
+--- a/codex-rs/hepta-bao-adapter/src/final_use_host.rs
++++ b/codex-rs/hepta-bao-adapter/src/final_use_host.rs
+@@ -29,6 +29,9 @@ use crate::BaoSecretReceipt;
+ 
+ pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync + 'static>;
+ 
++#[cfg(test)]
++type RevocationAppliedHook = Arc<dyn Fn(&FinalUseRevocationReceipt) + Send + Sync>;
++
+ #[derive(Clone)]
+ pub struct RegisteredBaoConsumer {
+     id: String,
+@@ -59,12 +62,16 @@ impl RegisteredBaoConsumer {
+ 
+ /// Host-selected composition of final-use authority, independent approval,
+ /// authenticated revocation distribution and a closed consumer registry.
++/// The injected clock must not synchronously reenter this host: freshness
++/// checks and revocation publication sample it under the same mutex.
+ pub struct BaoFinalUseHost {
+     authority: FinalUseAuthority,
+     approval_verifier: FinalUseApprovalVerifier,
+     revocation_verifier: FinalUseRevocationFeedVerifier,
+     clock: Arc<dyn AuthorityClock>,
+     revocation_fresh_until_unix_ms: Mutex<u64>,
++    #[cfg(test)]
++    after_revocation_applied: Mutex<Option<RevocationAppliedHook>>,
+     consumers: BTreeMap<String, BaoConsumerCallback>,
+ }
+ 
+@@ -102,6 +109,8 @@ impl BaoFinalUseHost {
+             revocation_verifier,
+             clock,
+             revocation_fresh_until_unix_ms: Mutex::new(0),
++            #[cfg(test)]
++            after_revocation_applied: Mutex::new(None),
+             consumers: registry,
+         })
+     }
+@@ -111,15 +120,15 @@ impl BaoFinalUseHost {
+     }
+ 
+     fn ensure_revocation_fresh(&self) -> Result<(), BaoFinalUseHostError> {
++        let fresh_until = self
++            .revocation_fresh_until_unix_ms
++            .lock()
++            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+         let now_unix_ms = self
+             .clock
+             .now_unix_ms()
+             .map_err(BaoFinalUseHostError::Trust)?;
+-        let fresh_until = *self
+-            .revocation_fresh_until_unix_ms
+-            .lock()
+-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+-        if fresh_until == 0 || now_unix_ms >= fresh_until {
++        if *fresh_until == 0 || now_unix_ms >= *fresh_until {
+             return Err(BaoFinalUseHostError::StaleRevocationFeed);
+         }
+         Ok(())
+@@ -132,6 +141,14 @@ impl BaoFinalUseHost {
+         &self,
+         update: &SignedFinalUseRevocationUpdate,
+     ) -> Result<FinalUseRevocationReceipt, BaoFinalUseHostError> {
++        // Serialize the accepted head and its freshness publication. Otherwise
++        // an older concurrent update can overwrite a newer head's shorter
++        // validity interval after the authority has already accepted both.
++        // Sample protected time after acquiring this lock, including on reads.
++        let mut fresh_until = self
++            .revocation_fresh_until_unix_ms
++            .lock()
++            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+         let now_unix_ms = self
+             .clock
+             .now_unix_ms()
+@@ -140,10 +157,14 @@ impl BaoFinalUseHost {
+             .revocation_verifier
+             .apply(&self.authority, update, now_unix_ms)
+             .map_err(BaoFinalUseHostError::Control)?;
+-        let mut fresh_until = self
+-            .revocation_fresh_until_unix_ms
+-            .lock()
+-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
++        #[cfg(test)]
++        {
++            // Per-host scheduling barrier, absent from production builds.
++            let hook = self.after_revocation_applied.lock().unwrap().clone();
++            if let Some(hook) = hook {
++                hook(&receipt);
++            }
++        }
+         *fresh_until = receipt.valid_until_unix_ms();
+         Ok(receipt)
+     }
+@@ -217,7 +238,8 @@ impl fmt::Display for BaoFinalUseHostError {
+ }
+ impl std::error::Error for BaoFinalUseHostError {}
+ 
+-#[cfg(all(test, unix))]
++#[cfg(test)]
++#[cfg(unix)]
+ mod tests {
+     use super::*;
+     use ed25519_dalek::SigningKey;
+@@ -280,3 +302,8 @@ mod tests {
+         );
+     }
+ }
++
++#[cfg(test)]
++#[cfg(unix)]
++#[path = "final_use_host_freshness_tests.rs"]
++mod freshness_tests;
+diff --git a/codex-rs/hepta-bao-adapter/src/final_use_host_freshness_tests.rs b/codex-rs/hepta-bao-adapter/src/final_use_host_freshness_tests.rs
+new file mode 100644
+index 0000000000..dee2086db9
+--- /dev/null
++++ b/codex-rs/hepta-bao-adapter/src/final_use_host_freshness_tests.rs
+@@ -0,0 +1,330 @@
++//! Deterministic checks of the publication exclusion boundary. The probe clock
++//! uses try_lock rather than scheduling delays to detect sampling outside the
++//! host's freshness critical section. All keys and times here are fixtures.
++
++use std::os::unix::fs::PermissionsExt;
++use std::sync::Arc;
++use std::sync::OnceLock;
++use std::sync::TryLockError;
++use std::sync::Weak;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::Ordering;
++
++use codex_hepta_contracts::AuthorityClock;
++use codex_hepta_contracts::AuthorityTrustError;
++use codex_hepta_contracts::FinalUseApprovalVerifier;
++use codex_hepta_contracts::FinalUseAuthority;
++use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
++use codex_hepta_contracts::FinalUseRevocationUpdate;
++use codex_hepta_contracts::FinalUseRevocations;
++use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
++use ed25519_dalek::Signer;
++use ed25519_dalek::SigningKey;
++
++use super::BaoFinalUseHost;
++use super::BaoFinalUseHostError;
++use super::RegisteredBaoConsumer;
++
++struct ProbeClock {
++    now: AtomicU64,
++    fail: AtomicBool,
++    sampled_without_exclusion: AtomicBool,
++    host: OnceLock<Weak<BaoFinalUseHost>>,
++}
++
++impl AuthorityClock for ProbeClock {
++    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
++        if let Some(host) = self.host.get().and_then(Weak::upgrade) {
++            match host.revocation_fresh_until_unix_ms.try_lock() {
++                Ok(_) => self.sampled_without_exclusion.store(true, Ordering::SeqCst),
++                Err(TryLockError::WouldBlock) => {}
++                Err(TryLockError::Poisoned(_)) => {
++                    self.sampled_without_exclusion.store(true, Ordering::SeqCst);
++                }
++            }
++        }
++        if self.fail.load(Ordering::SeqCst) {
++            return Err(AuthorityTrustError::Unavailable);
++        }
++        Ok(self.now.load(Ordering::SeqCst))
++    }
++}
++
++struct Fixture {
++    host: Arc<BaoFinalUseHost>,
++    clock: Arc<ProbeClock>,
++    distributor: SigningKey,
++    _directory: tempfile::TempDir,
++}
++
++impl Fixture {
++    fn new() -> Self {
++        let directory = tempfile::tempdir().unwrap();
++        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
++        let issuer = SigningKey::from_bytes(&[41; 32]);
++        let approver = SigningKey::from_bytes(&[42; 32]);
++        let distributor = SigningKey::from_bytes(&[43; 32]);
++        let clock = Arc::new(ProbeClock {
++            now: AtomicU64::new(10),
++            fail: AtomicBool::new(false),
++            sampled_without_exclusion: AtomicBool::new(false),
++            host: OnceLock::new(),
++        });
++        // The owner can sample its injected clock at construction, before the
++        // host exists. Only subsequent host samples are inspected by the probe.
++        let authority = FinalUseAuthority::open_state_dir_with_clock(
++            directory.path(),
++            "security-owner".into(),
++            issuer.verifying_key().to_bytes(),
++            FinalUseRevocations {
++                authority_epoch: 1,
++                revision: 1,
++                revoked_grant_ids: Default::default(),
++            },
++            clock.clone(),
++        )
++        .unwrap();
++        let host = Arc::new(
++            BaoFinalUseHost::new(
++                authority,
++                FinalUseApprovalVerifier::new(
++                    "approver".into(),
++                    approver.verifying_key().to_bytes(),
++                )
++                .unwrap(),
++                FinalUseRevocationFeedVerifier::new(
++                    "distributor".into(),
++                    distributor.verifying_key().to_bytes(),
++                )
++                .unwrap(),
++                clock.clone(),
++                [RegisteredBaoConsumer::new("consumer".into(), Arc::new(|_| Ok(()))).unwrap()],
++            )
++            .unwrap(),
++        );
++        clock.host.set(Arc::downgrade(&host)).unwrap();
++        Self {
++            host,
++            clock,
++            distributor,
++            _directory: directory,
++        }
++    }
++
++    fn update(&self, revision: u64, expires_at: u64) -> SignedFinalUseRevocationUpdate {
++        let update = FinalUseRevocationUpdate::new(
++            "distributor".into(),
++            FinalUseRevocations {
++                authority_epoch: 1,
++                revision,
++                revoked_grant_ids: Default::default(),
++            },
++            1,
++            expires_at,
++        );
++        SignedFinalUseRevocationUpdate {
++            signature: self
++                .distributor
++                .sign(&update.signing_bytes().unwrap())
++                .to_bytes()
++                .to_vec(),
++            update,
++        }
++    }
++}
++
++#[test]
++fn signed_head_update_and_freshness_publication_share_exclusion() {
++    let fixture = Fixture::new();
++    fixture
++        .host
++        .apply_revocation_update(&fixture.update(/*revision*/ 2, /*expires_at*/ 100))
++        .unwrap();
++    assert!(
++        !fixture
++            .clock
++            .sampled_without_exclusion
++            .load(Ordering::SeqCst)
++    );
++    fixture
++        .host
++        .apply_revocation_update(&fixture.update(/*revision*/ 3, /*expires_at*/ 20))
++        .unwrap();
++    fixture.clock.now.store(20, Ordering::SeqCst);
++    assert_eq!(
++        fixture.host.ensure_revocation_fresh(),
++        Err(BaoFinalUseHostError::StaleRevocationFeed)
++    );
++}
++
++#[test]
++fn freshness_reader_samples_time_inside_publication_exclusion() {
++    let fixture = Fixture::new();
++    fixture
++        .host
++        .apply_revocation_update(&fixture.update(/*revision*/ 2, /*expires_at*/ 100))
++        .unwrap();
++    fixture
++        .clock
++        .sampled_without_exclusion
++        .store(false, Ordering::SeqCst);
++    assert_eq!(fixture.host.ensure_revocation_fresh(), Ok(()));
++    assert!(
++        !fixture
++            .clock
++            .sampled_without_exclusion
++            .load(Ordering::SeqCst)
++    );
++}
++
++#[test]
++fn rejected_signature_and_failed_clock_preserve_accepted_freshness() {
++    let fixture = Fixture::new();
++    fixture
++        .host
++        .apply_revocation_update(&fixture.update(/*revision*/ 2, /*expires_at*/ 100))
++        .unwrap();
++    let mut forged = fixture.update(/*revision*/ 3, /*expires_at*/ 200);
++    forged.signature[0] ^= 1;
++    assert!(fixture.host.apply_revocation_update(&forged).is_err());
++    fixture.clock.fail.store(true, Ordering::SeqCst);
++    assert_eq!(
++        fixture
++            .host
++            .apply_revocation_update(&fixture.update(/*revision*/ 3, /*expires_at*/ 200)),
++        Err(BaoFinalUseHostError::Trust(
++            AuthorityTrustError::Unavailable
++        ))
++    );
++    assert_eq!(
++        *fixture.host.revocation_fresh_until_unix_ms.lock().unwrap(),
++        100
++    );
++    fixture.clock.fail.store(false, Ordering::SeqCst);
++    fixture
++        .host
++        .apply_revocation_update(&fixture.update(/*revision*/ 3, /*expires_at*/ 20))
++        .unwrap();
++    fixture.clock.now.store(20, Ordering::SeqCst);
++    assert_eq!(
++        fixture.host.ensure_revocation_fresh(),
++        Err(BaoFinalUseHostError::StaleRevocationFeed)
++    );
++}
++
++#[test]
++fn concurrent_signed_updates_cannot_reverse_freshness_publication() {
++    use std::sync::Mutex;
++    use std::sync::mpsc;
++    use std::time::Duration;
++
++    let fixture = Fixture::new();
++    let (applied_tx, applied_rx) = mpsc::channel();
++    let (release_tx, release_rx) = mpsc::channel();
++    let release_rx = Mutex::new(release_rx);
++    *fixture.host.after_revocation_applied.lock().unwrap() = Some(Arc::new(move |receipt| {
++        if receipt.revision() == 2 {
++            applied_tx.send(()).unwrap();
++            release_rx.lock().unwrap().recv().unwrap();
++        }
++    }));
++    let old = fixture.update(/*revision*/ 2, /*expires_at*/ 100);
++    let newer = fixture.update(/*revision*/ 3, /*expires_at*/ 20);
++    let old_host = Arc::clone(&fixture.host);
++    let old_thread = std::thread::spawn(move || old_host.apply_revocation_update(&old));
++    // The old authority head has committed, but its freshness is unpublished.
++    applied_rx.recv_timeout(Duration::from_secs(5)).unwrap();
++    let publication_is_excluded = match fixture.host.revocation_fresh_until_unix_ms.try_lock() {
++        Ok(_) => false,
++        Err(TryLockError::WouldBlock) => true,
++        Err(TryLockError::Poisoned(_)) => panic!("unexpected poisoned gate"),
++    };
++    let (newer_tx, newer_rx) = mpsc::channel();
++    let newer_host = Arc::clone(&fixture.host);
++    let newer_thread = std::thread::spawn(move || {
++        newer_tx
++            .send(newer_host.apply_revocation_update(&newer))
++            .unwrap();
++    });
++    // On the old implementation this deliberately publishes revision 3 first,
++    // then lets revision 2 overwrite its shorter expiry. With the repair, the
++    // held exclusion proves that revision 3 cannot pass the publication gate.
++    let newer_result = if publication_is_excluded {
++        release_tx.send(()).unwrap();
++        newer_rx.recv_timeout(Duration::from_secs(5)).unwrap()
++    } else {
++        let result = newer_rx.recv_timeout(Duration::from_secs(5)).unwrap();
++        release_tx.send(()).unwrap();
++        result
++    };
++    old_thread.join().unwrap().unwrap();
++    newer_result.unwrap();
++    newer_thread.join().unwrap();
++    assert_eq!(
++        fixture.host.authority.revocation_head().unwrap().revision,
++        3
++    );
++    fixture.clock.now.store(20, Ordering::SeqCst);
++    assert_eq!(
++        fixture.host.ensure_revocation_fresh(),
++        Err(BaoFinalUseHostError::StaleRevocationFeed)
++    );
++    assert_eq!(
++        *fixture.host.revocation_fresh_until_unix_ms.lock().unwrap(),
++        20
++    );
++}
++
++#[test]
++fn publication_panics_fail_closed_before_and_after_authority_application() {
++    let fixture = Fixture::new();
++    let host = Arc::clone(&fixture.host);
++    assert!(
++        std::thread::spawn(move || {
++            let _guard = host.revocation_fresh_until_unix_ms.lock().unwrap();
++            panic!("fixture publication panic");
++        })
++        .join()
++        .is_err()
++    );
++    assert_eq!(
++        fixture
++            .host
++            .apply_revocation_update(&fixture.update(/*revision*/ 2, /*expires_at*/ 100)),
++        Err(BaoFinalUseHostError::Unavailable)
++    );
++    assert_eq!(
++        fixture.host.authority.revocation_head().unwrap().revision,
++        1
++    );
++    assert_eq!(
++        fixture.host.ensure_revocation_fresh(),
++        Err(BaoFinalUseHostError::Unavailable)
++    );
++
++    let fixture = Fixture::new();
++    fixture
++        .host
++        .apply_revocation_update(&fixture.update(/*revision*/ 2, /*expires_at*/ 100))
++        .unwrap();
++    *fixture.host.after_revocation_applied.lock().unwrap() = Some(Arc::new(|_| {
++        panic!("fixture panic after durable application");
++    }));
++    let host = Arc::clone(&fixture.host);
++    let update = fixture.update(/*revision*/ 3, /*expires_at*/ 20);
++    assert!(
++        std::thread::spawn(move || host.apply_revocation_update(&update))
++            .join()
++            .is_err()
++    );
++    assert_eq!(
++        fixture.host.authority.revocation_head().unwrap().revision,
++        3
++    );
++    fixture.clock.now.store(20, Ordering::SeqCst);
++    assert_eq!(
++        fixture.host.ensure_revocation_fresh(),
++        Err(BaoFinalUseHostError::Unavailable)
++    );
++}
+diff --git a/codex-rs/hepta-bao-adapter/src/https_consumer.rs b/codex-rs/hepta-bao-adapter/src/https_consumer.rs
+index f830b64337..3e5b39e141 100644
+--- a/codex-rs/hepta-bao-adapter/src/https_consumer.rs
++++ b/codex-rs/hepta-bao-adapter/src/https_consumer.rs
+@@ -230,6 +230,10 @@ impl BaoClient {
+     /// Product composition for a quota-controlled Bao read:
+     /// authenticated time -> policy -> reservation -> durable dispatch fence ->
+     /// kernel final-use claim -> provider observation -> signed settlement.
++    #[expect(
++        clippy::too_many_arguments,
++        reason = "the existing composition API keeps independent authority, signed grant, policy admission, evidence source and consumer explicit"
++    )]
+     pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
+         &self,
+         authbus: AuthBusExecutionPort<'_>,
+@@ -319,7 +323,7 @@ impl BaoClient {
+                     "successful settlement lost its receipt",
+                 ))
+             }
+-            Err(error) if ambiguous_after_dispatch(&error) => {
++            Err(error) if ambiguous_after_dispatch(error) => {
+                 let time = authbus
+                     .observe_trusted_time_attestation(&evidence.trusted_time()?)
+                     .await;
+@@ -545,7 +549,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
+     Ok(receipt)
+ }
+ 
+-fn ambiguous_after_dispatch(error: &BaoClientError) -> bool {
++fn ambiguous_after_dispatch(error: BaoClientError) -> bool {
+     matches!(
+         error,
+         BaoClientError::TransportUnavailable
+@@ -588,6 +592,7 @@ impl fmt::Display for BaoClientError {
+ }
+ impl std::error::Error for BaoClientError {}
+ 
+-#[cfg(all(test, unix))]
++#[cfg(test)]
++#[cfg(unix)]
+ #[path = "https_consumer_tests.rs"]
+ mod tests;
+diff --git a/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs b/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs
+index ea21c58bb0..c9d40154e6 100644
+--- a/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs
++++ b/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs
+@@ -16,6 +16,7 @@ use codex_hepta_authbus::SettlementStatus;
+ use codex_hepta_authbus::SignedSettlementEvidence;
+ use codex_hepta_authbus::SignedTrustedTimeAttestation;
+ use codex_hepta_authbus::TrustedTimeAttestationClaims;
++use codex_hepta_authbus::bootstrap_retryable;
+ use codex_hepta_contracts::FinalUseGrant;
+ use codex_hepta_contracts::FinalUseRevocations;
+ use codex_hepta_types::Generation;
+@@ -582,7 +583,7 @@ async fn authbus_host(
+         .path()
+         .join("authbus-authority-checkpoint.json");
+ 
+-    let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint, "bao-product-owner").await?;
++    let host = bootstrap_retryable(&database, checkpoint, "bao-product-owner").await?;
+     let mut evidence = AuthBusEvidence::new(now);
+     host.admin()
+         .enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
+diff --git a/codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs b/codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs
+index b121f34c04..25894fc6f2 100644
+--- a/codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs
++++ b/codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs
+@@ -239,14 +239,22 @@ impl DurableLeaseRegistryV1 {
+             return Err(LeaseRegistryErrorV1::InvalidTransition);
+         }
+         operation.state = LeaseOperationStateV1::Unknown;
+-        if let Some(lease_id) = operation.lease_id.as_ref() {
+-            if let Some(lease) = next.leases.get_mut(lease_id) {
+-                lease.state = match operation.kind {
+-                    LeaseOperationKindV1::Renew => SecretLeaseStateV1::RenewUnknown,
+-                    LeaseOperationKindV1::Revoke => SecretLeaseStateV1::RevokeUnknown,
+-                    LeaseOperationKindV1::Issue => lease.state,
+-                };
++        if let Some(lease_id) = operation.lease_id.as_ref()
++            && let Some(lease) = next.leases.get_mut(lease_id)
++        {
++            if matches!(
++                lease.state,
++                SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
++            ) || (operation.kind == LeaseOperationKindV1::Renew
++                && lease.state == SecretLeaseStateV1::RevokeUnknown)
++            {
++                return Err(LeaseRegistryErrorV1::InvalidTransition);
+             }
++            lease.state = match operation.kind {
++                LeaseOperationKindV1::Renew => SecretLeaseStateV1::RenewUnknown,
++                LeaseOperationKindV1::Revoke => SecretLeaseStateV1::RevokeUnknown,
++                LeaseOperationKindV1::Issue => lease.state,
++            };
+         }
+         self.commit(next)?;
+         self.operation(operation_id)
+@@ -275,12 +283,18 @@ impl DurableLeaseRegistryV1 {
+         let mut next = self.state.clone();
+         match (&current.kind, observation) {
+             (LeaseOperationKindV1::Issue, ProviderLeaseObservationV1::IssueApplied { lease }) => {
+-                validate_lease(&lease)?;
++                if lease.state != SecretLeaseStateV1::Active {
++                    return Err(LeaseRegistryErrorV1::InvalidInput);
++                }
++                validate_lease_metadata(&lease)?;
+                 if next.leases.contains_key(&lease.lease_id) {
+                     return Err(LeaseRegistryErrorV1::ObservationMismatch);
+                 }
+                 next.leases.insert(lease.lease_id.clone(), lease);
+-                let operation = next.operations.get_mut(operation_id).unwrap();
++                let operation = next
++                    .operations
++                    .get_mut(operation_id)
++                    .ok_or(LeaseRegistryErrorV1::OperationNotFound)?;
+                 operation.state = LeaseOperationStateV1::Applied;
+             }
+             (
+@@ -303,6 +317,12 @@ impl DurableLeaseRegistryV1 {
+                     .leases
+                     .get_mut(&lease_id)
+                     .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
++                if !matches!(
++                    lease.state,
++                    SecretLeaseStateV1::Active | SecretLeaseStateV1::RenewUnknown
++                ) {
++                    return Err(LeaseRegistryErrorV1::InvalidTransition);
++                }
+                 lease.expires_at_unix_ms = expires_at_unix_ms;
+                 lease.renewable = renewable;
+                 lease.provider_metadata_sha256 = provider_metadata_sha256;
+@@ -311,8 +331,11 @@ impl DurableLeaseRegistryV1 {
+                     .checked_add(1)
+                     .ok_or(LeaseRegistryErrorV1::InvalidTransition)?;
+                 lease.state = SecretLeaseStateV1::Active;
+-                next.operations.get_mut(operation_id).unwrap().state =
+-                    LeaseOperationStateV1::Applied;
++                next.operations
++                    .get_mut(operation_id)
++                    .ok_or(LeaseRegistryErrorV1::OperationNotFound)?
++                    .state = LeaseOperationStateV1::Applied;
++                restore_unknown_lease_state(&mut next, &current)?;
+             }
+             (
+                 LeaseOperationKindV1::Revoke,
+@@ -333,20 +356,26 @@ impl DurableLeaseRegistryV1 {
+                     .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+                 lease.provider_metadata_sha256 = provider_metadata_sha256;
+                 lease.state = SecretLeaseStateV1::Revoked;
+-                next.operations.get_mut(operation_id).unwrap().state =
+-                    LeaseOperationStateV1::Applied;
++                next.operations
++                    .get_mut(operation_id)
++                    .ok_or(LeaseRegistryErrorV1::OperationNotFound)?
++                    .state = LeaseOperationStateV1::Applied;
+             }
+             (_, ProviderLeaseObservationV1::Unknown) => {
+                 return self.mark_unknown(operation_id);
+             }
+             (_, ProviderLeaseObservationV1::Denied) => {
+-                next.operations.get_mut(operation_id).unwrap().state =
+-                    LeaseOperationStateV1::Denied;
++                next.operations
++                    .get_mut(operation_id)
++                    .ok_or(LeaseRegistryErrorV1::OperationNotFound)?
++                    .state = LeaseOperationStateV1::Denied;
+                 restore_unknown_lease_state(&mut next, &current)?;
+             }
+             (_, ProviderLeaseObservationV1::NotApplied) => {
+-                next.operations.get_mut(operation_id).unwrap().state =
+-                    LeaseOperationStateV1::Denied;
++                next.operations
++                    .get_mut(operation_id)
++                    .ok_or(LeaseRegistryErrorV1::OperationNotFound)?
++                    .state = LeaseOperationStateV1::Denied;
+                 restore_unknown_lease_state(&mut next, &current)?;
+             }
+             _ => return Err(LeaseRegistryErrorV1::ObservationMismatch),
+@@ -442,11 +471,24 @@ fn restore_unknown_lease_state(
+         .leases
+         .get_mut(lease_id)
+         .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+-    if matches!(
++    if !matches!(
+         lease.state,
+-        SecretLeaseStateV1::RenewUnknown | SecretLeaseStateV1::RevokeUnknown
++        SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+     ) {
+-        lease.state = SecretLeaseStateV1::Active;
++        let has_unknown = |kind| {
++            state.operations.values().any(|candidate| {
++                candidate.lease_id.as_ref() == Some(lease_id)
++                    && candidate.kind == kind
++                    && candidate.state == LeaseOperationStateV1::Unknown
++            })
++        };
++        lease.state = if has_unknown(LeaseOperationKindV1::Revoke) {
++            SecretLeaseStateV1::RevokeUnknown
++        } else if has_unknown(LeaseOperationKindV1::Renew) {
++            SecretLeaseStateV1::RenewUnknown
++        } else {
++            SecretLeaseStateV1::Active
++        };
+     }
+     Ok(())
+ }
+@@ -458,6 +500,8 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1>
+     {
+         return Err(LeaseRegistryErrorV1::CorruptState);
+     }
++    // Summarize once rather than scanning all operations for every lease.
++    let mut lease_operations: BTreeMap<&str, (bool, bool, bool)> = BTreeMap::new();
+     for (id, operation) in &state.operations {
+         if id != &operation.operation_id
+             || !identifier(id)
+@@ -469,17 +513,61 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1>
+         {
+             return Err(LeaseRegistryErrorV1::CorruptState);
+         }
++        match operation.kind {
++            LeaseOperationKindV1::Issue if operation.lease_id.is_some() => {
++                return Err(LeaseRegistryErrorV1::CorruptState);
++            }
++            LeaseOperationKindV1::Renew | LeaseOperationKindV1::Revoke
++                if operation
++                    .lease_id
++                    .as_ref()
++                    .is_none_or(|id| !state.leases.contains_key(id)) =>
++            {
++                return Err(LeaseRegistryErrorV1::CorruptState);
++            }
++            _ => {}
++        }
++        if let Some(lease_id) = operation.lease_id.as_deref() {
++            let (renew_unknown, revoke_unknown, revoke_applied) =
++                lease_operations.entry(lease_id).or_default();
++            match (operation.kind, operation.state) {
++                (LeaseOperationKindV1::Renew, LeaseOperationStateV1::Unknown) => {
++                    *renew_unknown = true
++                }
++                (LeaseOperationKindV1::Revoke, LeaseOperationStateV1::Unknown) => {
++                    *revoke_unknown = true
++                }
++                (LeaseOperationKindV1::Revoke, LeaseOperationStateV1::Applied) => {
++                    *revoke_applied = true
++                }
++                _ => {}
++            }
++        }
+     }
+     for (id, lease) in &state.leases {
+         if id != &lease.lease_id {
+             return Err(LeaseRegistryErrorV1::CorruptState);
+         }
+-        validate_lease(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
++        validate_lease_metadata(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
++        let (unknown_renew, unknown_revoke, revoked) = lease_operations
++            .get(id.as_str())
++            .copied()
++            .unwrap_or_default();
++        let consistent = match lease.state {
++            SecretLeaseStateV1::Active => !unknown_renew && !unknown_revoke && !revoked,
++            SecretLeaseStateV1::RenewUnknown => unknown_renew && !unknown_revoke && !revoked,
++            SecretLeaseStateV1::RevokeUnknown => unknown_revoke && !revoked,
++            SecretLeaseStateV1::Revoked => revoked,
++            SecretLeaseStateV1::Expired => !unknown_renew && !unknown_revoke && !revoked,
++        };
++        if !consistent {
++            return Err(LeaseRegistryErrorV1::CorruptState);
++        }
+     }
+     Ok(())
+ }
+ 
+-fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
++fn validate_lease_metadata(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
+     if !identifier(&lease.lease_id)
+         || !identifier(&lease.secret_reference_id)
+         || !identifier(&lease.consumer_id)
+@@ -487,7 +575,6 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
+         || lease.provider_metadata_sha256 == [0; 32]
+         || lease.generation == 0
+         || lease.expires_at_unix_ms <= lease.issued_at_unix_ms
+-        || lease.state != SecretLeaseStateV1::Active
+     {
+         return Err(LeaseRegistryErrorV1::InvalidInput);
+     }
+diff --git a/codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs b/codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs
+index 4bc67f7f4e..0ec888a158 100644
+--- a/codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs
++++ b/codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs
+@@ -207,3 +207,200 @@ fn expiry_is_durable_and_terminal_for_renewal() {
+         SecretLeaseStateV1::Expired
+     );
+ }
++
++#[test]
++fn late_renewal_cannot_reactivate_a_revoked_lease() {
++    let (_directory, mut registry) = registry();
++    registry.prepare_issue("issue".into(), [3; 32]).unwrap();
++    registry
++        .reconcile(
++            "issue",
++            ProviderLeaseObservationV1::IssueApplied {
++                lease: active_lease(),
++            },
++        )
++        .unwrap();
++    registry
++        .prepare_renew("renew".into(), "lease:db:1".into(), [4; 32])
++        .unwrap();
++    registry
++        .prepare_revoke("revoke".into(), "lease:db:1".into(), [6; 32])
++        .unwrap();
++    registry
++        .reconcile(
++            "revoke",
++            ProviderLeaseObservationV1::RevokeApplied {
++                lease_id: "lease:db:1".into(),
++                observed_at_unix_ms: 20_000,
++                provider_metadata_sha256: [7; 32],
++            },
++        )
++        .unwrap();
++    assert_eq!(
++        registry.reconcile(
++            "renew",
++            ProviderLeaseObservationV1::RenewApplied {
++                lease_id: "lease:db:1".into(),
++                observed_at_unix_ms: 21_000,
++                expires_at_unix_ms: 120_000,
++                renewable: true,
++                provider_metadata_sha256: [5; 32],
++            }
++        ),
++        Err(LeaseRegistryErrorV1::InvalidTransition)
++    );
++    assert_eq!(
++        registry.lease("lease:db:1").unwrap().state,
++        SecretLeaseStateV1::Revoked
++    );
++}
++
++fn issued_registry() -> (tempfile::TempDir, DurableLeaseRegistryV1) {
++    let (directory, mut registry) = registry();
++    registry.prepare_issue("issue".into(), [3; 32]).unwrap();
++    registry
++        .reconcile(
++            "issue",
++            ProviderLeaseObservationV1::IssueApplied {
++                lease: active_lease(),
++            },
++        )
++        .unwrap();
++    (directory, registry)
++}
++
++#[test]
++fn nonactive_issue_observations_remain_invalid() {
++    for state in [
++        SecretLeaseStateV1::RenewUnknown,
++        SecretLeaseStateV1::RevokeUnknown,
++        SecretLeaseStateV1::Revoked,
++        SecretLeaseStateV1::Expired,
++    ] {
++        let (_directory, mut registry) = registry();
++        registry.prepare_issue("issue".into(), [3; 32]).unwrap();
++        let mut lease = active_lease();
++        lease.state = state;
++        assert_eq!(
++            registry.reconcile("issue", ProviderLeaseObservationV1::IssueApplied { lease }),
++            Err(LeaseRegistryErrorV1::InvalidInput)
++        );
++        assert!(registry.lease("lease:db:1").is_none());
++        assert_eq!(
++            registry.operation("issue").unwrap().state,
++            LeaseOperationStateV1::Prepared
++        );
++    }
++}
++
++#[test]
++fn unknown_lease_states_reopen_with_matching_operations() {
++    for kind in [LeaseOperationKindV1::Renew, LeaseOperationKindV1::Revoke] {
++        let (directory, mut registry) = issued_registry();
++        match kind {
++            LeaseOperationKindV1::Renew => {
++                registry
++                    .prepare_renew("next".into(), "lease:db:1".into(), [4; 32])
++                    .unwrap();
++            }
++            LeaseOperationKindV1::Revoke => {
++                registry
++                    .prepare_revoke("next".into(), "lease:db:1".into(), [4; 32])
++                    .unwrap();
++            }
++            LeaseOperationKindV1::Issue => unreachable!(),
++        }
++        registry.mark_unknown("next").unwrap();
++        let expected = registry.lease("lease:db:1").unwrap().clone();
++        drop(registry);
++        let reopened =
++            DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
++        assert_eq!(reopened.lease("lease:db:1"), Some(&expected));
++        assert_eq!(
++            reopened.operation("next").unwrap().state,
++            LeaseOperationStateV1::Unknown
++        );
++    }
++}
++
++#[test]
++fn unrelated_denial_cannot_clear_another_unknown_renewal() {
++    let (_directory, mut registry) = issued_registry();
++    registry
++        .prepare_renew("renew-a".into(), "lease:db:1".into(), [4; 32])
++        .unwrap();
++    registry
++        .prepare_renew("renew-b".into(), "lease:db:1".into(), [5; 32])
++        .unwrap();
++    registry.mark_unknown("renew-a").unwrap();
++    registry
++        .reconcile("renew-b", ProviderLeaseObservationV1::NotApplied)
++        .unwrap();
++    assert_eq!(
++        registry.lease("lease:db:1").unwrap().state,
++        SecretLeaseStateV1::RenewUnknown
++    );
++    assert_eq!(
++        registry.operation("renew-a").unwrap().state,
++        LeaseOperationStateV1::Unknown
++    );
++    registry
++        .reconcile("renew-a", ProviderLeaseObservationV1::NotApplied)
++        .unwrap();
++    assert_eq!(
++        registry.lease("lease:db:1").unwrap().state,
++        SecretLeaseStateV1::Active
++    );
++}
++
++#[test]
++fn terminal_expiry_cannot_be_replaced_by_unknown_or_late_renewal() {
++    let (directory, mut registry) = issued_registry();
++    registry
++        .prepare_renew("renew".into(), "lease:db:1".into(), [4; 32])
++        .unwrap();
++    registry.expire_at(61_000).unwrap();
++    assert_eq!(
++        registry.mark_unknown("renew"),
++        Err(LeaseRegistryErrorV1::InvalidTransition)
++    );
++    assert_eq!(
++        registry.reconcile(
++            "renew",
++            ProviderLeaseObservationV1::RenewApplied {
++                lease_id: "lease:db:1".into(),
++                observed_at_unix_ms: 60_000,
++                expires_at_unix_ms: 120_000,
++                renewable: true,
++                provider_metadata_sha256: [5; 32],
++            }
++        ),
++        Err(LeaseRegistryErrorV1::InvalidTransition)
++    );
++    let expected = registry.lease("lease:db:1").unwrap().clone();
++    drop(registry);
++    let reopened =
++        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
++    assert_eq!(reopened.lease("lease:db:1"), Some(&expected));
++    assert_eq!(expected.state, SecretLeaseStateV1::Expired);
++}
++
++#[test]
++fn malformed_metadata_and_unbacked_unknown_states_are_rejected_on_open() {
++    for corrupt_metadata in [false, true] {
++        let (directory, mut registry) = issued_registry();
++        let lease = registry.state.leases.get_mut("lease:db:1").unwrap();
++        if corrupt_metadata {
++            lease.scope_sha256 = [0; 32];
++        } else {
++            lease.state = SecretLeaseStateV1::RenewUnknown;
++        }
++        let path = directory.path().join("lease-registry.json");
++        std::fs::write(&path, serde_json::to_vec(&registry.state).unwrap()).unwrap();
++        drop(registry);
++        assert!(matches!(
++            DurableLeaseRegistryV1::open(path),
++            Err(LeaseRegistryErrorV1::CorruptState)
++        ));
++    }
++}
+diff --git a/codex-rs/hepta-bao-adapter/tests/final_use_host.rs b/codex-rs/hepta-bao-adapter/tests/final_use_host.rs
+index d7d0f0e6f7..af5ca19607 100644
+--- a/codex-rs/hepta-bao-adapter/tests/final_use_host.rs
++++ b/codex-rs/hepta-bao-adapter/tests/final_use_host.rs
+@@ -1,3 +1,4 @@
++#[cfg(test)]
+ #[cfg(unix)]
+ mod unix {
+     use std::collections::BTreeSet;
+diff --git a/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs b/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs
+index e5b5f6a8a1..7c5d253811 100644
+--- a/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs
++++ b/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs
+@@ -1,10 +1,10 @@
+-use codex_hepta_authbus::AuthBusAuthorityHost;
+ use codex_hepta_authbus::Error;
+ use codex_hepta_authbus::IssuerPurpose;
+ use codex_hepta_authbus::IssuerRegistration;
+ use codex_hepta_authbus::IssuerSpec;
+ use codex_hepta_authbus::SignedMessage;
+ use codex_hepta_authbus::SignedMessageClaims;
++use codex_hepta_authbus::bootstrap_retryable;
+ use codex_hepta_types::Generation;
+ use codex_hepta_types::StableId;
+ use codex_state::SqliteConfig;
+@@ -171,7 +171,7 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
+         .unwrap();
+     external = pending;
+ 
+-    let authority = AuthBusAuthorityHost::bootstrap(
++    let authority = bootstrap_retryable(
+         &temp.path().join("authbus-authority.sqlite"),
+         temp.path().join("authbus-authority.checkpoint.json"),
+         "evidence-recovery-test-owner",
+diff --git a/codex-rs/hepta-evidence/src/authbus_time.rs b/codex-rs/hepta-evidence/src/authbus_time.rs
+index 384380ab25..cf02b7db2d 100644
+--- a/codex-rs/hepta-evidence/src/authbus_time.rs
++++ b/codex-rs/hepta-evidence/src/authbus_time.rs
+@@ -39,9 +39,7 @@ impl HeptaEvidenceStore {
+     }
+ }
+ 
+-pub(crate) async fn authbus_now(
+-    tx: &mut Transaction<'_, Sqlite>,
+-) -> Result<i64, EvidenceError> {
++pub(crate) async fn authbus_now(tx: &mut Transaction<'_, Sqlite>) -> Result<i64, EvidenceError> {
+     let floor = advance_authbus_time_floor(tx, now_millis()?).await?;
+     i64::try_from(floor.wall_time_ms)
+         .map_err(|_| EvidenceError::Corrupt("AuthBus time floor exceeds i64".into()))
+diff --git a/codex-rs/hepta-evidence/src/lib.rs b/codex-rs/hepta-evidence/src/lib.rs
+index 03aac56638..cd9b54c3e8 100644
+--- a/codex-rs/hepta-evidence/src/lib.rs
++++ b/codex-rs/hepta-evidence/src/lib.rs
+@@ -6,9 +6,9 @@ mod authbus_outbox_record;
+ mod authbus_outbox_worker;
+ mod authbus_recovery;
+ mod authbus_store;
+-mod authbus_time;
+ #[cfg(test)]
+ mod authbus_test_support;
++mod authbus_time;
+ mod canonical;
+ mod governance_store;
+ mod governance_validation;
+diff --git a/codex-rs/hepta-operations/src/authbus_handle.rs b/codex-rs/hepta-operations/src/authbus_handle.rs
+index 80ac547fcc..93b0330e71 100644
+--- a/codex-rs/hepta-operations/src/authbus_handle.rs
++++ b/codex-rs/hepta-operations/src/authbus_handle.rs
+@@ -165,13 +165,7 @@ impl DurableOperationStore {
+             return Err(DurableOperationError::Conflict(operation_id.clone()));
+         }
+         let Some(claim) = self
+-            .claim_operation(
+-                scope_id,
+-                operation_id,
+-                worker_id,
+-                owner_generation,
+-                lease,
+-            )
++            .claim_operation(scope_id, operation_id, worker_id, owner_generation, lease)
+             .await?
+         else {
+             return Ok(None);
+@@ -253,7 +247,9 @@ impl DurableOperationStore {
+             || current.intent.destination != handle.destination
+             || current.intent.payload_digest != handle.payload_digest
+         {
+-            return Err(DurableOperationError::Conflict(handle.operation_id().clone()));
++            return Err(DurableOperationError::Conflict(
++                handle.operation_id().clone(),
++            ));
+         }
+         if current.intent.owner_generation != handle.owner_generation {
+             return Err(DurableOperationError::StaleGeneration);
+@@ -321,7 +317,9 @@ fn validate_claim_record(
+         || current.intent.destination != *handle.destination()
+         || current.intent.payload_digest != handle.payload_digest()
+     {
+-        return Err(DurableOperationError::Conflict(handle.operation_id().clone()));
++        return Err(DurableOperationError::Conflict(
++            handle.operation_id().clone(),
++        ));
+     }
+     if current.intent.owner_generation != handle.owner_generation() {
+         return Err(DurableOperationError::StaleGeneration);

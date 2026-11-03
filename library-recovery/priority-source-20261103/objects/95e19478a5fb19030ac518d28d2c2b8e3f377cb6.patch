@@ -1,0 +1,164 @@
+diff --git a/.github/workflows/ui-product-foundation.yml b/.github/workflows/ui-product-foundation.yml
+index 383f197e1..8f1884b1d 100644
+--- a/.github/workflows/ui-product-foundation.yml
++++ b/.github/workflows/ui-product-foundation.yml
+@@ -76,7 +76,9 @@ jobs:
+           echo "PR_SOURCE_SHA=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_ENV"
+           grep -F 'channel = "1.96.0"' codex-rs/rust-toolchain.toml
+       - name: Verify immutable merge checkout regression
+-        run: python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
++        run: |
++          python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
++          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_build_product_preview.py -v
+       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+         with:
+           node-version: 22
+@@ -95,12 +97,12 @@ jobs:
+       - id: official-tools-cache
+         uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+         with:
+-          path: .tmp/ui-official-tools-robrix
+-          key: ui-official-tools-v2-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
++          path: ${{ runner.temp }}/ui-official-tools-robrix
++          key: ui-official-tools-v3-runner-temp-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
+       - name: Install missing pinned official tools
+         if: steps.official-tools-cache.outputs.cache-hit != 'true'
+         env:
+-          TOOL_ROOT: ${{ github.workspace }}/.tmp/ui-official-tools-robrix
++          TOOL_ROOT: ${{ runner.temp }}/ui-official-tools-robrix
+           CARGO_BUILD_JOBS: 2
+         run: |
+           set -euo pipefail
+@@ -108,7 +110,7 @@ jobs:
+           python3 apps/hepta-control-ui/tools/install-official-nextest.py "$TOOL_ROOT"
+       - name: Verify installed tool versions on every cache hit or miss
+         env:
+-          TOOL_ROOT: ${{ github.workspace }}/.tmp/ui-official-tools-robrix
++          TOOL_ROOT: ${{ runner.temp }}/ui-official-tools-robrix
+         run: |
+           set -euo pipefail
+           test -x "$TOOL_ROOT/bin/just"
+@@ -123,8 +125,8 @@ jobs:
+       - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+         if: steps.official-tools-cache.outputs.cache-hit != 'true'
+         with:
+-          path: .tmp/ui-official-tools-robrix
+-          key: ui-official-tools-v2-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
++          path: ${{ runner.temp }}/ui-official-tools-robrix
++          key: ui-official-tools-v3-runner-temp-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
+       - name: Verify shared Rust presentation and renderer
+         shell: bash
+         run: |
+diff --git a/apps/hepta-control-ui/test/test_build_product_preview.py b/apps/hepta-control-ui/test/test_build_product_preview.py
+new file mode 100644
+index 000000000..4774da615
+--- /dev/null
++++ b/apps/hepta-control-ui/test/test_build_product_preview.py
+@@ -0,0 +1,65 @@
++"""Real-Git source guard regression; no compiler or external tool is installed."""
++
++import importlib.util
++from pathlib import Path
++import subprocess
++import tempfile
++import unittest
++
++ROOT = Path(__file__).resolve().parents[1]
++SPEC = importlib.util.spec_from_file_location(
++    "preview_builder", ROOT / "tools/build-product-preview.py"
++)
++BUILDER = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(BUILDER)
++
++
++class SourceGuardTests(unittest.TestCase):
++    def setUp(self):
++        temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(temporary.cleanup)
++        self.root = Path(temporary.name) / "source"
++        self.root.mkdir()
++        self.external = Path(temporary.name) / "runner-temp"
++        self.external.mkdir()
++        self.git("init", "-q")
++        source = self.root / "codex-rs/hepta-native-gateway/src/lib.rs"
++        source.parent.mkdir(parents=True)
++        source.write_text("// committed fixture\n")
++        self.git("add", ".")
++        self.git("commit", "-qm", "fixture")
++        previous = BUILDER.ROOT
++        BUILDER.ROOT = self.root
++        self.addCleanup(setattr, BUILDER, "ROOT", previous)
++
++    def git(self, *args):
++        return subprocess.check_output(
++            ["git", "-c", "user.name=dot", "-c", "user.email=dot@localhost", *args],
++            cwd=self.root,
++            text=True,
++            stderr=subprocess.PIPE,
++        ).strip()
++
++    def test_repository_tool_cache_is_rejected_but_external_cache_is_clean(self):
++        before = BUILDER.identity()
++        cache = self.root / ".tmp/ui-official-tools-robrix"
++        cache.mkdir(parents=True)
++        (cache / "tool-placeholder").write_text("nonexecutable test data")
++        with self.assertRaisesRegex(ValueError, r"dirty paths:[\s\S]*\.tmp/"):
++            BUILDER.identity()
++        cache.rename(self.external / "ui-official-tools-robrix")
++        self.assertEqual(BUILDER.identity(), before)
++
++    def test_actual_tracked_or_untracked_source_still_fails(self):
++        path = self.root / "codex-rs/hepta-native-gateway/src/lib.rs"
++        path.write_text("// dirty source\n")
++        with self.assertRaisesRegex(ValueError, "committed clean source"):
++            BUILDER.identity()
++        self.git("restore", "--", str(path.relative_to(self.root)))
++        path.with_name("untracked.rs").write_text("// untracked source\n")
++        with self.assertRaisesRegex(ValueError, "untracked.rs"):
++            BUILDER.identity()
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/apps/hepta-control-ui/tools/build-product-preview.py b/apps/hepta-control-ui/tools/build-product-preview.py
+index 482030705..df2cd373d 100644
+--- a/apps/hepta-control-ui/tools/build-product-preview.py
++++ b/apps/hepta-control-ui/tools/build-product-preview.py
+@@ -11,12 +11,18 @@ ROOT = Path(__file__).resolve().parents[3]
+ 
+ 
+ def git(*args):
+-    return subprocess.check_output(["git", "--no-replace-objects", *args], cwd=ROOT, text=True).strip()
++    return subprocess.check_output(
++        ["git", "--no-replace-objects", *args], cwd=ROOT, text=True
++    ).strip()
+ 
+ 
+ def identity():
+-    if git("status", "--porcelain", "--untracked-files=normal"):
+-        raise ValueError("Gateway preview evidence requires a committed clean source")
++    status = git("status", "--porcelain", "--untracked-files=normal")
++    if status:
++        raise ValueError(
++            "Gateway preview evidence requires a committed clean source; dirty paths:\n"
++            + status[:4096]
++        )
+     paths = git(
+         "ls-files",
+         "--",
+diff --git a/scripts/test_ui_product_foundation_ci.py b/scripts/test_ui_product_foundation_ci.py
+index 477402370..d4cea701d 100644
+--- a/scripts/test_ui_product_foundation_ci.py
++++ b/scripts/test_ui_product_foundation_ci.py
+@@ -170,6 +170,11 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
+                     any(matches(path, pattern) for pattern in patterns), path
+                 )
+ 
++    def test_official_tools_do_not_dirty_the_source_checkout(self):
++        self.assertNotIn(".tmp/ui-official-tools-robrix", self.workflow)
++        self.assertIn("${{ runner.temp }}/ui-official-tools-robrix", self.workflow)
++        self.assertIn("ui-official-tools-v3-runner-temp-", self.workflow)
++
+     def test_gateway_changes_trigger_source_and_merge_evidence(self):
+         for path in (
+             "codex-rs/hepta-native-gateway/**",

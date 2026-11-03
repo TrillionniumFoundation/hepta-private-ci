@@ -1,0 +1,289 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index 1f96ddd..0f2b3cb 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -3508,6 +3508,7 @@ dependencies = [
+  "codex-utils-home-dir",
+  "core_test_support",
+  "ed25519-dalek",
++ "futures",
+  "http 1.4.0",
+  "rustix 1.1.4",
+  "serde",
+@@ -3517,6 +3518,7 @@ dependencies = [
+  "tempfile",
+  "thiserror 2.0.18",
+  "tokio",
++ "tokio-tungstenite",
+  "tokio-util",
+  "wiremock",
+ ]
+diff --git a/codex-rs/hepta-agentd/Cargo.toml b/codex-rs/hepta-agentd/Cargo.toml
+index 96d1847..4c9f2ac 100644
+--- a/codex-rs/hepta-agentd/Cargo.toml
++++ b/codex-rs/hepta-agentd/Cargo.toml
+@@ -102,6 +102,8 @@ tokio-util = { workspace = true }
+ rustix = { workspace = true, features = ["fs"] }
+ 
+ [dev-dependencies]
++futures = { workspace = true }
++tokio-tungstenite = { workspace = true }
+ codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
+ codex-hepta-operations = { workspace = true }
+ codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+diff --git a/codex-rs/hepta-agentd/src/automation_service_tests.rs b/codex-rs/hepta-agentd/src/automation_service_tests.rs
+index 6d7dd56..a7e4e24 100644
+--- a/codex-rs/hepta-agentd/src/automation_service_tests.rs
++++ b/codex-rs/hepta-agentd/src/automation_service_tests.rs
+@@ -421,3 +421,7 @@ async fn production_constructor_never_resumes_a_draining_owner() {
+     assert!(!fixture.state.is_fenced().expect("host fence"));
+     fixture.store.close().await;
+ }
++
++#[cfg(unix)]
++#[path = "automation_recovery_transport_tests.rs"]
++mod recovery_transport_tests;
+diff --git a/codex-rs/hepta-agentd/src/automation_recovery_transport_tests.rs b/codex-rs/hepta-agentd/src/automation_recovery_transport_tests.rs
+new file mode 100644
+index 0000000..acfa7d4
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/automation_recovery_transport_tests.rs
+@@ -0,0 +1,238 @@
++//! Actual UDS/WebSocket observation timeout over the real SQLite scheduler.
++//! Requires the separately reviewed timeout-isolation production change.
++
++use super::*;
++use futures::SinkExt;
++use futures::StreamExt;
++use std::sync::Mutex;
++use tokio::net::UnixListener;
++use tokio_tungstenite::tungstenite::Message;
++
++struct ObservedQueue {
++    admissions: Mutex<Vec<AutomationAdmission>>,
++    entered: Notify,
++}
++
++impl AutomationTurnQueue for ObservedQueue {
++    fn enqueue(
++        &self,
++        admission: AutomationAdmission,
++    ) -> AutomationFuture<'_, AutomationQueueReceipt> {
++        Box::pin(async move {
++            self.admissions
++                .lock()
++                .expect("admissions")
++                .push(admission.clone());
++            let receipt = AutomationQueueReceipt {
++                queued_submission_id: format!(
++                    "queue:{}:{}",
++                    admission.task_id, admission.occurrence
++                ),
++                client_user_message_id: admission.client_user_message_id,
++            };
++            self.entered.notify_one();
++            Ok(receipt)
++        })
++    }
++}
++
++#[tokio::test]
++async fn real_observation_timeout_preserves_unknown_and_allows_independent_admission() {
++    let fixture = fixture().await;
++    fixture
++        .registry
++        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
++        .expect("running");
++    fixture.state.refresh_generation().expect("generation");
++    let cognitive =
++        codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
++            .await
++            .expect("real cognitive owner");
++    fixture
++        .state
++        .attach_cognitive_store(Arc::new(cognitive))
++        .expect("cognitive attachment");
++    fixture
++        .state
++        .mark_runtime_prerequisites_ready()
++        .expect("prerequisites");
++    fixture.state.mark_app_server_ready().expect("ready");
++
++    let original = AutomationTaskDraft::new(
++        "019153a4-3088-7e03-a56a-9b1964f75ddd",
++        "retain unknown effect identity",
++        AutomationSchedule::Once,
++        /*first_run_at_ms*/ 100,
++        /*created_at_ms*/ 1,
++    );
++    fixture
++        .store
++        .create_task(&original)
++        .await
++        .expect("unknown task");
++    let lease = fixture
++        .store
++        .claim_due(100, 1, 60_000)
++        .await
++        .expect("claim")
++        .expect("lease");
++    let occurrence = fixture
++        .store
++        .materialize_occurrence(&lease, 100)
++        .await
++        .expect("occurrence");
++    fixture
++        .store
++        .prepare_occurrence_taskflow(&occurrence, &lease, 100, 60_000)
++        .await
++        .expect("TaskFlow claim");
++    fixture
++        .store
++        .record_dispatch_uncertain(&lease, 101)
++        .await
++        .expect("unknown intent");
++    let unknown_before = fixture
++        .store
++        .uncertain_dispatches(1)
++        .await
++        .expect("unknown before");
++    let occurrence_before = fixture
++        .store
++        .automation_occurrence(original.task_id, 1)
++        .await
++        .expect("occurrence before");
++    let run_before = fixture
++        .store
++        .taskflow_run(&occurrence.taskflow_run_id)
++        .await
++        .expect("run before");
++
++    let independent = AutomationTaskDraft::new(
++        "019153a4-3088-7e03-a56a-9b1964f75dde",
++        "independent eligible work",
++        AutomationSchedule::Once,
++        /*first_run_at_ms*/ 100,
++        /*created_at_ms*/ 1,
++    );
++    fixture
++        .store
++        .create_task(&independent)
++        .await
++        .expect("independent task");
++    let listener =
++        UnixListener::bind(&fixture.identity.app_server_socket).expect("actual UDS listener");
++    let home = fixture.identity.home_root.to_string_lossy().into_owned();
++    let expected_client = lease.client_user_message_id.clone();
++    let recovery_requests = Arc::new(AtomicUsize::new(0));
++    let requests = Arc::clone(&recovery_requests);
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.expect("recovery connection");
++        let mut socket = tokio_tungstenite::accept_async(stream)
++            .await
++            .expect("WebSocket handshake");
++        while let Some(frame) = socket.next().await {
++            match frame.expect("WebSocket frame") {
++                Message::Text(text) => {
++                    let request: serde_json::Value = serde_json::from_str(&text).expect("JSON-RPC");
++                    match request.get("method").and_then(serde_json::Value::as_str) {
++                        Some("initialize") => {
++                            let response = serde_json::json!({
++                                "jsonrpc": "2.0",
++                                "id": request["id"],
++                                "result": {"userAgent": "taskflow-timeout-test", "codexHome": home}
++                            });
++                            socket
++                                .send(Message::Text(response.to_string().into()))
++                                .await
++                                .expect("initialize reply");
++                        }
++                        Some("initialized") => {}
++                        Some("thread/queue/reconcile") => {
++                            assert_eq!(request["params"]["mode"], "reconcileOnly");
++                            assert_eq!(request["params"]["clientUserMessageId"], expected_client);
++                            requests.fetch_add(1, Ordering::SeqCst);
++                            // Intentionally send no observation. Keep reading so
++                            // production shutdown can close the actual socket.
++                        }
++                        method => panic!("unexpected request method: {method:?}"),
++                    }
++                }
++                Message::Close(_) => break,
++                Message::Ping(_) | Message::Pong(_) => {}
++                Message::Binary(_) | Message::Frame(_) => panic!("unexpected non-text frame"),
++            }
++        }
++    });
++    let queue = Arc::new(ObservedQueue {
++        admissions: Mutex::new(Vec::new()),
++        entered: Notify::new(),
++    });
++    let scheduler = AutomationScheduler::new(
++        fixture.store.clone(),
++        Arc::clone(&queue),
++        1,
++        Duration::from_secs(30),
++        Duration::from_secs(2),
++    )
++    .expect("real scheduler");
++    let stop = CancellationToken::new();
++    let task = tokio::spawn(run_scheduler_loop(
++        scheduler,
++        Arc::clone(&fixture.state),
++        stop.clone(),
++        Duration::from_millis(1),
++    ));
++    // Retain the production five-second observation deadline. This outer test
++    // bound includes connection/shutdown; it never supplies a shorter timeout.
++    let progressed = timeout(Duration::from_secs(20), queue.entered.notified()).await;
++    stop.cancel();
++    timeout(Duration::from_secs(20), task)
++        .await
++        .expect("bounded loop exit")
++        .expect("scheduler join")
++        .expect("scheduler result");
++    timeout(Duration::from_secs(20), server)
++        .await
++        .expect("mock shutdown")
++        .expect("server result");
++    assert!(
++        progressed.is_ok(),
++        "read-only timeout disabled independent scheduling"
++    );
++    assert!(
++        fixture
++            .state
++            .automation_is_available()
++            .expect("automation still available")
++    );
++    assert_eq!(recovery_requests.load(Ordering::SeqCst), 1);
++    let admitted = queue.admissions.lock().expect("admissions");
++    assert_eq!(admitted.len(), 1);
++    assert_eq!(admitted[0].task_id, independent.task_id);
++    drop(admitted);
++    assert_eq!(
++        fixture
++            .store
++            .uncertain_dispatches(1)
++            .await
++            .expect("unknown after"),
++        unknown_before
++    );
++    assert_eq!(
++        fixture
++            .store
++            .automation_occurrence(original.task_id, 1)
++            .await
++            .expect("occurrence after"),
++        occurrence_before
++    );
++    assert_eq!(
++        fixture
++            .store
++            .taskflow_run(&occurrence.taskflow_run_id)
++            .await
++            .expect("run after"),
++        run_before
++    );
++    fixture.store.close().await;
++}

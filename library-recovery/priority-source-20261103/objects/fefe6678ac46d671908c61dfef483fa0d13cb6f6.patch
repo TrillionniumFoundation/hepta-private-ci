@@ -1,0 +1,408 @@
+--- a/scripts/authbus-evidence-projection.py
++++ b/scripts/authbus-evidence-projection.py
+@@ -13,6 +13,7 @@
+ import hashlib
+ import json
+ import os
++import re
+ import subprocess
+ from copy import deepcopy
+ from pathlib import Path
+@@ -159,6 +160,208 @@
+             raise ValueError(f"{path}: missing writer binding token {token!r}")
+ 
+ 
++def rust_tokens(text: str) -> list[str]:
++    """Lex the bounded surface contract, excluding comments and literal contents.
++
++    This is not a Rust parser or type checker. Unsupported declarations fail
++    closed in the named admission/signature checks below; native compile tests
++    remain required for authority and visibility guarantees.
++    """
++    tokens: list[str] = []
++    index = 0
++    while index < len(text):
++        if text[index].isspace():
++            index += 1
++            continue
++        if text.startswith("//", index):
++            end = text.find("\n", index + 2)
++            index = len(text) if end == -1 else end + 1
++            continue
++        if text.startswith("/*", index):
++            depth = 1
++            index += 2
++            while depth and index < len(text):
++                if text.startswith("/*", index):
++                    depth += 1
++                    index += 2
++                elif text.startswith("*/", index):
++                    depth -= 1
++                    index += 2
++                else:
++                    index += 1
++            if depth:
++                raise ValueError("unterminated Rust comment in caller contract")
++            continue
++        raw = re.match(r'(?:br|cr|r)(#*)"', text[index:])
++        if raw:
++            end_marker = '"' + raw.group(1)
++            end = text.find(end_marker, index + raw.end())
++            if end == -1:
++                raise ValueError("unterminated Rust raw string in caller contract")
++            tokens.append("<literal>")
++            index = end + len(end_marker)
++            continue
++        string = re.match(r'(?:b|c)?"', text[index:])
++        if string:
++            index += string.end()
++            while index < len(text) and text[index] != '"':
++                index += 2 if text[index] == "\\" else 1
++            if index >= len(text):
++                raise ValueError("unterminated Rust string in caller contract")
++            tokens.append("<literal>")
++            index += 1
++            continue
++        char = re.match(r"b?'(?:\\(?:u\{[0-9a-fA-F_]+\}|x[0-9a-fA-F]{2}|.)|[^'\\\n])'", text[index:])
++        if char:
++            tokens.append("<literal>")
++            index += char.end()
++            continue
++        identifier = re.match(r"(?:r#)?([A-Za-z_][A-Za-z_0-9]*)", text[index:])
++        if identifier:
++            tokens.append(identifier.group(1))
++            index += identifier.end()
++            continue
++        tokens.append(text[index])
++        index += 1
++    return tokens
++
++
++def bounded_group(tokens: list[str], start: int, opening: str, closing: str) -> tuple[list[str], int]:
++    if start >= len(tokens) or tokens[start] != opening:
++        raise ValueError(f"caller contract expected {opening!r}")
++    depth = 1
++    for index in range(start + 1, len(tokens)):
++        if tokens[index] == opening:
++            depth += 1
++        elif tokens[index] == closing and not (closing == ">" and tokens[index - 1] == "-"):
++            depth -= 1
++            if depth == 0:
++                return tokens[start + 1:index], index + 1
++    raise ValueError(f"caller contract has unclosed {opening!r}")
++
++
++def top_level_declarations(tokens: list[str], prefix: list[str]) -> list[int]:
++    scopes: list[str] = []
++    closing = {"}": "{", ")": "(", "]": "["}
++    matches: list[int] = []
++    for index, token in enumerate(tokens):
++        if not scopes and tokens[index:index + len(prefix)] == prefix:
++            matches.append(index)
++        if token in ("{", "(", "["):
++            scopes.append(token)
++        elif token in closing:
++            if not scopes or scopes.pop() != closing[token]:
++                raise ValueError("unbalanced Rust item scope")
++    if scopes:
++        raise ValueError("unclosed Rust item scope")
++    return matches
++
++
++def item_prefix(tokens: list[str], declaration: int) -> list[str]:
++    start = declaration
++    while start and tokens[start - 1] not in (";", "}"):
++        start -= 1
++    return tokens[start:declaration]
++
++
++def unconditional_item_prefix(tokens: list[str], declaration: int) -> list[str]:
++    prefix = item_prefix(tokens, declaration)
++    while prefix and prefix[0] == "#":
++        attribute, consumed = bounded_group(prefix, 1, "[", "]")
++        if attribute and attribute[0] in ("cfg", "cfg_attr"):
++            raise ValueError("conditional Bao authority declaration requires native review")
++        prefix = prefix[consumed:]
++    return prefix
++
++
++def comma_groups(tokens: list[str]) -> list[list[str]]:
++    """Split only the bounded generic/parameter list, not Rust expressions."""
++    result: list[list[str]] = []
++    start = 0
++    nesting: list[str] = []
++    closing = {"}": "{", ")": "(", "]": "[", ">": "<"}
++    for index, token in enumerate(tokens):
++        if token in ("{", "(", "[", "<"):
++            nesting.append(token)
++        elif token in closing and not (token == ">" and index and tokens[index - 1] == "-"):
++            if not nesting or nesting.pop() != closing[token]:
++                raise ValueError("unbalanced Bao parameter list")
++        elif token == "," and not nesting:
++            result.append(tokens[start:index])
++            start = index + 1
++    if nesting:
++        raise ValueError("unclosed Bao parameter list")
++    if start < len(tokens):
++        result.append(tokens[start:])
++    return result
++
++
++def validate_bao_input_surface(text: str) -> None:
++    # This diagnostic checks only direct operation identity and the named
++    # sealed inputs. It is not a field inventory or Rust type-resolution proof.
++    tokens = rust_tokens(text)
++    declarations = top_level_declarations(tokens, ["pub", "struct", "BaoDurableAuthBusAdmission"])
++    if len(declarations) != 1:
++        raise ValueError("Bao must declare one top-level durable admission struct")
++    declaration = declarations[0]
++    if unconditional_item_prefix(tokens, declaration):
++        raise ValueError("unsupported Bao admission declaration prefix")
++    body, _ = bounded_group(tokens, declaration + 3, "{", "}")
++    if top_level_declarations(body, ["operation_id", ":"]) or "BaoAuthBusAdmission" in body:
++        raise ValueError("Bao admission must not carry raw operation identity")
++
++    entry = "consume_kv_v2_with_durable_authbus_operation"
++    implementations = top_level_declarations(tokens, ["impl", "BaoClient", "{"])
++    if len(implementations) != 1:
++        raise ValueError("Bao must declare one top-level product implementation")
++    if unconditional_item_prefix(tokens, implementations[0]):
++        raise ValueError("unsupported Bao implementation prefix")
++    implementation, _ = bounded_group(tokens, implementations[0] + 2, "{", "}")
++    functions = top_level_declarations(implementation, ["fn", entry])
++    if len(functions) != 1:
++        raise ValueError("Bao must declare one sealed durable entry")
++    if unconditional_item_prefix(implementation, functions[0]) != ["pub", "async"]:
++        raise ValueError("Bao sealed entry must remain public and async")
++    index = functions[0] + 2
++    if index < len(implementation) and implementation[index] == "<":
++        generic, index = bounded_group(implementation, index, "<", ">")
++        for parameter in comma_groups(generic):
++            while parameter and parameter[0] == "#":
++                _, consumed = bounded_group(parameter, 1, "[", "]")
++                parameter = parameter[consumed:]
++            if parameter and parameter[0] in ("EnteredAuthBusOperationHandle", "BaoDurableAuthBusAdmission"):
++                raise ValueError("generic shadows a sealed Bao input type")
++    parameters, _ = bounded_group(implementation, index, "(", ")")
++    named: dict[str, list[str]] = {}
++    for parameter in comma_groups(parameters):
++        if "BaoAuthBusAdmission" in parameter:
++            raise ValueError("Bao entry must not accept a raw admission wrapper")
++        while parameter and parameter[0] == "#":
++            attribute, consumed = bounded_group(parameter, 1, "[", "]")
++            if attribute and attribute[0] in ("cfg", "cfg_attr"):
++                raise ValueError("conditional Bao parameter requires native review")
++            parameter = parameter[consumed:]
++        if ":" in parameter and "operation_id" in parameter[:parameter.index(":")]:
++            raise ValueError("Bao entry must not accept a raw operation identifier")
++        while parameter and parameter[0] in ("mut", "ref"):
++            parameter = parameter[1:]
++        if len(parameter) > 1 and parameter[1] == ":":
++            if parameter[0] in named:
++                raise ValueError("duplicate Bao entry parameter")
++            named[parameter[0]] = parameter[2:]
++    for name, expected_type in (("operation", "EnteredAuthBusOperationHandle"), ("admission", "BaoDurableAuthBusAdmission")):
++        parameter_type = named.get(name, [])
++        if not parameter_type or parameter_type[0] != "&":
++            raise ValueError(f"Bao entry lost borrowed sealed input {name}")
++        parameter_type = parameter_type[1:]
++        if len(parameter_type) >= 2 and parameter_type[0] == "'":
++            parameter_type = parameter_type[2:]
++        if parameter_type and parameter_type[0] == "mut":
++            parameter_type = parameter_type[1:]
++        if parameter_type != [expected_type]:
++            raise ValueError(f"Bao entry lost sealed input {name}: &{expected_type}")
++
++
+ def validate_product_contract(mapping: dict[str, Any]) -> dict[str, Any]:
+     contract = load_json(PRODUCT_CONTRACT)
+     if contract.get("schema") != "hepta.authbus.product-caller-contract.v2":
+@@ -173,6 +376,8 @@
+         name = str(caller.get("name"))
+         path = existing(str(caller.get("sourcePath")), f"caller {name}")
+         text = path.read_text(encoding="utf-8")
++        if name == "bao_kv_v2_read":
++            validate_bao_input_surface(text)
+         missing = [token for token in caller.get("requiredTokens", []) if token not in text]
+         forbidden = [token for token in caller.get("forbiddenTokens", []) if token in text]
+         if missing:
+--- /dev/null
++++ b/scripts/authbus-evidence-projection-tests.py
+@@ -0,0 +1,137 @@
++#!/usr/bin/env python3
++"""Scoped source-contract regressions; native Rust checks remain required."""
++import importlib.util
++from pathlib import Path
++import shutil
++import tempfile
++import unittest
++from unittest.mock import patch
++
++ROOT = Path(__file__).resolve().parents[1]
++SPEC = importlib.util.spec_from_file_location("authbus_projection", ROOT / "scripts/authbus-evidence-projection.py")
++assert SPEC and SPEC.loader
++PROJECTION = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(PROJECTION)
++BAO = "codex-rs/hepta-bao-adapter/src/durable_authbus.rs"
++CONTRACT = "docs/modules/auth.authbus/PRODUCT_CALLER_CONTRACT.json"
++MAPPING = {"productCallers": [{"name": "agentd_signed_text"}, {"name": "bao_kv_v2_read"}]}
++
++
++class BaoInputContractTests(unittest.TestCase):
++    def setUp(self):
++        self.source = (ROOT / BAO).read_text()
++
++    def test_real_receipt_identity_is_allowed(self):
++        self.assertIn("pub operation_id: StableId", self.source)
++        PROJECTION.validate_bao_input_surface(self.source)
++        self.assertEqual(len(PROJECTION.validate_product_contract(MAPPING)["callers"]), 2)
++
++    def test_multiline_comments_and_spacing_are_not_authority(self):
++        source = self.source.replace("pub policy_revision: u64,", "pub /* policy { */\n policy_revision\n :\n u64\n ,")
++        source = source.replace("operation: &EnteredAuthBusOperationHandle,", "operation /*nested /* } */ note*/ :\n & /* trusted */ EnteredAuthBusOperationHandle ,")
++        PROJECTION.validate_bao_input_surface(source)
++
++    def test_raw_operation_input_rejected_in_every_spelling(self):
++        for field in ["pub operation_id: StableId,", "pub\n operation_id /* x */ :\n StableId,", "pub r#operation_id: StableId,", "operation_id: StableId,"]:
++            with self.subTest(field=field):
++                source = self.source.replace("pub struct BaoDurableAuthBusAdmission {", "pub struct BaoDurableAuthBusAdmission {\n" + field)
++                with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(source)
++
++    def test_wrapped_raw_admission_input_rejected(self):
++        source = self.source.replace("pub quota_key: StableId,", "pub metadata: BaoAuthBusAdmission,")
++        with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(source)
++
++    def test_non_authority_metadata_and_benign_attributes_are_allowed(self):
++        source = self.source.replace("pub struct BaoDurableAuthBusAdmission {", "#[non_exhaustive] pub struct BaoDurableAuthBusAdmission {\n pub request_label: Option<String>,")
++        source = source.replace("impl BaoClient {", '#[allow(clippy::too_many_arguments)] impl BaoClient {')
++        source = source.replace("operation: &EnteredAuthBusOperationHandle,", "request_label: &str, operation: &EnteredAuthBusOperationHandle,")
++        PROJECTION.validate_bao_input_surface(source)
++
++    def test_missing_or_wrong_sealed_handle_rejected(self):
++        for replacement in ["", "operation: &StableId,", "operation_id: &EnteredAuthBusOperationHandle,", "operation: &AuthBusOperationHandle,"]:
++            with self.subTest(replacement=replacement):
++                source = self.source.replace("operation: &EnteredAuthBusOperationHandle,", replacement)
++                with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(source)
++
++    def test_disabled_impl_or_method_is_not_a_sealed_entry(self):
++        for source in [self.source.replace("impl BaoClient {", "#[cfg(any())] impl BaoClient {"), self.source.replace("    pub async fn consume_kv_v2_with_durable_authbus_operation", "    #[cfg(any())] pub async fn consume_kv_v2_with_durable_authbus_operation")]:
++            with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(source)
++
++    def test_generic_cannot_shadow_sealed_handle_name(self):
++        source = self.source.replace("E: BaoAuthBusEvidenceProvider,", "E: BaoAuthBusEvidenceProvider, EnteredAuthBusOperationHandle,")
++        with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(source)
++
++    def test_generic_attributes_do_not_hide_authority_shadowing(self):
++        source = self.source.replace("E: BaoAuthBusEvidenceProvider,", "E: BaoAuthBusEvidenceProvider, #[allow(unused)] EnteredAuthBusOperationHandle,")
++        with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(source)
++
++    def test_known_raw_wrapper_cannot_be_added_as_parameter(self):
++        for raw in ["&BaoAuthBusAdmission", "Option<BaoAuthBusAdmission>"]:
++            source = self.source.replace("operation: &EnteredAuthBusOperationHandle,", "operation: &EnteredAuthBusOperationHandle, raw_admission: " + raw + ",")
++            with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(source)
++
++    def test_valid_function_trait_bound_is_allowed(self):
++        source = self.source.replace("E: BaoAuthBusEvidenceProvider,", "E: BaoAuthBusEvidenceProvider + Fn() -> (),")
++        PROJECTION.validate_bao_input_surface(source)
++
++    def test_raw_identifier_parameter_cannot_be_added(self):
++        for argument in ["operation_id: StableId,", "mut operation_id: StableId,", "ref operation_id: StableId,", "r#operation_id: StableId,"]:
++            source = self.source.replace("operation: &EnteredAuthBusOperationHandle,", "operation: &EnteredAuthBusOperationHandle,\n" + argument)
++            with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(source)
++
++    def test_lifetimes_mutable_bindings_and_benign_parameter_attributes(self):
++        source = self.source.replace("E: BaoAuthBusEvidenceProvider,", "'a, E: BaoAuthBusEvidenceProvider,")
++        source = source.replace("operation: &EnteredAuthBusOperationHandle,", "#[allow(unused_mut)] mut operation: &'a EnteredAuthBusOperationHandle,")
++        PROJECTION.validate_bao_input_surface(source)
++
++    def test_comment_and_raw_string_cannot_supply_missing_declaration(self):
++        start = self.source.index("pub struct BaoDurableAuthBusAdmission {")
++        end = self.source.index("\n}", start) + 2
++        declaration = self.source[start:end]
++        absent = self.source[:start] + "pub type BaoDurableAuthBusAdmission = BaoAuthBusAdmission;" + self.source[end:]
++        for fake in ["/* " + declaration + " */", 'const SPOOF: &str = r###"' + declaration + '"###;']:
++            with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(absent + fake)
++
++    def test_nested_or_disabled_struct_cannot_mask_raw_admission_alias(self):
++        start = self.source.index("#[derive(Clone, Debug, Eq, PartialEq)]\npub struct BaoDurableAuthBusAdmission {")
++        end = self.source.index("\n}", start) + 2
++        declaration = self.source[start:end]
++        absent = self.source[:start] + "pub type BaoDurableAuthBusAdmission = BaoAuthBusAdmission;" + self.source[end:]
++        for decoy in ["macro_rules! unused { () => { " + declaration + " }; }", "#[cfg(any())] mod unused { " + declaration + " }", "#[cfg(any())] " + declaration, "unused!(; " + declaration + ");", "unused![; " + declaration + "];" ]:
++            with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(absent + decoy)
++
++    def test_optional_final_commas_are_allowed(self):
++        source = self.source.replace("pub expires_at_ms: u64,\n}", "pub expires_at_ms: u64\n}")
++        source = source.replace("consumer: impl FnOnce(&[u8]) -> Result<(), ()>,", "consumer: impl FnOnce(&[u8]) -> Result<(), ()>")
++        PROJECTION.validate_bao_input_surface(source)
++
++    def test_duplicate_declaration_is_not_an_allowlist(self):
++        with self.assertRaises(ValueError):
++            PROJECTION.validate_bao_input_surface(self.source + "\npub struct BaoDurableAuthBusAdmission {}")
++
++    def test_unterminated_comment_or_literal_fails_closed(self):
++        for suffix in ["/* unclosed", 'r###"unclosed', '"unclosed']:
++            with self.assertRaises(ValueError): PROJECTION.validate_bao_input_surface(self.source + suffix)
++
++    def test_actual_validator_retains_raw_store_and_required_marker_bans(self):
++        contract = PROJECTION.load_json(ROOT / CONTRACT)
++        with tempfile.TemporaryDirectory() as temporary:
++            root = Path(temporary)
++            for caller in contract["callers"]:
++                for name in [caller["sourcePath"], *caller["testPaths"]]:
++                    target = root / name
++                    target.parent.mkdir(parents=True, exist_ok=True)
++                    shutil.copyfile(ROOT / name, target)
++            (root / CONTRACT).parent.mkdir(parents=True, exist_ok=True)
++            shutil.copyfile(ROOT / CONTRACT, root / CONTRACT)
++            with patch.object(PROJECTION, "ROOT", root), patch.object(PROJECTION, "PRODUCT_CONTRACT", root / CONTRACT):
++                for malicious, expected in [(self.source + "\n// AuthBusAuthorityStore", "forbidden tokens"), (self.source.replace("validate_entered_authbus_operation", "unchecked_operation"), "missing required tokens")]:
++                    (root / BAO).write_text(malicious)
++                    with self.assertRaisesRegex(ValueError, expected): PROJECTION.validate_product_contract(MAPPING)
++
++    def test_caller_mapping_drift_still_fails(self):
++        with self.assertRaisesRegex(ValueError, "drift between map and contract"):
++            PROJECTION.validate_product_contract({"productCallers": [{"name": "bao_kv_v2_read"}]})
++
++
++if __name__ == "__main__": unittest.main()
+--- a/docs/modules/auth.authbus/PRODUCT_CALLER_CONTRACT.json
++++ b/docs/modules/auth.authbus/PRODUCT_CALLER_CONTRACT.json
+@@ -48,8 +48,7 @@
+         "reconciliation_required: true"
+       ],
+       "forbiddenTokens": [
+-        "AuthBusAuthorityStore",
+-        "pub operation_id: StableId"
++        "AuthBusAuthorityStore"
+       ],
+       "contracts": {
+         "noBypass": "The qualified product entry accepts an entered sealed kernel.operations handle and only AuthBusExecutionPort; it does not accept caller-minted operation metadata.",
+--- a/docs/modules/auth.authbus/IMPLEMENTATION_MAP.json
++++ b/docs/modules/auth.authbus/IMPLEMENTATION_MAP.json
+@@ -26,6 +26,7 @@
+     "docs/modules/auth.authbus",
+     "docs/lane-a-foundation/auth.authbus",
+     "scripts/authbus-evidence-projection.py",
++    "scripts/authbus-evidence-projection-tests.py",
+     "scripts/authbus-exact-head-evidence.py",
+     "scripts/authbus-readiness-manifest.py",
+     "scripts/check-authbus-source-truth.py",
+--- a/.github/workflows/authbus-authority-qualification.yml
++++ b/.github/workflows/authbus-authority-qualification.yml
+@@ -148,6 +148,7 @@
+           EXPECTED_HEAD: ${{ steps.resolve.outputs.head }}
+         run: |
+           set -euo pipefail
++          python3 scripts/authbus-evidence-projection-tests.py
+           python3 scripts/authbus-evidence-projection.py \
+             --candidate-kind "$CANDIDATE_KIND" \
+             --expected-commit "$EXPECTED_HEAD" \
+@@ -344,6 +345,7 @@
+           MERGE_SHA: ${{ steps.verify.outputs.merge }}
+         run: |
+           set -euo pipefail
++          python3 scripts/authbus-evidence-projection-tests.py
+           python3 scripts/authbus-evidence-projection.py \
+             --candidate-kind synthetic_merge \
+             --expected-commit "$MERGE_SHA" \

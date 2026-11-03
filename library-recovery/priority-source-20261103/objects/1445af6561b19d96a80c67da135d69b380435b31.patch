@@ -1,0 +1,179 @@
+diff --git a/.github/workflows/ui-product-foundation.yml b/.github/workflows/ui-product-foundation.yml
+index 96beb32aef..2bdbc13a4d 100644
+--- a/.github/workflows/ui-product-foundation.yml
++++ b/.github/workflows/ui-product-foundation.yml
+@@ -137,7 +137,7 @@ jobs:
+           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
+           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
+           node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
+-          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
++          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs apps/hepta-control-ui/test/font-network-diagnostic.test.mjs
+           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+       - id: default_build
+         name: Build canonical strict-CSP no-threads artifact
+diff --git a/apps/hepta-control-ui/e2e/robrix-host.spec.mjs b/apps/hepta-control-ui/e2e/robrix-host.spec.mjs
+index 07262e673a..3097909bc1 100644
+--- a/apps/hepta-control-ui/e2e/robrix-host.spec.mjs
++++ b/apps/hepta-control-ui/e2e/robrix-host.spec.mjs
+@@ -1,4 +1,5 @@
+ // Real canvas evidence. OCR is a necessary glyph regression, not full visual/a11y acceptance.
++import {observeFontNetwork} from '../tools/font-network-diagnostic.mjs';
+ import {test,expect} from '@playwright/test';
+ import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
+ import {readFile,writeFile} from 'node:fs/promises';
+@@ -7,7 +8,8 @@ import {execFileSync} from 'node:child_process';
+ import {captureSchedule} from '../tools/robrix-pixel-plan.mjs';
+ import {screenshotWordCenter,screenshotConversationTabs} from '../tools/verify-robrix-pixels.mjs';
+ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
+- test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName},testInfo)=>{
++ test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName,baseURL},testInfo)=>{
++  const fontDiagnostic=await observeFontNetwork(page,baseURL,browserName);
+   let phase='application';
+   const themeControlPoints=new Map();
+   const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+@@ -210,6 +212,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
+    await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,scrollObservations,jumpObservations,geometryObservations,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
+    if(testInfo.status!==testInfo.expectedStatus) console.log(JSON.stringify({scope:'fixture scroll diagnostics; not acceptance',browserName,viewport,scrollObservations,jumpObservations}));
+    await testInfo.attach('host-diagnostics',{path:diagnostics,contentType:'application/json'});
++   await writeFile(testInfo.outputPath('font-network-diagnostic.json'),JSON.stringify({sourceSha,fixtures,...await fontDiagnostic.finish()},null,2)+'\n');
+   }
+  });
+ }
+diff --git a/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs b/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
+index e5961777bb..ff709524da 100644
+--- a/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
++++ b/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
+@@ -1,4 +1,5 @@
+ // Real Rust UI + real gateway NotAttached path. This does not create a production host.
++import {observeFontNetwork} from '../tools/font-network-diagnostic.mjs';
+ import {test,expect} from '@playwright/test';
+ import {readFile,writeFile} from 'node:fs/promises';
+ import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
+@@ -7,7 +8,7 @@ import {readProductStatusPixels} from '../tools/product-status-pixels.mjs';
+ import {auditProductConsole} from '../tools/product-console-audit.mjs';
+ import {execFileSync} from 'node:child_process';
+ import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
+-for(const width of [1280,640])for(const scenario of ['timeout','navigation','background'])test(`actual missing-owner status ${width} ${scenario}`,async({page,baseURL},testInfo)=>{
++for(const width of [1280,640])for(const scenario of ['timeout','navigation','background'])test(`actual missing-owner status ${width} ${scenario}`,async({page,baseURL,browserName},testInfo)=>{
+  const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  expect(execFileSync('git',['status','--porcelain','--untracked-files=normal'],{encoding:'utf8'}).trim()).toBe('');
+  const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+@@ -46,6 +47,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
+   const record={...requestRecord(response.request()),status:response.status(),finished:false};responses.push(record);
+   finishedResponses.push(response.finished().then(error=>{record.finished=error===null;record.finishError=error?String(error):null;},error=>{record.finishError=String(error);}));
+  }});
++ const fontDiagnostic=await observeFontNetwork(page,baseURL,browserName);
+  try {
+  await page.setViewportSize({width,height:800});await page.goto('/');
+  await expect(page.locator('canvas')).toBeVisible();await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
+@@ -147,5 +149,5 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
+  const errorAudit=await audit('final-read-audit');
+  const bytes=await readFile(screenshot);
+  await writeFile(testInfo.outputPath('receipt.json'),JSON.stringify({...binding,width,ownerAttached:false,legacyRuntimeAvailable:false,requests,responses,errorAudit,faults,faultCases,networkFailures,scenario,proofs,cancellations,physicalBackgroundQualified:false,png:{name:'owner-not-attached.png',bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')},ocr:text},null,2)+'\n');
+- }finally{await writeFile(testInfo.outputPath('raw-request-audit.json'),JSON.stringify(rawAudit(),null,2)+'\n');}
++ }finally{await writeFile(testInfo.outputPath('raw-request-audit.json'),JSON.stringify(rawAudit(),null,2)+'\n');await writeFile(testInfo.outputPath('font-network-diagnostic.json'),JSON.stringify({...binding,...await fontDiagnostic.finish()},null,2)+'\n');}
+ });
+diff --git a/apps/hepta-control-ui/test/font-network-diagnostic.test.mjs b/apps/hepta-control-ui/test/font-network-diagnostic.test.mjs
+new file mode 100644
+index 0000000000..eb41d4394f
+--- /dev/null
++++ b/apps/hepta-control-ui/test/font-network-diagnostic.test.mjs
+@@ -0,0 +1,48 @@
++import {test} from 'node:test';
++import assert from 'node:assert/strict';
++import {EventEmitter} from 'node:events';
++import {fontHeaders,fontUrl,observeFontNetwork} from '../tools/font-network-diagnostic.mjs';
++const origin='http://127.0.0.1:4175';
++test('only exact bundle-origin font paths and selected nonsecret headers are retained',()=>{
++ assert.equal(fontUrl(origin+'/font.otf',origin),origin+'/font.otf');
++ for(const url of ['https://foreign/font.ttf',origin+'/api/hepta/runtime',origin+'/font.ttf?secret=1',origin+'/font.ttf#fragment','garbage'])assert.equal(fontUrl(url,origin),null);
++ assert.deepEqual(fontHeaders({Range:'bytes=0-4',Cookie:'secret',Authorization:'secret','Content-Length':'50'}),{range:'bytes=0-4','content-length':'50'});
++});
++function fixture(){
++ const page=new EventEmitter(),cdp=new EventEmitter(),commands=[];let detached=false,init;
++ cdp.send=async command=>commands.push(command);cdp.detach=async()=>{detached=true;};
++ page.context=()=>({newCDPSession:async()=>cdp});page.addInitScript=async callback=>{init=callback;};page.evaluate=async()=>[];
++ return {page,cdp,commands,get detached(){return detached;},get init(){return init;}};
++}
++test('passive Chromium observer records method/range/initiator and full transfer or failure separately',async()=>{
++ const f=fixture(),observer=await observeFontNetwork(f.page,origin,'chromium');
++ const request={url:()=>origin+'/font.otf',method:()=> 'GET',resourceType:()=> 'fetch',headers:()=>({Range:'bytes=0-4'}),timing:()=>({startTime:1}),failure:()=>({errorText:'net::ERR_ABORTED'})};
++ f.page.emit('request',request);f.page.emit('requestfailed',request);
++ f.cdp.emit('Network.requestWillBeSent',{requestId:'1',request:{url:request.url(),method:'GET',headers:{Range:'bytes=0-4'}},type:'Fetch',timestamp:1,initiator:{type:'script',stack:{callFrames:[{url:origin+'/makepad_platform/web.js?private=1',functionName:'loader',lineNumber:1,columnNumber:2}]}}});
++ f.cdp.emit('Network.dataReceived',{requestId:'1',dataLength:5,encodedDataLength:5,timestamp:2});
++ f.cdp.emit('Network.loadingFailed',{requestId:'1',errorText:'net::ERR_ABORTED',canceled:true,timestamp:3});
++ f.cdp.emit('Network.requestWillBeSent',{requestId:'2',request:{url:request.url(),method:'GET',headers:{}},type:'Fetch',timestamp:4});
++ f.cdp.emit('Network.loadingFinished',{requestId:'2',encodedDataLength:500,timestamp:5});
++ const result=await observer.finish();
++ assert.deepEqual(f.commands,['Network.enable']);assert.equal(f.detached,true);assert.equal(f.page.listenerCount('request'),0);
++ assert.equal(result.qualification,false);assert.equal(result.instrumented,true);assert.equal(result.records.filter(r=>r.event==='cdp-finished').length,1);
++ assert.equal(result.records.find(r=>r.event==='cdp-request').initiator.frames[0].url,'/makepad_platform/web.js');
++ assert.equal(result.records.find(r=>r.event==='cdp-failed').canceled,true);
++ assert.match(String(f.init),/passive:true/);assert.doesNotMatch(String(f.init),/preventDefault|fetch\s*=|prototype|cancel\(/);
++});
++test('non-Chromium path does not attempt unsupported CDP; record overflow is explicit',async()=>{
++ const f=fixture(),observer=await observeFontNetwork(f.page,origin,'firefox');
++ for(let i=0;i<300;i++)f.page.emit('request',{url:()=>origin+'/font.ttf',method:()=> 'GET',resourceType:()=> 'fetch',headers:()=>({})});
++ const result=await observer.finish();assert.deepEqual(f.commands,[]);assert.equal(result.records.length,256);assert.equal(result.dropped,44);
++});
++test('data-event overflow preserves bounded terminal summaries and accumulated byte counts',async()=>{
++ const f=fixture(),observer=await observeFontNetwork(f.page,origin,'chromium');
++ for(const requestId of ['finished','failed'])f.cdp.emit('Network.requestWillBeSent',{requestId,request:{url:origin+'/font.otf',method:'GET',headers:{}},type:'Fetch',timestamp:1});
++ for(let i=0;i<5000;i++)f.cdp.emit('Network.dataReceived',{requestId:'finished',dataLength:64,encodedDataLength:60,timestamp:2});
++ f.cdp.emit('Network.loadingFinished',{requestId:'finished',encodedDataLength:300100,timestamp:3});
++ f.cdp.emit('Network.loadingFailed',{requestId:'failed',errorText:'net::ERR_ABORTED',canceled:true,timestamp:3});
++ const result=await observer.finish();assert.equal(result.records.length,4096);assert.equal(result.dropped,908);
++ assert.equal(result.cdpRequests[0].dataLength,320000);assert.equal(result.cdpRequests[0].encodedDataLength,300000);assert.equal(result.cdpRequests[0].dataEvents,5000);
++ assert.equal(result.cdpRequests[0].terminal.event,'cdp-finished');assert.equal(result.cdpRequests[0].terminal.encodedDataLength,300100);
++ assert.equal(result.cdpRequests[1].terminal.event,'cdp-failed');
++});
+diff --git a/apps/hepta-control-ui/tools/font-network-diagnostic.mjs b/apps/hepta-control-ui/tools/font-network-diagnostic.mjs
+new file mode 100644
+index 0000000000..84035b38de
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/font-network-diagnostic.mjs
+@@ -0,0 +1,44 @@
++// Passive diagnostics only. Completion is transport evidence, not Rust font adoption.
++const FONT=/\.(?:ttf|otf|woff2?)$/i;
++const HEADERS=new Set(['range','accept','content-length','content-range','content-type','content-encoding']);
++export function fontUrl(value,origin){try{const url=new URL(value);return url.origin===origin&&FONT.test(url.pathname)&&!url.search&&!url.hash?url.href:null;}catch{return null;}}
++export function fontHeaders(headers){return Object.fromEntries(Object.entries(headers??{}).filter(([name])=>HEADERS.has(name.toLowerCase())).map(([name,value])=>[name.toLowerCase(),String(value).slice(0,256)]));}
++function sourcePath(value,origin){try{const url=new URL(value,origin);return url.origin===origin?url.pathname:'external';}catch{return 'invalid';}}
++export async function observeFontNetwork(page,baseURL,browserName){
++ const origin=new URL(baseURL).origin,records=[],ids=new Map(),requests=new Map();let dropped=0,next=0;
++ const add=record=>{if(records.length<4096)records.push(record);else dropped++;};
++ const listeners=[];
++ const on=(name,callback)=>{page.on(name,callback);listeners.push([name,callback]);};
++ const identify=request=>{const url=fontUrl(request.url(),origin);if(!url)return null;if(!ids.has(request)){if(ids.size>=256){dropped++;return null;}ids.set(request,++next);}return {id:ids.get(request),url};};
++ on('request',request=>{const item=identify(request);if(item){const record={...item,method:request.method(),resourceType:request.resourceType(),headers:fontHeaders(request.headers()),terminal:null};requests.set(item.id,record);add({event:'request',...record});}});
++ on('response',response=>{const item=identify(response.request());if(item){const responseRecord={status:response.status(),headers:fontHeaders(response.headers())};Object.assign(requests.get(item.id)??{}, {response:responseRecord});add({event:'response',...item,...responseRecord});}});
++ on('requestfinished',request=>{const item=identify(request);if(item){const terminal={event:'finished',timing:request.timing()};Object.assign(requests.get(item.id)??{},{terminal});add({...item,...terminal});}});
++ on('requestfailed',request=>{const item=identify(request);if(item){const terminal={event:'failed',error:request.failure()?.errorText,timing:request.timing()};Object.assign(requests.get(item.id)??{},{terminal});add({...item,...terminal});}});
++ await page.addInitScript(()=>{
++  window.__heptaFontWebglEvents=[];
++  for(const name of ['webglcontextlost','webglcontextrestored'])document.addEventListener(name,event=>{
++   if(window.__heptaFontWebglEvents.length<32)window.__heptaFontWebglEvents.push({type:event.type,time:performance.now(),statusMessage:String(event.statusMessage??'').slice(0,256)});
++  },{capture:true,passive:true});
++ });
++ let cdp=null;const tracked=new Map();
++ if(browserName==='chromium'){
++  cdp=await page.context().newCDPSession(page);
++  cdp.on('Network.requestWillBeSent',event=>{
++   const url=fontUrl(event.request.url,origin);if(!url)return;if(tracked.size>=256&&!tracked.has(event.requestId)){dropped++;return;}
++   const frames=(event.initiator?.stack?.callFrames??[]).slice(0,8).map(frame=>({url:sourcePath(frame.url,origin),functionName:frame.functionName.slice(0,160),lineNumber:frame.lineNumber,columnNumber:frame.columnNumber}));
++   const record={requestId:event.requestId,url,method:event.request.method,type:event.type,headers:fontHeaders(event.request.headers),timestamp:event.timestamp,initiator:{type:event.initiator?.type,frames},dataLength:0,encodedDataLength:0,dataEvents:0,terminal:null};
++   tracked.set(event.requestId,record);add({event:'cdp-request',...record});
++  });
++  cdp.on('Network.responseReceived',event=>{const record=tracked.get(event.requestId);if(record){record.response={status:event.response.status,headers:fontHeaders(event.response.headers),protocol:event.response.protocol,fromDiskCache:event.response.fromDiskCache,fromServiceWorker:event.response.fromServiceWorker,timestamp:event.timestamp};add({event:'cdp-response',requestId:event.requestId,...record.response});}});
++  cdp.on('Network.dataReceived',event=>{const record=tracked.get(event.requestId);if(record){record.dataLength+=event.dataLength;record.encodedDataLength+=event.encodedDataLength;record.dataEvents++;add({event:'cdp-data',requestId:event.requestId,dataLength:event.dataLength,encodedDataLength:event.encodedDataLength,timestamp:event.timestamp});}});
++  cdp.on('Network.loadingFinished',event=>{const record=tracked.get(event.requestId);if(record){record.terminal={event:'cdp-finished',encodedDataLength:event.encodedDataLength,timestamp:event.timestamp};add({requestId:event.requestId,...record.terminal});}});
++  cdp.on('Network.loadingFailed',event=>{const record=tracked.get(event.requestId);if(record){record.terminal={event:'cdp-failed',errorText:event.errorText,canceled:event.canceled,blockedReason:event.blockedReason,timestamp:event.timestamp};add({requestId:event.requestId,...record.terminal});}});
++  await cdp.send('Network.enable');
++ }
++ return {async finish(){
++  const webgl=await page.evaluate(()=>window.__heptaFontWebglEvents??[]).catch(error=>[{observationError:String(error).slice(0,256)}]);
++  for(const [name,callback]of listeners)page.off(name,callback);
++  if(cdp)await cdp.detach().catch(error=>add({event:'diagnostic-detach-error',message:String(error).slice(0,256)}));
++  return {schema:'hepta.font-network-diagnostic.v1',instrumented:true,qualification:false,origin,browserName,requests:[...requests.values()],cdpRequests:[...tracked.values()],records,dropped,webgl,scope:'Passive request/CDP observations; no fetch, stream, cancellation, cache or request interception changes. Transport completion alone does not prove Rust adoption.'};
++ }};
++}

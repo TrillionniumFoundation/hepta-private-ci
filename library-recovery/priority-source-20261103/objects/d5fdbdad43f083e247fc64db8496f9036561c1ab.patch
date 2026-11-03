@@ -1,0 +1,285 @@
+diff --git a/codex-rs/app-server-client/src/remote_blocked_close_test_support.rs b/codex-rs/app-server-client/src/remote_blocked_close_test_support.rs
+--- a/codex-rs/app-server-client/src/remote_blocked_close_test_support.rs
++++ b/codex-rs/app-server-client/src/remote_blocked_close_test_support.rs
+@@ -159,7 +159,9 @@
+     /// Existing test-support only: an exclusive client with one unanswered read
+     /// and a real worker that will block flushing its close frame.
+     #[doc(hidden)]
+-    pub async fn blocked_close_fixture_for_test() -> IoResult<(Self, RemoteBlockedCloseTestProbe)> {
++    pub async fn blocked_close_fixture_for_test(
++        codex_home: &str,
++    ) -> IoResult<(Self, RemoteBlockedCloseTestProbe)> {
+         let (stream, peer_stream) = tokio::io::duplex(4096);
+         let armed = Arc::new(AtomicBool::new(false));
+         let (blocked_tx, blocked_rx) = oneshot::channel();
+@@ -178,6 +180,7 @@
+         )
+         .await;
+         let (read_tx, read_rx) = oneshot::channel();
++        let codex_home = codex_home.to_string();
+         let peer = tokio::spawn(async move {
+             let mut websocket = WebSocketStream::from_raw_socket(
+                 peer_stream,
+@@ -190,7 +193,7 @@
+                     serde_json::from_str(&text).map_err(IoError::other)?;
+                 match request["method"].as_str() {
+                     Some("initialize") => websocket.send(Message::Text(serde_json::json!({
+-                        "id":request["id"], "result":{"userAgent":"blocked-close/1","codexHome":"fixture"}
++                        "id":request["id"], "result":{"userAgent":"blocked-close/1","codexHome":codex_home}
+                     }).to_string().into())).await.map_err(IoError::other)?,
+                     Some("initialized") => {},
+                     Some("thread/turns/list") => {
+diff --git a/codex-rs/hepta-agentd/BUILD.bazel b/codex-rs/hepta-agentd/BUILD.bazel
+--- a/codex-rs/hepta-agentd/BUILD.bazel
++++ b/codex-rs/hepta-agentd/BUILD.bazel
+@@ -4,6 +4,7 @@
+ load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+ 
+ _UNIT_TEST_DEPENDENCIES = {
++    "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
+     "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+     "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+     "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+diff --git a/codex-rs/hepta-agentd/Cargo.toml b/codex-rs/hepta-agentd/Cargo.toml
+--- a/codex-rs/hepta-agentd/Cargo.toml
++++ b/codex-rs/hepta-agentd/Cargo.toml
+@@ -99,6 +99,7 @@
+ tokio-util = { workspace = true }
+ 
+ [dev-dependencies]
++codex-app-server-client = { workspace = true, features = ["test-support"] }
+ futures = { workspace = true }
+ tokio-tungstenite = { workspace = true }
+ codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
+diff --git a/codex-rs/hepta-agentd/src/runtime.rs b/codex-rs/hepta-agentd/src/runtime.rs
+--- a/codex-rs/hepta-agentd/src/runtime.rs
++++ b/codex-rs/hepta-agentd/src/runtime.rs
+@@ -280,7 +280,11 @@
+         })?;
+         tasks.spawn_required(
+             "generation-monitor",
+-            monitor_runtime(Arc::clone(&state), cancellation.clone()),
++            monitor_runtime(
++                Arc::clone(&state),
++                cancellation.clone(),
++                RemoteAppServerClient::connect,
++            ),
+         )?;
+         tasks.spawn_required(
+             "authbus-relay",
+@@ -419,10 +423,15 @@
+     }
+ }
+ 
+-async fn monitor_runtime(
++async fn monitor_runtime<Connect, ConnectFuture>(
+     state: Arc<AgentdState>,
+     cancellation: CancellationToken,
+-) -> Result<(), AgentdError> {
++    mut connect: Connect,
++) -> Result<(), AgentdError>
++where
++    Connect: FnMut(RemoteAppServerConnectArgs) -> ConnectFuture,
++    ConnectFuture: Future<Output = std::io::Result<RemoteAppServerClient>>,
++{
+     let mut app_server_ready = false;
+     loop {
+         if state.is_fenced()? {
+@@ -438,7 +447,7 @@
+         if !app_server_ready {
+             let observation = tokio::select! {
+                 () = cancellation.cancelled() => return Ok(()),
+-                observation = probe_app_server(state.identity()) => observation,
++                observation = probe_app_server(state.identity(), &mut connect) => observation,
+             };
+             match observation {
+                 Ok(()) => {
+@@ -466,11 +475,18 @@
+     }
+ }
+ 
+-async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> {
++async fn probe_app_server<Connect, ConnectFuture>(
++    identity: &AgentdIdentity,
++    connect: Connect,
++) -> Result<(), AgentdError>
++where
++    Connect: FnOnce(RemoteAppServerConnectArgs) -> ConnectFuture,
++    ConnectFuture: Future<Output = std::io::Result<RemoteAppServerClient>>,
++{
+     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
+     let client = timeout(
+         APP_SERVER_PROBE_TIMEOUT,
+-        RemoteAppServerClient::connect(RemoteAppServerConnectArgs {
++        connect(RemoteAppServerConnectArgs {
+             endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+             client_name: "hepta-agentd-readiness".to_string(),
+             client_version: env!("CARGO_PKG_VERSION").to_string(),
+@@ -482,6 +498,9 @@
+     )
+     .await
+     .map_err(|_| AgentdError::Protocol("App Server readiness probe timed out".to_string()))??;
++    // This probe exclusively owns the connection. Bind its worker before either
++    // shutdown await can be dropped by the monitor's cancellation branch.
++    let client = client.into_abort_on_drop();
+     let expected_home = identity.home_root.to_string_lossy();
+     if client.codex_home() != Some(expected_home.as_ref()) {
+         let actual = client.codex_home().unwrap_or("<missing>").to_string();
+diff --git a/codex-rs/hepta-agentd/src/runtime_readiness_cancellation_tests.rs b/codex-rs/hepta-agentd/src/runtime_readiness_cancellation_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/runtime_readiness_cancellation_tests.rs
+@@ -0,0 +1,105 @@
++//! Exercise the production monitor and readiness probe with the real client worker.
++use codex_app_server_client::RemoteAppServerClient;
++use codex_hepta_fleet::AgentLifecycle;
++use std::sync::Arc;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++use std::time::Duration;
++use tokio::time::timeout;
++use tokio_util::sync::CancellationToken;
++
++use super::monitor_runtime;
++use super::runtime_fixture;
++use crate::AgentdMethod;
++use crate::AgentdPayload;
++use crate::LifecycleSnapshot;
++use crate::RuntimeTasks;
++use crate::runtime::TASK_SHUTDOWN_GRACE;
++
++#[derive(Clone, Copy)]
++enum ServerHome {
++    Matching,
++    Mismatched,
++}
++
++async fn exercise(server_home: ServerHome) {
++    let fixture = runtime_fixture();
++    let expected_home = fixture.identity.home_root.to_string_lossy();
++    let reported_home = match server_home {
++        ServerHome::Matching => expected_home.as_ref(),
++        ServerHome::Mismatched => "different-agent-home",
++    };
++    let (client, mut probe) = RemoteAppServerClient::blocked_close_fixture_for_test(reported_home)
++        .await
++        .expect("real initialized worker and pending read");
++    let cancellation = CancellationToken::new();
++    let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)
++        .expect("production host shutdown grace");
++    let state = Arc::clone(&fixture.state);
++    let returned = Arc::new(AtomicBool::new(false));
++    let monitor_returned = Arc::clone(&returned);
++    let mut client = Some(client);
++    tasks
++        .spawn_required("readiness-monitor", async move {
++            monitor_runtime(state, cancellation, move |_args| {
++                std::future::ready(Ok(client.take().expect("one readiness connection")))
++            })
++            .await?;
++            monitor_returned.store(true, Ordering::SeqCst);
++            Ok(())
++        })
++        .expect("monitor admission");
++
++    // Do not cancel before the production probe has acquired the raw client,
++    // checked its home, and asked the actual worker to flush a close frame.
++    probe
++        .wait_for_blocked_close()
++        .await
++        .expect("readiness shutdown is blocked in the real close flush");
++    assert!(!probe.worker_finished());
++    assert!(!probe.pending_request_finished());
++    timeout(Duration::from_secs(6), tasks.shutdown())
++        .await
++        .expect("host shutdown after readiness cancellation");
++
++    // Capture the failure before cleanup so cleanup cannot make the regression
++    // green. Removing readiness's immediate adoption must leave this worker live.
++    let stopped = probe.observe_stopped().await;
++    probe.cleanup().await.expect("bounded fixture cleanup");
++    stopped.expect("readiness cancellation released the worker and pending request");
++    assert!(
++        returned.load(Ordering::SeqCst),
++        "monitor must return cooperatively through its cancellation select"
++    );
++    assert_eq!(tasks.active_count(), 0);
++    assert!(probe.worker_finished());
++    assert!(probe.pending_request_finished());
++
++    let lifecycle = fixture
++        .state
++        .response(
++            /*request_id*/ 1,
++            /*spawn_generation*/ 1,
++            AgentdMethod::Lifecycle,
++        )
++        .await
++        .expect("lifecycle after cancellation");
++    assert_eq!(
++        lifecycle.payload,
++        AgentdPayload::Lifecycle(LifecycleSnapshot {
++            lifecycle: AgentLifecycle::Starting,
++            app_server_ready: false,
++            fenced: false,
++        })
++    );
++}
++
++#[tokio::test(flavor = "current_thread", start_paused = true)]
++async fn monitor_cancellation_releases_matching_home_readiness_worker() {
++    exercise(ServerHome::Matching).await;
++}
++
++#[tokio::test(flavor = "current_thread", start_paused = true)]
++async fn monitor_cancellation_releases_mismatched_home_readiness_worker() {
++    exercise(ServerHome::Mismatched).await;
++}
+diff --git a/codex-rs/hepta-agentd/src/runtime_tests.rs b/codex-rs/hepta-agentd/src/runtime_tests.rs
+--- a/codex-rs/hepta-agentd/src/runtime_tests.rs
++++ b/codex-rs/hepta-agentd/src/runtime_tests.rs
+@@ -975,7 +975,11 @@
+     fixture.state.mark_fenced();
+     let result = timeout(
+         Duration::from_secs(1),
+-        monitor_runtime(Arc::clone(&fixture.state), CancellationToken::new()),
++        monitor_runtime(
++            Arc::clone(&fixture.state),
++            CancellationToken::new(),
++            codex_app_server_client::RemoteAppServerClient::connect,
++        ),
+     )
+     .await
+     .expect("fenced monitor did not terminate");
+@@ -1060,7 +1064,11 @@
+     let fixture = runtime_fixture();
+     let cancellation = CancellationToken::new();
+     let stop = cancellation.clone();
+-    let monitor = monitor_runtime(Arc::clone(&fixture.state), cancellation);
++    let monitor = monitor_runtime(
++        Arc::clone(&fixture.state),
++        cancellation,
++        codex_app_server_client::RemoteAppServerClient::connect,
++    );
+     let (result, ()) = tokio::join!(monitor, async move {
+         tokio::task::yield_now().await;
+         stop.cancel();
+@@ -1068,3 +1076,6 @@
+     result?;
+     Ok(())
+ }
++
++#[path = "runtime_readiness_cancellation_tests.rs"]
++mod readiness_cancellation;
+diff --git a/codex-rs/hepta-infer-worker-host/src/runtime_owned_client_tests.rs b/codex-rs/hepta-infer-worker-host/src/runtime_owned_client_tests.rs
+--- a/codex-rs/hepta-infer-worker-host/src/runtime_owned_client_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/runtime_owned_client_tests.rs
+@@ -17,7 +17,7 @@
+ }
+ 
+ async fn exercise(ownership: Ownership) {
+-    let (client, mut probe) = RemoteAppServerClient::blocked_close_fixture_for_test()
++    let (client, mut probe) = RemoteAppServerClient::blocked_close_fixture_for_test("fixture")
+         .await
+         .expect("real initialized worker and pending read");
+     // Match the production host's grace without shortening client timeouts.

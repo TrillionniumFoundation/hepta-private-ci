@@ -1,0 +1,788 @@
+diff --git a/.github/scripts/run_bazel_with_buildbuddy.py b/.github/scripts/run_bazel_with_buildbuddy.py
+index 4f525b82f8..c2ba70fc06 100755
+--- a/.github/scripts/run_bazel_with_buildbuddy.py
++++ b/.github/scripts/run_bazel_with_buildbuddy.py
+@@ -39,6 +39,51 @@ REMOTE_REPO_CONTENTS_CACHE_STARTUP_OPTIONS = {
+ }
+ 
+ 
++# Unary startup flags accepted by the pinned Bazel 9 client. Values may follow
++# the flag as a separate argument, including values that look like commands.
++# See src/main/cpp/{startup_options,bazel_startup_options}.cc in bazelbuild/bazel.
++STARTUP_OPTIONS_WITH_VALUES = {
++    "--bazelrc",
++    "--command_port",
++    "--connect_timeout_secs",
++    "--digest_function",
++    "--experimental_cgroup_parent",
++    "--extra_classpath",
++    "--failure_detail_out",
++    "--host_jvm_args",
++    "--host_jvm_profile",
++    "--install_base",
++    "--invocation_policy",
++    "--io_nice_level",
++    "--local_startup_timeout_secs",
++    "--macos_qos_class",
++    "--max_idle_secs",
++    "--output_base",
++    "--output_user_root",
++    "--server_javabase",
++    "--server_jvm_out",
++    "--unix_digest_hash_attribute_name",
++}
++
++
++def bazel_command_index(args: Sequence[str]) -> int | None:
++    """Locate the command without interpreting startup values or run payloads."""
++    idx = 0
++    while idx < len(args):
++        arg = args[idx]
++        if arg == "--":
++            return None
++        if not arg.startswith("-"):
++            return idx
++        if arg in STARTUP_OPTIONS_WITH_VALUES:
++            if idx + 1 == len(args):
++                raise ValueError(f"missing value for Bazel startup option {arg}")
++            idx += 2
++        else:
++            idx += 1
++    return None
++
++
+ def startup_args(args: Sequence[str], env: Mapping[str, str]) -> list[str]:
+     """Return shared startup options that are missing from a Bazel invocation.
+ 
+@@ -47,16 +92,16 @@ def startup_args(args: Sequence[str], env: Mapping[str, str]) -> list[str]:
+     through several helpers, so normalize their startup options here while
+     preserving any explicit choice made by the caller.
+     """
+-    command_idx = next(
+-        (idx for idx, arg in enumerate(args) if not arg.startswith("-")),
+-        len(args),
+-    )
++    command_idx = bazel_command_index(args)
++    if command_idx is None:
++        command_idx = len(args)
+     configured_startup_args = args[:command_idx]
+     injected_args = []
+ 
+     output_user_root = env.get("BAZEL_OUTPUT_USER_ROOT")
+     if output_user_root and not any(
+-        arg.startswith("--output_user_root=") for arg in configured_startup_args
++        arg == "--output_user_root" or arg.startswith("--output_user_root=")
++        for arg in configured_startup_args
+     ):
+         injected_args.append(f"--output_user_root={output_user_root}")
+ 
+@@ -173,10 +218,7 @@ def bazel_args_without_remote_execution(
+             )
+             and "--config=ci" not in prefix
+         ):
+-            command_idx = next(
+-                (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),
+-                None,
+-            )
++            command_idx = bazel_command_index(prefix)
+             if command_idx is not None and prefix[command_idx] in {
+                 "build",
+                 "test",
+@@ -189,10 +231,7 @@ def bazel_args_without_remote_execution(
+                 prefix.insert(command_idx + 1, "--config=ci")
+         return [*prefix, *suffix]
+ 
+-    command_idx = next(
+-        (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),
+-        None,
+-    )
++    command_idx = bazel_command_index(prefix)
+     # Queries and administrative commands do not configure build actions.
+     # Do not inject CI build options or runtime skip filters into those calls.
+     if command_idx is None or prefix[command_idx] not in {
+@@ -251,10 +290,7 @@ def bazel_args_without_remote_execution(
+ def bazel_args_with_remote_config(
+     args: Sequence[str], env: Mapping[str, str]
+ ) -> list[str]:
+-    command_idx = next(
+-        (idx for idx, arg in enumerate(args) if not arg.startswith("-")),
+-        None,
+-    )
++    command_idx = bazel_command_index(args)
+     if command_idx is None:
+         raise ValueError("expected a Bazel command")
+ 
+@@ -322,7 +358,8 @@ def invocation_args(args: Sequence[str]) -> list[str]:
+ @contextmanager
+ def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
+     """Keep a complete target roster out of the native Bazel command line."""
+-    command = next((arg for arg in args[1:] if not arg.startswith("-")), None)
++    command_idx = bazel_command_index(args[1:])
++    command = None if command_idx is None else args[command_idx + 1]
+     if (
+         (os.name != "nt" and env.get("RUNNER_OS") != "Windows")
+         or command not in {"build", "test", "coverage"}
+diff --git a/.github/scripts/test_run_bazel_startup_values.py b/.github/scripts/test_run_bazel_startup_values.py
+new file mode 100644
+index 0000000000..77d01f8d73
+--- /dev/null
++++ b/.github/scripts/test_run_bazel_startup_values.py
+@@ -0,0 +1,322 @@
++#!/usr/bin/env python3
++
++import json
++import os
++import subprocess
++import sys
++import unittest
++from pathlib import Path
++from tempfile import TemporaryDirectory
++
++import run_bazel_with_buildbuddy as wrapper
++
++
++class BazelStartupValuesTest(unittest.TestCase):
++    def test_keyless_unix_preserves_split_startup_values_and_ci_defaults(self) -> None:
++        for runner, config in (
++            ("Linux", "ci-linux"),
++            ("Linux", "ci-v8"),
++            ("macOS", "ci-macos"),
++        ):
++            with self.subTest(runner=runner, config=config):
++                self.assertEqual(
++                    wrapper.bazel_args_with_remote_config(
++                        [
++                            "--output_user_root",
++                            "/tmp/build root",
++                            "build",
++                            f"--config={config}",
++                            "--disk_cache=/caller/cache",
++                            "--",
++                            "//app:bin",
++                        ],
++                        {"RUNNER_OS": runner},
++                    ),
++                    [
++                        "--output_user_root",
++                        "/tmp/build root",
++                        "build",
++                        "--config=ci",
++                        "--disk_cache=/caller/cache",
++                        "--",
++                        "//app:bin",
++                    ],
++                )
++
++    def test_keyed_options_follow_actual_command_not_startup_value(self) -> None:
++        self.assertEqual(
++            wrapper.bazel_args_with_remote_config(
++                [
++                    "--bazelrc",
++                    "/tmp/custom rc",
++                    "--host_jvm_args",
++                    "-Xmx2g",
++                    "test",
++                    "--config=ci-linux",
++                    "--",
++                    "//app:test",
++                ],
++                {"BUILDBUDDY_API_KEY": "fixture-token"},
++            ),
++            [
++                "--bazelrc",
++                "/tmp/custom rc",
++                "--host_jvm_args",
++                "-Xmx2g",
++                "test",
++                "--config=buildbuddy-generic-rbe",
++                "--remote_header=x-buildbuddy-api-key=fixture-token",
++                "--config=ci-linux",
++                "--",
++                "//app:test",
++            ],
++        )
++
++    def test_explicit_split_output_root_and_cache_choice_are_preserved(self) -> None:
++        self.assertEqual(
++            wrapper.startup_args(
++                [
++                    "--output_user_root",
++                    "/caller/root",
++                    "--experimental_remote_repo_contents_cache",
++                    "build",
++                ],
++                {
++                    "GITHUB_ACTIONS": "true",
++                    "BAZEL_OUTPUT_USER_ROOT": "/environment/root",
++                },
++            ),
++            [],
++        )
++
++    def test_startup_values_named_like_commands_are_not_commands(self) -> None:
++        self.assertEqual(
++            wrapper.bazel_args_with_remote_config(
++                [
++                    "--bazelrc",
++                    "build",
++                    "--host_jvm_args",
++                    "test",
++                    "run",
++                    "--config=ci-linux",
++                    "//app:bin",
++                    "--",
++                    "test",
++                ],
++                {},
++            ),
++            [
++                "--bazelrc",
++                "build",
++                "--host_jvm_args",
++                "test",
++                "run",
++                "--config=ci",
++                "//app:bin",
++                "--",
++                "test",
++            ],
++        )
++
++    def test_windows_cross_abi_configuration_follows_split_startup_value(self) -> None:
++        args = wrapper.bazel_args_with_remote_config(
++            [
++                "--output_base",
++                "C:/build root",
++                "test",
++                "--config=ci-windows-cross",
++                "--",
++                "//app:test",
++            ],
++            {"RUNNER_OS": "Windows"},
++        )
++        self.assertEqual(
++            args,
++            [
++                "--output_base",
++                "C:/build root",
++                "test",
++                "--config=ci-windows",
++                "--host_platform=//:local_windows_msvc",
++                "--platforms=//:windows_x86_64_gnullvm",
++                "--extra_execution_platforms=//:windows_x86_64_msvc",
++                "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
++                "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
++                "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
++                "--",
++                "//app:test",
++            ],
++        )
++
++    def test_windows_target_roster_survives_split_startup_value_and_is_removed(
++        self,
++    ) -> None:
++        args = [
++            "bazel",
++            "--output_base",
++            "C:/build root",
++            "test",
++            "--",
++            "//app:test",
++            "-//app:skip",
++        ]
++        with wrapper.windows_target_patterns(args, {"RUNNER_OS": "Windows"}) as (
++            command,
++            owned,
++        ):
++            self.assertIsNotNone(owned)
++            self.assertEqual(
++                owned.read_text(encoding="utf-8"), "//app:test\n-//app:skip\n"
++            )
++            self.assertEqual(command, [*args[:4], f"--target_pattern_file={owned}"])
++        self.assertFalse(owned.exists())
++
++    def test_administrative_command_does_not_gain_build_configuration(self) -> None:
++        args = ["--output_user_root", "/tmp/root", "shutdown"]
++        self.assertEqual(
++            wrapper.bazel_args_with_remote_config(args, {"RUNNER_OS": "Windows"}),
++            args,
++        )
++        self.assertEqual(wrapper.bazel_args_with_remote_config(args, {}), args)
++
++    def test_program_payload_after_separator_is_untouched(self) -> None:
++        payload = ["--output_base", "test", "--config=ci-linux"]
++        self.assertEqual(
++            wrapper.bazel_args_with_remote_config(
++                [
++                    "--output_base",
++                    "/tmp/base",
++                    "run",
++                    "//app:bin",
++                    "--",
++                    *payload,
++                ],
++                {},
++            ),
++            ["--output_base", "/tmp/base", "run", "//app:bin", "--", *payload],
++        )
++
++    def test_startup_value_without_command_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "expected a Bazel command"):
++            wrapper.bazel_command("--output_base", "/tmp/base", env={})
++
++    def test_missing_startup_value_is_rejected(self) -> None:
++        with self.assertRaisesRegex(
++            ValueError, "missing value for Bazel startup option"
++        ):
++            wrapper.bazel_command("--output_base", env={})
++
++    def test_separator_without_command_is_not_a_build(self) -> None:
++        with self.assertRaisesRegex(ValueError, "expected a Bazel command"):
++            wrapper.bazel_command("--", "build", env={})
++
++    def test_equals_startup_syntax_remains_unchanged(self) -> None:
++        self.assertEqual(
++            wrapper.bazel_command(
++                "--output_base=/tmp/base",
++                "build",
++                "--config=ci-linux",
++                "--",
++                "//app:bin",
++                env={},
++            ),
++            [
++                "bazel",
++                "--output_base=/tmp/base",
++                "build",
++                "--config=ci",
++                "--",
++                "//app:bin",
++            ],
++        )
++
++    def test_repeated_unary_options_and_nullary_flags_keep_their_order(self) -> None:
++        args = [
++            "--batch",
++            "--host_jvm_args",
++            "-Xmx2g",
++            "--host_jvm_args",
++            "-Dkey=build",
++            "--max_idle_secs",
++            "10",
++            "--output_base",
++            "/tmp/base",
++            "build",
++            "--config=ci-linux",
++        ]
++        self.assertEqual(
++            wrapper.bazel_args_with_remote_config(args, {}),
++            [*args[:-1], "--config=ci"],
++        )
++
++    @unittest.skipIf(
++        os.name == "nt",
++        "POSIX executable fixture; Windows argv logic is covered above",
++    )
++    def test_real_wrapper_child_receives_roster_and_propagates_failure(self) -> None:
++        with TemporaryDirectory() as directory:
++            root = Path(directory)
++            child = root / "fake bazel"
++            capture = root / "argv.json"
++            child.write_text(
++                f"#!{sys.executable}\n"
++                "import json, os, sys\n"
++                "from pathlib import Path\n"
++                "args = sys.argv[1:]\n"
++                "path = next(Path(a.split('=', 1)[1]) for a in args "
++                "if a.startswith('--target_pattern_file='))\n"
++                "Path(os.environ['ARGV_CAPTURE']).write_text(json.dumps({"
++                "'args': args, 'targets': path.read_text(), 'path': str(path)}))\n"
++                "sys.exit(37)\n",
++                encoding="utf-8",
++            )
++            child.chmod(0o755)
++            env = {
++                k: v
++                for k, v in os.environ.items()
++                if not k.startswith(
++                    ("BAZEL_", "BUILDBUDDY_", "GITHUB_", "CODEX_BAZEL_")
++                )
++            }
++            env.update(
++                {
++                    "CODEX_BAZEL_BIN": str(child),
++                    "RUNNER_OS": "Windows",
++                    "ARGV_CAPTURE": str(capture),
++                }
++            )
++            result = subprocess.run(
++                [
++                    sys.executable,
++                    str(Path(wrapper.__file__)),
++                    "--output_user_root",
++                    str(root / "build root"),
++                    "test",
++                    "--config=ci-windows-cross",
++                    "--",
++                    "//app:test",
++                    "-//app:skip",
++                ],
++                env=env,
++                capture_output=True,
++                text=True,
++                timeout=10,
++                check=False,
++            )
++            self.assertEqual(result.returncode, 37, result.stderr)
++            observed = json.loads(capture.read_text(encoding="utf-8"))
++            self.assertEqual(
++                observed["args"][:4],
++                [
++                    "--output_user_root",
++                    str(root / "build root"),
++                    "test",
++                    "--config=ci-windows",
++                ],
++            )
++            self.assertEqual(observed["targets"], "//app:test\n-//app:skip\n")
++            self.assertFalse(Path(observed["path"]).exists())
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/.github/workflows/hepta-gap-agentd-process.yml b/.github/workflows/hepta-gap-agentd-process.yml
+index 4b5f24e536..08324f9031 100644
+--- a/.github/workflows/hepta-gap-agentd-process.yml
++++ b/.github/workflows/hepta-gap-agentd-process.yml
+@@ -172,7 +172,8 @@ jobs:
+             --test cognitive_product_e2e --test plasticity_process_e2e \
+             --test runtime_codex_product_e2e --test supervised_two_agents \
+             --test supervisord_product_e2e --test queue_capacity_product \
+-            --test production_reconcile_host --test-threads=1
++            --test production_reconcile_host --test five_agent_rolling_upgrade \
++            --test-threads=1
+       - name: Strict owner lint
+         if: steps.execution.outputs.run_native == 'true'
+         working-directory: codex-rs
+diff --git a/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs b/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
+index bf1dcdcd86..5ab696a648 100644
+--- a/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
+@@ -75,6 +75,7 @@ async fn fixture(
+     let temp = tempfile::tempdir().unwrap();
+     let fleet = temp.path().join("fleet");
+     std::fs::create_dir_all(&fleet).unwrap();
++    let fleet = std::fs::canonicalize(&fleet).unwrap();
+     let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012}")).unwrap();
+     let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
+     let store = CognitiveStore::open(&layout).await.unwrap();
+diff --git a/codex-rs/hepta-agentd/src/intelligence_ingress_tests.rs b/codex-rs/hepta-agentd/src/intelligence_ingress_tests.rs
+index ca550a60bf..9cd5bc5a69 100644
+--- a/codex-rs/hepta-agentd/src/intelligence_ingress_tests.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_ingress_tests.rs
+@@ -275,7 +275,10 @@ async fn authenticated_current_run_start_reaches_the_invocation_provider_once()
+     .await?;
+     let frontier = evidence.authbus_replay_frontier_digest().await?;
+     drop(evidence);
+-    let checkpoint_file = directory.path().join("run-start-replay-checkpoint.json");
++    let checkpoint_file = directory
++        .path()
++        .canonicalize()?
++        .join("run-start-replay-checkpoint.json");
+     let checkpoint = serde_json::json!({
+         "schema_version": 1,
+         "agent_id": state.identity().agent_id.as_str(),
+diff --git a/codex-rs/hepta-agentd/src/state_isolation_tests.rs b/codex-rs/hepta-agentd/src/state_isolation_tests.rs
+index ef90d7f993..a3b52a0f4e 100644
+--- a/codex-rs/hepta-agentd/src/state_isolation_tests.rs
++++ b/codex-rs/hepta-agentd/src/state_isolation_tests.rs
+@@ -476,7 +476,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
+         fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600)).expect("private trust");
+     };
+     write_trust(false);
+-    let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
++    let checkpoint_file = temp
++        .path()
++        .canonicalize()
++        .expect("canonical checkpoint parent")
++        .join("run-start-replay-checkpoint.json");
+     // The external fixture witness is captured from the canonical empty owner,
+     // never invented from a label or recaptured from a suspect backup.
+     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
+diff --git a/codex-rs/hepta-agentd/src/test_support.rs b/codex-rs/hepta-agentd/src/test_support.rs
+index acd350012b..5b7db40482 100644
+--- a/codex-rs/hepta-agentd/src/test_support.rs
++++ b/codex-rs/hepta-agentd/src/test_support.rs
+@@ -77,6 +77,8 @@ impl CognitiveTestHost {
+         agent_id: AgentId,
+         model: &str,
+         provider_base_url: &str,
++        codex_self_exe: PathBuf,
++        codex_linux_sandbox_exe: Option<PathBuf>,
+     ) -> TestResult<Self> {
+         validate_config_scalar(model, "model")?;
+         validate_config_scalar(provider_base_url, "provider base URL")?;
+@@ -133,7 +135,11 @@ impl CognitiveTestHost {
+         let control_task = tokio::spawn(control.run());
+         let app_server_task = tokio::spawn(run_app_server(
+             identity.clone(),
+-            Arg0DispatchPaths::default(),
++            Arg0DispatchPaths {
++                codex_self_exe: Some(codex_self_exe),
++                codex_linux_sandbox_exe,
++                ..Arg0DispatchPaths::default()
++            },
+             CognitiveRuntime::Available(Arc::clone(&store)),
+             Arc::clone(&state),
+             /*production_writer_host*/ None,
+diff --git a/codex-rs/hepta-automation/tests/retirement_recovery.rs b/codex-rs/hepta-automation/tests/retirement_recovery.rs
+index 7afa3c3c5f..c1eac37396 100644
+--- a/codex-rs/hepta-automation/tests/retirement_recovery.rs
++++ b/codex-rs/hepta-automation/tests/retirement_recovery.rs
+@@ -121,7 +121,11 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
+         AutomationTaskState::Disabled,
+         AutomationTaskState::Cancelled,
+     ] {
+-        for release in [ReleasePath::PreDispatchRetry, ReleasePath::StaleGeneration] {
++        for release in [
++            ReleasePath::PreDispatchRetry,
++            ReleasePath::StaleGeneration,
++            ReleasePath::NegativeObservation,
++        ] {
+             let (_temp, layout, store, lease) = leased_store().await?;
+             if matches!(release, ReleasePath::NegativeObservation) {
+                 prepare_dispatch_intent(&store, &lease, /*observed_at_ms*/ 101).await?;
+diff --git a/codex-rs/hepta-fleet/src/release.rs b/codex-rs/hepta-fleet/src/release.rs
+index 47d2d1304e..6837da0c27 100644
+--- a/codex-rs/hepta-fleet/src/release.rs
++++ b/codex-rs/hepta-fleet/src/release.rs
+@@ -294,7 +294,13 @@ impl FleetRegistry {
+             sync_directory(&bin_root)?;
+             sync_directory(&staging)?;
+             set_mode(&staging, /*mode*/ 0o555)?;
+-            std::fs::rename(&staging, &final_root)?;
++            std::fs::rename(&staging, &final_root).inspect_err(|error| {
++                if cfg!(debug_assertions) {
++                    eprintln!(
++                        "fleet release publication failed at staged-directory rename: {error}"
++                    );
++                }
++            })?;
+             sync_directory(self.layout().releases_root())?;
+             Ok(())
+         })();
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
+index e96da18552..9cd9c6564d 100644
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
+@@ -399,7 +399,11 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
+ 
+ #[test]
+ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
+-    let source = include_str!("native_app_server.rs");
++    // Bind the current token-owning send path without depending on rustfmt line breaks.
++    let source: String = include_str!("native_app_server.rs")
++        .chars()
++        .filter(|character| !character.is_whitespace())
++        .collect();
+     let durable_dispatch = source
+         .find("control.dispatch_native_with_pre_effect_abort(")
+         .expect("durable native dispatch");
+@@ -407,7 +411,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
+         .find("owner.revalidate_cognitive_context(snapshot).await")
+         .expect("final-use cognitive revalidation");
+     let turn_start = source
+-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
++        .find("send_authorized_turn_start(&mutclient,entered_use,turn_params)")
+         .expect("physical turn start");
+     let durable_stop = source
+         .find("control.abort_native_before_effect(")
+@@ -415,6 +419,15 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
+     assert!(durable_dispatch < revalidation);
+     assert!(revalidation < turn_start);
+     assert!(durable_stop < turn_start);
++    let send_helper = source
++        .split_once("asyncfnsend_authorized_turn_start(")
++        .expect("token-owning physical send helper")
++        .1;
++    assert!(send_helper.starts_with(
++        "client:&mutRemoteAppServerClient,_entered:EnteredUseToken,params:TurnStartParams,"
++    ));
++    assert_eq!(source.matches("ClientRequest::TurnStart{").count(), 1);
++    assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart{"));
+ }
+ 
+ #[cfg(unix)]
+@@ -450,8 +463,21 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
+     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
+     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
+-    let host =
+-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
++    // core_test_support installs real arg0 helper dispatch in this executable.
++    // A default path tuple leaves App Server unable to start its exec environment.
++    #[cfg(target_os = "linux")]
++    let sandbox_exe = Some(core_test_support::find_codex_linux_sandbox_exe()?);
++    #[cfg(not(target_os = "linux"))]
++    let sandbox_exe = None;
++    let host = CognitiveTestHost::start(
++        root,
++        agent_id,
++        MODEL,
++        &format!("{}/v1", server.uri()),
++        std::env::current_exe()?,
++        sandbox_exe,
++    )
++    .await?;
+     let _accepted_memory = host
+         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
+         .await?;
+diff --git a/codex-rs/hepta-supervisor/src/unix_agent_peer_tests.rs b/codex-rs/hepta-supervisor/src/unix_agent_peer_tests.rs
+index 7846a05213..a20bc256fe 100644
+--- a/codex-rs/hepta-supervisor/src/unix_agent_peer_tests.rs
++++ b/codex-rs/hepta-supervisor/src/unix_agent_peer_tests.rs
+@@ -10,6 +10,12 @@ use super::query_agent_health_once;
+ 
+ type TestResult = Result<(), Box<dyn std::error::Error>>;
+ 
++fn fixture_io<T>(stage: &str, result: std::io::Result<T>) -> std::io::Result<T> {
++    result.map_err(|error| {
++        std::io::Error::new(error.kind(), format!("peer fixture {stage}: {error}"))
++    })
++}
++
+ enum AgentProbe {
+     Health,
+     Drain,
+@@ -20,7 +26,7 @@ fn reject_wrong_live_peer(probe: AgentProbe) -> TestResult {
+         .prefix("hpeer-")
+         .tempdir_in("/tmp")?;
+     let socket = temp.path().join("agent.sock");
+-    let listener = UnixListener::bind(&socket)?;
++    let listener = fixture_io("bind listener", UnixListener::bind(&socket))?;
+     let mut identity = AgentHealthProbeIdentity {
+         agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
+         spawn_generation: 7,
+@@ -30,22 +36,31 @@ fn reject_wrong_live_peer(probe: AgentProbe) -> TestResult {
+         run_root: temp.path().join("run"),
+         control_socket: socket,
+     };
+-    let mut unrelated = std::process::Command::new("/bin/sleep").arg("30").spawn()?;
++    let mut unrelated = fixture_io(
++        "spawn unrelated process",
++        std::process::Command::new("/bin/sleep").arg("30").spawn(),
++    )?;
+     identity.process_id = unrelated.id();
+     let worker = std::thread::spawn(move || -> std::io::Result<Vec<u8>> {
+-        let (mut stream, _) = listener.accept()?;
+-        stream.set_read_timeout(Some(super::HEALTH_PROBE_IO_TIMEOUT))?;
++        let (mut stream, _) = fixture_io("accept rejected peer", listener.accept())?;
++        fixture_io(
++            "set rejected peer read timeout",
++            stream.set_read_timeout(Some(super::HEALTH_PROBE_IO_TIMEOUT)),
++        )?;
+         let mut request = Vec::new();
+-        stream.read_to_end(&mut request)?;
++        fixture_io(
++            "read rejected peer to EOF",
++            stream.read_to_end(&mut request),
++        )?;
+         Ok(request)
+     });
+     let result = match probe {
+         AgentProbe::Health => query_agent_health_once(&identity, /*request_id*/ 19).map(|_| ()),
+         AgentProbe::Drain => query_agent_drain_once(&identity, /*request_id*/ 19).map(|_| ()),
+     };
+-    let still_running = unrelated.try_wait()?.is_none();
+-    unrelated.kill()?;
+-    unrelated.wait()?;
++    let still_running = fixture_io("observe unrelated process", unrelated.try_wait())?.is_none();
++    fixture_io("stop unrelated fixture process", unrelated.kill())?;
++    fixture_io("reap unrelated fixture process", unrelated.wait())?;
+     let request = worker
+         .join()
+         .map_err(|_| std::io::Error::other("peer fixture thread panicked"))??;
+diff --git a/codex-rs/hepta-supervisor/src/unix_matrix_peer_tests.rs b/codex-rs/hepta-supervisor/src/unix_matrix_peer_tests.rs
+index 8cbcc3f64d..721af6d953 100644
+--- a/codex-rs/hepta-supervisor/src/unix_matrix_peer_tests.rs
++++ b/codex-rs/hepta-supervisor/src/unix_matrix_peer_tests.rs
+@@ -20,6 +20,12 @@ use super::query_matrix_health_once;
+ 
+ type TestResult = Result<(), Box<dyn std::error::Error>>;
+ 
++fn fixture_io<T>(stage: &str, result: std::io::Result<T>) -> std::io::Result<T> {
++    result.map_err(|error| {
++        std::io::Error::new(error.kind(), format!("peer fixture {stage}: {error}"))
++    })
++}
++
+ fn identity(
+     socket: std::path::PathBuf,
+     process_id: u32,
+@@ -93,20 +99,29 @@ fn matrix_health_rejects_same_owner_wrong_process_before_sending_request() -> Te
+     // This live process's PID is deliberately different from the socket owner.
+     // Echoing its PID in JSON must never suffice to adopt or later signal it.
+     let socket = temp.path().join("matrix.sock");
+-    let listener = UnixListener::bind(&socket)?;
+-    let mut unrelated = std::process::Command::new("/bin/sleep").arg("30").spawn()?;
++    let listener = fixture_io("bind listener", UnixListener::bind(&socket))?;
++    let mut unrelated = fixture_io(
++        "spawn unrelated process",
++        std::process::Command::new("/bin/sleep").arg("30").spawn(),
++    )?;
+     let identity = identity(socket, unrelated.id())?;
+     let worker = std::thread::spawn(move || -> std::io::Result<Vec<u8>> {
+-        let (mut stream, _) = listener.accept()?;
+-        stream.set_read_timeout(Some(super::HEALTH_PROBE_IO_TIMEOUT))?;
++        let (mut stream, _) = fixture_io("accept rejected peer", listener.accept())?;
++        fixture_io(
++            "set rejected peer read timeout",
++            stream.set_read_timeout(Some(super::HEALTH_PROBE_IO_TIMEOUT)),
++        )?;
+         let mut request = Vec::new();
+-        stream.read_to_end(&mut request)?;
++        fixture_io(
++            "read rejected peer to EOF",
++            stream.read_to_end(&mut request),
++        )?;
+         Ok(request)
+     });
+     let result = query_matrix_health_once(&identity, /*request_id*/ 19);
+-    let still_running = unrelated.try_wait()?.is_none();
+-    unrelated.kill()?;
+-    unrelated.wait()?;
++    let still_running = fixture_io("observe unrelated process", unrelated.try_wait())?.is_none();
++    fixture_io("stop unrelated fixture process", unrelated.kill())?;
++    fixture_io("reap unrelated fixture process", unrelated.wait())?;
+     let request = worker.join().expect("peer fixture thread")?;
+     assert!(
+         result.is_err(),
+@@ -124,10 +139,13 @@ fn matrix_health_rejects_same_owner_wrong_process_before_sending_request() -> Te
+ fn matrix_peer_credentials_bind_real_socket_pair_to_owner_and_process() -> TestResult {
+     let (stream, _other) = std::os::unix::net::UnixStream::pair()?;
+     super::peer::ensure_process_owner(&stream, std::process::id())?;
+-    let mut unrelated = std::process::Command::new("/bin/sleep").arg("30").spawn()?;
++    let mut unrelated = fixture_io(
++        "spawn unrelated process",
++        std::process::Command::new("/bin/sleep").arg("30").spawn(),
++    )?;
+     let result = super::peer::ensure_process_owner(&stream, unrelated.id());
+-    unrelated.kill()?;
+-    unrelated.wait()?;
++    fixture_io("stop unrelated fixture process", unrelated.kill())?;
++    fixture_io("reap unrelated fixture process", unrelated.wait())?;
+     assert_eq!(
+         result.expect_err("different live process").kind(),
+         std::io::ErrorKind::PermissionDenied
+diff --git a/scripts/test_hepta_agentd_ci.py b/scripts/test_hepta_agentd_ci.py
+index fc07fc8b53..b298befe55 100644
+--- a/scripts/test_hepta_agentd_ci.py
++++ b/scripts/test_hepta_agentd_ci.py
+@@ -186,6 +186,7 @@ class WorkflowDependencyTests(unittest.TestCase):
+             ("--test", "supervised_two_agents"),
+             ("--test", "supervisord_product_e2e"),
+             ("--test", "queue_capacity_product"),
++            ("--test", "five_agent_rolling_upgrade"),
+         ):
+             with self.subTest(option=option, value=value):
+                 self.assertTrue(

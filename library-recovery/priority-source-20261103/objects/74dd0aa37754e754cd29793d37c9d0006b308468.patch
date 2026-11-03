@@ -1,0 +1,189 @@
+diff --git a/codex-rs/app-server-client/src/remote.rs b/codex-rs/app-server-client/src/remote.rs
+index 1f4d92f6c..72a529c10 100644
+--- a/codex-rs/app-server-client/src/remote.rs
++++ b/codex-rs/app-server-client/src/remote.rs
+@@ -391,6 +391,12 @@ impl std::ops::Deref for AbortOnDropRemoteAppServerClient {
+ }
+ 
+ impl AbortOnDropRemoteAppServerClient {
++    /// Read the next provenance-bearing event without exposing replaceable
++    /// access to the exclusively owned connection.
++    pub async fn next_observed_event(&mut self) -> Option<RemoteAppServerObservedEvent> {
++        self.client.next_observed_event().await
++    }
++
+     pub async fn shutdown(self) -> IoResult<()> {
+         let Self {
+             abort_guard,
+diff --git a/codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs b/codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs
+index 21a3bd46c..32fd2e4b3 100644
+--- a/codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs
++++ b/codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs
+@@ -235,3 +235,100 @@ async fn cancelling_owned_shutdown_does_not_detach_worker_or_pending_waiters() {
+         "parent cancellation detached the exclusively owned worker"
+     );
+ }
++
++#[tokio::test]
++async fn owned_event_reader_preserves_real_notification_provenance_and_graceful_shutdown() {
++    let (stream, peer) = tokio::io::duplex(8192);
++    let peer = tokio::spawn(async move {
++        let mut peer = WebSocketStream::from_raw_socket(
++            peer,
++            tokio_tungstenite::tungstenite::protocol::Role::Server,
++            None,
++        )
++        .await;
++        while let Some(message) = peer.next().await {
++            match message.expect("valid peer frame") {
++                Message::Text(text) => {
++                    let message: serde_json::Value = serde_json::from_str(&text).expect("JSON");
++                    match message["method"].as_str() {
++                        Some("initialize") => {
++                            peer.send(Message::Text(serde_json::json!({
++                                "id": message["id"],
++                                "result": {"userAgent": "owned-events/1", "codexHome": "fixture-home"}
++                            }).to_string().into())).await.expect("initialize reply");
++                        }
++                        Some("initialized") => {
++                            peer.send(Message::Text(
++                                serde_json::json!({
++                                    "method": "turn/completed",
++                                    "params": {"threadId": "thread-a", "turn": {
++                                        "id": "turn-a", "items": [], "itemsView": "full",
++                                        "status": "completed", "error": null
++                                    }}
++                                })
++                                .to_string()
++                                .into(),
++                            ))
++                            .await
++                            .expect("terminal event");
++                        }
++                        method => panic!("unexpected request {method:?}"),
++                    }
++                }
++                Message::Close(_) => return,
++                message => panic!("unexpected frame {message:?}"),
++            }
++        }
++    });
++    let websocket = WebSocketStream::from_raw_socket(
++        stream,
++        tokio_tungstenite::tungstenite::protocol::Role::Client,
++        None,
++    )
++    .await;
++    let args = RemoteAppServerConnectArgs {
++        endpoint: RemoteAppServerEndpoint::WebSocket {
++            websocket_url: "ws://unused.test".into(),
++            auth_token: None,
++        },
++        client_name: "owned-events".into(),
++        client_version: "1".into(),
++        experimental_api: true,
++        mcp_server_openai_form_elicitation: false,
++        opt_out_notification_methods: Vec::new(),
++        channel_capacity: 8,
++    };
++    let mut client = RemoteAppServerClient::connect_with_stream(
++        8,
++        RemoteEventMode::Bounded { capacity: 16 },
++        "in-memory owned event fixture".into(),
++        websocket,
++        args.initialize_params(),
++    )
++    .await
++    .expect("initialized client")
++    .into_abort_on_drop();
++    let connection_id = client.connection_id();
++    let worker = client.worker_handle.abort_handle();
++    let event = timeout(Duration::from_secs(10), client.next_observed_event())
++        .await
++        .expect("event deadline")
++        .expect("actual notification");
++    assert_eq!(event.connection_id(), connection_id);
++    assert_eq!(event.server_version(), Some("1"));
++    assert_eq!(event.codex_home(), Some("fixture-home"));
++    let AppServerEvent::ServerNotification(notification) = event.event() else {
++        panic!("expected protocol notification");
++    };
++    let ServerNotification::TurnCompleted(notification) = notification.as_ref() else {
++        panic!("expected terminal notification");
++    };
++    assert_eq!(notification.thread_id, "thread-a");
++    assert_eq!(notification.turn.id, "turn-a");
++    client.shutdown().await.expect("graceful owned shutdown");
++    assert!(worker.is_finished(), "graceful shutdown joined worker");
++    timeout(Duration::from_secs(10), peer)
++        .await
++        .expect("peer deadline")
++        .expect("peer completed");
++}
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+index 11f2db281..f87a1715f 100644
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+@@ -12,6 +12,7 @@ use std::time::Duration;
+ use std::time::SystemTime;
+ use std::time::UNIX_EPOCH;
+ 
++use codex_app_server_client::AbortOnDropRemoteAppServerClient;
+ use codex_app_server_client::AppServerEvent;
+ use codex_app_server_client::RemoteAppServerClient;
+ use codex_app_server_client::RemoteAppServerConnectArgs;
+@@ -254,7 +255,7 @@ impl AppServerModelDriver {
+         )
+         .await
+         {
+-            Ok(Ok(client)) => client,
++            Ok(Ok(client)) => client.into_abort_on_drop(),
+             _ => return Ok(None),
+         };
+         let observed_home = match client.codex_home() {
+@@ -471,7 +472,8 @@ impl AppServerModelDriver {
+                 /*event_channel_capacity*/ 256,
+             ),
+         )
+-        .await??;
++        .await??
++        .into_abort_on_drop();
+         let codex_home = client
+             .codex_home()
+             .ok_or("App Server initialize response omitted codex home")?
+@@ -1006,7 +1008,7 @@ impl AppServerModelDriver {
+ 
+     async fn observe(
+         &self,
+-        client: &mut RemoteAppServerClient,
++        client: &mut AbortOnDropRemoteAppServerClient,
+         output: &mut NativeRunOutput,
+         deadline: Instant,
+         cancellation: &CancellationToken,
+@@ -1134,7 +1136,7 @@ fn validate_post_authority_fence(
+ }
+ 
+ async fn send_authorized_turn_start(
+-    client: &mut RemoteAppServerClient,
++    client: &mut AbortOnDropRemoteAppServerClient,
+     _entered: EnteredUseToken,
+     params: TurnStartParams,
+ ) -> std::result::Result<TurnStartResponse, RemoteObservedTypedRequestError> {
+@@ -1218,7 +1220,7 @@ fn indeterminate_start_output(started: ThreadStartResponse, reason: String) -> N
+ /// connection, the worker may recover only from the authoritative
+ /// turn/started notification for this fresh per-request thread.
+ async fn reconcile_turn_start(
+-    client: &mut RemoteAppServerClient,
++    client: &mut AbortOnDropRemoteAppServerClient,
+     thread_id: &str,
+ ) -> Result<Option<codex_app_server_protocol::Turn>> {
+     let deadline = Instant::now() + TURN_START_RECONCILE_GRACE;
+@@ -1402,7 +1404,7 @@ fn downgrade_for_owner_loss(output: &mut NativeRunOutput) {
+     }
+ }
+ 
+-async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput) {
++async fn interrupt(client: &mut AbortOnDropRemoteAppServerClient, output: &NativeRunOutput) {
+     // An interrupt acknowledgement is not a terminal model outcome.
+     let _ = timeout(
+         RPC_TIMEOUT,

@@ -1,0 +1,3254 @@
+diff --git a/apps/hepta-control-ui/README.md b/apps/hepta-control-ui/README.md
+index d3f30c4e7..167214f78 100644
+--- a/apps/hepta-control-ui/README.md
++++ b/apps/hepta-control-ui/README.md
+@@ -8,11 +8,16 @@ the static WASM loader are platform boot/render/input glue.
+ 
+ ## Product status
+ 
+-This foundation is a selective source port from UI draft #1415 into the current
+-product. It does not yet replace the product gateway's existing `GET /` status
+-shell. That route must serve this verified Rust bundle and retain its existing
+-read-only runtime view in a separate integration slice. A new preview alone is
+-not product completion.
++This candidate replaces the product gateway's handwritten `GET /` interface
++with the verified Rust bundle. The gateway snapshots and hashes its selected
++assets before serving them; the manifest digest selects bytes and is not signing
++authority. The old read-only runtime API remains a separate legacy adapter.
++
++With an explicit bundle, the gateway can serve the UI even when legacy runtime
++state is missing. `/healthz` and `/api/hepta/runtime` then return 503, while the
++additive `/api/hepta/owner-status` returns actual `not_attached` until an existing
++production host is explicitly wired. The no-bundle startup path still requires
++compatible existing runtime state. It does not fall back to a handwritten JS UI.
+ 
+ The principal/signer/Agentd bridge is absent. Drafts and owner-fixture messages
+ are not live chat. Send and Console mutations remain disabled. No native host,
+@@ -85,8 +90,8 @@ No native-window/package or real owner integration success is claimed here.
+ 
+ Existing `src/*.js` files are authority-free legacy protocol/test oracles with
+ no package exports. They are not used by the Rust builder or default preview.
+-Their removal/deprecation and the old gateway UI entry must be handled with the
+-production entry slice, preserving read-only API compatibility tests.
++The gateway entry no longer uses the handwritten JS shell. These unexported
++oracles are compatibility test material, not a parallel product interface.
+ 
+ ## Build and preview lifetime
+ 
+@@ -110,3 +115,45 @@ publication states; unknown paths, symlinks or changed pins fail closed.
+ Interrupted cleanup may leave an inert owned backup, without blocking later
+ builds. Journal initialization failure leaves the previous artifact usable.
+ The unused Lunar archive retains immutable provenance but is not packaged.
++
++## Read-only product entry and completion ledger
++
++Build the owning Rust UI, then use a source-built product executable:
++
++```sh
++python3 tools/run-product.py --hepta /absolute/path/to/hepta --state-root /absolute/state/directory
++```
++
++The wrapper prepares the current bundle and derives its digest automatically;
++`--no-build` reuses only a source-current bundle. This does not initialize state,
++create keys, attach a writer, or qualify the old release/install handshake.
++The task-only `ui_product_preview` Rust example invokes the same gateway entry;
++`tools/run-product-preview.py` supplies an empty temporary state directory for
++honest missing-owner browser tests. It creates no SQL/HMAC fixture or owner.
++
++- Implemented Rust views: responsive conversations, local drafts, theme/input
++  controls, and a read-only Console. Refresh observations is an explicit GET-only
++  action; opening/resizing Console does not initiate owner scans or polling.
++- Legacy observation: the existing schema-v5 runtime DTO is still supported, with
++  a 256 KiB client cap. Oversize/malformed data is unavailable, never truncated.
++- Modern owner observation: `hepta.owner-lease-observation.v1` carries only
++  `not_attached`, a generation/disposition observation, or a fixed failure enum.
++  Its client cap is 4 KiB. JSON integer generations stay unsigned64 through raw
++  bytes and Rust serde; JavaScript Number conversion is unsupported. This wire
++  range is not a claim that SQLite accepts every u64 generation.
++- Actual owner composition: a higher-level adapter must supply a weak link to an
++  already-open host. The gateway adds no Agentd dependency and does not bootstrap
++  one. Idle providers retain no strong host reference. An active async inspection
++  temporarily retains its upgrade; its two-second response deadline is not SQL
++  cancellation or owner-shutdown proof. A timed-out scan retains its single-flight
++  permit until completion, returning Busy to further requests instead of spawning
++  additional scans. Dispositions are point-in-time metadata, not current authority.
++- HTTP boundary: loopback Host/optional Origin checks cover assets and APIs. They
++  prevent browser-origin confusion and are not user authentication. Commands,
++  signing, principal admission and production chat remain unavailable.
++- Fixture demonstrations: rendered fixture transcripts are not live owner wiring.
++  A real NotAttached response is not a fixture success-state or production readiness.
++- Platform/evidence limits: bundle loading is currently Unix-only; Windows needs
++  its own anchored reader. The new status view requires current source/merge
++  browser captures. Physical IME/accessibility, native product closure, installed
++  packaging and room caret/selection retention remain open.
+diff --git a/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs b/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
+new file mode 100644
+index 000000000..8d815a46d
+--- /dev/null
++++ b/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
+@@ -0,0 +1,47 @@
++// Real Rust UI + real gateway NotAttached path. This does not create a production host.
++import {test,expect} from '@playwright/test';
++import {readFile,writeFile} from 'node:fs/promises';
++import {createHash} from 'node:crypto';
++import {execFileSync} from 'node:child_process';
++import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
++for(const width of [1280,640])test(`actual missing-owner status ${width}`,async({page},testInfo)=>{
++ const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
++ const faults=[],responses=[],requests=[],errors=[];const pendingFonts=new Set();
++ const font=request=>/\.(?:ttf|otf)(?:[?#]|$)/i.test(request.url());
++ page.on('request',request=>{if(font(request))pendingFonts.add(request);});
++ page.on('requestfinished',request=>pendingFonts.delete(request));
++ page.on('requestfailed',request=>{pendingFonts.delete(request);if(font(request))faults.push('font request failed');});
++ page.on('pageerror',error=>faults.push(error.message));
++ page.on('console',message=>{if(message.type()==='error')errors.push({text:message.text(),url:message.location().url});});
++ page.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/api/hepta/'))requests.push({url:request.url(),method:request.method()});});
++ page.on('response',response=>{if(new URL(response.url()).pathname.startsWith('/api/hepta/'))responses.push({url:response.url(),status:response.status()});});
++ await page.setViewportSize({width,height:800});await page.goto('/');
++ await expect(page.locator('canvas')).toBeVisible();await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
++ const settle=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
++ await expect.poll(()=>pendingFonts.size,{timeout:60000}).toBe(0);await settle();
++ const initial=testInfo.outputPath('chat.png');await page.screenshot({path:initial,caret:'initial'});
++ const tabs=await screenshotConversationTabs(initial,page.viewportSize(),{recordOcr:true});
++ await page.mouse.click(tabs.Console.x,tabs.Console.y);await settle();
++ const before=testInfo.outputPath('before-read.png');await page.screenshot({path:before,caret:'initial'});
++ expect(requests).toEqual([]);
++ const refresh=await screenshotWordCenter(before,'Refresh',width,{recordOcr:true});
++ const owner=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/hepta/owner-status');
++ const legacy=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/hepta/runtime');
++ await page.mouse.click(refresh.x,refresh.y);
++ const [ownerReply,legacyReply]=await Promise.all([owner,legacy]);
++ expect(ownerReply.status()).toBe(200);expect(await ownerReply.json()).toEqual({schema:'hepta.owner-lease-observation.v1',observation:{status:'not_attached'}});
++ expect(legacyReply.status()).toBe(503);
++ await settle();
++ const screenshot=testInfo.outputPath('owner-not-attached.png');await page.screenshot({path:screenshot,caret:'initial'});
++ const text=await readScreenshotText(screenshot,{language:'eng'});
++ expect(text).toMatch(/not attached/i);expect(text).toMatch(/not current write authority/i);expect(text).toMatch(/runtime unavailable\s*\(Transport\)/i);
++ expect(requests.map(item=>({method:item.method,path:new URL(item.url).pathname}))).toEqual([
++  {method:'GET',path:'/api/hepta/owner-status'},{method:'GET',path:'/api/hepta/runtime'},
++ ]);
++ // An expected 503 is preserved as a transport observation; unrelated console
++ // exceptions, missing assets, Rust panics and cross-origin faults still fail.
++ const expectedHttpErrors=errors.filter(error=>error.url===legacyReply.url()&&/Failed to load resource.*503/.test(error.text));
++ expect(errors.filter(error=>!expectedHttpErrors.includes(error))).toEqual([]);expect(faults).toEqual([]);
++ const bytes=await readFile(screenshot);
++ await writeFile(testInfo.outputPath('receipt.json'),JSON.stringify({sourceSha,width,ownerAttached:false,legacyRuntimeAvailable:false,requests,responses,expectedHttpErrors,faults,png:{name:'owner-not-attached.png',bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')},ocr:text},null,2)+'\n');
++});
+diff --git a/apps/hepta-control-ui/package.json b/apps/hepta-control-ui/package.json
+index b67627c83..a8f70c84a 100644
+--- a/apps/hepta-control-ui/package.json
++++ b/apps/hepta-control-ui/package.json
+@@ -22,7 +22,8 @@
+     "start": "node tools/serve-robrix.mjs",
+     "test:robrix": "playwright test --config=playwright.robrix.config.mjs",
+     "desktop": "python3 tools/run-desktop.py",
+-    "prepare:fonts": "python3 tools/prepare-fonts.py"
++    "prepare:fonts": "python3 tools/prepare-fonts.py",
++    "product": "python3 tools/run-product.py"
+   },
+   "devDependencies": {
+     "@axe-core/playwright": "4.13.0",
+diff --git a/apps/hepta-control-ui/playwright.product.config.mjs b/apps/hepta-control-ui/playwright.product.config.mjs
+new file mode 100644
+index 000000000..03f56373d
+--- /dev/null
++++ b/apps/hepta-control-ui/playwright.product.config.mjs
+@@ -0,0 +1,10 @@
++// Actual Rust gateway entry with task-owned missing state. No owner fixture server.
++import {defineConfig,devices} from '@playwright/test';
++export default defineConfig({
++ testDir:'./e2e',testMatch:'robrix-product-status.spec.mjs',
++ outputDir:'test-results/product-status',fullyParallel:false,workers:1,timeout:90000,
++ reporter:[['line'],['json',{outputFile:'test-results/product-status-results.json'}]],
++ use:{baseURL:'http://127.0.0.1:4175',trace:'off',screenshot:'only-on-failure'},
++ projects:[{name:'chromium',use:{...devices['Desktop Chrome']}}],
++ webServer:{command:'python3 tools/run-product-preview.py',url:'http://127.0.0.1:4175',reuseExistingServer:false,timeout:30000,gracefulShutdown:{signal:'SIGTERM',timeout:10000}},
++});
+diff --git a/apps/hepta-control-ui/rust/core/src/lib.rs b/apps/hepta-control-ui/rust/core/src/lib.rs
+index f0658c699..68d5d5f62 100644
+--- a/apps/hepta-control-ui/rust/core/src/lib.rs
++++ b/apps/hepta-control-ui/rust/core/src/lib.rs
+@@ -14,3 +14,8 @@ pub mod projection;
+ pub mod recovery;
+ pub mod scheduler;
+ pub mod theme;
++
++/// Read-only runtime status projection; no business authority.
++pub mod runtime_view;
++
++pub mod owner_view;
+diff --git a/apps/hepta-control-ui/rust/core/src/owner_view.rs b/apps/hepta-control-ui/rust/core/src/owner_view.rs
+new file mode 100644
+index 000000000..e9532863c
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/core/src/owner_view.rs
+@@ -0,0 +1,156 @@
++//! Lossless, bounded owner metadata observations; never authorizes a write.
++use crate::runtime_view::RuntimeUnavailable;
++use serde::Deserialize;
++
++pub const MAX_OWNER_STATUS_BYTES: usize = 4096;
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize)]
++#[serde(rename_all = "snake_case")]
++enum Disposition {
++    Missing,
++    Active,
++    ExpiredActive,
++    Released,
++    RolledBack,
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize)]
++#[serde(rename_all = "snake_case")]
++enum ReadFailure {
++    ReadFailed,
++    IntegrityRejected,
++    InvalidObservation,
++    Busy,
++    TimedOut,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
++#[serde(tag = "status", rename_all = "snake_case", deny_unknown_fields)]
++enum Observation {
++    NotAttached {},
++    Observed {
++        generation: Option<u64>,
++        disposition: Disposition,
++    },
++    Unavailable {
++        reason: ReadFailure,
++    },
++}
++
++#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub struct OwnerStatusDocument {
++    schema: String,
++    observation: Observation,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub enum OwnerReadState {
++    Unavailable(RuntimeUnavailable),
++    Loading,
++    Received(OwnerStatusDocument),
++}
++
++impl OwnerReadState {
++    pub fn display_text(&self) -> String {
++        let detail = match self {
++            Self::Unavailable(RuntimeUnavailable::NotConnected) => "No owner observation has been requested for this view. Use the read-only control above to query metadata.".to_owned(),
++            Self::Unavailable(reason) => format!("Production owner observation unavailable ({reason:?})."),
++            Self::Loading => "Reading a point-in-time production owner observation…".to_owned(),
++            Self::Received(document) => match document.observation {
++                Observation::NotAttached {} => "Production owner: not attached. No lease observation is available.".to_owned(),
++                Observation::Observed {generation, disposition} => format!(
++                    "Point-in-time production lease observation\nRecorded generation: {}\nRecorded disposition: {disposition:?}",
++                    generation.map_or_else(|| "none".to_owned(), |value| value.to_string())
++                ),
++                Observation::Unavailable {reason} => format!("Production owner observation unavailable ({reason:?})."),
++            },
++        };
++        format!(
++            "{detail}\nThis is not current write authority. Chat and commands remain unavailable."
++        )
++    }
++}
++
++#[derive(Debug)]
++pub struct OwnerReader {
++    next: u64,
++    active: Option<u64>,
++    state: OwnerReadState,
++}
++impl Default for OwnerReader {
++    fn default() -> Self {
++        Self {
++            next: 0,
++            active: None,
++            state: OwnerReadState::Unavailable(RuntimeUnavailable::NotConnected),
++        }
++    }
++}
++impl OwnerReader {
++    pub fn state(&self) -> &OwnerReadState {
++        &self.state
++    }
++    pub fn begin(&mut self) -> Option<u64> {
++        if self.active.is_some() {
++            return None;
++        }
++        let Some(next) = self.next.checked_add(1) else {
++            self.state = OwnerReadState::Unavailable(RuntimeUnavailable::CounterExhausted);
++            return None;
++        };
++        self.next = next;
++        self.active = Some(next);
++        self.state = OwnerReadState::Loading;
++        Some(next)
++    }
++    pub fn complete(&mut self, ticket: u64, status: u16, bytes: &[u8]) -> bool {
++        if self.active != Some(ticket) {
++            return false;
++        }
++        self.active = None;
++        self.state = match parse(status, bytes) {
++            Ok(value) => OwnerReadState::Received(value),
++            Err(reason) => OwnerReadState::Unavailable(reason),
++        };
++        true
++    }
++    pub fn fail(&mut self, ticket: u64, reason: RuntimeUnavailable) -> bool {
++        if self.active != Some(ticket) {
++            return false;
++        }
++        self.active = None;
++        self.state = OwnerReadState::Unavailable(reason);
++        true
++    }
++    pub fn disconnect(&mut self) {
++        self.active = None;
++        self.state = OwnerReadState::Unavailable(RuntimeUnavailable::NotConnected);
++    }
++}
++fn parse(status: u16, bytes: &[u8]) -> Result<OwnerStatusDocument, RuntimeUnavailable> {
++    if status != 200 {
++        return Err(RuntimeUnavailable::Transport);
++    }
++    if bytes.len() > MAX_OWNER_STATUS_BYTES {
++        return Err(RuntimeUnavailable::Oversize);
++    }
++    let value: OwnerStatusDocument =
++        serde_json::from_slice(bytes).map_err(|_| RuntimeUnavailable::InvalidStatus)?;
++    if value.schema != "hepta.owner-lease-observation.v1" {
++        return Err(RuntimeUnavailable::InvalidStatus);
++    }
++    if let Observation::Observed {
++        generation,
++        disposition,
++    } = value.observation
++        && (disposition == Disposition::Missing) != generation.is_none()
++    {
++        return Err(RuntimeUnavailable::InvalidStatus);
++    }
++    Ok(value)
++}
++
++#[cfg(test)]
++#[path = "owner_view_tests.rs"]
++mod tests;
+diff --git a/apps/hepta-control-ui/rust/core/src/owner_view_tests.rs b/apps/hepta-control-ui/rust/core/src/owner_view_tests.rs
+new file mode 100644
+index 000000000..754f1f1e0
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/core/src/owner_view_tests.rs
+@@ -0,0 +1,93 @@
++use super::*;
++fn document(observation: serde_json::Value) -> Vec<u8> {
++    serde_json::to_vec(
++        &serde_json::json!({"schema":"hepta.owner-lease-observation.v1","observation":observation}),
++    )
++    .expect("synthetic wire fixture")
++}
++#[test]
++fn max_unsigned_wire_generation_renders_exactly_without_implying_sqlite_admission() {
++    let bytes = document(
++        serde_json::json!({"status":"observed","generation":u64::MAX,"disposition":"released"}),
++    );
++    let value = parse(200, &bytes).expect("lossless Rust serde bytes");
++    let text = OwnerReadState::Received(value).display_text();
++    assert!(text.contains("18446744073709551615"));
++    assert!(text.contains("not current write authority"));
++    let overflow = String::from_utf8(bytes)
++        .expect("JSON")
++        .replace("18446744073709551615", "18446744073709551616");
++    assert_eq!(
++        parse(200, overflow.as_bytes()),
++        Err(RuntimeUnavailable::InvalidStatus)
++    );
++}
++#[test]
++fn malformed_private_fields_and_inconsistent_generation_are_rejected() {
++    for value in [
++        serde_json::json!({"status":"not_attached","fencing_token":"forbidden"}),
++        serde_json::json!({"status":"observed","generation":null,"disposition":"active"}),
++        serde_json::json!({"status":"observed","generation":1,"disposition":"missing"}),
++        serde_json::json!({"status":"unavailable","reason":"/private/key/path"}),
++        serde_json::json!({"status":"observed","generation":-1,"disposition":"released"}),
++    ] {
++        assert_eq!(
++            parse(200, &document(value)),
++            Err(RuntimeUnavailable::InvalidStatus)
++        );
++    }
++    assert_eq!(
++        parse(200, &vec![b' '; MAX_OWNER_STATUS_BYTES + 1]),
++        Err(RuntimeUnavailable::Oversize)
++    );
++    assert_eq!(parse(503, b"{}"), Err(RuntimeUnavailable::Transport));
++}
++#[test]
++fn not_attached_and_read_failure_never_become_ready_or_write_authority() {
++    for observation in [
++        serde_json::json!({"status":"not_attached"}),
++        serde_json::json!({"status":"unavailable","reason":"busy"}),
++    ] {
++        let text =
++            OwnerReadState::Received(parse(200, &document(observation)).expect("valid status"))
++                .display_text();
++        assert!(text.contains("commands remain unavailable"));
++        assert!(!text.contains("Ready"));
++    }
++}
++#[test]
++fn refresh_cancel_epoch_and_late_reply_preserve_single_flight_and_clear_old_observation() {
++    let body = document(serde_json::json!({"status":"not_attached"}));
++    let mut reader = OwnerReader::default();
++    let first = reader.begin().expect("first");
++    assert_eq!(reader.begin(), None);
++    reader.disconnect();
++    let second = reader.begin().expect("new epoch");
++    assert!(!reader.complete(first, 200, &body));
++    assert_eq!(reader.state(), &OwnerReadState::Loading);
++    assert!(reader.complete(second, 200, &body));
++    let third = reader.begin().expect("explicit refresh");
++    assert!(reader.fail(third, RuntimeUnavailable::TimedOut));
++    assert!(!reader.complete(third, 200, &body));
++    assert_eq!(
++        reader.state(),
++        &OwnerReadState::Unavailable(RuntimeUnavailable::TimedOut)
++    );
++    reader.disconnect();
++    assert_eq!(
++        reader.state(),
++        &OwnerReadState::Unavailable(RuntimeUnavailable::NotConnected)
++    );
++}
++#[test]
++fn ticket_exhaustion_does_not_recycle_request_identity() {
++    let mut reader = OwnerReader {
++        next: u64::MAX,
++        ..Default::default()
++    };
++    assert_eq!(reader.begin(), None);
++    assert_eq!(
++        reader.state(),
++        &OwnerReadState::Unavailable(RuntimeUnavailable::CounterExhausted)
++    );
++}
+diff --git a/apps/hepta-control-ui/rust/core/src/runtime_view.rs b/apps/hepta-control-ui/rust/core/src/runtime_view.rs
+new file mode 100644
+index 000000000..55d713dd8
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/core/src/runtime_view.rs
+@@ -0,0 +1,176 @@
++//! Bounded read-only projection of the existing runtime status endpoint.
++//! This state never admits a chat owner, signs text, or grants operation authority.
++
++use serde::Deserialize;
++
++/// JSON has no provider-wide encoded-size guarantee. Oversize is unavailable,
++/// never truncated. This accommodates maximal escaped ordinary platform paths.
++pub const MAX_RUNTIME_JSON_BYTES: usize = 256 * 1024;
++
++#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub struct RuntimeSnapshot {
++    schema: String,
++    product: String,
++    status: String,
++    state_root: String,
++    state: RuntimeState,
++    authority: RuntimeAuthority,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct RuntimeState {
++    adapter: String,
++    schema_version: i64,
++    outcome_generation: i64,
++    preference_generation: i64,
++    runtime_snapshot_version: u64,
++    runtime_snapshot_generation: u64,
++    integrity_binding_present: bool,
++    integrity_verification: String,
++    open_mode: String,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct RuntimeAuthority {
++    telegram: bool,
++    outbound: bool,
++    model_invocation: bool,
++    operator_mutation: bool,
++    enforce: bool,
++    promotion: bool,
++    retirement: bool,
++    automatic_transition: bool,
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum RuntimeUnavailable {
++    NotConnected,
++    Transport,
++    TimedOut,
++    Oversize,
++    InvalidStatus,
++    CounterExhausted,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub enum RuntimeReadState {
++    Unavailable(RuntimeUnavailable),
++    Loading,
++    Ready(Box<RuntimeSnapshot>),
++}
++
++#[derive(Debug)]
++pub struct RuntimeReader {
++    next: u64,
++    active: Option<u64>,
++    state: RuntimeReadState,
++}
++
++impl Default for RuntimeReader {
++    fn default() -> Self {
++        Self {
++            next: 0,
++            active: None,
++            state: RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected),
++        }
++    }
++}
++
++impl RuntimeReader {
++    pub fn state(&self) -> &RuntimeReadState {
++        &self.state
++    }
++
++    pub fn begin(&mut self) -> Option<u64> {
++        if self.active.is_some() {
++            return None;
++        }
++        let Some(next) = self.next.checked_add(1) else {
++            self.state = RuntimeReadState::Unavailable(RuntimeUnavailable::CounterExhausted);
++            return None;
++        };
++        self.next = next;
++        self.active = Some(next);
++        self.state = RuntimeReadState::Loading;
++        Some(next)
++    }
++
++    pub fn complete(&mut self, ticket: u64, status: u16, bytes: &[u8]) -> bool {
++        if self.active != Some(ticket) {
++            return false;
++        }
++        self.active = None;
++        self.state = match parse_snapshot(status, bytes) {
++            Ok(snapshot) => RuntimeReadState::Ready(Box::new(snapshot)),
++            Err(reason) => RuntimeReadState::Unavailable(reason),
++        };
++        true
++    }
++
++    pub fn fail(&mut self, ticket: u64, reason: RuntimeUnavailable) -> bool {
++        if self.active != Some(ticket) {
++            return false;
++        }
++        self.active = None;
++        self.state = RuntimeReadState::Unavailable(reason);
++        true
++    }
++
++    pub fn disconnect(&mut self) -> Option<u64> {
++        self.state = RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected);
++        self.active.take()
++    }
++}
++
++fn parse_snapshot(status: u16, bytes: &[u8]) -> Result<RuntimeSnapshot, RuntimeUnavailable> {
++    if bytes.len() > MAX_RUNTIME_JSON_BYTES {
++        return Err(RuntimeUnavailable::Oversize);
++    }
++    if status != 200 {
++        return Err(RuntimeUnavailable::Transport);
++    }
++    let value: RuntimeSnapshot =
++        serde_json::from_slice(bytes).map_err(|_| RuntimeUnavailable::InvalidStatus)?;
++    let a = &value.authority;
++    if value.schema != "hepta_vnext_live_runtime_status_v1"
++        || value.product != "hepta"
++        || value.status != "ready"
++        || value.state.schema_version != 5
++        || value.state.outcome_generation < 0
++        || value.state.preference_generation < 0
++        || a.telegram
++        || a.outbound
++        || a.model_invocation
++        || a.operator_mutation
++        || a.enforce
++        || a.promotion
++        || a.retirement
++        || a.automatic_transition
++    {
++        return Err(RuntimeUnavailable::InvalidStatus);
++    }
++    Ok(value)
++}
++
++impl RuntimeReadState {
++    pub fn display_text(&self) -> String {
++        match self {
++            Self::Loading => "Read-only runtime: checking current status…\nNo chat or operation authority is provided by this view.".to_owned(),
++            Self::Unavailable(reason) => format!("Read-only runtime unavailable ({reason:?}).\nNo current status is shown. Chat and operation commands remain unavailable."),
++            Self::Ready(value) => format!(
++                "Read-only runtime: {}\nStorage schema: {} · snapshot version: {} · generation: {}\nOutcomes generation: {} · preferences generation: {}\nAdapter: {:?}\nIntegrity reported: {:?} · binding present: {}\nOpen mode: {:?}\nStorage root: {:?}\nAll effect gates reported closed. This observation does not grant chat or operation authority.",
++                value.status, value.state.schema_version, value.state.runtime_snapshot_version, value.state.runtime_snapshot_generation,
++                value.state.outcome_generation, value.state.preference_generation,
++                value.state.adapter, value.state.integrity_verification, value.state.integrity_binding_present,
++                value.state.open_mode, value.state_root
++            ),
++        }
++    }
++}
++
++#[cfg(test)]
++#[path = "runtime_view_tests.rs"]
++mod tests;
+diff --git a/apps/hepta-control-ui/rust/core/src/runtime_view_tests.rs b/apps/hepta-control-ui/rust/core/src/runtime_view_tests.rs
+new file mode 100644
+index 000000000..67087a126
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/core/src/runtime_view_tests.rs
+@@ -0,0 +1,107 @@
++use super::*;
++
++fn payload() -> serde_json::Value {
++    serde_json::json!({
++        "schema":"hepta_vnext_live_runtime_status_v1","product":"hepta","status":"ready",
++        "state_root":"/existing/runtime",
++        "state":{"adapter":"sqlite-schema-v5","schema_version":5,"outcome_generation":1,
++            "preference_generation":2,"runtime_snapshot_version":1,"runtime_snapshot_generation":3,
++            "integrity_binding_present":true,"integrity_verification":"owner-verified",
++            "open_mode":"immutable-query-only-open-existing"},
++        "authority":{"telegram":false,"outbound":false,"model_invocation":false,
++            "operator_mutation":false,"enforce":false,"promotion":false,"retirement":false,
++            "automatic_transition":false}
++    })
++}
++
++#[test]
++fn repeated_start_and_late_reply_cannot_replace_newer_status() {
++    let mut reader = RuntimeReader::default();
++    let first = reader.begin().expect("first request");
++    assert_eq!(reader.begin(), None);
++    assert_eq!(reader.disconnect(), Some(first));
++    let second = reader.begin().expect("second request");
++    let body = serde_json::to_vec(&payload()).expect("fixture");
++    assert!(!reader.complete(first, 200, &body));
++    assert_eq!(reader.state(), &RuntimeReadState::Loading);
++    assert!(reader.complete(second, 200, &body));
++    let ready = reader.state().clone();
++    assert!(!reader.fail(first, RuntimeUnavailable::Transport));
++    assert_eq!(reader.state(), &ready);
++}
++
++#[test]
++fn timeout_and_disconnect_never_leave_old_success_displayed_as_current() {
++    let mut reader = RuntimeReader::default();
++    let body = serde_json::to_vec(&payload()).expect("fixture");
++    let first = reader.begin().expect("request");
++    assert!(reader.complete(first, 200, &body));
++    let second = reader.begin().expect("refresh");
++    assert!(reader.fail(second, RuntimeUnavailable::TimedOut));
++    assert_eq!(
++        reader.state(),
++        &RuntimeReadState::Unavailable(RuntimeUnavailable::TimedOut)
++    );
++    assert!(!reader.complete(second, 200, &body));
++    reader.disconnect();
++    assert_eq!(
++        reader.state(),
++        &RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected)
++    );
++}
++
++#[test]
++fn malformed_http_schema_and_authority_are_unavailable_without_truncation() {
++    assert_eq!(
++        parse_snapshot(503, b"{}"),
++        Err(RuntimeUnavailable::Transport)
++    );
++    assert_eq!(
++        parse_snapshot(200, b"{"),
++        Err(RuntimeUnavailable::InvalidStatus)
++    );
++    let mut changed = payload();
++    changed["authority"]["outbound"] = true.into();
++    assert_eq!(
++        parse_snapshot(200, &serde_json::to_vec(&changed).expect("fixture")),
++        Err(RuntimeUnavailable::InvalidStatus)
++    );
++    changed = payload();
++    changed["state"]["schema_version"] = 6.into();
++    assert_eq!(
++        parse_snapshot(200, &serde_json::to_vec(&changed).expect("fixture")),
++        Err(RuntimeUnavailable::InvalidStatus)
++    );
++    assert_eq!(
++        parse_snapshot(200, &vec![b' '; MAX_RUNTIME_JSON_BYTES + 1]),
++        Err(RuntimeUnavailable::Oversize)
++    );
++}
++
++#[test]
++fn long_escaped_path_is_preserved_above_wire_v2_limit_within_json_bound() {
++    let mut value = payload();
++    // JSON and wire-v2 have different envelopes/limits. No module collection
++    // exists in this DTO; the path is its variable-size production field.
++    let path = format!("/{}", "漢\\\n".repeat(8192));
++    value["state_root"] = path.clone().into();
++    let bytes = serde_json::to_vec(&value).expect("fixture");
++    assert!(bytes.len() > 32 * 1024 && bytes.len() < MAX_RUNTIME_JSON_BYTES);
++    let result = parse_snapshot(200, &bytes).expect("bounded complete DTO");
++    assert_eq!(result.state_root, path);
++    let text = RuntimeReadState::Ready(Box::new(result)).display_text();
++    assert!(text.contains(&format!("{path:?}")));
++}
++
++#[test]
++fn request_counter_exhaustion_does_not_reuse_a_ticket() {
++    let mut reader = RuntimeReader {
++        next: u64::MAX,
++        ..RuntimeReader::default()
++    };
++    assert_eq!(reader.begin(), None);
++    assert_eq!(
++        reader.state(),
++        &RuntimeReadState::Unavailable(RuntimeUnavailable::CounterExhausted)
++    );
++}
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+index ff9b13fa1..cbfb35e42 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+@@ -5,6 +5,8 @@
+ use crate::ime_router::ImeRouter;
+ #[cfg(feature = "native-host")]
+ use crate::native_host::render::RendererHost as NativeRenderer;
++#[cfg(target_arch = "wasm32")]
++use crate::runtime_status::RuntimeClient;
+ use hepta_control_core::chat::ChatWorkspace;
+ use makepad_widgets::*;
+ app_main!(App, font_set: International, font_assets: [MATH_VIEW_FONT_ASSET], configure: |cx| {
+@@ -46,6 +48,9 @@ pub struct App {
+     workspace: ChatWorkspace,
+     #[rust]
+     ime_router: ImeRouter,
++    #[cfg(target_arch = "wasm32")]
++    #[rust]
++    runtime_status: RuntimeClient,
+     #[cfg(feature = "native-host")]
+     #[rust]
+     native_host: NativeRenderer,
+@@ -117,6 +122,15 @@ impl AppMain for App {
+         crate::visual_theme::apply_tree(cx, &self.ui);
+         self.ime_router
+             .dispatch(cx, &self.ui, event, &mut self.workspace);
++        #[cfg(target_arch = "wasm32")]
++        self.runtime_status.handle_event(
++            cx,
++            &self.ui,
++            event,
++            self.workspace.tab == hepta_control_core::chat::WorkspaceTab::Console
++                && !self.workspace.navigation_open,
++            self.workspace.presentation_epoch(),
++        );
+         #[cfg(feature = "native-host")]
+         if matches!(event, Event::Draw(_)) {
+             self.native_host.after_draw(cx, &self.ui);
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+index 273755366..0f6c7bab7 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+@@ -6,6 +6,8 @@ pub mod app;
+ mod native_status;
+ #[cfg(feature = "ui")]
+ pub mod robrix;
++#[cfg(feature = "ui")]
++mod runtime_status;
+ 
+ #[cfg(any(feature = "ui", test))]
+ mod ime_pointer_gate;
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+index cefd2fe71..430eaf7f9 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+@@ -34,10 +34,11 @@ script_mod! {
+    home_tab := DockTab {name: "Chat" kind: @room_screen template: @PermanentTab}
+    console_tab := DockTab {name: "Console" kind: @console_screen template: @PermanentTab}
+    room_screen := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
+-   console_screen := View {
++   console_screen := ScrollYView {
+     flow: Down padding: 24 spacing: 12
+     Label {text: "Console" draw_text.color: COLOR_TEXT}
+-    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Runtime controls are not yet composed into this Robrix host. No operation is dispatched from this view." draw_text.color: COLOR_TEXT}
++    owner_refresh := mod.widgets.AuroraButton {text: "Refresh observations" enabled: false}
++    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable." draw_text.color: COLOR_TEXT}
+    }
+   }
+  }
+@@ -96,8 +97,9 @@ script_mod! {
+       back_to_chat := mod.widgets.AuroraButton {text: "Back to conversation"}
+       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
+      }
+-     console_page := View {flow: Down padding: 16
+-      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Console controls are awaiting composition. No runtime operation is dispatched here."}
++     console_page := ScrollYView {flow: Down padding: 16 spacing: 12
++      mobile_owner_refresh := mod.widgets.AuroraButton {text: "Refresh observations" enabled: false}
++      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable."}
+      }
+     }
+    }
+@@ -116,6 +118,17 @@ impl Widget for MainConversationUI {
+         self.view.handle_event(cx, event, scope);
+     }
+     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
++        let status = cx
++            .global::<crate::runtime_status::RuntimeDisplay>()
++            .text
++            .clone();
++        let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
++        self.view
++            .button(cx, ids!(owner_refresh))
++            .set_enabled(cx, cfg!(target_arch = "wasm32") && !busy);
++        self.view
++            .label(cx, ids!(console_status))
++            .set_text(cx, &status);
+         // This child is created lazily by the outer layout Dock. Select here,
+         // before its first draw, so a cached Console stays Console on resize.
+         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
+@@ -314,6 +327,17 @@ impl Widget for HomeScreen {
+             } else {
+                 id!(chat_page)
+             };
++            let status = cx
++                .global::<crate::runtime_status::RuntimeDisplay>()
++                .text
++                .clone();
++            let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
++            self.view
++                .button(cx, ids!(mobile_owner_refresh))
++                .set_enabled(cx, cfg!(target_arch = "wasm32") && !busy);
++            self.view
++                .label(cx, ids!(mobile_console_status))
++                .set_text(cx, &status);
+             self.view
+                 .page_flip(cx, ids!(mobile_pages))
+                 .set_active_page(cx, page);
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs b/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs
+new file mode 100644
+index 000000000..0de9539fe
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs
+@@ -0,0 +1,235 @@
++//! Read-only observations never admit a chat owner or grant mutation authority.
++use hepta_control_core::owner_view::OwnerReadState;
++use hepta_control_core::runtime_view::RuntimeReadState;
++use hepta_control_core::runtime_view::RuntimeUnavailable;
++
++pub(crate) struct RuntimeDisplay {
++    pub(crate) text: String,
++    pub(crate) busy: bool,
++}
++impl Default for RuntimeDisplay {
++    fn default() -> Self {
++        Self {
++            text: format!(
++                "{}\n\nLegacy runtime observation\n{}",
++                OwnerReadState::Unavailable(RuntimeUnavailable::NotConnected).display_text(),
++                RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected).display_text()
++            ),
++            busy: false,
++        }
++    }
++}
++
++#[cfg(target_arch = "wasm32")]
++mod web {
++    use super::RuntimeDisplay;
++    use hepta_control_core::owner_view::MAX_OWNER_STATUS_BYTES;
++    use hepta_control_core::owner_view::OwnerReader;
++    use hepta_control_core::runtime_view::MAX_RUNTIME_JSON_BYTES;
++    use hepta_control_core::runtime_view::RuntimeReader;
++    use hepta_control_core::runtime_view::RuntimeUnavailable;
++    use makepad_widgets::*;
++
++    #[derive(Clone, Copy)]
++    enum Channel {
++        Owner,
++        Legacy,
++    }
++    #[derive(Clone, Copy)]
++    struct Flight {
++        channel: Channel,
++        ticket: u64,
++        request: LiveId,
++    }
++
++    #[derive(Default)]
++    pub(crate) struct RuntimeClient {
++        owner: OwnerReader,
++        legacy: RuntimeReader,
++        active: Option<Flight>,
++        next_request: u64,
++        deadline: Timer,
++        visible: bool,
++        background: bool,
++        closed: bool,
++        epoch: Option<u64>,
++    }
++    impl RuntimeClient {
++        pub(crate) fn handle_event(
++            &mut self,
++            cx: &mut Cx,
++            ui: &WidgetRef,
++            event: &Event,
++            requested_visible: bool,
++            epoch: u64,
++        ) {
++            match event {
++                Event::Shutdown => self.closed = true,
++                Event::Background => self.background = true,
++                Event::Foreground => self.background = false,
++                _ => {}
++            }
++            let visible = requested_visible && !self.background && !self.closed;
++            if !visible || self.epoch != Some(epoch) {
++                self.cancel(cx);
++                self.visible = false;
++                self.epoch = Some(epoch);
++                self.publish(cx, ui);
++            }
++            if !visible {
++                return;
++            }
++            let refresh = matches!(event,Event::Actions(actions) if ui.button(cx,ids!(owner_refresh)).clicked(actions)||ui.button(cx,ids!(mobile_owner_refresh)).clicked(actions));
++            if !self.visible {
++                self.visible = true;
++                self.publish(cx, ui);
++            }
++            if refresh && self.active.is_none() {
++                self.owner.disconnect();
++                self.legacy.disconnect();
++                self.start(cx, ui, Channel::Owner);
++            }
++            if self.deadline.is_event(event).is_some()
++                && let Some(flight) = self.active.take()
++            {
++                let _ = cx.net.http_cancel(flight.request);
++                self.fail(flight, RuntimeUnavailable::TimedOut);
++                self.deadline = Timer::default();
++                self.publish(cx, ui);
++                if matches!(flight.channel, Channel::Owner) {
++                    self.start(cx, ui, Channel::Legacy);
++                }
++            }
++            if let (Some(flight), Event::NetworkResponses(responses)) = (self.active, event) {
++                for response in responses {
++                    let completed = match response {
++                        NetworkResponse::HttpResponse {
++                            request_id,
++                            response,
++                        } if *request_id == flight.request => {
++                            let body = response.body.as_deref().unwrap_or(&[]);
++                            match flight.channel {
++                                Channel::Owner => {
++                                    self.owner
++                                        .complete(flight.ticket, response.status_code, body)
++                                }
++                                Channel::Legacy => {
++                                    self.legacy
++                                        .complete(flight.ticket, response.status_code, body)
++                                }
++                            }
++                        }
++                        NetworkResponse::HttpError { request_id, .. }
++                            if *request_id == flight.request =>
++                        {
++                            self.fail(flight, RuntimeUnavailable::Transport)
++                        }
++                        _ => false,
++                    };
++                    if completed {
++                        self.active = None;
++                        cx.stop_timer(self.deadline);
++                        self.deadline = Timer::default();
++                        self.publish(cx, ui);
++                        if matches!(flight.channel, Channel::Owner) {
++                            self.start(cx, ui, Channel::Legacy);
++                        }
++                        break;
++                    }
++                }
++            }
++        }
++        fn fail(&mut self, flight: Flight, reason: RuntimeUnavailable) -> bool {
++            match flight.channel {
++                Channel::Owner => self.owner.fail(flight.ticket, reason),
++                Channel::Legacy => self.legacy.fail(flight.ticket, reason),
++            }
++        }
++        fn start(&mut self, cx: &mut Cx, ui: &WidgetRef, channel: Channel) {
++            let (ticket, url, limit) = match channel {
++                Channel::Owner => (
++                    self.owner.begin(),
++                    "/api/hepta/owner-status",
++                    MAX_OWNER_STATUS_BYTES,
++                ),
++                Channel::Legacy => (
++                    self.legacy.begin(),
++                    "/api/hepta/runtime",
++                    MAX_RUNTIME_JSON_BYTES,
++                ),
++            };
++            let Some(ticket) = ticket else {
++                self.publish(cx, ui);
++                return;
++            };
++            let Some(next_request) = self.next_request.checked_add(1) else {
++                match channel {
++                    Channel::Owner => {
++                        self.owner
++                            .fail(ticket, RuntimeUnavailable::CounterExhausted);
++                    }
++                    Channel::Legacy => {
++                        self.legacy
++                            .fail(ticket, RuntimeUnavailable::CounterExhausted);
++                    }
++                }
++                self.publish(cx, ui);
++                return;
++            };
++            self.next_request = next_request;
++            let flight = Flight {
++                channel,
++                ticket,
++                request: LiveId(id!(hepta_read_only_observation_request).0 ^ next_request),
++            };
++            let mut request = HttpRequest::new(url.to_owned(), Default::default());
++            request.max_response_body_bytes = limit as u64;
++            request.set_header("Accept".to_owned(), "application/json".to_owned());
++            match cx.net.http_start(flight.request, request) {
++                Ok(()) => {
++                    self.active = Some(flight);
++                    self.deadline = cx.start_timeout(5.0);
++                }
++                Err(_) => {
++                    self.fail(flight, RuntimeUnavailable::Transport);
++                    if matches!(channel, Channel::Owner) {
++                        self.start(cx, ui, Channel::Legacy);
++                    }
++                }
++            }
++            self.publish(cx, ui);
++        }
++        fn cancel(&mut self, cx: &mut Cx) {
++            if let Some(flight) = self.active.take() {
++                let _ = cx.net.http_cancel(flight.request);
++            }
++            self.owner.disconnect();
++            self.legacy.disconnect();
++            cx.stop_timer(self.deadline);
++            self.deadline = Timer::default();
++        }
++        fn publish(&self, cx: &mut Cx, ui: &WidgetRef) {
++            let text = format!(
++                "{}\n\nLegacy runtime observation\n{}",
++                self.owner.state().display_text(),
++                self.legacy.state().display_text()
++            );
++            let busy = self.active.is_some();
++            if cx.global::<RuntimeDisplay>().text != text
++                || cx.global::<RuntimeDisplay>().busy != busy
++            {
++                cx.global::<RuntimeDisplay>().text = text.clone();
++                cx.global::<RuntimeDisplay>().busy = busy;
++                ui.button(cx, ids!(owner_refresh)).set_enabled(cx, !busy);
++                ui.button(cx, ids!(mobile_owner_refresh))
++                    .set_enabled(cx, !busy);
++                ui.label(cx, ids!(console_status)).set_text(cx, &text);
++                ui.label(cx, ids!(mobile_console_status))
++                    .set_text(cx, &text);
++                ui.redraw(cx);
++            }
++        }
++    }
++}
++#[cfg(target_arch = "wasm32")]
++pub(crate) use web::RuntimeClient;
+diff --git a/apps/hepta-control-ui/test/test_run_product.py b/apps/hepta-control-ui/test/test_run_product.py
+new file mode 100644
+index 000000000..91f4b5ec3
+--- /dev/null
++++ b/apps/hepta-control-ui/test/test_run_product.py
+@@ -0,0 +1,113 @@
++import hashlib
++import importlib.util
++import json
++import os
++import subprocess
++import sys
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++
++ROOT = Path(__file__).resolve().parents[1]
++SPEC = importlib.util.spec_from_file_location(
++    "run_product", ROOT / "tools/run-product.py"
++)
++product = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(product)
++
++
++@unittest.skipUnless(
++    os.name == "posix", "Product bundle launcher currently requires Unix anchoring"
++)
++class ProductLaunchTests(unittest.TestCase):
++    def setUp(self):
++        temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(temporary.cleanup)
++        self.root = Path(temporary.name).resolve()
++        (self.root / "dist").mkdir()
++        self.manifest = self.root / "dist/build-manifest.json"
++        self.value = {
++            "schema": "hepta.robrix-ui.build.v1",
++            "browserRuntime": "rust-makepad-wasm",
++            "fixtures": False,
++            "sourceIdentity": {"sha256": "a" * 64},
++        }
++        self.manifest.write_text(json.dumps(self.value))
++
++    def test_digest_is_derived_from_exact_current_build_bytes(self):
++        with patch.object(
++            product.subprocess, "check_output", return_value="a" * 64 + "\n"
++        ):
++            args = product.bundle_arguments(self.root)
++        self.assertEqual(
++            args,
++            [
++                "--ui-bundle",
++                str((self.root / "dist").resolve()),
++                "--ui-manifest-sha256",
++                hashlib.sha256(self.manifest.read_bytes()).hexdigest(),
++            ],
++        )
++
++    def test_stale_source_or_fixture_artifact_cannot_be_selected(self):
++        with patch.object(product.subprocess, "check_output", return_value="b" * 64):
++            with self.assertRaisesRegex(ValueError, "stale"):
++                product.bundle_arguments(self.root)
++        self.value["fixtures"] = True
++        self.manifest.write_text(json.dumps(self.value))
++        with patch.object(
++            product.subprocess,
++            "check_output",
++            side_effect=AssertionError("must not execute stale fixture"),
++        ):
++            with self.assertRaisesRegex(ValueError, "production"):
++                product.bundle_arguments(self.root)
++
++    def test_oversize_manifest_fails_before_source_tool_execution(self):
++        self.manifest.write_bytes(b" " * (product.MAX_MANIFEST_BYTES + 1))
++        with patch.object(
++            product.subprocess,
++            "check_output",
++            side_effect=AssertionError("must not execute"),
++        ):
++            with self.assertRaisesRegex(ValueError, "bound"):
++                product.bundle_arguments(self.root)
++
++    def test_fifo_manifest_fails_within_deadline_instead_of_blocking_launch(self):
++        self.manifest.unlink()
++        os.mkfifo(self.manifest)
++        script = "import importlib.util, pathlib, sys; s=importlib.util.spec_from_file_location('p',sys.argv[1]); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); m.bundle_arguments(pathlib.Path(sys.argv[2]))"
++        result = subprocess.run(
++            [
++                sys.executable,
++                "-c",
++                script,
++                str(ROOT / "tools/run-product.py"),
++                str(self.root),
++            ],
++            capture_output=True,
++            text=True,
++            timeout=3,
++            check=False,
++        )
++        self.assertNotEqual(result.returncode, 0)
++        self.assertIn("not a regular file", result.stderr)
++
++    def test_symlink_manifest_and_ancestor_are_rejected(self):
++        self.manifest.rename(self.root / "original.json")
++        self.manifest.symlink_to(self.root / "original.json")
++        with patch.object(product.subprocess, "check_output", return_value="a" * 64):
++            with self.assertRaises(OSError):
++                product.bundle_arguments(self.root)
++        self.manifest.unlink()
++        (self.root / "dist").rename(self.root / "real-dist")
++        (self.root / "real-dist/build-manifest.json").write_bytes(
++            (self.root / "original.json").read_bytes()
++        )
++        (self.root / "dist").symlink_to(
++            self.root / "real-dist", target_is_directory=True
++        )
++        with patch.object(product.subprocess, "check_output", return_value="a" * 64):
++            with self.assertRaises(OSError):
++                product.bundle_arguments(self.root)
+diff --git a/apps/hepta-control-ui/tools/robrix-source-identity.mjs b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+index 19888f48f..e4eb31052 100644
+--- a/apps/hepta-control-ui/tools/robrix-source-identity.mjs
++++ b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+@@ -18,6 +18,6 @@ export async function robrixSourceIdentity(root){
+  await walk(join(root,'rust/robrix-ui/resources'));
+  await add(join(root,'rust/robrix-ui/UPSTREAM.json'));
+  await add(join(root,'rust/robrix-ui/build.rs'));
+- for(const name of ['build.mjs','build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py','owned-artifact-lease.mjs','artifact-lock.py','serve-robrix.mjs'])await add(join(root,'tools',name));
++ for(const name of ['build.mjs','build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py','run-product.py','owned-artifact-lease.mjs','artifact-lock.py','serve-robrix.mjs'])await add(join(root,'tools',name));
+  return {sha256:sha(JSON.stringify(files)),files};
+ }
+diff --git a/apps/hepta-control-ui/tools/run-product-preview.py b/apps/hepta-control-ui/tools/run-product-preview.py
+new file mode 100644
+index 000000000..10c2efedf
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/run-product-preview.py
+@@ -0,0 +1,79 @@
++"""Task-local missing-state preview of the real Rust gateway entry.
++
++No database, key or owner is created. This is developer evidence, not an
++installed-product or attached-owner qualification path.
++"""
++
++import importlib.util
++import os
++from pathlib import Path
++import signal
++import subprocess
++import tempfile
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def main():
++    binary = Path(os.environ["HEPTA_GATEWAY_EXAMPLE"]).resolve(strict=True)
++    if not binary.is_file():
++        raise ValueError("Select the source-built gateway example executable")
++    spec = importlib.util.spec_from_file_location(
++        "product_launcher", ROOT / "tools/run-product.py"
++    )
++    launcher = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(launcher)
++    bundle = launcher.bundle_arguments(ROOT)
++    process = None
++    stopping = False
++
++    def stop(_signum, _frame):
++        nonlocal stopping
++        stopping = True
++        if process is not None and process.poll() is None:
++            process.send_signal(signal.SIGINT)
++
++    previous = {
++        number: signal.signal(number, stop)
++        for number in (signal.SIGINT, signal.SIGTERM)
++    }
++    try:
++        with tempfile.TemporaryDirectory(prefix="hepta-ui-missing-owner-") as state:
++            if stopping:
++                return
++            process = subprocess.Popen(
++                [
++                    str(binary),
++                    "--serve-ui",
++                    "--listen",
++                    "127.0.0.1:4175",
++                    "--state-root",
++                    state,
++                    *bundle,
++                ]
++            )
++            if stopping:
++                process.send_signal(signal.SIGINT)
++            try:
++                code = process.wait()
++            finally:
++                if process.poll() is None:
++                    process.send_signal(signal.SIGINT)
++                    try:
++                        process.wait(timeout=5)
++                    except subprocess.TimeoutExpired:
++                        process.kill()
++                        process.wait()
++            if any(Path(state).iterdir()):
++                raise RuntimeError(
++                    "Read-only preview unexpectedly created runtime state"
++                )
++            if code != 0:
++                raise SystemExit(code)
++    finally:
++        for number, handler in previous.items():
++            signal.signal(number, handler)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/apps/hepta-control-ui/tools/run-product.py b/apps/hepta-control-ui/tools/run-product.py
+new file mode 100644
+index 000000000..a89c14d72
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/run-product.py
+@@ -0,0 +1,117 @@
++"""Launch the existing read-only product gateway with its owned Rust UI build.
++
++The manifest digest is derived from the actual build, not supplied as a receipt
++or treated as signing authority. This does not create runtime state or keys.
++"""
++
++import argparse
++import hashlib
++import json
++import os
++import stat
++from pathlib import Path
++import subprocess
++
++ROOT = Path(__file__).resolve().parents[1]
++MAX_MANIFEST_BYTES = 2 * 1024 * 1024
++
++
++def bundle_arguments(root):
++    manifest_path = root / "dist/build-manifest.json"
++    if os.name != "posix":
++        raise ValueError(
++            "Product UI bundle launch needs a reviewed anchored reader on this platform"
++        )
++    # Walk from a pinned directory descriptor; reject symlink ancestors and a
++    # FIFO/device final entry before reading. No canonicalize/open fallback.
++    directory = os.open("/", os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
++    try:
++        if not manifest_path.is_absolute() or ".." in manifest_path.parts:
++            raise ValueError("Manifest path must be normalized and absolute")
++        for part in manifest_path.parts[1:-1]:
++            child = os.open(
++                part,
++                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
++                dir_fd=directory,
++            )
++            os.close(directory)
++            directory = child
++        descriptor = os.open(
++            manifest_path.name,
++            os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC,
++            dir_fd=directory,
++        )
++        with os.fdopen(descriptor, "rb") as source:
++            metadata = os.fstat(source.fileno())
++            if not stat.S_ISREG(metadata.st_mode):
++                raise ValueError("UI manifest is not a regular file")
++            if metadata.st_size > MAX_MANIFEST_BYTES:
++                raise ValueError("UI manifest exceeds the supported bound")
++            data = source.read(MAX_MANIFEST_BYTES + 1)
++    finally:
++        os.close(directory)
++    if len(data) > MAX_MANIFEST_BYTES:
++        raise ValueError("UI manifest exceeds the supported bound")
++    manifest = json.loads(data)
++    if (
++        manifest.get("schema") != "hepta.robrix-ui.build.v1"
++        or manifest.get("browserRuntime") != "rust-makepad-wasm"
++        or manifest.get("fixtures") is not False
++    ):
++        raise ValueError("Build the production Rust UI before launching the product")
++    script = """
++import {robrixSourceIdentity} from './tools/robrix-source-identity.mjs';
++console.log((await robrixSourceIdentity(process.cwd())).sha256);
++"""
++    current = subprocess.check_output(
++        ["node", "--input-type=module", "-e", script], cwd=root, text=True
++    ).strip()
++    if current != manifest.get("sourceIdentity", {}).get("sha256"):
++        raise ValueError("UI build is stale; rebuild the current source")
++    return [
++        "--ui-bundle",
++        str((root / "dist").resolve(strict=True)),
++        "--ui-manifest-sha256",
++        hashlib.sha256(data).hexdigest(),
++    ]
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument(
++        "--hepta", type=Path, required=True, help="Built product hepta executable"
++    )
++    parser.add_argument(
++        "--state-root",
++        type=Path,
++        required=True,
++        help="State directory; missing runtime contents are shown as unavailable",
++    )
++    parser.add_argument("--listen", default="127.0.0.1:7373")
++    parser.add_argument(
++        "--no-build", action="store_true", help="Verify and reuse a current build"
++    )
++    args = parser.parse_args()
++    executable = args.hepta.resolve(strict=True)
++    state = args.state_root.resolve(strict=True)
++    if not executable.is_file() or not state.is_dir():
++        parser.error("Supply a built executable and an existing state directory")
++    if not args.no_build:
++        subprocess.run(["node", "tools/build.mjs"], cwd=ROOT, check=True)
++    bundle = bundle_arguments(ROOT)
++    subprocess.run(
++        [
++            str(executable),
++            "--serve-ui",
++            "--listen",
++            args.listen,
++            "--state-root",
++            str(state),
++            *bundle,
++        ],
++        check=True,
++    )
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index d6ca3388c..b25559684 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -4051,7 +4051,10 @@ dependencies = [
+  "codex-hepta-runtime",
+  "codex-hepta-wire",
+  "pretty_assertions",
++ "rustix 1.1.4",
++ "serde",
+  "serde_json",
++ "sha2 0.10.9",
+  "tokio",
+ ]
+ 
+diff --git a/codex-rs/hepta-native-gateway/Cargo.toml b/codex-rs/hepta-native-gateway/Cargo.toml
+index ecad366f0..ad2428494 100644
+--- a/codex-rs/hepta-native-gateway/Cargo.toml
++++ b/codex-rs/hepta-native-gateway/Cargo.toml
+@@ -17,16 +17,22 @@ workspace = true
+ anyhow = { workspace = true }
+ codex-hepta-paths = { workspace = true }
+ codex-hepta-runtime = { workspace = true }
++serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
++sha2 = { workspace = true }
+ tokio = { workspace = true, features = [
+     "io-util",
+     "macros",
+     "net",
+     "rt-multi-thread",
+     "signal",
++    "sync",
+     "time",
+ ] }
+ 
++[target.'cfg(unix)'.dependencies]
++rustix = { workspace = true, features = ["fs"] }
++
+ [dev-dependencies]
+ codex-hepta-wire = { path = "../hepta-wire" }
+ pretty_assertions = { workspace = true }
+diff --git a/codex-rs/hepta-native-gateway/examples/ui_product_preview.rs b/codex-rs/hepta-native-gateway/examples/ui_product_preview.rs
+new file mode 100644
+index 000000000..bead607ad
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/examples/ui_product_preview.rs
+@@ -0,0 +1,9 @@
++//! Developer entry for the actual gateway. This never initializes owner state.
++fn main() -> anyhow::Result<()> {
++    let args = std::env::args().skip(1).collect::<Vec<_>>();
++    anyhow::ensure!(
++        codex_hepta_native_gateway::run_serve_ui_if_requested(&args)?,
++        "Pass --serve-ui with explicit bundle, manifest digest, state root and loopback address"
++    );
++    Ok(())
++}
+diff --git a/codex-rs/hepta-native-gateway/src/http_origin.rs b/codex-rs/hepta-native-gateway/src/http_origin.rs
+new file mode 100644
+index 000000000..193ff7685
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/http_origin.rs
+@@ -0,0 +1,119 @@
++//! Browser-origin checks for the shared loopback HTTP boundary.
++//! These reject DNS rebinding/cross-origin reads; they are not user authentication.
++
++use std::net::IpAddr;
++use std::net::SocketAddr;
++
++#[derive(Eq, PartialEq)]
++struct Authority {
++    host: String,
++    port: u16,
++}
++
++fn authority(value: &str) -> Option<Authority> {
++    if value.is_empty() || !value.is_ascii() || value.bytes().any(|byte| byte.is_ascii_whitespace())
++    {
++        return None;
++    }
++    if value.starts_with('[') {
++        let end = value.find(']')?;
++        let host = value.get(1..end)?.parse::<std::net::Ipv6Addr>().ok()?;
++        let rest = value.get(end + 1..)?;
++        let port = if rest.is_empty() {
++            80
++        } else {
++            port(rest.strip_prefix(':')?)?
++        };
++        return Some(Authority {
++            host: host.to_string(),
++            port,
++        });
++    }
++    let (host, port) = match value.rsplit_once(':') {
++        Some((host, encoded)) => (host, port(encoded)?),
++        None => (value, 80),
++    };
++    let host = if host.eq_ignore_ascii_case("localhost") {
++        "localhost".to_owned()
++    } else {
++        host.parse::<std::net::Ipv4Addr>().ok()?.to_string()
++    };
++    Some(Authority { host, port })
++}
++
++fn port(value: &str) -> Option<u16> {
++    if value.is_empty() || !value.bytes().all(|byte| byte.is_ascii_digit()) {
++        return None;
++    }
++    value.parse().ok().filter(|port| *port != 0)
++}
++
++pub(crate) fn allowed(request: &[u8], local: SocketAddr) -> bool {
++    if !local.ip().is_loopback() {
++        return false;
++    }
++    let Ok(text) = std::str::from_utf8(request) else {
++        return false;
++    };
++    let mut lines = text.split("\r\n");
++    let Some(first) = lines.next() else {
++        return false;
++    };
++    let fields = first.split_whitespace().collect::<Vec<_>>();
++    if fields.len() != 3 || !matches!(fields[2], "HTTP/1.0" | "HTTP/1.1") {
++        return false;
++    }
++    let mut host = None;
++    let mut origin = None;
++    for line in lines {
++        if line.is_empty() {
++            break;
++        }
++        if line.starts_with([' ', '\t']) {
++            return false;
++        }
++        let Some((name, value)) = line.split_once(':') else {
++            return false;
++        };
++        if name.is_empty()
++            || !name
++                .bytes()
++                .all(|byte| byte.is_ascii_alphanumeric() || b"!#$%&'*+-.^_`|~".contains(&byte))
++            || value
++                .bytes()
++                .any(|byte| (byte < 0x20 && byte != b'\t') || byte == 0x7f)
++        {
++            return false;
++        }
++        if name.eq_ignore_ascii_case("host") {
++            if host.replace(value.trim()).is_some() {
++                return false;
++            }
++        } else if name.eq_ignore_ascii_case("origin") && origin.replace(value.trim()).is_some() {
++            return false;
++        }
++    }
++    // Retain legacy direct HTTP/1.0 clients without granting browsers an omitted-Host path.
++    let Some(host) = host else {
++        return fields[2] == "HTTP/1.0" && origin.is_none();
++    };
++    let Some(host) = authority(host) else {
++        return false;
++    };
++    let is_bound_host =
++        host.host == "localhost" || host.host.parse::<IpAddr>().ok() == Some(local.ip());
++    if !local.ip().is_loopback() || host.port != local.port() || !is_bound_host {
++        return false;
++    }
++    match origin {
++        None => true,
++        Some(value) => value
++            .strip_prefix("http://")
++            .and_then(authority)
++            .is_some_and(|value| value == host),
++    }
++}
++
++#[cfg(test)]
++#[path = "http_origin_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-native-gateway/src/http_origin_tests.rs b/codex-rs/hepta-native-gateway/src/http_origin_tests.rs
+new file mode 100644
+index 000000000..bf8db4f65
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/http_origin_tests.rs
+@@ -0,0 +1,42 @@
++use super::*;
++
++#[test]
++fn expected_loopback_host_and_same_origin_are_admitted() {
++    let address: SocketAddr = "127.0.0.1:7373".parse().expect("fixture");
++    for host in ["127.0.0.1:7373", "localhost:7373", "LOCALHOST:7373"] {
++        let request = format!(
++            "GET /api/hepta/runtime HTTP/1.1\r\nHost: {host}\r\nOrigin: http://{host}\r\n\r\n"
++        );
++        assert!(allowed(request.as_bytes(), address));
++    }
++    assert!(allowed(b"GET /healthz HTTP/1.0\r\n\r\n", address));
++    assert!(allowed(
++        b"GET / HTTP/1.1\r\nHost: [::1]:7373\r\nOrigin: http://[::1]:7373\r\n\r\n",
++        "[::1]:7373".parse().expect("fixture")
++    ));
++}
++
++#[test]
++fn rebinding_cross_origin_ambiguous_and_opaque_hosts_are_rejected() {
++    let address: SocketAddr = "127.0.0.1:7373".parse().expect("fixture");
++    for headers in [
++        "Host: attacker.example:7373",
++        "Host: 127.0.0.2:7373",
++        "Host: localhost",
++        "Host: localhost:0",
++        "Host: localhost:+7373",
++        "Host: localhost:7373\r\nHost: localhost:7373",
++        "Host: localhost:7373\r\nOrigin: https://attacker.example",
++        "Host: localhost:7373\r\nOrigin: null",
++        "Host: localhost:7373\r\nOrigin: http://127.0.0.1:7373",
++        "Host: localhost:7373\r\nOrigin: http://localhost:7373/",
++        "Host: localhost:7373\r\nOrigin: http://localhost:7373\r\nOrigin: http://localhost:7373",
++        "Host: localhost:7373\r\n Origin: http://attacker.example",
++        "Host : localhost:7373",
++        "",
++        "Host: localhost:7373\nOrigin: http://attacker.example",
++    ] {
++        let request = format!("GET /api/hepta/runtime HTTP/1.1\r\n{headers}\r\n\r\n");
++        assert!(!allowed(request.as_bytes(), address), "{headers:?}");
++    }
++}
+diff --git a/codex-rs/hepta-native-gateway/src/lib.rs b/codex-rs/hepta-native-gateway/src/lib.rs
+index 990e07d87..4ed90edd0 100644
+--- a/codex-rs/hepta-native-gateway/src/lib.rs
++++ b/codex-rs/hepta-native-gateway/src/lib.rs
+@@ -7,6 +7,7 @@
+ 
+ use std::env;
+ use std::net::SocketAddr;
++use std::path::PathBuf;
+ use std::sync::Arc;
+ use std::time::Duration;
+ 
+@@ -19,6 +20,18 @@ use tokio::io::AsyncWriteExt;
+ use tokio::net::TcpListener;
+ use tokio::net::TcpStream;
+ 
++mod http_origin;
++mod owner_status;
++mod ui_bundle;
++
++pub use owner_status::OwnerLeaseDisposition;
++pub use owner_status::OwnerLeaseObservation;
++pub use owner_status::OwnerObservationFuture;
++pub use owner_status::OwnerReadFailure;
++pub use owner_status::OwnerStatusProvider;
++use ui_bundle::UiBundle;
++pub use ui_bundle::UiBundleOptions;
++
+ pub const DEFAULT_LISTEN_ADDR: &str = "127.0.0.1:7373";
+ pub const CANARY_LISTEN_ADDR: &str = "127.0.0.1:17373";
+ pub const LIVE_SHELL_CONTRACT_ARG: &str = "--hepta-vnext-live-shell-contract-v1";
+@@ -52,6 +65,7 @@ const CLOSED_EFFECT_ENV_VARS: &[&str] = &[
+ pub struct NativeGatewayOptions {
+     pub listen_addr: SocketAddr,
+     pub state_root: HeptaStateRoot,
++    pub ui_bundle: Option<UiBundleOptions>,
+ }
+ 
+ impl NativeGatewayOptions {
+@@ -59,6 +73,8 @@ impl NativeGatewayOptions {
+         let mut listen_addr = DEFAULT_LISTEN_ADDR.to_string();
+         let mut state_root = default_root;
+         let mut positional_listen_seen = false;
++        let mut ui_directory = None;
++        let mut ui_manifest_sha256 = None;
+         let mut index = 0;
+         while index < raw_args.len() {
+             match raw_args[index].as_str() {
+@@ -69,6 +85,23 @@ impl NativeGatewayOptions {
+                         .context("--listen requires HOST:PORT")?
+                         .clone();
+                 }
++                "--ui-bundle" => {
++                    index += 1;
++                    ui_directory = Some(PathBuf::from(
++                        raw_args
++                            .get(index)
++                            .context("--ui-bundle requires an absolute directory")?,
++                    ));
++                }
++                "--ui-manifest-sha256" => {
++                    index += 1;
++                    ui_manifest_sha256 = Some(
++                        raw_args
++                            .get(index)
++                            .context("--ui-manifest-sha256 requires a digest")?
++                            .clone(),
++                    );
++                }
+                 "--state-root" => {
+                     index += 1;
+                     let value = raw_args.get(index).context("--state-root requires PATH")?;
+@@ -87,9 +120,18 @@ impl NativeGatewayOptions {
+             .parse::<SocketAddr>()
+             .with_context(|| format!("parse loopback listen address {listen_addr}"))?;
+         validate_loopback(listen_addr)?;
++        let ui_bundle = match (ui_directory, ui_manifest_sha256) {
++            (None, None) => None,
++            (Some(directory), Some(manifest_sha256)) => Some(UiBundleOptions {
++                directory,
++                manifest_sha256,
++            }),
++            _ => anyhow::bail!("--ui-bundle and --ui-manifest-sha256 must be supplied together"),
++        };
+         Ok(Self {
+             listen_addr,
+             state_root,
++            ui_bundle,
+         })
+     }
+ }
+@@ -134,8 +176,35 @@ pub fn run_serve_ui_if_requested(raw_args: &[String]) -> Result<bool> {
+ }
+ 
+ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
++    run_native_gateway_with_owner_status(options, OwnerStatusProvider::default()).await
++}
++
++/// Attach only an already-owned, weak, read-only observation provider.
++/// The default CLI never constructs a production owner as a side effect.
++pub async fn run_native_gateway_with_owner_status(
++    options: NativeGatewayOptions,
++    owner_status: OwnerStatusProvider,
++) -> Result<()> {
+     validate_closed_effect_environment()?;
+-    let runtime = Arc::new(HeptaRuntime::open_existing(options.state_root).await?);
++    let ui = options
++        .ui_bundle
++        .as_ref()
++        .map(UiBundle::load)
++        .transpose()?
++        .map(Arc::new);
++    if let Some(ui) = &ui {
++        eprintln!("Rust UI artifact source identity {}", ui.source_identity);
++    }
++    let runtime = match HeptaRuntime::open_existing(options.state_root).await {
++        Ok(runtime) => Some(Arc::new(runtime)),
++        Err(_) if ui.is_some() => {
++            eprintln!(
++                "Legacy runtime unavailable; serving verified UI with closed read-only status"
++            );
++            None
++        }
++        Err(error) => return Err(error),
++    };
+     let listener = TcpListener::bind(options.listen_addr)
+         .await
+         .with_context(|| format!("bind Hepta gateway at {}", options.listen_addr))?;
+@@ -152,9 +221,11 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
+                 if !peer.ip().is_loopback() {
+                     continue;
+                 }
+-                let runtime = Arc::clone(&runtime);
++                let runtime = runtime.clone();
++                let ui = ui.clone();
++                let owner_status = owner_status.clone();
+                 tokio::spawn(async move {
+-                    if let Err(error) = serve_connection(stream, runtime).await {
++                    if let Err(error) = serve_connection(stream, runtime, ui, owner_status).await {
+                         eprintln!("hepta loopback request failed: {error:#}");
+                     }
+                 });
+@@ -227,21 +298,100 @@ fn runtime_representation(request: &str) -> RuntimeRepresentation {
+     RuntimeRepresentation::Json
+ }
+ 
+-async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> Result<()> {
++async fn serve_connection(
++    mut stream: TcpStream,
++    runtime: Option<Arc<HeptaRuntime>>,
++    ui: Option<Arc<UiBundle>>,
++    owner_status: OwnerStatusProvider,
++) -> Result<()> {
+     let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
+         .await
+         .context("loopback request timed out")??;
+-    let response = route_request(&request, &runtime)?;
+-    tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
++    if !http_origin::allowed(&request, stream.local_addr()?) {
++        let rejected = response(
++            "403 Forbidden",
++            "application/json; charset=utf-8",
++            br#"{"error":"loopback Host/Origin boundary rejected request"}"#,
++        );
++        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&rejected))
++            .await
++            .context("rejected response timed out")?
++            .context("write rejected response")?;
++    } else if let Some(asset) = ui.as_ref().and_then(|ui| ui_response(&request, ui)) {
++        tokio::time::timeout(RESPONSE_TIMEOUT, async {
++            stream.write_all(&asset.headers).await?;
++            stream.write_all(&asset.body).await
++        })
+         .await
+-        .context("loopback response timed out")?
+-        .context("write loopback response")?;
++        .context("UI response timed out")?
++        .context("write UI response")?;
++    } else {
++        let response = if request_target(&request) == Some(("GET", "/api/hepta/owner-status")) {
++            response(
++                "200 OK",
++                "application/json; charset=utf-8",
++                &owner_status.json().await?,
++            )
++        } else if let Some(runtime) = &runtime {
++            route_request(&request, runtime)?
++        } else {
++            route_unavailable(&request)
++        };
++        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
++            .await
++            .context("loopback response timed out")?
++            .context("write loopback response")?;
++    }
+     tokio::time::timeout(RESPONSE_TIMEOUT, stream.shutdown())
+         .await
+         .context("loopback shutdown timed out")?
+         .context("close loopback response")
+ }
+ 
++fn request_target(request: &[u8]) -> Option<(&str, &str)> {
++    let text = std::str::from_utf8(request).ok()?;
++    let mut fields = text.lines().next()?.split_whitespace();
++    let method = fields.next()?;
++    let target = fields.next()?.split('?').next()?;
++    let version = fields.next()?;
++    if fields.next().is_some() || !matches!(version, "HTTP/1.0" | "HTTP/1.1") {
++        return None;
++    }
++    Some((method, target))
++}
++
++fn route_unavailable(request: &[u8]) -> Vec<u8> {
++    let (status, body): (&str, &[u8]) = match request_target(request) {
++        None => ("400 Bad Request", br#"{"error":"bad request"}"#),
++        Some((method, _)) if method != "GET" => (
++            "405 Method Not Allowed",
++            br#"{"error":"live shell is read-only"}"#,
++        ),
++        Some(("GET", "/healthz" | "/api/hepta/runtime")) => (
++            "503 Service Unavailable",
++            br#"{"product":"hepta","status":"unavailable","error":"legacy runtime unavailable"}"#,
++        ),
++        Some(("GET", "/")) => (
++            "503 Service Unavailable",
++            br#"{"error":"verified UI bundle unavailable"}"#,
++        ),
++        Some(_) => ("404 Not Found", br#"{"error":"not found"}"#),
++    };
++    response(status, "application/json; charset=utf-8", body)
++}
++
++fn ui_response(request: &[u8], ui: &UiBundle) -> Option<ui_bundle::UiResponse> {
++    let text = std::str::from_utf8(request).ok()?;
++    let mut fields = text.lines().next()?.split_whitespace();
++    let method = fields.next()?;
++    let target = fields.next()?;
++    let version = fields.next()?;
++    if method != "GET" || !matches!(version, "HTTP/1.0" | "HTTP/1.1") || fields.next().is_some() {
++        return None;
++    }
++    ui.response(target)
++}
++
+ async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
+     let mut bytes = Vec::with_capacity(2048);
+     let mut buffer = [0_u8; 2048];
+@@ -328,9 +478,9 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
+             )),
+         },
+         "/" => Ok(response(
+-            "200 OK",
+-            "text/html; charset=utf-8",
+-            CONTROL_SHELL.as_bytes(),
++            "503 Service Unavailable",
++            "application/json; charset=utf-8",
++            br#"{"error":"Rust UI bundle unavailable; configure the owned build artifact"}"#,
+         )),
+         _ => Ok(response(
+             "404 Not Found",
+@@ -351,19 +501,6 @@ fn response(status: &str, content_type: &str, body: &[u8]) -> Vec<u8> {
+     response
+ }
+ 
+-const CONTROL_SHELL: &str = r#"<!doctype html>
+-<html lang="en">
+-<meta charset="utf-8">
+-<meta name="viewport" content="width=device-width, initial-scale=1">
+-<title>Hepta vNext</title>
+-<style>body{font:16px system-ui;margin:3rem;max-width:58rem}pre{padding:1rem;background:#111;color:#eee;overflow:auto}</style>
+-<h1>Hepta vNext live shell</h1>
+-<p>Loopback-only, read-only internal canary surface.</p>
+-<pre id="status">loading…</pre>
+-<script>fetch('/api/hepta/runtime').then(r=>r.json()).then(v=>status.textContent=JSON.stringify(v,null,2)).catch(e=>status.textContent=String(e))</script>
+-</html>
+-"#;
+-
+ #[cfg(test)]
+ #[path = "organ_request_tests.rs"]
+ mod organ_request_tests;
+@@ -493,13 +630,19 @@ mod tests {
+         let server = tokio::spawn(async move {
+             let (stream, peer) = listener.accept().await?;
+             assert!(peer.ip().is_loopback());
+-            serve_connection(stream, runtime).await
++            serve_connection(
++                stream,
++                Some(runtime),
++                /*ui*/ None,
++                OwnerStatusProvider::default(),
++            )
++            .await
+         });
+ 
+         let mut client = TcpStream::connect(address).await?;
+         client
+             .write_all(
+-                b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n",
++                format!("GET /api/hepta/runtime HTTP/1.1\r\nHost: {address}\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n").as_bytes(),
+             )
+             .await?;
+         let mut response = Vec::new();
+diff --git a/codex-rs/hepta-native-gateway/src/organ_request_tests.rs b/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
+index 48740c3c5..3780fcd69 100644
+--- a/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
++++ b/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
+@@ -40,11 +40,17 @@ async fn loopback_http_request_reaches_the_read_only_status_organ() -> Result<()
+     let address = listener.local_addr()?;
+     let server = tokio::spawn(async move {
+         let (stream, _) = listener.accept().await?;
+-        serve_connection(stream, runtime).await
++        serve_connection(
++            stream,
++            Some(runtime),
++            /*ui*/ None,
++            OwnerStatusProvider::default(),
++        )
++        .await
+     });
+     let mut client = TcpStream::connect(address).await?;
+     client
+-        .write_all(b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\n\r\n")
++        .write_all(format!("GET /api/hepta/runtime HTTP/1.1\r\nHost: {address}\r\n\r\n").as_bytes())
+         .await?;
+     let mut bytes = Vec::new();
+     tokio::time::timeout(RESPONSE_TIMEOUT, client.read_to_end(&mut bytes)).await??;
+diff --git a/codex-rs/hepta-native-gateway/src/owner_status.rs b/codex-rs/hepta-native-gateway/src/owner_status.rs
+new file mode 100644
+index 000000000..ef0363021
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/owner_status.rs
+@@ -0,0 +1,167 @@
++//! Token-free, point-in-time observation. Host/Origin checks are not authentication.
++//! A timed-out async inspection retains its single-flight permit until it ends.
++
++use std::fmt;
++use std::future::Future;
++use std::pin::Pin;
++use std::sync::Arc;
++use std::sync::Weak;
++use std::time::Duration;
++
++use serde::Serialize;
++use tokio::sync::Semaphore;
++
++const OBSERVATION_TIMEOUT: Duration = Duration::from_secs(2);
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum OwnerLeaseDisposition {
++    Missing,
++    Active,
++    ExpiredActive,
++    Released,
++    RolledBack,
++}
++
++/// Metadata only. This is neither a fencing token nor permission to write.
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub struct OwnerLeaseObservation {
++    pub generation: Option<u64>,
++    pub disposition: OwnerLeaseDisposition,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum OwnerReadFailure {
++    ReadFailed,
++    IntegrityRejected,
++    InvalidObservation,
++    Busy,
++    TimedOut,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
++#[serde(tag = "status", rename_all = "snake_case")]
++enum Observation {
++    NotAttached,
++    Observed {
++        generation: Option<u64>,
++        disposition: OwnerLeaseDisposition,
++    },
++    Unavailable {
++        reason: OwnerReadFailure,
++    },
++}
++
++/// Future returned by a higher-level, read-only owner mapping on its existing runtime.
++pub type OwnerObservationFuture<'a> =
++    Pin<Box<dyn Future<Output = Result<OwnerLeaseObservation, OwnerReadFailure>> + Send + 'a>>;
++type ObservationFuture = Pin<Box<dyn Future<Output = Observation> + Send>>;
++
++/// An idle provider retains only a weak reader adapter. An in-flight read holds
++/// a temporary strong upgrade, even after its HTTP deadline; it may delay owner
++/// handoff until the underlying async read completes. Timeout is not SQL cancellation.
++/// Higher-level composition supplies an existing host and a noncapturing,
++/// read-only projection. No Agentd dependency or implicit owner reopen is needed.
++#[derive(Clone)]
++pub struct OwnerStatusProvider {
++    read: Option<Arc<dyn Fn() -> ObservationFuture + Send + Sync>>,
++    flight: Arc<Semaphore>,
++}
++
++impl fmt::Debug for OwnerStatusProvider {
++    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
++        f.debug_struct("OwnerStatusProvider")
++            .finish_non_exhaustive()
++    }
++}
++
++impl Default for OwnerStatusProvider {
++    fn default() -> Self {
++        Self {
++            read: None,
++            flight: Arc::new(Semaphore::new(1)),
++        }
++    }
++}
++
++impl OwnerStatusProvider {
++    /// The callback must inspect its supplied owner without reopening a store,
++    /// obtaining authority, retaining the host, or returning private identifiers.
++    pub fn from_weak<T>(
++        owner: Weak<T>,
++        inspect: for<'a> fn(&'a T) -> OwnerObservationFuture<'a>,
++    ) -> Self
++    where
++        T: Send + Sync + 'static,
++    {
++        Self {
++            read: Some(Arc::new(move || {
++                let owner = owner.clone();
++                Box::pin(async move {
++                    let Some(owner) = owner.upgrade() else {
++                        return Observation::NotAttached;
++                    };
++                    match inspect(&owner).await {
++                        Ok(observed)
++                            if (observed.disposition == OwnerLeaseDisposition::Missing)
++                                == observed.generation.is_none() =>
++                        {
++                            Observation::Observed {
++                                generation: observed.generation,
++                                disposition: observed.disposition,
++                            }
++                        }
++                        Ok(_) => Observation::Unavailable {
++                            reason: OwnerReadFailure::InvalidObservation,
++                        },
++                        Err(reason) => Observation::Unavailable { reason },
++                    }
++                }) as ObservationFuture
++            })),
++            ..Self::default()
++        }
++    }
++
++    async fn observe(&self, timeout: Duration) -> Observation {
++        let Some(read) = self.read.clone() else {
++            return Observation::NotAttached;
++        };
++        let Ok(permit) = Arc::clone(&self.flight).try_acquire_owned() else {
++            return Observation::Unavailable {
++                reason: OwnerReadFailure::Busy,
++            };
++        };
++        let task = tokio::spawn(async move {
++            let _permit = permit;
++            read().await
++        });
++        match tokio::time::timeout(timeout, task).await {
++            Ok(Ok(observation)) => observation,
++            Ok(Err(_)) => Observation::Unavailable {
++                reason: OwnerReadFailure::ReadFailed,
++            },
++            Err(_) => Observation::Unavailable {
++                reason: OwnerReadFailure::TimedOut,
++            },
++        }
++    }
++
++    pub(crate) async fn json(&self) -> anyhow::Result<Vec<u8>> {
++        #[derive(Serialize)]
++        struct Document {
++            schema: &'static str,
++            observation: Observation,
++        }
++        // Numbers are serialized directly from u64; consumers must not round-trip
++        // them through JS Number. The Rust UI parses the raw transport bytes.
++        Ok(serde_json::to_vec(&Document {
++            schema: "hepta.owner-lease-observation.v1",
++            observation: self.observe(OBSERVATION_TIMEOUT).await,
++        })?)
++    }
++}
++
++#[cfg(test)]
++#[path = "owner_status_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-native-gateway/src/owner_status_tests.rs b/codex-rs/hepta-native-gateway/src/owner_status_tests.rs
+new file mode 100644
+index 000000000..5e711ee5e
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/owner_status_tests.rs
+@@ -0,0 +1,181 @@
++use super::*;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++use tokio::sync::Notify;
++
++struct SyntheticOwner(OwnerLeaseObservation);
++fn inspect(owner: &SyntheticOwner) -> OwnerObservationFuture<'_> {
++    Box::pin(async move { Ok(owner.0) })
++}
++
++#[tokio::test]
++async fn weak_provider_neither_creates_nor_retains_an_owner() {
++    let provider = OwnerStatusProvider::default();
++    assert_eq!(
++        provider.observe(OBSERVATION_TIMEOUT).await,
++        Observation::NotAttached
++    );
++    let owner = Arc::new(SyntheticOwner(OwnerLeaseObservation {
++        generation: Some(7),
++        disposition: OwnerLeaseDisposition::Active,
++    }));
++    let provider = OwnerStatusProvider::from_weak(Arc::downgrade(&owner), inspect);
++    assert_eq!(
++        provider.observe(OBSERVATION_TIMEOUT).await,
++        Observation::Observed {
++            generation: Some(7),
++            disposition: OwnerLeaseDisposition::Active,
++        }
++    );
++    assert_eq!(Arc::strong_count(&owner), 1);
++    drop(owner);
++    assert_eq!(
++        provider.observe(OBSERVATION_TIMEOUT).await,
++        Observation::NotAttached
++    );
++}
++
++#[tokio::test]
++async fn unsigned_max_is_a_lossless_wire_value_not_a_claim_sqlite_admits_it() -> anyhow::Result<()>
++{
++    let owner = Arc::new(SyntheticOwner(OwnerLeaseObservation {
++        generation: Some(u64::MAX),
++        disposition: OwnerLeaseDisposition::Released,
++    }));
++    let provider = OwnerStatusProvider::from_weak(Arc::downgrade(&owner), inspect);
++    let bytes = provider.json().await?;
++    assert!(bytes.len() < 1024);
++    assert_eq!(
++        serde_json::from_slice::<serde_json::Value>(&bytes)?,
++        serde_json::json!({
++            "schema":"hepta.owner-lease-observation.v1",
++            "observation":{"status":"observed","generation":u64::MAX,"disposition":"released"}
++        })
++    );
++    Ok(())
++}
++
++#[tokio::test]
++async fn inconsistent_missing_generation_is_sanitized() {
++    for observation in [
++        OwnerLeaseObservation {
++            generation: Some(9),
++            disposition: OwnerLeaseDisposition::Missing,
++        },
++        OwnerLeaseObservation {
++            generation: None,
++            disposition: OwnerLeaseDisposition::Active,
++        },
++    ] {
++        let owner = Arc::new(SyntheticOwner(observation));
++        let provider = OwnerStatusProvider::from_weak(Arc::downgrade(&owner), inspect);
++        assert_eq!(
++            provider.observe(OBSERVATION_TIMEOUT).await,
++            Observation::Unavailable {
++                reason: OwnerReadFailure::InvalidObservation,
++            }
++        );
++    }
++}
++
++struct SlowSyntheticOwner {
++    reads: Arc<AtomicUsize>,
++    release: Arc<Notify>,
++}
++fn slow(owner: &SlowSyntheticOwner) -> OwnerObservationFuture<'_> {
++    Box::pin(async move {
++        owner.reads.fetch_add(1, Ordering::SeqCst);
++        owner.release.notified().await;
++        Ok(OwnerLeaseObservation {
++            generation: None,
++            disposition: OwnerLeaseDisposition::Missing,
++        })
++    })
++}
++
++#[tokio::test]
++async fn timeout_does_not_accumulate_detached_reads_and_releases_the_weak_upgrade() {
++    let reads = Arc::new(AtomicUsize::new(0));
++    let release = Arc::new(Notify::new());
++    let owner = Arc::new(SlowSyntheticOwner {
++        reads: Arc::clone(&reads),
++        release: Arc::clone(&release),
++    });
++    let weak = Arc::downgrade(&owner);
++    let provider = OwnerStatusProvider::from_weak(weak.clone(), slow);
++    assert_eq!(
++        provider.observe(Duration::from_millis(20)).await,
++        Observation::Unavailable {
++            reason: OwnerReadFailure::TimedOut,
++        }
++    );
++    for _ in 0..8 {
++        assert_eq!(
++            provider.observe(OBSERVATION_TIMEOUT).await,
++            Observation::Unavailable {
++                reason: OwnerReadFailure::Busy,
++            }
++        );
++    }
++    assert_eq!(reads.load(Ordering::SeqCst), 1);
++    drop(owner);
++    release.notify_one();
++    tokio::time::timeout(Duration::from_secs(2), async {
++        while weak.strong_count() != 0 {
++            tokio::task::yield_now().await;
++        }
++    })
++    .await
++    .expect("read must finish");
++    assert_eq!(
++        provider.observe(OBSERVATION_TIMEOUT).await,
++        Observation::NotAttached
++    );
++}
++
++#[tokio::test]
++async fn cancelling_a_request_does_not_release_the_single_flight_while_scan_is_alive() {
++    let reads = Arc::new(AtomicUsize::new(0));
++    let release = Arc::new(Notify::new());
++    let owner = Arc::new(SlowSyntheticOwner {
++        reads: Arc::clone(&reads),
++        release: Arc::clone(&release),
++    });
++    let weak = Arc::downgrade(&owner);
++    let provider = OwnerStatusProvider::from_weak(weak.clone(), slow);
++    let task_provider = provider.clone();
++    let request = tokio::spawn(async move { task_provider.observe(OBSERVATION_TIMEOUT).await });
++    tokio::time::timeout(Duration::from_secs(2), async {
++        while reads.load(Ordering::SeqCst) == 0 {
++            tokio::task::yield_now().await;
++        }
++    })
++    .await
++    .expect("scan must start");
++    request.abort();
++    let _ = request.await;
++    drop(owner);
++    assert_eq!(
++        provider.observe(OBSERVATION_TIMEOUT).await,
++        Observation::Unavailable {
++            reason: OwnerReadFailure::Busy
++        }
++    );
++    assert_eq!(
++        weak.strong_count(),
++        1,
++        "in-flight read still owns its temporary upgrade"
++    );
++    release.notify_one();
++    tokio::time::timeout(Duration::from_secs(2), async {
++        while weak.strong_count() != 0 {
++            tokio::task::yield_now().await;
++        }
++    })
++    .await
++    .expect("scan must release upgrade");
++    assert_eq!(
++        provider.observe(OBSERVATION_TIMEOUT).await,
++        Observation::NotAttached
++    );
++}
+diff --git a/codex-rs/hepta-native-gateway/src/ui_bundle.rs b/codex-rs/hepta-native-gateway/src/ui_bundle.rs
+new file mode 100644
+index 000000000..124df8889
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/ui_bundle.rs
+@@ -0,0 +1,222 @@
++//! Immutable, bounded Rust UI assets selected by an explicit manifest digest.
++//! The digest is artifact integrity, never signer or business authority.
++
++use std::collections::BTreeMap;
++use std::path::PathBuf;
++use std::sync::Arc;
++
++use anyhow::Context;
++use anyhow::Result;
++use anyhow::ensure;
++use serde::Deserialize;
++use sha2::Digest;
++use sha2::Sha256;
++
++#[path = "ui_bundle_reader.rs"]
++mod reader;
++
++const MAX_MANIFEST_BYTES: usize = 2 * 1024 * 1024;
++const MAX_ASSETS: usize = 128;
++const MAX_ASSET_BYTES: usize = 64 * 1024 * 1024;
++const MAX_BUNDLE_BYTES: usize = 128 * 1024 * 1024;
++const CSP: &str = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++
++/// Explicit selection of a complete, immutable UI build result.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct UiBundleOptions {
++    pub directory: PathBuf,
++    pub manifest_sha256: String,
++}
++
++#[derive(Deserialize)]
++#[serde(rename_all = "camelCase")]
++struct Manifest {
++    schema: String,
++    browser_runtime: String,
++    fixtures: bool,
++    threads: bool,
++    automatic_crash_upload: bool,
++    source_identity: SourceIdentity,
++    files: BTreeMap<String, AssetInput>,
++}
++
++#[derive(Deserialize)]
++struct SourceIdentity {
++    sha256: String,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct AssetInput {
++    bytes: usize,
++    sha256: String,
++}
++
++struct Asset {
++    bytes: Arc<[u8]>,
++    mime: &'static str,
++}
++
++pub(crate) struct UiBundle {
++    assets: BTreeMap<String, Asset>,
++    pub(crate) source_identity: String,
++}
++
++pub(crate) struct UiResponse {
++    pub(crate) headers: Vec<u8>,
++    pub(crate) body: Arc<[u8]>,
++}
++
++impl UiBundle {
++    pub(crate) fn load(options: &UiBundleOptions) -> Result<Self> {
++        ensure!(
++            canonical_digest(&options.manifest_sha256),
++            "invalid UI manifest SHA256"
++        );
++        let directory = reader::Directory::open(&options.directory)?;
++        let bytes = directory.read("build-manifest.json", MAX_MANIFEST_BYTES)?;
++        ensure!(
++            digest(&bytes) == options.manifest_sha256,
++            "UI manifest digest differs from selected artifact"
++        );
++        let manifest: Manifest =
++            serde_json::from_slice(&bytes).context("parse UI build manifest")?;
++        ensure!(
++            manifest.schema == "hepta.robrix-ui.build.v1"
++                && manifest.browser_runtime == "rust-makepad-wasm",
++            "unsupported UI build schema/runtime"
++        );
++        ensure!(
++            !manifest.fixtures && !manifest.threads && !manifest.automatic_crash_upload,
++            "UI build has unsupported fixture/thread/upload behavior"
++        );
++        ensure!(
++            canonical_digest(&manifest.source_identity.sha256),
++            "invalid UI source identity"
++        );
++        ensure!(
++            !manifest.files.is_empty() && manifest.files.len() <= MAX_ASSETS,
++            "UI asset count exceeds bound"
++        );
++        for required in ["index.html", "bootstrap.js", "input-platform.css"] {
++            ensure!(
++                manifest.files.contains_key(required),
++                "UI build missing required entry {required}"
++            );
++        }
++        ensure!(
++            manifest.files.keys().any(|path| path.ends_with(".wasm")),
++            "UI build missing WASM"
++        );
++        let mut total = bytes.len();
++        for input in manifest.files.values() {
++            ensure!(
++                input.bytes <= MAX_ASSET_BYTES && canonical_digest(&input.sha256),
++                "invalid UI asset size/digest"
++            );
++            total = total
++                .checked_add(input.bytes)
++                .context("UI asset size overflow")?;
++            ensure!(total <= MAX_BUNDLE_BYTES, "UI bundle exceeds memory bound");
++        }
++        let mut assets = BTreeMap::new();
++        for (path, input) in manifest.files {
++            ensure!(
++                valid_asset_path(&path) && path != "build-manifest.json",
++                "invalid or reserved UI asset path"
++            );
++            let bytes = directory.read(&path, input.bytes)?;
++            ensure!(
++                bytes.len() == input.bytes && digest(&bytes) == input.sha256,
++                "UI asset differs from selected manifest: {path}"
++            );
++            assets.insert(
++                path.clone(),
++                Asset {
++                    bytes: bytes.into(),
++                    mime: mime(&path)?,
++                },
++            );
++        }
++        assets.insert(
++            "build-manifest.json".to_owned(),
++            Asset {
++                bytes: bytes.into(),
++                mime: "application/json",
++            },
++        );
++        Ok(Self {
++            assets,
++            source_identity: manifest.source_identity.sha256,
++        })
++    }
++
++    pub(crate) fn response(&self, target: &str) -> Option<UiResponse> {
++        let path = target.split('?').next()?;
++        let relative = if path == "/" {
++            "index.html"
++        } else {
++            path.strip_prefix('/')?
++        };
++        if !valid_asset_path(relative) {
++            return None;
++        }
++        let asset = self.assets.get(relative)?;
++        let headers = format!(
++            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\nCache-Control: no-store\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: no-referrer\r\nContent-Security-Policy: {CSP}\r\n\r\n",
++            asset.mime, asset.bytes.len()
++        ).into_bytes();
++        Some(UiResponse {
++            headers,
++            body: Arc::clone(&asset.bytes),
++        })
++    }
++}
++
++fn canonical_digest(value: &str) -> bool {
++    value.len() == 64
++        && value
++            .bytes()
++            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
++}
++
++fn digest(bytes: &[u8]) -> String {
++    format!("{:x}", Sha256::digest(bytes))
++}
++
++fn valid_asset_path(path: &str) -> bool {
++    !path.is_empty()
++        && path.len() <= 512
++        && path.split('/').count() <= 16
++        && path.split('/').all(|part| {
++            !part.is_empty()
++                && part != "."
++                && part != ".."
++                && part
++                    .bytes()
++                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
++        })
++        && path != "healthz"
++        && path != "api"
++        && !path.starts_with("api/")
++}
++
++fn mime(path: &str) -> Result<&'static str> {
++    Ok(match path.rsplit('.').next() {
++        Some("html") => "text/html; charset=utf-8",
++        Some("js") => "text/javascript; charset=utf-8",
++        Some("css") => "text/css; charset=utf-8",
++        Some("wasm") => "application/wasm",
++        Some("ttf") => "font/ttf",
++        Some("otf") => "font/otf",
++        Some("png") => "image/png",
++        Some("svg") => "image/svg+xml",
++        Some("json") => "application/json",
++        Some("txt" | "md") => "text/plain; charset=utf-8",
++        _ => anyhow::bail!("unsupported UI asset type"),
++    })
++}
++
++#[cfg(test)]
++#[path = "ui_bundle_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-native-gateway/src/ui_bundle_reader.rs b/codex-rs/hepta-native-gateway/src/ui_bundle_reader.rs
+new file mode 100644
+index 000000000..b6b5a31e8
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/ui_bundle_reader.rs
+@@ -0,0 +1,113 @@
++//! Descriptor-relative reads follow the existing exec-server no-follow pattern.
++//! No pathname reopen or canonicalize-then-open fallback is used after anchoring.
++
++use std::path::Path;
++
++use anyhow::Result;
++
++#[cfg(unix)]
++use std::fs::File;
++#[cfg(unix)]
++use std::io::Read;
++#[cfg(unix)]
++use std::path::Component;
++
++#[cfg(unix)]
++use anyhow::Context;
++#[cfg(unix)]
++use anyhow::ensure;
++#[cfg(unix)]
++use rustix::fs::Mode;
++#[cfg(unix)]
++use rustix::fs::OFlags;
++
++pub(super) struct Directory {
++    #[cfg(unix)]
++    file: File,
++}
++
++impl Directory {
++    #[cfg(unix)]
++    pub(super) fn open(path: &Path) -> Result<Self> {
++        ensure!(path.is_absolute(), "UI bundle directory must be absolute");
++        let flags = OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC;
++        let mut file = File::from(rustix::fs::open("/", flags, Mode::empty())?);
++        for component in path.components() {
++            match component {
++                Component::RootDir => {}
++                Component::Normal(name) => {
++                    file = File::from(
++                        rustix::fs::openat(&file, name, flags, Mode::empty())
++                            .context("open UI bundle directory without following links")?,
++                    );
++                }
++                Component::CurDir | Component::ParentDir | Component::Prefix(_) => {
++                    anyhow::bail!("UI bundle directory must be normalized");
++                }
++            }
++        }
++        Ok(Self { file })
++    }
++
++    #[cfg(not(unix))]
++    pub(super) fn open(_path: &Path) -> Result<Self> {
++        anyhow::bail!(
++            "UI bundle serving is unsupported until this platform has a reviewed anchored reader; read-only health/runtime APIs remain available without a bundle"
++        )
++    }
++
++    #[cfg(unix)]
++    pub(super) fn read(&self, relative: &str, limit: usize) -> Result<Vec<u8>> {
++        ensure!(
++            super::valid_asset_path(relative),
++            "invalid UI relative path"
++        );
++        let mut directory = self.file.try_clone()?;
++        let mut components = relative.split('/').peekable();
++        while let Some(name) = components.next() {
++            if components.peek().is_some() {
++                directory = File::from(
++                    rustix::fs::openat(
++                        &directory,
++                        name,
++                        OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
++                        Mode::empty(),
++                    )
++                    .context("open anchored UI asset directory")?,
++                );
++                continue;
++            }
++            // NONBLOCK prevents a FIFO/device replacement from blocking before fstat.
++            let file = File::from(
++                rustix::fs::openat(
++                    &directory,
++                    name,
++                    OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC,
++                    Mode::empty(),
++                )
++                .context("open anchored UI asset")?,
++            );
++            let metadata = file.metadata()?;
++            ensure!(metadata.is_file(), "UI resource is not a regular file");
++            ensure!(
++                metadata.len() <= u64::try_from(limit)?,
++                "UI resource exceeds byte bound"
++            );
++            let mut bytes = Vec::new();
++            file.take(
++                u64::try_from(limit)?
++                    .checked_add(1)
++                    .context("UI read bound overflow")?,
++            )
++            .read_to_end(&mut bytes)?;
++            ensure!(bytes.len() <= limit, "UI resource grew beyond byte bound");
++            return Ok(bytes);
++        }
++        anyhow::bail!("UI resource path is empty")
++    }
++
++    #[cfg(not(unix))]
++    pub(super) fn read(&self, _relative: &str, _limit: usize) -> Result<Vec<u8>> {
++        anyhow::bail!("UI bundle serving is unsupported on this platform")
++    }
++}
+diff --git a/codex-rs/hepta-native-gateway/src/ui_bundle_tests.rs b/codex-rs/hepta-native-gateway/src/ui_bundle_tests.rs
+new file mode 100644
+index 000000000..686bae628
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/ui_bundle_tests.rs
+@@ -0,0 +1,504 @@
++use super::*;
++use std::fs;
++use std::path::Path;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::Ordering;
++
++static NEXT: AtomicU64 = AtomicU64::new(0);
++
++struct Fixture(PathBuf);
++impl Fixture {
++    fn new() -> Result<Self> {
++        let base = std::env::temp_dir().canonicalize()?;
++        for _ in 0..100 {
++            let path = base.join(format!(
++                "hepta-ui-bundle-{}-{}",
++                std::process::id(),
++                NEXT.fetch_add(1, Ordering::Relaxed)
++            ));
++            match fs::create_dir(&path) {
++                Ok(()) => return Ok(Self(path)),
++                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
++                Err(error) => return Err(error.into()),
++            }
++        }
++        anyhow::bail!("cannot create isolated fixture")
++    }
++
++    fn bundle(&self) -> Result<UiBundleOptions> {
++        let mut files = serde_json::Map::new();
++        for (name, bytes) in [
++            ("index.html", b"<canvas></canvas>".as_slice()),
++            ("bootstrap.js", b"// fixture".as_slice()),
++            ("input-platform.css", b"canvas{}".as_slice()),
++            ("app.wasm", b"\0asm\x01\0\0\0".as_slice()),
++        ] {
++            fs::write(self.0.join(name), bytes)?;
++            files.insert(
++                name.to_owned(),
++                serde_json::json!({"bytes":bytes.len(),"sha256":digest(bytes)}),
++            );
++        }
++        self.manifest(&serde_json::json!({
++            "schema":"hepta.robrix-ui.build.v1", "browserRuntime":"rust-makepad-wasm",
++            "fixtures":false,"threads":false,"automaticCrashUpload":false,
++            "sourceIdentity":{"sha256":"a".repeat(64)},"files":files
++        }))
++    }
++
++    fn manifest(&self, value: &serde_json::Value) -> Result<UiBundleOptions> {
++        let bytes = serde_json::to_vec(value)?;
++        fs::write(self.0.join("build-manifest.json"), &bytes)?;
++        Ok(UiBundleOptions {
++            directory: self.0.clone(),
++            manifest_sha256: digest(&bytes),
++        })
++    }
++}
++impl Drop for Fixture {
++    fn drop(&mut self) {
++        let _ = fs::remove_dir_all(&self.0);
++    }
++}
++
++#[cfg(unix)]
++#[test]
++fn verified_snapshot_survives_asset_replacement_without_copying_bodies() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let options = fixture.bundle()?;
++    let bundle = UiBundle::load(&options)?;
++    let first = bundle.response("/").context("entry")?;
++    fs::write(fixture.0.join("replacement"), "changed")?;
++    fs::rename(fixture.0.join("replacement"), fixture.0.join("index.html"))?;
++    let second = bundle.response("/index.html").context("entry")?;
++    assert!(Arc::ptr_eq(&first.body, &second.body));
++    assert_eq!(&*second.body, b"<canvas></canvas>");
++    assert!(UiBundle::load(&options).is_err());
++    assert!(std::str::from_utf8(&first.headers)?.contains("Content-Security-Policy:"));
++    assert!(bundle.response("/build-manifest.json").is_some());
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn malformed_requests_never_escape_the_selected_asset_map() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let bundle = UiBundle::load(&fixture.bundle()?)?;
++    for target in [
++        "/../index.html",
++        "/%2e%2e/index.html",
++        "/x%2findex.html",
++        "//index.html",
++        "/x\\index.html",
++        "/api/hepta/runtime",
++        "/healthz",
++        "/unlisted.js",
++    ] {
++        assert!(bundle.response(target).is_none(), "{target}");
++    }
++    for request in [
++        b"POST / HTTP/1.1\r\n\r\n".as_slice(),
++        b"GET / BAD\r\n\r\n",
++        b"GET / HTTP/1.1 extra\r\n\r\n",
++    ] {
++        assert!(crate::ui_response(request, &bundle).is_none());
++    }
++    assert!(crate::ui_response(b"GET / HTTP/1.1\r\n\r\n", &bundle).is_some());
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn manifest_selection_and_resource_failures_are_closed() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let options = fixture.bundle()?;
++    let mut wrong = options;
++    wrong.manifest_sha256 = "0".repeat(64);
++    assert!(UiBundle::load(&wrong).is_err());
++    let original: serde_json::Value =
++        serde_json::from_slice(&fs::read(fixture.0.join("build-manifest.json"))?)?;
++    for field in ["fixtures", "threads", "automaticCrashUpload"] {
++        let mut changed = original.clone();
++        changed[field] = true.into();
++        assert!(UiBundle::load(&fixture.manifest(&changed)?).is_err());
++    }
++    for path in ["../escape.js", "api/hepta/runtime", "build-manifest.json"] {
++        let mut changed = original.clone();
++        changed["files"][path] = serde_json::json!({"bytes":0,"sha256":digest(b"")});
++        assert!(UiBundle::load(&fixture.manifest(&changed)?).is_err());
++    }
++    let options = fixture.manifest(&original)?;
++    fs::remove_file(fixture.0.join("bootstrap.js"))?;
++    assert!(UiBundle::load(&options).is_err());
++    fs::write(fixture.0.join("bootstrap.js"), "too many fixture bytes")?;
++    assert!(UiBundle::load(&options).is_err());
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn anchored_reader_rejects_symlink_ancestors_and_final_files() -> Result<()> {
++    use std::os::unix::fs::symlink;
++    let fixture = Fixture::new()?;
++    fs::create_dir(fixture.0.join("real"))?;
++    fs::write(fixture.0.join("real/file.txt"), "safe")?;
++    symlink("real", fixture.0.join("link"))?;
++    let directory = reader::Directory::open(&fixture.0)?;
++    assert!(reader::Directory::open(&fixture.0.join("link")).is_err());
++    assert!(directory.read("link/file.txt", 4).is_err());
++    symlink("real/file.txt", fixture.0.join("file.txt"))?;
++    assert!(directory.read("file.txt", 4).is_err());
++    assert_eq!(directory.read("real/file.txt", 4)?, b"safe");
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn pinned_directory_survives_path_rename_and_replacement() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let original = fixture.0.join("bundle");
++    fs::create_dir(&original)?;
++    fs::write(original.join("data.txt"), "original")?;
++    let directory = reader::Directory::open(&original)?;
++    fs::rename(&original, fixture.0.join("moved"))?;
++    fs::create_dir(&original)?;
++    fs::write(original.join("data.txt"), "replacement")?;
++    assert_eq!(directory.read("data.txt", 32)?, b"original");
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn nonregular_and_oversize_resources_fail_before_unbounded_read() -> Result<()> {
++    let fixture = Fixture::new()?;
++    fs::write(fixture.0.join("large.txt"), b"12345")?;
++    let directory = reader::Directory::open(&fixture.0)?;
++    assert!(directory.read("large.txt", 4).is_err());
++    assert!(directory.read("large.txt", 0).is_err());
++    rustix::fs::mkfifoat(
++        rustix::fs::CWD,
++        fixture.0.join("pipe.txt"),
++        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
++    )?;
++    assert!(directory.read("pipe.txt", 16).is_err());
++    assert!(
++        reader::Directory::open(Path::new("/dev"))?
++            .read("null", 16)
++            .is_err()
++    );
++    Ok(())
++}
++
++#[test]
++fn bundle_arguments_are_paired_without_changing_api_only_startup() -> Result<()> {
++    let root =
++        codex_hepta_paths::HeptaStateRoot::parse(std::env::temp_dir().join("hepta-ui-args"))?;
++    assert!(
++        crate::NativeGatewayOptions::from_args(&[], root.clone())?
++            .ui_bundle
++            .is_none()
++    );
++    assert!(
++        crate::NativeGatewayOptions::from_args(
++            &["--ui-bundle".to_owned(), "/bundle".to_owned()],
++            root.clone()
++        )
++        .is_err()
++    );
++    assert!(
++        crate::NativeGatewayOptions::from_args(
++            &["--ui-manifest-sha256".to_owned(), "a".repeat(64)],
++            root
++        )
++        .is_err()
++    );
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn manifest_count_aggregate_and_entry_limits_reject_before_asset_reads() -> Result<()> {
++    let fixture = Fixture::new()?;
++    fixture.bundle()?;
++    let original: serde_json::Value =
++        serde_json::from_slice(&fs::read(fixture.0.join("build-manifest.json"))?)?;
++    let mut count = original.clone();
++    for index in 0..MAX_ASSETS {
++        count["files"][format!("extra-{index}.js")] =
++            serde_json::json!({"bytes":0,"sha256":digest(b"")});
++    }
++    let error = UiBundle::load(&fixture.manifest(&count)?)
++        .err()
++        .context("must reject count")?;
++    assert!(error.to_string().contains("count exceeds"));
++    let mut aggregate = original.clone();
++    for index in 0..3 {
++        aggregate["files"][format!("large-{index}.js")] =
++            serde_json::json!({"bytes":MAX_ASSET_BYTES,"sha256":digest(b"")});
++    }
++    let error = UiBundle::load(&fixture.manifest(&aggregate)?)
++        .err()
++        .context("must reject aggregate")?;
++    assert!(error.to_string().contains("memory bound"));
++    let mut entry = original;
++    entry["files"]
++        .as_object_mut()
++        .context("fixture files")?
++        .remove("index.html");
++    let error = UiBundle::load(&fixture.manifest(&entry)?)
++        .err()
++        .context("must reject entry")?;
++    assert!(error.to_string().contains("missing required entry"));
++    let oversized = vec![b' '; MAX_MANIFEST_BYTES + 1];
++    fs::write(fixture.0.join("build-manifest.json"), &oversized)?;
++    let options = UiBundleOptions {
++        directory: fixture.0.clone(),
++        manifest_sha256: digest(&oversized),
++    };
++    let error = UiBundle::load(&options)
++        .err()
++        .context("must reject oversized manifest")?;
++    assert!(error.to_string().contains("byte bound"));
++    Ok(())
++}
++
++#[cfg(unix)]
++#[derive(Debug)]
++struct SocketAdapter;
++#[cfg(unix)]
++impl codex_hepta_runtime::RuntimeStateAdapter for SocketAdapter {
++    fn status(&self) -> codex_hepta_runtime::RuntimeStateStatus {
++        codex_hepta_runtime::RuntimeStateStatus {
++            adapter: "ui-socket-fixture",
++            schema_version: 5,
++            outcome_generation: 1,
++            preference_generation: 2,
++            runtime_snapshot_version: 1,
++            runtime_snapshot_generation: 3,
++            integrity_binding_present: true,
++            integrity_verification: "fixture-only",
++            open_mode: "read-only-test",
++        }
++    }
++}
++
++#[cfg(unix)]
++async fn exchange(
++    ui: Option<Arc<UiBundle>>,
++    packet: impl FnOnce(std::net::SocketAddr) -> String,
++) -> Result<Vec<u8>> {
++    use tokio::io::AsyncReadExt;
++    use tokio::io::AsyncWriteExt;
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
++    let address = listener.local_addr()?;
++    let root = codex_hepta_paths::HeptaStateRoot::parse(
++        std::env::temp_dir().join("hepta-ui-socket-fixture"),
++    )?;
++    let runtime = Arc::new(codex_hepta_runtime::HeptaRuntime::from_adapter(
++        root,
++        Arc::new(SocketAdapter),
++    ));
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await?;
++        crate::serve_connection(
++            stream,
++            Some(runtime),
++            ui,
++            crate::OwnerStatusProvider::default(),
++        )
++        .await
++    });
++    let mut client = tokio::net::TcpStream::connect(address).await?;
++    client.write_all(packet(address).as_bytes()).await?;
++    let mut response = Vec::new();
++    tokio::time::timeout(crate::RESPONSE_TIMEOUT, client.read_to_end(&mut response)).await??;
++    server.await??;
++    Ok(response)
++}
++
++#[cfg(unix)]
++fn http_parts(response: &[u8]) -> Result<(&str, &[u8])> {
++    let offset = response
++        .windows(4)
++        .position(|bytes| bytes == b"\r\n\r\n")
++        .context("HTTP headers")?
++        + 4;
++    let headers = std::str::from_utf8(&response[..offset])?;
++    let length: usize = headers
++        .lines()
++        .find_map(|line| line.strip_prefix("Content-Length: "))
++        .context("HTTP length")?
++        .parse()?;
++    assert_eq!(response[offset..].len(), length);
++    Ok((headers, &response[offset..]))
++}
++
++#[cfg(unix)]
++#[tokio::test]
++async fn real_ui_socket_serves_selected_bytes_and_preserves_read_only_apis() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let ui = Arc::new(UiBundle::load(&fixture.bundle()?)?);
++    for (path, content_type, expected) in [
++        (
++            "/",
++            "text/html; charset=utf-8",
++            b"<canvas></canvas>".as_slice(),
++        ),
++        (
++            "/app.wasm",
++            "application/wasm",
++            b"\0asm\x01\0\0\0".as_slice(),
++        ),
++    ] {
++        let response = exchange(Some(Arc::clone(&ui)), |address| {
++            format!("GET {path} HTTP/1.1\r\nHost: {address}\r\n\r\n")
++        })
++        .await?;
++        let (headers, body) = http_parts(&response)?;
++        assert!(headers.starts_with("HTTP/1.1 200 OK"));
++        assert!(headers.contains(&format!("Content-Type: {content_type}\r\n")));
++        assert!(headers.contains("Content-Security-Policy:"));
++        assert_eq!(body, expected);
++    }
++    for path in ["/healthz", "/api/hepta/runtime"] {
++        let response = exchange(Some(Arc::clone(&ui)), |address| {
++            format!("GET {path} HTTP/1.1\r\nHost: {address}\r\n\r\n")
++        })
++        .await?;
++        let (headers, body) = http_parts(&response)?;
++        assert!(headers.starts_with("HTTP/1.1 200 OK"));
++        let value: serde_json::Value = serde_json::from_slice(body)?;
++        assert_eq!(value["product"], "hepta");
++    }
++    let wire = exchange(Some(Arc::clone(&ui)), |address| format!("GET /api/hepta/runtime HTTP/1.1\r\nHost: {address}\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n")).await?;
++    let (headers, body) = http_parts(&wire)?;
++    assert!(headers.contains("application/x-hepta-wire; version=2"));
++    let _ = codex_hepta_wire::WireEnvelopeV2::decode(body)?;
++    for (method, path, expected) in [("POST", "/", "405"), ("GET", "/unlisted.js", "404")] {
++        let response = exchange(Some(Arc::clone(&ui)), |address| {
++            format!("{method} {path} HTTP/1.1\r\nHost: {address}\r\n\r\n")
++        })
++        .await?;
++        assert!(
++            http_parts(&response)?
++                .0
++                .starts_with(&format!("HTTP/1.1 {expected}"))
++        );
++    }
++    let missing = exchange(/*ui*/ None, |address| {
++        format!("GET / HTTP/1.1\r\nHost: {address}\r\n\r\n")
++    })
++    .await?;
++    assert!(http_parts(&missing)?.0.starts_with("HTTP/1.1 503"));
++    Ok(())
++}
++
++#[cfg(unix)]
++#[tokio::test]
++async fn rebinding_and_cross_origin_are_denied_before_ui_or_runtime_dispatch() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let ui = Arc::new(UiBundle::load(&fixture.bundle()?)?);
++    for path in [
++        "/",
++        "/app.wasm",
++        "/healthz",
++        "/api/hepta/runtime",
++        "/api/hepta/owner-status",
++    ] {
++        let response = exchange(Some(Arc::clone(&ui)), |_| {
++            format!("GET {path} HTTP/1.1\r\nHost: attacker.example\r\n\r\n")
++        })
++        .await?;
++        assert!(http_parts(&response)?.0.starts_with("HTTP/1.1 403"));
++        let response = exchange(Some(Arc::clone(&ui)), |address| {
++            format!(
++                "GET {path} HTTP/1.1\r\nHost: {address}\r\nOrigin: https://attacker.example\r\n\r\n"
++            )
++        })
++        .await?;
++        assert!(http_parts(&response)?.0.starts_with("HTTP/1.1 403"));
++    }
++    Ok(())
++}
++
++#[cfg(unix)]
++#[tokio::test]
++async fn actual_entry_serves_verified_ui_and_not_attached_without_initializing_legacy_state()
++-> Result<()> {
++    let fixture = Fixture::new()?;
++    let bundle = fixture.bundle()?;
++    let missing_state = fixture.0.join("missing-owner-state");
++    let root = codex_hepta_paths::HeptaStateRoot::parse(&missing_state)?;
++    let reservation = std::net::TcpListener::bind("127.0.0.1:0")?;
++    let address = reservation.local_addr()?;
++    drop(reservation);
++    let server = tokio::spawn(crate::run_native_gateway(crate::NativeGatewayOptions {
++        listen_addr: address,
++        state_root: root.clone(),
++        ui_bundle: Some(bundle),
++    }));
++    struct Stop(tokio::task::JoinHandle<Result<()>>);
++    impl Drop for Stop {
++        fn drop(&mut self) {
++            self.0.abort();
++        }
++    }
++    let server = Stop(server);
++    tokio::time::timeout(std::time::Duration::from_secs(2), async {
++        loop {
++            if tokio::net::TcpStream::connect(address).await.is_ok() {
++                break;
++            }
++            assert!(!server.0.is_finished(), "actual gateway startup failed");
++            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
++        }
++    })
++    .await?;
++    for (method, path, status) in [
++        ("GET", "/", "200"),
++        ("GET", "/api/hepta/owner-status", "200"),
++        ("GET", "/healthz", "503"),
++        ("GET", "/api/hepta/runtime", "503"),
++        ("POST", "/api/hepta/owner-status", "405"),
++    ] {
++        use tokio::io::AsyncReadExt;
++        use tokio::io::AsyncWriteExt;
++        let mut stream = tokio::net::TcpStream::connect(address).await?;
++        stream
++            .write_all(format!("{method} {path} HTTP/1.1\r\nHost: {address}\r\n\r\n").as_bytes())
++            .await?;
++        let mut bytes = Vec::new();
++        stream.read_to_end(&mut bytes).await?;
++        let (headers, body) = http_parts(&bytes)?;
++        assert!(headers.starts_with(&format!("HTTP/1.1 {status}")));
++        if path == "/" {
++            assert_eq!(body, b"<canvas></canvas>");
++        }
++        if method == "GET" && path == "/api/hepta/owner-status" {
++            assert_eq!(
++                serde_json::from_slice::<serde_json::Value>(body)?,
++                serde_json::json!({
++                    "schema":"hepta.owner-lease-observation.v1","observation":{"status":"not_attached"}
++                })
++            );
++        }
++        assert!(!String::from_utf8_lossy(body).contains("missing-owner-state"));
++    }
++    assert!(
++        !missing_state.exists(),
++        "UI inspection must not bootstrap state"
++    );
++    drop(server);
++    assert!(
++        crate::run_native_gateway(crate::NativeGatewayOptions {
++            listen_addr: address,
++            state_root: root,
++            ui_bundle: None,
++        })
++        .await
++        .is_err(),
++        "no-bundle legacy startup must still reject missing state"
++    );
++    assert!(!missing_state.exists());
++    Ok(())
++}
+diff --git a/docs/modules/ui.control/TECHNICAL.md b/docs/modules/ui.control/TECHNICAL.md
+index c652db7d1..52e140b18 100644
+--- a/docs/modules/ui.control/TECHNICAL.md
++++ b/docs/modules/ui.control/TECHNICAL.md
+@@ -242,7 +242,6 @@ The bootstrap source-location obligation for `ui.control` is implemented by work
+ 
+ The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+ 
+-
+ ## Selective Rust product foundation (2026-10-05)
+ 
+ The owning standalone workspace is now `apps/hepta-control-ui/rust`, with
+@@ -252,11 +251,26 @@ provenance and actual-host regressions are selectively imported; see the module
+ README and `PORT_SOURCE.json` for source blob identities. The internal Rust DOM
+ compatibility member remains only to preserve the locked workspace graph.
+ 
+-This stage has not yet replaced the gateway `GET /` handwritten status shell.
+-The next slice must serve the verified Rust bundle and expose the existing
+-read-only runtime observations in Rust without changing API/write semantics.
+-Chat owner admission/signing/Agentd dispatch, Operations owner projections and
+-native-host closure remain separate missing contracts. Send and Console mutation
+-controls stay disabled. Source-branch fixture evidence does not qualify this
+-product tree; current source and synthetic merge require new build/pixel/input
+-evidence. No historical qualification record is rewritten.
++The additive product-entry candidate replaces gateway `GET /` with the verified
++Rust bundle. See the module README's completion ledger and developer commands.
++The old schema-v5 read adapter is preserved; no verified production initializer
++for that legacy layout is present. A bundle-enabled degraded entry can report
++actual NotAttached and legacy 503 without manufacturing databases or credentials.
++
++The modern owner-status endpoint is a separate versioned, token-free observation:
++generation/disposition only, with fixed sanitized failures. It does not reuse
++legacy schema5 labels for CognitiveStore model schema1. Its weak async adapter
++must be composed by an already-owning higher layer; no new Agentd dependency,
++store reopen or authority acquisition is added to the gateway. A response deadline
++does not cancel a still-running owner scan, and an active read may temporarily
++retain the owner until completion. Single-flight admission bounds that work.
++
++The Rust Console performs bounded reads only on explicit refresh and clears them
++on navigation/background/epoch changes. Numeric generations stay lossless through
++raw HTTP bytes and Rust serde. Host/Origin validation is a loopback browser boundary,
++not user authentication. The user sees a point-in-time observation, never writable
++or current-authority status. Chat principal/signing/Agentd dispatch, actual attached
++owner composition, native-host closure and installed-package qualification remain
++separate work. Send and Console mutation controls stay disabled. New gateway/status
++source needs its own execution and pixels; no foundation or historical receipt is
++rewritten or transferred as its proof.

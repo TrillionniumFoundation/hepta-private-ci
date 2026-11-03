@@ -1,0 +1,11 @@
+diff --git a/codex-rs/hepta-agentd/src/runtime.rs b/codex-rs/hepta-agentd/src/runtime.rs
+--- a/codex-rs/hepta-agentd/src/runtime.rs
++++ b/codex-rs/hepta-agentd/src/runtime.rs
+@@ -500,7 +500,6 @@
+     .map_err(|_| AgentdError::Protocol("App Server readiness probe timed out".to_string()))??;
+     // This probe exclusively owns the connection. Bind its worker before either
+     // shutdown await can be dropped by the monitor's cancellation branch.
+-    let client = client.into_abort_on_drop();
+     let expected_home = identity.home_root.to_string_lossy();
+     if client.codex_home() != Some(expected_home.as_ref()) {
+         let actual = client.codex_home().unwrap_or("<missing>").to_string();

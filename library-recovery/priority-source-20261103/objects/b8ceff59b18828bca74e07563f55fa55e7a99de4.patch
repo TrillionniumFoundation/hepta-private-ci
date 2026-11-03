@@ -1,0 +1,286 @@
+--- a/docs/modules/kernel.operations/TECHNICAL.md
++++ b/docs/modules/kernel.operations/TECHNICAL.md
+@@ -55,7 +55,7 @@
+ | exact-head / synthetic-merge execution | pending current candidate CI |
+ | independent acceptance / release | false |
+ 
+-Canonical exact source identity is recorded by `IMPLEMENTATION_MAP.json` with `sourceIdentityPolicy=path_blob_manifest_v1`. The verifier resolves every mapped path through `git rev-parse HEAD:<path>`; a tracked map therefore does not need to contain its own future HEAD/tree hash.
++Canonical source identity is recorded by `IMPLEMENTATION_MAP.json` with `sourceIdentityPolicy=candidate_or_exact_observation_v1`. Its separate `exactSourceEvidence.kind=path_blob_manifest_v1` records mapped file blob identities. The verifier checks candidate or exact historical observations, tracked evidence paths and mapped blobs; a tracked map does not contain its own future HEAD/tree hash. These are distinct metadata fields, and source changes still require current candidate verification rather than inheriting an older observation.
+ 
+ The 16,384-record limits belong to the in-memory reference oracle. Durable configured limits and fail-before-mutation checks live in the CognitiveStore owner. Long-lived segment/checkpoint compaction remains a separate gap.
+ 
+@@ -377,6 +377,6 @@
+ | reference ledger | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | reference oracle |
+ | reference outbox | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | reference oracle |
+ 
+-- Exact mapped source identity is verified through `path_blob_manifest_v1`.
+-- `productionImplementation=true` means repository source implementation exists; it does not mean product execution, activation, acceptance or release.
++- The map declares `sourceIdentityPolicy=candidate_or_exact_observation_v1` and separately records `exactSourceEvidence.kind=path_blob_manifest_v1`; both source-identity and blob-manifest checks must pass for the actual candidate.
++- The current map retains `productionImplementation=false`. The source implementations described here do not raise that claim or establish product execution, activation, acceptance or release.
+ - Remaining repository gates are current exact-head/synthetic-merge success, remaining destination adapters and long-lived segment/checkpoint compaction. External production authority/grant enrollment remains an activation gate and is not manufactured by Agentd.
+--- a/qualification/module-execution-dossiers/test_lane_a_foundation.py
++++ b/qualification/module-execution-dossiers/test_lane_a_foundation.py
+@@ -219,6 +219,99 @@
+             "hepta.kernel.operations.reference-model.v1",
+         )
+ 
++    def test_protocol_registry_preserves_additional_operations_surface(self) -> None:
++        registry = verify.read_json(
++            ROOT / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json"
++        )
++        verify.validate_protocol_registry(registry)
++        primary = registry["protocols"][3]
++        self.assertEqual(
++            primary["protocolId"], "hepta.kernel.operations.durable-ledger-outbox.v1"
++        )
++        self.assertEqual(
++            primary["legacyProtocolId"], "hepta.kernel.operations.reference-model.v1"
++        )
++        self.assertEqual(len(primary["additionalProtocols"]), 1)
++        product = primary["additionalProtocols"][0]
++        self.assertEqual(
++            product["protocolId"], "hepta.kernel.operations.durable-owner.v1"
++        )
++        self.assertIn("codex-rs/hepta-operations/src/durable_store.rs", primary["source"])
++        self.assertIn("codex-rs/hepta-memory/src/production_writer.rs", product["source"])
++        by_id = {
++            surface["protocolId"]: surface
++            for row in registry["protocols"]
++            for surface in [row, *row.get("additionalProtocols", [])]
++        }
++        self.assertEqual(by_id[primary["protocolId"]], primary)
++        self.assertEqual(by_id[product["protocolId"]], product)
++        primary_only = deepcopy(registry)
++        primary_only["protocols"][3].pop("additionalProtocols")
++        verify.validate_protocol_registry(primary_only)
++
++    def test_protocol_registry_rejects_duplicate_ids_foreign_owners_and_nested_surfaces(self) -> None:
++        registry = verify.read_json(
++            ROOT / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json"
++        )
++        mutations = (
++            lambda value: value["protocols"].append(deepcopy(value["protocols"][3])),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "protocolId", value["protocols"][3]["protocolId"]
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "module", "kernel.authority"
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "additionalProtocols", []
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "source", []
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "invariants", []
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "source", ["../outside.rs"]
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "source", ["missing-source.rs"]
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "source", ["."]
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"].append("malformed"),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "activation", True
++            ),
++            lambda value: value["protocols"][3]["additionalProtocols"][0].__setitem__(
++                "legacyProtocolId", value["protocols"][3]["legacyProtocolId"]
++            ),
++        )
++        for mutation in mutations:
++            invalid = deepcopy(registry)
++            mutation(invalid)
++            with self.subTest(mutation=mutation), self.assertRaises(verify.VerificationError):
++                verify.validate_protocol_registry(invalid)
++
++    def test_operations_guide_matches_identity_metadata(self) -> None:
++        metadata = verify.read_json(
++            ROOT / "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json"
++        )
++        guide = (ROOT / "docs/modules/kernel.operations/TECHNICAL.md").read_text(
++            encoding="utf-8"
++        )
++        self.assertIn(
++            f"`sourceIdentityPolicy={metadata['sourceIdentityPolicy']}`", guide
++        )
++        self.assertIn(
++            f"`exactSourceEvidence.kind={metadata['exactSourceEvidence']['kind']}`",
++            guide,
++        )
++        self.assertIn(
++            f"`productionImplementation={str(metadata['productionImplementation']).lower()}`",
++            guide,
++        )
++
+     def test_native_observation_manifest_binds_current_candidate_blobs(self) -> None:
+         bindings = json.loads(
+             (
+--- a/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json
++++ b/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json
+@@ -92,27 +92,29 @@
+         "the retained in-memory reference model is an oracle and grants no production authority",
+         "source implementation does not grant product activation operator acceptance promotion or release"
+       ],
+-      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1"
+-    },
+-    {
+-      "protocolId": "hepta.kernel.operations.durable-owner.v1",
+-      "module": "kernel.operations",
+-      "kind": "sqlite_durable_operation_outbox_and_reconciliation",
+-      "source": [
+-        "codex-rs/hepta-operations/src/model.rs",
+-        "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+-        "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+-        "codex-rs/hepta-memory/src/production_writer.rs",
+-        "codex-rs/hepta-memory/src/production_cognitive_source_target.rs"
+-      ],
+-      "invariants": [
+-        "OperationIntentV1 semantic digest binds operation subject destination payload scope policy generation and optional predecessor",
+-        "operation intent event and local outbox identity commit atomically before dispatch",
+-        "durable dispatch claims have bounded attempts lease expiry renewal backoff and stale claimant fencing",
+-        "dispatch request carries full semantic digest and predecessor expectation to the destination",
+-        "final-use authority is consumed immediately before destination entry",
+-        "destination predecessor mismatch is deterministic not-applied inside the destination transaction",
+-        "transport acknowledgement is not terminality and lost acknowledgement reconciles through an independent destination observer"
++      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1",
++      "additionalProtocols": [
++        {
++          "protocolId": "hepta.kernel.operations.durable-owner.v1",
++          "module": "kernel.operations",
++          "kind": "sqlite_durable_operation_outbox_and_reconciliation",
++          "source": [
++            "codex-rs/hepta-operations/src/model.rs",
++            "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
++            "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
++            "codex-rs/hepta-memory/src/production_writer.rs",
++            "codex-rs/hepta-memory/src/production_cognitive_source_target.rs"
++          ],
++          "invariants": [
++            "OperationIntentV1 semantic digest binds operation subject destination payload scope policy generation and optional predecessor",
++            "operation intent event and local outbox identity commit atomically before dispatch",
++            "durable dispatch claims have bounded attempts lease expiry renewal backoff and stale claimant fencing",
++            "dispatch request carries full semantic digest and predecessor expectation to the destination",
++            "final-use authority is consumed immediately before destination entry",
++            "destination predecessor mismatch is deterministic not-applied inside the destination transaction",
++            "transport acknowledgement is not terminality and lost acknowledgement reconciles through an independent destination observer"
++          ]
++        }
+       ]
+     },
+     {
+--- a/scripts/lane_a_foundation_core.py
++++ b/scripts/lane_a_foundation_core.py
+@@ -111,6 +111,69 @@
+                 raise VerificationError(
+                     f"{owner}: {state} {needle!r} in {item['path']}"
+                 )
++
++
++def validate_protocol_registry(value: dict[str, Any], root: Path = ROOT) -> None:
++    """Validate one module entry plus optional same-owner executable surfaces."""
++    rows = value.get("protocols")
++    if (
++        set(value) != {"schemaVersion", "lane", "role", "authority", "protocols"}
++        or value.get("schemaVersion") != 1
++        or value.get("lane") != "LANE-A-FOUNDATION"
++        or value.get("role") != "current_executable_protocol_index"
++        or value.get("authority") != "none"
++        or not isinstance(rows, list)
++        or any(not isinstance(row, dict) for row in rows)
++        or [row.get("module") for row in rows] != EXPECTED_MODULES
++    ):
++        raise VerificationError("protocol registry header/module set mismatch")
++    identities: set[str] = set()
++    for row in rows:
++        additional = row.get("additionalProtocols", [])
++        if not isinstance(additional, list):
++            raise VerificationError("additional protocols must be a list")
++        for surface in [row, *additional]:
++            if (
++                not isinstance(surface, dict)
++                or set(surface).difference({
++                    "protocolId", "module", "kind", "source", "invariants",
++                    "legacyProtocolId", "additionalProtocols",
++                })
++                or surface.get("module") != row["module"]
++                or (surface is not row and "additionalProtocols" in surface)
++                or not isinstance(surface.get("kind"), str)
++                or not surface["kind"]
++            ):
++                raise VerificationError("invalid additional protocol owner/shape")
++            for field in ("protocolId", "legacyProtocolId"):
++                if field == "legacyProtocolId" and field not in surface:
++                    continue
++                identity = surface.get(field)
++                if (
++                    not isinstance(identity, str)
++                    or not identity.startswith("hepta.")
++                    or identity in identities
++                ):
++                    raise VerificationError("invalid/duplicate protocol identity")
++                identities.add(identity)
++            for field in ("source", "invariants"):
++                items = surface.get(field)
++                if not isinstance(items, list) or not items or any(
++                    not isinstance(item, str) or not item.strip() for item in items
++                ):
++                    raise VerificationError(f"protocol {field} must be nonempty")
++                if field == "source":
++                    for item in items:
++                        source = Path(item)
++                        if (
++                            chr(0) in item or chr(92) in item
++                            or not source.parts
++                            or source.is_absolute() or ".." in source.parts
++                            or source.as_posix() != item
++                            or not (root / source).resolve().is_relative_to(root.resolve())
++                            or not (root / source).exists()
++                        ):
++                            raise VerificationError("invalid/unavailable protocol source path")
+ 
+ 
+ def validate_capability_map(
+--- a/scripts/lane_a_foundation_lib.py
++++ b/scripts/lane_a_foundation_lib.py
+@@ -113,6 +113,9 @@
+     for (module, axis), value in exact.items():
+         if by_name[module]["states"][axis] != value:
+             raise VerificationError(f"{module}: {axis} drift")
++    validate_protocol_registry(
++        read_json(root / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json"), root
++    )
+     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
+     validate_capability_map(matrix, capability, root)
+     native = validate_native_bindings(root)
+--- a/docs/lane-a-foundation/README.md
++++ b/docs/lane-a-foundation/README.md
+@@ -29,6 +29,24 @@
+ writes exact-source receipts. Historical blob hashes are provenance, not a ban
+ on source changes.
+ 
++### Multiple executable surfaces in one module
++
++`PROTOCOL_REGISTRY_V1.json` keeps one primary entry per Lane A module.
++The optional `additionalProtocols` array contains one level of complete,
++same-module protocol records, retaining each `protocolId`, source list and
++invariants. Primary and legacy identifiers are unchanged; readers enumerating
++all current surfaces include the primary record and its additional records.
++Identifiers remain unique across current and legacy records, and nested
++additional records cannot introduce another owner or another nesting level.
++
++For `kernel.operations`, `hepta.kernel.operations.durable-ledger-outbox.v1`
++continues to describe the standalone qualification owner and retains the
++`hepta.kernel.operations.reference-model.v1` legacy identifier. Its additional
++`hepta.kernel.operations.durable-owner.v1` record describes the CognitiveStore
++product owner. These are distinct persistence roles, not interchangeable wire
++identities or permission to dual-write one logical operation. Indexing a
++surface grants no product activation, acceptance or release authority.
++
+ ## Internal blocker guards
+ 
+ The exact candidate additionally guards the implementation-truth defects that

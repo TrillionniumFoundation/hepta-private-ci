@@ -1,0 +1,19 @@
+diff --git a/codex-rs/hepta-fleet/src/release.rs b/codex-rs/hepta-fleet/src/release.rs
+index 47d2d1304e..6837da0c27 100644
+--- a/codex-rs/hepta-fleet/src/release.rs
++++ b/codex-rs/hepta-fleet/src/release.rs
+@@ -294,7 +294,13 @@ impl FleetRegistry {
+             sync_directory(&bin_root)?;
+             sync_directory(&staging)?;
+             set_mode(&staging, /*mode*/ 0o555)?;
+-            std::fs::rename(&staging, &final_root)?;
++            std::fs::rename(&staging, &final_root).inspect_err(|error| {
++                if cfg!(debug_assertions) {
++                    eprintln!(
++                        "fleet release publication failed at staged-directory rename: {error}"
++                    );
++                }
++            })?;
+             sync_directory(self.layout().releases_root())?;
+             Ok(())
+         })();

@@ -1,0 +1,35 @@
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+@@ -913,17 +913,16 @@
+         if let Err(reason) = result {
+             output.boundary_status = classify_observation_failure(&reason);
+             output.stop_reason = Some(reason.clone());
+-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+-                if let Ok(cancelled) = owner
++            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
++                && let Ok(cancelled) = owner
+                     .run_cancel(
+                         binding.run_id.clone(),
+                         revision,
+                         reason.chars().take(512).collect(),
+                     )
+                     .await
+-                {
+-                    intelligence_revision = Some(cancelled.receipt.revision);
+-                }
++            {
++                intelligence_revision = Some(cancelled.receipt.revision);
+             }
+             // Persist cancellation intent, but still interrupt if that write
+             // fails. A failed journal write fences later admission/settlement.
+@@ -1146,6 +1145,10 @@
+         .await
+ }
+ 
++#[expect(
++    clippy::too_many_arguments,
++    reason = "Keep independently sourced authority, session and payload inputs explicit at the durable dispatch comparison"
++)]
+ fn verify_persisted_dispatch_binding(
+     control: &DurableInferenceControl,
+     request_id: &str,

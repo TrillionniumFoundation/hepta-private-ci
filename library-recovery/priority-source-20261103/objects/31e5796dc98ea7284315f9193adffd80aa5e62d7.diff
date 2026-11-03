@@ -1,0 +1,17 @@
+--- hcsn_p1_reconcile/experiments/hcsn_hx_unified_v3/matched_slope.py	2026-10-31 01:47:21.634248117 +0000
++++ hcsn_fullspeed_20261030/p1_slope_reference/matched_slope.py	2026-10-31 03:58:57.065592912 +0000
+@@ -144,12 +144,12 @@
+     E(V)>=0 are necessary for admission. They are NOT a sufficient global
+     obstacle/fixed-point certificate. Never clip a bad region to make a gate.
+     """
+-    from .hx import boundary, mechanism_channels
+-
+     allowed={'call':'equity','risk':'default_probability',
+              'survival':'default_probability','margin':'rollover_margin'}
+     if channel_name not in allowed:
+         raise ValueError('Unknown financial mechanism channel')
++    # Reject a malformed channel before importing the HX research backend.
++    from .hx import boundary, mechanism_channels
+     if not math.isfinite(boundary_exclusion) or boundary_exclusion<=0:
+         raise ValueError('Boundary exclusion must be positive')
+     b=boundary(p) if asset_boundary is None else asset_boundary

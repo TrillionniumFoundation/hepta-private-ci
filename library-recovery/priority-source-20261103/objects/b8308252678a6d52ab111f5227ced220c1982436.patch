@@ -1,0 +1,162 @@
+--- a/codex-rs/hepta-agentd/src/automation_recovery.rs
++++ b/codex-rs/hepta-agentd/src/automation_recovery.rs
+@@ -42,22 +42,23 @@
+ const RECOVERY_RUN_LEASE_MS: u64 = 30_000;
+ const RECOVERY_OBSERVATION_TIMEOUT: Duration = Duration::from_secs(5);
+ 
+-/// Observations are read-only: a timeout preserves durable uncertainty and
+-/// fails the recovery pass rather than authorizing another provider admission.
++/// A read-only observation timeout preserves durable uncertainty. It is not a
++/// protocol or integrity failure and must not disable unrelated schedules.
++/// `None` means no observation was obtained, never provider absence.
+ async fn bounded_observation<T>(
+     observation: impl Future<Output = Result<T, AgentdError>>,
+-) -> Result<T, AgentdError> {
+-    tokio::time::timeout(RECOVERY_OBSERVATION_TIMEOUT, observation)
+-        .await
+-        .map_err(|_| {
+-            AgentdError::Protocol("automation recovery observation timed out".to_string())
+-        })?
++) -> Result<Option<T>, AgentdError> {
++    match tokio::time::timeout(RECOVERY_OBSERVATION_TIMEOUT, observation).await {
++        Ok(result) => result.map(Some),
++        Err(_) => Ok(None),
++    }
+ }
+ 
+ enum TurnLookup {
+     Found(Turn),
+     Continue(String),
+     Exhausted,
++    Deferred,
+ }
+ 
+ pub(crate) async fn reconcile_one(
+@@ -74,8 +75,9 @@
+     };
+     let observed_occurrence = work.occurrence.clone();
+     reconcile_work(store, state, identity, work, now_ms).await?;
+-    // A long-running or unresolved occurrence must not monopolize the bounded
+-    // observer. Semantic changes during the lookup make this exact CAS a no-op.
++    // A long-running, unresolved or timed-out occurrence must not monopolize
++    // the bounded observer. Semantic changes during the lookup make this exact
++    // CAS a no-op.
+     store
+         .defer_occurrence_observation(&observed_occurrence, now_ms)
+         .await?;
+@@ -108,7 +110,11 @@
+     .await;
+     let _ = client.shutdown().await;
+     state.refresh_generation()?;
+-    let response = response?;
++    let Some(response) = response? else {
++        // Preserve the exact unknown dispatch. Continue to the ordinary
++        // observer and independent admission; never retry this effect.
++        return Ok(false);
++    };
+     validate_reconcile_identity(&response, &uncertain.client_user_message_id, &expected)?;
+     match &response.outcome {
+         ThreadQueueReconcileOutcome::Queued {
+@@ -240,6 +246,7 @@
+         state.refresh_generation()?;
+         let turn = match observed? {
+             TurnLookup::Found(turn) => turn,
++            TurnLookup::Deferred => return Ok(()),
+             TurnLookup::Continue(next_cursor) => {
+                 store
+                     .record_terminal_scan_cursor(
+@@ -337,7 +344,11 @@
+     .await;
+     let _ = client.shutdown().await;
+     state.refresh_generation()?;
+-    let response = response?;
++    let Some(response) = response? else {
++        // The caller rotates this exact still-pending snapshot. Timeout is
++        // neither a terminal observation nor permission to readmit the work.
++        return Ok(());
++    };
+     validate_reconcile_identity(&response, &work.admission.client_user_message_id, &expected)?;
+     match &response.outcome {
+         ThreadQueueReconcileOutcome::Queued {
+@@ -476,7 +487,7 @@
+     input: Vec<UserInput>,
+     client_user_message_id: &str,
+     expected_payload_sha256: &str,
+-) -> Result<ThreadQueueReconcileResponse, AgentdError> {
++) -> Result<Option<ThreadQueueReconcileResponse>, AgentdError> {
+     bounded_observation(async {
+         client
+             .request_handle()
+@@ -529,11 +540,7 @@
+                     AgentdError::Protocol("automation recovery lost scan continuation".to_string())
+                 });
+             }
+-            Err(_) => {
+-                return Err(AgentdError::Protocol(
+-                    "automation recovery observation timed out".to_string(),
+-                ));
+-            }
++            Err(_) => return Ok(TurnLookup::Deferred),
+         }
+         .map_err(|error| {
+             AgentdError::Protocol(format!("automation turn observation failed: {error}"))
+--- a/codex-rs/hepta-agentd/src/automation_recovery_tests.rs
++++ b/codex-rs/hepta-agentd/src/automation_recovery_tests.rs
+@@ -25,8 +25,22 @@
+         }),
+     )
+     .await?;
+-    assert!(matches!(result, Err(AgentdError::Protocol(_))));
++    assert!(result?.is_none());
+     assert!(released.load(Ordering::Acquire));
+-    assert_eq!(bounded_observation(async { Ok(42) }).await?, 42);
++    assert_eq!(bounded_observation(async { Ok(42) }).await?, Some(42));
+     Ok(())
+ }
++
++#[tokio::test]
++async fn observation_protocol_and_generation_failures_are_not_timeouts() {
++    let malformed = bounded_observation::<()>(async {
++        Err(AgentdError::Protocol("mismatched durable identity".to_string()))
++    })
++    .await;
++    assert!(matches!(malformed, Err(AgentdError::Protocol(_))));
++    let fenced = bounded_observation::<()>(async {
++        Err(AgentdError::GenerationFenced("retired owner".to_string()))
++    })
++    .await;
++    assert!(matches!(fenced, Err(AgentdError::GenerationFenced(_))));
++}
+--- a/codex-rs/hepta-automation/src/occurrence_observer.rs
++++ b/codex-rs/hepta-automation/src/occurrence_observer.rs
+@@ -86,10 +86,11 @@
+         Ok(())
+     }
+ 
+-    /// Rotate successfully observed, still-pending work behind newer work.
+-    /// Call only after the observer completed its lookup. Exact snapshot CAS
++    /// Rotate observed or timed-out, still-pending work behind newer work.
++    /// Call only after the bounded observer attempt completed. Exact snapshot CAS
+     /// prevents this progress write from overwriting a concurrent turn, cursor
+-    /// or terminal update. Failed lookups leave the recovery frontier intact.
++    /// or terminal update. This changes only scheduling priority: uncertainty
++    /// and all authority, claim and terminal evidence remain unchanged.
+     pub async fn defer_occurrence_observation(
+         &self,
+         occurrence: &AutomationOccurrence,
+--- a/codex-rs/hepta-agentd/src/automation.rs
++++ b/codex-rs/hepta-agentd/src/automation.rs
+@@ -314,9 +314,10 @@
+             Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
+         };
+ 
+-        // Reconcile one durable historical occurrence before admitting new
+-        // work. This is bounded to one item/turn-page chain per tick and does
+-        // not prevent an overlap-allowed scheduler from also making progress.
++        // Observe at most one unknown dispatch, then one ordinary occurrence
++        // if no unknown result was obtained. Each queue/turn observation is
++        // bounded; connect and shutdown are outside that observation deadline.
++        // Read-only timeout preserves uncertainty and independent progress.
+         if let Err(error) =
+             automation_recovery::reconcile_one(scheduler.store(), &state, state.identity(), now_ms)
+                 .await

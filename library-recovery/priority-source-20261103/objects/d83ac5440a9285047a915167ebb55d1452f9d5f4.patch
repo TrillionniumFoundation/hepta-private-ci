@@ -1,0 +1,737 @@
+diff --git a/.github/workflows/ui-product-foundation.yml b/.github/workflows/ui-product-foundation.yml
+index 1b16483e60..96beb32aef 100644
+--- a/.github/workflows/ui-product-foundation.yml
++++ b/.github/workflows/ui-product-foundation.yml
+@@ -24,6 +24,7 @@ on:
+       - scripts/run-nextest.py
+       - scripts/just-shell.py
+       - scripts/hepta_ci_dependencies.py
++      - scripts/hepta_ci_exec.py
+       - scripts/hepta_ci_git_objects.py
+       - scripts/hepta_ci_module_paths.py
+       - apps/hepta-native/resources/NATIVE-ASSETS.json
+@@ -136,7 +137,7 @@ jobs:
+           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
+           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
+           node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
+-          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs
++          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
+           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+       - id: default_build
+         name: Build canonical strict-CSP no-threads artifact
+@@ -165,6 +166,17 @@ jobs:
+         run: |
+           rustup toolchain install 1.96.0 --profile minimal
+           RUSTUP_TOOLCHAIN=1.96.0 python3 apps/hepta-control-ui/tools/build-product-preview.py --target-dir "$RUNNER_TEMP/product-gateway-target"
++      - id: product_gateway_transport_tests
++        name: Execute bounded gateway transport regressions
++        env:
++          RUSTUP_TOOLCHAIN: 1.96.0
++          CARGO_TARGET_DIR: ${{ runner.temp }}/product-gateway-target
++          CARGO_PROFILE_TEST_DEBUG: 0
++          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
++          BASE_SHA: ${{ github.event.pull_request.base.sha }}
++          HEPTA_CI_LANE: ${{ matrix.lane }}
++        run: |
++          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-transport-${{ matrix.lane }}.json" --minimum-tests 9 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(http_transport::tests::)'
+       - id: product_gateway_browser
+         name: Exercise real gateway unavailable status and cancellation
+         working-directory: apps/hepta-control-ui
+@@ -180,6 +192,7 @@ jobs:
+             apps/hepta-control-ui/test-results/product-status/
+             apps/hepta-control-ui/test-results/product-status-results.json
+             ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview.hepta-build.json
++            ${{ runner.temp }}/gateway-transport-${{ matrix.lane }}.json*
+           if-no-files-found: warn
+       - id: fixture_build
+         if: always() && steps.default_build.outcome == 'success'
+diff --git a/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs b/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
+index b2dafe76be..e5961777bb 100644
+--- a/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
++++ b/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
+@@ -4,9 +4,10 @@ import {readFile,writeFile} from 'node:fs/promises';
+ import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
+ import {createHash} from 'node:crypto';
+ import {readProductStatusPixels} from '../tools/product-status-pixels.mjs';
++import {auditProductConsole} from '../tools/product-console-audit.mjs';
+ import {execFileSync} from 'node:child_process';
+ import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
+-for(const width of [1280,640])test(`actual missing-owner status ${width}`,async({page},testInfo)=>{
++for(const width of [1280,640])for(const scenario of ['timeout','navigation','background'])test(`actual missing-owner status ${width} ${scenario}`,async({page,baseURL},testInfo)=>{
+  const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  expect(execFileSync('git',['status','--porcelain','--untracked-files=normal'],{encoding:'utf8'}).trim()).toBe('');
+  const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+@@ -20,15 +21,32 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway};
+  await writeFile(testInfo.outputPath('binding.json'),JSON.stringify(binding,null,2)+'\n');
+  await writeFile(testInfo.outputPath('ui-build-manifest.json'),manifestBytes);
+- const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[];const pendingFonts=new Set();
++ const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[],finishedResponses=[];const pendingFonts=new Set();
++ const ownerUrl=new URL('/api/hepta/owner-status',baseURL).href,runtimeUrl=new URL('/api/hepta/runtime',baseURL).href,sdkUrl=new URL('/makepad_platform/web.js',baseURL).href;
++ let phase='initial',nextRequestId=0;const requestRecords=new Map(),proofs={},cancellations=[];
++ function requestRecord(request){
++  if(!requestRecords.has(request)){const record={id:++nextRequestId,url:request.url(),method:request.method(),phase};requestRecords.set(request,record);requests.push(record);}
++  return requestRecords.get(request);
++ }
++ function rawAudit(){return {binding,scenario,errors,requests,responses,failures:networkFailures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl,faults};}
++ async function audit(name){
++  await Promise.all(finishedResponses);
++  const raw=rawAudit();await writeFile(testInfo.outputPath(name+'-raw.json'),JSON.stringify(raw,null,2)+'\n');
++  const result=auditProductConsole(raw);await writeFile(testInfo.outputPath(name+'.json'),JSON.stringify(result,null,2)+'\n');
++  expect(result.passed).toBe(true);expect(faults).toEqual([]);return result;
++ }
+  const font=request=>/\.(?:ttf|otf)(?:[?#]|$)/i.test(request.url());
+  page.on('request',request=>{if(font(request))pendingFonts.add(request);});
+  page.on('requestfinished',request=>pendingFonts.delete(request));
+- page.on('requestfailed',request=>{pendingFonts.delete(request);if(font(request))faults.push('font request failed');if(new URL(request.url()).pathname.startsWith('/api/hepta/'))networkFailures.push({url:request.url(),error:request.failure()?.errorText});});
++ page.on('requestfailed',request=>{pendingFonts.delete(request);if(font(request))faults.push({kind:'font request failed',url:request.url(),error:request.failure()?.errorText});if(new URL(request.url()).pathname.startsWith('/api/hepta/'))networkFailures.push({...requestRecord(request),error:request.failure()?.errorText});});
+  page.on('pageerror',error=>faults.push(error.message));
+- page.on('console',message=>{if(message.type()==='error')errors.push({text:message.text(),url:message.location().url});});
+- page.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/api/hepta/'))requests.push({url:request.url(),method:request.method()});});
+- page.on('response',response=>{if(new URL(response.url()).pathname.startsWith('/api/hepta/'))responses.push({url:response.url(),status:response.status()});});
++ page.on('console',message=>{if(message.type()==='error')errors.push({text:message.text(),url:message.location().url,phase});});
++ page.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/api/hepta/'))requestRecord(request);});
++ page.on('response',response=>{if(new URL(response.url()).pathname.startsWith('/api/hepta/')){
++  const record={...requestRecord(response.request()),status:response.status(),finished:false};responses.push(record);
++  finishedResponses.push(response.finished().then(error=>{record.finished=error===null;record.finishError=error?String(error):null;},error=>{record.finishError=String(error);}));
++ }});
++ try {
+  await page.setViewportSize({width,height:800});await page.goto('/');
+  await expect(page.locator('canvas')).toBeVisible();await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
+  const settle=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+@@ -39,6 +57,7 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  const before=testInfo.outputPath('before-read.png');await page.screenshot({path:before,caret:'initial'});
+  expect(requests).toEqual([]);
+  const refresh=await screenshotWordCenter(before,'Refresh',width,{recordOcr:true});
++ const initialSdk503=page.waitForEvent('console',message=>message.type()==='error'&&message.location().url===sdkUrl&&message.text()===`[makepad][http][fail] 503 ${runtimeUrl}`);
+  const owner=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/hepta/owner-status');
+  const legacy=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/hepta/runtime');
+  await page.mouse.click(refresh.x,refresh.y);
+@@ -53,6 +72,11 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  expect(requests.map(item=>({method:item.method,path:new URL(item.url).pathname}))).toEqual([
+   {method:'GET',path:'/api/hepta/owner-status'},{method:'GET',path:'/api/hepta/runtime'},
+  ]);
++ await legacyReply.finished();await initialSdk503;
++ proofs.initial={ownerState:'notAttached',ownerVerified:observation.passed,transportVerified:/runtime unavailable\s*\(Transport\)/i.test(text)};
++ await audit('initial-read-audit');
++ phase=scenario;
++
+  const ownerCount=()=>requests.filter(item=>new URL(item.url).pathname==='/api/hepta/owner-status').length;
+  async function observedText(name,state){
+   await settle();const path=testInfo.outputPath(name+'.png');await page.screenshot({path,caret:'initial'});
+@@ -63,11 +87,13 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  }
+  const pendingReleases=new Set();
+  async function holdOwner(name){
+-  let release,entered,rejectReady,finished;const gate=new Promise(resolve=>{release=resolve;});
++  let release,entered,rejectReady,finished,requestId=null;const gate=new Promise(resolve=>{release=resolve;});
+   const ready=new Promise((resolve,reject)=>{entered=resolve;rejectReady=reject;});const done=new Promise(resolve=>{finished=resolve;});
+   const record={name,mode:'hold actual gateway response bytes',lateFulfillReturned:false};pendingReleases.add(release);
+   const handler=async route=>{
+    try{
++    if(requestId!==null)throw new Error('More than one held owner request in a fresh-page case');
++    requestId=requestRecord(route.request()).id;record.requestId=requestId;
+     const response=await route.fetch({timeout:5000});expect(response.status()).toBe(200);
+     expect(await response.json()).toEqual({schema:'hepta.owner-lease-observation.v1',observation:{status:'not_attached'}});
+     entered();await gate;
+@@ -77,41 +103,49 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+    finally{pendingReleases.delete(release);finished();}
+   };
+   await page.route('**/api/hepta/owner-status',handler);
+-  return {ready,async finish(){release();await done;await page.unroute('**/api/hepta/owner-status',handler);faultCases.push(record);}};
++  return {ready,get requestId(){return requestId;},async finish(){release();await done;await page.unroute('**/api/hepta/owner-status',handler);faultCases.push(record);}};
+  }
+  // Hold a real response, then exercise the actual Rust five-second timeout and
+  // disabled/single-flight control. No fabricated success body is injected.
+  try {
+- const timeoutHold=await holdOwner('repeat-click-and-timeout');const beforeTimeout=ownerCount();
+- await page.mouse.click(refresh.x,refresh.y);await timeoutHold.ready;
+- for(let index=0;index<3;index++)await page.mouse.click(refresh.x,refresh.y);
+- await settle();expect(ownerCount()).toBe(beforeTimeout+1);
+- await expect.poll(async()=> (await observedText('timed-out','timedOut')).passed,{timeout:15000,intervals:[250]}).toBe(true);
+- await timeoutHold.finish();
+- expect((await observedText('late-after-timeout','timedOut')).passed).toBe(true);
+- // Navigating away cancels the pending read; reopening does not start another
+- // scan and an old reply cannot populate the new view.
+- const navigationHold=await holdOwner('navigation-cancel');const beforeNavigation=ownerCount();
+- await page.mouse.click(refresh.x,refresh.y);await navigationHold.ready;
+- const currentTabs=await screenshotConversationTabs((await observedText('reading')).path,page.viewportSize(),{recordOcr:true});
+- await page.mouse.click(currentTabs.Chat.x,currentTabs.Chat.y);await settle();
+- const chatTabs=await screenshotConversationTabs((await observedText('chat-after-cancel')).path,page.viewportSize(),{recordOcr:true});
+- await page.mouse.click(chatTabs.Console.x,chatTabs.Console.y);await settle();
+- await navigationHold.finish();expect(ownerCount()).toBe(beforeNavigation+1);
+- expect((await observedText('late-after-navigation','noObservation')).passed).toBe(true);
+- // Deterministic browser-lifecycle injection through the pinned SDK listener.
+- // This covers routing/cancellation, not a physical OS backgrounding claim.
+- const backgroundHold=await holdOwner('synthetic-persisted-pagehide');const beforeBackground=ownerCount();
+- await page.mouse.click(refresh.x,refresh.y);await backgroundHold.ready;
+- await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true})));
+- await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
+- await backgroundHold.finish();expect(ownerCount()).toBe(beforeBackground+1);
+- expect((await observedText('late-after-background','noObservation')).passed).toBe(true);
++ const timeoutLegacy=scenario==='timeout'?page.waitForResponse(response=>response.url()===runtimeUrl&&requestRecord(response.request()).phase==='timeout'):null;
++ const timeoutSdk503=scenario==='timeout'?page.waitForEvent('console',message=>phase==='timeout'&&message.type()==='error'&&message.location().url===sdkUrl&&message.text()===`[makepad][http][fail] 503 ${runtimeUrl}`):null;
++ const held=await holdOwner(scenario);const beforeCancellation=ownerCount();
++ await page.mouse.click(refresh.x,refresh.y);await held.ready;
++ let expectedState;
++ if(scenario==='timeout'){
++  for(let index=0;index<3;index++)await page.mouse.click(refresh.x,refresh.y);
++  await settle();expect(ownerCount()).toBe(beforeCancellation+1);
++  await expect.poll(async()=> (await observedText('timed-out','timedOut')).passed,{timeout:15000,intervals:[250]}).toBe(true);
++  const timeoutReply=await timeoutLegacy;expect(timeoutReply.status()).toBe(503);expect(await timeoutReply.finished()).toBeNull();await timeoutSdk503;
++  expectedState='timedOut';
++ }else if(scenario==='navigation'){
++  const currentTabs=await screenshotConversationTabs((await observedText('reading')).path,page.viewportSize(),{recordOcr:true});
++  await page.mouse.click(currentTabs.Chat.x,currentTabs.Chat.y);await settle();
++  const chatTabs=await screenshotConversationTabs((await observedText('chat-after-cancel')).path,page.viewportSize(),{recordOcr:true});
++  await page.mouse.click(chatTabs.Console.x,chatTabs.Console.y);await settle();
++  expectedState='noObservation';
++ }else{
++  // Synthetic pinned-SDK lifecycle routing, not physical OS background proof.
++  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true})));
++  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
++  expectedState='noObservation';
++ }
++ await held.finish();expect(ownerCount()).toBe(beforeCancellation+1);
++ const late=await observedText('late-after-'+scenario,expectedState);expect(late.passed).toBe(true);
++ await expect.poll(()=>networkFailures.filter(f=>f.id===held.requestId).length).toBe(1);
++ cancellations.push({requestId:held.requestId,phase:scenario});
++ proofs[scenario]={ownerState:expectedState,ownerVerified:late.passed,transportVerified:/runtime unavailable\s*\(Transport\)/i.test(late.text)};
+  }finally{for(const release of pendingReleases)release();await page.unrouteAll({behavior:'ignoreErrors'});}
+- // An expected 503 is preserved as a transport observation; unrelated console
+- // exceptions, missing assets, Rust panics and cross-origin faults still fail.
+- const expectedHttpErrors=errors.filter(error=>error.url===legacyReply.url()&&/Failed to load resource.*503/.test(error.text));
+- expect(errors.filter(error=>!expectedHttpErrors.includes(error))).toEqual([]);expect(faults).toEqual([]);
++ await Promise.all(finishedResponses);
++ expect(requests.map(item=>({method:item.method,path:new URL(item.url).pathname,phase:item.phase}))).toEqual([
++  {method:'GET',path:'/api/hepta/owner-status',phase:'initial'},
++  {method:'GET',path:'/api/hepta/runtime',phase:'initial'},
++  {method:'GET',path:'/api/hepta/owner-status',phase:scenario},
++  ...(scenario==='timeout'?[{method:'GET',path:'/api/hepta/runtime',phase:'timeout'}]:[]),
++ ]);
++ const errorAudit=await audit('final-read-audit');
+  const bytes=await readFile(screenshot);
+- await writeFile(testInfo.outputPath('receipt.json'),JSON.stringify({...binding,width,ownerAttached:false,legacyRuntimeAvailable:false,requests,responses,expectedHttpErrors,faults,faultCases,networkFailures,physicalBackgroundQualified:false,png:{name:'owner-not-attached.png',bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')},ocr:text},null,2)+'\n');
++ await writeFile(testInfo.outputPath('receipt.json'),JSON.stringify({...binding,width,ownerAttached:false,legacyRuntimeAvailable:false,requests,responses,errorAudit,faults,faultCases,networkFailures,scenario,proofs,cancellations,physicalBackgroundQualified:false,png:{name:'owner-not-attached.png',bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')},ocr:text},null,2)+'\n');
++ }finally{await writeFile(testInfo.outputPath('raw-request-audit.json'),JSON.stringify(rawAudit(),null,2)+'\n');}
+ });
+diff --git a/apps/hepta-control-ui/test/product-console-audit.test.mjs b/apps/hepta-control-ui/test/product-console-audit.test.mjs
+new file mode 100644
+index 0000000000..8fbf973637
+--- /dev/null
++++ b/apps/hepta-control-ui/test/product-console-audit.test.mjs
+@@ -0,0 +1,29 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {auditProductConsole} from '../tools/product-console-audit.mjs';
++const runtimeUrl='http://127.0.0.1:4175/api/hepta/runtime',ownerUrl='http://127.0.0.1:4175/api/hepta/owner-status',sdkUrl='http://127.0.0.1:4175/makepad_platform/web.js';
++const abort=`[makepad][http][err] GET ${ownerUrl} AbortError: signal is aborted without reason tiles=-`;
++function fixture(){return {sdkUrl,runtimeUrl,ownerUrl,errors:[{url:sdkUrl,text:abort,phase:'timeout'}],requests:[{id:1,url:ownerUrl,method:'GET',phase:'timeout'}],responses:[],failures:[{id:1,url:ownerUrl,phase:'timeout',error:'net::ERR_ABORTED'}],cancellations:[{requestId:1,phase:'timeout'}],proofs:{timeout:{ownerVerified:true,ownerState:'timedOut',transportVerified:true}}};}
++test('exact URL-bearing AbortError requires one failed request and verified owner state',()=>{
++ assert.equal(auditProductConsole(fixture()).passed,true);
++ for(const mutate of [x=>{x.failures=[];},x=>{x.proofs.timeout.ownerVerified=false;},x=>{x.proofs.timeout.ownerState='notAttached';},x=>{x.errors[0].phase='navigation';},x=>{x.errors[0].text='AbortError: signal is aborted without reason';},x=>{x.errors[0].url=runtimeUrl;},x=>{x.failures[0].id=2;}]){const x=fixture();mutate(x);assert.equal(auditProductConsole(x).passed,false);}
++});
++test('duplicate, unrelated and ambiguous diagnostics remain fatal',()=>{
++ for(const mutate of [x=>{x.errors.push({...x.errors[0]});},x=>{x.errors.push({url:sdkUrl,text:'font missing',phase:'timeout'});},x=>{x.failures.push({id:2,url:ownerUrl,phase:'timeout',error:'net::ERR_ABORTED'});}]){const x=fixture();mutate(x);assert.equal(auditProductConsole(x).passed,false);}
++ const x=fixture();x.cancellations.push({requestId:2,phase:'navigation'});assert.throws(()=>auditProductConsole(x),/one cancellation/);
++});
++test('503 diagnostics consume only a completed exact response with visible Transport state',()=>{
++ const x=fixture();x.errors=[{url:sdkUrl,text:`[makepad][http][fail] 503 ${runtimeUrl}`,phase:'initial'}];x.requests=[{id:2,url:runtimeUrl,method:'GET',phase:'initial'}];x.responses=[{id:2,url:runtimeUrl,status:503,phase:'initial',finished:true}];x.failures=[];x.cancellations=[];x.proofs={initial:{transportVerified:true}};
++ assert.equal(auditProductConsole(x).passed,true);
++ const paired=structuredClone(x);paired.errors.push({url:runtimeUrl,text:'Failed to load resource: the server responded with a status of 503 (Service Unavailable)',phase:'initial'});assert.equal(auditProductConsole(paired).accepted.length,2);assert.equal(auditProductConsole(paired).passed,true);
++ for(const mutate of [y=>{y.responses[0].status=500;},y=>{y.responses[0].finished=false;},y=>{y.proofs.initial.transportVerified=false;},y=>{y.errors[0].phase='timeout';},y=>{y.responses.push({...y.responses[0],id:3});},y=>{y.errors.push({...y.errors[0]});}]){const y=structuredClone(x);mutate(y);assert.equal(auditProductConsole(y).passed,false);}
++});
++test('asset truncation and a foreign AbortError cannot be explained by API state',()=>{
++ const x=fixture();for(const error of [{url:'http://127.0.0.1:4175/font.otf',text:'Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH',phase:'timeout'},{url:sdkUrl,text:abort.replace(ownerUrl,'http://foreign.invalid/api/hepta/owner-status'),phase:'timeout'}]){x.errors=[error];assert.equal(auditProductConsole(x).passed,false);}
++});
++
++
++test('a declared cancellation must be proved even when there are no diagnostics',()=>{
++ const x=fixture();x.errors=[];x.failures=[];
++ const result=auditProductConsole(x);assert.equal(result.passed,false);assert.equal(result.unprovedCancellations.length,1);
++});
+diff --git a/apps/hepta-control-ui/test/product-status-pixels.test.mjs b/apps/hepta-control-ui/test/product-status-pixels.test.mjs
+index 253fdf2b1f..13b41be9ee 100644
+--- a/apps/hepta-control-ui/test/product-status-pixels.test.mjs
++++ b/apps/hepta-control-ui/test/product-status-pixels.test.mjs
+@@ -8,9 +8,10 @@ test('NotAttached requires exact visible owner, legacy transport and both author
+  for(const text of [state,state+' Chat and commands remain unavailable.',state+' This is not current write authority.',(state+' '+warning).replace('not attached','jot attached'),(state+' '+warning).replace('(Transport)','(NotConnected)'),(state+' '+warning).replace('No lease observation is available.','')])assert.equal(productStatusTextMatches(text,'notAttached'),false);
+ });
+ test('timeout and cancelled-state observations cannot substitute for each other',()=>{
+- assert.equal(productStatusTextMatches('Production owner observation unavailable (TimedOut). '+warning,'timedOut'),true);
++ assert.equal(productStatusTextMatches('Production owner observation unavailable (TimedOut). Read-only runtime unavailable (Transport). '+warning,'timedOut'),true);
+  assert.equal(productStatusTextMatches('No owner observation has been requested '+warning,'noObservation'),true);
+  assert.equal(productStatusTextMatches(state+' '+warning,'timedOut'),false);
++ assert.equal(productStatusTextMatches('Production owner observation unavailable (TimedOut). '+warning,'timedOut'),false);
+  assert.equal(productStatusTextMatches('Production owner: not attached. No lease observation is available. Read-only runtime unavailable (TimedOut). '+warning,'timedOut'),false);
+  assert.equal(productStatusTextMatches('TimedOut '+warning,'noObservation'),false);
+  assert.throws(()=>productStatusTextMatches(state,'invented'),/Unknown/);
+diff --git a/apps/hepta-control-ui/tools/product-console-audit.mjs b/apps/hepta-control-ui/tools/product-console-audit.mjs
+new file mode 100644
+index 0000000000..ffe572d5bb
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/product-console-audit.mjs
+@@ -0,0 +1,39 @@
++// Test evidence only. Exact SDK diagnostics must have an unambiguous captured
++// request witness; an active cancellation phase alone never excuses an error.
++import assert from 'node:assert/strict';
++export function auditProductConsole({errors,requests,responses,failures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl}){
++ const byId=new Map(requests.map(r=>[r.id,r]));
++ assert.equal(byId.size,requests.length,'Duplicate captured request identity');
++ assert.ok(requests.every(r=>Number.isSafeInteger(r.id)&&r.id>0));
++ assert.ok(cancellations.length<=1,'Each fresh page may prove only one cancellation');
++ const used=new Set(),accepted=[],unexpected=[];
++ const unexpectedRecords=[...responses,...failures].filter(r=>!byId.has(r.id)||byId.get(r.id).url!==r.url||byId.get(r.id).phase!==r.phase);
++ const cancelledRequest=()=>{
++  if(cancellations.length!==1)return null;
++  const c=cancellations[0],r=byId.get(c.requestId),proof=proofs[c.phase];
++  const expectedState=c.phase==='timeout'?'timedOut':['navigation','background'].includes(c.phase)?'noObservation':null;
++  if(!r||r.url!==ownerUrl||r.method!=='GET'||r.phase!==c.phase||!expectedState||proof?.ownerVerified!==true||proof.ownerState!==expectedState)return null;
++  const failed=failures.filter(f=>f.url===ownerUrl);
++  if(failed.length!==1||failed[0].id!==r.id||failed[0].phase!==r.phase||!['net::ERR_ABORTED','net::ERR_FAILED'].includes(failed[0].error))return null;
++  return r;
++ };
++ for(const error of errors){
++  let witness=null,kind=null;
++  const sdk503=error.url===sdkUrl&&error.text===`[makepad][http][fail] 503 ${runtimeUrl}`;
++  const browser503=error.url===runtimeUrl&&/^Failed to load resource: the server responded with a status of 503(?: \(Service Unavailable\))?$/.test(error.text);
++  if(sdk503||browser503){
++   const candidates=responses.filter(r=>r.url===runtimeUrl&&r.status===503&&r.phase===error.phase&&r.finished===true&&byId.get(r.id)?.url===runtimeUrl&&byId.get(r.id)?.phase===r.phase&&byId.get(r.id)?.method==='GET');
++   if(candidates.length===1&&proofs[error.phase]?.transportVerified===true){witness=candidates[0];kind=sdk503?'sdk-503':'browser-503';}
++  }else if(error.url===sdkUrl&&error.text===`[makepad][http][err] GET ${ownerUrl} AbortError: signal is aborted without reason tiles=-`){
++   const request=cancelledRequest();
++   if(request&&request.phase===error.phase){witness=request;kind='sdk-abort';}
++  }
++  const key=witness?`${kind}:${witness.id}`:null;
++  if(!key||used.has(key))unexpected.push(error);
++  else{used.add(key);accepted.push({kind,requestId:witness.id,error});}
++ }
++ const cancellation=cancelledRequest();
++ const unprovedCancellations=cancellations.length&&!cancellation?[...cancellations]:[];
++ const unexpectedFailures=failures.filter(f=>!cancellation||f.id!==cancellation.id||f.url!==ownerUrl||f.phase!==cancellation.phase||!['net::ERR_ABORTED','net::ERR_FAILED'].includes(f.error));
++ return {passed:unexpected.length===0&&unexpectedFailures.length===0&&unexpectedRecords.length===0&&unprovedCancellations.length===0,accepted,unexpected,unexpectedFailures,unexpectedRecords,unprovedCancellations};
++}
+diff --git a/apps/hepta-control-ui/tools/product-status-pixels.mjs b/apps/hepta-control-ui/tools/product-status-pixels.mjs
+index 100d805522..02d0b45c4f 100644
+--- a/apps/hepta-control-ui/tools/product-status-pixels.mjs
++++ b/apps/hepta-control-ui/tools/product-status-pixels.mjs
+@@ -8,7 +8,7 @@ export function productStatusTextMatches(text,state){
+  const common=[/not current write authority/i,/commands remain unavailable/i];
+  const specific={
+   notAttached:[/Production owner:\s*not attached/i,/No lease observation is available/i,/runtime unavailable\s*\(Transport\)/i],
+-  timedOut:[/Production owner observation unavailable\s*\(TimedOut\)/i],
++  timedOut:[/Production owner observation unavailable\s*\(TimedOut\)/i,/runtime unavailable\s*\(Transport\)/i],
+   noObservation:[/No owner observation has been requested/i],
+  };
+  assert.ok(Object.hasOwn(specific,state),'Unknown product status observation');
+diff --git a/codex-rs/hepta-native-gateway/Cargo.toml b/codex-rs/hepta-native-gateway/Cargo.toml
+index ad24284944..1902d73143 100644
+--- a/codex-rs/hepta-native-gateway/Cargo.toml
++++ b/codex-rs/hepta-native-gateway/Cargo.toml
+@@ -36,3 +36,4 @@ rustix = { workspace = true, features = ["fs"] }
+ [dev-dependencies]
+ codex-hepta-wire = { path = "../hepta-wire" }
+ pretty_assertions = { workspace = true }
++tokio = { workspace = true, features = ["test-util"] }
+diff --git a/codex-rs/hepta-native-gateway/src/http_transport.rs b/codex-rs/hepta-native-gateway/src/http_transport.rs
+new file mode 100644
+index 0000000000..6dd6388226
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/http_transport.rs
+@@ -0,0 +1,284 @@
++//! Bounded loopback transport. Accepted byte counts describe socket writes,
++//! never proof that a remote application consumed those bytes.
++
++use std::future::Future;
++use std::time::Duration;
++
++use anyhow::Context;
++use anyhow::Result;
++use anyhow::ensure;
++use tokio::io::AsyncWrite;
++use tokio::io::AsyncWriteExt;
++use tokio::task::JoinSet;
++
++const MAX_CONNECTION_TASKS: usize = 32;
++const UI_CHUNK_BYTES: usize = 64 * 1024;
++const UI_TRANSFER_TIMEOUT: Duration = Duration::from_secs(30);
++const MAX_UI_HEADER_BYTES: usize = 4096;
++
++#[derive(Default)]
++pub(crate) struct ConnectionTasks {
++    tasks: JoinSet<()>,
++}
++
++impl ConnectionTasks {
++    /// Overload closes the newly accepted socket by dropping its unpolled
++    /// future. No task or permit-waiting queue is created for rejected work.
++    pub(crate) fn try_spawn<F>(&mut self, connection: F) -> bool
++    where
++        F: Future<Output = Result<()>> + Send + 'static,
++    {
++        while let Some(result) = self.tasks.try_join_next() {
++            if let Err(error) = result {
++                eprintln!("hepta connection task failed: {error}");
++            }
++        }
++        if self.tasks.len() >= MAX_CONNECTION_TASKS {
++            return false;
++        }
++        self.tasks.spawn(async move {
++            if let Err(error) = connection.await {
++                eprintln!("hepta loopback request failed: {error:#}");
++            }
++        });
++        true
++    }
++
++    pub(crate) async fn shutdown(&mut self) {
++        self.tasks.shutdown().await;
++    }
++}
++
++pub(crate) async fn write_ui_response<W: AsyncWrite + Unpin>(
++    stream: &mut W,
++    headers: &[u8],
++    body: &[u8],
++) -> Result<()> {
++    write_ui_with_budget(stream, headers, body, UI_TRANSFER_TIMEOUT).await
++}
++
++async fn write_ui_with_budget<W: AsyncWrite + Unpin>(
++    stream: &mut W,
++    headers: &[u8],
++    body: &[u8],
++    budget: Duration,
++) -> Result<()> {
++    ensure!(
++        headers.len() <= MAX_UI_HEADER_BYTES,
++        "UI headers exceed bound"
++    );
++    ensure!(
++        body.len() <= crate::ui_bundle::MAX_ASSET_BYTES,
++        "UI asset exceeds bound"
++    );
++    let total = headers.len() + body.len();
++    let mut accepted = 0;
++    let outcome = tokio::time::timeout(budget, async {
++        for bytes in [headers, body] {
++            let mut offset = 0;
++            while offset < bytes.len() {
++                let end = (offset + UI_CHUNK_BYTES).min(bytes.len());
++                let written = stream.write(&bytes[offset..end]).await?;
++                if written == 0 {
++                    return Err(std::io::Error::from(std::io::ErrorKind::WriteZero));
++                }
++                offset += written;
++                accepted += written;
++                // Yield between bounded chunks even when the socket stays ready.
++                tokio::task::yield_now().await;
++            }
++        }
++        stream.flush().await
++    })
++    .await;
++    outcome
++        .with_context(|| {
++            format!("UI transfer timed out; socket accepted {accepted}/{total} bytes")
++        })?
++        .with_context(|| format!("UI transfer failed; socket accepted {accepted}/{total} bytes"))
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use std::sync::Arc;
++    use std::sync::atomic::AtomicBool;
++    use std::sync::atomic::Ordering;
++    use tokio::io::AsyncReadExt;
++
++    #[tokio::test(start_paused = true)]
++    async fn slow_reader_beyond_api_budget_receives_exact_asset() {
++        let (mut writer, mut reader) = tokio::io::duplex(16);
++        let task =
++            tokio::spawn(async move { write_ui_response(&mut writer, b"header", &[7; 128]).await });
++        tokio::time::sleep(Duration::from_secs(6)).await;
++        let mut bytes = Vec::new();
++        reader.read_to_end(&mut bytes).await.unwrap();
++        task.await.unwrap().unwrap();
++        assert_eq!(bytes, [b"header".as_slice(), &[7; 128]].concat());
++    }
++
++    #[tokio::test(start_paused = true)]
++    async fn old_five_second_budget_expires_with_exact_partial_count() {
++        let (mut writer, _reader) = tokio::io::duplex(16);
++        let error = write_ui_with_budget(&mut writer, b"header", &[7; 128], Duration::from_secs(5))
++            .await
++            .unwrap_err();
++        assert!(error.to_string().contains("socket accepted 16/134 bytes"));
++        assert!(error.to_string().contains("timed out"));
++    }
++
++    #[tokio::test(start_paused = true)]
++    async fn permanent_backpressure_still_expires_at_asset_budget() {
++        let (mut writer, _reader) = tokio::io::duplex(16);
++        let start = tokio::time::Instant::now();
++        let error = write_ui_response(&mut writer, b"header", &[7; 128])
++            .await
++            .unwrap_err();
++        assert_eq!(start.elapsed(), UI_TRANSFER_TIMEOUT);
++        assert!(error.to_string().contains("socket accepted 16/134 bytes"));
++    }
++
++    #[tokio::test]
++    async fn disconnected_writer_reports_error_without_claiming_delivery() {
++        let (mut writer, reader) = tokio::io::duplex(16);
++        drop(reader);
++        let error = write_ui_response(&mut writer, b"header", &[7; 128])
++            .await
++            .unwrap_err();
++        assert!(error.to_string().contains("socket accepted 0/134 bytes"));
++        assert!(error.to_string().contains("failed"));
++    }
++
++    #[tokio::test]
++    async fn connection_cap_drops_overload_without_polling_or_retaining_it() {
++        let mut tasks = ConnectionTasks::default();
++        for _ in 0..MAX_CONNECTION_TASKS {
++            assert!(tasks.try_spawn(std::future::pending()));
++        }
++        let observed = Arc::new(AtomicBool::new(false));
++        let polled = observed.clone();
++        let retained = Arc::new(());
++        let weak = Arc::downgrade(&retained);
++        assert!(!tasks.try_spawn(async move {
++            let _retained = retained;
++            polled.store(true, Ordering::SeqCst);
++            Ok(())
++        }));
++        assert!(!observed.load(Ordering::SeqCst));
++        assert!(weak.upgrade().is_none());
++        assert_eq!(tasks.tasks.len(), MAX_CONNECTION_TASKS);
++        tasks.shutdown().await;
++        assert!(tasks.tasks.is_empty());
++        assert!(tasks.try_spawn(async { Ok(()) }));
++        tasks.shutdown().await;
++    }
++
++    #[tokio::test]
++    async fn shutdown_and_completed_connections_release_owned_resources() {
++        let retained = Arc::new(());
++        let weak = Arc::downgrade(&retained);
++        let mut tasks = ConnectionTasks::default();
++        assert!(tasks.try_spawn(async move {
++            let _retained = retained;
++            std::future::pending().await
++        }));
++        tokio::task::yield_now().await;
++        tasks.shutdown().await;
++        assert!(weak.upgrade().is_none());
++        let mut completed = Vec::new();
++        for _ in 0..MAX_CONNECTION_TASKS {
++            let (sender, receiver) = tokio::sync::oneshot::channel();
++            completed.push(receiver);
++            assert!(tasks.try_spawn(async move {
++                let _ = sender.send(());
++                Ok(())
++            }));
++        }
++        for receiver in completed {
++            receiver.await.unwrap();
++        }
++        assert!(tasks.try_spawn(async { Ok(()) }));
++        assert_eq!(tasks.tasks.len(), 1);
++        tasks.shutdown().await;
++    }
++
++    #[derive(Default)]
++    struct RecordingWriter {
++        bytes: Vec<u8>,
++        largest_write: usize,
++        fail_after: Option<usize>,
++    }
++
++    impl AsyncWrite for RecordingWriter {
++        fn poll_write(
++            mut self: std::pin::Pin<&mut Self>,
++            _cx: &mut std::task::Context<'_>,
++            buffer: &[u8],
++        ) -> std::task::Poll<std::io::Result<usize>> {
++            self.largest_write = self.largest_write.max(buffer.len());
++            let remaining = self
++                .fail_after
++                .map_or(buffer.len(), |limit| limit.saturating_sub(self.bytes.len()));
++            if remaining == 0 {
++                return std::task::Poll::Ready(Err(std::io::ErrorKind::BrokenPipe.into()));
++            }
++            let written = buffer.len().min(remaining);
++            self.bytes.extend_from_slice(&buffer[..written]);
++            std::task::Poll::Ready(Ok(written))
++        }
++
++        fn poll_flush(
++            self: std::pin::Pin<&mut Self>,
++            _cx: &mut std::task::Context<'_>,
++        ) -> std::task::Poll<std::io::Result<()>> {
++            std::task::Poll::Ready(Ok(()))
++        }
++
++        fn poll_shutdown(
++            self: std::pin::Pin<&mut Self>,
++            _cx: &mut std::task::Context<'_>,
++        ) -> std::task::Poll<std::io::Result<()>> {
++            std::task::Poll::Ready(Ok(()))
++        }
++    }
++
++    #[tokio::test]
++    async fn ready_writer_still_uses_bounded_chunks_and_exact_bytes() {
++        let mut writer = RecordingWriter::default();
++        let body = vec![7; UI_CHUNK_BYTES * 2 + 3];
++        write_ui_response(&mut writer, b"header", &body)
++            .await
++            .unwrap();
++        assert_eq!(writer.largest_write, UI_CHUNK_BYTES);
++        assert_eq!(
++            writer.bytes,
++            [b"header".as_slice(), body.as_slice()].concat()
++        );
++    }
++
++    #[tokio::test]
++    async fn oversized_headers_fail_before_any_write() {
++        let mut writer = RecordingWriter::default();
++        assert!(
++            write_ui_response(&mut writer, &vec![0; MAX_UI_HEADER_BYTES + 1], b"body")
++                .await
++                .is_err()
++        );
++        assert!(writer.bytes.is_empty());
++    }
++
++    #[tokio::test]
++    async fn mid_transfer_writer_error_reports_exact_accepted_bytes() {
++        let mut writer = RecordingWriter {
++            fail_after: Some(17),
++            ..Default::default()
++        };
++        let error = write_ui_response(&mut writer, b"header", &[7; 128])
++            .await
++            .unwrap_err();
++        assert_eq!(writer.bytes.len(), 17);
++        assert!(error.to_string().contains("socket accepted 17/134 bytes"));
++        assert!(error.to_string().contains("failed"));
++    }
++}
+diff --git a/codex-rs/hepta-native-gateway/src/lib.rs b/codex-rs/hepta-native-gateway/src/lib.rs
+index 4ed90edd0c..4cddfeb48b 100644
+--- a/codex-rs/hepta-native-gateway/src/lib.rs
++++ b/codex-rs/hepta-native-gateway/src/lib.rs
+@@ -21,6 +21,7 @@ use tokio::net::TcpListener;
+ use tokio::net::TcpStream;
+ 
+ mod http_origin;
++mod http_transport;
+ mod owner_status;
+ mod ui_bundle;
+ 
+@@ -214,6 +215,7 @@ pub async fn run_native_gateway_with_owner_status(
+     validate_loopback(actual_addr)?;
+     eprintln!("hepta live shell listening on http://{actual_addr}");
+ 
++    let mut connections = http_transport::ConnectionTasks::default();
+     loop {
+         tokio::select! {
+             accepted = listener.accept() => {
+@@ -224,14 +226,13 @@ pub async fn run_native_gateway_with_owner_status(
+                 let runtime = runtime.clone();
+                 let ui = ui.clone();
+                 let owner_status = owner_status.clone();
+-                tokio::spawn(async move {
+-                    if let Err(error) = serve_connection(stream, runtime, ui, owner_status).await {
+-                        eprintln!("hepta loopback request failed: {error:#}");
+-                    }
++                let _ = connections.try_spawn(async move {
++                    serve_connection(stream, runtime, ui, owner_status).await
+                 });
+             }
+             signal = tokio::signal::ctrl_c() => {
+                 signal.context("wait for gateway shutdown signal")?;
++                connections.shutdown().await;
+                 return Ok(());
+             }
+         }
+@@ -318,13 +319,7 @@ async fn serve_connection(
+             .context("rejected response timed out")?
+             .context("write rejected response")?;
+     } else if let Some(asset) = ui.as_ref().and_then(|ui| ui_response(&request, ui)) {
+-        tokio::time::timeout(RESPONSE_TIMEOUT, async {
+-            stream.write_all(&asset.headers).await?;
+-            stream.write_all(&asset.body).await
+-        })
+-        .await
+-        .context("UI response timed out")?
+-        .context("write UI response")?;
++        http_transport::write_ui_response(&mut stream, &asset.headers, &asset.body).await?;
+     } else {
+         let response = if request_target(&request) == Some(("GET", "/api/hepta/owner-status")) {
+             response(
+diff --git a/codex-rs/hepta-native-gateway/src/ui_bundle.rs b/codex-rs/hepta-native-gateway/src/ui_bundle.rs
+index 124df88894..e874273ca8 100644
+--- a/codex-rs/hepta-native-gateway/src/ui_bundle.rs
++++ b/codex-rs/hepta-native-gateway/src/ui_bundle.rs
+@@ -17,7 +17,7 @@ mod reader;
+ 
+ const MAX_MANIFEST_BYTES: usize = 2 * 1024 * 1024;
+ const MAX_ASSETS: usize = 128;
+-const MAX_ASSET_BYTES: usize = 64 * 1024 * 1024;
++pub(crate) const MAX_ASSET_BYTES: usize = 64 * 1024 * 1024;
+ const MAX_BUNDLE_BYTES: usize = 128 * 1024 * 1024;
+ const CSP: &str = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+ 
+diff --git a/scripts/test_ui_product_foundation_ci.py b/scripts/test_ui_product_foundation_ci.py
+index d4cea701d8..3cc35bab94 100644
+--- a/scripts/test_ui_product_foundation_ci.py
++++ b/scripts/test_ui_product_foundation_ci.py
+@@ -115,6 +115,7 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
+         steps = [
+             "- id: default_browser",
+             "- id: product_gateway_build",
++            "- id: product_gateway_transport_tests",
+             "- id: product_gateway_browser",
+             "- id: fixture_build",
+         ]
+@@ -170,6 +171,33 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
+                     any(matches(path, pattern) for pattern in patterns), path
+                 )
+ 
++    def test_transport_command_executes_the_authored_module_with_bound_identity(self):
++        block = self.workflow.split("- id: product_gateway_transport_tests", 1)[
++            1
++        ].split("- id: product_gateway_browser", 1)[0]
++        for expected in (
++            "RUSTUP_TOOLCHAIN: 1.96.0",
++            "SOURCE_SHA: ${{ github.event.pull_request.head.sha }}",
++            "BASE_SHA: ${{ github.event.pull_request.base.sha }}",
++            'TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py',
++            "HEPTA_CI_LANE: ${{ matrix.lane }}",
++            "scripts/hepta_ci_exec.py",
++            "--minimum-tests 9",
++            "just test --locked -p codex-hepta-native-gateway --lib",
++            "test(http_transport::tests::)",
++        ):
++            self.assertIn(expected, block)
++        transport = (
++            ROOT / "codex-rs/hepta-native-gateway/src/http_transport.rs"
++        ).read_text()
++        self.assertEqual(
++            len(re.findall(r"#\[tokio::test(?:\([^\n]*\))?\]", transport)), 9
++        )
++        self.assertIn(
++            "mid_transfer_writer_error_reports_exact_accepted_bytes", transport
++        )
++        self.assertIn("gateway-transport-${{ matrix.lane }}.json*", self.workflow)
++
+     def test_official_tools_do_not_dirty_the_source_checkout(self):
+         self.assertNotIn(".tmp/ui-official-tools-robrix", self.workflow)
+         self.assertIn("${{ runner.temp }}/ui-official-tools-robrix", self.workflow)

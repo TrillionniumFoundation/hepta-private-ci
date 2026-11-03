@@ -1,0 +1,197 @@
+"""Independent *two-state* CTMC renewal event oracle; research only.
+
+Active --(fire, rate lam)--> refractory --(recover, rate gamma)--> active.
+F(T)=P(N_T>=1) is not E[N_T], and repeated fires require regeneration.
+This constant-rate memoryless reference does NOT implement HX, Erlang
+refractory, physical SNN threshold crossings or production probability flow.
+"""
+
+from dataclasses import dataclass
+import math
+
+
+def _parameters(lam: float, gamma: float, dt: float):
+    if not (all(math.isfinite(x) for x in (lam, gamma, dt))
+            and lam > 0 and gamma > 0 and dt >= 0):
+        raise ValueError('Finite positive rates and nonnegative time required')
+
+
+def _exp_difference_quotient(lam: float, gamma: float, dt: float):
+    """(exp(-gamma*dt)-exp(-lam*dt))/(lam-gamma), including equality."""
+    d = (lam-gamma)*dt
+    if abs(d) <= .01:
+        # Finite positive-term Taylor series, no subtractive cancellation.
+        term = 1.0
+        total = 1.0
+        for n in range(1, 16):
+            term *= d/(n+1)
+            total += term
+        return dt * math.exp(-lam*dt) * total
+    return math.fsum((math.exp(-gamma*dt),-math.exp(-lam*dt)))/(lam-gamma)
+
+
+def _first_fire_from_refractory(lam: float, gamma: float, dt: float):
+    A,B = lam*dt, gamma*dt
+    if max(A, B) <= .05:
+        # CDF of the sum of independent Exp(gamma) and Exp(lam) waiting
+        # times. In positive A,B, this alternating expansion resolves tiny
+        # O(dt^2) probabilities without the subtractive 1-survival operation.
+        terms = []
+        for n in range(16):
+            homogeneous = math.fsum(A**(n-i)*B**i for i in range(n+1))
+            terms.append(((-1)**n)*homogeneous/math.factorial(n+2))
+        result = A*B*math.fsum(terms)
+    else:
+        kernel = _exp_difference_quotient(lam, gamma, dt)
+        result = math.fsum((1.,-math.exp(-gamma*dt),-gamma*kernel))
+    if not math.isfinite(result) or not 0 <= result <= 1:
+        raise ArithmeticError('Unresolved refractory first-fire probability')
+    return result
+
+
+@dataclass(frozen=True)
+class RenewalState:
+    time: float
+    active: float
+    no_fire_active: float
+    no_fire_refractory: float
+    ever_fired: float
+    expected_count: float
+    version: int = 1
+
+    @classmethod
+    def initial(cls, active: float):
+        if not math.isfinite(active) or not 0 <= active <= 1:
+            raise ValueError('Initial active probability must be in [0,1]')
+        return cls(0.,active,active,1.-active,0.,0.)
+
+
+def _killed_masses_are_subsets(active, no_fire_active, no_fire_refractory):
+    """Necessary joint-event invariant, allowing only tiny f64 roundoff.
+
+    No-previous-FIRE active/refractory particles are subsets of the
+    corresponding *unconditional* active/refractory populations. Unit mass
+    and nonnegative entries alone do not establish this causal relationship.
+    The ULP allowance is a diagnostic gate, not a certified forward bound.
+    """
+    # A fixed ULP at 1.0 admits impossible *relative* errors when either
+    # physical population is near zero (e.g. active=0, no_fire_active=1e-16).
+    # Use the local representable spacing of both compared populations;
+    # no absolute 1.0-scale allowance survives at vanishing mass.
+    refractory = 1.0 - active
+    active_slack = 8 * max(math.ulp(active), math.ulp(no_fire_active))
+    refractory_slack = 8 * max(math.ulp(refractory),
+                               math.ulp(no_fire_refractory))
+    return (no_fire_active <= active + active_slack
+            and no_fire_refractory <= refractory + refractory_slack)
+
+
+def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> RenewalState:
+    """Exact constant-rate segment, with both physical and killed states.
+
+    The no-event survival state is unnormalized and persists across segments.
+    Checkpoint all six numeric fields and version; neither reset refractory mass nor reconstruct
+    a first-event probability from the last interval's event expectation.
+    """
+    _parameters(lam,gamma,dt)
+    if not isinstance(state,RenewalState):
+        raise TypeError('A full versioned renewal state is required')
+    entries=(state.time,state.active,state.no_fire_active,
+             state.no_fire_refractory,state.ever_fired,state.expected_count)
+    if (type(state.version) is not int or state.version != 1 or
+            not all(math.isfinite(x) for x in entries)
+            or not 0<=state.active<=1
+            or min(state.no_fire_active,state.no_fire_refractory,state.ever_fired,
+                   state.expected_count,state.time)<0
+            or state.ever_fired>1
+            or abs(math.fsum((state.no_fire_active,state.no_fire_refractory,state.ever_fired))-1)>1e-11
+            or state.expected_count+1e-11<state.ever_fired):
+        raise ValueError('Inconsistent or nonfinite persisted renewal state')
+    if not _killed_masses_are_subsets(state.active, state.no_fire_active,
+                                     state.no_fire_refractory):
+        raise ValueError('Killed state is not a subset of unconditional physical state')
+    # At absolute physical time zero there have been no exponentially timed
+    # transitions: a persisted checkpoint must be a true initial() state,
+    # not an invented historical FIRE/reset record with matching mass sums.
+    if state.time == 0:
+        # Accept only local binary64 rounding at the initialization point.
+        # The earlier subset check alone is one-sided, while exact equality
+        # would reject the upstream legitimate one-ULP checkpoint witness.
+        refractory = 1. - state.active
+        active_slack = 8 * max(math.ulp(state.active),
+                               math.ulp(state.no_fire_active))
+        refractory_slack = 8 * max(math.ulp(refractory),
+                                   math.ulp(state.no_fire_refractory))
+        if (abs(state.no_fire_active - state.active) > active_slack or
+                abs(state.no_fire_refractory - refractory) > refractory_slack or
+                state.ever_fired != 0 or state.expected_count != 0):
+            raise ValueError('Invalid initial renewal checkpoint at time zero')
+    elif state.ever_fired == 0 or state.expected_count == 0:
+        # Under finite strictly positive FIRE/recovery rates, any elapsed
+        # physical time gives positive first-fire probability and mean count.
+        # Real transitions already fail closed if these increments underflow.
+        raise ValueError('Impossible positive-time renewal checkpoint')
+    if dt == 0:
+        return state
+    try:
+        next_time = math.fsum((state.time, dt))
+    except OverflowError as exc:
+        raise ArithmeticError('Renewal physical time cannot be represented') from exc
+    if not math.isfinite(next_time) or next_time <= state.time:
+        raise ArithmeticError('Renewal positive physical time step was erased in f64')
+    s=lam+gamma
+    if not math.isfinite(s):
+        raise ArithmeticError('Renewal rates sum unresolved in f64')
+    x=s*dt
+    decay=math.exp(-x)
+    eq=gamma/s
+    if x <= .05:
+        # Form the new active probability from nonnegative populations.
+        # eq+(active-eq)*exp(-x) subtracts O(1) terms and silently drops
+        # tiny recovered active mass when exp(-x) rounds to exactly one.
+        active=math.fsum((state.active*decay,eq*(-math.expm1(-x))))
+        # E[N] integrates active occupancy. Starting refractory, the
+        # occupation is O(dt^2): subtracting eq*dt - eq*(-expm1(-x))/s
+        # cancels its leading O(dt) terms and can round a real event
+        # expectation to zero. Split the nonnegative integrals instead:
+        # J=int exp(-s*u)du; D=dt-J=dt*(x/2-x^2/6+x^3/24-...).
+        term=x/2
+        terms=[]
+        for n in range(1,17):
+            terms.append(term)
+            term *= -x/(n+2)
+        d_ratio=math.fsum(terms)
+        occupation=math.fsum((state.active*dt*(1-d_ratio),
+                              eq*dt*d_ratio))
+    else:
+        active=math.fsum((eq,(state.active-eq)*decay))
+        occupation=math.fsum((eq*dt,(state.active-eq)*(-math.expm1(-x))/s))
+    increment=lam*occupation
+    if not math.isfinite(increment) or increment <= 0:
+        raise ArithmeticError('Positive renewal count increment unresolved in f64')
+    count=math.fsum((state.expected_count,increment))
+    if not math.isfinite(count) or count <= state.expected_count:
+        raise ArithmeticError('Positive renewal event count erased at f64 scale')
+    kernel=_exp_difference_quotient(lam,gamma,dt)
+    no_fire_active=math.fsum((state.no_fire_active*math.exp(-lam*dt),
+                             state.no_fire_refractory*gamma*kernel))
+    no_fire_refractory=state.no_fire_refractory*math.exp(-gamma*dt)
+    event_increment=math.fsum((state.no_fire_active*(-math.expm1(-lam*dt)),
+                                state.no_fire_refractory*_first_fire_from_refractory(lam,gamma,dt)))
+    fired=math.fsum((state.ever_fired,event_increment))
+    # With positive killed mass and dt>0, true first-hit probability grows.
+    # Refuse a positive event increment erased in the stored binary64 CDF.
+    # This is a numerical admission policy, not a full CTMC error bound.
+    if (state.no_fire_active>0 or state.no_fire_refractory>0) and (
+            event_increment<=0 or fired<=state.ever_fired):
+        raise ArithmeticError('Positive first-fire CDF increment erased at f64 scale')
+    output=RenewalState(next_time,active,no_fire_active,
+                        no_fire_refractory,fired,count,version=1)
+    if (not all(math.isfinite(x) for x in vars(output).values()) or
+            not 0<=active<=1 or not 0<=fired<=1 or
+            min(no_fire_active,no_fire_refractory,count)<0 or
+            abs(math.fsum((no_fire_active,no_fire_refractory,fired))-1)>1e-10 or
+            count+1e-10<fired or
+            not _killed_masses_are_subsets(active,no_fire_active,no_fire_refractory)):
+        raise ArithmeticError('Renewal state/probability conservation unresolved')
+    return output

@@ -1,0 +1,136 @@
+diff --git a/experiments/hcsn_hx_unified_v3/hx.py b/experiments/hcsn_hx_unified_v3/hx.py
+--- a/experiments/hcsn_hx_unified_v3/hx.py
++++ b/experiments/hcsn_hx_unified_v3/hx.py
+@@ -129,10 +129,28 @@
+         raise ValueError('HX smooth-pasting denominator not positive')
+     asset_boundary=top/bottom
+     if asset_boundary <= 0 or not math.isfinite(asset_boundary):
+         raise ValueError('No finite positive HX endogenous default boundary in this regime')
+     return asset_boundary
++
++
++def _first_passage_factors(p: HX, v: float, tau: float) -> tuple[float, float]:
++    """Joint F/G reference in the positive log-distance and horizon region.
++
++    In exact math 0 <= G <= F <= 1. Refuse unresolved f64 ordering rather
++    than clipping; this necessary check is not a full-domain error certificate.
++    """
++    u=p.volatility*math.sqrt(tau)
++    if not (math.isfinite(v) and v>0 and math.isfinite(u) and u>0):
++        raise ArithmeticError('HX first-passage scale unresolved in f64')
++    a,zhat=p.a,p.zhat
++    F=float(ndtr((-v-a*u*u)/u))+_exp_cdf(-2*a*v,(-v+a*u*u)/u)
++    G=(_exp_cdf((-a+zhat)*v,(-v-zhat*u*u)/u)
++       +_exp_cdf((-a-zhat)*v,(-v+zhat*u*u)/u))
++    if not (math.isfinite(F) and math.isfinite(G) and 0<=G<=F<=1):
++        raise ArithmeticError('HX first-passage F/G ordering unresolved in f64')
++    return F,G
+ 
+ 
+ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = None) -> float:
+     """Finite-maturity defaultable bond, published equation (8), including endpoints."""
+     b=boundary(p) if asset_boundary is None else asset_boundary
+@@ -143,17 +161,11 @@
+     if asset<=b:
+         return recovery
+     if tau==0:
+         return p.per_bond_principal
+     v=math.log(asset/b)
+-    u=p.volatility*math.sqrt(tau)
+-    h1=(-v-p.a*u*u)/u
+-    h2=(-v+p.a*u*u)/u
+-    q1=(-v-p.zhat*u*u)/u
+-    q2=(-v+p.zhat*u*u)/u
+-    F=float(ndtr(h1))+_exp_cdf(-2*p.a*v,h2)
+-    G=_exp_cdf((-p.a+p.zhat)*v,q1)+_exp_cdf((-p.a-p.zhat)*v,q2)
++    F,G=_first_passage_factors(p,v,tau)
+     base=p.per_bond_coupon/p.q
+     return base+math.exp(-p.q*tau)*(p.per_bond_principal-base)*(1-F)+(recovery-base)*G
+ 
+ 
+ 
+@@ -310,13 +322,12 @@
+     if asset<=b:
+         return 1.0
+     if tau==0:
+         return 0.0
+     v=math.log(asset/b)
+-    u=p.volatility*math.sqrt(tau)
+-    result=float(ndtr((-v-p.a*u*u)/u))+_exp_cdf(-2*p.a*v,(-v+p.a*u*u)/u)
+-    return result
++    F,_=_first_passage_factors(p,v,tau)
++    return F
+ 
+ 
+ def discounted_default_factor(p: HX, asset: float, tau: float,
+                               asset_boundary: float | None = None) -> float:
+     """G(tau) of HX (8)-(9): E[e^(-q*T) 1{T<=tau}], not default probability."""
+@@ -327,13 +338,12 @@
+     if asset<=b:
+         return 1.0
+     if tau==0:
+         return 0.0
+     v=math.log(asset/b)
+-    u=p.volatility*math.sqrt(tau)
+-    return (_exp_cdf((-p.a+p.zhat)*v,(-v-p.zhat*u*u)/u)
+-            +_exp_cdf((-p.a-p.zhat)*v,(-v+p.zhat*u*u)/u))
++    _,G=_first_passage_factors(p,v,tau)
++    return G
+ 
+ 
+ def mechanism_channels(p: HX, asset: float, asset_boundary: float | None = None) -> HXChannels:
+     """Named financial proxy channels for later matched experimental ablations."""
+     b=boundary(p) if asset_boundary is None else asset_boundary
+diff --git a/experiments/hcsn_hx_unified_v3/test_hx_fpt_physical_envelope.py b/experiments/hcsn_hx_unified_v3/test_hx_fpt_physical_envelope.py
+new file mode 100644
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/test_hx_fpt_physical_envelope.py
+@@ -0,0 +1,48 @@
++"""Research-only HX F/G physical envelope regression (never silently clip)."""
++import math
++import unittest
++
++from .hx import HX, bond_value, default_probability, discounted_default_factor
++
++
++class HXFirstPassageEnvelope(unittest.TestCase):
++    def test_frozen_near_boundary_roundoff_reversal_is_denied(self):
++        # Both rates are strictly positive, tau>0 and asset>barrier.
++        # Original f64 F=0.9999999999942438, G=0.9999999999942439;
++        # independent 110-dps mpmath gives F-G~9.71516418409e-22 > 0.
++        p=HX(rate=.007595780582070804,
++             payout=3.5072936797757205e-07,
++             volatility=1.8581469732429565,
++             maturity=2.2216211523554883e-08,
++             shock_intensity=1.158839083935111e-13,
++             sale_fraction=1.0)
++        b=1.0
++        asset=1.000000000000002
++        for evaluate in (default_probability, discounted_default_factor, bond_value):
++            with self.subTest(entry=evaluate.__name__):
++                with self.assertRaisesRegex(ArithmeticError, 'F/G ordering unresolved'):
++                    evaluate(p, asset, p.maturity, b)
++
++    def test_regular_fpt_pair_and_bond_remain_finite(self):
++        p=HX()
++        for ratio in (1.00001, 1.1, 2., 4.):
++            for tau in (1e-8, .5, p.maturity):
++                with self.subTest(ratio=ratio, tau=tau):
++                    f=default_probability(p,ratio,tau,1.)
++                    g=discounted_default_factor(p,ratio,tau,1.)
++                    d=bond_value(p,ratio,tau,1.)
++                    self.assertTrue(0 <= g <= f <= 1)
++                    self.assertTrue(math.isfinite(d))
++
++    def test_immediate_event_and_zero_horizon_endpoints(self):
++        p=HX()
++        self.assertEqual(default_probability(p,1.,p.maturity,1.),1.)
++        self.assertEqual(discounted_default_factor(p,1.,p.maturity,1.),1.)
++        self.assertEqual(default_probability(p,2.,0.,1.),0.)
++        self.assertEqual(discounted_default_factor(p,2.,0.,1.),0.)
++        self.assertEqual(bond_value(p,2.,0.,1.),p.per_bond_principal)
++        self.assertEqual(bond_value(p,1.,p.maturity,1.),p.recovery/p.maturity)
++
++
++if __name__ == '__main__':
++    unittest.main()

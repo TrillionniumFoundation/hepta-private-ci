@@ -1,0 +1,24 @@
+diff --git a/codex-rs/hepta-operations/src/durable_entry_fence_tests.rs b/codex-rs/hepta-operations/src/durable_entry_fence_tests.rs
+index af8b67ca65..5f3cbef189 100644
+--- a/codex-rs/hepta-operations/src/durable_entry_fence_tests.rs
++++ b/codex-rs/hepta-operations/src/durable_entry_fence_tests.rs
+@@ -138,11 +138,14 @@ async fn adapter_entry_excludes_concurrent_recovery_but_allows_wal_reads() -> Te
+                             .expect("competitor runtime");
+                         runtime.block_on(async {
+                             let recovery = competitor.recover_expired_leases().await;
+-                            assert!(matches!(
+-                                recovery,
+-                                Err(DurableOperationError::Unavailable(message))
+-                                    if message.contains("locked")
+-                            ));
++                            assert!(
++                                matches!(
++                                    &recovery,
++                                    Err(DurableOperationError::Unavailable(message))
++                                        if message.contains("locked")
++                                ),
++                                "competing recovery must reach SQLite contention: {recovery:?}"
++                            );
+                             let observed = competitor
+                                 .operation(&operation.scope_id, &operation.operation_id)
+                                 .await

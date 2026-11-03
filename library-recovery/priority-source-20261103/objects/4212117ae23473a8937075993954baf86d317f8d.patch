@@ -1,0 +1,1459 @@
+diff --git a/.github/workflows/blocking-ci.yml b/.github/workflows/blocking-ci.yml
+index c3c9d01bc..861527242 100644
+--- a/.github/workflows/blocking-ci.yml
++++ b/.github/workflows/blocking-ci.yml
+@@ -71,6 +71,8 @@ jobs:
+     needs: scope
+     if: needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'
+     uses: ./.github/workflows/hepta-contract-gate.yml
++    with:
++      profile: development
+     secrets: inherit
+ 
+   bazel:
+@@ -207,7 +209,7 @@ jobs:
+           python3 scripts/asciicheck.py README.md
+           python3 scripts/readme_toc.py README.md
+           python3 scripts/hepta-module-docs.py refresh-derived --check
+-          python3 scripts/hepta-docs.py verify
++          python3 scripts/hepta-docs.py verify --profile development
+           test -z "$(git status --porcelain --untracked-files=no)"
+ 
+   required:
+diff --git a/.github/workflows/hepta-contract-gate.yml b/.github/workflows/hepta-contract-gate.yml
+index 9e2dd47f0..0eb3d8480 100644
+--- a/.github/workflows/hepta-contract-gate.yml
++++ b/.github/workflows/hepta-contract-gate.yml
+@@ -2,7 +2,16 @@ name: Hepta contract gate
+ 
+ on:
+   workflow_call:
++    inputs:
++      profile:
++        type: string
++        default: qualification
+   workflow_dispatch:
++    inputs:
++      profile:
++        type: choice
++        options: [qualification, development]
++        default: qualification
+ 
+ permissions:
+   contents: read
+@@ -42,11 +51,21 @@ jobs:
+               raise SystemExit('deprecated branch trigger(s):\n' + '\n'.join(offenders))
+           PY
+       - name: Validate canonical contract and readiness documents
++        env:
++          VERIFICATION_PROFILE: ${{ inputs.profile }}
+         shell: bash
+         run: |
+           set -euo pipefail
+-          python3 scripts/hepta-implementation-maps.py verify --expected-sha "${GITHUB_SHA}"
+-          python3 scripts/hepta-technical-receipts.py verify
+-          python3 scripts/hepta-implementation-dossiers.py verify
++          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
++          git diff --check
++          git diff --quiet
++          git diff --cached --quiet
++          if [ "$VERIFICATION_PROFILE" = qualification ]; then
++            python3 scripts/hepta-technical-receipts.py verify
++            python3 scripts/hepta-implementation-dossiers.py verify
++          fi
+           # Includes module, algorithm, readiness, CNS and HNMF checks.
+-          python3 scripts/hepta-docs.py verify
++          # Historical source evidence is revalidated only by qualification.
++          python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
++          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
++          test -z "$(git status --porcelain --untracked-files=no)"
+diff --git a/.github/workflows/hepta-development-docs.yml b/.github/workflows/hepta-development-docs.yml
+index 3aa7acc36..1e9a4aeb5 100644
+--- a/.github/workflows/hepta-development-docs.yml
++++ b/.github/workflows/hepta-development-docs.yml
+@@ -43,10 +43,19 @@ on:
+       - ".github/workflows/hepta-development-docs.yml"
+       - ".github/actions/hepta-synthetic-merge/**"
+   workflow_dispatch:
++    inputs:
++      profile:
++        description: Qualification additionally renews historical source evidence and receipts.
++        type: choice
++        options: [qualification, development]
++        default: qualification
+ 
+ permissions:
+   contents: read
+ 
++env:
++  VERIFICATION_PROFILE: ${{ inputs.profile || 'development' }}
++
+ concurrency:
+   group: hepta-development-docs-${{ github.event.pull_request.number || github.ref }}
+   cancel-in-progress: true
+@@ -84,14 +93,17 @@ jobs:
+           python3 scripts/hepta-algorithm-docs.py generate-status --check
+           python3 scripts/hepta-readiness.py generate-status --check
+           python3 scripts/hepta-cns.py generate-status --check
+-          python3 scripts/hepta-docs.py verify
+-          python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
+-          python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
+-          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/source-head.json --kind source-head --expected-sha "$EXPECTED_SHA"
++          python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
++          if [ "$VERIFICATION_PROFILE" = qualification ]; then
++            python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
++            python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
++            python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/source-head.json --kind source-head --expected-sha "$EXPECTED_SHA"
++          fi
+           git diff --check
+           test -z "$(git status --porcelain --untracked-files=no)"
+ 
+       - name: Retain exact source receipts
++        if: env.VERIFICATION_PROFILE == 'qualification'
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+           name: hepta-v8-source-${{ github.event.pull_request.head.sha || github.sha }}
+@@ -135,13 +147,16 @@ jobs:
+           # Source-head performs the full static suite. The merge job only
+           # revalidates the merged tree and receipt identity, so every PR does
+           # not pay for the same document suite twice.
+-          python3 scripts/hepta-docs.py verify
+-          python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
+-          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
++          python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
++          if [ "$VERIFICATION_PROFILE" = qualification ]; then
++            python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
++            python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
++          fi
+           git diff --check
+           test -z "$(git status --porcelain --untracked-files=no)"
+ 
+       - name: Retain exact merge receipts
++        if: env.VERIFICATION_PROFILE == 'qualification'
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+           name: hepta-v8-merge-${{ steps.synthetic.outputs.sha }}
+diff --git a/.github/workflows/hepta-gap-agentd-process.yml b/.github/workflows/hepta-gap-agentd-process.yml
+index 70132a35c..7122659ff 100644
+--- a/.github/workflows/hepta-gap-agentd-process.yml
++++ b/.github/workflows/hepta-gap-agentd-process.yml
+@@ -56,7 +56,7 @@ jobs:
+           set -euo pipefail
+           python3 scripts/hepta-module-docs.py refresh-derived --check
+           python3 scripts/hepta_module_registry.py --strict
+-          python3 scripts/hepta-implementation-maps.py verify
++          python3 scripts/hepta-implementation-maps.py verify --profile development
+           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
+           python3 -m unittest discover -v -s scripts -p 'test_hepta_agentd_ci.py'
+ 
+diff --git a/.github/workflows/hepta-kernel-evidence-qualification.yml b/.github/workflows/hepta-kernel-evidence-qualification.yml
+index bdd748d61..33faebf22 100644
+--- a/.github/workflows/hepta-kernel-evidence-qualification.yml
++++ b/.github/workflows/hepta-kernel-evidence-qualification.yml
+@@ -58,8 +58,8 @@ jobs:
+           python3 scripts/hepta_ci_exec.py --output "$records/evidence-tests.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
+           python3 scripts/hepta_ci_exec.py --output "$records/agentd-product-test.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
+           python3 scripts/hepta_ci_exec.py --output "$records/lane-a-truth.json" --             python3 scripts/verify_lane_a_foundation.py verify
+-          python3 scripts/hepta_ci_exec.py --output "$records/docs.json" --             python3 scripts/hepta-docs.py verify
+-          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify
++          python3 scripts/hepta_ci_exec.py --output "$records/docs.json" --             python3 scripts/hepta-docs.py verify --profile qualification
++          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify --profile development
+           python3 - <<'PY' > "$records/candidate.json"
+           import json, subprocess
+           def git(*args):
+@@ -125,8 +125,8 @@ jobs:
+           python3 scripts/hepta_ci_exec.py --output "$records/evidence-tests.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
+           python3 scripts/hepta_ci_exec.py --output "$records/agentd-product-test.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
+           python3 scripts/hepta_ci_exec.py --output "$records/lane-a-truth.json" --             python3 scripts/verify_lane_a_foundation.py verify
+-          python3 scripts/hepta_ci_exec.py --output "$records/docs.json" --             python3 scripts/hepta-docs.py verify
+-          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify
++          python3 scripts/hepta_ci_exec.py --output "$records/docs.json" --             python3 scripts/hepta-docs.py verify --profile qualification
++          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify --profile development
+           python3 - <<'PY' > "$records/candidate.json"
+           import json, subprocess
+           def git(*args):
+diff --git a/.github/workflows/hepta-knowledge-graph-qualification.yml b/.github/workflows/hepta-knowledge-graph-qualification.yml
+index d67bece17..7fd9aceeb 100644
+--- a/.github/workflows/hepta-knowledge-graph-qualification.yml
++++ b/.github/workflows/hepta-knowledge-graph-qualification.yml
+@@ -101,7 +101,7 @@ jobs:
+         shell: bash
+         run: |
+           set -euo pipefail
+-          python3 scripts/hepta-implementation-maps.py verify
++          python3 scripts/hepta-implementation-maps.py verify --profile development
+ 
+       - name: Observe repository-wide detailed-design health
+         continue-on-error: true
+diff --git a/.github/workflows/hepta-lane-d-semantic-conformance.yml b/.github/workflows/hepta-lane-d-semantic-conformance.yml
+index 0c1e81074..3ddb5609c 100644
+--- a/.github/workflows/hepta-lane-d-semantic-conformance.yml
++++ b/.github/workflows/hepta-lane-d-semantic-conformance.yml
+@@ -69,7 +69,7 @@ jobs:
+           python3 scripts/hepta-lane-d-semantic-conformance.py verify
+           EXPECTED_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+           EXPECTED_TREE="$(git rev-parse HEAD^{tree})"
+-          python3 scripts/hepta-implementation-maps.py verify \
++          python3 scripts/hepta-implementation-maps.py verify --profile development \
+             --expected-sha "${EXPECTED_SHA}" \
+             --expected-tree "${EXPECTED_TREE}"
+ 
+diff --git a/.github/workflows/hepta-objective-admission.yml b/.github/workflows/hepta-objective-admission.yml
+index 3fb897f04..4eae78487 100644
+--- a/.github/workflows/hepta-objective-admission.yml
++++ b/.github/workflows/hepta-objective-admission.yml
+@@ -56,7 +56,7 @@ jobs:
+         run: |
+           set -euo pipefail
+           SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+-          python3 scripts/hepta-implementation-maps.py verify \
++          python3 scripts/hepta-implementation-maps.py verify --profile development \
+             --expected-sha "${SOURCE_SHA}" \
+             --expected-tree "${SOURCE_TREE}"
+           python3 scripts/hepta-objective-target-measure.py --self-test
+diff --git a/.github/workflows/memory-federation-v2-final-verify.yml b/.github/workflows/memory-federation-v2-final-verify.yml
+index fcc581056..b2f7cdb27 100644
+--- a/.github/workflows/memory-federation-v2-final-verify.yml
++++ b/.github/workflows/memory-federation-v2-final-verify.yml
+@@ -63,7 +63,7 @@ jobs:
+           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+ 
+       - name: Verify implementation maps
+-        run: python3 scripts/hepta-implementation-maps.py verify
++        run: python3 scripts/hepta-implementation-maps.py verify --profile qualification
+ 
+       - name: Check formatting
+         working-directory: codex-rs
+@@ -149,7 +149,7 @@ jobs:
+           test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+ 
+       - name: Verify implementation maps on merge candidate
+-        run: python3 scripts/hepta-implementation-maps.py verify
++        run: python3 scripts/hepta-implementation-maps.py verify --profile qualification
+ 
+       - name: Check formatting on merge candidate
+         working-directory: codex-rs
+diff --git a/scripts/hepta-docs.py b/scripts/hepta-docs.py
+index 534a8a150..94299a9cf 100644
+--- a/scripts/hepta-docs.py
++++ b/scripts/hepta-docs.py
+@@ -451,7 +451,10 @@ def lease_path_set_sha(paths):
+     return hashlib.sha256(("\n".join(paths) + "\n").encode()).hexdigest()
+ 
+ 
+-def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
++def validate_path_leases(
++    path_registry, packages, dev, act, changed_paths=None, *, profile="qualification"
++):
++    need(profile in {"development", "qualification"}, "path lease verification profile")
+     need(
+         path_registry.get("schema") == "hepta.path-ownership.v3"
+         and has_schema_version(path_registry, 3),
+@@ -590,10 +593,15 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
+     for pair, paths in required.items():
+         need(declared[pair] == paths, "lease path mismatch " + "/".join(pair))
+ 
++    touched_leases = 0
+     if changed_paths is not None:
+         changed = {canonical_exact_path(path, "changed path") for path in changed_paths}
+         for pair, paths in declared.items():
+             path_set = set(paths)
++            if changed & path_set:
++                touched_leases += 1
++            if profile == "development":
++                continue
+             prefix_aliases = {
+                 path
+                 for path in changed
+@@ -610,8 +618,9 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
+     return {
+         "declaredLeaseCount": len(declared),
+         "leasedPathCount": len(lease_paths),
+-        "touchedLeaseCount": 0,
++        "touchedLeaseCount": touched_leases,
+         "externallyAttestedLeaseCount": 0,
++        "leaseActivationEvaluated": profile == "qualification",
+     }
+ 
+ 
+@@ -822,7 +831,10 @@ def verify_document_inventory(system, required):
+     root = ROOT.resolve()
+     for path in normalized:
+         target = ROOT / path
+-        need(target.resolve().is_relative_to(root), "canonical path escapes repository " + path)
++        need(
++            target.resolve().is_relative_to(root),
++            "canonical path escapes repository " + path,
++        )
+         need(target.is_file(), "missing canonical path " + path)
+ 
+ 
+@@ -1003,7 +1015,8 @@ def verify_cleanup_base(system):
+     }
+ 
+ 
+-def verify() -> int:
++def verify(profile="qualification") -> int:
++    need(profile in {"development", "qualification"}, "verification profile")
+     verify_exact_workflow_references()
+     module_index = load(FILES["module_docs"])
+     algorithm_index = load(FILES["algorithm_specs"])
+@@ -1067,7 +1080,10 @@ def verify() -> int:
+             isinstance(f, dict) and list(f) == AUTHORITY_KEYS,
+             k + " authority key closure",
+         )
+-        need(not any(f.values()), k + " positive authority")
++        need(
++            all(type(flag) is bool and flag is False for flag in f.values()),
++            k + " positive authority or invalid authority type",
++        )
+     cur = d["current"]
+     r = cur["repository"]
+     need(
+@@ -1175,9 +1191,18 @@ def verify() -> int:
+         need(row["recursiveShapeSha256"] == shape_sha(d[k]), "recursive closure " + rel)
+     paths = tracked()
+     verify_legacy(system, paths)
+-    cleanup = verify_cleanup_base(system)
++    cleanup = (
++        verify_cleanup_base(system)
++        if profile == "qualification"
++        else {
++            "evaluated": False,
++            "reason": "historical_cleanup_not_development_evidence",
++        }
++    )
+     need(
+-        cleanup["evaluated"] or not (ROOT / ".git").exists(),
++        profile == "development"
++        or cleanup["evaluated"]
++        or not (ROOT / ".git").exists(),
+         "cleanup inventory not evaluated",
+     )
+     mods = d["modules"]["modules"]
+@@ -1307,7 +1332,7 @@ def verify() -> int:
+     dev = reach(d["development"]["nodes"], d["development"]["edges"])
+     act = reach(d["activation"]["nodes"], d["activation"]["edges"])
+     lease_summary = validate_path_leases(
+-        d["paths"], packages, dev, act, pull_request_changed_paths()
++        d["paths"], packages, dev, act, pull_request_changed_paths(), profile=profile
+     )
+     evid = {x["id"] for x in d["evidence"]["evidenceTypes"]}
+     for ladder in d["claims"]["ladders"]:
+@@ -1396,7 +1421,7 @@ def verify() -> int:
+     )
+     need((ROOT / "docs/STATUS.md").read_text() == status_text(d), "STATUS stale")
+     module_check = subprocess.run(
+-        [sys.executable, str(ROOT / MODULE_VERIFIER), "verify"],
++        [sys.executable, str(ROOT / MODULE_VERIFIER), "verify", "--profile", profile],
+         text=True,
+         stdout=subprocess.PIPE,
+         stderr=subprocess.PIPE,
+@@ -1470,6 +1495,8 @@ def verify() -> int:
+             {
+                 "status": "PASS_HEPTA_DEVELOPMENT_DOCS_V8",
+                 "planVersion": VERSION,
++                "verificationProfile": profile,
++                "historicalEvidenceRevalidated": profile == "qualification",
+                 "modules": len(mods),
+                 "contracts": len(contracts),
+                 "protocols": len(protocols),
+@@ -1885,10 +1912,26 @@ def self_test():
+             "leasedPathCount": 1,
+             "touchedLeaseCount": 0,
+             "externallyAttestedLeaseCount": 0,
++            "leaseActivationEvaluated": True,
+         },
+         "valid static exact path lease request",
+     )
+     cases.append("static_exact_path_lease_request")
++    ordinary = validate_path_leases(
++        fixture_registry,
++        fixture_packages,
++        fixture_reach,
++        fixture_reach,
++        {fixture_path},
++        profile="development",
++    )
++    need(
++        ordinary["touchedLeaseCount"] == 1
++        and ordinary["externallyAttestedLeaseCount"] == 0
++        and ordinary["leaseActivationEvaluated"] is False,
++        "ordinary development does not activate a historical external lease",
++    )
++    cases.append("ordinary_development_reports_touch_without_lease_activation")
+ 
+     def cloned(value):
+         return json.loads(json.dumps(value))
+@@ -2085,7 +2128,11 @@ def self_test():
+ def main():
+     ap = argparse.ArgumentParser()
+     sp = ap.add_subparsers(dest="cmd", required=True)
+-    for name in ["verify", "generate-status", "inventory-legacy", "self-test"]:
++    verification = sp.add_parser("verify")
++    verification.add_argument(
++        "--profile", choices=["development", "qualification"], default="development"
++    )
++    for name in ["generate-status", "inventory-legacy", "self-test"]:
+         sp.add_parser(name)
+     cp = sp.add_parser("cleanup-inventory")
+     cp.add_argument("--output", required=True)
+@@ -2099,7 +2146,7 @@ def main():
+     vp.add_argument("--expected-sha", required=True)
+     args = ap.parse_args()
+     if args.cmd == "verify":
+-        return verify()
++        return verify(args.profile)
+     if args.cmd == "generate-status":
+         return generate()
+     if args.cmd == "inventory-legacy":
+diff --git a/scripts/hepta-gap-closure.py b/scripts/hepta-gap-closure.py
+index 571a550de..89a177904 100644
+--- a/scripts/hepta-gap-closure.py
++++ b/scripts/hepta-gap-closure.py
+@@ -1022,7 +1022,9 @@ def normalize_source() -> bool:
+     return workspace_changed or ndu_changed or registry_changed or metadata_changed
+ 
+ 
+-def verify() -> list[str]:
++def verify(profile: str = "qualification") -> list[str]:
++    if profile not in {"development", "qualification"}:
++        return ["unknown verification profile"]
+     failures: list[str] = []
+     try:
+         workspace_manifest = tomllib.loads(CARGO_MANIFEST.read_text(encoding="utf-8"))
+@@ -1127,7 +1129,13 @@ def verify() -> list[str]:
+ 
+     # Source presence cannot hide stale guides or a broken full module index.
+     document_check = subprocess.run(
+-        [sys.executable, str(ROOT / "scripts/hepta-module-docs.py"), "verify"],
++        [
++            sys.executable,
++            str(ROOT / "scripts/hepta-module-docs.py"),
++            "verify",
++            "--profile",
++            profile,
++        ],
+         cwd=ROOT,
+         text=True,
+         capture_output=True,
+@@ -1155,7 +1163,7 @@ def verify() -> list[str]:
+     return failures
+ 
+ 
+-def emit_status() -> None:
++def emit_status(profile: str) -> None:
+     print(
+         json.dumps(
+             {
+@@ -1163,6 +1171,8 @@ def emit_status() -> None:
+                 "candidate_identity": STATIC_CANDIDATE_IDENTITY,
+                 "implemented_modules": sorted(RUST_PACKAGES),
+                 "status": "verified_source_inventory",
++                "verificationProfile": profile,
++                "historicalEvidenceRevalidated": profile == "qualification",
+             },
+             sort_keys=True,
+         )
+@@ -1203,7 +1213,10 @@ def main() -> int:
+     parser = argparse.ArgumentParser()
+     subparsers = parser.add_subparsers(dest="command", required=True)
+     subparsers.add_parser("normalize")
+-    subparsers.add_parser("verify")
++    source_parser = subparsers.add_parser("verify")
++    source_parser.add_argument(
++        "--profile", choices=("development", "qualification"), default="qualification"
++    )
+     receipt_parser = subparsers.add_parser("identity-receipt")
+     _add_identity_arguments(receipt_parser)
+     receipt_parser.add_argument("--output", required=True)
+@@ -1223,7 +1236,8 @@ def main() -> int:
+         print(error, file=sys.stderr)
+         return 1
+ 
+-    failures = verify()
++    profile = args.profile if args.command == "verify" else "qualification"
++    failures = verify(profile)
+     if failures:
+         for failure in failures:
+             print(f"- {failure}", file=sys.stderr)
+@@ -1257,7 +1271,7 @@ def main() -> int:
+         )
+         return 0
+ 
+-    emit_status()
++    emit_status(profile)
+     if args.command == "normalize":
+         print(json.dumps({"source_changed": changed}, sort_keys=True))
+     return 0
+diff --git a/scripts/hepta-implementation-maps.py b/scripts/hepta-implementation-maps.py
+index 86b0d3bcf..a0675e6e7 100755
+--- a/scripts/hepta-implementation-maps.py
++++ b/scripts/hepta-implementation-maps.py
+@@ -220,15 +220,47 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
+ 
+ 
+ def verify_source_identity(
+-    row: dict, roots: list[str], candidate: dict[str, str], *, check_checkout=True
++    row: dict,
++    roots: list[str],
++    candidate: dict[str, str],
++    *,
++    check_checkout=True,
++    profile: str = "qualification",
+ ) -> list[str]:
+     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
+     if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
+         raise ValueError(f"unknown source identity policy: {policy}")
+-    source = checked_identity(row.get("sourceBase"), candidate)
+     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
+     if mapping_mode not in {"path_only", "exact_blob"}:
+         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
++    if profile == "development":
++        # Current source navigation is not a renewal of historical execution
++        # evidence. Retain working-tree path/type checks without rebinding an old
++        # observation after an ordinary implementation or test edit.
++        paths = evidence_paths(row, roots)
++        for key in ("sourceBase", "observedAtHead"):
++            if key not in row and key == "observedAtHead":
++                continue
++            identity = row.get(key)
++            if not isinstance(identity, dict) or any(
++                not isinstance(identity.get(field), str)
++                or re.fullmatch(r"[0-9a-f]{40}", identity[field]) is None
++                for field in ("commit", "tree")
++            ):
++                raise ValueError(
++                    "source identity requires literal commit/tree SHA-1 values"
++                )
++        observed_paths = row.get("observedSourcePaths", [])
++        if not isinstance(observed_paths, list):
++            raise ValueError("invalid observed source paths")
++        for path in observed_paths:
++            if not checked_source_path(ROOT, path).exists():
++                raise ValueError(f"missing observed source/evidence: {path}")
++        paths = sorted(set(paths + observed_paths))
++        return paths
++    if profile != "qualification":
++        raise ValueError("unknown verification profile")
++    source = checked_identity(row.get("sourceBase"), candidate)
+     paths = evidence_paths(row, roots)
+     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
+     # not the current-source observation. Currentness is proved independently
+@@ -338,13 +370,22 @@ def current_source_objects(row: dict) -> list[dict[str, str]]:
+     ]
+ 
+ 
+-def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> None:
++def validate_path_blob_manifest(
++    row: dict,
++    mid: str,
++    failures: list[str],
++    *,
++    profile: str = "qualification",
++) -> None:
+     """Validate a self-reference-safe exact source manifest against HEAD.
+ 
+     Tracked implementation maps cannot contain their own future HEAD/tree
+     identity without a fixed-point problem. This policy freezes mapped source
+     files to Git blob identities and verifies the candidate checkout directly.
+     """
++    if profile not in {"development", "qualification"}:
++        failures.append(f"{mid}: unknown verification profile")
++        return
+     evidence = row.get("exactSourceEvidence")
+     if (
+         not isinstance(evidence, dict)
+@@ -384,13 +425,14 @@ def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> Non
+         if not candidate.is_file():
+             failures.append(f"{mid}: missing exact source path {path}")
+             return
+-        try:
+-            actual = git("rev-parse", f"HEAD:{path}")
+-        except subprocess.CalledProcessError:
+-            failures.append(f"{mid}: cannot resolve exact source path {path}")
+-            return
+-        if actual != blob:
+-            failures.append(f"{mid}: exact source blob drift {path}")
++        if profile == "qualification":
++            try:
++                actual = git("rev-parse", f"HEAD:{path}")
++            except subprocess.CalledProcessError:
++                failures.append(f"{mid}: cannot resolve exact source path {path}")
++                return
++            if actual != blob:
++                failures.append(f"{mid}: exact source blob drift {path}")
+         by_path[path] = blob
+ 
+     mapped_paths = {
+@@ -1206,8 +1248,9 @@ def verify(
+     require_current_source: bool = True,
+     expected_sha: str | None = None,
+     expected_tree: str | None = None,
++    profile: str = "qualification",
+ ):
+-    """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
++    """Validate current navigation or strictly qualify mapped source identity.
+ 
+     Exact-blob maps may retain an immutable provenance anchor only when their
+     mapped HEAD blobs and explicit current-source observation both verify. No
+@@ -1215,6 +1258,8 @@ def verify(
+     """
+     candidate = current_source_base()
+     try:
++        if profile not in {"development", "qualification"}:
++            raise ValueError("unknown verification profile")
+         for value, label in (
+             (expected_sha, "expected-sha"),
+             (expected_tree, "expected-tree"),
+@@ -1231,7 +1276,8 @@ def verify(
+             raise ValueError(
+                 f"expected candidate tree {expected_tree}, observed {candidate['tree']}"
+             )
+-        require_clean_candidate(candidate)
++        if profile == "qualification":
++            require_clean_candidate(candidate)
+         modules = load("docs/modules/MODULES.json")["modules"]
+         if not isinstance(modules, list) or not modules:
+             raise ValueError("module registry must be nonempty")
+@@ -1258,7 +1304,9 @@ def verify(
+                 mid == "ui.native"
+                 and row.get("schema") == "hepta.module-implementation-map.v6"
+             ):
+-                adapted = verify_native_map(ROOT, row, module, candidate, git)
++                adapted = verify_native_map(
++                    ROOT, row, module, candidate, git, profile=profile
++                )
+                 checked_paths.update(adapted["paths"])
+                 source = adapted["source"]
+                 source_bases.add((source["commit"], source["tree"]))
+@@ -1298,7 +1346,10 @@ def verify(
+             if "sourceRootPresent" not in row or "productionImplementation" not in row:
+                 raise ValueError("status model")
+             validate_operation_inventory(mid, ops)
+-            if row.get("closedWorldPublicFunctions") is True:
++            if (
++                profile == "qualification"
++                and row.get("closedWorldPublicFunctions") is True
++            ):
+                 exported = set()
+                 for root in resolved:
+                     if (checked_source_path(ROOT, root) / "Cargo.toml").is_file():
+@@ -1343,13 +1394,19 @@ def verify(
+                         raise ValueError(
+                             f"invalid exact source blob: {op['operation']}"
+                         )
+-                    if (
++                    if profile == "qualification" and (
+                         git("rev-parse", f"{candidate['commit']}:{source}")
+                         != source_blob
+                     ):
+                         raise ValueError(f"source blob drift: {op['operation']}")
+             checked_paths.update(
+-                verify_source_identity(row, resolved, candidate, check_checkout=False)
++                verify_source_identity(
++                    row,
++                    resolved,
++                    candidate,
++                    check_checkout=False,
++                    profile=profile,
++                )
+             )
+             source_bases.add((row["sourceBase"]["commit"], row["sourceBase"]["tree"]))
+             if row["sourceBase"] == candidate:
+@@ -1404,15 +1461,39 @@ def verify(
+                 == "path_blob_manifest_v1"
+             ):
+                 manifest_failures = []
+-                validate_path_blob_manifest(row, mid, manifest_failures)
++                validate_path_blob_manifest(
++                    row, mid, manifest_failures, profile=profile
++                )
+                 if manifest_failures:
+                     raise ValueError("; ".join(manifest_failures))
+             source_objects = row.get("sourceObjects")
+             if source_objects is not None:
+-                if not isinstance(source_objects, list) or not source_objects:
++                if (
++                    not isinstance(source_objects, list)
++                    or not source_objects
++                    or any(
++                        not isinstance(entry, dict)
++                        or set(entry) != {"path", "object"}
++                        or not isinstance(entry["path"], str)
++                        or not isinstance(entry["object"], str)
++                        or re.fullmatch(r"[0-9a-f]{40}", entry["object"]) is None
++                        for entry in source_objects
++                    )
++                ):
+                     raise ValueError("source objects")
+-                if source_objects != current_source_objects(row):
++                if len({entry["path"] for entry in source_objects}) != len(
++                    source_objects
++                ):
++                    raise ValueError("duplicate source object paths")
++                if (
++                    profile == "qualification"
++                    and source_objects != current_source_objects(row)
++                ):
+                     raise ValueError("stale source objects")
++                if profile == "development" and {
++                    entry["path"] for entry in source_objects
++                } != set(tracked_source_paths(row)):
++                    raise ValueError("source object path coverage")
+             if row.get("productCallerState", "not_composed") != "not_composed":
+                 callers = row.get("productCallers")
+                 if not isinstance(callers, list) or not callers:
+@@ -1451,9 +1532,10 @@ def verify(
+         ) as exc:
+             failures.append(f"{mid}: {exc}")
+     try:
+-        # Two global scans, not two scans per module. The documented contract
+-        # remains a quiescent checkout, never concurrent build attestation.
+-        require_clean_candidate(candidate, sorted(checked_paths))
++        # Qualification requires a quiescent checkout. Development navigation
++        # also works on edits that have not yet been committed.
++        if profile == "qualification":
++            require_clean_candidate(candidate, sorted(checked_paths))
+     except (ValueError, subprocess.CalledProcessError) as exc:
+         failures.append(str(exc))
+     if failures:
+@@ -1466,7 +1548,9 @@ def verify(
+                 "maps": len(modules),
+                 "productionImplementationProved": False,
+                 "candidateSource": candidate,
+-                "currentSourceIdentityRequired": True,
++                "verificationProfile": profile,
++                "currentSourceIdentityRequired": profile == "qualification",
++                "historicalEvidenceRevalidated": profile == "qualification",
+                 "candidateBoundMaps": candidate_bound_maps,
+                 "exactObservedFallbackMaps": exact_observed_fallback_maps,
+                 "provenanceAnchoredExactBlobMaps": provenance_anchored_exact_blob_maps,
+@@ -1495,7 +1579,7 @@ def main():
+     parser.add_argument(
+         "--require-current-source",
+         action="store_true",
+-        help="Compatibility alias: verify always requires clean, exact mapped source; not execution qualification.",
++        help="Require clean, exact mapped source using the qualification profile; not execution qualification.",
+     )
+     parser.add_argument(
+         "--expected-sha",
+@@ -1505,7 +1589,16 @@ def main():
+         "--expected-tree",
+         help="Require verify to run at this exact candidate tree.",
+     )
++    parser.add_argument(
++        "--profile",
++        choices=["development", "qualification"],
++        help="Defaults to development navigation checks; qualification also revalidates exact source evidence.",
++    )
+     args = parser.parse_args()
++    if args.profile is None:
++        args.profile = "qualification" if args.require_current_source else "development"
++    if args.require_current_source and args.profile != "qualification":
++        parser.error("--require-current-source requires the qualification profile")
+     if args.require_current_source and args.command != "verify":
+         parser.error("--require-current-source applies only to verify")
+     if args.modules is not None and args.command != "migrate":
+@@ -1522,6 +1615,7 @@ def main():
+             "verify": lambda: verify(
+                 expected_sha=args.expected_sha,
+                 expected_tree=args.expected_tree,
++                profile=args.profile,
+             ),
+             "sync-plasticity-status": sync_plasticity_status,
+         }[args.command]()
+diff --git a/scripts/hepta-module-docs.py b/scripts/hepta-module-docs.py
+index 473cbdb6c..7b3bd18d2 100644
+--- a/scripts/hepta-module-docs.py
++++ b/scripts/hepta-module-docs.py
+@@ -174,14 +174,20 @@ def refresh_derived(check):
+     # Preflight the entire input before writing either derived file. Missing
+     # guides remain real work; a generated row must not fabricate documentation.
+     for module_id, module in module_map.items():
+-        need(re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", module_id),
+-             "invalid canonical module ID")
++        need(
++            re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", module_id),
++            "invalid canonical module ID",
++        )
+         expected = f"docs/modules/{module_id}/TECHNICAL.md"
+         guide = (ROOT / expected).resolve()
+         need(module["technicalDocument"] == expected, module_id + " stable doc path")
+-        need(guide.is_relative_to(ROOT.resolve()) and guide.is_file(),
+-             module_id + " guide missing or outside repository")
+-        need(bool(guide.read_text(encoding="utf-8").strip()), module_id + " empty guide")
++        need(
++            guide.is_relative_to(ROOT.resolve()) and guide.is_file(),
++            module_id + " guide missing or outside repository",
++        )
++        need(
++            bool(guide.read_text(encoding="utf-8").strip()), module_id + " empty guide"
++        )
+ 
+     # Membership comes only from MODULES.json: additions and removals do not
+     # require hand-edited projection rows. Preserve module-local navigation
+@@ -189,11 +195,16 @@ def refresh_derived(check):
+     bindings["bindings"] = []
+     docs["modules"] = []
+     for module_id, module in module_map.items():
+-        row = dict(old_bindings.get(module_id, {
+-            "module": module_id,
+-            "sourceEvidenceRoots": [],
+-            "interpretation": "generated_navigation_only_not_execution_evidence",
+-        }))
++        row = dict(
++            old_bindings.get(
++                module_id,
++                {
++                    "module": module_id,
++                    "sourceEvidenceRoots": [],
++                    "interpretation": "generated_navigation_only_not_execution_evidence",
++                },
++            )
++        )
+         declared = [binding["path"] for binding in module["rootBindings"]]
+         existing = [item for item in declared if (ROOT / item).exists()]
+         row.update(
+@@ -237,9 +248,15 @@ def refresh_derived(check):
+         "docs/modules/SOURCE_BINDINGS.json": json.dumps(bindings, indent=2, ensure_ascii=False) + "\n",
+         "docs/modules/MODULE_DOCS.json": json.dumps(docs, indent=2, ensure_ascii=False) + "\n",
+     }
+-    changed = [path for path, text in rendered.items()
+-               if (ROOT / path).read_text(encoding="utf-8") != text]
+-    need(not check or not changed, "generated module projection drift: " + ", ".join(changed))
++    changed = [
++        path
++        for path, text in rendered.items()
++        if (ROOT / path).read_text(encoding="utf-8") != text
++    ]
++    need(
++        not check or not changed,
++        "generated module projection drift: " + ", ".join(changed),
++    )
+     if not check:
+         for path in changed:
+             (ROOT / path).write_text(rendered[path], encoding="utf-8")
+@@ -247,7 +264,8 @@ def refresh_derived(check):
+     return 0
+ 
+ 
+-def verify():
++def verify(profile="qualification"):
++    need(profile in {"development", "qualification"}, "verification profile")
+     modules = load("docs/modules/MODULES.json")
+     bindings = load("docs/modules/SOURCE_BINDINGS.json")
+     docs = load("docs/modules/MODULE_DOCS.json")
+@@ -394,7 +412,13 @@ def verify():
+     # records the distinction between a source root being present and a
+     # production implementation being composed; it never upgrades claims.
+     maps = subprocess.run(
+-        ["python3", "scripts/hepta-implementation-maps.py", "verify"],
++        [
++            "python3",
++            "scripts/hepta-implementation-maps.py",
++            "verify",
++            "--profile",
++            profile,
++        ],
+         cwd=ROOT,
+         text=True,
+         capture_output=True,
+@@ -411,6 +435,8 @@ def verify():
+                 "technicalDocuments": len(dmap),
+                 "sourceBindings": len(bmap),
+                 "validationScope": "registry_ownership_paths_and_document_navigation",
++                "verificationProfile": profile,
++                "historicalEvidenceRevalidated": profile == "qualification",
+                 "productExecutionProved": False,
+                 "authorityGranted": False,
+             },
+@@ -443,6 +469,9 @@ def main():
+     p = argparse.ArgumentParser()
+     p.add_argument("command", choices=["verify", "self-test", "refresh-indexes", "refresh-derived"])
+     p.add_argument("--check", action="store_true")
++    p.add_argument(
++        "--profile", choices=["development", "qualification"], default="development"
++    )
+     args = p.parse_args()
+     if args.command == "refresh-indexes":
+         return refresh_indexes(args.check)
+@@ -450,7 +479,7 @@ def main():
+         return refresh_derived(args.check)
+     if args.check:
+         p.error("--check applies only to refresh-indexes or refresh-derived")
+-    return verify() if args.command == "verify" else self_test()
++    return verify(args.profile) if args.command == "verify" else self_test()
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/scripts/hepta_ui_native_integrate_20260928.py b/scripts/hepta_ui_native_integrate_20260928.py
+index ecf35a88b..ac7a44514 100644
+--- a/scripts/hepta_ui_native_integrate_20260928.py
++++ b/scripts/hepta_ui_native_integrate_20260928.py
+@@ -156,7 +156,7 @@ BRANCH = CANDIDATE["canonicalBranch"]''')
+         text = re.sub(r'branches: \[[^\n]+\]', 'branches: [' + BRANCH + ']', file.read_text(), count=1)
+         text = text.replace('base=a126987b84737dbc2ee2592442a314117bddb4a2', 'base=$(python3 -c \'import json; print(json.load(open("apps/hepta-native/CANDIDATE.json"))["pinnedBase"])\')')
+         if path.endswith('remediation.yml'):
+-            text = text.replace('          check registry python3 scripts/test_hepta_module_registry.py', '          check registry python3 scripts/test_hepta_module_registry.py\n          python3 scripts/hepta-module-docs.py verify\n          python3 scripts/hepta-module-docs.py refresh-derived --check\n          python3 scripts/hepta-module-docs.py refresh-indexes --check')
++            text = text.replace('          check registry python3 scripts/test_hepta_module_registry.py', '          check registry python3 scripts/test_hepta_module_registry.py\n          python3 scripts/hepta-module-docs.py verify --profile qualification\n          python3 scripts/hepta-module-docs.py refresh-derived --check\n          python3 scripts/hepta-module-docs.py refresh-indexes --check')
+         file.write_text(text)
+     # The executor is not a second product source or a permanent branch writer.
+     (ROOT / '.github/workflows/hepta-ui-native-integrate-20260928.yml').unlink()
+diff --git a/scripts/hepta_ui_native_map_adapter.py b/scripts/hepta_ui_native_map_adapter.py
+index 7c3be8b7a..a3105a139 100644
+--- a/scripts/hepta_ui_native_map_adapter.py
++++ b/scripts/hepta_ui_native_map_adapter.py
+@@ -43,11 +43,11 @@ def require(condition: bool, message: str) -> None:
+         raise ValueError(message)
+ 
+ 
+-def strict_native_check(root: Path, git: Callable[..., str]) -> dict:
+-    """Reuse every native rule with the parent verifier's sanitized Git transport.
++def native_check(root: Path, git: Callable[..., str], *, profile: str) -> dict:
++    """Run an explicit native profile with the parent's sanitized Git transport.
+ 
+-    Like the parent map verifier this is a quiescent checkout observation. Only
+-    repository/transport bindings change temporarily; no rule is substituted.
++    Only repository/transport bindings change temporarily. Qualification keeps
++    its quiescent frozen-checkout contract; development validates current structure.
+     """
+     previous = native.ROOT, native._git_value, native._git_success
+ 
+@@ -62,15 +62,28 @@ def strict_native_check(root: Path, git: Callable[..., str]) -> dict:
+ 
+     try:
+         native.ROOT, native._git_value, native._git_success = root, value, success
+-        return native.check_repository()
++        if profile == "qualification":
++            return native.check_repository()
++        return native.check_repository(profile=profile)
+     except RuntimeError as error:
+         raise ValueError(f"native convergence refused: {error}") from error
+     finally:
+         native.ROOT, native._git_value, native._git_success = previous
+ 
+ 
++def strict_native_check(root: Path, git: Callable[..., str]) -> dict:
++    """Retain the strict historical-checkout contract for existing callers."""
++    return native_check(root, git, profile="qualification")
++
++
+ def verify_native_map(
+-    root: Path, row: dict, module: dict, candidate: dict, git: Callable[..., str]
++    root: Path,
++    row: dict,
++    module: dict,
++    candidate: dict,
++    git: Callable[..., str],
++    *,
++    profile: str = "qualification",
+ ) -> dict:
+     require(
+         module.get("id") == row.get("module") == "ui.native"
+@@ -105,20 +118,29 @@ def verify_native_map(
+         if key in EXECUTION_CLAIMS:
+             require(value is False, f"native execution claim promoted: {key}")
+ 
+-    evidence = strict_native_check(root, git)
++    require(profile in {"development", "qualification"}, "unknown verification profile")
++    evidence = (
++        strict_native_check(root, git)
++        if profile == "qualification"
++        else native_check(root, git, profile=profile)
++    )
+     require(
+         evidence["repositoryHead"] == candidate["commit"]
+         and evidence["repositoryTree"] == candidate["tree"],
+         "native checker observed a different candidate",
+     )
+-    source = {
+-        "commit": evidence["implementationSourceSha"],
+-        "tree": evidence["implementationSourceTree"],
+-    }
++    source = (
++        {
++            "commit": evidence["implementationSourceSha"],
++            "tree": evidence["implementationSourceTree"],
++        }
++        if profile == "qualification"
++        else evidence["historicalQualificationSource"]
++    )
+     require(
+         row.get("implementationSourceSha") == source["commit"]
+         and row.get("implementationSourceTree") == source["tree"],
+-        "native map source identity differs from its strict checker",
++        "native map source identity differs from its checker",
+     )
+     git("merge-base", "--is-ancestor", source["commit"], candidate["commit"])
+ 
+diff --git a/scripts/test_hepta_implementation_source_identity.py b/scripts/test_hepta_implementation_source_identity.py
+index b51ffe5e6..03570d440 100644
+--- a/scripts/test_hepta_implementation_source_identity.py
++++ b/scripts/test_hepta_implementation_source_identity.py
+@@ -110,14 +110,14 @@ class SourceIdentityTests(unittest.TestCase):
+             row["observedAtHead"] = dict(self.base)
+             row["observedSourcePaths"] = [f"src/{mid}", "Cargo.lock"]
+ 
+-    def verify(self, *, strict=False):
++    def verify(self, *, strict=False, profile="qualification"):
+         self.save_maps()
+         output = io.StringIO()
+         with contextlib.redirect_stdout(output):
+             if strict:
+-                MAPS.verify(require_current_source=True)
++                MAPS.verify(require_current_source=True, profile=profile)
+             else:
+-                MAPS.verify()
++                MAPS.verify(profile=profile)
+         return json.loads(output.getvalue())
+ 
+     def rejects(self, fragment, *, strict=False):
+@@ -207,6 +207,77 @@ class SourceIdentityTests(unittest.TestCase):
+         self.commit("changed source")
+         self.rejects("changed after source observation")
+ 
++    def test_ordinary_source_edit_preserves_navigation_without_renewing_evidence(self):
++        self.save_maps()
++        maps_before = {
++            path: path.read_bytes() for path in self.root.glob("docs/modules/*/*.json")
++        }
++        self.write("src/alpha/lib.rs", "// Ordinary owner change\npub fn run() {}\n")
++        self.commit("implementation edit")
++        result = self.verify(profile="development")
++        self.assertEqual(result["verificationProfile"], "development")
++        self.assertFalse(result["historicalEvidenceRevalidated"])
++        self.assertFalse(result["productionImplementationProved"])
++        self.assertEqual(maps_before, {path: path.read_bytes() for path in maps_before})
++        self.rejects("changed after source observation")
++
++    def test_development_retains_path_and_type_guards(self):
++        cases = [
++            ("observedSourcePaths", ["src/alpha/../beta"], "non-canonical source path"),
++            ("sourceBase", {"commit": 0, "tree": "f" * 40}, "literal commit/tree"),
++            ("productionImplementation", "false", "must be boolean"),
++        ]
++        for field, value, message in cases:
++            original = self.rows["alpha"][field]
++            self.rows["alpha"][field] = value
++            with self.subTest(field=field), self.assertRaisesRegex(SystemExit, message):
++                self.verify(profile="development")
++            self.rows["alpha"][field] = original
++        self.save_maps()
++        self.write("src/alpha/lib.rs", "// uncommitted source\n")
++        self.verify(profile="development")
++        with self.assertRaisesRegex(SystemExit, "dirty|uncommitted"):
++            self.verify()
++
++    def test_blob_manifest_helper_rejects_unknown_profile_before_git(self):
++        row = self.rows["alpha"]
++        row["exactSourceEvidence"] = {
++            "kind": "path_blob_manifest_v1",
++            "entries": [{"path": "src/alpha/lib.rs", "blobSha": "a" * 40}],
++        }
++        failures = []
++        with patch.object(MAPS, "git") as git:
++            MAPS.validate_path_blob_manifest(
++                row, "alpha", failures, profile="permissive"
++            )
++        self.assertEqual(failures, ["alpha: unknown verification profile"])
++        git.assert_not_called()
++
++    def test_development_does_not_freeze_exact_blob_manifests(self):
++        self.rows["alpha"]["mappingSourceIdentityMode"] = "exact_blob"
++        blob = self.git("rev-parse", "HEAD:src/alpha/lib.rs")
++        self.rows["alpha"]["operations"][0]["sourceBlob"] = blob
++        self.rows["alpha"]["exactSourceEvidence"] = {
++            "kind": "path_blob_manifest_v1",
++            "entries": [{"path": "src/alpha/lib.rs", "blobSha": blob}],
++        }
++        self.save_maps()
++        self.write("src/alpha/lib.rs", "// revised implementation\npub fn run() {}\n")
++        self.commit("implementation edit")
++        self.verify(profile="development")
++        self.rejects("source blob drift")
++
++    def test_development_requires_unique_complete_source_object_paths(self):
++        row = self.rows["alpha"]
++        row["sourceObjects"] = MAPS.current_source_objects(row)
++        self.verify(profile="development")
++        row["sourceObjects"].append(dict(row["sourceObjects"][0]))
++        with self.assertRaisesRegex(SystemExit, "duplicate source object"):
++            self.verify(profile="development")
++        row["sourceObjects"] = row["sourceObjects"][:1]
++        with self.assertRaisesRegex(SystemExit, "source object path coverage"):
++            self.verify(profile="development")
++
+     def test_declared_dependency_drift_fails(self):
+         self.observed()
+         self.write("Cargo.lock", "# Changed dependency\n")
+diff --git a/scripts/test_hepta_ui_native_map_adapter.py b/scripts/test_hepta_ui_native_map_adapter.py
+index 616c89303..360e7e211 100644
+--- a/scripts/test_hepta_ui_native_map_adapter.py
++++ b/scripts/test_hepta_ui_native_map_adapter.py
+@@ -233,12 +233,14 @@ jobs:
+         self.write("docs/modules/ui.native/IMPLEMENTATION_MAP.json", self.row)
+         self.commit("map mutation")
+ 
+-    def verify(self):
++    def verify(self, *, profile="qualification"):
+         output = io.StringIO()
+         candidate = maps.current_source_base()
+         with contextlib.redirect_stdout(output):
+             maps.verify(
+-                expected_sha=candidate["commit"], expected_tree=candidate["tree"]
++                expected_sha=candidate["commit"],
++                expected_tree=candidate["tree"],
++                profile=profile,
+             )
+         return json.loads(output.getvalue())
+ 
+@@ -320,6 +322,35 @@ jobs:
+             with self.assertRaisesRegex(RuntimeError, "unknown native check profile"):
+                 adapter.native.check_repository(profile="developmnt")
+ 
++    def test_development_map_routes_v6_without_rewriting_historical_evidence(self):
++        before = {path: (self.root / path).read_bytes() for path in self.states}
++        path = self.root / "apps/hepta-native/src/runtime.rs"
++        path.write_text(path.read_text() + "\n// ordinary product edit\n")
++        self.commit("ordinary product edit")
++        result = self.verify(profile="development")
++        self.assertEqual(result["verificationProfile"], "development")
++        self.assertFalse(result["historicalEvidenceRevalidated"])
++        self.assertFalse(result["currentSourceIdentityRequired"])
++        self.assertFalse(result["productionImplementationProved"])
++        self.assertEqual(
++            result["nativeSchemaAdapters"][0]["implementationSource"], self.source
++        )
++        self.assertEqual(
++            before, {path: (self.root / path).read_bytes() for path in before}
++        )
++        self.reject("after the frozen source")
++
++    def test_development_map_retains_v6_claims_and_ownership(self):
++        self.row["claimBoundary"]["productExecutionComplete"] = True
++        self.save_row()
++        with self.assertRaisesRegex(SystemExit, "claim"):
++            self.verify(profile="development")
++        self.row["claimBoundary"]["productExecutionComplete"] = False
++        self.row["owner"] = "foreign-owner"
++        self.save_row()
++        with self.assertRaisesRegex(SystemExit, "native owner identity"):
++            self.verify(profile="development")
++
+     def test_every_state_anchor_and_tree_must_match(self):
+         for relative in adapter.native.STATE_FILES:
+             for key in ("implementationSourceSha", "implementationSourceTree"):
+diff --git a/scripts/test_hepta_verification_profiles.py b/scripts/test_hepta_verification_profiles.py
+new file mode 100644
+index 000000000..ca6ed7673
+--- /dev/null
++++ b/scripts/test_hepta_verification_profiles.py
+@@ -0,0 +1,307 @@
++"""Development checks retain authority validation and delegate source profiles."""
++
++import contextlib
++import copy
++import importlib.util
++import io
++import json
++from pathlib import Path
++import sys
++import subprocess
++import os
++import tempfile
++import re
++import textwrap
++import unittest
++from unittest.mock import patch
++
++SCRIPTS = Path(__file__).resolve().parent
++sys.path.insert(0, str(SCRIPTS))
++
++
++def verifier(name):
++    spec = importlib.util.spec_from_file_location(
++        name.replace("-", "_"), SCRIPTS / name
++    )
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++DOCS = verifier("hepta-docs.py")
++MODULES = verifier("hepta-module-docs.py")
++MAPS = verifier("hepta-implementation-maps.py")
++GAP = verifier("hepta-gap-closure.py")
++
++
++class VerificationProfileTests(unittest.TestCase):
++    def test_cli_routes_ordinary_checks_and_explicit_qualification(self):
++        for module in (DOCS, MODULES, MAPS):
++            for arguments, expected in (
++                ([], "development"),
++                (["--profile", "qualification"], "qualification"),
++            ):
++                with (
++                    self.subTest(module=module.__name__, arguments=arguments),
++                    patch.object(sys, "argv", [module.__file__, "verify", *arguments]),
++                    patch.object(module, "verify", return_value=0) as verify,
++                ):
++                    module.main()
++                    if module is MAPS:
++                        self.assertEqual(verify.call_args.kwargs["profile"], expected)
++                    else:
++                        verify.assert_called_once_with(expected)
++
++    def test_legacy_exact_source_cli_keeps_qualification_semantics(self):
++        with (
++            patch.object(
++                sys, "argv", [MAPS.__file__, "verify", "--require-current-source"]
++            ),
++            patch.object(MAPS, "verify", return_value=0) as verify,
++        ):
++            MAPS.main()
++            self.assertEqual(verify.call_args.kwargs["profile"], "qualification")
++
++    def test_exact_source_cli_rejects_an_explicit_conflicting_profile(self):
++        with (
++            patch.object(
++                sys,
++                "argv",
++                [
++                    MAPS.__file__,
++                    "verify",
++                    "--require-current-source",
++                    "--profile",
++                    "development",
++                ],
++            ),
++            patch.object(MAPS, "verify") as verify,
++            contextlib.redirect_stderr(io.StringIO()),
++            self.assertRaises(SystemExit),
++        ):
++            MAPS.main()
++        verify.assert_not_called()
++
++    def test_real_development_tree_reports_a_shared_path_touch_without_activating_the_lease(
++        self,
++    ):
++        lease = DOCS.load(DOCS.FILES["paths"])["activeLeases"][0]
++        changed = {lease["normalizedExactPaths"][0]}
++        output = io.StringIO()
++        with (
++            patch.object(DOCS, "pull_request_changed_paths", return_value=changed),
++            contextlib.redirect_stdout(output),
++        ):
++            self.assertEqual(DOCS.verify("development"), 0)
++        report = json.loads(output.getvalue().splitlines()[-1])
++        self.assertEqual(report["touchedLeaseCount"], 1)
++        self.assertEqual(report["externallyAttestedLeaseCount"], 0)
++        self.assertFalse(report["leaseActivationEvaluated"])
++        self.assertFalse(report["historicalEvidenceRevalidated"])
++
++    def test_gap_owner_development_checks_the_real_tree_without_renewing_stale_maps(
++        self,
++    ):
++        with contextlib.redirect_stdout(io.StringIO()):
++            self.assertEqual(GAP.verify("development"), [])
++
++    def test_gap_profiles_are_forwarded_to_the_document_child(self):
++        for profile in ("development", "qualification"):
++            with (
++                self.subTest(profile=profile),
++                patch.object(GAP.subprocess, "run") as run,
++            ):
++                run.return_value.returncode = 0
++                self.assertEqual(GAP.verify(profile), [])
++                self.assertEqual(
++                    run.call_args.args[0],
++                    [
++                        sys.executable,
++                        str(GAP.ROOT / "scripts/hepta-module-docs.py"),
++                        "verify",
++                        "--profile",
++                        profile,
++                    ],
++                )
++
++    def test_gap_unknown_profile_is_rejected_before_reading_source(self):
++        with patch.object(GAP.CARGO_MANIFEST.__class__, "read_text") as read:
++            self.assertEqual(GAP.verify("permissive"), ["unknown verification profile"])
++        read.assert_not_called()
++
++    def test_real_cli_propagates_development_through_the_aggregate(self):
++        result = subprocess.run(
++            [sys.executable, str(SCRIPTS / "hepta-docs.py"), "verify"],
++            cwd=SCRIPTS.parent,
++            text=True,
++            capture_output=True,
++        )
++        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++        report = json.loads(result.stdout.splitlines()[-1])
++        self.assertEqual(report["verificationProfile"], "development")
++        self.assertFalse(report["historicalEvidenceRevalidated"])
++
++    def test_workflow_shells_route_ordinary_and_qualifying_checks(self):
++        workflows = SCRIPTS.parent / ".github/workflows"
++        subjects = (
++            (
++                "hepta-contract-gate.yml",
++                "Validate canonical contract and readiness documents",
++            ),
++            ("hepta-development-docs.yml", "Verify source and emit receipts"),
++            ("hepta-development-docs.yml", "Verify merge candidate and emit receipts"),
++        )
++        for workflow, step in subjects:
++            content = (workflows / workflow).read_text()
++            block = content.split("      - name: " + step + "\n", 1)[1]
++            block = block.split("      - name:", 1)[0]
++            command = textwrap.dedent(block.split("        run: |\n", 1)[1])
++            for profile in ("development", "qualification"):
++                with self.subTest(workflow=workflow, step=step, profile=profile):
++                    with tempfile.TemporaryDirectory() as directory:
++                        log = Path(directory) / "commands"
++                        preamble = (
++                            'python3() { printf "%s\\n" "$*" >> "$COMMAND_LOG"; }\n'
++                            'git() { if [ "$1" = rev-parse ]; then printf "%s\\n" "$EXPECTED_SHA"; fi; }\n'
++                        )
++                        result = subprocess.run(
++                            ["bash", "-c", preamble + command],
++                            cwd=SCRIPTS.parent,
++                            text=True,
++                            capture_output=True,
++                            env={
++                                **os.environ,
++                                "VERIFICATION_PROFILE": profile,
++                                "EXPECTED_SHA": "a" * 40,
++                                "GITHUB_SHA": "a" * 40,
++                                "COMMAND_LOG": str(log),
++                            },
++                        )
++                        self.assertEqual(result.returncode, 0, result.stderr)
++                        calls = log.read_text().splitlines()
++                    self.assertIn(
++                        "scripts/hepta-docs.py verify --profile " + profile, calls
++                    )
++                    evidence = [
++                        call
++                        for call in calls
++                        if any(
++                            token in call
++                            for token in (
++                                "cleanup-inventory",
++                                "receipt --kind",
++                                "receipt-verify",
++                                "hepta-technical-receipts.py",
++                                "hepta-implementation-dossiers.py",
++                            )
++                        )
++                    ]
++                    self.assertEqual(bool(evidence), profile == "qualification")
++
++    def test_qualification_callers_are_explicit_and_defaults_stay_strict(self):
++        workflows = SCRIPTS.parent / ".github/workflows"
++        expected = {
++            "hepta-knowledge-graph-qualification.yml": ["development"],
++            "hepta-gap-agentd-process.yml": ["development"],
++            "hepta-objective-admission.yml": ["development"],
++            "hepta-lane-d-semantic-conformance.yml": ["development"],
++            "memory-federation-v2-final-verify.yml": ["qualification"] * 2,
++            "hepta-kernel-evidence-qualification.yml": ["qualification", "development"]
++            * 2,
++        }
++        for name, profiles in expected.items():
++            with self.subTest(workflow=name):
++                calls = re.findall(
++                    r"python3 scripts/hepta-(?:docs|implementation-maps)\.py verify([^\n]*)",
++                    (workflows / name).read_text(),
++                )
++                self.assertEqual(len(calls), len(profiles))
++                self.assertEqual(
++                    [
++                        re.search(
++                            r"--profile (development|qualification)\b", call
++                        ).group(1)
++                        for call in calls
++                    ],
++                    profiles,
++                )
++        contract = (workflows / "hepta-contract-gate.yml").read_text()
++        for event in ("workflow_call", "workflow_dispatch"):
++            block = contract.split("  " + event + ":\n", 1)[1].split("\n\n", 1)[0]
++            self.assertIn("        default: qualification", block)
++        docs = (workflows / "hepta-development-docs.yml").read_text()
++        self.assertIn(
++            "        default: qualification", docs.split("  workflow_dispatch:", 1)[1]
++        )
++        self.assertIn("inputs.profile || 'development'", docs)
++        blocking = (workflows / "blocking-ci.yml").read_text()
++        self.assertIn(
++            "uses: ./.github/workflows/hepta-contract-gate.yml\n    with:\n      profile: development",
++            blocking,
++        )
++        for name in ("single-main-foundation.yml", "single-main-consolidation.yml"):
++            self.assertIn(
++                "'verify', '--require-current-source'", (workflows / name).read_text()
++            )
++        with (
++            patch.object(sys, "argv", [GAP.__file__, "verify"]),
++            patch.object(GAP, "verify", return_value=[]) as verify,
++            contextlib.redirect_stdout(io.StringIO()),
++        ):
++            GAP.main()
++            verify.assert_called_once_with("qualification")
++
++    def test_unknown_profile_is_rejected_before_reading_source(self):
++        for module in (DOCS, MODULES):
++            with (
++                self.subTest(module=module.__name__),
++                self.assertRaisesRegex(SystemExit, "profile"),
++            ):
++                module.verify("permissive")
++
++    def test_authority_types_and_permissions_remain_mandatory_in_both_profiles(self):
++        for module in (DOCS, MODULES):
++            original_load = module.load
++            for profile in ("development", "qualification"):
++                for value in (True, 0, "", None):
++
++                    def altered(path):
++                        document = copy.deepcopy(original_load(path))
++                        if path == "docs/modules/MODULES.json":
++                            document["authorityFlags"]["merge"] = value
++                        return document
++
++                    with self.subTest(
++                        module=module.__name__, profile=profile, value=value
++                    ):
++                        with (
++                            patch.object(module, "load", altered),
++                            self.assertRaisesRegex(SystemExit, "authority"),
++                        ):
++                            module.verify(profile)
++
++    def test_module_profile_reaches_the_real_map_verifier(self):
++        # All registry/path/navigation checks run against actual repository inputs.
++        # The source-map subprocess is observed separately from execution evidence.
++        for profile in ("development", "qualification"):
++            with (
++                self.subTest(profile=profile),
++                contextlib.redirect_stdout(io.StringIO()),
++            ):
++                with patch.object(MODULES.subprocess, "run") as run:
++                    run.return_value.returncode = 0
++                    MODULES.verify(profile)
++                    self.assertEqual(
++                        run.call_args.args[0],
++                        [
++                            "python3",
++                            "scripts/hepta-implementation-maps.py",
++                            "verify",
++                            "--profile",
++                            profile,
++                        ],
++                    )
++
++
++if __name__ == "__main__":
++    unittest.main()

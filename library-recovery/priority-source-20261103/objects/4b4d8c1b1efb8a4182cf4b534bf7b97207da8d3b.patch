@@ -1,0 +1,13 @@
+--- a/codex-rs/core/src/client.rs
++++ b/codex-rs/core/src/client.rs
+@@ -3107,6 +3107,10 @@
+     )
+ }
+ 
++#[expect(
++    clippy::too_many_arguments,
++    reason = "stream adaptation keeps provider ownership, terminal observation, redaction, and telemetry inputs explicit"
++)]
+ fn map_response_events<S>(
+     upstream_request_id: Option<String>,
+     api_stream: S,

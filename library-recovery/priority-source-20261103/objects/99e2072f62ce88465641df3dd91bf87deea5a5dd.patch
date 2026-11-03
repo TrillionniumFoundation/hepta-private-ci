@@ -1,0 +1,82 @@
+--- a/codex-rs/hepta-control-plane/src/module_runtime_checkpoint.rs
++++ b/codex-rs/hepta-control-plane/src/module_runtime_checkpoint.rs
+@@ -211,12 +211,21 @@
+                 return Err(Error::CheckpointInvalid);
+             }
+             match (record.selection_digest, record.canary_digest) {
+-                (Some(selection_digest), Some(canary_digest)) => RuntimeModulePromotionWitnessV1 {
+-                    selection_digest,
+-                    canary_digest,
+-                    handoff_digest: record.handoff_digest.unwrap_or(Digest32::ZERO),
+-                }
+-                .validate_for(&record.abi)?,
++                (Some(selection_digest), Some(canary_digest)) => {
++                    let witness = RuntimeModulePromotionWitnessV1 {
++                        selection_digest,
++                        canary_digest,
++                        handoff_digest: record.handoff_digest.unwrap_or(Digest32::ZERO),
++                    };
++                    witness.validate_for(&record.abi)?;
++                    // Recovery must retain the same two-sided obligations as
++                    // live promotion when the predecessor payload is retained.
++                    if let Some(previous) = record.abi.predecessor_generation.and_then(|previous| {
++                        restored.records.get(&(module_id.clone(), previous))
++                    }) {
++                        witness.validate_for(&previous.abi)?;
++                    }
++                }
+                 (None, None) if record.handoff_digest.is_none() => {
+                     if (selected || matches!(record.lifecycle, RuntimeModuleLifecycleV1::Retired))
+                         && (record.abi.predecessor_generation.is_some() || generation != first)
+--- a/codex-rs/hepta-control-plane/src/module_runtime_checkpoint_tests.rs
++++ b/codex-rs/hepta-control-plane/src/module_runtime_checkpoint_tests.rs
+@@ -296,3 +296,49 @@
+ #[path = "module_runtime_checkpoint_wire_tests.rs"]
+ mod wire_tests;
+ 
++#[test]
++fn restored_successor_preserves_predecessor_handoff_and_stateless_controls() {
++    for hazard in 0..5 {
++        let mut registry = RuntimeModuleRegistryV1::new();
++        let mut previous = abi("handoff", /*value*/ 1, /*previous*/ None);
++        previous.state_class = RuntimeModuleStateClassV1::Stateless;
++        previous.authoritative_domains.clear();
++        match hazard {
++            0 => previous.state_class = RuntimeModuleStateClassV1::Stateful,
++            1 => previous.state_class = RuntimeModuleStateClassV1::ExternalStateful,
++            2 => { previous.authoritative_domains.insert(id("retained-domain")); }
++            3 => { previous.effect_scope.insert(id("retained-effect")); }
++            4 => {}
++            _ => unreachable!(),
++        }
++        bootstrap(&mut registry, previous.clone());
++        let mut candidate = abi("handoff", /*value*/ 2, Some(&previous));
++        candidate.state_class = RuntimeModuleStateClassV1::Stateless;
++        candidate.authoritative_domains.clear();
++        registry.register_candidate(candidate.clone()).unwrap();
++        registry.enter_shadow(&candidate.module_id, candidate.generation).unwrap();
++        registry.enter_canary(&candidate.module_id, candidate.generation).unwrap();
++        registry.promote_after_handoff(
++            &candidate.module_id,
++            candidate.generation,
++            RuntimeModulePromotionWitnessV1 {
++                selection_digest: digest("selection"),
++                canary_digest: digest("canary"),
++                handoff_digest: digest("handoff"),
++            },
++        ).unwrap();
++        let original = registry.checkpoint();
++        assert_eq!(restore(original.clone()).unwrap().checkpoint(), original);
++        let mut malformed = original;
++        malformed.records.iter_mut()
++            .find(|record| record.abi.generation == candidate.generation)
++            .unwrap().handoff_digest = None;
++        resign(&mut malformed);
++        if hazard == 4 {
++            assert!(restore(malformed).is_ok(), "fully stateless recovery needs no handoff");
++        } else {
++            assert_eq!(restore(malformed).unwrap_err(), Error::MissingWriterHandoff);
++        }
++    }
++}
++
