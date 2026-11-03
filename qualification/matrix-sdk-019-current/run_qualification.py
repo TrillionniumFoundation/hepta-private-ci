@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import time
 import xml.etree.ElementTree as ET
 
@@ -26,6 +27,9 @@ def snapshot():
         "codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrix-store",
         "codex-rs/hepta-matrix-protocol", "codex-rs/hepta-matrixd",
         "codex-rs/state", "codex-rs/execpolicy",
+        "codex-rs/keyring-store", "codex-rs/third_party/keyring-3.6.3",
+        "codex-rs/third_party/dbus-secret-service-4.1.0", "third_party/dbus",
+        "qualification/keyring-sync-provider/build_pinned_client.py",
         "codex-rs/third_party/matrix-sdk-0.19.1",
         "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
         "codex-rs/third_party/sqlx-sqlite-0.9.0",
@@ -90,11 +94,16 @@ def main():
     started = time.monotonic()
     try:
         if args.mode == "bazel":
+            committed_lock = (ROOT / "MODULE.bazel.lock").read_bytes()
+            execute("committed-lock-check", ["just", "bazel-lock-check"], output, receipt["commands"], ROOT)
             execute("original-lock-update", ["just", "bazel-lock-update"], output, receipt["commands"], ROOT)
             shutil.copyfile(ROOT / "MODULE.bazel.lock", output / "MODULE.bazel.lock")
             execute("original-lock-check", ["just", "bazel-lock-check"], output, receipt["commands"], ROOT)
+            if (ROOT / "MODULE.bazel.lock").read_bytes() != committed_lock:
+                raise RuntimeError("generated lock differs from the committed current-source lock")
             wrapper = str(ROOT / ".github/scripts/run_bazel_with_buildbuddy.py")
-            execute("production-dependencies", [wrapper, "build", "@crates//:matrix-sdk", "@crates//:sqlx-sqlite", "@crates//:starlark"], output, receipt["commands"], ROOT)
+            execute("sqlite-dependency-graph", [wrapper, "query", 'filter("sqlx[-_]sqlite", deps(@crates//:sqlx))', "--output=label_kind"], output, receipt["commands"], ROOT)
+            execute("production-dependencies", [wrapper, "build", "@crates//:matrix-sdk", "@crates//:sqlx", "@crates//:starlark"], output, receipt["commands"], ROOT)
             execute("matrix-regressions", [wrapper, "test", "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-crypto_advisory-test", "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-event_handler_context-test", "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-sdk_store_upgrade-test"], output, receipt["commands"], ROOT)
         else:
             rustc = subprocess.check_output(["rustc", "--version", "--verbose"], text=True)
@@ -123,6 +132,10 @@ def main():
             (WORKSPACE / "target/nextest/local/junit.xml").unlink(missing_ok=True)
             expected = None
             if args.mode == "owners":
+                native = output.parent / "matrix-pinned-dbus-client"
+                execute("pinned-dbus-client", [sys.executable, str(ROOT / "qualification/keyring-sync-provider/build_pinned_client.py"), "--output", str(native)], output, receipt["commands"])
+                shutil.copyfile(native / "receipt.json", output / "pinned-dbus-receipt.json")
+                os.environ["PKG_CONFIG_PATH"] = str(native / "lib/pkgconfig")
                 command = ["just", "test", "--locked", "--no-tests=fail", "--retries", "0", "-p", "codex-hepta-matrix-protocol", "-p", "codex-hepta-matrix-sdk", "-p", "codex-hepta-matrix-store", "-p", "codex-hepta-matrixd"]
             elif args.mode == "sqlite-starlark":
                 command = ["just", "test", "--locked", "--no-tests=fail", "--retries", "0", "-p", "codex-state", "-p", "codex-execpolicy", "--lib"]
@@ -141,6 +154,16 @@ def main():
             raise RuntimeError("tracked production or qualification inputs changed")
         receipt["status"] = "passed"
     finally:
+        if "source_after" not in receipt:
+            try:
+                receipt["source_after"] = snapshot()
+            except OSError as error:
+                receipt["source_after_error"] = str(error)
+        receipt["source_inputs_unchanged"] = receipt.get("source_after") == before
+        if not receipt["source_inputs_unchanged"]:
+            difference = subprocess.run(["git", "diff", "--binary"], cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            (output / "source-changes.patch").write_bytes(difference.stdout)
+            (output / "source-changes.stderr").write_bytes(difference.stderr)
         receipt["seconds"] = time.monotonic() - started
         receipt["resource_environment"] = {k: os.environ.get(k) for k in ["CARGO_BUILD_JOBS", "CARGO_INCREMENTAL", "CARGO_PROFILE_DEV_DEBUG", "CARGO_PROFILE_TEST_DEBUG"]}
         (output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")

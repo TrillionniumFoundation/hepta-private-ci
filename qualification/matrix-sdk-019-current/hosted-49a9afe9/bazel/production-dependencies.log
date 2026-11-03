@@ -1,0 +1,14 @@
+BuildBuddy key unavailable; using local Bazel configuration.
+INFO: Invocation ID: d0d225db-84f2-47d7-8542-c2e3d04ff621
+Computing main repo mapping: 
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Computing main repo mapping: 
+Loading: 
+Loading: 3 packages loaded
+WARNING: Target pattern parsing failed.
+ERROR: Skipping '@crates//:sqlx-sqlite': no such target '@@rules_rs++crate+crates//:sqlx-sqlite': target 'sqlx-sqlite' not declared in package '' defined by /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel
+ERROR: no such target '@@rules_rs++crate+crates//:sqlx-sqlite': target 'sqlx-sqlite' not declared in package '' defined by /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel
+INFO: Elapsed time: 1.749s
+INFO: 0 processes.
+ERROR: Build did NOT complete successfully
