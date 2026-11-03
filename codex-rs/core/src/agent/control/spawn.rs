@@ -21,9 +21,9 @@ use futures::future::BoxFuture;
 
 const AGENT_NAMES: &str = include_str!("../agent_names.txt");
 
-struct SpawnAgentThreadInheritance {
-    environments: Option<TurnEnvironmentSnapshot>,
-    exec_policy: Option<Arc<crate::exec_policy::ExecPolicyManager>>,
+pub(super) struct SpawnAgentThreadInheritance {
+    pub(super) environments: Option<TurnEnvironmentSnapshot>,
+    pub(super) exec_policy: Option<Arc<crate::exec_policy::ExecPolicyManager>>,
 }
 
 /// Initial input delivered after a spawned agent acquires execution capacity.
@@ -795,7 +795,7 @@ impl AgentControl {
         })
     }
 
-    async fn spawn_forked_thread(
+    pub(super) async fn spawn_forked_thread(
         &self,
         state: &Arc<ThreadManagerState>,
         config: Config,

@@ -387,6 +387,9 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    if let Some(completion) = thread.pending_turn_terminalization() {
+        completion.await;
+    }
     thread
         .inject_response_items(vec![user_message(message)])
         .await
@@ -2715,33 +2718,45 @@ async fn spawn_agent_fork_last_n_turns_strips_parent_usage_hints() {
         .await
         .expect("parent rollout should flush");
 
-    let child_thread_id = harness
+    // Observe the real fork stage before any initial input is submitted. The
+    // complete spawn API already starts that input, so inspecting its returned
+    // thread cannot establish a pre-rebuild assertion.
+    let state = harness.control.upgrade().expect("thread manager is live");
+    let source = SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
+        parent_thread_id,
+        depth: 1,
+        agent_path: None,
+        agent_nickname: None,
+        agent_role: None,
+    });
+    let inheritance = spawn::SpawnAgentThreadInheritance {
+        environments: harness
+            .control
+            .inherited_environments_for_source(&state, Some(&source))
+            .await,
+        exec_policy: harness
+            .control
+            .inherited_exec_policy_for_source(&state, Some(&source), &child_config)
+            .await,
+    };
+    let child = harness
         .control
-        .spawn_agent_with_metadata(
+        .spawn_forked_thread(
+            &state,
             child_config,
-            text_input("child task"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: None,
-            })),
-            SpawnAgentOptions {
+            source,
+            &SpawnAgentOptions {
                 fork_parent_spawn_call_id: Some(parent_spawn_call_id),
                 fork_mode: Some(SpawnAgentForkMode::LastNTurns(2)),
                 ..Default::default()
             },
+            inheritance,
+            MultiAgentVersion::V2,
         )
         .await
-        .expect("bounded forked spawn should sanitize parent usage hints")
-        .thread_id;
-
-    let child_thread = harness
-        .manager
-        .get_thread(child_thread_id)
-        .await
-        .expect("child thread should be registered");
+        .expect("bounded fork should sanitize parent usage hints before input");
+    let child_thread_id = child.thread_id;
+    let child_thread = child.thread;
     let history = child_thread.session.clone_history().await;
     assert!(
         history_contains_text(history.raw_items(), "parent task"),
@@ -2763,6 +2778,52 @@ async fn spawn_agent_fork_last_n_turns_strips_parent_usage_hints() {
         history_contains_text(history.raw_items(), "Preserved bounded developer context."),
         "bounded fork should preserve unrelated developer fragments"
     );
+
+    assert!(history.reference_context_item().is_none());
+    harness
+        .control
+        .send_input(
+            child_thread_id,
+            text_input("child task"),
+            /*parent_turn_id*/ None,
+            /*root_turn_id*/ None,
+        )
+        .await
+        .expect("the initial child input should start through the normal owner");
+    // This real lifecycle event is emitted after canonical context rebuilding,
+    // so the existing bounded helper observes a completed stage, not a delay.
+    wait_for_recorded_user_message(&child_thread, "child task").await;
+    let rebuilt = child_thread.session.clone_history().await;
+    assert!(rebuilt.reference_context_item().is_some());
+    assert!(!history_contains_text(
+        rebuilt.raw_items(),
+        "Parent root guidance."
+    ));
+    assert!(!history_contains_text(
+        rebuilt.raw_items(),
+        "Parent developer instructions."
+    ));
+    for expected in [
+        "Child developer instructions.",
+        "Child subagent guidance.",
+        "Preserved bounded developer context.",
+    ] {
+        let occurrences = rebuilt
+            .raw_items()
+            .filter_map(|item| match item {
+                ResponseItem::Message { content, .. } => Some(content),
+                _ => None,
+            })
+            .flatten()
+            .map(|item| match item {
+                ContentItem::InputText { text } | ContentItem::OutputText { text } => {
+                    text.matches(expected).count()
+                }
+                ContentItem::InputImage { .. } | ContentItem::InputAudio { .. } => 0,
+            })
+            .sum::<usize>();
+        assert_eq!(occurrences, 1, "canonical child context: {expected}");
+    }
 
     let _ = harness
         .control
@@ -3611,6 +3672,8 @@ async fn resume_agent_from_rollout_reads_archived_rollout_path() {
         .get_thread(child_thread_id)
         .await
         .expect("child thread should exist");
+    // Observe initial input after canonical context recording before aborting it.
+    wait_for_recorded_user_message(&child_thread, "hello").await;
     persist_thread_for_tree_resume(&child_thread, "persist before archiving").await;
     let _ = harness
         .control
@@ -3664,6 +3727,8 @@ async fn resume_agent_from_paginated_rollout_loads_model_context() {
         child_thread.config_snapshot().await.history_mode,
         ThreadHistoryMode::Paginated
     );
+    // Observe initial input after canonical context recording before aborting it.
+    wait_for_recorded_user_message(&child_thread, "child task").await;
     persist_thread_for_tree_resume(&child_thread, "persist before resume").await;
     let _ = harness
         .control
