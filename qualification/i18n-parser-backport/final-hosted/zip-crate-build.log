@@ -1,0 +1,23 @@
+BuildBuddy key unavailable; using local Bazel configuration.
+INFO: Invocation ID: 4490cf82-d6cd-4a4b-a885-8946522d3695
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: target @@rules_rs++crate+crates//:zip (0 packages loaded, 0 targets configured)
+Analyzing: target @@rules_rs++crate+crates//:zip (0 packages loaded, 0 targets configured)
+
+INFO: Repo rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+ERROR: /home/runner/.cache/codex-ci/o/external/bazel_tools/tools/build_defs/repo/utils.bzl:251:22: An error occurred during the fetch of repository 'rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7':
+   Traceback (most recent call last):
+	File "/home/runner/.cache/codex-ci/o/external/rules_rs+/rs/private/crate_repository.bzl", line 61, column 10, in _crate_repository_impl
+		patch(rctx)
+	File "/home/runner/.cache/codex-ci/o/external/bazel_tools/tools/build_defs/repo/utils.bzl", line 251, column 22, in patch
+		ctx.patch(patchfile, strip)
+Error in patch: Error applying patch /home/runner/work/hepta-private-ci/hepta-private-ci/patches/zstd-sys_windows_msvc_include_dirs.patch: in patch applied to /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7/build.rs: could not apply patch due to CONTENT_DOES_NOT_MATCH_TARGET, error applying change near line 210
+ERROR: no such package '@@rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7//': Error applying patch /home/runner/work/hepta-private-ci/hepta-private-ci/patches/zstd-sys_windows_msvc_include_dirs.patch: in patch applied to /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7/build.rs: could not apply patch due to CONTENT_DOES_NOT_MATCH_TARGET, error applying change near line 210
+ERROR: /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:7692:6: @@rules_rs++crate+crates//:zstd-sys-2.1.2+zstd.1.5.7 depends on @@rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7//:zstd-sys in repository @@rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7 which failed to fetch. no such package '@@rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7//': Error applying patch /home/runner/work/hepta-private-ci/hepta-private-ci/patches/zstd-sys_windows_msvc_include_dirs.patch: in patch applied to /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7/build.rs: could not apply patch due to CONTENT_DOES_NOT_MATCH_TARGET, error applying change near line 210
+ERROR: Analysis of target '@@rules_rs++crate+crates//:zip' failed; build aborted: Analysis failed
+INFO: Elapsed time: 0.751s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+ERROR: Build did NOT complete successfully
+FAILED: 

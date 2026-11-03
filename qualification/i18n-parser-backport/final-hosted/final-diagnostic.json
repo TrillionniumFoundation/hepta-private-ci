@@ -1,0 +1,59 @@
+{
+  "source_commit": "4b1a326ec50c28e8803d390e81d2f03457cc7499",
+  "run_id": 41661774235,
+  "job_id": 126006521269,
+  "artifact_id": 13244950919,
+  "artifact_sha256": "878035db232af0eb28071d8ad5419dc6e65e8c142871c0719f146c3dd47ca3a4",
+  "workflow_conclusion": "failure",
+  "original_lock_update_and_check": "PASS",
+  "lock_matches_committed_bytes": true,
+  "i18n_config_bazel_library": "PASS; 1526 actions; 112.635 seconds",
+  "zip_bazel_library": "FAIL during repository analysis: existing zstd-sys 2.1.2 patch content mismatch",
+  "scope": "No complete workspace/CI/production claim",
+  "files": {
+    "i18n-crate-build.log": {
+      "bytes": 11882,
+      "sha256": "54b7e4820a76d092dc9ff80a6601d7b60e4c033708e22bbc30ce88a208aa3dba"
+    },
+    "i18n-generated-target.bazel": {
+      "bytes": 27904,
+      "sha256": "d64064c7fc7180f4ddfb40081e24e9b3242d6404f652c3c6bdd49d855de95043"
+    },
+    "zip-crate-build.log": {
+      "bytes": 2774,
+      "sha256": "b9eae82c0e473678002c691b9123a5e72210f572d46246bf78d9f7d32ffe310e"
+    },
+    "bazel-lock-check.log": {
+      "bytes": 905,
+      "sha256": "b05ee9fe8b990cb532691b39136d87388646d59ca44d09debe5fc63b595b6676"
+    },
+    "zip-generated-target.bazel": {
+      "bytes": 189921,
+      "sha256": "a58292815f54485de3a60639b25f41dfa7f612c305fd445194c80b9f5ef7505a"
+    },
+    "source-inputs.sha256": {
+      "bytes": 172,
+      "sha256": "e9718545634520c73eb7a11d2d47e537e36dc3150a3977e4a4d08661b41f162d"
+    },
+    "source-commit.txt": {
+      "bytes": 41,
+      "sha256": "cca5e25ac96e17953939061318f698d547041b2565fdbf335c8325beb89e51ec"
+    },
+    "bazel-lock-update.log": {
+      "bytes": 2148,
+      "sha256": "d50f0c98fa797da34e37cdee14ddf7db9c15ed77479305f10030b373815db620"
+    },
+    "zip-generated-target.log": {
+      "bytes": 705,
+      "sha256": "149a3422419d331474b0acb9a5773eefad107277580bcf20c06f265ed2bc3735"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1661637,
+      "sha256": "8a20bf1a4a4755f970511e2d6b860665473d2928d43a8fd3b5da9a7a668bf024"
+    },
+    "i18n-generated-target.log": {
+      "bytes": 146,
+      "sha256": "f72e8ef68dc994b1777bc624acc290b744a0aaf74edf4c0531c56dc9d3dc7a50"
+    }
+  }
+}
