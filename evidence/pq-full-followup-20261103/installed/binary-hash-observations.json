@@ -1,0 +1,62 @@
+{
+  "artifact": {
+    "id": 13233273505,
+    "name": "hepta-cell-installed-x64-source-head-a7c523f366de3aaf9bce923be885ad275d0ecc22-1",
+    "size_in_bytes": 41009316,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13233273505",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13233273505/zip",
+    "expired": false,
+    "created_at": "2026-11-03T13:15:19Z",
+    "expires_at": "2026-11-17T13:15:17Z",
+    "updated_at": "2026-11-03T13:15:19Z",
+    "digest": "sha256:cd46b5985d874fc9a292a41270a8b33e257bbd418537fbc76cf6c93a92a3082e",
+    "workflow_run": {
+      "id": 41634290628,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "fix/hepta-pn-cell-closure-20261031",
+      "head_sha": "a7c523f366de3aaf9bce923be885ad275d0ecc22"
+    }
+  },
+  "observations": [
+    {
+      "path": "current-from-zero/public_v3_from_zero",
+      "bytes": 10408296,
+      "sha256": "6db78d1b8c165f15d3bf073ee039bad99589807790640a65040e53fc38c65f4c"
+    },
+    {
+      "path": "current-node-pq.gz",
+      "bytes": 7951825,
+      "sha256": "d5e30117f4020bfa42ef9bd37ebcadaa4061e7203734f18cdca444e19a31d660",
+      "decompressed_bytes": 21419904,
+      "decompressed_sha256": "0505167c70a4824e51160c9dee92277cd1fba04939fd9b41fd8af4e3c54a3523"
+    },
+    {
+      "path": "trnm-cell.gz",
+      "bytes": 1595224,
+      "sha256": "9c75430d95864e183924c6e3012c361b3eed8370fca10379bf20ac198a1def0f",
+      "decompressed_bytes": 3450424,
+      "decompressed_sha256": "b577ad871efac94744c3feb208cba05bad2ac9ffe5a663388d2e69fc1af018d5"
+    }
+  ],
+  "omitted_members": [
+    {
+      "path": "current-from-zero/public_v3_from_zero",
+      "bytes": 10408296,
+      "sha256": "6db78d1b8c165f15d3bf073ee039bad99589807790640a65040e53fc38c65f4c",
+      "reason": "binary bytes omitted; original digest and independent hash observation retained"
+    },
+    {
+      "path": "current-node-pq.gz",
+      "bytes": 7951825,
+      "sha256": "d5e30117f4020bfa42ef9bd37ebcadaa4061e7203734f18cdca444e19a31d660",
+      "reason": "binary bytes omitted; original digest and independent hash observation retained"
+    },
+    {
+      "path": "trnm-cell.gz",
+      "bytes": 1595224,
+      "sha256": "9c75430d95864e183924c6e3012c361b3eed8370fca10379bf20ac198a1def0f",
+      "reason": "binary bytes omitted; original digest and independent hash observation retained"
+    }
+  ]
+}

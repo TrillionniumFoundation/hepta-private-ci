@@ -26,6 +26,9 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
+#[path = "support/taskflow_write_contention_tests.rs"]
+mod write_contention_tests;
+
 struct Fixture {
     _temp: tempfile::TempDir,
     layout: HeptaAgentLayout,

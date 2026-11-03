@@ -18,6 +18,7 @@ use codex_hepta_types::Digest32;
 use crate::AppendDisposition;
 use crate::AppendReceipt;
 use crate::DurableLedgerError;
+use crate::LearningAuthenticationProfile;
 use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerEvent;
@@ -78,15 +79,38 @@ impl SegmentedLedger {
         binding: Digest32,
         limits: LedgerSegmentLimits,
     ) -> Result<Self, DurableLedgerError> {
+        Self::create_with_authentication_profile(
+            owner_lock,
+            first_segment,
+            binding,
+            limits,
+            LearningAuthenticationProfile::ClassicalV1,
+        )
+    }
+
+    pub fn create_with_authentication_profile(
+        owner_lock: File,
+        first_segment: File,
+        binding: Digest32,
+        limits: LedgerSegmentLimits,
+        profile: LearningAuthenticationProfile,
+    ) -> Result<Self, DurableLedgerError> {
         validate(binding, limits)?;
         let owner = LockedFile::acquire(owner_lock)?;
         let mut active = LockedFile::acquire(first_segment)?;
         let predecessor = empty_anchor();
-        segment_codec::initialize(&mut active, binding, limits, /*index*/ 0, predecessor)?;
+        segment_codec::initialize(
+            &mut active,
+            binding,
+            limits,
+            /*index*/ 0,
+            predecessor,
+            profile,
+        )?;
         Ok(Self {
             _owner: owner,
             active,
-            core: LearningLedger::new(),
+            core: LearningLedger::new_with_authentication_profile(profile),
             binding,
             limits,
             index: 0,
@@ -109,6 +133,24 @@ impl SegmentedLedger {
         limits: LedgerSegmentLimits,
         minimum: LedgerSegmentCheckpoint,
     ) -> Result<Self, DurableLedgerError> {
+        Self::recover_with_authentication_profile(
+            owner_lock,
+            segments,
+            binding,
+            limits,
+            minimum,
+            LearningAuthenticationProfile::ClassicalV1,
+        )
+    }
+
+    pub fn recover_with_authentication_profile(
+        owner_lock: File,
+        segments: Vec<File>,
+        binding: Digest32,
+        limits: LedgerSegmentLimits,
+        minimum: LedgerSegmentCheckpoint,
+        profile: LearningAuthenticationProfile,
+    ) -> Result<Self, DurableLedgerError> {
         validate(binding, limits)?;
         if segments.is_empty() || segments.len() > MAX_LEDGER_SEGMENTS {
             return Err(DurableLedgerError::InvalidLimit);
@@ -118,7 +160,7 @@ impl SegmentedLedger {
         if minimum.segment >= count {
             return Err(DurableLedgerError::AcknowledgedHistoryMissing);
         }
-        let mut core = LearningLedger::new();
+        let mut core = LearningLedger::new_with_authentication_profile(profile);
         let mut final_file = None;
         for (index, file) in segments.into_iter().enumerate() {
             let mut file = LockedFile::acquire(file)?;
@@ -232,7 +274,12 @@ impl SegmentedLedger {
         if expected.sequence == self.predecessor.sequence {
             return Err(DurableLedgerError::InvalidAnchor);
         }
-        let footer = segment_codec::footer(self.binding, self.index, expected);
+        let footer = segment_codec::footer(
+            self.binding,
+            self.index,
+            expected,
+            self.core.authentication_profile(),
+        );
         self.poisoned = true;
         if self.active.seek(SeekFrom::End(0))? != self.length {
             return Err(DurableLedgerError::Corrupt);
@@ -272,6 +319,7 @@ impl SegmentedLedger {
             self.limits,
             self.index + 1,
             expected,
+            self.core.authentication_profile(),
         )?;
         self.active = next;
         self.index += 1;

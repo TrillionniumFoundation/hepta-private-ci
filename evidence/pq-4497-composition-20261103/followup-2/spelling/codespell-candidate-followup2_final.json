@@ -1,0 +1,61 @@
+{
+  "base_head": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "version": "2.4.3",
+  "local_python": "3.12.14",
+  "ci_action_ref": "8f01853be192eb0f849a5c7d721450e7a467c579",
+  "command": [
+    "/workspace/scratch/df0a4a720ed8/hepta-pq/codespell-2.4.3/bin/codespell",
+    "--count",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git"
+  ],
+  "cwd": "/workspace/scratch/df0a4a720ed8/hepta-pq/codespell-candidate-followup2_final",
+  "returncode": 0,
+  "elapsed_seconds": 8.971,
+  "log": "codespell-candidate-followup2_final.log",
+  "log_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+  "dictionary_sha256": "becad0f381d1a654a79908cc05ccd87d85d032f962b427ae28184ca895d77eaf",
+  "config_sha256": "3698e08e5ee9e6c9c169b5b35a7cfb33927ce369d621b07a2dca2a717efc6717",
+  "tracked_paths": 11094,
+  "present_tracked_paths": 9838,
+  "missing_tracked_paths": 1256,
+  "followup_evidence_paths": 78,
+  "total_selected_paths": 9916,
+  "manifests": {
+    "input-manifest.jsonl": {
+      "file": "codespell-candidate-followup2_final-input-manifest.jsonl.gz",
+      "raw_bytes": 1918089,
+      "raw_sha256": "1275d25121d24f37f38b79060aa0b96ef006f725e999a10e299adb49f9e4911a",
+      "gzip_bytes": 523452,
+      "gzip_sha256": "fd4f3ee1775826ca8e21d5368c92535dd3ca69cd7039e244ddd11937cb3fd1cd"
+    },
+    "selected-paths.txt": {
+      "file": "codespell-candidate-followup2_final-selected-paths.txt.gz",
+      "raw_bytes": 589752,
+      "raw_sha256": "cc6fade5c7bd608d45cd4f2718aa15a54becdcf037ab28ae17f40ce54f1779f1",
+      "gzip_bytes": 69422,
+      "gzip_sha256": "3e3dc22c16934d3331360e00d325270c940c61b4d2b05bd29f0c8221badbe31e"
+    },
+    "missing-paths.txt": {
+      "file": "codespell-candidate-followup2_final-missing-paths.txt.gz",
+      "raw_bytes": 86435,
+      "raw_sha256": "50a7548e0cc7f165a66c781bdc30487618f2cdf9cbab275b4383f950593af31e",
+      "gzip_bytes": 12256,
+      "gzip_sha256": "cf70c149f7e79219458a826ae37efa102f7d000d6a910642044536845dbf7eda"
+    }
+  },
+  "all_selected_source_and_snapshot_bytes_unchanged": true,
+  "base_head_unchanged": true,
+  "immutable_compiler_log_sha256_before": "d510782c8bee3c41c4cbb6de29163fba78ae5dc3e0cf76c35de93d182bc9109d",
+  "immutable_compiler_log_sha256_after": "d510782c8bee3c41c4cbb6de29163fba78ae5dc3e0cf76c35de93d182bc9109d",
+  "limitations": [
+    "Local available candidate files, not the full remote checkout",
+    "The exact missing base paths are recorded and were not scanned",
+    "Local Python differs from the CI Python 3.13 Alpine container",
+    "Present tracked files plus all files in the new follow-up evidence directory",
+    "This receipt and its output files are saved outside the scanned candidate",
+    "No scanner options, configuration exclusions or raw evidence bytes were changed"
+  ]
+}

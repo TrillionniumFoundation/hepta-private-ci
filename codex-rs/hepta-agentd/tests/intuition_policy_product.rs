@@ -68,9 +68,9 @@ fn sign(
         issued_at: 100,
         expires_at: 200,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes().into();
     evidence
 }
 
@@ -222,21 +222,21 @@ fn agentd_calls_authenticated_current_intuition_policy_with_owner_pins() {
                 TrustedLearningSignerV1 {
                     principal: principals[0].clone(),
                     controller_id: id("controller:agentd-generator"),
-                    verifying_key: keys[0].verifying_key().to_bytes(),
+                    verifying_key: keys[0].verifying_key().to_bytes().into(),
                     roles: vec![LearningEvidenceRoleV1::Generator],
                     revoked_at: None,
                 },
                 TrustedLearningSignerV1 {
                     principal: principals[1].clone(),
                     controller_id: id("controller:agentd-evaluator"),
-                    verifying_key: keys[1].verifying_key().to_bytes(),
+                    verifying_key: keys[1].verifying_key().to_bytes().into(),
                     roles: vec![LearningEvidenceRoleV1::Evaluator],
                     revoked_at: None,
                 },
                 TrustedLearningSignerV1 {
                     principal: principals[2].clone(),
                     controller_id: id("controller:agentd-observer"),
-                    verifying_key: keys[2].verifying_key().to_bytes(),
+                    verifying_key: keys[2].verifying_key().to_bytes().into(),
                     roles: vec![LearningEvidenceRoleV1::Observer],
                     revoked_at: None,
                 },

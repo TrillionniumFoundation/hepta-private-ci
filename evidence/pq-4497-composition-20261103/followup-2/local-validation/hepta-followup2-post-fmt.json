@@ -1,0 +1,26 @@
+{
+  "schema": "hepta-followup2-post-format-static-validation-v1",
+  "base_commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "changed_paths": [
+    "codex-rs/hepta-agentd/BUILD.bazel",
+    "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+    "codex-rs/hepta-infer-worker-host/BUILD.bazel"
+  ],
+  "input_sha256": {
+    "codex-rs/hepta-infer-worker-host/BUILD.bazel": "4ab781703229cfd6c9de8e2047b9e96ce88e24b7d03a1d5a745b80c07b15dca5",
+    "codex-rs/hepta-agentd/BUILD.bazel": "1c9e8b8c98ed4a31469bf437bd0b676e67d866398b6e2a4c94d8dc17e68e20eb",
+    "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs": "92df0882cdd16274e374c8056181503338118958162362c2e6e4f61a4fa8fba3"
+  },
+  "original_just_fmt_exit_code": 0,
+  "format_receipt": "hepta-followup2-fmt.json",
+  "formatted_bytes_equal_independently_reviewed_proposals": true,
+  "bazel_rust_source_closure": {
+    "known_cross_crate_files": 7,
+    "missing_declared_inputs_after_patch": [],
+    "restricted_visibility_unchanged": true
+  },
+  "provider_effect_assertion_condition_preserved": true,
+  "provider_effect_diagnostic_only": true,
+  "provider_effect_133_of134_failure_fixed": false,
+  "native_rerun_or_rust_recompile": false
+}

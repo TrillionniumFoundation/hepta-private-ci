@@ -1,0 +1,89 @@
+{
+  "base_head": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "prior_failed_strict_log": "pq-audit/hepta-scoped-clippy-2.log",
+  "prior_failed_strict_log_sha256": "7f126966b570514978e63827d9d856a68988cd1ce20f186cc29b41bf737a6fe6",
+  "changed_files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "before_sha256": "896617d8e4fdec7c495bb4de063de39f848cfc1d2746ac22a7095fb86a2c45f9",
+      "after_sha256": "c30f1a93d51b07e5d5c057d556c6a685b770a54496d1f4f1ea6c7db050b4bc4d",
+      "original_assertions_preserved": 14,
+      "tests_preserved": [
+        "actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry",
+        "actual_external_cas_is_exact_durable_and_never_replaced_by_local_state"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_learning_tests.rs",
+      "before_sha256": "9485dec7f8c5bd43ae722784f49b56cc1e2dc978ccd42afebd7b09461dd0156a",
+      "after_sha256": "b5ccabde1c6a15f6adc06401e21966876a24717e908ba72e3fa72f1874131801",
+      "original_assertions_preserved": 7,
+      "tests_preserved": [
+        "external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart"
+      ]
+    }
+  ],
+  "patch_sha256": "b93c826bd98f7dbd76fde3f45a58cb6e7a595c77b1205d727f484740f9c9d126",
+  "all_helper_consumers": [
+    "codex-rs/hepta-contracts/src/authority_trust_learning_tests.rs",
+    "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs"
+  ],
+  "all_helper_calls": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_learning_tests.rs",
+      "line": 24,
+      "helper": "TestService::start",
+      "handling": "propagates Result with ?"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_learning_tests.rs",
+      "line": 49,
+      "helper": "signed",
+      "handling": "returns Result to fallible service handler"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 69,
+      "helper": "key",
+      "handling": "propagates Result with ?"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 138,
+      "helper": "TestService::start",
+      "handling": "tail returns Result from frontier_service"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 169,
+      "helper": "signed",
+      "handling": "returns Result to fallible service handler"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 179,
+      "helper": "TestService::start",
+      "handling": "propagates Result with ?"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 184,
+      "helper": "signed",
+      "handling": "propagates Result with ?"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 245,
+      "helper": "frontier_service",
+      "handling": "propagates Result with ?"
+    }
+  ],
+  "checks": [
+    "Helper implementation matches previously reviewed and strict-compiled host helper after whitespace normalization",
+    "No unwrap or expect remains in non-test helper implementation; original test-body unwrap calls are retained",
+    "All original assertion expressions, three test names, seeds, request bounds, request counts, timeout values and signed negative cases remain",
+    "Service errors and thread panics still fail through Drop; filesystem write, file sync, rename and directory sync preserve order",
+    "Initial UnixListener bind errors propagate as test failure; no platform skip or permission bypass added"
+  ],
+  "validation": "Rustfmt 1.96 completed; original full strict Clippy remains pending; no claim that the three original AF_UNIX tests passed after this change"
+}

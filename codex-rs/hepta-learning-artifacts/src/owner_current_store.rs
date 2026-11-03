@@ -75,6 +75,7 @@ impl CurrentArtifactStoreV1<'_> {
             current.witness_digest,
             current.trust_digest,
             self.verifier.current_validity(&current.signed, now)?,
+            self.verifier.profile,
         ))
     }
 
@@ -179,7 +180,11 @@ impl CurrentArtifactStoreV1<'_> {
             now,
             /*require_current*/ true,
         )?;
-        if now > latest.signed.witness.expires_at {
+        if self
+            .verifier
+            .profile
+            .expired_at(now, latest.signed.witness.expires_at)
+        {
             return Err(ArtifactOwnerHostError::CurrentHeadExpired);
         }
         Ok(Some(latest))
@@ -211,9 +216,16 @@ impl CurrentArtifactStoreV1<'_> {
             /*require_current_signer*/ false,
         )?;
         let path = self.signed_head_record_path(anchor);
-        if !path.is_file()
-            || read_small_record(&path, MAX_SMALL_RECORD_BYTES)? != encode_signed_head(anchor)
-        {
+        if !path.is_file() {
+            return Err(ArtifactOwnerHostError::CurrentHeadRollback);
+        }
+        let stored = decode_signed_head(&read_small_record(&path, MAX_SMALL_RECORD_BYTES)?)?;
+        self.verifier.verify_signed_head(
+            &stored,
+            &requirement,
+            /*require_current_signer*/ false,
+        )?;
+        if !authentication::same_authenticated_head(&stored, anchor) {
             return Err(ArtifactOwnerHostError::CurrentHeadRollback);
         }
         let latest = latest.ok_or(ArtifactOwnerHostError::CurrentHeadRollback)?;

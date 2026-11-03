@@ -1,0 +1,179 @@
+{
+  "kind": "independent-source-review",
+  "reviewed_at_utc": "2026-11-01T08:06:44.778772+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "f0f1f16898c2f9737461a28752b421fe52e65ee7",
+  "base_tree": "81d52b6ea085a2b4e913cbea027d8198febc3046",
+  "reviewer": "wan_acceptance",
+  "must_fix_findings": [],
+  "pending_publication_binding": "Replace temporary cea95 Chain pin/tree and manifest digest atomically with root successor source identity; regenerate changed-file records and review those binding-only changes.",
+  "temporary_chain_commit": "cea95fb44d8152a0eb1138727619fcced056f496",
+  "temporary_chain_tree": "22df9ea34daaf960fdfe6c154f043a47c82c338c",
+  "files": [
+    {
+      "path": "scripts/hepta_smollm_execution_source_v1.py",
+      "bytes": 9453,
+      "git_blob": "0035e4735ec1bb64f510060031e21a65702220ef",
+      "sha256": "186f39a19b0aaa8955c65d785e1f000b13afa7d01f1a09586fce886a76971cf8",
+      "baseline_blob": "4f7e6a48d64a7eba65a9c2996f182b9eff631a95"
+    },
+    {
+      "path": "scripts/hepta_neural_study_diverse_v3.py",
+      "bytes": 16987,
+      "git_blob": "e524f6825bd0940d94defdec803abef4d482dbbb",
+      "sha256": "5aa5e2894968db52b96093cb60a129398fd287b0c1a887857049239561304b1e",
+      "baseline_blob": "1eaf1dc79a0faf12f60494b054afefea74f14288"
+    },
+    {
+      "path": "scripts/hepta_neural_evidence_diverse_v3.py",
+      "bytes": 23676,
+      "git_blob": "a2a0b07010644f79a30dfa4cf15a0697ea288b24",
+      "sha256": "202f4184340400605d6d1de01926e1543c7c7905b8acce5c5db88ca90bd4fe5f",
+      "baseline_blob": "dd92cf8f54c83898b6490f8a638f19afe5d7aa06"
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v1.py",
+      "bytes": 21354,
+      "git_blob": "211e6422a925fda7819e7821108075ecd9fc47de",
+      "sha256": "2ee455be7bfc39e9707f9434050ae5b282566d5206fe9ab749770d114d9e6fd6",
+      "baseline_blob": "995c027bc911208686b0fe38ca15559db73dedaa"
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v5.py",
+      "bytes": 8344,
+      "git_blob": "9a64c4aa6dad7aa76f2a5792f2a7bd3d5a87a475",
+      "sha256": "fcd700ef89edf4960ba55df11c2e9be0953ae3af5fb49876070f3c385324b153",
+      "baseline_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v5.json",
+      "bytes": 7086,
+      "git_blob": "605f8c3bb87bd282903f5913f1d6f534875893d6",
+      "sha256": "8efce2c6d4089fe835bdda4019163fccdb38daa4374f3174ebdcbd4f732eb4cc",
+      "baseline_blob": null
+    },
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "bytes": 87542,
+      "git_blob": "34cffd0b9970fcc4436c8dc825cc8eccbe0b7786",
+      "sha256": "fd01ba85737d467fcd0d6215c4a388df12c8f603c0ad5a375945c6f33364a243",
+      "baseline_blob": "4285305d239e8615a4a03ab31e27d7c8551f543f"
+    }
+  ],
+  "findings": [
+    "All five pre-existing non-installed jobs are YAML-identical to the reviewed f0f1 baseline; historical c165 source-head/base-merge x64/arm observations remain separate.",
+    "All four historical execution manifests and original profile/source files retain f0f1 Git blobs; all eighteen previous literal constants retain their values.",
+    "V5 explicitly selects one exact Chain commit/tree. The new schema requires chain_tree; manifest bytes are digest-bound; unknown/unfrozen/mutated selections fail before Chain module import.",
+    "Diverse training binds TRAINING_COMMIT/TRAINING_TREE before runtime import, verifies both training/runtime checkouts, and retains original material/training budgets. The reader checks all four Chain roles against V5 and refuses inherited source records.",
+    "All 42 V5 closure files match current Chain bytes by size and SHA256. This source binding grants no model compatibility, product qualification or installation authority.",
+    "Native selectors are source-confirmed: 14 PQ startup tests; 16 History registrations minus only ignored kill-child = 15 direct tests; 3+4 growth CLI tests. The parent actually starts ignored child, issues SIGKILL at five cuts and checks recovery; child stdout is suppressed, so it cannot inflate parent passed-test counts.",
+    "Original current from-zero host wrapper, four-argument child argv, five exact native cases, 900-second build and 90-second case limits remain unmodified. The actual fixed Host validation and nonzero failures remain mandatory; no fallback is added.",
+    "Installed job keeps its original 60-minute timeout and non-source environment. PQ binary gzip/SHA is retained before subsequent default-feature builds can overwrite the shared target path."
+  ],
+  "independent_executed_python_controls": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_smollm_execution_source*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 4.542771742999321,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "1778ffe649ecf5cfa3f27dec2cd5d9094032aab9139ef6ac8c198f2889461ef0",
+      "stderr_tail": "_rehashed_manifest) ... ok\ntest_unfrozen_source_cannot_import_diverse_training (test_hepta_smollm_execution_source_v5.ExecutionSourceV5Tests.test_unfrozen_source_cannot_import_diverse_training) ... ok\n\n----------------------------------------------------------------------\nRan 51 tests in 4.450s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_neural_*diverse_v3.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 0.617296341999463,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5612675c7d3295c2b96c771bf9b4186a85075db4a7614971e1bbb6c0041eab8b",
+      "stderr_tail": ") ... ok\ntest_unpublished_training_pin_fails_before_any_git_or_owner_call (test_hepta_neural_study_diverse_v3.DiverseStudyTests.test_unpublished_training_pin_fails_before_any_git_or_owner_call) ... ok\n\n----------------------------------------------------------------------\nRan 32 tests in 0.534s\n\nOK\n"
+    }
+  ],
+  "bash_syntax_checks": [
+    {
+      "step_index": 1,
+      "name": "Require an exact installed-profile source and exercise artifact rejection controls",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 3,
+      "name": "Prepare the original native compiler and platform prerequisites",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 5,
+      "name": "Verify source tree, lockfile, command, original logs and native image before use",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 6,
+      "name": "Run the fixed Chain's original source preflight",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 7,
+      "name": "Prepare the Chain's original pinned PQ provider with its real smoke controls",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 8,
+      "name": "Fetch the unchanged locked Chain dependencies",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 9,
+      "name": "Build the actual Cell binary with the unchanged default release profile",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 10,
+      "name": "Require all original 14 and protected-installed 8 controls with zero skips",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 11,
+      "name": "Exercise current PQ startup History recovery and original growth CLI",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step_index": 12,
+      "name": "Preserve original current-source pressure wrapper and all five native cases",
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ],
+  "limitations": [
+    "This review used seven local edited files and verified baseline blobs, not a published successor Hepta commit.",
+    "No actual installed native binary, current Node binary, provider, original CPU gate, WAN campaign, real model training/retrieval/install loop or migration was executed by this reviewer.",
+    "Current native additions cover x64 source-head only; historical four-lane c165 results cannot qualify the current source.",
+    "Passing 83 independent Python controls does not establish native runtime compatibility, PQ/growth composition, production readiness, independent acceptance or learning benefit."
+  ]
+}

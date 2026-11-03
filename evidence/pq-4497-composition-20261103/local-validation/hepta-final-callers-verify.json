@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python3",
+    "scripts/verify_hepta_callers.py",
+    "verify",
+    "--root",
+    "/workspace/scratch/df0a4a720ed8/hepta-source",
+    "--manifest",
+    "/workspace/scratch/df0a4a720ed8/hepta-source/CALLERS.toml"
+  ],
+  "base": "a6c58700d23efd575d2803637aa7d9203d27e7bf",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "exit_code": 0,
+  "elapsed_seconds": 73.562,
+  "log": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-final-callers-verify.log",
+  "log_sha256": "c4f47cb4b1bb8e5fb20d107891ac0bef21666d97effabe928fc2b15b4d5e05fa"
+}

@@ -1,0 +1,86 @@
+{
+  "command_provenance": "Reproduction argv is provided for convenience; the preserved original raw logs do not contain argv or a separately captured process-status record. Their terminal test summaries are retained. The final rerun records actual argv and process exit codes directly.",
+  "kind": "preserved-original-python-control-logs",
+  "logs": [
+    {
+      "gzip_sha256": "ff7dd80842bf7577ecc7458b0ecfecb7a1b161975f6e6a2fb1316c77afad0276",
+      "name": "execution-sources",
+      "new_execution": false,
+      "ok_terminal": true,
+      "raw_bytes": 9859,
+      "raw_sha256": "cb2b112dda51e67868af7066648fb60f69360296225d6a1be4fa410d39e6f696",
+      "reproduction_command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_smollm_execution_source*.py",
+        "-v"
+      ],
+      "saved_path": "before-final-pin/execution-sources.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/v5-all-source-controls.log",
+      "tests_reported": 51
+    },
+    {
+      "gzip_sha256": "fdd8bb1b99b6acb9e4bfa13120f38f63be83b3cb4fd43f9d3655068451833c81",
+      "name": "diverse-sources",
+      "new_execution": false,
+      "ok_terminal": true,
+      "raw_bytes": 6233,
+      "raw_sha256": "c9a37f274cb9ca591d67445688f815181df53adeb6fb085fb54be093f95a706b",
+      "reproduction_command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_neural_*diverse_v3.py",
+        "-v"
+      ],
+      "saved_path": "before-final-pin/diverse-sources.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/v5-final-diverse-controls.log",
+      "tests_reported": 32
+    },
+    {
+      "gzip_sha256": "f67e3c6eee4194b4dde1479c87d07ce8ba05468a98ee7de54609b5317bd7648d",
+      "name": "from-zero-host",
+      "new_execution": false,
+      "ok_terminal": true,
+      "raw_bytes": 3185,
+      "raw_sha256": "40afc3db69b2c9a915a7f952a453cd895a01b536bc03bddc4c1e05593708c1d5",
+      "reproduction_command": [
+        "python3",
+        "scripts/ci/test_from_zero_host_ci.py",
+        "-v"
+      ],
+      "saved_path": "before-final-pin/from-zero-host.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/from-zero-host-controls.log",
+      "tests_reported": 20
+    },
+    {
+      "gzip_sha256": "971482c51e6c82f417b2a03511122731670a23551f4d14c595481920ec6196a3",
+      "name": "from-zero-reader",
+      "new_execution": false,
+      "ok_terminal": true,
+      "raw_bytes": 12948,
+      "raw_sha256": "9e7c6c00e2f1c6ff719d329ea3d0a8e484573683831a1a0d612b0658da7cf79e",
+      "reproduction_command": [
+        "python3",
+        "scripts/ci/test_run_from_zero_native.py",
+        "-v"
+      ],
+      "saved_path": "before-final-pin/from-zero-reader.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/from-zero-reader-controls.log",
+      "tests_reported": 86
+    }
+  ],
+  "scope": "Original local controls before final source binding; final-controls.json is the separate actual rerun on the final source binding.",
+  "temporary_chain_commit": "cea95fb44d8152a0eb1138727619fcced056f496",
+  "temporary_chain_tree": "22df9ea34daaf960fdfe6c154f043a47c82c338c",
+  "total_tests_reported": 189
+}

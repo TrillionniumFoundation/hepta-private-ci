@@ -1,0 +1,25 @@
+diff --git a/codex-rs/hepta-authbus/src/settlement_issuer_tests.rs b/codex-rs/hepta-authbus/src/settlement_issuer_tests.rs
+index 5bcb4b2..fd00ecd 100644
+--- a/codex-rs/hepta-authbus/src/settlement_issuer_tests.rs
++++ b/codex-rs/hepta-authbus/src/settlement_issuer_tests.rs
+@@ -98,7 +98,7 @@ async fn caller_epoch_cannot_invent_a_durable_registration() {
+     hint.key_epoch = Generation::new(2).expect("generation");
+     let mut signed = evidence(&key, &reservation, SettlementStatus::Completed, 1, 1_600);
+     signed.claims.key_epoch = hint.key_epoch;
+-    signed.signature = key.sign(&signed.claims.signing_bytes()).to_bytes();
++    signed.signature = key.sign(&signed.claims.signing_bytes()).to_bytes().into();
+     assert!(matches!(
+         store.settle(&hint, &signed, sample(6, 1_600)).await,
+         Err(AuthBusAuthorityError::IssuerMissing)
+diff --git a/codex-rs/hepta-authbus/src/settlement_store_tests.rs b/codex-rs/hepta-authbus/src/settlement_store_tests.rs
+index 75bd8bb..581b7ed 100644
+--- a/codex-rs/hepta-authbus/src/settlement_store_tests.rs
++++ b/codex-rs/hepta-authbus/src/settlement_store_tests.rs
+@@ -4,6 +4,7 @@ use pretty_assertions::assert_eq;
+ use tempfile::TempDir;
+ 
+ use super::*;
++use crate::IssuerPurpose;
+ use crate::IssuerSpec;
+ use crate::PolicyDecision;
+ use crate::PolicySpec;

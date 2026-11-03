@@ -6,10 +6,12 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
+use codex_hepta_authbus::AuthBusAlgorithm;
+use codex_hepta_authbus::AuthBusVerifyingKey;
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 
 use crate::AgentdError;
@@ -25,6 +27,8 @@ pub(crate) struct TextTrust {
     public_key_hex: String,
     revoked: bool,
     thread_ids: Vec<String>,
+    #[serde(default)]
+    policy_revision: Option<u64>,
 }
 
 impl TextTrust {
@@ -33,7 +37,7 @@ impl TextTrust {
     pub fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
         let bytes = read_private_owner_file(path, identity, 16_384)?;
         let trust: Self = serde_json::from_slice(&bytes)?;
-        if trust.schema_version != 1
+        if !matches!(trust.schema_version, 1 | 2)
             || trust.agent_id != identity.agent_id.as_str()
             || trust.thread_ids.len() > 16
             || trust
@@ -46,23 +50,89 @@ impl TextTrust {
             ));
         }
         trust.issuer()?;
+        match trust.algorithm()? {
+            AuthBusAlgorithm::MlDsa65V2 => {
+                trust.owner_policy()?;
+            }
+            AuthBusAlgorithm::Ed25519V1 if trust.policy_revision.is_some() => {
+                return Err(invalid(
+                    "policy_revision requires the ML-DSA-65 owner profile",
+                ));
+            }
+            AuthBusAlgorithm::Ed25519V1 => {}
+        }
         Ok(trust)
     }
 
+    pub fn owner_policy(&self) -> Result<(Generation, Digest32), AgentdError> {
+        let revision = self
+            .policy_revision
+            .and_then(|revision| Generation::new(revision).ok())
+            .ok_or_else(|| {
+                invalid("PQ owner policy_revision must be explicitly set and nonzero")
+            })?;
+        let issuer = self.issuer()?;
+        let mut bytes = b"hepta.agentd.text-owner-policy.v1\0".to_vec();
+        for field in [
+            self.agent_id.as_bytes(),
+            issuer.issuer_id.as_str().as_bytes(),
+            issuer.verifying_key.as_bytes(),
+        ] {
+            bytes.extend_from_slice(&(field.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(field);
+        }
+        bytes.extend_from_slice(&issuer.key_epoch.get().to_be_bytes());
+        bytes.push(u8::from(self.revoked));
+        let mut threads: Vec<&str> = self.thread_ids.iter().map(String::as_str).collect();
+        threads.sort_unstable();
+        threads.dedup();
+        bytes.extend_from_slice(&(threads.len() as u64).to_be_bytes());
+        for thread in threads {
+            bytes.extend_from_slice(&(thread.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(thread.as_bytes());
+        }
+        Ok((revision, Digest32::of_bytes(&bytes)))
+    }
+
     pub fn issuer(&self) -> Result<IssuerRegistration, AgentdError> {
+        let algorithm = self.algorithm()?;
+        let verifying_key = match algorithm {
+            AuthBusAlgorithm::Ed25519V1 => {
+                AuthBusVerifyingKey::from_bytes(algorithm, &hex_bytes::<32>(&self.public_key_hex)?)
+            }
+            AuthBusAlgorithm::MlDsa65V2 => {
+                AuthBusVerifyingKey::from_pq_spki(&hex_bytes::<1974>(&self.public_key_hex)?)
+            }
+        }
+        .map_err(|_| invalid("invalid registered public key"))?;
         Ok(IssuerRegistration {
             issuer_id: StableId::new(&self.issuer_id)
                 .map_err(|error| invalid(&error.to_string()))?,
             key_epoch: Generation::new(self.key_epoch)
                 .map_err(|error| invalid(&error.to_string()))?,
-            verifying_key: VerifyingKey::from_bytes(&hex_bytes(&self.public_key_hex)?)
-                .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
+            verifying_key,
             revoked: self.revoked,
         })
     }
 
     pub fn permits(&self, thread_id: &str) -> bool {
         !self.revoked && self.thread_ids.iter().any(|id| id == thread_id)
+    }
+
+    pub fn algorithm(&self) -> Result<AuthBusAlgorithm, AgentdError> {
+        AuthBusAlgorithm::from_schema_version(self.schema_version)
+            .map_err(|_| invalid("unsupported owner authentication profile"))
+    }
+
+    /// The durable RunStart V1 journal still contains a classical signature.
+    /// A PQ owner cannot authorize it through the text migration's verifier.
+    pub fn require_run_start_v1(&self) -> Result<(), AgentdError> {
+        match self.algorithm()? {
+            AuthBusAlgorithm::Ed25519V1 => Ok(()),
+            AuthBusAlgorithm::MlDsa65V2 => Err(invalid(
+                "RunStart V1 does not support the active ML-DSA-65 authority profile",
+            )),
+        }
     }
 }
 

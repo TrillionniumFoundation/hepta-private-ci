@@ -1,0 +1,22 @@
+--- a/codex-rs/hepta-infer-worker-host/BUILD.bazel
++++ b/codex-rs/hepta-infer-worker-host/BUILD.bazel
+@@ -16,6 +16,8 @@
+         exclude = ["src/bin/**/*.rs"],
+     ) + [
+         "//codex-rs/hepta-agentd:src/cognitive_process_wire.rs",
++        "//codex-rs/hepta-agentd:src/cognitive_process_learning_auth.rs",
++        "//codex-rs/hepta-agentd:src/cognitive_process_learning_auth_tests.rs",
+         "//codex-rs/hepta-agentd:src/cognitive_process_evidence.rs",
+         "//codex-rs/hepta-agentd:src/cognitive_process_evaluation.rs",
+         "//codex-rs/hepta-agentd:src/cognitive_process_materials.rs",
+--- a/codex-rs/hepta-agentd/BUILD.bazel
++++ b/codex-rs/hepta-agentd/BUILD.bazel
+@@ -146,6 +146,8 @@
+ exports_files(
+     [
+         "src/cognitive_process_wire.rs",
++        "src/cognitive_process_learning_auth.rs",
++        "src/cognitive_process_learning_auth_tests.rs",
+         "src/cognitive_process_evidence.rs",
+         "src/cognitive_process_evaluation.rs",
+         "src/cognitive_process_materials.rs",

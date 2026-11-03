@@ -3,6 +3,7 @@
 use std::sync::Arc;
 
 use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::AuthBusVerifyingKey;
 use codex_hepta_authbus::QuotaReservation;
 use codex_hepta_authbus::ReservationRequest;
 use codex_hepta_authbus::ReservationState;
@@ -117,7 +118,7 @@ impl LedgerFundedControlledAggregate {
             funding: ControlledLedgerFunding {
                 owner,
                 reservation,
-                issuer_key: issuer.verifying_key.to_bytes(),
+                issuer_key: issuer.verifying_key,
                 issuer_id: issuer.issuer_id,
                 issuer_epoch: issuer.key_epoch,
                 time_provider,
@@ -163,7 +164,7 @@ pub(super) struct ControlledLedgerFunding {
     reservation: QuotaReservation,
     issuer_id: StableId,
     issuer_epoch: Generation,
-    issuer_key: [u8; 32],
+    issuer_key: AuthBusVerifyingKey,
     time_provider: Arc<dyn ControlledTrustedTimeProvider>,
 }
 
@@ -182,7 +183,7 @@ impl ControlledLedgerFunding {
             .settlement_issuer(&self.issuer_id, self.issuer_epoch)
             .await
             .map_err(|e| e.to_string())?;
-        if issuer.revoked || issuer.verifying_key.to_bytes() != self.issuer_key {
+        if issuer.revoked || issuer.verifying_key != self.issuer_key {
             return Err("controlled current settlement issuer differs".to_owned());
         }
         let time = self

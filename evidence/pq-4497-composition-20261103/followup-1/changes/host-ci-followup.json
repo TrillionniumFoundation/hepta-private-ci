@@ -1,0 +1,27 @@
+{
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/controlled_funding.rs",
+      "base_sha256": "4212a83884a1523855f1e89545ee4fe33a5e1ea2d89288118a5998f22dd9e63e",
+      "modified_sha256": "8ad4adb08ceaaa48781c2ab91cc43ca050dbed80925869deb5da87e0ea4580ce"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/controlled_ledger_source_route_tests.rs",
+      "base_sha256": "51ee672a1822a27980e99d6a3db9d5f3aa5eb01d9e1f32b532424a1b5faeae1e",
+      "modified_sha256": "1f933a20231fcb833cd104e2c85a8bf8516e3150d7bc117d22c5e4b2e8857223"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_study_roles_tests.rs",
+      "base_sha256": "9d16c012c107fbd1f3b83b9c944bd9cbbbde9a01ca2bb0399e26c24410aaf94e",
+      "modified_sha256": "d9bcdf07e7e0a5e20396ed9e51da67f109c7f43e0b6f5e32b8d4b041f313b193"
+    },
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "base_sha256": "0f36a9110731e100b160ba53dcc64a0f5cfa6869f3749e99cc178cbad01f4773",
+      "modified_sha256": "0e3bf46701083ddd11d61b1673dc35fa0c9b83544b878ed01322c141428c618b"
+    }
+  ],
+  "rust_validation": "pending env-agent original just fmt/test/fix",
+  "workflow_validation": "actionlint1.7.12 corrected PASS, publishedbaseline correctly rejected invalid runner context; actionlint-validation.json"
+}

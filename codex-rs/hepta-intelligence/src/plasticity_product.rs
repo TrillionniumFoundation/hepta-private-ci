@@ -658,7 +658,11 @@ fn validate_admission_binding(
 
 fn attestation_digest(evidence: &SignedLearningEvidenceV1) -> Digest32 {
     let mut bytes = evidence.signing_bytes();
-    bytes.extend_from_slice(&evidence.signature);
+    if evidence.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        bytes.extend_from_slice(&evidence.signature);
+    }
     Digest32::of_bytes(&bytes)
 }
 

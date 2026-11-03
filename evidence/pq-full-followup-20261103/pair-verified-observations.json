@@ -1,0 +1,233 @@
+{
+  "schema": "hepta-pair-retained-observations-v1",
+  "run_id": 41634290628,
+  "workload_rerun": false,
+  "failure_waived": false,
+  "whole_system_qualified": false,
+  "observations": [
+    {
+      "artifact_id": 13230248928,
+      "artifact_name": "hepta-pon-pair-ubuntu-24.04-source-head-1",
+      "original_zip_sha256": "sha256:72b774409a2dd0d324b7303c84ed37d17826492d6966b964d84633a61e4d1997",
+      "original_report_sha256": "3f61d836d131acf94e90cf547b0d6dde313fdd6b46fbf476139c1f25ba8fe9ed",
+      "source_tuple": "lane=source-head\nhepta_source=a7c523f366de3aaf9bce923be885ad275d0ecc22\nhepta_base=3a81000aae08c658276958d678874aca4db5eedd\nhepta_tested=a7c523f366de3aaf9bce923be885ad275d0ecc22\nchain_source=c16507147b65285ea94dead22d3b93c5db7295af\nchain_base=1d11f875493f8125e36b9adceacb342df108e5e5\nchain_tested=c16507147b65285ea94dead22d3b93c5db7295af\n",
+      "native_source": {
+        "commit": "c16507147b65285ea94dead22d3b93c5db7295af",
+        "tree": "20b8ab41b6004a199e11f5e598d32ec6f08238c2",
+        "tracked_source_identity": {
+          "schema": "trnm-ci-source-v1",
+          "kind": "head",
+          "tested_commit": "c16507147b65285ea94dead22d3b93c5db7295af",
+          "tested_tree": "20b8ab41b6004a199e11f5e598d32ec6f08238c2",
+          "candidate": "c16507147b65285ea94dead22d3b93c5db7295af",
+          "base": null,
+          "prospective_merge": null,
+          "tracked_worktree_verified": true,
+          "tracked_entries": 7485,
+          "tracked_bytes": 966070640,
+          "tests_executed_by_identity_check": false
+        },
+        "test_sha256": "6416076f2aa9e9b69a47195a3ff0b8e9d419f33c2ef226aa0d3c655a8871dc56"
+      },
+      "phases": [
+        {
+          "mode": "attack-free-baseline",
+          "original_window_ns": 4000000000,
+          "confirmed_transactions": 1,
+          "confirmation_latency_ns": 1308766696,
+          "full_native_state_equal": true,
+          "invariant_target_met": true,
+          "accounting_closed": true,
+          "verification_errors": [],
+          "successful_submissions": 7,
+          "last_submission_ended_ns": 311591601,
+          "successful_history_pages": 7,
+          "history_errors": []
+        },
+        {
+          "mode": "from-zero-pressure",
+          "original_window_ns": 4000000000,
+          "confirmed_transactions": 0,
+          "confirmation_latency_ns": null,
+          "full_native_state_equal": false,
+          "invariant_target_met": true,
+          "accounting_closed": true,
+          "verification_errors": [],
+          "successful_submissions": 7,
+          "last_submission_ended_ns": 2461187796,
+          "successful_history_pages": 3,
+          "history_errors": []
+        }
+      ]
+    },
+    {
+      "artifact_id": 13230359294,
+      "artifact_name": "hepta-pon-pair-ubuntu-24.04-base-merge-1",
+      "original_zip_sha256": "sha256:d1070d9b3252799604a0141e550a0b48f75cb446c1ad14ce62dc9083dd7b4728",
+      "original_report_sha256": "ab12ae083020cccfefd8a2a5d716e9c24b923f6a7b76377ffcbda69288086b42",
+      "source_tuple": "lane=base-merge\nhepta_source=a7c523f366de3aaf9bce923be885ad275d0ecc22\nhepta_base=3a81000aae08c658276958d678874aca4db5eedd\nhepta_tested=f561bfafef1171db955a886227de698e49609913\nchain_source=c16507147b65285ea94dead22d3b93c5db7295af\nchain_base=1d11f875493f8125e36b9adceacb342df108e5e5\nchain_tested=d1b8ae970bb5e014b6feaa49030823e1d8228c90\n",
+      "native_source": {
+        "commit": "d1b8ae970bb5e014b6feaa49030823e1d8228c90",
+        "tree": "20b8ab41b6004a199e11f5e598d32ec6f08238c2",
+        "tracked_source_identity": {
+          "schema": "trnm-ci-source-v1",
+          "kind": "head",
+          "tested_commit": "d1b8ae970bb5e014b6feaa49030823e1d8228c90",
+          "tested_tree": "20b8ab41b6004a199e11f5e598d32ec6f08238c2",
+          "candidate": "d1b8ae970bb5e014b6feaa49030823e1d8228c90",
+          "base": null,
+          "prospective_merge": null,
+          "tracked_worktree_verified": true,
+          "tracked_entries": 7485,
+          "tracked_bytes": 966070640,
+          "tests_executed_by_identity_check": false
+        },
+        "test_sha256": "6416076f2aa9e9b69a47195a3ff0b8e9d419f33c2ef226aa0d3c655a8871dc56"
+      },
+      "phases": [
+        {
+          "mode": "attack-free-baseline",
+          "original_window_ns": 4000000000,
+          "confirmed_transactions": 1,
+          "confirmation_latency_ns": 1378542949,
+          "full_native_state_equal": true,
+          "invariant_target_met": true,
+          "accounting_closed": true,
+          "verification_errors": [],
+          "successful_submissions": 7,
+          "last_submission_ended_ns": 304128246,
+          "successful_history_pages": 7,
+          "history_errors": []
+        },
+        {
+          "mode": "from-zero-pressure",
+          "original_window_ns": 4000000000,
+          "confirmed_transactions": 0,
+          "confirmation_latency_ns": null,
+          "full_native_state_equal": false,
+          "invariant_target_met": true,
+          "accounting_closed": true,
+          "verification_errors": [],
+          "successful_submissions": 7,
+          "last_submission_ended_ns": 2552411729,
+          "successful_history_pages": 2,
+          "history_errors": [
+            "IO: Resource temporarily unavailable (os error 11)"
+          ]
+        }
+      ]
+    },
+    {
+      "artifact_id": 13230881804,
+      "artifact_name": "hepta-pon-pair-ubuntu-24.04-arm-base-merge-1",
+      "original_zip_sha256": "sha256:ae6a2d1d3e0f08596cca7aa48fa2da3408bfcbcb7c25eaad37b33f4e1d1b7ec3",
+      "original_report_sha256": "78e4deeb2ae8ee9f6a9d86eab0a2af68894d1e2aba7afe09e8187f89641c222f",
+      "source_tuple": "lane=base-merge\nhepta_source=a7c523f366de3aaf9bce923be885ad275d0ecc22\nhepta_base=3a81000aae08c658276958d678874aca4db5eedd\nhepta_tested=f561bfafef1171db955a886227de698e49609913\nchain_source=c16507147b65285ea94dead22d3b93c5db7295af\nchain_base=1d11f875493f8125e36b9adceacb342df108e5e5\nchain_tested=d1b8ae970bb5e014b6feaa49030823e1d8228c90\n",
+      "native_source": {
+        "commit": "d1b8ae970bb5e014b6feaa49030823e1d8228c90",
+        "tree": "20b8ab41b6004a199e11f5e598d32ec6f08238c2",
+        "tracked_source_identity": {
+          "schema": "trnm-ci-source-v1",
+          "kind": "head",
+          "tested_commit": "d1b8ae970bb5e014b6feaa49030823e1d8228c90",
+          "tested_tree": "20b8ab41b6004a199e11f5e598d32ec6f08238c2",
+          "candidate": "d1b8ae970bb5e014b6feaa49030823e1d8228c90",
+          "base": null,
+          "prospective_merge": null,
+          "tracked_worktree_verified": true,
+          "tracked_entries": 7485,
+          "tracked_bytes": 966070640,
+          "tests_executed_by_identity_check": false
+        },
+        "test_sha256": "6416076f2aa9e9b69a47195a3ff0b8e9d419f33c2ef226aa0d3c655a8871dc56"
+      },
+      "phases": [
+        {
+          "mode": "attack-free-baseline",
+          "original_window_ns": 4000000000,
+          "confirmed_transactions": 1,
+          "confirmation_latency_ns": 1209546291,
+          "full_native_state_equal": true,
+          "invariant_target_met": true,
+          "accounting_closed": true,
+          "verification_errors": [],
+          "successful_submissions": 7,
+          "last_submission_ended_ns": 317647676,
+          "successful_history_pages": 7,
+          "history_errors": []
+        },
+        {
+          "mode": "from-zero-pressure",
+          "original_window_ns": 4000000000,
+          "confirmed_transactions": 0,
+          "confirmation_latency_ns": null,
+          "full_native_state_equal": false,
+          "invariant_target_met": true,
+          "accounting_closed": true,
+          "verification_errors": [],
+          "successful_submissions": 7,
+          "last_submission_ended_ns": 2172246388,
+          "successful_history_pages": 4,
+          "history_errors": [
+            "FRAME_DEADLINE"
+          ]
+        }
+      ]
+    },
+    {
+      "artifact_id": 13231007767,
+      "artifact_name": "hepta-pon-pair-ubuntu-24.04-arm-source-head-1",
+      "original_zip_sha256": "sha256:3b21dc8ac5f2fd90183ddf72ab9e3bbdafca9ac78685ac441fcd6d6349926ec7",
+      "original_report_sha256": "43c63cec1b8ddc152ada144a46d6a79cb5688d24ac2659bcd5a28796b0f62380",
+      "source_tuple": "lane=source-head\nhepta_source=a7c523f366de3aaf9bce923be885ad275d0ecc22\nhepta_base=3a81000aae08c658276958d678874aca4db5eedd\nhepta_tested=a7c523f366de3aaf9bce923be885ad275d0ecc22\nchain_source=c16507147b65285ea94dead22d3b93c5db7295af\nchain_base=1d11f875493f8125e36b9adceacb342df108e5e5\nchain_tested=c16507147b65285ea94dead22d3b93c5db7295af\n",
+      "native_source": {
+        "commit": "c16507147b65285ea94dead22d3b93c5db7295af",
+        "tree": "20b8ab41b6004a199e11f5e598d32ec6f08238c2",
+        "tracked_source_identity": {
+          "schema": "trnm-ci-source-v1",
+          "kind": "head",
+          "tested_commit": "c16507147b65285ea94dead22d3b93c5db7295af",
+          "tested_tree": "20b8ab41b6004a199e11f5e598d32ec6f08238c2",
+          "candidate": "c16507147b65285ea94dead22d3b93c5db7295af",
+          "base": null,
+          "prospective_merge": null,
+          "tracked_worktree_verified": true,
+          "tracked_entries": 7485,
+          "tracked_bytes": 966070640,
+          "tests_executed_by_identity_check": false
+        },
+        "test_sha256": "6416076f2aa9e9b69a47195a3ff0b8e9d419f33c2ef226aa0d3c655a8871dc56"
+      },
+      "phases": [
+        {
+          "mode": "attack-free-baseline",
+          "original_window_ns": 4000000000,
+          "confirmed_transactions": 1,
+          "confirmation_latency_ns": 1210610394,
+          "full_native_state_equal": true,
+          "invariant_target_met": true,
+          "accounting_closed": true,
+          "verification_errors": [],
+          "successful_submissions": 7,
+          "last_submission_ended_ns": 379547209,
+          "successful_history_pages": 7,
+          "history_errors": []
+        },
+        {
+          "mode": "from-zero-pressure",
+          "original_window_ns": 4000000000,
+          "confirmed_transactions": 0,
+          "confirmation_latency_ns": null,
+          "full_native_state_equal": false,
+          "invariant_target_met": true,
+          "accounting_closed": true,
+          "verification_errors": [],
+          "successful_submissions": 7,
+          "last_submission_ended_ns": 2350451371,
+          "successful_history_pages": 4,
+          "history_errors": []
+        }
+      ]
+    }
+  ]
+}

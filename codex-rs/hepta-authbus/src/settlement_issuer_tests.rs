@@ -98,7 +98,7 @@ async fn caller_epoch_cannot_invent_a_durable_registration() {
     hint.key_epoch = Generation::new(2).expect("generation");
     let mut signed = evidence(&key, &reservation, SettlementStatus::Completed, 1, 1_600);
     signed.claims.key_epoch = hint.key_epoch;
-    signed.signature = key.sign(&signed.claims.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.claims.signing_bytes()).to_bytes().into();
     assert!(matches!(
         store.settle(&hint, &signed, sample(6, 1_600)).await,
         Err(AuthBusAuthorityError::IssuerMissing)
