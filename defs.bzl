@@ -423,6 +423,7 @@ def codex_rust_crate(
         cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath :%s)" % binary
         rust_binary(
             name = binary,
+            crate_features = crate_features,
             crate_name = binary.replace("-", "_"),
             crate_root = main,
             deps = all_crate_deps() + maybe_deps + deps_extra,
@@ -583,6 +584,7 @@ def codex_rust_crate(
             # materialization, sharding, and flaky retry behavior.
             rust_test(
                 name = integration_test_binary,
+                crate_features = crate_features,
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -623,6 +625,7 @@ def codex_rust_crate(
             # Bazel's normal test environment.
             rust_test(
                 name = test_name,
+                crate_features = crate_features,
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -698,6 +701,7 @@ def codex_rust_crate(
 
         rust_test(
             name = windows_cross_test_binary,
+            crate_features = crate_features,
             crate_name = test_crate_name,
             crate_root = test,
             srcs = [test],
