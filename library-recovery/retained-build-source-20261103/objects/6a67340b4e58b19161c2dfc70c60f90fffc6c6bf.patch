@@ -1,0 +1,320 @@
+diff --git a/codex-rs/exec-server/src/authorized_read_error_tests.rs b/codex-rs/exec-server/src/authorized_read_error_tests.rs
+index 9eba834eeb48afb14656bf48d6cd427c2fd1d93e..c7187096e96213e9ffdfb61203afc8d9b51491ca 100644
+--- a/codex-rs/exec-server/src/authorized_read_error_tests.rs
++++ b/codex-rs/exec-server/src/authorized_read_error_tests.rs
+@@ -23,13 +23,27 @@ fn absent_malformed_unknown_and_wrong_method_metadata_is_not_classified() {
+         Some(serde_json::json!("permissionDenied")),
+         Some(serde_json::json!([])),
+         Some(serde_json::json!({})),
+-        Some(serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": "1", "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": 2, "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": 1, "kind": "unknown"})),
+-        Some(serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": 1, "kind": 1})),
+-        Some(serde_json::json!({"method": "fs/readFile", "version": 1, "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": 1, "kind": "permissionDenied", "extra": true})),
++        Some(
++            serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "kind": "permissionDenied"}),
++        ),
++        Some(
++            serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": "1", "kind": "permissionDenied"}),
++        ),
++        Some(
++            serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": 2, "kind": "permissionDenied"}),
++        ),
++        Some(
++            serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": 1, "kind": "unknown"}),
++        ),
++        Some(
++            serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": 1, "kind": 1}),
++        ),
++        Some(
++            serde_json::json!({"method": "fs/readFile", "version": 1, "kind": "permissionDenied"}),
++        ),
++        Some(
++            serde_json::json!({"method": FS_READ_FILE_AUTHORIZED_METHOD, "version": 1, "kind": "permissionDenied", "extra": true}),
++        ),
+     ];
+     for data in invalid_data {
+         let error = JSONRPCErrorError {
+@@ -62,5 +76,9 @@ fn recognized_metadata_requires_matching_legacy_error_code() {
+ #[test]
+ fn diagnostic_macos_arm_stable_handle_capability_is_required() {
+     assert!(cfg!(all(target_os = "macos", target_arch = "aarch64")));
+-    assert!(crate::local_environment_info().capabilities.stable_handle_authorized_read);
++    assert!(
++        crate::local_environment_info()
++            .capabilities
++            .stable_handle_authorized_read
++    );
+ }
+diff --git a/codex-rs/exec-server/src/client.rs b/codex-rs/exec-server/src/client.rs
+index 4417df29495880c89fbe299d560955d82383d2c1..7aed890bc0e4622c77ca9b2a32a630d596a20832 100644
+--- a/codex-rs/exec-server/src/client.rs
++++ b/codex-rs/exec-server/src/client.rs
+@@ -30,6 +30,8 @@ use tracing::debug;
+ use tracing::instrument::WithSubscriber;
+ 
+ use crate::ProcessId;
++use crate::authorized_read_error::AuthorizedReadFailure;
++use crate::authorized_read_error::AuthorizedReadRpcError;
+ use crate::client::http_client::response_body_stream::MAX_QUEUED_HTTP_BODY_BYTES;
+ use crate::client::http_client::response_body_stream::QueuedHttpBodyDelta;
+ use crate::client_api::ExecServerClientConnectOptions;
+@@ -122,8 +124,6 @@ use crate::protocol::TerminateParams;
+ use crate::protocol::TerminateResponse;
+ use crate::protocol::WriteParams;
+ use crate::protocol::WriteResponse;
+-use crate::authorized_read_error::AuthorizedReadFailure;
+-use crate::authorized_read_error::AuthorizedReadRpcError;
+ use crate::rpc::RpcCallError;
+ use crate::rpc::RpcClient;
+ use crate::rpc_server_requests::MAX_IN_FLIGHT_SERVER_CALLS;
+@@ -890,7 +890,11 @@ impl ExecServerClient {
+             .rpc_client()
+             .await
+             .map_err(AuthorizedReadRpcError::unclassified)?;
+-        map_authorized_read_rpc_result(rpc_client.call(FS_READ_FILE_AUTHORIZED_METHOD, &params).await)
++        map_authorized_read_rpc_result(
++            rpc_client
++                .call(FS_READ_FILE_AUTHORIZED_METHOD, &params)
++                .await,
++        )
+     }
+ 
+     pub async fn fs_open(&self, params: FsOpenParams) -> Result<FsOpenResponse, ExecServerError> {
+@@ -1744,13 +1748,17 @@ mod tests {
+         use super::map_authorized_read_rpc_result;
+ 
+         let failure = AuthorizedReadFailure::BoundExceeded;
+-        let error = map_authorized_read_rpc_result::<()>(Err(RpcCallError::Server(failure.rpc_error())))
+-            .expect_err("typed server error");
++        let error =
++            map_authorized_read_rpc_result::<()>(Err(RpcCallError::Server(failure.rpc_error())))
++                .expect_err("typed server error");
+         assert_eq!(error.failure, Some(failure));
+         let error = map_authorized_read_rpc_result::<()>(Err(RpcCallError::Closed))
+             .expect_err("closed transport");
+         assert_eq!(error.failure, None);
+-        assert!(matches!(error.error, super::ExecServerError::Disconnected(_)));
++        assert!(matches!(
++            error.error,
++            super::ExecServerError::Disconnected(_)
++        ));
+         assert!(map_authorized_read_rpc_result(Ok(())).is_ok());
+     }
+ 
+@@ -1758,20 +1766,29 @@ mod tests {
+     fn authorized_read_call_does_not_classify_old_or_unrecognized_peer_errors() {
+         for data in [
+             None,
+-            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 2, "kind": "permissionDenied"})),
+-            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "unknown"})),
+-            Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "boundExceeded"})),
++            Some(
++                serde_json::json!({"method": "fs/readFileAuthorized", "version": 2, "kind": "permissionDenied"}),
++            ),
++            Some(
++                serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "unknown"}),
++            ),
++            Some(
++                serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "boundExceeded"}),
++            ),
+         ] {
+-            let error = super::map_authorized_read_rpc_result::<()>(Err(super::RpcCallError::Server(
+-                codex_exec_server_protocol::JSONRPCErrorError {
++            let error = super::map_authorized_read_rpc_result::<()>(Err(
++                super::RpcCallError::Server(codex_exec_server_protocol::JSONRPCErrorError {
+                     code: -32600,
+                     message: "secret peer detail".to_string(),
+                     data,
+-                },
+-            )))
++                }),
++            ))
+             .expect_err("unrecognized metadata remains an error");
+             assert_eq!(error.failure, None);
+-            assert!(matches!(error.error, super::ExecServerError::Server { code: -32600, .. }));
++            assert!(matches!(
++                error.error,
++                super::ExecServerError::Server { code: -32600, .. }
++            ));
+         }
+     }
+ 
+diff --git a/codex-rs/exec-server/src/remote_file_system.rs b/codex-rs/exec-server/src/remote_file_system.rs
+index da7b3bbfcc1c303686a088b4540bbe548492ed8f..d2e06d780e1a291dcf036114e0f8ef1b63b56093 100644
+--- a/codex-rs/exec-server/src/remote_file_system.rs
++++ b/codex-rs/exec-server/src/remote_file_system.rs
+@@ -636,12 +636,23 @@ mod tests {
+         use crate::authorized_read_error::AuthorizedReadFailure;
+ 
+         for (failure, expected_kind, expected_message) in [
+-            (AuthorizedReadFailure::PermissionDenied, io::ErrorKind::PermissionDenied, "Permission denied"),
+-            (AuthorizedReadFailure::BoundExceeded, io::ErrorKind::InvalidData, "authorized file read exceeds bound"),
++            (
++                AuthorizedReadFailure::PermissionDenied,
++                io::ErrorKind::PermissionDenied,
++                "Permission denied",
++            ),
++            (
++                AuthorizedReadFailure::BoundExceeded,
++                io::ErrorKind::InvalidData,
++                "authorized file read exceeds bound",
++            ),
+         ] {
+             let error = map_classified_authorized_read_remote_error(AuthorizedReadRpcError {
+                 failure: Some(failure),
+-                error: ExecServerError::Server { code: failure.rpc_error().code, message: "secret peer detail".to_string() },
++                error: ExecServerError::Server {
++                    code: failure.rpc_error().code,
++                    message: "secret peer detail".to_string(),
++                },
+             });
+             assert_eq!(error.kind(), expected_kind);
+             assert_eq!(error.to_string(), expected_message);
+@@ -651,16 +662,43 @@ mod tests {
+     #[test]
+     fn old_peer_or_unknown_metadata_uses_existing_redacted_error_fallback() {
+         for (code, expected_kind, expected_message) in [
+-            (-32600, io::ErrorKind::InvalidInput, "remote authorized file read was rejected"),
+-            (-32602, io::ErrorKind::InvalidInput, "remote authorized file read was rejected"),
+-            (-32603, io::ErrorKind::Other, "remote authorized file read failed"),
+-            (-32601, io::ErrorKind::Unsupported, "remote exec-server does not support stable-handle authorized reads"),
+-            (-32004, io::ErrorKind::NotFound, "remote authorized file is unavailable"),
+-            (-32099, io::ErrorKind::Other, "remote authorized file read failed"),
++            (
++                -32600,
++                io::ErrorKind::InvalidInput,
++                "remote authorized file read was rejected",
++            ),
++            (
++                -32602,
++                io::ErrorKind::InvalidInput,
++                "remote authorized file read was rejected",
++            ),
++            (
++                -32603,
++                io::ErrorKind::Other,
++                "remote authorized file read failed",
++            ),
++            (
++                -32601,
++                io::ErrorKind::Unsupported,
++                "remote exec-server does not support stable-handle authorized reads",
++            ),
++            (
++                -32004,
++                io::ErrorKind::NotFound,
++                "remote authorized file is unavailable",
++            ),
++            (
++                -32099,
++                io::ErrorKind::Other,
++                "remote authorized file read failed",
++            ),
+         ] {
+-            let error = map_classified_authorized_read_remote_error(AuthorizedReadRpcError::unclassified(
+-                ExecServerError::Server { code, message: "secret peer detail".to_string() },
+-            ));
++            let error = map_classified_authorized_read_remote_error(
++                AuthorizedReadRpcError::unclassified(ExecServerError::Server {
++                    code,
++                    message: "secret peer detail".to_string(),
++                }),
++            );
+             assert_eq!(error.kind(), expected_kind);
+             assert_eq!(error.to_string(), expected_message);
+         }
+diff --git a/codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs b/codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs
+index 5e558fa6bb21f9fcdb10c960e4942a4b1ddc0b11..134b5c85e8a7368946b97df04ed14827095099fb 100644
+--- a/codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs
++++ b/codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs
+@@ -309,7 +309,9 @@ async fn authorized_read_recognized_metadata_survives_framed_rpc_without_fallbac
+             2
+         ]
+     );
+-    server.await.expect("recording server must reject fallback requests");
++    server
++        .await
++        .expect("recording server must reject fallback requests");
+ }
+ 
+ #[tokio::test]
+@@ -321,13 +323,25 @@ async fn authorized_read_unrecognized_metadata_keeps_legacy_errors_without_read_
+         Some(serde_json::json!([])),
+         Some(serde_json::json!({})),
+         Some(serde_json::json!({"method": "fs/readFileAuthorized", "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": "1", "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1.0, "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 2, "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "unknown"})),
++        Some(
++            serde_json::json!({"method": "fs/readFileAuthorized", "version": "1", "kind": "permissionDenied"}),
++        ),
++        Some(
++            serde_json::json!({"method": "fs/readFileAuthorized", "version": 1.0, "kind": "permissionDenied"}),
++        ),
++        Some(
++            serde_json::json!({"method": "fs/readFileAuthorized", "version": 2, "kind": "permissionDenied"}),
++        ),
++        Some(
++            serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "unknown"}),
++        ),
+         Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": 1})),
+-        Some(serde_json::json!({"method": "fs/readFile", "version": 1, "kind": "permissionDenied"})),
+-        Some(serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "permissionDenied", "extra": true})),
++        Some(
++            serde_json::json!({"method": "fs/readFile", "version": 1, "kind": "permissionDenied"}),
++        ),
++        Some(
++            serde_json::json!({"method": "fs/readFileAuthorized", "version": 1, "kind": "permissionDenied", "extra": true}),
++        ),
+     ];
+     let mut cases = unrecognized_data
+         .into_iter()
+@@ -424,7 +438,9 @@ async fn authorized_read_unrecognized_metadata_keeps_legacy_errors_without_read_
+             expected_requests
+         ]
+     );
+-    server.await.expect("recording server must reject fallback requests");
++    server
++        .await
++        .expect("recording server must reject fallback requests");
+ }
+ 
+ #[tokio::test]
+diff --git a/codex-rs/exec-server/src/server/file_system_handler.rs b/codex-rs/exec-server/src/server/file_system_handler.rs
+index f4ba6b28cf8726756fb24a8186d2e2d414561513..cd54ebe251ceefc3368850ffb19b7a855fe0ef63 100644
+--- a/codex-rs/exec-server/src/server/file_system_handler.rs
++++ b/codex-rs/exec-server/src/server/file_system_handler.rs
+@@ -412,8 +412,14 @@ mod tests {
+     #[test]
+     fn authorized_read_classification_does_not_change_generic_fs_errors() {
+         for (kind, failure) in [
+-            (io::ErrorKind::PermissionDenied, AuthorizedReadFailure::PermissionDenied),
+-            (io::ErrorKind::InvalidData, AuthorizedReadFailure::BoundExceeded),
++            (
++                io::ErrorKind::PermissionDenied,
++                AuthorizedReadFailure::PermissionDenied,
++            ),
++            (
++                io::ErrorKind::InvalidData,
++                AuthorizedReadFailure::BoundExceeded,
++            ),
+         ] {
+             let classified = map_authorized_read_fs_error(io::Error::new(kind, "secret path"));
+             assert_eq!(classified, failure.rpc_error());
+@@ -422,7 +428,11 @@ mod tests {
+             assert_eq!(generic.data, None);
+             assert_eq!(generic.message, "generic message");
+         }
+-        for kind in [io::ErrorKind::InvalidInput, io::ErrorKind::NotFound, io::ErrorKind::Other] {
++        for kind in [
++            io::ErrorKind::InvalidInput,
++            io::ErrorKind::NotFound,
++            io::ErrorKind::Other,
++        ] {
+             assert_eq!(
+                 map_authorized_read_fs_error(io::Error::new(kind, "existing error")),
+                 map_fs_error(io::Error::new(kind, "existing error"))
