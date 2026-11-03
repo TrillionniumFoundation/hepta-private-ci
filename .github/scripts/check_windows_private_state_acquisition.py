@@ -59,8 +59,10 @@ def check_result(lane, returncode, output):
     require(lane in ("positive", *PATCHES), "unrecognized qualification lane")
     clean = re.sub(r"\x1b\[[0-9;]*m", "", output).replace("\r\n", "\n")
     statuses = {}
-    for status, name in re.findall(
-        r"^\s*(PASS|FAIL)\s+\[[^\]\r\n]+\]\s+codex-utils-path\s+(\S+)\s*$",
+    progress = {}
+    for status, position, total, name in re.findall(
+        r"^\s*(PASS|FAIL)\s+\[[^\]\r\n]+\]\s+"
+        r"(?:\(([1-9][0-9]*)/([1-9][0-9]*)\)\s+)?codex-utils-path\s+(\S+)\s*$",
         clean,
         re.MULTILINE,
     ):
@@ -69,6 +71,19 @@ def check_result(lane, returncode, output):
             "inconsistent test status",
         )
         statuses[name] = status
+        if position:
+            require(
+                total == "2" and position in {"1", "2"}, "wrong exact test progress"
+            )
+            require(
+                name not in progress or progress[name] == position,
+                "inconsistent test progress",
+            )
+            progress[name] = position
+    require(
+        not progress or len(progress) == 2 and set(progress.values()) == {"1", "2"},
+        "incomplete or duplicate test progress",
+    )
     expected = {CREATION: "PASS", SUBSTITUTION: "PASS"}
     if lane == "unchecked-create":
         expected[CREATION] = "FAIL"

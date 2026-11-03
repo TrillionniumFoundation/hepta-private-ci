@@ -44,6 +44,43 @@ class AcquisitionOracleTests(unittest.TestCase):
                     fixture(lane).replace("\n", "\r\n"),
                 )
 
+    def test_accepts_nextest_progress_and_repeated_final_status(self):
+        for lane in ("positive", "unchecked-create", "path-check-open"):
+            output = fixture(lane)
+            lines = output.splitlines()
+            for index in range(2):
+                lines[index] = lines[index].replace(
+                    "] codex-utils-path", f"] ({index + 1}/2) codex-utils-path"
+                )
+            output = "\n".join(lines + lines[:2]) + "\n"
+            output = output.replace("PASS", "\x1b[32;1mPASS\x1b[0m")
+            output = output.replace("FAIL", "\x1b[31;1mFAIL\x1b[0m")
+            with self.subTest(lane=lane):
+                check_result(lane, 0 if lane == "positive" else 1, output)
+                check_result(
+                    lane,
+                    0 if lane == "positive" else 1,
+                    output.replace("\n", "\r\n"),
+                )
+
+    def test_rejects_inconsistent_progress_or_missing_selected_case(self):
+        output = (
+            fixture("positive")
+            .replace("] codex-utils-path", "] (1/2) codex-utils-path", 1)
+            .replace("] codex-utils-path", "] (2/2) codex-utils-path", 1)
+        )
+        changes = (
+            output.replace("(2/2)", "(1/2)"),
+            output.replace("(2/2)", "(3/2)"),
+            output.replace("(2/2)", "(2/3)"),
+            output.replace("(2/2)", "(0/2)"),
+            "\n".join(line for line in output.splitlines() if SUBSTITUTION not in line),
+            output + f"PASS [ 0.1s] (2/2) codex-utils-path {CREATION}\n",
+        )
+        for changed in changes:
+            with self.subTest(output=changed), self.assertRaises(RuntimeError):
+                check_result("positive", 0, changed)
+
     def test_rejects_compile_failure_or_timeout_as_negative(self):
         for output in ("error[E0308]: compiler failed\n", "test timed out\n", ""):
             with self.subTest(output=output), self.assertRaises(RuntimeError):

@@ -1,0 +1,51 @@
+{
+  "schema": "agentd-owned-fixture-path-independent-static-review-v1",
+  "base": "8275996f2c589a96843e116ac6f2c1d194ef3d2b",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-agentd/src/control_native_tests.rs",
+      "bytes": 5347,
+      "sha256": "064a284419ccad02a16d24e742f4aa48ce2fca34796ca2dd68ae097d1d81c660",
+      "git_blob_sha": "91332a31f1c753128ecd85f31c8c5b7f5ae3e3d6",
+      "original_assert_lines_preserved": true
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "bytes": 10785,
+      "sha256": "fb7a1a4d36d8127c1e109cad313f891086604341e30a8f128d1fafd992163bac",
+      "git_blob_sha": "c49d9e33659ce0324977e94eac92a965149928bc",
+      "original_assert_lines_preserved": true
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "bytes": 23378,
+      "sha256": "f0d7bce572986a8883f9ff2743adc80e2c60d79da1d349dc06e39f6f0fc01ffc",
+      "git_blob_sha": "d7c3e8e45f6cf1144da14e19e3e21b1a81c9d559",
+      "original_assert_lines_preserved": true
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "bytes": 24269,
+      "sha256": "5bc77754db6544284c4f00bc2178f97f7e99d476c438222085a45eeca8b063ce",
+      "git_blob_sha": "8b3efc183271d0f8c7dd224e088d0487209b4860",
+      "original_assert_lines_preserved": true
+    }
+  ],
+  "scope": "Four test-fixture-only diffs: owned temp root canonicalization and short randomized Unix socket parent; no production policy changes.",
+  "findings": [
+    {
+      "severity": "none_confirmed",
+      "finding": "HNMF fleet and AuthBus checkpoint derive their paths from the already-created owned TempDir physical root, preserving intended owned namespace and existing retained-directory checks."
+    },
+    {
+      "severity": "none_confirmed",
+      "finding": "Unix ranker/control fixtures select short randomized TempDirs under /tmp, retain the existing canonicalized root and TempDir lifetime. Non-Unix fixture creation remains unchanged. This reduces the host sun_path budget without broadening transport authentication."
+    }
+  ],
+  "original_assertions_preserved": true,
+  "production_code_modified_by_review": false,
+  "files_modified_by_review": false,
+  "cargo_or_native_executed": false,
+  "new_hosted_qualification_inferred": false,
+  "portability_limit": "Actual host path length and F_GETPATH behavior still require the newly pinned hosted runs; this static review does not certify all filesystem/mount layouts."
+}

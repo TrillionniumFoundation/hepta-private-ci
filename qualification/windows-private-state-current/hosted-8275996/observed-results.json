@@ -1,0 +1,140 @@
+{
+  "source_commit": "8275996f2c589a96843e116ac6f2c1d194ef3d2b",
+  "workflow_run": 41713496978,
+  "artifacts": [
+    {
+      "id": 13270382017,
+      "name": "private-state-union-ubuntu-24.04-8275996f2c589a96843e116ac6f2c1d194ef3d2b",
+      "size_in_bytes": 1508911,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13270382017",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13270382017/zip",
+      "expired": false,
+      "created_at": "2026-11-03T20:47:55Z",
+      "expires_at": "2026-11-10T20:47:54Z",
+      "updated_at": "2026-11-03T20:47:55Z",
+      "digest": "sha256:364672548aadc6d7084b570cbde5b0df4f90fea9b140a7535e5c89caa5bc431e",
+      "workflow_run": {
+        "id": 41713496978,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/private-ci-windows-private-state-20261103",
+        "head_sha": "8275996f2c589a96843e116ac6f2c1d194ef3d2b"
+      }
+    },
+    {
+      "id": 13270157656,
+      "name": "private-state-union-bazel-8275996f2c589a96843e116ac6f2c1d194ef3d2b",
+      "size_in_bytes": 1083868,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13270157656",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13270157656/zip",
+      "expired": false,
+      "created_at": "2026-11-03T20:52:10Z",
+      "expires_at": "2026-11-10T20:52:09Z",
+      "updated_at": "2026-11-03T20:52:10Z",
+      "digest": "sha256:e37ce2c54976edc8b50a280c6ebb99d1a542f22a2b6e596ed5ad514e771c56f5",
+      "workflow_run": {
+        "id": 41713496978,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/private-ci-windows-private-state-20261103",
+        "head_sha": "8275996f2c589a96843e116ac6f2c1d194ef3d2b"
+      }
+    },
+    {
+      "id": 13269466844,
+      "name": "private-state-union-windows-2025-8275996f2c589a96843e116ac6f2c1d194ef3d2b",
+      "size_in_bytes": 1428664,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13269466844",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13269466844/zip",
+      "expired": false,
+      "created_at": "2026-11-03T20:36:22Z",
+      "expires_at": "2026-11-10T20:36:21Z",
+      "updated_at": "2026-11-03T20:36:22Z",
+      "digest": "sha256:913f81e4d2f48050a93b78fadd03ad711c57b44755f9e3ac56e645286c6cc515",
+      "workflow_run": {
+        "id": 41713496978,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/private-ci-windows-private-state-20261103",
+        "head_sha": "8275996f2c589a96843e116ac6f2c1d194ef3d2b"
+      }
+    },
+    {
+      "id": 13268992702,
+      "name": "private-state-union-macos-15-8275996f2c589a96843e116ac6f2c1d194ef3d2b",
+      "size_in_bytes": 1489143,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13268992702",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13268992702/zip",
+      "expired": false,
+      "created_at": "2026-11-03T20:46:21Z",
+      "expires_at": "2026-11-10T20:46:20Z",
+      "updated_at": "2026-11-03T20:46:21Z",
+      "digest": "sha256:597da267cd319d9f884b117a8ab3eb889e1ef9f2488cf6605b23c116fc29275b",
+      "workflow_run": {
+        "id": 41713496978,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/private-ci-windows-private-state-20261103",
+        "head_sha": "8275996f2c589a96843e116ac6f2c1d194ef3d2b"
+      }
+    }
+  ],
+  "raw_evidence": {
+    "windows-positive.log.gz": {
+      "raw_bytes": 11376,
+      "raw_sha256": "d9af475c470a98727da41ae78bb04d2eed121d176df7a31ae54ec62351879223",
+      "gzip_bytes": 1778,
+      "gzip_sha256": "897d02ed63119948cb8c03188354920bd8f44d1abe05e7a22fa6b9fc635b5618"
+    },
+    "macos-agentd.junit.xml.gz": {
+      "raw_bytes": 46029,
+      "raw_sha256": "928358d022f311759982ca0cb1cd63faeb3bfc4d7c8e29651ca2b40e8ac45f8a",
+      "gzip_bytes": 7130,
+      "gzip_sha256": "e147277e494f72fdde377a4965ae97f90aca989ae54cffd9a612712ea7857bc8"
+    }
+  },
+  "macos_agentd_tests": 173,
+  "macos_agentd_passed": 166,
+  "macos_agentd_failed": 7,
+  "macos_agentd_skipped": 0,
+  "failures": [
+    {
+      "name": "cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed",
+      "failure": "thread 'cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed' (89838) panicked at hepta-agentd/src/cognitive_context_hnmf_tests.rs:80:53:\ncalled `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery",
+      "failure": "thread 'cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery' (89841) panicked at hepta-agentd/src/cognitive_context_hnmf_tests.rs:80:53:\ncalled `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context",
+      "failure": "thread 'cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context' (89844) panicked at hepta-agentd/src/cognitive_context_hnmf_tests.rs:80:53:\ncalled `Result::unwrap()` on an `Err` value: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "failure": "thread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (89858) panicked at hepta-agentd/src/cognitive_ranker_tests.rs:522:14:\ncalled `Result::unwrap()` on an `Err` value: Io(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \"bind agentd control socket\", path: \"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmphIadjt/fleet/run/aaaaaaaaaabaabaaaaaaaaaabde.ctl\", source: Error { kind: InvalidInput, message: \"path must be shorter than SUN_LEN\" } } })\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "control::native_tests::ordinary_control_preserves_server_identity_and_launch_generation",
+      "failure": "Error: Io(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \"bind agentd control socket\", path: \"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpZGf5hn/fleet/run/aaaaaaaaaabaabaaaaaaaaaaaae.ctl\", source: Error { kind: InvalidInput, message: \"path must be shorter than SUN_LEN\" } } })"
+    },
+    {
+      "name": "control::native_tests::saturated_ordinary_control_returns_original_overload_and_recovers",
+      "failure": "Error: Io(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \"bind agentd control socket\", path: \"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpyFeKUb/fleet/run/aaaaaaaaaabaabaaaaaaaaaaaae.ctl\", source: Error { kind: InvalidInput, message: \"path must be shorter than SUN_LEN\" } } })"
+    },
+    {
+      "name": "state::isolation_tests::current_durable_run_start_requires_live_owner_trust",
+      "failure": "thread 'state::isolation_tests::current_durable_run_start_requires_live_owner_trust' (91235) panicked at hepta-agentd/src/state_isolation_tests.rs:516:6:\nopen trust: Invalid(\"AuthBus text: external replay checkpoint parent must be canonical and symlink-free\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    }
+  ],
+  "windows_positive_cases_passed": 2,
+  "windows_mutants_run": false,
+  "windows_full_libraries_run": false,
+  "linux_original_library_cases_passed": 404,
+  "linux_original_library_cases_skipped": 0,
+  "bazel_original_targets_passed": 4,
+  "successor_native_status": "pending",
+  "production_runtime_files_changed_by_successor": false,
+  "reader_controls_passed": 8,
+  "original_just_fmt_exit": 0
+}
