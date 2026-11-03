@@ -56,10 +56,10 @@ class ArchitecturePinnedDBusPrerequisiteTest(unittest.TestCase):
     def test_exact_client_identity_is_bound_to_original_cargo(self):
         self.assertIn("PKG_CONFIG_PATH=%s", self.step)
         self.assertIn('>> "$GITHUB_ENV"', self.step)
-        self.assertIn('pkg-config --modversion dbus-1', self.step)
+        self.assertIn("pkg-config --modversion dbus-1", self.step)
         self.assertIn("1.16.2", self.step)
         self.assertIn(EXPECTED_SHA, self.builder)
-        self.assertIn('run([str(identity)])', self.builder)
+        self.assertIn("run([str(identity)])", self.builder)
         self.assertIn('receipt["status"] = "FAIL"', self.builder)
 
 
