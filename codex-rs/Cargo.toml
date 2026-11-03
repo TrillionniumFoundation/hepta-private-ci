@@ -665,6 +665,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Backport upstream's maintained TOML parser without changing age encryption,
+# i18n-config's configuration schema, or the source allowlist.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Declare ZIP's selected C bzip2 backend on its optional dependency, avoiding
 # same-named feature activation and graph-tool forwarding discrepancies.
 # The vendored Rust implementation is unchanged.

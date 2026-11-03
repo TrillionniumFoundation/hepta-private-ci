@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/root/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "update",
+    "--manifest-path",
+    "/dev/shm/private-ci-next-20261103/codex-rs/Cargo.toml",
+    "-p",
+    "i18n-config",
+    "--offline"
+  ],
+  "exit_code": 0,
+  "seconds": 2.337851385000249,
+  "before_lock_sha256": "9bd97ee53e641986502cf32a5a10cf71f53739e18d7ab6dec3e2992cc85d51ed",
+  "after_lock_sha256": "74db452102601d2c8e2e1ab9cca70b0446709a86590cf2977e503b2cc24693c2",
+  "output": "     Locking 1 package to latest compatible version\n    Removing basic-toml v0.1.10\n      Adding i18n-config v0.4.8 (/dev/shm/private-ci-next-20261103/codex-rs/third_party/i18n-config-0.4.8)\n    Removing i18n-config v0.4.8\nnote: pass `--verbose` to see 17 unchanged dependencies behind latest\n"
+}

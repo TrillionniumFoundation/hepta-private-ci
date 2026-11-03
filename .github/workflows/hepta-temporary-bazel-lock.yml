@@ -7,6 +7,8 @@ on:
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/third_party/zip-9.0.0/**
+      - codex-rs/third_party/i18n-config-0.4.8/**
+      - codex-rs/secrets/Cargo.toml
       - MODULE.bazel
       - MODULE.bazel.lock
 
@@ -19,7 +21,7 @@ concurrency:
 
 jobs:
   generate:
-    if: github.head_ref == 'fix/private-ci-zip-feature-isolation-20261103'
+    if: github.head_ref == 'fix/private-ci-zip-feature-isolation-20261103' || github.head_ref == 'fix/private-ci-i18n-parser-20261103'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -47,6 +49,12 @@ jobs:
           ./scripts/check-module-bazel-lock.sh > "${output}/bazel-lock-check.log" 2>&1
           ./.github/scripts/run_bazel_with_buildbuddy.py query 'deps(@crates//:zip, 4)' --output=build > "${output}/zip-generated-target.bazel" 2> "${output}/zip-generated-target.log"
           test -s "${output}/zip-generated-target.bazel"
+          if [[ "${GITHUB_HEAD_REF}" == "fix/private-ci-i18n-parser-20261103" ]]; then
+            ./.github/scripts/run_bazel_with_buildbuddy.py query 'deps(@crates//:i18n-config, 3)' --output=build > "${output}/i18n-generated-target.bazel" 2> "${output}/i18n-generated-target.log"
+            test -s "${output}/i18n-generated-target.bazel"
+            ./.github/scripts/run_bazel_with_buildbuddy.py build @crates//:i18n-config > "${output}/i18n-crate-build.log" 2>&1
+            ./.github/scripts/run_bazel_with_buildbuddy.py build @crates//:zip > "${output}/zip-crate-build.log" 2>&1
+          fi
       - name: Retain exact lock candidate and diagnostics
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f

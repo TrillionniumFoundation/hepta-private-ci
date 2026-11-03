@@ -16,6 +16,10 @@ use sha2::Sha256;
 mod local;
 mod sanitizer;
 
+#[cfg(test)]
+#[path = "i18n_config_tests.rs"]
+mod i18n_config_tests;
+
 pub use local::LocalSecretsBackend;
 pub use local::LocalSecretsNamespace;
 pub use sanitizer::redact_secrets;

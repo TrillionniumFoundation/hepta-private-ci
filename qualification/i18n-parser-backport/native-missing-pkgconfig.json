@@ -1,0 +1,32 @@
+{
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-secrets",
+    "--locked",
+    "--offline",
+    "--no-tests=fail",
+    "--retries",
+    "0"
+  ],
+  "exit_code": 101,
+  "seconds": 191.22781655400104,
+  "input_sha256": {
+    "codex-rs/Cargo.lock": "74db452102601d2c8e2e1ab9cca70b0446709a86590cf2977e503b2cc24693c2",
+    "codex-rs/Cargo.toml": "005f87170c5f71bf67364cfd4b6f0276ae95165277ce3bff6974e05f0ab0f57d",
+    "codex-rs/secrets/Cargo.toml": "c55082a7d102e6e1eb73a1e3bf357841f491682de1462784ae6159dcda0c9ea7",
+    "codex-rs/secrets/src/i18n_config_tests.rs": "6703aad3aa7152f0b8c32ebb972f5ab9a4abc6b5fde0104917c9374686b793c4",
+    "codex-rs/secrets/src/lib.rs": "cc6905f645496517f141e0b4733cc35c40bb06835710d6adc4a6d10c5ac071c6",
+    "codex-rs/third_party/i18n-config-0.4.8/CHANGELOG.md": "d43722d4e4526cdd6263bf195e13dc22b73eb22fd45b792d4d5f297e59e4ff54",
+    "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml": "abe971c9c6ede88cb8d67db951ba028e7421412fb1dc984082d3a002efa0d388",
+    "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml.orig": "8bcc345f6146606412af5401658d734d32e317fc6b01134d856d7b8a83aa7dfb",
+    "codex-rs/third_party/i18n-config-0.4.8/LICENSE.txt": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802",
+    "codex-rs/third_party/i18n-config-0.4.8/README.md": "bdadc28dd4a62f5b8c7c4c759c7b3cf2b33181700563c3083f8515f1638c12f2",
+    "codex-rs/third_party/i18n-config-0.4.8/src/fluent.rs": "fdf091a54559e437dd0ee0f2a291b2e18c42a7857e9bbecfd338b038b320f9f7",
+    "codex-rs/third_party/i18n-config-0.4.8/src/gettext.rs": "3626b50f396f0a83e7d5aab702d4d18d078dff7620108db80ffa7ed9da0b5991",
+    "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs": "4e0ffba6f96cbc01c06c16269b097df8617ac2c4b348a512a3bf8858793259c5"
+  },
+  "inputs_unchanged": true,
+  "log_sha256": "33597d9008d020108bd14d7965e67cd77cbc95bbb0331ce34d3c78da06cde4de"
+}
