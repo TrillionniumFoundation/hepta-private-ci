@@ -132,6 +132,7 @@ enum Behavior {
     Success,
     LostAcknowledgement,
     NeverTerminal,
+    EscapedOutput,
 }
 
 struct Tools {
@@ -174,7 +175,12 @@ impl ToolPort for Tools {
         if matches!(self.behavior, Behavior::NeverTerminal) {
             return Ok(ToolObservation::Accepted);
         }
-        let stdout = b"42\n".to_vec();
+        let stdout = match self.behavior {
+            Behavior::EscapedOutput => vec![0; 4096],
+            Behavior::Success | Behavior::LostAcknowledgement | Behavior::NeverTerminal => {
+                b"42\n".to_vec()
+            }
+        };
         let stderr = Vec::new();
         let tool_outcome = ToolOutcomeV1 {
             terminal_observed: true,
@@ -208,6 +214,9 @@ impl ToolPort for Tools {
         Ok(())
     }
 }
+
+#[path = "engine_context_tests.rs"]
+mod context_limits;
 
 fn fixture(behavior: Behavior) -> Result<(NativeAgent, Arc<Owner>, Tools, TurnState)> {
     let owner = Arc::new(Owner {

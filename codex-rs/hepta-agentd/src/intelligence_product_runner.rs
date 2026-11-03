@@ -2,6 +2,12 @@
 
 use super::*;
 
+#[derive(Clone, Copy)]
+enum PreparationDeadline {
+    BudgetOnly,
+    Original(u64),
+}
+
 impl AgentdIntelligenceProductRunnerV1 {
     pub fn new(
         authority_file: PathBuf,
@@ -75,8 +81,52 @@ impl AgentdIntelligenceProductRunnerV1 {
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
-        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_with_deadline(composition, request, inputs, PreparationDeadline::BudgetOnly)
+            .await
+    }
+
+    /// Preserve the authenticated objective's deadline throughout preparation
+    /// and the resulting immutable run/context binding. An expired objective
+    /// cannot acquire an owner worker or receive a new preparation deadline.
+    pub(crate) async fn prepare_for_composition_before_deadline(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        original_deadline_ms: u64,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_with_deadline(composition, request, inputs, PreparationDeadline::Original(original_deadline_ms))
+            .await
+    }
+
+    async fn prepare_with_deadline(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        deadline: PreparationDeadline,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let started = tokio::time::Instant::now();
+        let started_ms = wall_clock_ms()?;
+        if let PreparationDeadline::Original(original) = deadline
+            && original <= started_ms {
+                return Err(AgentdIntelligenceProductError::TimedOut);
+        }
+        let budget = Duration::from_micros(request.budget.total_micros);
+        let timeout_ms = request.budget.total_micros.saturating_add(999) / 1_000;
+        let budget_deadline_ms = started_ms.checked_add(timeout_ms.max(1))
+            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        let (deadline_ms, worker_budget) = match deadline {
+            PreparationDeadline::BudgetOnly => (budget_deadline_ms, budget),
+            PreparationDeadline::Original(original) => (
+                original.min(budget_deadline_ms),
+                budget.min(Duration::from_millis(original - started_ms)),
+            ),
+        };
+        let worker_deadline = started.checked_add(worker_budget)
+            .ok_or(AgentdIntelligenceProductError::Clock)?;
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -99,16 +149,11 @@ impl AgentdIntelligenceProductRunnerV1 {
         let generation = composition.agentd_generation;
         let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
         fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
+        fence_bytes.extend_from_slice(&composition.supervisor_generation.to_be_bytes());
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();
-        let timeout_micros = request.budget.total_micros;
-        let started_ms = wall_clock_ms()?;
-        let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
-        let deadline_ms = started_ms
-            .checked_add(timeout_ms.max(1))
-            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        let original_request = request.clone();
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
         let evaluation_session = match inputs.signed_evaluation.take() {
@@ -135,12 +180,16 @@ impl AgentdIntelligenceProductRunnerV1 {
                 })
             }
         };
+        if tokio::time::Instant::now() >= worker_deadline || wall_clock_ms()? >= deadline_ms {
+            return Err(AgentdIntelligenceProductError::TimedOut);
+        }
         let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+            let outcome = prepare_intelligence_run(request, &mut ports, &mut oracle)?;
+            Ok::<_, CanonicalIntelligenceError>((outcome, ports.compiled_context))
         })?;
-        let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
+        let (outcome, compiled_context) = tokio::time::timeout_at(worker_deadline, &mut worker)
             .await
             .map_err(|_| {
                 worker.abort();
@@ -148,15 +197,25 @@ impl AgentdIntelligenceProductRunnerV1 {
             })?
             .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
             .map_err(AgentdIntelligenceProductError::Canonical)?;
+        // A completed blocking owner may become observable only after its
+        // deadline. Never publish that late result as a prepared run.
+        if tokio::time::Instant::now() >= worker_deadline || wall_clock_ms()? >= deadline_ms {
+            return Err(AgentdIntelligenceProductError::TimedOut);
+        }
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
+                let (context_request, context_receipt) = compiled_context
+                    .ok_or(AgentdIntelligenceProductError::ContextCompilationMissing)?;
                 let mut oracle = FileBackedFreshnessOracleV1::new(
                     self.authority_file.clone(),
                     self.authority_verifier.clone(),
                 );
                 validate_current_snapshot(&snapshot, &mut oracle)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
+                if tokio::time::Instant::now() >= worker_deadline || wall_clock_ms()? >= deadline_ms {
+                    return Err(AgentdIntelligenceProductError::TimedOut);
+                }
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
                 bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
@@ -191,12 +250,16 @@ impl AgentdIntelligenceProductRunnerV1 {
                 };
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(
                     PreparedAgentdIntelligenceRunV1 {
+                        original_envelope: envelope.clone(),
                         envelope,
                         dispatch_proposal_digest,
+                        request: original_request,
                         snapshot,
                         candidate_ids,
                         run_snapshot,
                         context_attachment,
+                        context_request,
+                        context_receipt,
                     },
                 ))
             }

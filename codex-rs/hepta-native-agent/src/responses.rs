@@ -16,6 +16,12 @@ use http::header::CONTENT_TYPE;
 use serde_json::Value;
 use url::Url;
 
+#[path = "responses_entry.rs"]
+mod entry;
+#[path = "responses_terminal.rs"]
+mod terminal;
+pub use terminal::ObservedModelTerminal;
+
 /// One exact request already persisted by the turn owner.
 #[derive(Clone, Debug)]
 pub struct ModelRequest {
@@ -110,10 +116,13 @@ impl ResponsesModel {
             bail!("model did not return an SSE response");
         }
         Ok(ResponsesStream {
+            operation_id: request.operation_id.clone(),
+            terminal_observer: None,
             response,
             decoder: SseDecoder::new(self.max_stream_bytes),
             idle_timeout: self.idle_timeout,
             response_id: None,
+            output_items: Vec::new(),
             completed: false,
         })
     }
@@ -162,13 +171,11 @@ impl ResponsesModel {
         if value["status"] != "completed" {
             return Ok(None);
         }
+        let items = terminal::completed_output(&value)?;
         Ok(Some(ObservedModelCompletion {
             operation_id: request.operation_id.clone(),
             response_id: response_id.to_owned(),
-            items: value["output"]
-                .as_array()
-                .context("reconciled model output missing")?
-                .clone(),
+            items: items.to_vec(),
             usage: value["usage"].clone(),
         }))
     }
@@ -185,10 +192,15 @@ pub struct ObservedModelCompletion {
 
 /// A response stream owns its transport; dropping it closes local observation.
 pub struct ResponsesStream {
+    operation_id: String,
+    terminal_observer: Option<terminal::TerminalObserver>,
     response: HttpResponse,
     decoder: SseDecoder,
     idle_timeout: Duration,
     response_id: Option<String>,
+    // Every retained item came from the byte-bounded transport decoder. The
+    // terminal output must match the exact items exposed to the turn owner.
+    output_items: Vec<Value>,
     completed: bool,
 }
 
@@ -220,6 +232,7 @@ impl ResponsesStream {
                             .get("item")
                             .filter(|v| v.is_object())
                             .context("completed output item missing")?;
+                        self.output_items.push(item.clone());
                         return Ok(Some(ModelEvent::Item(item.clone())));
                     }
                     "response.completed" => {
@@ -232,6 +245,17 @@ impl ResponsesStream {
                             bail!("terminal response does not match the observed response");
                         }
                         self.completed = true;
+                        if let Some(observer) = self.terminal_observer.take() {
+                            let items = terminal::completed_output(&value["response"])?;
+                            anyhow::ensure!(
+                                items == self.output_items.as_slice(),
+                                "terminal output differs from the actual streamed output items"
+                            );
+                            observer(ObservedModelTerminal::observed(
+                                self.operation_id.clone(), id.clone(), items,
+                                &value["response"]["usage"],
+                            )?).await?;
+                        }
                         return Ok(Some(ModelEvent::Completed {
                             response_id: id,
                             usage: value["response"]["usage"].clone(),

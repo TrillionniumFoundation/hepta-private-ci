@@ -186,6 +186,8 @@ impl FleetRegistry {
         expected_generation: u64,
         requested: AgentLifecycle,
     ) -> Result<AgentLifecycleState, FleetRegistryError> {
+        let layout = self.layout.agent(agent_id);
+        let _publication = crate::lifecycle_fence::try_transition(layout.run_root(), agent_id)?;
         let current = self.load_agent(agent_id)?.lifecycle;
         if current.generation != expected_generation {
             return Err(FleetRegistryError::StaleGeneration {
@@ -195,7 +197,6 @@ impl FleetRegistry {
             });
         }
         let next = current.successor(requested)?;
-        let layout = self.layout.agent(agent_id);
         match publish_lifecycle(layout.run_root(), &next)? {
             PublishOutcome::Published => Ok(next),
             PublishOutcome::AlreadyExists => {

@@ -28,6 +28,8 @@ pub enum FleetRegistryError {
         agent_id: AgentId,
         registered_agent_id: AgentId,
     },
+    #[error("agent {agent_id} lifecycle entry or publication is busy; retry after it completes")]
+    LifecycleBusy { agent_id: AgentId },
     #[error("stale generation for agent {agent_id}: expected {expected}, current {current}")]
     StaleGeneration {
         agent_id: AgentId,

@@ -15,6 +15,8 @@ use codex_hepta_types::StableId;
 
 mod candidate_bound;
 mod requirements;
+mod retained;
+pub use retained::validate_retained_compilation_v1;
 mod v2;
 mod wire;
 
@@ -118,6 +120,7 @@ pub struct ContextCompilationReceipt {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Error {
+    RetainedReceiptMismatch,
     ItemLimitExceeded,
     InvalidTokenBudget,
     EmptyDigest(&'static str),

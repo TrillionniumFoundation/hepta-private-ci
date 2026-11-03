@@ -39,6 +39,9 @@ pub const LOCAL_LEASE_OUTBOX_EXTERNAL_EFFECTS: bool = false;
 pub const LOCAL_LEASE_OUTBOX_KG_WRITE_AUTHORITY: bool = false;
 pub const LOCAL_LEASE_OUTBOX_PRODUCTION_CALLER: bool = false;
 
+#[path = "local_scope_frontier.rs"]
+mod scope_frontier;
+
 const MAX_LEASE_ROWS: usize = 4_096;
 /// Production owner ceiling for one lease/shard. This is deliberately above
 /// the 100k pending-operation target because one operation appends admission,
@@ -2343,14 +2346,34 @@ impl LocalLeaseOutbox {
         occurrence_key: impl Into<String>,
         outcome: LocalReconcileOutcome,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        self.append_reconciliation(occurrence_key.into(), outcome)
+        self.append_reconciliation(occurrence_key.into(), outcome, None)
             .await
+    }
+
+    /// Retain the destination's terminal receipt in the original outcome
+    /// event. Exact replay is permitted; conflicting evidence for an already
+    /// terminal operation is rejected inside the same fenced transaction.
+    pub(crate) async fn reconcile_with_terminal_receipt(
+        &self,
+        occurrence_key: impl Into<String>,
+        outcome: LocalReconcileOutcome,
+        receipt: impl Into<String>,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        if outcome == LocalReconcileOutcome::StillIndeterminate {
+            return Err(LocalLeaseOutboxError::Invalid(
+                "terminal receipt requires a terminal observation".to_string(),
+            ));
+        }
+        let receipt = receipt.into();
+        validate_text(&receipt, "terminal receipt", /*max_bytes*/ 65_536)?;
+        self.append_reconciliation(occurrence_key.into(), outcome, Some(receipt)).await
     }
 
     async fn append_reconciliation(
         &self,
         occurrence_key: String,
         outcome: LocalReconcileOutcome,
+        terminal_receipt: Option<String>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         let (kind, resulting_state) = match outcome {
@@ -2363,7 +2386,8 @@ impl LocalLeaseOutbox {
                 LocalOutcomeState::Indeterminate,
             ),
         };
-        let payload = outcome.as_str().to_string();
+        let exact_terminal_replay = terminal_receipt.is_some();
+        let payload = terminal_receipt.unwrap_or_else(|| outcome.as_str().to_string());
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
 
         let mut transaction = self
@@ -2408,7 +2432,9 @@ impl LocalLeaseOutbox {
             &self.owner_agent_id,
         )
         .await?;
-        if current != LocalOutcomeState::Indeterminate {
+        if current != LocalOutcomeState::Indeterminate
+            && !(exact_terminal_replay && current == resulting_state)
+        {
             return Err(LocalLeaseOutboxError::IllegalTransition(format!(
                 "occurrence is already in {} state",
                 current.as_str()
@@ -2455,7 +2481,7 @@ impl LocalLeaseOutbox {
         )
         .await?
         {
-            if existing.payload_sha256 != payload_sha256 {
+            if existing.payload_sha256 != payload_sha256 || existing.payload_json != payload {
                 return Err(LocalLeaseOutboxError::CasConflict(
                     "reconciliation replay changed its outcome payload".to_string(),
                 ));
@@ -2473,6 +2499,9 @@ impl LocalLeaseOutbox {
             });
         }
 
+        if current != LocalOutcomeState::Indeterminate {
+            return Err(corrupt("terminal occurrence is missing its original outcome event"));
+        }
         let sequence = next_event_sequence(&mut transaction, &self.lease_id).await?;
         let previous = event_head(&mut transaction, &self.lease_id).await?;
         let event_id = journal_row_id("event", &self.lease_id, sequence);

@@ -376,15 +376,17 @@ impl CodexThread {
             request,
             state,
             TurnInputMode::StartOrSteer,
+            /*hosted*/ None,
         )
         .await
     }
 
-    async fn submit_turn_input_with_mode_and_wait_for_exact_admission(
+    pub(crate) async fn submit_turn_input_with_mode_and_wait_for_exact_admission(
         &self,
         request: TurnInputRequest,
         state: PendingUserMessageAdmissionState,
         mode: TurnInputMode,
+        hosted: Option<crate::hosted_turn::HostedTurnDispatch>,
     ) -> Result<(TurnInputSubmission, Option<AdmittedUserMessage>), UserMessageAdmissionError> {
         let client_user_message_id = match &request.input {
             SubmittedTurnInput::UserInput { client_id, .. } => client_id.clone(),
@@ -408,6 +410,10 @@ impl CodexThread {
             .session
             .pending_user_message_admissions
             .register(submission_id.clone(), client_user_message_id, state);
+        if let Some(hosted) = hosted {
+            self.session.pending_user_message_admissions.attach_hosted(&submission_id, hosted)
+                .map_err(UserMessageAdmissionError::Admission)?;
+        }
         let submission = self
             .io
             .submit_turn_input_with_id(submission_id, request, mode.clone())
@@ -499,7 +505,7 @@ impl CodexThread {
         .map(AdmittedUserMessage::into_admission)
     }
 
-    fn validate_persisted_user_input(
+    pub(crate) fn validate_persisted_user_input(
         request: &TurnInputRequest,
     ) -> Result<(), UserMessageAdmissionError> {
         match &request.input {
@@ -607,6 +613,7 @@ impl CodexThread {
                 request,
                 PendingUserMessageAdmissionState::WaitingForAdmission,
                 TurnInputMode::StartIfIdle,
+                /*hosted*/ None,
             )
             .await?;
         match (submission, admitted) {
@@ -641,6 +648,9 @@ impl CodexThread {
     /// The returned epoch must be passed back in [`RecoverTurnRequest`]. Core
     /// revalidates it atomically when reserving the recovery task.
     pub async fn recovery_epoch_if_idle(&self, turn_id: &str) -> Option<u64> {
+        if self.session.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some() {
+            return Box::pin(self.hosted_recovery_epoch_if_idle(turn_id)).await;
+        }
         self.session.recovery_epoch_if_idle(turn_id).await
     }
 

@@ -106,6 +106,8 @@ struct PendingUserMessageAdmission {
     client_id: Option<String>,
     sender: oneshot::Sender<Result<AdmittedUserMessage, UserMessageAdmissionError>>,
     state: PendingUserMessageAdmissionState,
+    hosted: Option<crate::hosted_turn::HostedTurnDispatch>,
+    hosted_commit_pending: bool,
 }
 
 pub(crate) enum PendingUserMessageAdmissionState {
@@ -116,6 +118,29 @@ pub(crate) enum PendingUserMessageAdmissionState {
 }
 
 impl PendingUserMessageAdmissions {
+    pub(crate) fn register_hosted_recovery(
+        &self,
+        submission_id: String,
+        dispatch: crate::hosted_turn::HostedTurnDispatch,
+    ) -> CodexResult<(
+        PendingUserMessageAdmissionGuard<'_>,
+        oneshot::Receiver<Result<AdmittedUserMessage, UserMessageAdmissionError>>,
+    )> {
+        let mut pending = self.pending.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        if pending.contains_key(&submission_id)
+            || pending.values().any(|entry| entry.client_id.as_deref() == Some(dispatch.queue.client_id.as_str()))
+        {
+            return Err(CodexErr::InvalidRequest("original hosted admission is still owned".to_owned()));
+        }
+        let (sender, receiver) = oneshot::channel();
+        pending.insert(submission_id.clone(), PendingUserMessageAdmission {
+            client_id: Some(dispatch.queue.client_id.clone()), sender,
+            state: PendingUserMessageAdmissionState::WaitingForAdmission,
+            hosted: Some(dispatch), hosted_commit_pending: true,
+        });
+        Ok((PendingUserMessageAdmissionGuard { admissions: self, submission_id }, receiver))
+    }
+
     pub(crate) fn register(
         &self,
         submission_id: String,
@@ -135,6 +160,8 @@ impl PendingUserMessageAdmissions {
                     client_id,
                     sender,
                     state,
+                    hosted: None,
+                    hosted_commit_pending: false,
                 },
             );
         (
@@ -144,6 +171,41 @@ impl PendingUserMessageAdmissions {
             },
             receiver,
         )
+    }
+
+    pub(crate) fn attach_hosted(&self, submission_id: &str, dispatch: crate::hosted_turn::HostedTurnDispatch) -> CodexResult<()> {
+        let mut pending = self.pending.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let entry = pending.get_mut(submission_id).ok_or_else(|| {
+            CodexErr::InvalidRequest("original hosted admission is missing".to_string())
+        })?;
+        if entry.hosted_commit_pending || entry.client_id.as_deref() != Some(dispatch.queue.client_id.as_str()) {
+            return Err(CodexErr::InvalidRequest("hosted admission identity changed".to_string()));
+        }
+        entry.hosted = Some(dispatch);
+        entry.hosted_commit_pending = true;
+        Ok(())
+    }
+
+    pub(crate) fn is_hosted(&self, submission_id: &str) -> bool {
+        self.pending.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+            .get(submission_id).is_some_and(|entry| entry.hosted_commit_pending)
+    }
+
+    pub(crate) fn take_hosted(&self, submission_id: &str) -> Option<crate::hosted_turn::HostedTurnDispatch> {
+        self.pending.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+            .get_mut(submission_id).and_then(|entry| entry.hosted.take())
+    }
+
+    pub(crate) fn confirm_hosted_persistence(&self, submission_id: &str) {
+        let client_id = {
+            let mut pending = self.pending.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let Some(entry) = pending.get_mut(submission_id) else { return; };
+            entry.hosted_commit_pending = false;
+            entry.client_id.clone()
+        };
+        if let Some(client_id) = client_id {
+            self.complete_persistence(&client_id, Ok(()));
+        }
     }
 
     pub(crate) fn complete(
@@ -238,6 +300,11 @@ impl PendingUserMessageAdmissions {
         let Some(entry) = pending.get_mut(&submission_id) else {
             return;
         };
+        // The user input flush is only the first half of hosted admission.
+        // The host's checkpoint/history must become durable before queue ACK.
+        if entry.hosted_commit_pending {
+            return;
+        }
         match std::mem::replace(
             &mut entry.state,
             PendingUserMessageAdmissionState::Persisted,

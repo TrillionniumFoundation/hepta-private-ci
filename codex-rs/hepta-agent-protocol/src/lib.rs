@@ -11,6 +11,7 @@ pub use authbus::AuthBusTextBody;
 pub use authbus::AuthBusTextIngress;
 pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
+pub use authbus::ObjectiveQueuedInputV1;
 pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;

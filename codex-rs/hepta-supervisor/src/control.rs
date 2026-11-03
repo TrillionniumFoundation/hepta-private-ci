@@ -100,8 +100,8 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
         slot.deferred_agent_action = None;
-        self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
+        self.kill_matrix_now(agent_id, slot)?;
         let generation = {
             let runtime = active_runtime(agent_id, slot)?;
             runtime.phase = RuntimePhase::Killing;
@@ -149,15 +149,30 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         }
         let lifecycle = record.lifecycle.lifecycle;
-        let result = if matches!(
+        let action = if matches!(
             lifecycle,
             AgentLifecycle::Running | AgentLifecycle::Draining
         ) {
-            self.drain_slot(agent_id, slot, now)
+            DeferredAgentActionKind::Drain
         } else {
-            self.stop_slot(agent_id, slot, now)
+            DeferredAgentActionKind::Stop
         };
-        result?;
+        let result = match action {
+            DeferredAgentActionKind::Drain => self.drain_slot(agent_id, slot, now),
+            DeferredAgentActionKind::Stop => self.stop_slot(agent_id, slot, now),
+        };
+        if let Err(error) = result {
+            if !error.is_lifecycle_busy() {
+                return Err(error);
+            }
+            let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
+            slot.deferred_agent_action.get_or_insert(crate::runtime::DeferredAgentAction {
+                kind: action,
+                spawn_generation,
+            });
+        }
+        // The original durable restart claim survives entry contention. Tick
+        // retries its drain; it must not consume another restart attempt.
         slot.restart_pending = true;
         let generation = active_runtime(agent_id, slot)?.generation;
         slot.event(generation, SupervisorEventKind::RestartQueued);
@@ -191,6 +206,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
+        if slot.runtime.as_ref().is_some_and(|runtime| runtime.observed_exit.is_some()) {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} exit awaits lifecycle finalization"
+            )));
+        }
         let runtime_generation = slot
             .runtime
             .as_ref()

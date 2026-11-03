@@ -3,6 +3,15 @@ use std::collections::BTreeMap;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 
+#[path = "lane_b_queued_input.rs"]
+mod queued_input;
+
+#[path = "lane_b_prepared_recovery.rs"]
+mod prepared_recovery;
+
+#[path = "lane_b_lifecycle_recovery.rs"]
+mod lifecycle_recovery;
+
 const MAX_SUPPORTED_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
 const MAX_CANCEL_REASON_BYTES: usize = 512;
@@ -48,7 +57,8 @@ pub struct RuntimeComposition {
     pub max_active_runs: usize,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RunSnapshot {
     pub run_id: String,
     pub request_digest: String,
@@ -76,7 +86,8 @@ pub struct ContextAttachment {
     pub compilation_receipt_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RunRecovery {
     pub snapshot: RunSnapshot,
     pub revision: u64,
@@ -139,14 +150,16 @@ struct RunRecord {
     compilation_receipt_digest: Option<String>,
     cancel_reason: Option<String>,
     cancel_ack_deadline_ms: Option<u64>,
+    canonical_queued: Option<crate::canonical_queued_input::CanonicalQueuedRunV1>,
 }
 
 /// Owner-local Lane B coordinator for Agentd.
 ///
 /// This type owns only run admission and immutable snapshot references. Codex
 /// remains the thread/turn execution owner, and domain stores remain with their
-/// canonical modules. Recovery can only rehydrate a previously-dispatched run
-/// as indeterminate; it can never authorize redispatch.
+/// canonical modules. Dispatched recovery remains indeterminate and cannot
+/// authorize redispatch. Completed pre-effect preparation can be restored only
+/// from the original journal under the original Core/Queue admission proof.
 #[derive(Debug)]
 pub struct AgentRunCoordinator {
     composition: RuntimeComposition,
@@ -213,6 +226,7 @@ impl AgentRunCoordinator {
             compilation_receipt_digest: None,
             cancel_reason: None,
             cancel_ack_deadline_ms: None,
+            canonical_queued: None,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
@@ -327,6 +341,7 @@ impl AgentRunCoordinator {
             return Err(AgentRunError::ContextRequired);
         }
         record.phase = RunPhase::Dispatched;
+        record.canonical_queued = None;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
     }
@@ -457,6 +472,7 @@ impl AgentRunCoordinator {
             compilation_receipt_digest: Some(recovery.compilation_receipt_digest),
             cancel_reason: recovery.cancel_reason,
             cancel_ack_deadline_ms: None,
+            canonical_queued: None,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(run_id, record);
@@ -539,10 +555,31 @@ impl AgentRunCoordinator {
         Ok(receipt)
     }
 
+    /// Authority-free recovery correlation from this coordinator's actual
+    /// dispatched record. Persisted by the existing ThreadStore checkpoint.
+    pub(crate) fn recovery_record(&self, run_id: &str) -> Result<RunRecovery, AgentRunError> {
+        let record = self.runs.get(run_id).ok_or(AgentRunError::RunNotFound)?;
+        if !record.phase.unresolved_after_dispatch() {
+            return Err(AgentRunError::InvalidTransition);
+        }
+        Ok(RunRecovery {
+            snapshot: record.snapshot.clone(), revision: record.revision,
+            context_digest: record.context_digest.clone().ok_or(AgentRunError::ContextRequired)?,
+            compilation_receipt_digest: record.compilation_receipt_digest.clone().ok_or(AgentRunError::ContextRequired)?,
+            cancel_reason: record.cancel_reason.clone(),
+        })
+    }
+
     pub fn run(&self, run_id: &str) -> Option<RunReceipt> {
         self.runs
             .get(run_id)
             .map(|record| receipt(record, /*idempotent*/ false))
+    }
+
+    /// Read the immutable original admission without claiming a dispatched
+    /// recovery record or changing the coordinator's phase.
+    pub(crate) fn run_snapshot(&self, run_id: &str) -> Option<RunSnapshot> {
+        self.runs.get(run_id).map(|record| record.snapshot.clone())
     }
 
     pub fn active_run_count(&self) -> usize {

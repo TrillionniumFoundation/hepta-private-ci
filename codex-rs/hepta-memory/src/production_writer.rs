@@ -57,6 +57,29 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_effect_entry.rs"]
+mod effect_entry;
+#[path = "production_effect_observation.rs"]
+mod effect_observation;
+#[path = "production_operation_resolver.rs"]
+mod operation_resolver;
+#[path = "production_writer_lifecycle.rs"]
+mod writer_lifecycle;
+#[path = "production_scope_frontier.rs"]
+mod scope_frontier;
+
+pub use effect_entry::ProductionEffectEntry;
+pub use effect_entry::ProductionEnteredEffect;
+pub use effect_entry::ProductionEntryCurrentness;
+pub use effect_entry::ProductionReadyEffectEntry;
+pub use effect_observation::ProductionEffectObservation;
+pub use operation_resolver::ProductionUnusedScope;
+pub use scope_frontier::ProductionScopeFrontier;
+pub use scope_frontier::ProductionScopeOperation;
+pub use scope_frontier::ProductionScopeClaim;
+pub use scope_frontier::ProductionScopeClaimState;
+pub use writer_lifecycle::ProductionCurrentLeaseGuard;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
@@ -393,6 +416,7 @@ pub struct ProductionDurableWriter {
     lease: LocalLeaseOutbox,
     lease_id: Arc<str>,
     live_verifier: Option<Arc<dyn ProductionAuthorityVerifier>>,
+    lifecycle: Arc<writer_lifecycle::WriterLifecycle>,
     // Retain the OS-level lock for the lifetime of the writer.  SQLite's
     // transaction lock serializes individual mutations, but it does not
     // establish the H4 single-writer boundary: two processes could otherwise
@@ -611,6 +635,7 @@ impl ProductionDurableWriter {
             lease,
             lease_id: Arc::from(lease_id),
             live_verifier: None,
+            lifecycle: Arc::new(writer_lifecycle::WriterLifecycle::default()),
             _writer_lock: writer_lock,
         })
     }
@@ -726,24 +751,37 @@ impl ProductionDurableWriter {
         topic: impl Into<String>,
         payload_json: impl Into<String>,
     ) -> Result<ProductionQueuedReceipt, ProductionWriterError> {
-        self.verify_authority().await?;
+        self.prepare_operation_checked(operation, topic, payload_json, || Ok(())).await
+    }
+
+    /// Check the installed execution owner's currentness after this owned
+    /// admission has acquired the original writer's read lease. A same-writer
+    /// continuation cannot acquire its exclusive frontier between this check
+    /// and the durable operation/outbox commit, even if the caller disappears.
+    pub async fn prepare_operation_checked<F>(
+        &self,
+        operation: OperationIntentV1,
+        topic: impl Into<String>,
+        payload_json: impl Into<String>,
+        current: F,
+    ) -> Result<ProductionQueuedReceipt, ProductionWriterError>
+    where F: FnOnce() -> Result<(), ProductionWriterError> + Send + 'static {
+        let writer = self.clone();
         let topic = topic.into();
         let payload_json = payload_json.into();
-        let admission = self
-            .lease
-            .admit_operation(operation, &topic, &payload_json)
-            .await?;
-        let (receipt, replayed) = match admission {
-            LocalAdmission::Queued(receipt) => (receipt, false),
-            LocalAdmission::Replay(receipt) => (receipt, true),
-        };
-        ProductionQueuedReceipt::from_local(
-            &self.authority,
-            &topic,
-            &payload_json,
-            receipt,
-            replayed,
-        )
+        // SQL may finish after a caller drops its future. The original owner
+        // task must retain this lease until the durable operation/outbox join
+        // is known, including while a preparation-recovery fence is waiting.
+        tokio::spawn(async move {
+            let _lease = writer.acquire_owner_lease().await?;
+            current()?;
+            let admission = writer.lease.admit_operation(operation, &topic, &payload_json).await?;
+            let (receipt, replayed) = match admission {
+                LocalAdmission::Queued(receipt) => (receipt, false),
+                LocalAdmission::Replay(receipt) => (receipt, true),
+            };
+            ProductionQueuedReceipt::from_local(&writer.authority, &topic, &payload_json, receipt, replayed)
+        }).await.map_err(|error| ProductionWriterError::Durability(format!("original operation admission task: {error}")))?
     }
 
     /// Derive the only FinalUseBinding accepted for this durable operation
@@ -832,18 +870,7 @@ impl ProductionDurableWriter {
         &self,
         occurrence_key: impl Into<String>,
     ) -> Result<ProductionRecoveryReceipt, ProductionWriterError> {
-        self.verify_authority().await?;
-        let occurrence_key = occurrence_key.into();
-        let result = self
-            .lease
-            .finalize_replayed_occurrence(&occurrence_key)
-            .await?;
-        Ok(ProductionRecoveryReceipt::from_local(
-            &self.authority,
-            self.lease_id(),
-            &occurrence_key,
-            result,
-        ))
+        self.recover_owned_lease(occurrence_key.into()).await
     }
 
     /// Recover one queued outbox row inherited from a terminal predecessor
@@ -932,20 +959,42 @@ impl ProductionDurableWriter {
                 .reconciliation_request(&operation_id, target.destination_id())
                 .await?;
             match target.observe_terminal(&request).await {
-                ProductionTerminalObservation::Applied { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
+                ProductionTerminalObservation::Applied { receipt } => {
+                    self.reconcile_registered_observation(
+                        &operation_id, target.destination_id(),
+                        ProductionTargetOutcome::Committed { receipt },
+                    )
                         .await?;
                     reconciled += 1;
                 }
-                ProductionTerminalObservation::NotApplied { .. }
-                | ProductionTerminalObservation::Quarantined { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
+                ProductionTerminalObservation::NotApplied { reason }
+                | ProductionTerminalObservation::Quarantined { reason } => {
+                    self.reconcile_registered_observation(
+                        &operation_id, target.destination_id(),
+                        ProductionTargetOutcome::NotApplied { reason },
+                    )
                         .await?;
                     reconciled += 1;
                 }
                 ProductionTerminalObservation::Indeterminate { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
-                        .await?;
+                    if let Err(error) = self
+                        .reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
+                        .await
+                    {
+                        // A weak observation can race a real terminal commit
+                        // after batch discovery. Validate the current owner
+                        // and journal before ignoring only that stale result.
+                        // Receipt conflicts and authority/storage errors still
+                        // propagate through their original paths.
+                        if matches!(&error, ProductionWriterError::Local(
+                            LocalLeaseOutboxError::IllegalTransition(_)
+                        )) && matches!(self.status(&operation_id).await?,
+                            LocalOutcomeState::Committed | LocalOutcomeState::Rejected
+                        ) {
+                            continue;
+                        }
+                        return Err(error);
+                    }
                     reconciled += 1;
                 }
                 ProductionTerminalObservation::Unavailable { .. } => {}
@@ -1060,23 +1109,11 @@ impl ProductionDurableWriter {
     }
 
     pub async fn release(&self) -> Result<ProductionLeaseReceipt, ProductionWriterError> {
-        self.verify_authority().await?;
-        let head = self.lease.release().await?;
-        Ok(ProductionLeaseReceipt::new(
-            &self.authority,
-            head,
-            "released",
-        ))
+        self.close_owned_lease(/*rollback*/ false).await
     }
 
     pub async fn rollback_lease(&self) -> Result<ProductionLeaseReceipt, ProductionWriterError> {
-        self.verify_authority().await?;
-        let head = self.lease.rollback_lease().await?;
-        Ok(ProductionLeaseReceipt::new(
-            &self.authority,
-            head,
-            "rolled_back",
-        ))
+        self.close_owned_lease(/*rollback*/ true).await
     }
 
     async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
@@ -1403,10 +1440,13 @@ impl ProductionDurableWriter {
         dispatch_claim_event_id: String,
         outcome: ProductionTargetOutcome,
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
+        self.verify_authority().await?;
         match outcome {
             ProductionTargetOutcome::Committed { receipt } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Committed)
+                    .lease.reconcile_with_terminal_receipt(
+                        occurrence_key, LocalReconcileOutcome::Committed, &receipt,
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1420,7 +1460,9 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::NotApplied { reason } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                    .lease.reconcile_with_terminal_receipt(
+                        occurrence_key, LocalReconcileOutcome::Rejected, &reason,
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1434,7 +1476,9 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::Rejected { reason } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                    .lease.reconcile_with_terminal_receipt(
+                        occurrence_key, LocalReconcileOutcome::Rejected, &reason,
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -2165,6 +2209,19 @@ impl ProductionFinalUseOutboxDispatcher {
         target: Arc<dyn FinalUseProductionOutboxTarget>,
     ) -> Self {
         Self { final_use, target }
+    }
+
+    /// Attach another destination to this exact authority owner. Cloning the
+    /// authority retains the same revocation head and consumed-nonce state;
+    /// it neither opens another state directory nor creates signing material.
+    pub fn with_shared_authority_target(
+        &self,
+        target: Arc<dyn FinalUseProductionOutboxTarget>,
+    ) -> Self {
+        Self {
+            final_use: self.final_use.clone(),
+            target,
+        }
     }
 
     pub fn destination_id(&self) -> &str {
@@ -3493,18 +3550,18 @@ mod final_use_dispatch_tests {
     use std::sync::atomic::Ordering;
     use tempfile::TempDir;
 
-    fn agent() -> AgentId {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").expect("agent")
+    type TestResult<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+    fn agent() -> TestResult<AgentId> {
+        Ok(AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff")?)
     }
 
-    async fn store(temp: &TempDir) -> CognitiveStore {
+    async fn store(temp: &TempDir) -> TestResult<CognitiveStore> {
         let root = temp.path().join("fleet-final-use");
-        std::fs::create_dir_all(&root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
-            .expect("fleet root");
-        CognitiveStore::open(&fleet.layout().agent(&agent()))
-            .await
-            .expect("store")
+        std::fs::create_dir_all(&root)?;
+        let fleet = HeptaFleetRoot::parse(root.canonicalize()?)
+            ?;
+        Ok(CognitiveStore::open(&fleet.layout().agent(&agent()?)).await?)
     }
 
     struct FinalUseVerifier;
@@ -3563,40 +3620,38 @@ mod final_use_dispatch_tests {
         operation_id: &str,
         destination: &str,
         payload: &str,
-    ) -> OperationIntentV1 {
-        OperationIntentV1::new(
-            StableId::new(operation_id).expect("operation id"),
-            StableId::new(owner.as_str()).expect("subject"),
-            StableId::new(destination).expect("destination"),
+    ) -> TestResult<OperationIntentV1> {
+        Ok(OperationIntentV1::new(
+            StableId::new(operation_id)?,
+            StableId::new(owner.as_str())?,
+            StableId::new(destination)?,
             Digest32::of_bytes(payload.as_bytes()),
             Digest32::of_bytes(b"scope:production-test"),
-            codex_hepta_types::Generation::new(1).expect("policy generation"),
+            codex_hepta_types::Generation::new(1)?,
             None,
-        )
-        .expect("operation intent")
+        )?)
     }
 
-    fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
-        ProductionAuthorityLease::from_verified_parts(
+    fn production_authority(owner: AgentId) -> TestResult<ProductionAuthorityLease> {
+        Ok(ProductionAuthorityLease::from_verified_parts(
             owner,
             Sha256Digest::for_bytes(b"production-grant"),
             31,
             41,
-            now_unix_seconds().expect("clock") + 3_600,
+            now_unix_seconds()? + 3_600,
             ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())
-                .expect("token"),
-        )
-        .expect("authority")
+                ?,
+        )?)
     }
 
-    fn test_nonce(label: &str) -> [u8; 32] {
+    fn test_nonce(label: &str) -> TestResult<[u8; 32]> {
         let now_nanos = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .expect("clock")
+            ?
             .as_nanos();
         let material = format!("{label}:{now_nanos}:{}", std::process::id());
         let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
-        digest.into()
+        Ok(digest.into())
     }
 
     fn signed_final_use(
@@ -3604,10 +3659,10 @@ mod final_use_dispatch_tests {
         binding: FinalUseBinding,
         grant_id: &str,
         nonce: [u8; 32],
-    ) -> SignedFinalUseGrant {
+    ) -> TestResult<SignedFinalUseGrant> {
         let now_ms = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .expect("clock")
+            ?
             .as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
@@ -3620,20 +3675,20 @@ mod final_use_dispatch_tests {
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = issuer
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(&grant.signing_bytes()?)
             .to_bytes()
             .to_vec();
-        SignedFinalUseGrant { grant, signature }
+        Ok(SignedFinalUseGrant { grant, signature })
     }
 
     #[tokio::test]
-    async fn final_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target() {
+    async fn final_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target() -> TestResult<()> {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await?;
         let owner = store.owner_agent_id().clone();
         let writer = ProductionDurableWriter::open(
             store,
-            production_authority(owner.clone()),
+            production_authority(owner.clone())?,
             &FinalUseVerifier,
             "production:h4:final-use",
             1,
@@ -3669,7 +3724,7 @@ mod final_use_dispatch_tests {
                     "occurrence:final-use:1",
                     target.destination_id(),
                     payload_one,
-                ),
+                )?,
                 "memory.write",
                 payload_one,
             )
@@ -3683,8 +3738,8 @@ mod final_use_dispatch_tests {
             &issuer,
             binding.clone(),
             "final-use-good",
-            test_nonce("final-use-good"),
-        );
+            test_nonce("final-use-good")?,
+        )?;
         let dispatched = dispatcher
             .dispatch(&writer, &signed, &binding, queued)
             .await
@@ -3700,7 +3755,7 @@ mod final_use_dispatch_tests {
                     "occurrence:final-use:2",
                     target.destination_id(),
                     payload_two,
-                ),
+                )?,
                 "memory.write",
                 payload_two,
             )
@@ -3715,8 +3770,8 @@ mod final_use_dispatch_tests {
             &issuer,
             bad_binding.clone(),
             "final-use-bad-destination",
-            test_nonce("final-use-bad-destination"),
-        );
+            test_nonce("final-use-bad-destination")?,
+        )?;
         assert!(matches!(
             dispatcher
                 .dispatch(&writer, &bad_signed, &bad_binding, queued_bad.clone())
@@ -3744,16 +3799,17 @@ mod final_use_dispatch_tests {
             .claim(&bad_signed, &bad_binding)
             .expect("nonce remains unused");
         drop(token);
+        Ok(())
     }
 
     #[tokio::test]
-    async fn durable_dispatch_claim_is_idempotent_and_renewable_before_entry() {
+    async fn durable_dispatch_claim_is_idempotent_and_renewable_before_entry() -> TestResult<()> {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await?;
         let owner = store.owner_agent_id().clone();
         let writer = ProductionDurableWriter::open(
             store,
-            production_authority(owner.clone()),
+            production_authority(owner.clone())?,
             &FinalUseVerifier,
             "production:h4:claim-lease",
             1,
@@ -3768,7 +3824,7 @@ mod final_use_dispatch_tests {
                     "occurrence:claim-lease",
                     "destination:cognitive-store",
                     payload,
-                ),
+                )?,
                 "memory.write",
                 payload,
             )
@@ -3792,16 +3848,17 @@ mod final_use_dispatch_tests {
         assert_eq!(renewed.attempt, 1);
         assert!(renewed.lease_expires_at_unix_ms > first.lease_expires_at_unix_ms);
         assert_ne!(renewed.claim_sha256, first.claim_sha256);
+        Ok(())
     }
 
     #[tokio::test]
-    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() {
+    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() -> TestResult<()> {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await?;
         let owner = store.owner_agent_id().clone();
         let old = ProductionDurableWriter::open(
             store.clone(),
-            production_authority(owner.clone()),
+            production_authority(owner.clone())?,
             &FinalUseVerifier,
             "production:h4:queued-handoff",
             1,
@@ -3816,7 +3873,7 @@ mod final_use_dispatch_tests {
                     "occurrence:queued-handoff",
                     "destination:cognitive-store",
                     handoff_payload,
-                ),
+                )?,
                 "memory.write",
                 handoff_payload,
             )
@@ -3890,8 +3947,8 @@ mod final_use_dispatch_tests {
             &issuer,
             binding.clone(),
             "final-use-handoff",
-            test_nonce("final-use-handoff"),
-        );
+            test_nonce("final-use-handoff")?,
+        )?;
         let result = dispatcher
             .dispatch(&successor, &signed, &binding, inherited)
             .await
@@ -3921,5 +3978,6 @@ mod final_use_dispatch_tests {
             max_attempt, 2,
             "successor takeover must advance the durable dispatch attempt"
         );
+        Ok(())
     }
 }

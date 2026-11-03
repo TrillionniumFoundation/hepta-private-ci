@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -205,6 +207,8 @@ struct PairFleet {
 
 impl PairFleet {
     fn new(count: usize) -> Result<Self> {
+        let started = Instant::now();
+        eprintln!("paired-stage fixture_setup_begin count={count}");
         // The child fixtures bind the same compact control sockets as the
         // product.  Keep the synthetic fleet under a short root so Darwin's
         // SUN_LEN limit is exercised against production geometry, not the
@@ -228,6 +232,11 @@ impl PairFleet {
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
         let fixture_binary = std::env::current_exe()?;
+        eprintln!(
+            "paired-stage release_install_begin count={count} binary_bytes={} elapsed={:?}",
+            std::fs::metadata(&fixture_binary)?.len(),
+            started.elapsed()
+        );
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
@@ -241,10 +250,18 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        eprintln!(
+            "paired-stage release_install_complete count={count} elapsed={:?}",
+            started.elapsed()
+        );
         for agent_id in &agents {
             registry.allow_release(agent_id, &release_id)?;
             write_binding(&registry, agent_id)?;
         }
+        eprintln!(
+            "paired-stage release_allow_complete count={count} elapsed={:?}",
+            started.elapsed()
+        );
         let (supervisor, report) = Supervisor::recover(
             registry.clone(),
             UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
@@ -252,6 +269,10 @@ impl PairFleet {
             Instant::now(),
         )?;
         assert!(report.faults.is_empty());
+        eprintln!(
+            "paired-stage fixture_setup_complete count={count} elapsed={:?}",
+            started.elapsed()
+        );
         Ok(Self {
             _temp: temp,
             registry,
@@ -263,12 +284,22 @@ impl PairFleet {
 
     fn start_all(&mut self) -> Result<()> {
         for agent_id in &self.agents {
+            let started = Instant::now();
+            eprintln!("paired-stage release_resolve_begin agent={agent_id}");
             let release =
                 AgentRelease::try_from(self.registry.resolve_release(agent_id, &self.release_id)?)?;
+            eprintln!(
+                "paired-stage release_resolve_complete agent={agent_id} elapsed={:?}",
+                started.elapsed()
+            );
             self.supervisor
                 .as_mut()
                 .context("supervisor")?
                 .start_release(agent_id, release, Instant::now())?;
+            eprintln!(
+                "paired-stage agent_start_complete agent={agent_id} elapsed={:?}",
+                started.elapsed()
+            );
         }
         Ok(())
     }
@@ -295,10 +326,13 @@ impl PairFleet {
     }
 
     fn wait_agents_ready(&mut self, agents: &[AgentId], timeout: Duration) -> Result<()> {
-        let deadline = Instant::now() + timeout;
+        let started = Instant::now();
+        let deadline = started + timeout;
+        let mut next_progress = started + Duration::from_secs(2);
         loop {
             let supervisor = self.supervisor.as_mut().context("supervisor")?;
-            let report = supervisor.tick(Instant::now());
+            let tick_started = Instant::now();
+            let report = supervisor.tick(tick_started);
             anyhow::ensure!(report.faults.is_empty(), "tick faults: {:?}", report.faults);
             if agents.iter().all(|agent_id| {
                 supervisor.snapshot(agent_id).is_some_and(|snapshot| {
@@ -309,6 +343,36 @@ impl PairFleet {
                 })
             }) {
                 return Ok(());
+            }
+            let now = Instant::now();
+            if now >= next_progress {
+                let snapshots: Vec<_> = agents
+                    .iter()
+                    .map(|agent_id| {
+                        supervisor.snapshot(agent_id).map(|snapshot| {
+                            format!(
+                                "agent={agent_id} active={} healthy={} pid={:?} spawn={:?} runtime={:?} matrix_active={} matrix_healthy={} matrix_pid={:?} matrix_generation={:?} matrix_error={:?} last_log={:?}",
+                                snapshot.active,
+                                snapshot.healthy,
+                                snapshot.process_system_id,
+                                snapshot.spawn_generation,
+                                snapshot.runtime_generation,
+                                snapshot.matrix.active,
+                                snapshot.matrix.healthy,
+                                snapshot.matrix.process_system_id,
+                                snapshot.matrix.attached_agent_generation,
+                                snapshot.matrix.last_error,
+                                snapshot.logs.last(),
+                            )
+                        })
+                    })
+                    .collect();
+                eprintln!(
+                    "paired-stage waiting_ready elapsed={:?} tick_elapsed={:?} snapshots={snapshots:?}",
+                    started.elapsed(),
+                    tick_started.elapsed()
+                );
+                next_progress = now + Duration::from_secs(2);
             }
             if Instant::now() >= deadline {
                 let snapshots: Vec<_> = agents
@@ -537,6 +601,11 @@ fn run_agent_child() -> Result<()> {
         let mut bytes = Vec::new();
         reader.read_until(b'\n', &mut bytes)?;
         let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+        anyhow::ensure!(
+            request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+                && request.spawn_generation == spawn_generation,
+            "fixture request did not bind the agentd spawn generation"
+        );
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
         );
@@ -545,13 +614,8 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let response = AgentdResponse {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: request.request_id,
-            agent_id: agent_id.clone(),
-            spawn_generation,
-            current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
+        let payload = match request.method {
+            AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
                 ready: running,
                 fenced: false,
@@ -561,6 +625,31 @@ fn run_agent_child() -> Result<()> {
                 home_root,
                 run_root,
             }),
+            AgentdMethod::Drain => {
+                anyhow::ensure!(
+                    lifecycle.lifecycle == AgentLifecycle::Draining
+                        && spawn_generation.checked_add(2) == Some(lifecycle.generation),
+                    "fixture drain request did not bind the current draining generation"
+                );
+                // This fixture accepts only control requests and owns no assistant
+                // turns. Its authoritative Draining state closes all work admission.
+                AgentdPayload::Drain(DrainSnapshot {
+                    admission_closed: true,
+                    running_turns: 0,
+                    drained: true,
+                    lifecycle: lifecycle.lifecycle,
+                    fenced: false,
+                })
+            }
+            method => anyhow::bail!("unsupported agentd fixture method: {method:?}"),
+        };
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: agent_id.clone(),
+            spawn_generation,
+            current_generation: lifecycle.generation,
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

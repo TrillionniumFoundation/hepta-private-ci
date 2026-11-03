@@ -245,6 +245,7 @@ fn context(
 
 fn bindings(run: &str, expected: Digest32) -> ObjectiveRunBindingsV1 {
     ObjectiveRunBindingsV1 {
+        authenticated_payload: None,
         authentication: RunStartAuthenticationV1 {
             issuer_id: id("issuer.objective"),
             key_epoch: 3,
@@ -425,6 +426,34 @@ fn exact_product_retry_is_idempotent_and_semantic_drift_conflicts() {
         ),
         Err(ObjectiveRunError::RunStart(RunStartStoreError::Conflict))
     ));
+}
+
+#[test]
+fn original_authenticated_body_is_retained_by_the_destination_run_start_journal() {
+    let fixture = Fixture::new();
+    let mut journal = DurableRunStartJournal::create(
+        fixture.file(), digest("principal-run-start-scope"), 16,
+    ).expect("journal");
+    let profile = profile();
+    let envelope = envelope();
+    let admission_context = context(&profile, &envelope);
+    let payload = br#"{"queuedInput":{"threadId":"original-thread","text":"signed objective"}}"#.to_vec();
+    let mut original = bindings("run-authenticated", Digest32::ZERO);
+    original.authentication.signed_body_digest = Digest32::of_bytes(&payload);
+    original.authenticated_payload = Some(payload.clone());
+    let published = compile_and_publish_objective_run_v1(
+        &envelope, &profile, &admission_context, original.clone(), &mut journal,
+    ).expect("publish original body");
+    let durable = journal.get(&original.run_id).expect("journal read").expect("record");
+    assert_eq!((&durable.authentication, &durable.authenticated_payload, &durable.snapshot),
+        (&original.authentication, &Some(payload), &published.run_start));
+    let retry = compile_and_publish_objective_run_v1(
+        &envelope, &profile, &admission_context, original, &mut journal,
+    ).expect("replay original body");
+    assert_eq!(retry.publication, codex_hepta_learning_ledger::RunStartAppendReceipt {
+        disposition: RunStartAppendDisposition::IdempotentReplay,
+        ..published.publication
+    });
 }
 
 #[test]

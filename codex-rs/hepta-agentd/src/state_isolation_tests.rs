@@ -537,6 +537,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     let objective_protocol_bytes = b"objective protocol v1".to_vec();
     let run_id = StableId::new("run.durable.current").expect("run id");
     let record = RunStartRecordV1 {
+        authenticated_payload: None,
         authentication: RunStartAuthenticationV1 {
             issuer_id: claims.issuer_id.clone(),
             key_epoch: claims.key_epoch.get(),
@@ -597,6 +598,30 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         .expect("current signed durable admission");
     assert_eq!(admitted.phase, RunPhase::Admitted);
     assert_eq!(admitted.generation, 2);
+
+    // Explicit verifier time proves the AuthBus expiry branch independently
+    // of sleeping and of the Objective owner's longer deadline. The durable
+    // original record remains unchanged by this signed boundary fixture.
+    let original = journal.get(&run_id).expect("journal").expect("original").clone();
+    let mut short_lived = original.clone();
+    let mut short_claims = claims;
+    short_claims.expires_at_ms = now_ms + 1_000;
+    short_lived.authentication.expires_at_ms = short_claims.expires_at_ms;
+    short_lived.authentication.signature = key.sign(&short_claims.signing_bytes()).to_bytes();
+    state.authenticate_current_run_start(&short_lived, 2, now_ms + 999)
+        .expect("same signature is current immediately before expiry");
+    let expired_signature = state.authenticate_current_run_start(&short_lived, 2, now_ms + 1_000)
+        .expect_err("same signature expires exactly at its AuthBus deadline");
+    assert!(matches!(expired_signature, AgentdError::Invalid(message)
+        if message.contains("authentication is not current") && message.to_ascii_lowercase().contains("expired")));
+    assert_eq!(journal.get(&run_id).expect("original journal"), Some(&original));
+
+    // Authentication remains current for several minutes; it cannot extend
+    // the objective owner's independent admission deadline before preparation.
+    let mut expired = journal.get(&run_id).expect("journal").expect("original record").clone();
+    expired.admission.deadline_unix_micros = now_ms * 1_000;
+    let error = state.require_current_run_start(&expired).expect_err("original objective deadline elapsed");
+    assert!(matches!(error, AgentdError::Protocol(message) if message.contains("DeadlineElapsed")));
 
     write_trust(true);
     let second_id = StableId::new("run.durable.revoked").expect("run id");

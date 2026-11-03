@@ -524,6 +524,9 @@ pub struct AppServerRuntimeOptions {
     /// per-thread limit. An embedding runtime may opt into a database-wide
     /// limit; Hepta agentd binds that database to one Agent-private home.
     pub turn_queue_capacity: Option<NonZeroUsize>,
+    /// Optional trusted executor for the original exact-input queue. Core keeps
+    /// its turn reservation/live writer; ordinary direct sampling is disabled.
+    pub hosted_turn_executor: Option<Arc<dyn codex_core::hosted_turn::HostedTurnExecutor>>,
     /// Optional exact SQLite root required by the embedding runtime.
     ///
     /// Ordinary Codex leaves this unset. Embedders that rely on a private
@@ -588,6 +591,7 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
             )
             .field("graceful_drain", &self.graceful_drain.is_some())
             .field("turn_queue_capacity", &self.turn_queue_capacity)
+            .field("hosted_turn_executor", &self.hosted_turn_executor.is_some())
             .field("required_sqlite_home", &self.required_sqlite_home)
             .field(
                 "required_thread_store_mode",
@@ -635,6 +639,11 @@ impl PartialEq for AppServerRuntimeOptions {
                 _ => false,
             }
             && self.turn_queue_capacity == other.turn_queue_capacity
+            && match (&self.hosted_turn_executor, &other.hosted_turn_executor) {
+                (Some(left), Some(right)) => Arc::ptr_eq(left, right),
+                (None, None) => true,
+                _ => false,
+            }
             && self.required_sqlite_home == other.required_sqlite_home
             && self.required_thread_store_mode == other.required_thread_store_mode
             && self.hepta_cognitive_runtime == other.hepta_cognitive_runtime
@@ -667,6 +676,7 @@ impl Default for AppServerRuntimeOptions {
             install_shutdown_signal_handler: true,
             graceful_drain: None,
             turn_queue_capacity: None,
+            hosted_turn_executor: None,
             required_sqlite_home: None,
             required_thread_store_mode: None,
             hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
@@ -787,6 +797,9 @@ pub async fn run_main_with_transport_options(
         runtime_options.required_thread_store_mode.as_ref(),
         &config.experimental_thread_store,
     )?;
+    if runtime_options.hosted_turn_executor.is_some() {
+        enforce_required_thread_store_mode(Some(&ThreadStoreConfig::Local), &config.experimental_thread_store)?;
+    }
     let code_mode_session_provider: Option<Arc<dyn CodeModeSessionProvider>> =
         match &runtime_options.code_mode_host_transport {
             CodeModeHostTransport::Local => None,
@@ -865,6 +878,9 @@ pub async fn run_main_with_transport_options(
         }
     };
     let state_db = state_db_init.state_db;
+    if runtime_options.hosted_turn_executor.is_some() && state_db.is_none() {
+        return Err(std::io::Error::new(ErrorKind::InvalidInput, "hosted turn execution requires the original durable queue"));
+    }
     if let Some(recovery_notice) = state_db_init.recovery_notice {
         config_warnings.push(ConfigWarningNotification {
             summary: SQLITE_RECOVERY_CONFIG_WARNING_SUMMARY.to_string(),
@@ -1168,6 +1184,7 @@ pub async fn run_main_with_transport_options(
             remote_control_handle: Some(remote_control_handle.clone()),
             plugin_startup_tasks: runtime_options.plugin_startup_tasks,
             turn_queue_capacity: runtime_options.turn_queue_capacity,
+            hosted_turn_executor: runtime_options.hosted_turn_executor.clone(),
             hepta: HeptaExtensionBindings {
                 cognitive_runtime: runtime_options.hepta_cognitive_runtime.clone(),
                 cognitive_production_mutation: runtime_options
@@ -1458,6 +1475,11 @@ pub async fn run_main_with_transport_options(
             };
 
             if !shutdown_state.forced() {
+                // Transport-backed embeddings own the same callbacks and
+                // listeners as the in-process server. Release them before
+                // joining the remaining thread work and its execution owners.
+                processor.clear_runtime_references();
+                processor.cancel_active_login().await;
                 futures::future::join_all(connections.iter().map(
                     |(&connection_id, connection_state)| {
                         processor.connection_closed(connection_id, &connection_state.session)
@@ -1465,6 +1487,7 @@ pub async fn run_main_with_transport_options(
                 ))
                 .await;
                 connection_cleanup_tasks.drain().await;
+                processor.clear_all_thread_listeners().await;
                 processor.drain_background_tasks().await;
                 processor.shutdown_threads().await;
             } else {

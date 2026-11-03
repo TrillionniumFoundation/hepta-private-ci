@@ -39,6 +39,13 @@ use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 use crate::AgentdConfig;
 use crate::AgentdError;
 
+#[path = "production_native_entry.rs"]
+mod native_entry;
+#[path = "production_writer_attachment.rs"]
+mod attachment;
+
+use attachment::RecoveredWriterAttachment;
+
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
 pub trait AgentdFinalUseGrantProvider: Send + Sync {
@@ -203,6 +210,10 @@ impl AgentdProductionOperationRuntimeConfig {
 #[derive(Clone)]
 pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
+    // Created only by exact-cut recovery for this original Agentd launch.
+    // Fleet lifecycle and durable writer lease generations have independent
+    // owners; equal numeric values are not an attachment proof.
+    attachment: Option<RecoveredWriterAttachment>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
     grants: Option<Arc<dyn AgentdFinalUseGrantProvider>>,
     // Private read-side clone of the exact recovered generation. Runtime
@@ -286,6 +297,7 @@ impl AgentdProductionWriterHost {
         );
         let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
+            attachment: Some(RecoveredWriterAttachment::new(config.identity(), &writer)),
             writer,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
@@ -317,6 +329,7 @@ impl AgentdProductionWriterHost {
                 .await?;
         Ok(Self {
             writer: Arc::new(writer),
+            attachment: None,
             dispatchers: BTreeMap::new(),
             grants: None,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
@@ -439,6 +452,30 @@ impl AgentdProductionWriterHost {
             destination,
             ProductionFinalUseOutboxDispatcher::attach(final_use, target),
         );
+        Ok(self)
+    }
+
+    /// Add a native destination using an explicitly named, already registered
+    /// authority owner. The original dispatcher supplies the shared state;
+    /// native configuration cannot substitute another nonce ledger.
+    pub(crate) fn attach_target_with_existing_authority(
+        mut self,
+        authority_destination: &str,
+        target: Arc<dyn FinalUseProductionOutboxTarget>,
+    ) -> Result<Self, AgentdError> {
+        let source = self.dispatchers.get(authority_destination).ok_or_else(|| {
+            AgentdError::Invalid(format!(
+                "native final-use authority source {authority_destination:?} is not registered"
+            ))
+        })?;
+        let destination = target.destination_id().to_owned();
+        if destination.is_empty() || self.dispatchers.contains_key(&destination) {
+            return Err(AgentdError::Invalid(
+                "production operation destination must be non-empty and unique".to_owned(),
+            ));
+        }
+        let dispatcher = source.with_shared_authority_target(target);
+        self.dispatchers.insert(destination, dispatcher);
         Ok(self)
     }
 

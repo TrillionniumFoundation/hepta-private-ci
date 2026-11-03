@@ -405,6 +405,7 @@ fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence()
     let id = |value: &str| StableId::new(value).expect("stable id");
     let d = |value: &str| Digest32::of_bytes(value.as_bytes());
     let record = RunStartRecordV1 {
+        authenticated_payload: None,
         authentication: RunStartAuthenticationV1 {
             issuer_id: id("issuer.1"),
             key_epoch: 2,
@@ -467,6 +468,7 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
     let id = |value: &str| StableId::new(value).expect("stable id");
     let d = |value: &str| Digest32::of_bytes(value.as_bytes());
     let record = RunStartRecordV1 {
+        authenticated_payload: None,
         authentication: RunStartAuthenticationV1 {
             issuer_id: id("issuer.1"),
             key_epoch: 2,

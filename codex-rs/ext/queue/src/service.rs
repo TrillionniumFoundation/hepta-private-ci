@@ -14,12 +14,14 @@ use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
 use codex_core::TurnInputRequest;
+use codex_core::hosted_turn::{HostedQueueBinding, HostedQueueCompletion, HostedTurnExecutor, HostedTurnMode, HostedTurnProvenance};
 use codex_extension_api::ExtensionEventSink;
 use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ThreadIdleCause;
 use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
 use codex_extension_api::ThreadResumeInput;
+use codex_extension_api::ThreadStartInput;
 use codex_history::RolloutItem;
 use codex_history::RolloutLine;
 use codex_protocol::ThreadId;
@@ -89,6 +91,8 @@ pub struct QueueReconcileResponse {
 
 #[derive(Debug, Error)]
 pub enum QueueServiceError {
+    #[error("the original hosted checkpoint must confirm durable admission before this queue can settle")]
+    HostedAdmissionRequired { recovery: Box<codex_history::TurnRecoveryRequestBinding> },
     #[error("queue storage failed: {0}")]
     Storage(#[from] ThreadStoreError),
     #[error("queued submission payload is invalid: {0}")]
@@ -131,13 +135,16 @@ pub struct QueuedItemService {
     dispatch_locks: Arc<StdMutex<HashMap<ThreadId, Weak<Mutex<()>>>>>,
     resumed_threads: Arc<StdMutex<HashSet<ThreadId>>>,
     dispatch_owner_id: String,
+    hosted_turn_executor: Option<Arc<dyn HostedTurnExecutor>>,
 }
 
 struct OwnedDispatchRequest {
+    queued_item_id: String,
     input: TurnInput,
     trace: Option<W3cTraceContext>,
     client_id: String,
     payload_sha256: String,
+    preparation_recovery: Option<codex_history::TurnRecoveryRequestBinding>,
 }
 
 /// Process-local authority that must outlive every potentially-routed Core
@@ -147,6 +154,7 @@ struct OwnedDispatchRequest {
 struct OwnedDispatchAuthority {
     process_lock: QueuedClientDispatchLock,
     lease: QueuedClientDispatchLease,
+    hosted_completion: Option<HostedQueueCompletion>,
 }
 
 impl QueuedItemService {
@@ -162,7 +170,15 @@ impl QueuedItemService {
             dispatch_locks: Arc::new(StdMutex::new(HashMap::new())),
             resumed_threads: Arc::new(StdMutex::new(HashSet::new())),
             dispatch_owner_id: Uuid::now_v7().to_string(),
+            hosted_turn_executor: None,
         }
+    }
+
+    /// Installs an explicit executor while preserving this queue's original
+    /// storage, dispatch locks, claims and completion transactions.
+    pub fn with_hosted_turn_executor(mut self, executor: Option<Arc<dyn HostedTurnExecutor>>) -> Self {
+        self.hosted_turn_executor = executor;
+        self
     }
 
     // Check SQLite's inexpensive data version every 10 seconds, then use the
@@ -410,7 +426,8 @@ impl QueuedItemService {
                 QueueReconcileOutcome::Persisted { turn_id }
             }
             QueuedClientBindingReserveOutcome::Cancelled => {
-                if let Some(turn_id) = persisted_turn_for_client_id_path(
+                if let Some(turn_id) = self.observe_exact_client_admission(
+                    thread_id,
                     rollout_path.as_deref(),
                     &client_id,
                     &payload_sha256,
@@ -442,13 +459,21 @@ impl QueuedItemService {
                 }
             }
             QueuedClientBindingReserveOutcome::Queued(record) => {
-                if let Some(turn_id) = persisted_turn_for_client_id_path(
+                let observed = match self.observe_exact_client_admission(
+                    thread_id,
                     rollout_path.as_deref(),
                     &client_id,
                     &payload_sha256,
                 )
-                .await?
-                {
+                .await {
+                    Ok(observed) => observed,
+                    // Keep the same queue row and wake its original dispatch
+                    // owner. Reconciliation itself cannot restore preparation.
+                    Err(QueueServiceError::HostedAdmissionRequired { .. })
+                        if self.hosted_turn_executor.is_some() => None,
+                    Err(error) => return Err(error),
+                };
+                if let Some(turn_id) = observed {
                     let bound = self
                         .queue
                         .mark_client_binding_persisted(
@@ -482,7 +507,8 @@ impl QueuedItemService {
                 }
             }
             QueuedClientBindingReserveOutcome::Reserved(lease) => {
-                let observed_turn_id = persisted_turn_for_client_id_path(
+                let observed_turn_id = self.observe_exact_client_admission(
+                    thread_id,
                     rollout_path.as_deref(),
                     &client_id,
                     &payload_sha256,
@@ -691,6 +717,7 @@ impl QueuedItemService {
             )
             .await?;
 
+        let mut preparation_recovery = None;
         let lease = match claim {
             QueuedClientDispatchClaimOutcome::Unbound => {
                 return self
@@ -705,7 +732,7 @@ impl QueuedItemService {
                     .await;
             }
             QueuedClientDispatchClaimOutcome::Acquired(lease) => {
-                match persisted_turn_for_client_id(thread.as_ref(), &client_id, &payload_sha256)
+                match self.observe_exact_client_admission(thread_id, thread.rollout_path().as_deref(), &client_id, &payload_sha256)
                     .await
                 {
                     Ok(Some(turn_id)) => {
@@ -714,6 +741,11 @@ impl QueuedItemService {
                         return Ok(StartIfIdleSubmission::Started { turn_id });
                     }
                     Ok(None) => lease,
+                    Err(QueueServiceError::HostedAdmissionRequired { recovery })
+                        if self.hosted_turn_executor.is_some() => {
+                            preparation_recovery = Some(*recovery);
+                            lease
+                        }
                     Err(error) => {
                         self.queue
                             .release_client_binding_dispatch(&process_lock, lease)
@@ -726,9 +758,20 @@ impl QueuedItemService {
                 // The OS lock is positive owner-death/release evidence. Only
                 // after acquiring it do we inspect the exact rollout. Expiry
                 // by itself never grants a resubmission.
-                let observed_turn_id =
-                    persisted_turn_for_client_id(thread.as_ref(), &client_id, &payload_sha256)
-                        .await?;
+                let observed_turn_id = match self.observe_exact_client_admission(
+                    thread_id, thread.rollout_path().as_deref(), &client_id, &payload_sha256,
+                ).await {
+                    Ok(observed) => observed,
+                    Err(QueueServiceError::HostedAdmissionRequired { recovery })
+                        if self.hosted_turn_executor.is_some() => {
+                            // This only transfers the original queue claim.
+                            // The Core call below retains this exact turn and
+                            // requires independent no-operation evidence.
+                            preparation_recovery = Some(*recovery);
+                            None
+                        }
+                    Err(error) => return Err(error),
+                };
                 let (now_ms, lease_expires_at_ms) = dispatch_window()?;
                 match self
                     .queue
@@ -798,10 +841,12 @@ impl QueuedItemService {
                     process_lock,
                     lease,
                     OwnedDispatchRequest {
+                        queued_item_id,
                         input,
                         trace,
                         client_id,
                         payload_sha256,
+                        preparation_recovery,
                     },
                 )
                 .await
@@ -821,45 +866,62 @@ impl QueuedItemService {
         request: OwnedDispatchRequest,
     ) -> Result<StartIfIdleSubmission, QueueServiceError> {
         let OwnedDispatchRequest {
+            queued_item_id,
             input,
             trace,
             client_id,
             payload_sha256,
+            preparation_recovery,
         } = request;
+        let (hosted_completion, hosted_waiter) = match self.hosted_turn_executor.as_ref() {
+            Some(_) => { let (owner, waiter) = HostedQueueCompletion::channel(); (Some(owner), Some(waiter)) }
+            None => (None, None),
+        };
+        let authority = Arc::new(OwnedDispatchAuthority { process_lock, lease, hosted_completion });
         // Keep the exact authority in this owner task while Core admission
         // runs in a monitored child. A panic in Core may happen after the
         // message was routed to a detached session task, so the JoinError is
         // ambiguous and must never release the process fence.
         let admission_thread = Arc::clone(&thread);
+        let hosted_executor = self.hosted_turn_executor.clone();
+        let hosted_queue = HostedQueueBinding { queued_item_id, client_id: client_id.clone(), payload_sha256: payload_sha256.clone() };
         let admission = tokio::spawn(async move {
-            admission_thread
-                .start_turn_if_idle_and_wait_for_persisted_admission(
+            match (hosted_executor, hosted_waiter, preparation_recovery) {
+                (Some(executor), Some(waiter), Some(recovery)) => {
+                    let TurnInput::UserInput { content, .. } = input else {
+                        return Err(codex_core::UserMessageAdmissionError::Admission(CodexErr::InvalidRequest(
+                            "retained hosted preparation requires its original queued input".to_owned(),
+                        )));
+                    };
+                    admission_thread.resume_hosted_preparation_if_idle_and_wait_for_persisted_admission(
+                        content, hosted_queue, recovery, executor, waiter,
+                    ).await
+                }
+                (Some(executor), Some(waiter), None) => admission_thread.start_hosted_turn_if_idle_and_wait_for_persisted_admission(
+                    TurnInputRequest::new(input).with_trace(trace), hosted_queue, executor, waiter,
+                ).await,
+                (None, None, None) => admission_thread.start_turn_if_idle_and_wait_for_persisted_admission(
                     TurnInputRequest::new(input).with_trace(trace),
-                )
-                .await
+                ).await,
+                _ => unreachable!("hosted executor and original queue notification are installed together"),
+            }
         })
         .await;
         let submission = match admission {
             Ok(Ok(submission)) => submission,
             Ok(Err(error)) => {
-                self.spawn_uncertain_owned_dispatch(
+                self.spawn_shared_uncertain_owned_dispatch(
                     thread,
-                    OwnedDispatchAuthority {
-                        process_lock,
-                        lease,
-                    },
+                    authority,
                     client_id,
                     payload_sha256,
                 );
                 return Err(CodexErr::from(error).into());
             }
             Err(error) => {
-                self.spawn_uncertain_owned_dispatch(
+                self.spawn_shared_uncertain_owned_dispatch(
                     thread,
-                    OwnedDispatchAuthority {
-                        process_lock,
-                        lease,
-                    },
+                    authority,
                     client_id,
                     payload_sha256,
                 );
@@ -874,10 +936,6 @@ impl QueuedItemService {
                 // durable Core admission must not unwind through and drop the
                 // authority. The owner retains its Arc while the child only
                 // borrows the lock and lease.
-                let authority = Arc::new(OwnedDispatchAuthority {
-                    process_lock,
-                    lease,
-                });
                 let completion_service = self.clone();
                 let completion_authority = Arc::clone(&authority);
                 let completion_turn_id = turn_id.clone();
@@ -888,7 +946,9 @@ impl QueuedItemService {
                             &completion_authority.lease,
                             &completion_turn_id,
                         )
-                        .await
+                        .await?;
+                    if let Some(completion) = &completion_authority.hosted_completion { completion.committed(); }
+                    Ok::<(), QueueServiceError>(())
                 })
                 .await;
                 match completion {
@@ -915,27 +975,17 @@ impl QueuedItemService {
                 }
             }
             StartIfIdleSubmission::NotSubmitted { .. } => {
+                let Ok(authority) = Arc::try_unwrap(authority) else {
+                    return Err(QueueServiceError::Storage(ThreadStoreError::Internal {
+                        message: "declined queue admission still has a completion owner".to_string(),
+                    }));
+                };
                 self.queue
-                    .release_client_binding_dispatch(&process_lock, lease)
+                    .release_client_binding_dispatch(&authority.process_lock, authority.lease)
                     .await?;
             }
         }
         Ok(submission)
-    }
-
-    fn spawn_uncertain_owned_dispatch(
-        &self,
-        thread: Arc<CodexThread>,
-        authority: OwnedDispatchAuthority,
-        client_id: String,
-        payload_sha256: String,
-    ) {
-        self.spawn_shared_uncertain_owned_dispatch(
-            thread,
-            Arc::new(authority),
-            client_id,
-            payload_sha256,
-        );
     }
 
     fn spawn_shared_uncertain_owned_dispatch(
@@ -977,8 +1027,9 @@ impl QueuedItemService {
             let probe_client_id = client_id.clone();
             let probe_payload_sha256 = payload_sha256.clone();
             let probe = tokio::spawn(async move {
-                let Some(turn_id) = persisted_turn_for_client_id(
-                    probe_thread.as_ref(),
+                let Some(turn_id) = probe_service.observe_exact_client_admission(
+                    probe_thread.session_configured().thread_id,
+                    probe_thread.rollout_path().as_deref(),
                     &probe_client_id,
                     &probe_payload_sha256,
                 )
@@ -993,6 +1044,7 @@ impl QueuedItemService {
                         &turn_id,
                     )
                     .await?;
+                if let Some(completion) = &probe_authority.hosted_completion { completion.committed(); }
                 Ok(true)
             })
             .await;
@@ -1240,6 +1292,33 @@ impl QueuedItemService {
         Ok(())
     }
 
+    async fn observe_exact_client_admission(
+        &self,
+        thread_id: ThreadId,
+        rollout_path: Option<&Path>,
+        client_id: &str,
+        payload_sha256: &str,
+    ) -> Result<Option<String>, QueueServiceError> {
+        match persisted_turn_for_client_id_path(rollout_path, client_id, payload_sha256).await {
+            Err(QueueServiceError::HostedAdmissionRequired { recovery }) => {
+                let Some(executor) = self.hosted_turn_executor.clone() else {
+                    return Err(QueueServiceError::HostedAdmissionRequired { recovery });
+                };
+                let manager = self.thread_manager.upgrade().ok_or_else(|| ThreadStoreError::Internal {
+                    message: "hosted observation lost the original thread owner".to_string(),
+                })?;
+                let thread = manager.get_thread(thread_id).await?;
+                match thread.observe_hosted_turn_admission(executor, (*recovery).clone()).await? {
+                    Some(turn_id) => Ok(Some(turn_id)),
+                    // Missing host state is unknown, never proof that it is safe
+                    // to release/reclaim and dispatch this input a second time.
+                    None => Err(QueueServiceError::HostedAdmissionRequired { recovery }),
+                }
+            }
+            observed => observed,
+        }
+    }
+
     fn emit_changed(&self, thread_id: ThreadId) {
         self.event_sink.emit(Event {
             id: Uuid::now_v7().to_string(),
@@ -1324,8 +1403,18 @@ impl<C> ThreadLifecycleContributor<C> for QueuedItemService
 where
     C: Send + Sync + 'static,
 {
+    fn on_thread_start<'a>(&'a self, input: ThreadStartInput<'a, C>) -> ExtensionFuture<'a, ()> {
+        Box::pin(async move {
+            if let Some(executor) = self.hosted_turn_executor.clone() {
+                input.session_store.insert(HostedTurnMode::with_queue_owner(executor, Arc::clone(&self.queue)));
+            }
+        })
+    }
     fn on_thread_resume<'a>(&'a self, input: ThreadResumeInput<'a>) -> ExtensionFuture<'a, ()> {
         Box::pin(async move {
+            if let Some(executor) = self.hosted_turn_executor.clone() {
+                input.session_store.insert(HostedTurnMode::with_queue_owner(executor, Arc::clone(&self.queue)));
+            }
             if let Ok(thread_id) = ThreadId::from_string(input.thread_store.level_id()) {
                 self.resumed_threads
                     .lock()
@@ -1406,18 +1495,6 @@ fn ensure_payload_digest_matches(
 /// therefore die after the rollout flush and before deleting the queue row.
 /// The durable user-message client id is the recovery join: once observed,
 /// dispatch removes the stale queue row without ever submitting it again.
-async fn persisted_turn_for_client_id(
-    thread: &CodexThread,
-    client_id: &str,
-    expected_sha256: &str,
-) -> Result<Option<String>, QueueServiceError> {
-    // Local threads are materialized lazily. Before the first accepted user
-    // message the configured rollout path is intentionally absent, so there
-    // cannot yet be a durable client-id match to reconcile.
-    persisted_turn_for_client_id_path(thread.rollout_path().as_deref(), client_id, expected_sha256)
-        .await
-}
-
 async fn persisted_turn_for_client_id_path(
     rollout_path: Option<&Path>,
     client_id: &str,
@@ -1482,6 +1559,8 @@ async fn persisted_turn_for_client_id_path_with_mode(
     let mut found = None;
     let mut legacy_turn_ids = HashSet::new();
     let mut legacy_without_digest = false;
+    let mut hosted_recovery: Option<codex_history::TurnRecoveryRequestBinding> = None;
+    let mut hosted_generation = 0_u64;
     while let Some(line) = reader
         .next_line()
         .await
@@ -1498,6 +1577,29 @@ async fn persisted_turn_for_client_id_path_with_mode(
                 ),
             })
         })?;
+        if let RolloutItem::TurnRecoveryRequestBinding(binding) = &record.item
+            && let Some(provenance) = HostedTurnProvenance::from_recovery(binding)?
+            && provenance.queue.client_id == client_id {
+                ensure_payload_digest_matches(client_id, expected_sha256, &provenance.queue.payload_sha256)?;
+                if let Some(original) = hosted_recovery.as_ref() {
+                    if binding.turn_id != original.turn_id
+                        || binding.replay_applied_from_generation != Some(hosted_generation)
+                        || hosted_generation.checked_add(1) != Some(binding.generation)
+                        || binding.fingerprint_sha256 != original.fingerprint_sha256
+                        || binding.history_boundary != original.history_boundary
+                        || binding.replay != original.replay {
+                        return Err(malformed_rollout_turn_boundary("hosted original input has a conflicting recovery successor".to_string()));
+                    }
+                    // scan_persisted_client_line below also requires the exact
+                    // preceding Unready and following TurnStarted handoff.
+                } else {
+                    if binding.replay_applied_from_generation.is_some() {
+                        return Err(malformed_rollout_turn_boundary("hosted recovery lacks its original binding".to_string()));
+                    }
+                    hosted_recovery = Some(binding.clone());
+                }
+                hosted_generation = binding.generation;
+        }
         scan_persisted_client_line(
             record.item,
             client_id,
@@ -1514,6 +1616,14 @@ async fn persisted_turn_for_client_id_path_with_mode(
         return Err(malformed_rollout_turn_boundary(format!(
             "recovery hand-off for turn `{turn_id}` was not followed by a turn start"
         )));
+    }
+    if let Some(recovery) = hosted_recovery {
+        if found.as_ref().is_some_and(|turn_id| turn_id != &recovery.turn_id) {
+            return Err(malformed_rollout_turn_boundary("hosted input crossed its original turn".to_string()));
+        }
+        // This includes a crash after provenance but before UserMessage. Neither
+        // that partial input nor a generic terminal event is a host checkpoint.
+        return Err(QueueServiceError::HostedAdmissionRequired { recovery: Box::new(recovery) });
     }
     if legacy_turn_ids
         .iter()

@@ -18,6 +18,27 @@ fn generation(value: u64) -> Generation {
     Generation::new(value).expect("valid generation")
 }
 
+#[test]
+fn retained_trace_validation_reads_the_actual_preparation_without_invoking_owners() {
+    let request = request();
+    let mut oracle = Oracle::new(&request.snapshot);
+    let mut ports = Ports::new();
+    let CanonicalRunOutcomeV1::Ready(envelope) = prepare_intelligence_run(request.clone(), &mut ports, &mut oracle)
+        .expect("real canonical preparation") else { panic!("expected ready"); };
+    let calls = ports.calls.clone();
+    let oracle_calls = oracle.calls.clone();
+    validate_retained_envelope_v1(&request, &envelope).expect("retained exact trace");
+    assert_eq!(envelope.stage_trace.iter().map(|trace| trace.stage).collect::<Vec<_>>(), calls);
+    assert_eq!(ports.calls, calls);
+    assert_eq!(oracle.calls, oracle_calls);
+    let mut changed = envelope.clone();
+    changed.stage_trace[2].predecessor_digest = digest("different-predecessor");
+    assert!(validate_retained_envelope_v1(&request, &changed).is_err());
+    let mut missing = envelope;
+    missing.stage_trace.remove(0);
+    assert!(validate_retained_envelope_v1(&request, &missing).is_err());
+}
+
 fn owners() -> Vec<OwnerBindingV1> {
     [
         "objective.compiler",

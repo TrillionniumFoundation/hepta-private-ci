@@ -505,3 +505,6 @@ async fn cancelled_waiter_does_not_release_owner_commit_permit() {
     assert!(fixture.authority.current.try_write().is_ok());
     fixture.live.shutdown().await.expect("close writer");
 }
+
+#[path = "native_checkpoint_chain_tests.rs"]
+mod chain_tests;

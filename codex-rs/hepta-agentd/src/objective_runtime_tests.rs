@@ -33,6 +33,7 @@ fn record(
             signed_body_digest: digest(&format!("signed:{run_id}")),
             signature: [7; 64],
         },
+        authenticated_payload: None,
         admission: RunStartAdmissionBindingV1 {
             profile_id: id("profile.objective"),
             profile_revision: 1,

@@ -121,6 +121,28 @@ pub trait ToolPort: Send + Sync {
     ) -> impl Future<Output = Result<ToolObservation>> + Send;
 
     fn cancel(&self, intent: &RuntimeToolIntentV1) -> impl Future<Output = Result<()>> + Send;
+
+    /// Present verified complete terminal bytes. An overriding host may return
+    /// a bounded excerpt with its original-owner reference. It must freeze that
+    /// policy and verify the same projection during checkpoint recovery.
+    fn present_output(
+        &self,
+        _intent: &RuntimeToolIntentV1,
+        receipt: &RuntimeReceiptV1,
+        stdout: &[u8],
+        stderr: &[u8],
+    ) -> impl Future<Output = Result<String>> + Send {
+        async move { Ok(terminal_output_json(receipt, stdout, stderr)) }
+    }
+}
+
+// Shared by the default live port and the pure recovery projection.
+pub(crate) fn terminal_output_json(receipt: &RuntimeReceiptV1, stdout: &[u8], stderr: &[u8]) -> String {
+    serde_json::json!({
+        "exit_code": receipt.tool_outcome.exit_code,
+        "stdout": String::from_utf8_lossy(stdout),
+        "stderr": String::from_utf8_lossy(stderr),
+    }).to_string()
 }
 
 /// Existing host owns admission, generation, FinalUse and durable checkpoints.

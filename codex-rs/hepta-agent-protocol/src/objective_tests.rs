@@ -23,6 +23,7 @@ fn ingress() -> AuthBusObjectiveIngress {
             prompt_registry_digest: digest('4'),
             artifact_set_digest: digest('5'),
             authority_epoch: 7,
+            queued_input: None,
         },
     }
 }
@@ -56,4 +57,25 @@ fn objective_start_outcomes_are_strict_wire_types() {
         serde_json::from_slice::<ObjectiveStartOutcome>(&bytes).expect("decode"),
         outcome
     );
+}
+
+#[test]
+fn optional_queued_input_preserves_legacy_body_bytes_and_covers_the_new_route() {
+    let mut request = ingress();
+    let legacy = serde_json::to_vec(&request.body).expect("legacy body");
+    let decoded: AuthBusObjectiveBody = serde_json::from_slice(&legacy).expect("legacy decode");
+    assert_eq!(decoded.queued_input, None);
+    assert_eq!(serde_json::to_vec(&decoded).expect("legacy encode"), legacy);
+    let legacy_value: serde_json::Value = serde_json::from_slice(&legacy).expect("legacy JSON");
+    assert!(legacy_value.get("queued_input").is_none());
+
+    request.body.queued_input = Some(ObjectiveQueuedInputV1 {
+        thread_id: "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12".to_string(),
+        text: "Edit the requested file and run its test.".to_string(),
+    });
+    let with_queue = serde_json::to_vec(&request.body).expect("queued body");
+    assert_ne!(with_queue, legacy);
+    assert_eq!(serde_json::from_slice::<AuthBusObjectiveBody>(&with_queue).expect("queued decode"), request.body);
+    request.body.queued_input = None;
+    assert_eq!(serde_json::to_vec(&request.body).expect("legacy again"), legacy);
 }

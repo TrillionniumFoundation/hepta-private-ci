@@ -84,6 +84,7 @@ pub struct AgentdConfig {
     authbus_checkpoint_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
+    native_runtime: Option<crate::AgentdNativeRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -207,6 +208,7 @@ impl AgentdConfig {
             authbus_checkpoint_file: None,
             cognitive_ranker: None,
             production_operations: None,
+            native_runtime: None,
             production_writer_host: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
@@ -336,6 +338,53 @@ impl AgentdConfig {
         Ok(self)
     }
 
+    /// Attach native execution to this exact daemon and recovered production
+    /// writer. `NativeHostedRuntimeConfig::CanonicalObjective` selects the
+    /// signed ObjectiveStart owner and its original Core queue dispatch.
+    pub fn with_native_runtime(mut self, native: crate::AgentdNativeRuntimeConfig) -> Result<Self, AgentdError> {
+        if self.native_runtime.is_some() {
+            return Err(AgentdError::Invalid("native runtime already configured".to_owned()));
+        }
+        self.native_runtime = Some(native);
+        Ok(self)
+    }
+
+    /// Reject incomplete explicit native composition before opening owners or
+    /// probing runtime hosts. Non-native compatibility remains unchanged;
+    /// exact authority, lease, target and currentness checks stay at attachment.
+    pub(crate) fn validate_native_composition(&self) -> Result<(), AgentdError> {
+        let Some(native) = self.native_runtime.as_ref() else { return Ok(()); };
+        let runner = self.intelligence_product_runner.is_some();
+        let provider = self.intelligence_invocation_provider.is_some();
+        if runner != provider {
+            return Err(AgentdError::Invalid(
+                "native execution requires the canonical intelligence runner and its host-owned invocation provider together when either is configured".to_owned(),
+            ));
+        }
+        if matches!(&native.hosted_turn, Some(crate::NativeHostedRuntimeConfig::CanonicalObjective { .. })) {
+            if !runner {
+                return Err(AgentdError::Invalid("canonical native execution requires both original intelligence owners".to_owned()));
+            }
+            if self.objective_profile_file.is_none() {
+                return Err(AgentdError::Invalid("canonical native execution requires the original objective profile".to_owned()));
+            }
+            if self.authbus_trust_file.is_none() || self.authbus_checkpoint_file.is_none() {
+                return Err(AgentdError::Invalid("canonical native execution requires original AuthBus trust and replay checkpoint together".to_owned()));
+            }
+        }
+        if self.production_writer_host.is_none() {
+            return Err(AgentdError::Invalid("native execution requires an independently recovered production writer host".to_owned()));
+        }
+        if self.production_operations.is_none() {
+            return Err(AgentdError::Invalid("native execution requires the configured original production operation service".to_owned()));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn take_native_runtime(&mut self) -> Option<crate::AgentdNativeRuntimeConfig> {
+        self.native_runtime.take()
+    }
+
     pub(crate) fn take_production_operations(
         &mut self,
     ) -> Option<crate::AgentdProductionOperationRuntimeConfig> {
@@ -353,19 +402,7 @@ impl AgentdConfig {
                 "production cognitive writer host already configured".to_string(),
             ));
         }
-        let writer = host.writer();
-        if writer.owner_agent_id() != &self.identity.agent_id {
-            return Err(AgentdError::GenerationFenced(
-                "production cognitive writer owner does not match Agentd identity".to_string(),
-            ));
-        }
-        if writer.generation() != self.identity.spawn_generation {
-            return Err(AgentdError::GenerationFenced(format!(
-                "production cognitive writer generation {} does not match Agentd spawn generation {}",
-                writer.generation(),
-                self.identity.spawn_generation
-            )));
-        }
+        host.require_attachment(&self.identity)?;
         self.production_writer_host = Some(host);
         Ok(self)
     }

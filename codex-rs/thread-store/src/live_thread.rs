@@ -116,6 +116,16 @@ impl LiveThread {
         self.thread_store.load_native_checkpoint(session).await
     }
 
+    /// Load every original revision after the storage owner validates the complete chain.
+    /// The result is bounded read evidence and does not acquire a host execution permit.
+    pub async fn load_native_checkpoint_chain(
+        &self,
+        session: &crate::NativeCheckpointSession,
+    ) -> ThreadStoreResult<Vec<crate::StoredNativeCheckpoint>> {
+        session.require_thread(self.thread_id)?;
+        self.thread_store.load_native_checkpoint_chain(session).await
+    }
+
     pub async fn commit_native_checkpoint(
         &self,
         session: &crate::NativeCheckpointSession,
@@ -125,6 +135,31 @@ impl LiveThread {
         session.require_thread(self.thread_id)?;
         self.thread_store
             .commit_native_checkpoint(session, expected, state)
+            .await
+    }
+
+    /// Verify the original turn across all canonical history using bounded
+    /// storage-owned scanning. This does not load a model-context suffix or
+    /// acquire a currentness permit, and is safe for read-only recovery.
+    pub async fn verify_native_history(
+        &self,
+        session: &crate::NativeCheckpointSession,
+        expected: crate::NativeHistoryVerification,
+    ) -> ThreadStoreResult<()> {
+        session.require_thread(self.thread_id)?;
+        self.thread_store.verify_native_history(session, expected).await
+    }
+
+    /// Complete the canonical output prefix after its checkpoint is durable.
+    pub async fn sync_native_history(
+        &self,
+        session: &crate::NativeCheckpointSession,
+        expected: crate::NativeCheckpointVersion,
+        items: Vec<codex_protocol::models::ResponseItem>,
+    ) -> ThreadStoreResult<()> {
+        session.require_thread(self.thread_id)?;
+        self.thread_store
+            .sync_native_history(session, expected, items)
             .await
     }
 

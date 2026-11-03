@@ -36,18 +36,20 @@ pub(crate) async fn run_app_server(
     cognitive_runtime: CognitiveRuntime,
     state: Arc<AgentdState>,
     production_writer_host: Option<Arc<crate::AgentdProductionWriterHost>>,
+    hosted_turn_executor: Option<Arc<dyn codex_core::hosted_turn::HostedTurnExecutor>>,
 ) -> std::io::Result<()> {
     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
     let production_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>> =
         production_writer_host.and_then(|host| host.production_mutation());
     let cognitive_write_enabled = COGNITIVE_WRITE_ENABLED || production_mutation.is_some();
     let config_overrides = app_server_config_overrides(cognitive_write_enabled);
-    let runtime_options = app_server_runtime_options_for_agent(
+    let mut runtime_options = app_server_runtime_options_for_agent(
         &identity,
         state,
         cognitive_runtime,
         production_mutation,
     )?;
+    runtime_options.hosted_turn_executor = hosted_turn_executor;
     codex_app_server::run_main_with_transport_options(
         arg0_paths,
         config_overrides,

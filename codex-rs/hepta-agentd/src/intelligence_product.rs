@@ -30,6 +30,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_context_compiler::CompilationRequest;
+use codex_hepta_context_compiler::ContextCompilationReceipt;
 use codex_hepta_context_compiler::compile;
 use codex_hepta_intelligence::CanonicalFreshnessOracleV1;
 use codex_hepta_intelligence::CanonicalIntelligenceError;
@@ -78,6 +79,7 @@ use ed25519_dalek::Verifier;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
+#[cfg(test)]
 use tokio::time::timeout;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -225,6 +227,7 @@ struct AgentdOwnerPortsV1 {
     prompt_request: Option<OptimizationRequest>,
     intuition_request: Option<CalibratedDecisionRequestV1>,
     context_request: Option<CompilationRequest>,
+    compiled_context: Option<(CompilationRequest, ContextCompilationReceipt)>,
     evaluation_request: Option<EvaluationRequest>,
     evaluation_session: Option<AgentdEvaluationSessionV1>,
     selected_candidate: Option<StableId>,
@@ -249,6 +252,7 @@ impl AgentdOwnerPortsV1 {
             prompt_request: Some(value.prompt_request),
             intuition_request: Some(value.intuition_request),
             context_request: Some(value.context_request),
+            compiled_context: None,
             evaluation_request: Some(value.evaluation_request),
             evaluation_session,
             selected_candidate: None,
@@ -492,17 +496,20 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             return Err(Self::reject(input.stage, "context binding"));
         }
         let started = Instant::now();
-        let receipt = compile(request).map_err(|_| Self::reject(input.stage, "context compile"))?;
+        let receipt = compile(request.clone())
+            .map_err(|_| Self::reject(input.stage, "context compile"))?;
         Self::within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "context authority"));
         }
-        Self::receipt(
+        let port_receipt = Self::receipt(
             input,
             "context.compiler",
             receipt.context_digest,
             CanonicalPortDecisionV1::Continue,
-        )
+        )?;
+        self.compiled_context = Some((request, receipt));
+        Ok(port_receipt)
     }
 
     fn evaluate_candidate(
@@ -543,11 +550,24 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
 pub struct PreparedAgentdIntelligenceRunV1 {
     pub envelope: IntelligenceHostEnvelopeV1,
     pub dispatch_proposal_digest: Digest32,
+    original_envelope: IntelligenceHostEnvelopeV1,
+    request: CanonicalIntelligenceRunRequestV1,
     snapshot: CanonicalIntelligenceSnapshotV1,
     candidate_ids: Vec<StableId>,
     run_snapshot: crate::AgentRunSnapshot,
     context_attachment: crate::AgentContextAttachment,
+    context_request: CompilationRequest,
+    context_receipt: ContextCompilationReceipt,
 }
+
+#[path = "native_context_binding.rs"]
+mod native_context_binding;
+pub use native_context_binding::NativeContextBindingV1;
+pub use native_context_binding::NativeContextMaterialV1;
+
+#[path = "canonical_prepared.rs"]
+mod canonical_prepared;
+pub(crate) use canonical_prepared::RestoredCanonicalPreparationV1;
 
 impl PreparedAgentdIntelligenceRunV1 {
     #[must_use]
@@ -589,6 +609,7 @@ pub enum AgentdIntelligenceProductError {
     CandidateSetMismatch,
     Clock,
     InvalidAuthorityVerifier,
+    ContextCompilationMissing,
     Run(crate::AgentRunError),
 }
 
@@ -717,7 +738,7 @@ impl StdError for AgentdIntelligenceLedgerError {}
 
 #[cfg(test)]
 #[path = "intelligence_product_tests.rs"]
-mod tests;
+pub(crate) mod tests;
 
 #[cfg(test)]
 #[path = "intelligence_evaluation_tests.rs"]

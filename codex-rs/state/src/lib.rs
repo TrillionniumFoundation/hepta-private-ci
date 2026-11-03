@@ -88,6 +88,7 @@ pub use runtime::GoalUpdate;
 pub use runtime::MemoryStore;
 pub use runtime::QueueCapacityExceeded;
 pub use runtime::QueueCapacityLimit;
+pub use runtime::QueuePersistedBindingObservation;
 pub use runtime::QueuedClientDispatchLock;
 pub use runtime::RemoteControlEnrollmentRecord;
 pub use runtime::RuntimeDbBackup;

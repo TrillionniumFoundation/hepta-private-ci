@@ -26,6 +26,23 @@ pub struct NativeCheckpointBinding {
     pub lease_id: String,
 }
 
+/// Exact original queued input expected in typed history, never a queue lease.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeQueuedInputBinding {
+    pub client_id: String,
+    pub payload_sha256: String,
+}
+
+/// Read-only correlation to verify across the complete canonical rollout.
+/// A model-context suffix cannot prove that an older conflicting row is absent.
+#[derive(Clone, Debug)]
+pub struct NativeHistoryVerification {
+    /// Must be the exact original `TurnRecoveryRequestBinding` item; every
+    /// other item kind is rejected before scanning or accessing storage.
+    pub recovery_item: codex_rollout::RolloutItem,
+    pub queued_input: Option<NativeQueuedInputBinding>,
+}
+
 /// A complete, bounded native state encoding under its original binding.
 /// The embedding codec must validate its own typed payload on recovery.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -52,6 +69,9 @@ pub enum NativeCheckpointExpected {
 pub enum NativeCheckpointOpenMode {
     Create,
     Recover,
+    /// Report absence without creating a database or granting checkpoint
+    /// writes. Missing remains an observation, never permission to retry.
+    Inspect,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

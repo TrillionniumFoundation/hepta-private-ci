@@ -20,6 +20,10 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+#[path = "canonical_retained.rs"]
+mod retained;
+pub use retained::validate_retained_envelope_v1;
+
 const MAX_CANDIDATES: usize = 128;
 const MAX_SUPPORT_FLOOR_PPM: u32 = 1_000_000;
 const REQUIRED_OWNERS: [&str; 7] = [
@@ -187,6 +191,13 @@ impl CanonicalIntelligenceSnapshotV1 {
     #[must_use]
     pub const fn revocation_frontier_digest(&self) -> Digest32 {
         self.revocation_frontier_digest
+    }
+
+    /// Authority-free exact snapshot fields for the original owner persistence codec.
+    pub fn retained_request(&self) -> CanonicalSnapshotRequestV1 {
+        CanonicalSnapshotRequestV1 { objective_digest: self.objective_digest, authority_epoch: self.authority_epoch,
+            body_generation: self.body_generation, configuration_digest: self.configuration_digest,
+            revocation_frontier_digest: self.revocation_frontier_digest, owner_bindings: self.owners.values().cloned().collect() }
     }
 
     fn binding(&self, owner: &str) -> Result<&OwnerBindingV1, CanonicalIntelligenceError> {
@@ -445,6 +456,8 @@ pub struct IntelligenceHostEnvelopeV1 {
     pub context_binding_digest: Digest32,
     pub evaluation_receipt_digest: Digest32,
     pub trace_digest: Digest32,
+    /// The actual seven stage trace retained from this preparation, not reconstructed on recovery.
+    pub stage_trace: Vec<CanonicalStageTraceV1>,
     pub envelope_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -796,6 +809,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         context_binding_digest: context_binding.assembly_digest,
         evaluation_receipt_digest,
         trace_digest,
+        stage_trace: traces,
         envelope_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     }))

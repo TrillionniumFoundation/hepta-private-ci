@@ -7,6 +7,7 @@ mod live_writer;
 mod model_context;
 mod move_thread_to_section;
 mod native_checkpoint;
+mod native_history;
 mod paginated_fork;
 mod pending_thread_metadata;
 mod projects;
@@ -434,6 +435,13 @@ impl ThreadStore for LocalThreadStore {
         Box::pin(async move { native_checkpoint::load(self, session).await })
     }
 
+    fn load_native_checkpoint_chain<'a>(
+        &'a self,
+        session: &'a crate::NativeCheckpointSession,
+    ) -> ThreadStoreFuture<'a, Vec<crate::StoredNativeCheckpoint>> {
+        Box::pin(async move { native_checkpoint::load_chain(self, session).await })
+    }
+
     fn commit_native_checkpoint<'a>(
         &'a self,
         session: &'a crate::NativeCheckpointSession,
@@ -441,6 +449,23 @@ impl ThreadStore for LocalThreadStore {
         state: crate::NativeCheckpointState,
     ) -> ThreadStoreFuture<'a, crate::StoredNativeCheckpoint> {
         Box::pin(async move { native_checkpoint::commit(self, session, expected, state).await })
+    }
+
+    fn verify_native_history<'a>(
+        &'a self,
+        session: &'a crate::NativeCheckpointSession,
+        expected: crate::NativeHistoryVerification,
+    ) -> ThreadStoreFuture<'a, ()> {
+        Box::pin(async move { native_history::verify(self, session, expected).await })
+    }
+
+    fn sync_native_history<'a>(
+        &'a self,
+        session: &'a crate::NativeCheckpointSession,
+        expected: crate::NativeCheckpointVersion,
+        items: Vec<codex_protocol::models::ResponseItem>,
+    ) -> ThreadStoreFuture<'a, ()> {
+        Box::pin(async move { native_history::sync(self, session, expected, items).await })
     }
 
     fn as_any(&self) -> &dyn std::any::Any {

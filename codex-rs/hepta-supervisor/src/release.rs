@@ -18,6 +18,9 @@ use crate::runtime::AgentSlot;
 use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
 
+#[path = "lifecycle_retry.rs"]
+mod lifecycle_retry;
+
 impl<D: ProcessDriver> Supervisor<D> {
     /// Re-admit a release at the final-use boundary. Product/catalog releases
     /// must still exist, remain allowed, and not be revoked. Direct in-process
@@ -298,12 +301,25 @@ impl<D: ProcessDriver> Supervisor<D> {
             phase: ReleaseChangePhase::WaitingForTargetExit,
             explicit_rollback,
         });
-        if let Err(error) = self.drain_slot(agent_id, slot, now) {
-            let _ = self.enter_unsigned_release_recovery(agent_id, slot);
-            slot.release_change = None;
-            return Err(error);
+        match self.drain_slot(agent_id, slot, now) {
+            Ok(()) => self.advance_release_transaction(agent_id, slot, ReleaseTransactionPhase::Draining)?,
+            Err(error) if error.is_lifecycle_busy() => {
+                // The prepared original transaction remains queued. Tick
+                // retries its drain without another signed grant or intent.
+                let spawn_generation = slot.runtime.as_ref().ok_or_else(|| {
+                    SupervisorError::Invalid("busy release lost its original process".to_owned())
+                })?.spawn_generation;
+                slot.deferred_agent_action.get_or_insert(crate::runtime::DeferredAgentAction {
+                    kind: crate::runtime::DeferredAgentActionKind::Drain,
+                    spawn_generation,
+                });
+            }
+            Err(error) => {
+                let _ = self.enter_unsigned_release_recovery(agent_id, slot);
+                slot.release_change = None;
+                return Err(error);
+            }
         }
-        self.advance_release_transaction(agent_id, slot, ReleaseTransactionPhase::Draining)?;
         let generation = slot
             .runtime
             .as_ref()
@@ -448,6 +464,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.active_release = None;
                 match self.start_release_slot(agent_id, slot, target, now) {
                     Ok(()) => Ok(true),
+                    Err(error) if error.is_lifecycle_busy() || slot.deferred_start_failure.is_some() => Err(error),
                     Err(_) => self.start_automatic_rollback(agent_id, slot, now),
                 }
             }
@@ -674,24 +691,40 @@ impl<D: ProcessDriver> Supervisor<D> {
         change.phase = ReleaseChangePhase::AutomaticRollbackStarting;
         slot.release_change = Some(change);
         slot.active_release = None;
+        self.start_prepared_rollback(agent_id, slot, rollback, now)?;
+        Ok(true)
+    }
+
+    fn start_prepared_rollback(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        rollback: AgentRelease,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
         if let Err(error) = self.start_release_slot(agent_id, slot, rollback, now) {
-            let failed_generation = self.record(agent_id)?.lifecycle.generation;
-            if let Some(change) = slot.release_change.take() {
-                slot.event(
-                    failed_generation,
-                    SupervisorEventKind::AutomaticRollbackFailed {
-                        failed: change.target.identity().to_string(),
-                        rollback: change.origin.identity().to_string(),
-                    },
-                );
+            if error.is_lifecycle_busy() || slot.deferred_start_failure.is_some() {
+                return Err(error);
             }
-            let _ = self.advance_release_transaction(
-                agent_id,
-                slot,
-                ReleaseTransactionPhase::RecoveryRequired,
-            );
+            self.finish_failed_rollback(agent_id, slot)?;
             return Err(error);
         }
-        Ok(true)
+        Ok(())
+    }
+
+    fn finish_failed_rollback(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+    ) -> Result<(), SupervisorError> {
+        let failed_generation = self.record(agent_id)?.lifecycle.generation;
+        if let Some(change) = slot.release_change.take() {
+            slot.event(failed_generation, SupervisorEventKind::AutomaticRollbackFailed {
+                failed: change.target.identity().to_string(),
+                rollback: change.origin.identity().to_string(),
+            });
+        }
+        let _ = self.advance_release_transaction(agent_id, slot, ReleaseTransactionPhase::RecoveryRequired);
+        Ok(())
     }
 }

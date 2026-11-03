@@ -67,7 +67,7 @@ async fn release_start_reservation_after_error(
 /// recovery preamble. The active-turn lock is already held by both callers;
 /// taking the short synchronous gate second makes the shutdown/fence check
 /// and `reserve_start` one publication window without changing lock order.
-fn reserve_start_after_admission(
+pub(super) fn reserve_start_after_admission(
     session: &Session,
     active_turn: &mut Option<ActiveTurn>,
     turn_id: String,
@@ -195,6 +195,11 @@ pub(super) async fn handle(
     mode: TurnInputMode,
     submission_id: String,
 ) -> CodexResult<TurnInputSubmission> {
+    if session.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some()
+        && (!matches!(mode, TurnInputMode::StartIfIdle)
+            || !session.pending_user_message_admissions.is_hosted(&submission_id)) {
+        return Err(CodexErr::InvalidRequest("hosted execution requires the original queue admission".to_string()));
+    }
     // Each routing mode carries a substantial state machine. Heap-erasing the
     // selected branch keeps polling `handle` within Tokio's default worker stack.
     match mode {
@@ -223,6 +228,12 @@ pub(super) async fn handle_recovery(
     thread_settings: ThreadSettingsOverrides,
     submission_id: String,
 ) -> CodexResult<TurnInputSubmission> {
+    if session.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some() {
+        if thread_settings != ThreadSettingsOverrides::default() {
+            return Err(CodexErr::InvalidRequest("hosted recovery cannot replace original thread settings".to_string()));
+        }
+        return Box::pin(super::hosted_recovery::start(session, expected_epoch, submission_id)).await;
+    }
     let request = TurnInputRequest::user_input(Vec::new()).with_thread_settings(thread_settings);
     start_if_idle(
         session,
@@ -449,6 +460,26 @@ async fn start_if_idle(
             return Ok(TurnInputSubmission::NotSubmitted {
                 reason: NotSubmittedReason::NotIdle,
             });
+        }
+        // Technical hosted failures release the live task fence while their
+        // original logical turn remains unfinished. Reserve no new turn over
+        // that durable tail. Same-turn hosted recovery has its own entry.
+        if !is_recovery
+            && session.services.session_extension_data
+                .get::<crate::hosted_turn::HostedTurnMode>().is_some()
+        {
+            match crate::hosted_turn_history::allows_new_turn(session).await {
+                Ok(true) => {}
+                Ok(false) => return Ok(TurnInputSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::RecoveryStateChanged,
+                }),
+                Err(error) => {
+                    tracing::warn!(%error, "could not verify the original hosted history before new admission");
+                    return Ok(TurnInputSubmission::NotSubmitted {
+                        reason: NotSubmittedReason::RecoveryPersistenceFailed,
+                    });
+                }
+            }
         }
         if let Some(expected_epoch) = recovery_epoch
             && (session.turn_epoch.load(Ordering::Acquire) != expected_epoch
@@ -699,8 +730,17 @@ async fn start_if_idle(
     } else {
         None
     };
-    let start_outcome = session
-        .start_task_with_recovery_owned(
+    let start_outcome = if let Some(hosted) = session.pending_user_message_admissions.take_hosted(&submission_id) {
+        session.start_task_with_recovery_owned(
+            Arc::clone(&turn_context),
+            task_input,
+            crate::session::hosted_turn::HostedTask::new(hosted),
+            MailboxParentProvenance::Ignore,
+            recovery_history_transition,
+            start_reservation_owner.handle().clone(),
+        ).await
+    } else {
+        session.start_task_with_recovery_owned(
             Arc::clone(&turn_context),
             task_input,
             regular_task,
@@ -708,7 +748,8 @@ async fn start_if_idle(
             recovery_history_transition,
             start_reservation_owner.handle().clone(),
         )
-        .await;
+        .await
+    };
     if start_outcome != StartTaskOutcome::Stale {
         start_reservation_owner.disarm();
     }

@@ -6,6 +6,7 @@ use codex_protocol::ThreadId;
 use codex_rollout::StateDbHandle;
 use codex_state::QueueCapacityExceeded;
 use codex_state::QueueCapacityLimit;
+use codex_state::QueuePersistedBindingObservation;
 use codex_state::QueuedClientBindingConflict;
 use codex_state::QueuedClientBindingFinalizeMode;
 use codex_state::QueuedClientBindingFinalizeOutcome;
@@ -54,6 +55,39 @@ pub trait QueueStore: Send + Sync {
         Box::pin(async {
             Err(ThreadStoreError::Unsupported {
                 operation: "queue_enqueue_guarded",
+            })
+        })
+    }
+
+    /// Read a completed exact client binding from this original store. Missing
+    /// returns `None`; incompatible, unfinished, cancelled, or deleted bindings
+    /// fail closed. The returned snapshot grants no execution authority and
+    /// retains no deletion or cancellation lock.
+    fn observe_persisted_client_binding(
+        &self,
+        thread_id: ThreadId,
+        client_id: String,
+        payload_sha256: String,
+    ) -> ThreadStoreFuture<'_, Option<QueuePersistedBindingObservation>> {
+        let _ = (thread_id, client_id, payload_sha256);
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "queue_persisted_client_binding_observe",
+            })
+        })
+    }
+
+    /// Recheck this store's exact persisted tuple and revision. Callers still
+    /// need their original Core provenance and current turn admission boundary;
+    /// a publicly constructed observation is not a permit.
+    fn revalidate_persisted_client_binding<'a>(
+        &'a self,
+        observation: &'a QueuePersistedBindingObservation,
+    ) -> ThreadStoreFuture<'a, ()> {
+        let _ = observation;
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "queue_persisted_client_binding_revalidate",
             })
         })
     }
@@ -340,6 +374,32 @@ impl QueueStore for LocalQueueStore {
         })
     }
 
+    fn observe_persisted_client_binding(
+        &self,
+        thread_id: ThreadId,
+        client_id: String,
+        payload_sha256: String,
+    ) -> ThreadStoreFuture<'_, Option<QueuePersistedBindingObservation>> {
+        Box::pin(async move {
+            self.queue()
+                .observe_persisted_client_binding(thread_id, &client_id, &payload_sha256)
+                .await
+                .map_err(map_queue_observation_error)
+        })
+    }
+
+    fn revalidate_persisted_client_binding<'a>(
+        &'a self,
+        observation: &'a QueuePersistedBindingObservation,
+    ) -> ThreadStoreFuture<'a, ()> {
+        Box::pin(async move {
+            self.queue()
+                .revalidate_persisted_client_binding(observation)
+                .await
+                .map_err(map_queue_observation_error)
+        })
+    }
+
     fn reserve_client_binding(
         &self,
         thread_id: ThreadId,
@@ -547,6 +607,17 @@ impl QueueStore for LocalQueueStore {
                     },
                 })
         })
+    }
+}
+
+fn map_queue_observation_error(error: anyhow::Error) -> ThreadStoreError {
+    if let Some(conflict) = error.downcast_ref::<QueuedClientBindingConflict>() {
+        return ThreadStoreError::Conflict {
+            message: conflict.message.clone(),
+        };
+    }
+    ThreadStoreError::Internal {
+        message: format!("queue observation failed: {error}"),
     }
 }
 

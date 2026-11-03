@@ -45,6 +45,7 @@ codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
 codex-arg0 = { workspace = true }
 codex-config = { workspace = true }
+codex-core = { workspace = true }
 codex-features = { workspace = true }
 codex-hepta-agent-protocol = { workspace = true }
 codex-hepta-automation = { workspace = true }
@@ -74,6 +75,12 @@ codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-memory-extension = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-model-provider = { workspace = true }
+codex-hepta-native-agent = { path = "../hepta-native-agent" }
+codex-thread-store = { workspace = true }
+codex-history = { workspace = true }
+codex-http-client = { workspace = true }
+codex-hepta-operations = { workspace = true }
+hepta-runtime = { git = "https://github.com/TrillionniumFoundation/hepta-runtime.git", rev = "bef3935e4751fae62f5139fda94409a571c5af6f", default-features = false }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-protocol = { workspace = true }
 codex-uds = { workspace = true }
@@ -99,6 +106,10 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
+chrono = { workspace = true }
+pretty_assertions = { workspace = true }
+codex-extension-api = { workspace = true }
+codex-queue-extension = { workspace = true }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }

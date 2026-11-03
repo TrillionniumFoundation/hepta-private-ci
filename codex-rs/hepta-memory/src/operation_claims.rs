@@ -11,6 +11,11 @@ pub(crate) const MAX_DURABLE_CLAIM_LEASE_MS: u64 = 60_000;
 const MAX_RETRY_BACKOFF_MS: u64 = 5_000;
 const CLAIM_GENESIS: &[u8] = b"hepta:kernel.operations:dispatch-claim:genesis:v1";
 
+#[path = "operation_claim_observation.rs"]
+mod observation;
+pub(crate) use observation::ObservedDispatchClaim;
+pub(crate) use observation::observe_claims;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ClaimState {
     Claimed,
@@ -273,6 +278,61 @@ pub(crate) async fn mark_settled(
     now_unix_ms: u64,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
     transition_claim(store, claim, now_unix_ms, ClaimState::Settled).await
+}
+
+/// Close the original claim after independently observed terminality has
+/// already been committed through the durable occurrence reconciler. This
+/// also repairs a crash between the occurrence commit and claim settlement,
+/// including a successor owner observing an older entered claim.
+pub(crate) async fn settle_reconciled(
+    store: &CognitiveStore,
+    operation_id: &str,
+    owner_generation: u64,
+    fencing_token: &str,
+    now_unix_ms: u64,
+) -> Result<(), LocalLeaseOutboxError> {
+    if now_unix_ms == 0 {
+        return Err(LocalLeaseOutboxError::Invalid("claim settlement requires a timestamp".to_string()));
+    }
+    let mut transaction = store.pool.begin_with("BEGIN IMMEDIATE").await
+        .map_err(crate::cognitive_store::unavailable)?;
+    verify_operation_fence(
+        &mut transaction, store, operation_id, owner_generation, fencing_token,
+    ).await?;
+    let terminal: Option<String> = sqlx::query_scalar(
+        "SELECT e.event_kind FROM cognitive_local_events e
+         JOIN cognitive_operation_ledger o
+           ON o.operation_id = e.occurrence_key AND o.lease_id = e.lease_id
+         WHERE o.operation_id = ? AND e.owner_agent_id = ?
+         ORDER BY e.event_sequence DESC LIMIT 1",
+    )
+    .bind(operation_id)
+    .bind(store.owner_agent_id().as_str())
+    .fetch_optional(&mut *transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    if !matches!(terminal.as_deref(), Some("reconcile_committed" | "reconcile_rejected")) {
+        return Err(LocalLeaseOutboxError::IllegalTransition(
+            "observer claim settlement requires an original durable terminal outcome".to_string(),
+        ));
+    }
+    if let Some(previous) = latest_claim(&mut transaction, operation_id).await? {
+        if previous.owner_generation > owner_generation {
+            return Err(LocalLeaseOutboxError::StaleFence("claim belongs to a successor".to_string()));
+        }
+        if previous.state != ClaimState::Settled {
+            // Retain the original claim's owner and attempt. Observing a
+            // terminal result never mints a new retry claim or generation.
+            append_claim(
+                &mut transaction, operation_id, Some(&previous), previous.attempt,
+                previous.owner_generation, &previous.fencing_token, ClaimState::Settled,
+                previous.lease_expires_at_unix_ms, previous.next_eligible_at_unix_ms,
+                now_unix_ms,
+            ).await?;
+        }
+    }
+    transaction.commit().await.map_err(crate::cognitive_store::unavailable)?;
+    Ok(())
 }
 
 async fn transition_claim(

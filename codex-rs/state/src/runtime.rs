@@ -67,6 +67,7 @@ pub use goals::GoalUpdate;
 pub use memories::MemoryStore;
 pub use queued_items::QueueCapacityExceeded;
 pub use queued_items::QueueCapacityLimit;
+pub use queued_items::QueuePersistedBindingObservation;
 pub use queued_items::QueuedClientDispatchLock;
 pub use queued_items::SqliteQueueStore;
 pub use recovery::RuntimeDbBackup;

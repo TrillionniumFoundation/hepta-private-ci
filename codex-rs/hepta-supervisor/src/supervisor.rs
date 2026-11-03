@@ -98,6 +98,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 Ok(process_fault)
             });
             match result {
+                // Startup must retry this exact recovery; it must not report
+                // a partially recovered slot as ready or as a driver fault.
+                Ok(Some(error)) if error.is_lifecycle_busy() => return Err(error),
                 Ok(Some(error)) => supervisor.record_fault(&agent_id, &error, &mut report),
                 Ok(None) => {}
                 // Corrupt/unreadable durable restart, release or signed-intent
@@ -1205,6 +1208,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         error: &SupervisorError,
         report: &mut TickReport,
     ) {
+        // A live effect-entry permit is backpressure, not evidence of a
+        // broken driver. Keep the original slot/intent for the next attempt.
+        if error.is_lifecycle_busy() {
+            return;
+        }
         let message = bounded_message(error.to_string());
         if let Some(slot) = self.slots.get_mut(agent_id) {
             let generation = slot

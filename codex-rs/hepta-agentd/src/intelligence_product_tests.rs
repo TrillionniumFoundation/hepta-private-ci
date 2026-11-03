@@ -1155,3 +1155,12 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[path = "native_context_binding_tests.rs"]
+pub(crate) mod native_context_binding_tests;
+
+#[path = "objective_queued_fixtures.rs"]
+pub(crate) mod objective_queued_fixtures;
+
+#[path = "canonical_prepared_tests.rs"]
+mod canonical_prepared_tests;

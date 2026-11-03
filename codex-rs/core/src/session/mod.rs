@@ -230,6 +230,9 @@ pub(crate) mod multi_agents;
 mod review;
 mod rollout_budget;
 mod rollout_reconstruction;
+pub(crate) mod hosted_turn;
+mod hosted_recovery;
+mod hosted_preparation_recovery;
 #[allow(clippy::module_inception)]
 pub(crate) mod session;
 pub(crate) mod step_context;

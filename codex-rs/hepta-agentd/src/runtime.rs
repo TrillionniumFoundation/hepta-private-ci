@@ -39,7 +39,9 @@ pub async fn run(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
+    config.validate_native_composition()?;
     let production_operations = config.take_production_operations();
+    let native_runtime = config.take_native_runtime();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -202,7 +204,7 @@ pub async fn run(
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
     }
-    let production_operations = match production_operations {
+    let mut production_operations = match production_operations {
         Some(operations) => {
             let recovered_host = production_writer_host.as_ref().ok_or_else(|| {
                 AgentdError::Protocol(
@@ -210,12 +212,25 @@ pub async fn run(
                 )
             })?;
             let (host, interval) = operations.attach(Arc::clone(recovered_host)).await?;
-            state.attach_production_operations(Arc::clone(&host))?;
             production_writer_host = Some(Arc::clone(&host));
             Some((host, interval))
         }
         None => None,
     };
+    let mut hosted_turn_executor = None;
+    if let Some(native) = native_runtime {
+        let (recovered, interval) = production_operations.take().ok_or_else(|| AgentdError::Invalid(
+            "native execution requires the configured original production operation service".to_owned(),
+        ))?;
+        let attached = native.attach_to(&state, recovered).await?;
+        let host = attached.writer_host;
+        hosted_turn_executor = attached.hosted_turn_executor;
+        production_writer_host = Some(Arc::clone(&host));
+        production_operations = Some((host, interval));
+    }
+    if let Some((host, _)) = &production_operations {
+        state.attach_production_operations(Arc::clone(host))?;
+    }
     let cognitive_runtime = attach_federation_after_generation_fence(
         &state,
         cognitive_runtime,
@@ -267,6 +282,7 @@ pub async fn run(
                 cognitive_runtime,
                 app_state,
                 production_writer_host,
+                hosted_turn_executor,
             )
             .await
             .map_err(AgentdError::from)?;

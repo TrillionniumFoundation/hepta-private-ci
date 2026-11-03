@@ -27,10 +27,28 @@ use crate::EventBuffer;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
 
+#[path = "native_state.rs"]
+pub(crate) mod native;
+
+#[path = "canonical_queued_state.rs"]
+mod canonical_queued;
+
+#[path = "native_preparation_state.rs"]
+mod native_preparation;
+
+#[path = "native_checkpoint_continuation_state.rs"]
+mod native_checkpoint_continuation;
+
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "state_run_lifecycle.rs"]
+pub(crate) mod run_lifecycle;
+
 pub(crate) struct AgentdState {
+    native_active_turns: std::sync::atomic::AtomicUsize,
+    pub(crate) native_objective_executor:
+        std::sync::OnceLock<Arc<dyn codex_core::hosted_turn::HostedTurnExecutor>>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -127,6 +145,8 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            native_active_turns: std::sync::atomic::AtomicUsize::new(0),
+            native_objective_executor: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
@@ -503,7 +523,7 @@ impl AgentdState {
     ) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
-        let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
+        let running_turns = u32::try_from(self.app_server_drain.running_turns().saturating_add(self.native_active_turns.load(std::sync::atomic::Ordering::Acquire))).map_err(|_| {
             AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
         })?;
         Ok(DrainSnapshot {
@@ -515,6 +535,7 @@ impl AgentdState {
                 && !runtime.fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
+                && self.unresolved_run_count()? == 0
                 && automation_blockers == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
@@ -586,20 +607,33 @@ impl AgentdState {
             return Ok(None);
         };
 
+        // The signed record belongs to the current Fleet generation. Startup
+        // identity remains the supervisor generation and must not replace it.
+        // Preparation may take time, so the original final checks below still
+        // revalidate this same record before coordinator admission.
+        self.with_fresh_original_run(record.snapshot.run_id.as_str(), || self.require_current_run_start(record))?;
+        let current_generation = record.snapshot.generation;
+        let original_deadline_ms = record.admission.deadline_unix_micros
+            .checked_add(999)
+            .map(|deadline| deadline / 1_000)
+            .ok_or_else(|| run_error(crate::AgentRunError::ArithmeticOverflow))?;
         let invocation = provider.build(&self.identity, record)?;
-        invocation.validate(&self.identity, record)?;
+        invocation.validate(current_generation, record)?;
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
         // lifecycle operations.
-        let composition = self
+        let mut composition = self
             .runs
             .lock()
             .map_err(poisoned_state)?
             .composition()
             .clone();
+        composition.agentd_generation = current_generation;
         let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .prepare_for_composition_before_deadline(
+                &composition, invocation.request, invocation.inputs, original_deadline_ms,
+            )
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!(
@@ -612,6 +646,7 @@ impl AgentdState {
                 // Owner preparation is asynchronous. Revalidate the durable
                 // signed Objective and Fleet fence again after it completes,
                 // twice as the compatibility path does at its final boundary.
+                self.with_fresh_original_run(record.snapshot.run_id.as_str(), || {
                 let first_now = self.require_current_run_start(record)?;
                 let second_now = self.require_current_run_start(record)?;
                 let now_ms = first_now.max(second_now);
@@ -657,6 +692,7 @@ impl AgentdState {
                     prepared,
                     run_receipt,
                 }))
+                })
             }
             crate::AgentdIntelligenceProductOutcomeV1::Abstained => {
                 Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained))
@@ -683,13 +719,19 @@ impl AgentdState {
             .ok_or_else(|| {
                 AgentdError::Protocol(format!("durable run-start {run_id} is not published"))
             })?;
-        self.start_current_run_start_record(record)
+        // The caller retains this original journal lock across projection.
+        run_lifecycle::require_fresh(Some(journal), run_id.as_str())?;
+        self.start_current_run_start_record_locked(record)
     }
 
     pub(crate) fn start_current_run_start_record(
         &self,
         record: &RunStartRecordV1,
     ) -> Result<RunReceipt, AgentdError> {
+        self.with_fresh_original_run(record.snapshot.run_id.as_str(), || self.start_current_run_start_record_locked(record))
+    }
+
+    fn start_current_run_start_record_locked(&self, record: &RunStartRecordV1) -> Result<RunReceipt, AgentdError> {
         let now_ms = self.require_current_run_start(record)?;
         // Re-read both mutable authority domains immediately before mutation.
         // This is intentionally redundant: a trust/fleet change during the
@@ -703,14 +745,26 @@ impl AgentdState {
             .map_err(run_error)
     }
 
-    fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
+    pub(crate) fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
         crate::authbus_ingress::require_ready(self)?;
         let now_ms = crate::authbus_ingress::now_ms()?;
-        let current_generation = self
-            .runtime
-            .lock()
-            .map_err(poisoned_state)?
-            .current_generation;
+        let current_generation = self.runtime.lock().map_err(poisoned_state)?.current_generation;
+        self.authenticate_current_run_start(record, current_generation, now_ms)?;
+        Ok(now_ms)
+    }
+
+    // This verifier does not acquire runtime/runs locks. The physical native
+    // entry calls it while those original locks cover the FinalUse consume.
+    // AuthBus file publishers have no shared transaction with FinalUse: this
+    // is an entry-time current snapshot check, not atomic cross-owner revoke.
+    fn authenticate_current_run_start(&self, record: &RunStartRecordV1, current_generation: u64, now_ms: u64) -> Result<(), AgentdError> {
+        let original_deadline_ms = record.admission.deadline_unix_micros
+            .checked_add(999)
+            .map(|deadline| deadline / 1_000)
+            .ok_or_else(|| run_error(crate::AgentRunError::ArithmeticOverflow))?;
+        if now_ms >= original_deadline_ms {
+            return Err(run_error(crate::AgentRunError::DeadlineElapsed));
+        }
         if record.snapshot.generation != current_generation
             || record.snapshot.fence_digest.to_string()
                 != objective_run_fence(&self.identity, current_generation)
@@ -752,7 +806,14 @@ impl AgentdState {
                     "durable run-start authentication is not current: {error}"
                 ))
             })?;
-        Ok(now_ms)
+        if record.authenticated_payload.is_some() {
+            let input = crate::canonical_queued_input::queued_input(&self.identity, record)
+                .map_err(|error| AgentdError::Invalid(format!("original Objective input: {error:#}")))?;
+            if !trust.permits(&input.thread_id) {
+                return Err(AgentdError::Invalid("original Objective thread is no longer permitted".to_owned()));
+            }
+        }
+        Ok(())
     }
 
     pub(crate) fn expire_run_deadlines(&self) -> Result<usize, AgentdError> {
@@ -821,3 +882,7 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
 mod isolation_tests;
+
+#[cfg(test)]
+#[path = "native_state_tests.rs"]
+pub(crate) mod native_tests;

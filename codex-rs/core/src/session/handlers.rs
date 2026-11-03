@@ -113,6 +113,16 @@ pub async fn inter_agent_communication(
 }
 
 pub async fn run_user_shell_command(sess: &Arc<Session>, sub_id: String, command: String) {
+    if sess.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some() {
+        sess.send_event_raw(Event {
+            id: sub_id,
+            msg: EventMsg::Error(ErrorEvent {
+                message: "auxiliary shell execution is unsupported by the selected hosted executor".to_string(),
+                codex_error_info: Some(CodexErrorInfo::Other),
+            }),
+        }).await;
+        return;
+    }
     if let Some((turn_context, cancellation_token)) =
         sess.active_turn_context_and_cancellation_token().await
     {
@@ -591,6 +601,16 @@ pub async fn review(
     sub_id: String,
     review_request: ReviewRequest,
 ) {
+    if sess.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some() {
+        sess.send_event_raw(Event {
+            id: sub_id,
+            msg: EventMsg::Error(ErrorEvent {
+                message: "review is unsupported by the selected hosted executor".to_string(),
+                codex_error_info: Some(CodexErrorInfo::Other),
+            }),
+        }).await;
+        return;
+    }
     let turn_context = sess.new_default_turn_with_sub_id(sub_id.clone()).await;
     sess.maybe_emit_model_warnings_for_turn(turn_context.as_ref())
         .await;
@@ -650,9 +670,12 @@ pub(super) async fn submission_loop(
                     false
                 }
                 Op::RealtimeConversationStart(params) => {
-                    if let Err(err) =
+                    let result = if sess.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some() {
+                        Err(crate::hosted_turn::invalid("realtime conversations are unsupported by the selected hosted executor"))
+                    } else {
                         handle_realtime_conversation_start(&sess, sub.id.clone(), params).await
-                    {
+                    };
+                    if let Err(err) = result {
                         sess.send_event_raw(Event {
                             id: sub.id.clone(),
                             msg: EventMsg::Error(ErrorEvent {

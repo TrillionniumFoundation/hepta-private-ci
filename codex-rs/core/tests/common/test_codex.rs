@@ -83,8 +83,12 @@ use crate::wait_for_event_with_timeout;
 use wiremock::Match;
 use wiremock::matchers::path_regex;
 
+#[path = "test_codex_paginated_resume.rs"]
+mod paginated_resume;
+
 type ConfigMutator = dyn FnOnce(&mut Config) + Send;
 type PreBuildHook = dyn FnOnce(&Path) + Send + 'static;
+type ThreadStoreDecorator = dyn FnOnce(Arc<dyn ThreadStore>) -> Arc<dyn ThreadStore> + Send;
 type WorkspaceSetup = dyn FnOnce(AbsolutePathBuf, Arc<dyn ExecutorFileSystem>) -> BoxFuture<'static, Result<()>>
     + Send;
 const TEST_MODEL_WITH_EXPERIMENTAL_TOOLS: &str = "test-gpt-5.1-codex";
@@ -338,6 +342,7 @@ pub struct TestCodexBuilder {
     code_mode_host_program: Option<PathBuf>,
     history_mode: Option<ThreadHistoryMode>,
     models_manager: Option<SharedModelsManager>,
+    thread_store_decorator: Option<Box<ThreadStoreDecorator>>,
 }
 
 impl TestCodexBuilder {
@@ -433,6 +438,16 @@ impl TestCodexBuilder {
 
     pub fn with_extensions(mut self, extensions: Arc<ExtensionRegistry<Config>>) -> Self {
         self.extensions = extensions;
+        self
+    }
+
+    /// Wraps the real configured store at a test-owned persistence boundary.
+    /// The decorator is consumed once; subsequent builds keep the normal store.
+    pub fn with_thread_store_decorator<F>(mut self, decorator: F) -> Self
+    where
+        F: FnOnce(Arc<dyn ThreadStore>) -> Arc<dyn ThreadStore> + Send + 'static,
+    {
+        self.thread_store_decorator = Some(Box::new(decorator));
         self
     }
 
@@ -670,6 +685,10 @@ impl TestCodexBuilder {
         let auth = self.auth.clone();
         let state_db = codex_core::init_state_db(&config).await;
         let thread_store = thread_store_from_config(&config, state_db.clone());
+        let thread_store = match self.thread_store_decorator.take() {
+            Some(decorate) => decorate(thread_store),
+            None => thread_store,
+        };
         let installation_id = resolve_installation_id(&config.codex_home).await?;
         let user_instructions_provider =
             self.user_instructions_provider.clone().unwrap_or_else(|| {
@@ -748,14 +767,26 @@ impl TestCodexBuilder {
                     auth,
                     config.codex_home.to_path_buf(),
                 );
-                Box::pin(thread_manager.resume_thread_from_rollout(
-                    config.clone(),
-                    path,
-                    auth_manager,
-                    /*parent_trace*/ None,
-                    client_mcp_extensions(),
-                ))
-                .await?
+                if self.history_mode == Some(ThreadHistoryMode::Paginated) {
+                    Box::pin(paginated_resume::resume(
+                        thread_manager.as_ref(),
+                        thread_store.as_ref(),
+                        config.clone(),
+                        path,
+                        auth_manager,
+                        client_mcp_extensions(),
+                    ))
+                    .await?
+                } else {
+                    Box::pin(thread_manager.resume_thread_from_rollout(
+                        config.clone(),
+                        path,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                    ))
+                    .await?
+                }
             }
             (None, Some(user_shell_override)) => {
                 Box::pin(
@@ -1358,6 +1389,7 @@ pub fn test_codex() -> TestCodexBuilder {
         code_mode_host_program: None,
         history_mode: None,
         models_manager: None,
+        thread_store_decorator: None,
     }
 }
 

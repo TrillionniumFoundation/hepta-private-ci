@@ -11,12 +11,14 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
 use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
 use crate::AgentdError;
+use crate::AgentdMethod;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
 use crate::AgentdResponse;
@@ -25,7 +27,9 @@ use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
+// Frame read, non-Objective dispatch, and response write have separate bounds.
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
+const DISPATCH_TIMEOUT: Duration = Duration::from_secs(2);
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
@@ -57,10 +61,16 @@ impl AgentdControlServer {
     }
 
     pub(crate) async fn run(mut self) -> Result<(), AgentdError> {
-        loop {
+        let mut requests = JoinSet::new();
+        let result = loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
-                accepted = self.listener.accept() => accepted?,
+                biased;
+                _ = self.cancellation.cancelled() => break Ok(()),
+                _ = requests.join_next(), if !requests.is_empty() => continue,
+                accepted = self.listener.accept() => match accepted {
+                    Ok(stream) => stream,
+                    Err(error) => break Err(error.into()),
+                },
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
@@ -72,11 +82,16 @@ impl AgentdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            requests.spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = serve_connection(stream, state).await;
             });
-        }
+        };
+        // A client disconnect does not cancel dispatch. Server shutdown still
+        // joins every connection; interrupted admissions retain their original
+        // durable identity for reconciliation.
+        requests.shutdown().await;
+        result
     }
 }
 
@@ -97,13 +112,16 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
+    let count = timeout(IO_TIMEOUT, reader.read_until(b'\n', &mut frame))
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Err(AgentdError::Protocol(
             "agentd control request must be one bounded newline JSON frame".to_string(),
         ));
     }
     let request: AgentdRequest = serde_json::from_slice(&frame)?;
+    let is_objective = matches!(&request.method, AgentdMethod::ObjectiveStart { .. });
     let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
         error_response(
             &state,
@@ -113,16 +131,27 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
-            .await
-        {
+        let dispatch = state.response(request.request_id, request.spawn_generation, request.method);
+        // Objective admission owns its preparation and QueueStore deadlines. A
+        // socket observer's budget must not cancel work after durable publication.
+        let result = if is_objective {
+            dispatch.await
+        } else {
+            timeout(DISPATCH_TIMEOUT, dispatch)
+                .await
+                .map_err(|_| AgentdError::Protocol("agentd control dispatch timed out".to_string()))?
+        };
+        match result {
             Ok(response) => response,
             Err(error) => error_response(
                 &state,
                 request.request_id,
                 request.spawn_generation,
-                "request_rejected",
+                if is_objective {
+                    "objective_response_error"
+                } else {
+                    "request_rejected"
+                },
                 &error.to_string(),
             ),
         }
@@ -134,8 +163,12 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "agentd control response exceeded frame bound".to_string(),
         ));
     }
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    timeout(IO_TIMEOUT, async {
+        writer.write_all(&bytes).await?;
+        writer.shutdown().await
+    })
+    .await
+    .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
     Ok(())
 }
 

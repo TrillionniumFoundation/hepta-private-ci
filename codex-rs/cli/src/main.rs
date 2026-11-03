@@ -1088,10 +1088,7 @@ fn main() -> anyhow::Result<()> {
     configure_product_home()?;
     let remote_control_disabled = codex_app_server::take_remote_control_disabled_env();
     arg0_dispatch_or_else(move |arg0_paths: Arg0DispatchPaths| {
-        Box::pin(async move {
-            cli_main(arg0_paths, remote_control_disabled).await?;
-            Ok(())
-        })
+        Box::pin(cli_main(arg0_paths, remote_control_disabled))
     })
 }
 

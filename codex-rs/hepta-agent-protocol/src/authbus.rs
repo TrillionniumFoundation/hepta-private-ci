@@ -24,6 +24,15 @@ pub struct AuthBusTextIngress {
     pub body: AuthBusTextBody,
 }
 
+/// Signed text and target thread offered to the existing Core QueueStore.
+/// Agentd validates the route and byte bounds before publishing a RunStart.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ObjectiveQueuedInputV1 {
+    pub thread_id: String,
+    pub text: String,
+}
+
 /// Product-bounded structured objective body admitted by Agentd. The signed
 /// source JSON is intentionally capped below the generic compiler ceiling so a
 /// complete request remains inside the local control-frame bound.
@@ -40,6 +49,8 @@ pub struct AuthBusObjectiveBody {
     pub prompt_registry_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub queued_input: Option<ObjectiveQueuedInputV1>,
 }
 
 /// Signed objective ingress. The signature covers the body plus the

@@ -30,6 +30,10 @@ const DATABASE: &str = "native-turn-checkpoints.sqlite";
 const MAX_PAYLOAD: usize = 4 * 1024 * 1024;
 const MAX_REVISIONS: u64 = 4096;
 
+#[path = "native_checkpoint_chain.rs"]
+mod chain;
+pub(super) use chain::load as load_chain;
+
 pub(super) async fn open(
     store: &LocalThreadStore,
     binding: NativeCheckpointBinding,
@@ -85,12 +89,29 @@ pub(super) async fn load(
         .live_writer_locks
         .lock(session.binding.thread_id)
         .await;
+    load_locked(store, session).await
+}
+
+/// Caller holds the existing lifecycle and live-writer locks in that order.
+pub(super) async fn load_locked(
+    store: &LocalThreadStore,
+    session: &NativeCheckpointSession,
+) -> ThreadStoreResult<NativeCheckpointLoad> {
     verify_writer(store, session).await?;
+    if session.mode == NativeCheckpointOpenMode::Inspect
+        && !tokio::fs::try_exists(store.config.codex_home.join(DATABASE))
+            .await.map_err(storage_error)?
+    {
+        if store.native_checkpoint_db.get().is_some() {
+            return Err(storage_error("native checkpoint database disappeared during inspection"));
+        }
+        return Ok(NativeCheckpointLoad::Missing);
+    }
     let pool = database(store, session.mode).await?;
     let mut connection = pool.acquire().await.map_err(storage_error)?;
     match read_chain(&mut connection, session).await? {
         Some(record) => Ok(NativeCheckpointLoad::Present(record)),
-        None if session.mode == NativeCheckpointOpenMode::Create => {
+        None if session.mode != NativeCheckpointOpenMode::Recover => {
             Ok(NativeCheckpointLoad::Missing)
         }
         None => Err(storage_error(
@@ -120,6 +141,9 @@ async fn commit_owned(
     expected: NativeCheckpointExpected,
     state: NativeCheckpointState,
 ) -> ThreadStoreResult<StoredNativeCheckpoint> {
+    if session.mode == NativeCheckpointOpenMode::Inspect {
+        return Err(conflict("native checkpoint inspection cannot commit"));
+    }
     if state.binding != session.binding
         || state.payload.is_empty()
         || state.payload.len() > MAX_PAYLOAD
@@ -191,7 +215,7 @@ async fn commit_owned(
     })
 }
 
-async fn verify_writer(
+pub(super) async fn verify_writer(
     store: &LocalThreadStore,
     session: &NativeCheckpointSession,
 ) -> ThreadStoreResult<()> {
@@ -227,7 +251,7 @@ async fn database(
     let path = store.config.codex_home.join(DATABASE);
     let exists = tokio::fs::try_exists(&path).await.map_err(storage_error)?;
     if !exists
-        && (mode == NativeCheckpointOpenMode::Recover || store.native_checkpoint_db.get().is_some())
+        && (mode != NativeCheckpointOpenMode::Create || store.native_checkpoint_db.get().is_some())
     {
         return Err(storage_error(
             "native checkpoint database is missing; refusing recreation",
@@ -267,6 +291,14 @@ async fn database(
 async fn read_chain(
     connection: &mut SqliteConnection,
     session: &NativeCheckpointSession,
+) -> ThreadStoreResult<Option<StoredNativeCheckpoint>> {
+    read_chain_collect(connection, session, None).await
+}
+
+async fn read_chain_collect(
+    connection: &mut SqliteConnection,
+    session: &NativeCheckpointSession,
+    mut collected: Option<&mut Vec<StoredNativeCheckpoint>>,
 ) -> ThreadStoreResult<Option<StoredNativeCheckpoint>> {
     let integrity: Vec<String> = sqlx::query_scalar("PRAGMA quick_check(1)")
         .fetch_all(&mut *connection)
@@ -326,14 +358,18 @@ async fn read_chain(
             ));
         }
         expected_hash = sha256.clone();
-        latest = Some(StoredNativeCheckpoint {
+        let record = StoredNativeCheckpoint {
             rollout_id: session.rollout_id,
             version: NativeCheckpointVersion {
                 revision: expected_revision,
                 sha256,
             },
             state: NativeCheckpointState { binding, payload },
-        });
+        };
+        if let Some(records) = collected.as_deref_mut() {
+            records.push(record.clone());
+        }
+        latest = Some(record);
         expected_revision += 1;
     }
     match (&head, &latest) {

@@ -37,8 +37,22 @@ pub(crate) struct AgentRuntime<P> {
     pub release_id: ReleaseId,
     pub generation: u64,
     pub phase: RuntimePhase,
+    /// Exact first exit observation, retained until its lifecycle CAS commits.
+    /// Adopted-process polling may consume waitpid evidence only once.
+    pub observed_exit: Option<crate::ProcessExit>,
+    /// Restart policy is evaluated once for that exit. Retain its report
+    /// through a busy lifecycle CAS and emit it only after finalization.
+    pub exit_restart_fault: Option<SupervisorError>,
     pub healthy: bool,
     pub fenced: bool,
+}
+
+/// A failed spawn/lease publication whose original Starting -> Failed CAS
+/// has not completed. This is cleanup state in the existing Agent slot, not
+/// another restart intent or permission to spawn a replacement.
+pub(crate) struct DeferredStartFailure {
+    pub generation: u64,
+    pub error: SupervisorError,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -144,6 +158,7 @@ impl<T> BoundedQueue<T> {
 
 pub(crate) struct AgentSlot<P> {
     pub runtime: Option<AgentRuntime<P>>,
+    pub deferred_start_failure: Option<DeferredStartFailure>,
     pub matrix: MatrixCompanionSlot<P>,
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
@@ -175,6 +190,7 @@ impl<P> AgentSlot<P> {
     pub fn new(config: &SupervisorConfig) -> Self {
         Self {
             runtime: None,
+            deferred_start_failure: None,
             matrix: MatrixCompanionSlot::new(),
             deferred_agent_action: None,
             last_command: None,

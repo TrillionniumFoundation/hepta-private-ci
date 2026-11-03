@@ -6,7 +6,13 @@ fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {
-    let mut value = fixture();
+    sign_fixture(fixture())
+}
+
+pub(super) fn sign_fixture(mut value: Fixture) -> (
+    Fixture,
+    codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+) {
     let key = SigningKey::from_bytes(&[47; 32]);
     for owner in &mut value.owners {
         if owner.owner_id.as_str() == "learning.eval" {

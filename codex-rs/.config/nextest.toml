@@ -31,6 +31,28 @@ max-threads = 1
 [test-groups.windows_process_heavy]
 max-threads = 2
 
+# Each nextest case runs in its own process, so the fixture's local Mutex
+# cannot serialize these two real agentd+matrixd scenarios by itself.
+[test-groups.hepta_paired_process_product]
+max-threads = 1
+
+[[profile.default.overrides]]
+# The five-pair fixture installs both programs, verifies five allowances,
+# warms one pair, starts five pairs, then revalidates them for adoption:
+# 36 full test-binary SHA256 passes (about 1.74 GB at the observed 48.46 MB).
+# Measured setup was 45 s and each two-program resolve about 6.5 s. This is a
+# bounded fixture preparation/adoption cost, not a product latency budget or
+# acceptance of slower runtime behavior. Keep every SHA check and all internal
+# readiness, drain, stop, restart and shutdown deadlines unchanged.
+filter = 'package(codex-hepta-supervisor) & test(five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash)'
+test-group = 'hepta_paired_process_product'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-supervisor) & test(two_real_pairs_restart_one_without_peer_pid_churn)'
+test-group = 'hepta_paired_process_product'
+
 [[profile.default.overrides]]
 # Do not add new tests here
 filter = 'test(rmcp_client) | test(humanlike_typing_1000_chars_appears_live_no_placeholder)'

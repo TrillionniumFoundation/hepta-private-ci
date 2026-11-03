@@ -38,6 +38,7 @@ pub use canonical::build_legal_candidates;
 pub use canonical::decide_boundary;
 pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
+pub use canonical::validate_retained_envelope_v1;
 
 mod evaluated_shadow;
 mod ndu_stochastic_admission;

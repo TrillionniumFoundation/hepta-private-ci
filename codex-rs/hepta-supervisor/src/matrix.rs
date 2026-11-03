@@ -638,9 +638,18 @@ impl<D: ProcessDriver> Supervisor<D> {
                     DeferredAgentActionKind::Stop => true,
                 };
                 if applies_to_runtime && lifecycle_allows_action {
-                    match action.kind {
-                        DeferredAgentActionKind::Drain => self.drain_slot(agent_id, slot, now)?,
-                        DeferredAgentActionKind::Stop => self.stop_slot(agent_id, slot, now)?,
+                    let result = match action.kind {
+                        DeferredAgentActionKind::Drain => self.drain_slot(agent_id, slot, now),
+                        DeferredAgentActionKind::Stop => self.stop_slot(agent_id, slot, now),
+                    };
+                    if let Err(error) = result {
+                        if error.is_lifecycle_busy() {
+                            slot.deferred_agent_action = Some(action);
+                        }
+                        return Err(error);
+                    }
+                    if action.kind == DeferredAgentActionKind::Drain && slot.release_change.is_some() {
+                        self.advance_release_transaction(agent_id, slot, crate::release_transaction::ReleaseTransactionPhase::Draining)?;
                     }
                     return Ok(());
                 }

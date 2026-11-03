@@ -12,16 +12,8 @@ use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_uds::UnixStream;
-use tokio::io::AsyncBufReadExt;
-use tokio::io::AsyncReadExt;
-use tokio::io::AsyncWriteExt;
-use tokio::io::BufReader;
-use tokio::time::timeout;
 
-use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
-use crate::AGENTD_OVERLOAD_RETRY_AFTER_MS;
 use crate::AgentContextAttachment;
 use crate::AgentRunCancellation;
 use crate::AgentRunPhase;
@@ -31,19 +23,22 @@ use crate::AgentdCapabilitySet;
 use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
-use crate::AgentdResponse;
 use crate::AuthBusObjectiveIngress;
 use crate::AutomationEffectReconcileSnapshot;
 use crate::AutomationEffectSnapshot;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
-use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
+
+#[path = "client_transport.rs"]
+mod transport;
+
+use transport::ResponseObservation;
 
 pub struct AgentdClient {
     socket_path: PathBuf,
@@ -133,16 +128,38 @@ impl AgentdClient {
         }
     }
 
+    /// Wait up to thirty seconds for the Objective response. Connect and write
+    /// retain their separate two-second bounds; the owner's deadlines do not change.
     pub async fn objective_start(
         &self,
         request: AuthBusObjectiveIngress,
     ) -> Result<ObjectiveStartOutcome, AgentdError> {
+        self.objective_start_with_timeout(request, Duration::from_secs(30))
+            .await
+    }
+
+    /// A response timeout is an unknown outcome. Reconcile the same Objective
+    /// identity; this method never retries or authorizes a replacement operation.
+    /// This bounds response observation only, separately from connect and write.
+    pub async fn objective_start_with_timeout(
+        &self,
+        request: AuthBusObjectiveIngress,
+        observation_timeout: Duration,
+    ) -> Result<ObjectiveStartOutcome, AgentdError> {
+        if observation_timeout.is_zero() || observation_timeout > Duration::from_secs(300) {
+            return Err(AgentdError::Invalid(
+                "Objective observation timeout must be positive and at most 300 seconds".to_string(),
+            ));
+        }
         match self
-            .send(AgentdRequest::objective_start(
-                self.request_id(),
-                self.spawn_generation,
-                request,
-            ))
+            .send_observing(
+                AgentdRequest::objective_start(
+                    self.request_id(),
+                    self.spawn_generation,
+                    request,
+                ),
+                ResponseObservation::Objective(observation_timeout),
+            )
             .await?
             .payload
         {
@@ -154,7 +171,12 @@ impl AgentdClient {
                 run_id,
                 conflict_digest,
             }),
-            payload => unexpected(payload),
+            AgentdPayload::Error { code, message } => Err(AgentdError::Protocol(format!(
+                "Objective outcome is unknown; reconcile the original identity: response ({code}): {message}"
+            ))),
+            other => Err(AgentdError::Protocol(format!(
+                "Objective outcome is unknown; reconcile the original identity: unexpected payload {other:?}"
+            ))),
         }
     }
 
@@ -713,51 +735,6 @@ impl AgentdClient {
             AgentdPayload::MemoryFederationStatus { capability } => Ok(capability),
             payload => unexpected(payload),
         }
-    }
-
-    async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
-        let expected_request_id = request.request_id;
-        let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
-        let (reader, mut writer) = tokio::io::split(stream);
-        let mut bytes = serde_json::to_vec(&request)?;
-        bytes.push(b'\n');
-        if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
-            return Err(AgentdError::Protocol(
-                "agentd request exceeded frame bound".to_string(),
-            ));
-        }
-        timeout(self.timeout, writer.write_all(&bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
-        let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
-        let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
-        if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")
-        {
-            return Err(AgentdError::Protocol(
-                "agentd returned an invalid bounded response frame".to_string(),
-            ));
-        }
-        if response_bytes.as_slice() == AGENTD_CONTROL_OVERLOAD_FRAME {
-            return Err(AgentdError::Overloaded {
-                retry_after_ms: AGENTD_OVERLOAD_RETRY_AFTER_MS,
-            });
-        }
-        let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
-        if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
-            || response.request_id != expected_request_id
-            || response.agent_id != self.expected_agent_id
-            || response.spawn_generation != self.spawn_generation
-        {
-            return Err(AgentdError::Protocol(
-                "agentd response identity does not match request".to_string(),
-            ));
-        }
-        Ok(response)
     }
 
     fn request_id(&self) -> u64 {

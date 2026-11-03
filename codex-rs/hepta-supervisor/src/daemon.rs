@@ -1145,6 +1145,11 @@ fn safe_rejection(
         );
     }
     match error {
+        SupervisorError::Registry(FleetRegistryError::LifecycleBusy { .. }) => error_payload(
+            "lifecycle_busy",
+            "current generation entry or publication is busy; retry after it completes",
+            actual,
+        ),
         SupervisorError::UnknownAgent(_) => {
             error_payload(
                 "unknown_agent",

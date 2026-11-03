@@ -73,3 +73,9 @@ pub enum SupervisorError {
     #[error(transparent)]
     Io(#[from] std::io::Error),
 }
+
+impl SupervisorError {
+    pub(crate) fn is_lifecycle_busy(&self) -> bool {
+        matches!(self, Self::Registry(FleetRegistryError::LifecycleBusy { .. }))
+    }
+}

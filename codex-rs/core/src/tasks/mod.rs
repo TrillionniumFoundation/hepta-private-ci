@@ -99,6 +99,15 @@ static ACTIVE_TURNS: Gauge = Gauge::new("core.turns.active");
 
 pub(crate) type SessionTaskResult = CodexResult<Option<String>>;
 
+fn hosted_failure_is_unresolved(hosted: bool, cancelled: bool, result: &SessionTaskResult) -> bool {
+    hosted && !cancelled
+        && matches!(result, Err(error) if !matches!(error.details(), CodexErrorDetails::TurnAborted))
+}
+
+#[cfg(test)]
+#[path = "hosted_outcome_tests.rs"]
+mod hosted_outcome_tests;
+
 pub(crate) enum MailboxParentProvenance {
     Ignore,
     Attribute,
@@ -1293,6 +1302,13 @@ pub(crate) trait SessionTask: Send + Sync + 'static {
     /// surface it in telemetry and UI.
     fn kind(&self) -> TaskKind;
 
+    /// Only the original hosted admission and observation tasks may execute in
+    /// a session that selected a host executor. Auxiliary tasks must not sample
+    /// through Core or replace an unresolved hosted turn.
+    fn hosted_execution(&self) -> bool {
+        false
+    }
+
     /// Whether an interrupted instance can resume as the same model turn.
     /// Auxiliary tasks must leave this false even when their UI kind is
     /// `Regular`.
@@ -1355,6 +1371,8 @@ pub(crate) trait SessionTask: Send + Sync + 'static {
 pub(crate) trait AnySessionTask: Send + Sync + 'static {
     fn kind(&self) -> TaskKind;
 
+    fn hosted_execution_owner(&self) -> bool { false }
+
     fn recovery_eligible_model_turn(&self) -> bool;
 
     fn recovery_authority(&self) -> Option<Arc<TurnRecoveryAuthority>>;
@@ -1380,6 +1398,10 @@ where
 {
     fn kind(&self) -> TaskKind {
         SessionTask::kind(self)
+    }
+
+    fn hosted_execution_owner(&self) -> bool {
+        SessionTask::hosted_execution(self)
     }
 
     fn recovery_eligible_model_turn(&self) -> bool {
@@ -2064,6 +2086,11 @@ impl Session {
         input: Vec<TurnInput>,
         task: T,
     ) -> CodexResult<()> {
+        if self.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some()
+            && !SessionTask::hosted_execution(&task)
+        {
+            return Err(crate::hosted_turn::invalid("this task is unsupported by the selected hosted executor"));
+        }
         if self.shutdown_started() {
             return Err(CodexErr::InvalidRequest(
                 "cannot start a task while the session is shutting down".to_string(),
@@ -2189,6 +2216,12 @@ impl Session {
         start_reservation: Option<StartReservationHandle>,
         terminalization_owner: Option<Arc<()>>,
     ) -> StartTaskOutcome {
+        let hosted_execution = SessionTask::hosted_execution(&task);
+        if self.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some()
+            && !hosted_execution
+        {
+            return StartTaskOutcome::Stale;
+        }
         let task: Arc<dyn AnySessionTask> = Arc::new(task);
         let task_kind = task.kind();
         // Mark the host-owned async start transition before any subsequent
@@ -2324,8 +2357,14 @@ impl Session {
             .await
             .clear_turn(&turn_context.sub_id);
 
-        let (pending_items, parent_turn_id, root_turn_id) =
-            self.input_queue.get_pending_input(&self.active_turn).await;
+        let (pending_items, parent_turn_id, root_turn_id) = if hosted_execution {
+            // The original product admission owns exactly its queued input.
+            // Mailbox/sleep work is not part of that binding and must remain
+            // with its existing owner, including during observation recovery.
+            (Vec::new(), None, None)
+        } else {
+            self.input_queue.get_pending_input(&self.active_turn).await
+        };
         // Preserve the durable client/input identity in the turn scope before
         // any qualification contributor runs.  The extension API remains
         // inert for mailbox/automatic turns and for direct inputs that lack a
@@ -2668,6 +2707,12 @@ impl Session {
         sub_id: String,
         terminalization_owner: Option<Arc<()>>,
     ) {
+        // Mailbox and durable-sleep work remains pending until its original
+        // product owner supplies a hosted admission. Never fall back to Core
+        // sampling after a hosted task's uncertain outcome.
+        if self.services.session_extension_data.get::<crate::hosted_turn::HostedTurnMode>().is_some() {
+            return;
+        }
         if self.shutdown_started()
             || self.has_pending_admission_fence_except(terminalization_owner.as_ref())
         {
@@ -3181,23 +3226,31 @@ impl Session {
     }
 
     async fn run_finish_handoff(self: &Arc<Self>, handoff: &mut TaskFinishHandoff) {
-        let (task_identity, task_epoch) = {
+        let (task_identity, task_epoch, hosted_task, mut hosted_unresolved) = {
             let Some(task) = handoff.task.as_ref() else {
                 handoff.failed_closed = true;
                 return;
             };
-            (Arc::clone(&task.task), task.attach_epoch)
+            let hosted = task.task.hosted_execution_owner();
+            let held = handoff.task_result.as_ref().is_some_and(|result|
+                hosted_failure_is_unresolved(hosted, task.cancellation_token.is_cancelled(), result));
+            (Arc::clone(&task.task), task.attach_epoch, hosted, held)
         };
         let turn_context = Arc::clone(&handoff.turn_context);
         let turn_state = Arc::clone(&handoff.turn_state);
         handoff.phase = TaskFinishHandoffPhase::RecoveryRevoking;
-        let recovery_seed = self
-            .prepare_recovery_seed_for_controlled_detach(
+        let recovery_seed = if hosted_unresolved {
+            // Internal hosted tasks never publish ordinary sampler Ready.
+            // Keep their exact typed binding; an orphan Unready tombstone
+            // would make this unfinished original history unrecoverable.
+            None
+        } else {
+            self.prepare_recovery_seed_for_controlled_detach(
                 &turn_context.sub_id,
                 handoff.recovery_authority.as_ref(),
                 handoff.recovery_seed.clone(),
-            )
-            .await;
+            ).await
+        };
         handoff.recovery_seed = recovery_seed;
         turn_context
             .turn_metadata_state
@@ -3222,9 +3275,12 @@ impl Session {
             .task_result
             .take()
             .unwrap_or_else(|| panic!("claimed finish handoff has task result"));
+        let hosted_cancelled = hosted_task && handoff.task.as_ref()
+            .is_some_and(|task| task.cancellation_token.is_cancelled());
+        hosted_unresolved &= !hosted_cancelled;
         let (last_agent_message, abort_reason) = match task_result {
             Ok(last_agent_message) => (last_agent_message, None),
-            Err(err) if matches!(err.details(), CodexErrorDetails::TurnAborted) => {
+            Err(err) if matches!(err.details(), CodexErrorDetails::TurnAborted) || hosted_cancelled => {
                 (None, Some(TurnAbortReason::Interrupted))
             }
             Err(err) => {
@@ -3419,7 +3475,7 @@ impl Session {
             Some(TurnAbortReason::Interrupted | TurnAbortReason::BudgetLimited)
         ) {
             ThreadIdleCause::Interrupted
-        } else if task_ended_before_persistence
+        } else if hosted_unresolved || task_ended_before_persistence
             || (abort_reason.is_none() && turn_context.terminal_error.lock().await.is_some())
         {
             ThreadIdleCause::Failed
@@ -3427,16 +3483,21 @@ impl Session {
             ThreadIdleCause::Completed
         };
         handoff.phase = TaskFinishHandoffPhase::LifecyclePublishing;
-        let event = if let Some(reason) = abort_reason {
+        let event = if hosted_unresolved {
+            // Error notification is not durable outcome evidence. Flush the
+            // original history below, but do not turn a technical failure or
+            // unknown hosted effect into either completion or cancellation.
+            None
+        } else if let Some(reason) = abort_reason {
             self.emit_turn_abort_lifecycle(reason.clone(), turn_context.extension_data.as_ref())
                 .await;
-            EventMsg::TurnAborted(TurnAbortedEvent {
+            Some(EventMsg::TurnAborted(TurnAbortedEvent {
                 turn_id: Some(turn_context.sub_id.clone()),
                 reason,
                 started_at,
                 completed_at,
                 duration_ms,
-            })
+            }))
         } else {
             let time_to_first_token_ms = turn_context
                 .turn_timing_state
@@ -3445,7 +3506,7 @@ impl Session {
             let error = turn_context.terminal_error.lock().await.clone();
             self.emit_turn_stop_lifecycle(turn_context.extension_data.as_ref())
                 .await;
-            EventMsg::TurnComplete(TurnCompleteEvent {
+            Some(EventMsg::TurnComplete(TurnCompleteEvent {
                 turn_id: turn_context.sub_id.clone(),
                 last_agent_message,
                 error,
@@ -3453,12 +3514,23 @@ impl Session {
                 completed_at,
                 duration_ms,
                 time_to_first_token_ms,
-            })
+            }))
         };
         handoff.phase = TaskFinishHandoffPhase::PersistencePublishing;
-        let terminal_persistence_generation = self
-            .send_terminal_event_and_flush(turn_context.as_ref(), event)
-            .await;
+        let terminal_persistence_generation = if let Some(event) = event {
+            self.send_terminal_event_and_flush(turn_context.as_ref(), event).await
+        } else {
+            let before = self.rollout_persistence_failure_generation();
+            let flushed = match self.flush_rollout().await {
+                Ok(()) => true,
+                Err(error) => {
+                    warn!(%error, "hosted unresolved history flush remains uncertain");
+                    false
+                }
+            };
+            let after = self.rollout_persistence_failure_generation();
+            (flushed && before == after).then_some(after)
+        };
         self.services
             .guardian_rejection_circuit_breaker
             .lock()
@@ -3483,12 +3555,13 @@ impl Session {
             return;
         }
         handoff.phase = TaskFinishHandoffPhase::RecoveryPublishing;
-        self.publish_recovery_seed_after_terminal(
-            handoff.recovery_seed.take(),
-            /*task_quiesced*/ true,
-            terminal_persistence_generation,
-        )
-        .await;
+        if !hosted_unresolved {
+            self.publish_recovery_seed_after_terminal(
+                handoff.recovery_seed.take(),
+                /*task_quiesced*/ true,
+                terminal_persistence_generation,
+            ).await;
+        }
         handoff.phase = TaskFinishHandoffPhase::PendingWorkStarting;
         if let Some(completion) = cleared_completion.as_ref() {
             self.emit_thread_idle_lifecycle_if_idle_for_terminalization(

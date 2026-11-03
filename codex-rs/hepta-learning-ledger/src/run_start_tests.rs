@@ -11,6 +11,92 @@ use pretty_assertions::assert_eq;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
+#[test]
+fn prepared_handoff_reopens_exact_original_journal_without_consuming_ingress_again() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let original = record("prepared-run", b"original-objective");
+    let start = must(journal.append(Digest32::ZERO, original.clone()));
+    let payload = b"exact sealed owner handoff bytes".to_vec();
+    let prepared = RunPreparedRecordV1 { run_id: original.snapshot.run_id.clone(),
+        run_start_record_digest: start.record_digest, payload_digest: Digest32::of_bytes(&payload), payload };
+    let appended = must(journal.append_prepared(start.chain_digest, prepared.clone()));
+    let before = locked_bytes(&journal.file.0);
+    drop(journal);
+    let mut cold = must(fixture.recover(RunStartRecovery::Acknowledged(RunStartAnchor {
+        sequence: appended.sequence, chain_digest: appended.chain_digest })));
+    let loaded = must(cold.prepared(&original.snapshot.run_id)).expect("committed handoff");
+    assert_eq!(loaded.record(), &prepared);
+    assert_eq!(loaded.receipt().record_digest, appended.record_digest);
+    assert_eq!(must(cold.records()), vec![&original]);
+    assert_eq!(must(cold.authentication_records()), vec![(&original.authentication, &original.snapshot.run_id)]);
+    assert_eq!(must(cold.append(Digest32::ZERO, original)).record_digest, start.record_digest);
+    let replay = must(cold.append_prepared(Digest32::ZERO, prepared));
+    assert_eq!(replay, RunStartAppendReceipt { disposition: RunStartAppendDisposition::IdempotentReplay, ..appended });
+    assert_eq!(locked_bytes(&cold.file.0), before);
+}
+
+#[test]
+fn prepared_handoff_requires_original_compiled_record_and_exact_payload() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let original = record("bound-prepared", b"objective");
+    let start = must(journal.append(Digest32::ZERO, original.clone()));
+    let make = |payload: &[u8]| RunPreparedRecordV1 { run_id: original.snapshot.run_id.clone(),
+        run_start_record_digest: start.record_digest, payload_digest: Digest32::of_bytes(payload), payload: payload.to_vec() };
+    let initial = locked_bytes(&journal.file.0);
+    let mut changed = make(b"prepared");
+    changed.run_start_record_digest = digest("other-start");
+    assert_eq!(journal.append_prepared(start.chain_digest, changed), Err(RunStartStoreError::Conflict));
+    let mut missing = make(b"prepared");
+    missing.run_id = id("missing-run");
+    assert_eq!(journal.append_prepared(start.chain_digest, missing), Err(RunStartStoreError::Conflict));
+    let mut altered = make(b"prepared");
+    altered.payload.push(1);
+    assert!(journal.append_prepared(start.chain_digest, altered).is_err());
+    assert!(journal.append_prepared(start.chain_digest, make(&vec![1; MAX_RUN_PREPARED_BYTES + 1])).is_err());
+    assert_eq!(locked_bytes(&journal.file.0), initial);
+    must(journal.append_prepared(start.chain_digest, make(b"prepared")));
+    let committed = locked_bytes(&journal.file.0);
+    assert_eq!(journal.append_prepared(journal.head_digest(), make(b"replacement")), Err(RunStartStoreError::Conflict));
+    assert_eq!(locked_bytes(&journal.file.0), committed);
+}
+
+#[test]
+fn run_start_only_is_unknown_and_prepared_shares_original_frame_capacity() {
+    let fixture = Fixture::new();
+    let mut journal = must(DurableRunStartJournal::create(fixture.file(), binding(), /*max_records*/ 2));
+    let original = record("capacity-prepared", b"objective");
+    let start = must(journal.append(Digest32::ZERO, original.clone()));
+    assert_eq!(must(journal.prepared(&original.snapshot.run_id)), None);
+    let payload = b"completed preparation".to_vec();
+    must(journal.append_prepared(start.chain_digest, RunPreparedRecordV1 {
+        run_id: original.snapshot.run_id, run_start_record_digest: start.record_digest,
+        payload_digest: Digest32::of_bytes(&payload), payload }));
+    let before = locked_bytes(&journal.file.0);
+    assert_eq!(journal.append(journal.head_digest(), record("new-run", b"other")), Err(RunStartStoreError::Capacity));
+    assert_eq!(locked_bytes(&journal.file.0), before);
+}
+
+#[test]
+fn corrupted_committed_handoff_never_recovers_as_a_new_preparation() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let original = record("corrupt-prepared", b"objective");
+    let start = must(journal.append(Digest32::ZERO, original.clone()));
+    let payload = b"original prepared state".to_vec();
+    must(journal.append_prepared(start.chain_digest, RunPreparedRecordV1 {
+        run_id: original.snapshot.run_id, run_start_record_digest: start.record_digest,
+        payload_digest: Digest32::of_bytes(&payload), payload }));
+    let mut bytes = locked_bytes(&journal.file.0);
+    drop(journal);
+    let end = bytes.len();
+    bytes[end - FRAME_OVERHEAD] ^= 1;
+    must(fs::write(fixture.path(), &bytes));
+    assert!(matches!(fixture.recover(RunStartRecovery::Unacknowledged), Err(RunStartStoreError::Corrupt)));
+    assert_eq!(must(fs::read(fixture.path())), bytes);
+}
+
 fn must<T, E: fmt::Debug>(result: Result<T, E>) -> T {
     match result {
         Ok(value) => value,
@@ -32,6 +118,7 @@ fn binding() -> Digest32 {
 
 fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
     RunStartRecordV1 {
+        authenticated_payload: None,
         authentication: RunStartAuthenticationV1 {
             issuer_id: id("issuer.objective"),
             key_epoch: 3,
@@ -428,3 +515,101 @@ fn semantic_or_protocol_drift_after_reopen_conflicts() {
         Err(RunStartStoreError::Conflict)
     );
 }
+
+#[test]
+fn authenticated_payload_v3_recovers_exact_bytes_and_replays_without_a_second_append() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let mut first = record("run-authenticated", b"objective-semantic");
+    let payload = br#"{"queuedInput":{"threadId":"original-thread","text":"original signed input"}}"#.to_vec();
+    first.authentication.signed_body_digest = Digest32::of_bytes(&payload);
+    first.authenticated_payload = Some(payload);
+    let receipt = must(journal.append(Digest32::ZERO, first.clone()));
+    let before = locked_bytes(&journal.file.0);
+    assert!(before.windows(RECORD_DOMAIN_V3.len()).any(|part| part == RECORD_DOMAIN_V3));
+    drop(journal);
+
+    let mut recovered = must(fixture.recover(RunStartRecovery::Acknowledged(RunStartAnchor {
+        sequence: receipt.sequence,
+        chain_digest: receipt.chain_digest,
+    })));
+    assert_eq!(must(recovered.get(&first.snapshot.run_id)), Some(&first));
+    let replay = must(recovered.append(Digest32::ZERO, first));
+    assert_eq!(replay, RunStartAppendReceipt {
+        disposition: RunStartAppendDisposition::IdempotentReplay,
+        ..receipt
+    });
+    assert_eq!(locked_bytes(&recovered.file.0), before);
+}
+
+#[test]
+fn legacy_v1_v2_decode_without_inventing_authenticated_payload_and_v2_replays_exactly() {
+    let legacy = record("run-legacy", b"objective-semantic");
+    let v2 = encode_record(&legacy);
+    assert!(v2.starts_with(b"hepta.run-start-record.v2"));
+    assert_eq!(must(decode_record(&v2)), legacy);
+    let protocol_bytes = 32 + 4 + legacy.objective_function_v1_bytes.len();
+    let mut v1 = v2[..v2.len() - protocol_bytes].to_vec();
+    v1[..RECORD_DOMAIN_V1.len()].copy_from_slice(RECORD_DOMAIN_V1);
+    let decoded_v1 = must(decode_record(&v1));
+    assert_eq!(decoded_v1, RunStartRecordV1 {
+        objective_function_v1_digest: Digest32::ZERO,
+        objective_function_v1_bytes: Vec::new(),
+        ..legacy.clone()
+    });
+
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let receipt = must(journal.append(Digest32::ZERO, legacy.clone()));
+    assert_eq!(receipt.record_digest, Digest32::of_bytes(&v2));
+    let before = locked_bytes(&journal.file.0);
+    drop(journal);
+    let mut recovered = must(fixture.recover(RunStartRecovery::Unacknowledged));
+    assert_eq!(must(recovered.append(Digest32::ZERO, legacy)).disposition,
+        RunStartAppendDisposition::IdempotentReplay);
+    assert_eq!(locked_bytes(&recovered.file.0), before);
+}
+
+#[test]
+fn authenticated_payload_mismatch_invalid_json_and_size_reject_before_journal_io() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let before = locked_bytes(&journal.file.0);
+    for payload in [Vec::new(), b"not-json".to_vec(), b"[]".to_vec(),
+        vec![b'x'; MAX_AUTHENTICATED_PAYLOAD_BYTES + 1]] {
+        let mut invalid = record("run-invalid-authenticated", b"objective-semantic");
+        invalid.authentication.signed_body_digest = Digest32::of_bytes(&payload);
+        invalid.authenticated_payload = Some(payload);
+        assert!(matches!(journal.append(Digest32::ZERO, invalid),
+            Err(RunStartStoreError::InvalidSnapshot(_))));
+        assert_eq!(locked_bytes(&journal.file.0), before);
+    }
+    let mut wrong_digest = record("run-forged-authenticated", b"objective-semantic");
+    wrong_digest.authenticated_payload = Some(br#"{"text":"not the signed input"}"#.to_vec());
+    assert_eq!(journal.append(Digest32::ZERO, wrong_digest),
+        Err(RunStartStoreError::InvalidSnapshot("authenticatedPayloadDigest")));
+    assert_eq!(locked_bytes(&journal.file.0), before);
+}
+
+#[test]
+fn authenticated_payload_v3_rejects_truncated_changed_and_unbounded_tail() {
+    let mut original = record("run-authenticated-tail", b"objective-semantic");
+    let payload = br#"{"text":"original"}"#.to_vec();
+    original.authentication.signed_body_digest = Digest32::of_bytes(&payload);
+    original.authenticated_payload = Some(payload.clone());
+    let encoded = encode_record(&original);
+    for end in [encoded.len() - 1, encoded.len() - payload.len(), encoded.len() - payload.len() - 4] {
+        assert_eq!(decode_record(&encoded[..end]), Err(RunStartStoreError::Corrupt));
+    }
+    let mut changed = encoded.clone();
+    let payload_start = encoded.len() - payload.len();
+    changed[payload_start + 10] = b'x';
+    assert_eq!(decode_record(&changed), Err(RunStartStoreError::Corrupt));
+    let mut oversized = encoded;
+    oversized[payload_start - 4..payload_start]
+        .copy_from_slice(&((MAX_AUTHENTICATED_PAYLOAD_BYTES + 1) as u32).to_be_bytes());
+    assert_eq!(decode_record(&oversized), Err(RunStartStoreError::Corrupt));
+}
+
+#[path = "run_lifecycle_tests.rs"]
+mod lifecycle_records;

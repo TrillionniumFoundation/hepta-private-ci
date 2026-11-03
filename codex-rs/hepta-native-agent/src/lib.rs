@@ -11,6 +11,7 @@ pub use model_port::ModelPort;
 pub use responses::ModelEvent;
 pub use responses::ModelRequest;
 pub use responses::ObservedModelCompletion;
+pub use responses::ObservedModelTerminal;
 pub use responses::ResponsesModel;
 pub use responses::ResponsesStream;
 

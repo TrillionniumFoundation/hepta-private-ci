@@ -10,8 +10,10 @@ use std::collections::BTreeMap;
 use std::fs::OpenOptions;
 use std::path::Path;
 use std::str::FromStr;
+use std::sync::Arc;
 use std::sync::Mutex;
 
+use codex_app_server_protocol::ThreadQueueReconcileMode;
 use codex_hepta_authbus::Error as AuthBusError;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
@@ -52,6 +54,12 @@ const MAX_RUN_START_RECORDS: usize = 4_096;
 const RUN_START_DIRECTORY: &str = "objective-run-start-v1";
 const RUN_START_FILE: &str = "journal.bin";
 
+#[path = "objective_prepared.rs"]
+mod prepared;
+
+#[path = "objective_lifecycle.rs"]
+mod lifecycle;
+
 pub(crate) enum ObjectiveStartResult {
     Admitted(ObjectiveRunAdmission),
     Conflict {
@@ -64,6 +72,7 @@ pub(crate) struct ObjectiveRuntimeHost {
     profile: ObjectiveAdmissionProfileV1,
     profile_digest: Digest32,
     state: Mutex<ObjectiveHostState>,
+    pub(crate) queue_transport: Arc<dyn crate::objective_queue_relay::ObjectiveQueueTransport>,
 }
 
 struct ObjectiveHostState {
@@ -92,6 +101,7 @@ impl ObjectiveRuntimeHost {
         Ok(Self {
             profile,
             profile_digest,
+            queue_transport: Arc::new(crate::objective_queue_relay::OriginalObjectiveQueueTransport),
             state: Mutex::new(ObjectiveHostState {
                 journal,
                 highest_sequences,
@@ -116,6 +126,10 @@ impl ObjectiveRuntimeHost {
         })?;
         let fence = objective_fence(agentd.identity(), current_generation);
         for record in state.journal.records().map_err(store_error)? {
+            if state.journal.cancellation(&record.snapshot.run_id).map_err(store_error)?.is_some()
+                || state.journal.closed(&record.snapshot.run_id).map_err(store_error)?.is_some() {
+                continue;
+            }
             if record.snapshot.generation != current_generation
                 || record.snapshot.fence_digest != fence
                 || record.disposition != RunStartObjectiveDispositionV1::Compiled
@@ -124,7 +138,7 @@ impl ObjectiveRuntimeHost {
                 continue;
             }
             if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
-                if agentd.canonical_intelligence_enabled() {
+                if agentd.canonical_intelligence_enabled() || record.authenticated_payload.is_some() {
                     // A RunStart publication predates the seven-owner handoff.
                     // Until that exact handoff is durably recovered, startup
                     // must wait for the authenticated ObjectiveStart retry
@@ -135,6 +149,15 @@ impl ObjectiveRuntimeHost {
             }
         }
         Ok(())
+    }
+
+    pub(crate) fn original_record(&self, run_id: &str) -> Result<RunStartRecordV1, AgentdError> {
+        let run_id = StableId::new(run_id)
+            .map_err(|error| invalid(&format!("original objective run id: {error}")))?;
+        self.state.lock().map_err(|_| {
+            AgentdError::Protocol("objective runtime mutex is poisoned".to_owned())
+        })?.journal.get(&run_id).map_err(store_error)?.cloned()
+            .ok_or_else(|| invalid("original objective run publication is unavailable"))
     }
 
     pub(crate) async fn submit(
@@ -154,6 +177,12 @@ impl ObjectiveRuntimeHost {
         let authbus = authbus_ingress::attached(agentd)?;
         let trust = authbus.trust(agentd)?;
         let issuer = trust.issuer()?;
+        if let Some(input) = &request.body.queued_input
+            && (!trust.permits(&input.thread_id)
+                || !agentd.canonical_intelligence_enabled()
+                || agentd.native_objective_executor.get().is_none()) {
+            return Err(invalid("queued objective requires its permitted original thread and installed canonical native owners"));
+        }
         let message = SignedMessage {
             claims: objective_claims(agentd.identity(), &request, &payload)?,
             signature: hex_bytes(&request.signature_hex)?,
@@ -203,12 +232,30 @@ impl ObjectiveRuntimeHost {
             signature: message.signature,
         };
 
+        if let Some((record, publication)) = self.observe_stopped_queue_replay(&authentication, &run_id, &payload)? {
+            // The immutable receipt and exact original client remain readable
+            // after cancellation/close. ReconcileOnly cannot create an input;
+            // absence stays held and the normal fresh path remains fenced.
+            crate::objective_queue_relay::relay(agentd, &record,
+                ThreadQueueReconcileMode::ReconcileOnly, self.queue_transport.as_ref()).await?;
+            return Ok(ObjectiveStartResult::Admitted(ObjectiveRunAdmission {
+                run_id: record.snapshot.run_id.to_string(),
+                objective_digest: record.snapshot.objective_digest.to_string(),
+                hard_constraint_digest: record.snapshot.hard_constraint_digest.to_string(),
+                publication_digest: publication.record_digest.to_string(),
+                chain_digest: publication.chain_digest.to_string(),
+                disposition: "canonical_queue_accepted".to_owned(),
+                idempotent: true,
+            }));
+        }
+
         // Durable publication and replay-frontier mutation remain serialized,
         // but the guard is deliberately dropped before seven-owner execution.
         let (published, record) = {
             let mut state = self.state.lock().map_err(|_| {
                 AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
             })?;
+            crate::state::run_lifecycle::require_fresh(Some(&state.journal), run_id.as_str())?;
             require_replay_admission(&state, &authentication, &run_id)?;
 
             let expected_run_start_head = state.journal.head_digest();
@@ -218,6 +265,9 @@ impl ObjectiveRuntimeHost {
                 &context,
                 ObjectiveRunBindingsV1 {
                     authentication,
+                    // Existing objective requests retain their exact V2
+                    // journal encoding. Only signed queued inputs need V3.
+                    authenticated_payload: request.body.queued_input.as_ref().map(|_| payload.clone()),
                     run_id: run_id.clone(),
                     runtime_body_digest,
                     preference_state_digest,
@@ -295,10 +345,37 @@ impl ObjectiveRuntimeHost {
         }
 
         let disposition = match record.disposition {
+            RunStartObjectiveDispositionV1::Compiled
+                if request.body.queued_input.is_some()
+                    && published.publication.disposition == RunStartAppendDisposition::IdempotentReplay => {
+                // Only the original journal's committed seven-owner handoff
+                // permits completing an interrupted queue admission. Loading
+                // validates the exact signed record, retained preparation and
+                // current owner authority without invoking the owners again.
+                agentd.load_canonical_prepared(record.snapshot.run_id.as_str())?
+                    .ok_or_else(|| invalid("original canonical preparation is not durable; outcome remains unknown"))?;
+                // The original QueueStore keeps its exact client/payload CAS,
+                // persisted-history reconciliation and dispatch ownership.
+                // Cold coordinator projection occurs only inside that Core
+                // preparation boundary, never in this replay branch.
+                crate::objective_queue_relay::relay(agentd, &record,
+                    ThreadQueueReconcileMode::AllowIfAbsent, self.queue_transport.as_ref()).await?;
+                "canonical_queue_accepted"
+            }
             RunStartObjectiveDispositionV1::Compiled => {
                 match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
+                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { prepared, .. }) => {
+                        if request.body.queued_input.is_some() {
+                            let materials = crate::canonical_queued_input::selected_text_materials(&record, &prepared)
+                                .map_err(|error| invalid(&format!("original queued source material: {error:#}")))?;
+                            self.publish_prepared_handoff(agentd, &record, &prepared, materials)?;
+                            agentd.retain_canonical_queued_input(&record, &prepared)?;
+                            crate::objective_queue_relay::relay(agentd, &record,
+                                ThreadQueueReconcileMode::AllowIfAbsent, self.queue_transport.as_ref()).await?;
+                            "canonical_queue_accepted"
+                        } else {
+                            "canonical_ready"
+                        }
                     }
                     Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
                         "canonical_abstained"
@@ -345,6 +422,13 @@ fn objective_payload(
         ));
     }
     StableId::new(&body.run_id).map_err(|error| invalid(&format!("objective run id: {error}")))?;
+    if let Some(input) = &body.queued_input {
+        if input.text.is_empty() || input.text.len() > 8 * 1024 {
+            return Err(invalid("queued objective text must be nonempty and at most 8 KiB"));
+        }
+        codex_protocol::ThreadId::from_string(&input.thread_id)
+            .map_err(|error| invalid(&format!("queued objective thread: {error}")))?;
+    }
     for (digest, field) in [
         (&body.runtime_body_digest, "runtime body"),
         (&body.preference_state_digest, "preference state"),

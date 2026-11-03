@@ -25,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -142,8 +143,6 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    drop(store);
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -172,6 +171,20 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             Ok(())
         },
     );
+
+    // Initial lease acquisition is an owner mutation, so retain the exact cut
+    // after acquiring the writer. Drop without release to recover that same
+    // active lease rather than appending a successor lease during recovery.
+    let original_writer = ProductionDurableWriter::open_with_live_verifier(
+        store,
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        /*generation*/ 1,
+    )
+    .await?;
+    let expected = original_writer.recovery_anchor().await?;
+    drop(original_writer);
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,

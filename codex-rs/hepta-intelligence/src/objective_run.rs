@@ -40,6 +40,9 @@ use codex_hepta_types::StableId;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveRunBindingsV1 {
     pub authentication: RunStartAuthenticationV1,
+    /// Original authenticated body for the destination journal; absence retains
+    /// the legacy publication format without manufacturing missing evidence.
+    pub authenticated_payload: Option<Vec<u8>>,
     pub run_id: StableId,
     pub runtime_body_digest: Digest32,
     pub preference_state_digest: Digest32,
@@ -187,6 +190,7 @@ pub fn compile_and_publish_objective_run_v1(
         bindings.expected_run_start_head,
         RunStartRecordV1 {
             authentication: bindings.authentication,
+            authenticated_payload: bindings.authenticated_payload,
             admission,
             disposition,
             snapshot: run_start.clone(),

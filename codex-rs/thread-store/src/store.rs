@@ -95,6 +95,19 @@ pub trait ThreadStore: Any + Send + Sync {
         })
     }
 
+    /// Read the complete original chain as bounded evidence, never permission to resume.
+    /// Unsupported stores must fail closed rather than returning a head-only suffix.
+    fn load_native_checkpoint_chain<'a>(
+        &'a self,
+        _session: &'a crate::NativeCheckpointSession,
+    ) -> ThreadStoreFuture<'a, Vec<crate::StoredNativeCheckpoint>> {
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "native_checkpoint_chain",
+            })
+        })
+    }
+
     /// Publish a complete checkpoint by exact CAS while retaining the host permit.
     /// Local storage retains its commit task when the waiter is cancelled. A lost
     /// acknowledgement is ambiguous: reload the same operation before proceeding.
@@ -107,6 +120,38 @@ pub trait ThreadStore: Any + Send + Sync {
         Box::pin(async {
             Err(ThreadStoreError::Unsupported {
                 operation: "native_checkpoint",
+            })
+        })
+    }
+
+    /// Verify original recovery/input correlation without granting a write.
+    /// Implementations must scan the complete canonical history for duplicates
+    /// and conflicting inputs while bounding memory independently of its length.
+    fn verify_native_history<'a>(
+        &'a self,
+        _session: &'a crate::NativeCheckpointSession,
+        _expected: crate::NativeHistoryVerification,
+    ) -> ThreadStoreFuture<'a, ()> {
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "native_history",
+            })
+        })
+    }
+
+    /// Reconcile canonical native output with an already-confirmed checkpoint.
+    /// Implementations must compare exact stable IDs and content, retain the
+    /// original writer/currentness guards through durable append, and reject
+    /// malformed or conflicting history. This is not a cross-file transaction.
+    fn sync_native_history<'a>(
+        &'a self,
+        _session: &'a crate::NativeCheckpointSession,
+        _expected: crate::NativeCheckpointVersion,
+        _items: Vec<codex_protocol::models::ResponseItem>,
+    ) -> ThreadStoreFuture<'a, ()> {
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "native_history",
             })
         })
     }

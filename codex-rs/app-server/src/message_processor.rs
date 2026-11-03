@@ -286,6 +286,7 @@ pub(crate) struct MessageProcessorArgs {
     pub(crate) remote_control_handle: Option<RemoteControlHandle>,
     pub(crate) plugin_startup_tasks: crate::PluginStartupTasks,
     pub(crate) turn_queue_capacity: Option<NonZeroUsize>,
+    pub(crate) hosted_turn_executor: Option<Arc<dyn codex_core::hosted_turn::HostedTurnExecutor>>,
     pub(crate) hepta: HeptaExtensionBindings,
 }
 
@@ -312,6 +313,7 @@ impl MessageProcessor {
             remote_control_handle,
             plugin_startup_tasks,
             turn_queue_capacity,
+            hosted_turn_executor,
             hepta,
         } = args;
         let hepta = hepta.validated();
@@ -353,7 +355,7 @@ impl MessageProcessor {
                     queue,
                     thread_manager.clone(),
                     Arc::clone(&extension_event_sink),
-                ))
+                ).with_hosted_turn_executor(hosted_turn_executor.clone()))
             });
             let manager = ThreadManager::new(
                 config.as_ref(),

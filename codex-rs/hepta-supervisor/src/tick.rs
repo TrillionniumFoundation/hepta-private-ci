@@ -34,6 +34,19 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        // A first manual start has no restart/release intent to drive its
+        // cleanup. Preserve its original failure until the same CAS completes.
+        if slot.runtime.is_none() && slot.release_change.is_none() && !slot.restart_pending
+            && let Some(error) = self.retry_start_failure_cleanup(agent_id, slot)?
+        {
+            return Err(error);
+        }
+        // Retry only a release already owned by this supervisor and lacking
+        // a spawned process. Live pending actions use the original deferred
+        // action slot after polling, so an exited child is never re-drained.
+        if slot.runtime.is_none() && slot.release_change.is_some() {
+            self.retry_unstarted_release(agent_id, slot, now)?;
+        }
         let mut post_exit_fault = None;
         if let Some(mut runtime) = slot.runtime.take() {
             let outcome = match self.tick_runtime(agent_id, slot, &mut runtime, now) {
@@ -66,6 +79,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             let release =
                 release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
             if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
+                if error.is_lifecycle_busy() || slot.deferred_start_failure.is_some() {
+                    return Err(error);
+                }
                 let record = self.record(agent_id)?;
                 crate::restart_budget::complete_restart(record.layout.run_root())
                     .map_err(|persist| SupervisorError::Invalid(persist.to_string()))?;
@@ -144,7 +160,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<RuntimeTickOutcome, SupervisorError> {
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
-        if registry_generation != runtime.generation && !runtime.fenced {
+        if registry_generation != runtime.generation && !runtime.fenced && runtime.observed_exit.is_none() {
             self.kill_matrix_now(agent_id, slot)?;
             runtime
                 .process
@@ -160,26 +176,34 @@ impl<D: ProcessDriver> Supervisor<D> {
                 },
             );
         }
-        let observation = runtime
-            .process
-            .poll(self.config.driver_poll_batch)
-            .map_err(|error| driver_error(agent_id, error))?;
+        let observation = match runtime.observed_exit {
+            Some(exit) => crate::ProcessObservation { state: ProcessState::Exited(exit), logs: Vec::new() },
+            None => runtime.process.poll(self.config.driver_poll_batch)
+                .map_err(|error| driver_error(agent_id, error))?,
+        };
         self.push_logs(slot, observation.logs);
         if let ProcessState::Exited(exit) = observation.state {
+            // A live Fleet entry can postpone the CAS. Never ask an adopted
+            // process to replay consumed waitpid evidence or signal its PID.
+            runtime.healthy = false;
             // Persist the automatic-restart claim before the lifecycle/lease
             // exit finalization. If supervisord crashes between these durable
             // boundaries, recovery reuses the same pending attempt rather than
             // losing the restart intent after publishing Failed.
-            let restart_fault = if !runtime.fenced
-                && matches!(runtime.phase, RuntimePhase::Running)
-                && slot.release_change.is_none()
-                && !slot.restart_pending
-            {
-                self.queue_automatic_restart_before_exit(agent_id, slot, now)
-            } else {
-                None
-            };
+            if runtime.observed_exit.is_none() {
+                runtime.exit_restart_fault = if !runtime.fenced
+                    && matches!(runtime.phase, RuntimePhase::Running)
+                    && slot.release_change.is_none()
+                    && !slot.restart_pending
+                {
+                    self.queue_automatic_restart_before_exit(agent_id, slot, now)
+                } else {
+                    None
+                };
+                runtime.observed_exit = Some(exit);
+            }
             self.finalize_exit(agent_id, slot, runtime, exit)?;
+            let restart_fault = runtime.exit_restart_fault.take();
             return Ok(RuntimeTickOutcome::Exited { restart_fault });
         }
         if runtime.fenced {
@@ -294,7 +318,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: runtime.release_id.clone(),
             identity: runtime.identity.clone(),
         };
-        remove_lease(record.layout.run_root(), &lease)?;
         let mut generation = runtime.generation;
         if !fenced {
             let target = match record.lifecycle.lifecycle {
@@ -316,6 +339,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(next.generation, SupervisorEventKind::Lifecycle(target));
             }
         }
+        // Keep the original process lease if generation publication is busy;
+        // a later poll can finish this same exit instead of losing its owner.
+        remove_lease(record.layout.run_root(), &lease)?;
         if !runtime.fenced && fenced {
             slot.event(
                 runtime.generation,

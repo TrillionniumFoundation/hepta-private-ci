@@ -17,6 +17,7 @@ mod thread_sections;
 mod types;
 
 pub use codex_state::MAX_QUEUE_ITEMS;
+pub use codex_state::QueuePersistedBindingObservation;
 pub use codex_state::QueuedClientBindingFinalizeMode;
 pub use codex_state::QueuedClientBindingFinalizeOutcome;
 pub use codex_state::QueuedClientBindingLease;
@@ -50,6 +51,8 @@ pub use native_checkpoint::NativeCheckpointPermit;
 pub use native_checkpoint::NativeCheckpointSession;
 pub use native_checkpoint::NativeCheckpointState;
 pub use native_checkpoint::NativeCheckpointVersion;
+pub use native_checkpoint::NativeHistoryVerification;
+pub use native_checkpoint::NativeQueuedInputBinding;
 pub use native_checkpoint::StoredNativeCheckpoint;
 pub use projects::CreateProjectParams;
 pub use projects::CreatedProject;

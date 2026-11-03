@@ -26,6 +26,10 @@ use std::sync::OnceLock;
 use tokio::sync::Mutex;
 use uuid::Uuid;
 
+#[path = "queued_persisted_observation.rs"]
+mod persisted_observation;
+pub use persisted_observation::QueuePersistedBindingObservation;
+
 #[cfg(unix)]
 use std::ffi::CString;
 #[cfg(unix)]

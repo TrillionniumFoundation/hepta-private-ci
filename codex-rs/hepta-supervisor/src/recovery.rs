@@ -105,6 +105,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if let Some(error) = self.retry_start_failure_cleanup(agent_id, slot)? {
+            return Err(error);
+        }
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
@@ -145,13 +148,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         let mut spawned = match self.driver.spawn(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
-                self.transition_without_runtime(
-                    agent_id,
-                    slot,
-                    starting.generation,
-                    AgentLifecycle::Failed,
-                )?;
-                return Err(driver_error(agent_id, error));
+                return self.retain_start_failure(
+                    agent_id, slot, starting.generation, driver_error(agent_id, error),
+                );
             }
         };
         let lease = ProcessLease {
@@ -163,13 +162,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         if let Err(error) = write_lease(record.layout.run_root(), &lease) {
             let _ = spawned.process.kill();
-            self.transition_without_runtime(
-                agent_id,
-                slot,
-                starting.generation,
-                AgentLifecycle::Failed,
-            )?;
-            return Err(error);
+            return self.retain_start_failure(agent_id, slot, starting.generation, error);
         }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
@@ -182,6 +175,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             phase: RuntimePhase::AwaitingHealth {
                 deadline: health_deadline,
             },
+            observed_exit: None,
+            exit_restart_fault: None,
             healthy: false,
             fenced: false,
         });
@@ -262,6 +257,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                                         } else {
                                             RuntimePhase::Stopping { deadline: now }
                                         },
+                                        observed_exit: None,
+                                        exit_restart_fault: None,
                                         healthy: false,
                                         fenced: true,
                                     });
@@ -314,6 +311,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     release_id: lease.release_id,
                     generation: record.lifecycle.generation,
                     phase,
+                    observed_exit: None,
+                    exit_restart_fault: None,
                     healthy: false,
                     fenced: false,
                 });
@@ -329,7 +328,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             }
             Adoption::Missing => {
-                remove_lease(record.layout.run_root(), &lease)?;
                 let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
@@ -340,10 +338,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 } else {
                     record.lifecycle.generation
                 };
+                remove_lease(record.layout.run_root(), &lease)?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {
-                remove_lease(record.layout.run_root(), &lease)?;
                 let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
@@ -354,6 +352,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 } else {
                     record.lifecycle.generation
                 };
+                remove_lease(record.layout.run_root(), &lease)?;
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
             }
         }
