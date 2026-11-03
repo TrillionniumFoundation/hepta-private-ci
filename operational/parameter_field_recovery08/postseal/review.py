@@ -18,6 +18,9 @@ if str(ROOT) not in sys.path:
 from operational.parameter_field_recovery08 import common as c  # noqa: E402
 from operational.parameter_field_recovery08.job_queue import LABELS  # noqa: E402
 from operational.parameter_field_recovery08 import asset_provenance  # noqa: E402
+from operational.parameter_field_recovery08.postseal.normal_exit import (  # noqa: E402
+    legacy_analysis_exit,
+)
 
 SCHEMA = "hepta.execution08.postseal-review.1"
 
@@ -79,19 +82,21 @@ class Metadata:
             )
 
 
-def wait4(metadata, directory, *, config_item=None, argv=None):
+def wait4(metadata, directory, *, config_item=None, argv=None, allow_analysis_exit=False):
     directory = Path(directory)
     closure, waited = (
         metadata.file(directory / "CLOSURE.json"),
         metadata.file(directory / "001.WAIT4.json"),
     )
+    wait4_item = c.descriptor(directory / "001.WAIT4.json")
+    legacy_exit = allow_analysis_exit and legacy_analysis_exit(closure, waited, wait4_item)
     c.need(
         closure.get("all_returned_direct_children_reaped") is True
         and closure.get("accounting_complete_for_attempted_direct_workers") is True
         and closure.get("attempt_count") == closure.get("returned_children") == 1
         and len(closure.get("attempts", [])) == len(closure.get("children", [])) == 1
         and closure["children"][0].get("wait4") == waited
-        and closure.get("original_exception") is None
+        and (closure.get("original_exception") is None or legacy_exit)
         and closure.get("receipt_errors") == []
         and closure.get("cleanup_errors") == []
         and closure.get("construction_wait4_unavailable") is False
@@ -127,8 +132,9 @@ def wait4(metadata, directory, *, config_item=None, argv=None):
     if argv is not None:
         c.need(closure["attempts"][0]["argv"] == argv, "Owned process argv differs")
     return {
-        "wait4": c.descriptor(directory / "001.WAIT4.json"),
+        "wait4": wait4_item,
         "closure": c.descriptor(directory / "CLOSURE.json"),
+        "exit_semantics": "legacy_analysis_system_exit_zero" if legacy_exit else "normal_return",
         "cpu_seconds": waited["cpu_seconds"],
         "wall_seconds": waited["wall_seconds"],
         "peak_rss_bytes": waited["peak_rss_bytes"],
@@ -550,7 +556,10 @@ def operational_gate(config, config_item, terminal_item, metadata):
             "Actual worker wrapper completion or source differs",
         )
     nested = wait4(
-        metadata, wrappers / "ANALYSIS_PARENT/owned_children", config_item=config_item
+        metadata,
+        wrappers / "ANALYSIS_PARENT/owned_children",
+        config_item=config_item,
+        allow_analysis_exit=True,
     )
     initial_plan = metadata.read(config["initialization_intent"])
     c.need(

@@ -25,3 +25,21 @@ The actual failed execution07 pipeline child consumed 20,587.204849 CPU seconds 
 No archive name, green engineering fixture, partial completion or emitted report is a scientific success claim. The original complete-seal gates, full byte and literal-state restoration, independent endpoint coverage and final ownership closure remain mandatory. Negative outcomes must be retained. A complete result may close an execution blocker while failing a scientific or adoption criterion. This controlled task does not establish new task-family transfer or LLM-scale performance, and repeated fixed seeds do not provide new independent models.
 
 The new workflow is `.github/workflows/parameter-field-execution08.yml` on `research/parameter-field-recovery08-20261101`. It uses the exact original public runtime and pinned SDK. There is no automatic scientific retry and no automatic retry after an unknown upload result. Any pre-science host reallocation must be supported by its actual preserved failure evidence.
+
+## Normal CLI exit and historical postseal review
+
+The original analysis launcher raises `SystemExit(0)` after its child succeeds.
+The execution08 adapter now converts only `None` or an integer zero into a normal
+return before the owned-child controller closes. Other exits still propagate.
+
+For already sealed receipts, only the analysis parent's nested child scope may
+interpret the exact legacy integer-zero record as a normal CLI exit. Its original
+bytes and descriptor remain unchanged. Child/parent identity, the original
+analysis argv, successful wait status, receipt identity, complete reaping and
+error-free accounting are still required; signals and ambiguous exits fail.
+The review records `legacy_analysis_system_exit_zero` when this rule is used.
+
+This repairs an execution-accounting interpretation, not a scientific result.
+The focused workflow runs real small subprocesses and rejection cases without
+starting science. A replay on another filesystem must separately establish fresh
+archive readback: historical inode numbers cannot certify a newly restored copy.
