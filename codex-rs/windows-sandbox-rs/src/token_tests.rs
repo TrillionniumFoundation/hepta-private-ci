@@ -121,6 +121,22 @@ fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
 
 #[test]
 fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()> {
+    native_write_deny_repair(DELETE)
+}
+
+#[test]
+fn legacy_generic_write_deny_keeps_mutations_denied_without_blocking_reads() -> Result<()> {
+    use windows_sys::Win32::Foundation::GENERIC_WRITE;
+    use windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
+    use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+
+    for write in [GENERIC_WRITE, FILE_GENERIC_WRITE] {
+        native_write_deny_repair(write | DELETE | FILE_DELETE_CHILD)?;
+    }
+    Ok(())
+}
+
+fn native_write_deny_repair(seed_mask: u32) -> Result<()> {
     let fixture = tempfile::tempdir()?;
     let capability = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
     let everyone = LocalSid::from_string("S-1-1-0")?;
@@ -133,7 +149,7 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     let created = fixture.path().join("created.txt");
     std::fs::write(&existing, "original")?;
     let entry = EXPLICIT_ACCESS_W {
-        grfAccessPermissions: DELETE,
+        grfAccessPermissions: seed_mask,
         grfAccessMode: DENY_ACCESS,
         grfInheritance: OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
         Trustee: TRUSTEE_W {
@@ -185,7 +201,21 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     {
         // SAFETY: token remains owned throughout this impersonation scope.
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
-        std::fs::write(&existing, "before repair")?;
+        let write = std::fs::write(&existing, "before repair");
+        if seed_mask == DELETE {
+            write?;
+        } else {
+            assert_eq!(
+                write.err().map(|error| error.kind()),
+                Some(std::io::ErrorKind::PermissionDenied),
+            );
+            assert_eq!(
+                std::fs::read_to_string(&existing)
+                    .err()
+                    .map(|error| error.kind()),
+                Some(std::io::ErrorKind::PermissionDenied),
+            );
+        }
     }
     // SAFETY: the fixture and validated capability SID are live for the repair.
     let repaired = unsafe { add_deny_write_ace(fixture.path(), capability.as_ptr())? };
@@ -214,10 +244,15 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
         (true, [Some(std::io::ErrorKind::PermissionDenied); 2]),
     );
     assert_eq!(repeated_repairs, (false, true, false));
-    assert_eq!(read, "before repair");
+    let expected = if seed_mask == DELETE {
+        "before repair"
+    } else {
+        "original"
+    };
+    assert_eq!(read, expected);
     assert_eq!(
         (std::fs::read_to_string(&existing)?, created.exists()),
-        ("before repair".to_owned(), false),
+        (expected.to_owned(), false),
     );
     Ok(())
 }
@@ -229,6 +264,7 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     let cap_a = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
     let cap_b = LocalSid::from_string("S-1-5-21-111-222-333-444")?;
     let other_cap = LocalSid::from_string("S-1-5-21-121-232-343-454")?;
+    let read_cap = LocalSid::from_string("S-1-5-21-131-242-353-464")?;
     let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
     let mut everyone = unsafe { world_sid()? };
     // Deliberately grant broad inherited DELETE and parent DELETE_CHILD inside
@@ -257,11 +293,21 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     // A stale capability for another root must not authorize this token either.
     unsafe {
         ensure_allow_write_aces(&outside, &[other_cap.as_ptr()])?;
+        ensure_allow_mask_aces(
+            &outside,
+            &[read_cap.as_ptr()],
+            windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ
+                | windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE,
+        )?;
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
+        create_workspace_write_token_with_read_caps_from(
+            base.0,
+            &[cap_a.as_ptr(), cap_b.as_ptr()],
+            &[read_cap.as_ptr()],
+        )?
     });
     let (outside_read, refused) = {
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
@@ -300,5 +346,74 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
             ("allowed".to_owned(), false, false)
         );
     }
+    Ok(())
+}
+
+#[test]
+fn shared_read_root_cannot_authorize_cross_workspace_ipc_writes() -> Result<()> {
+    use windows_sys::Win32::System::Threading::CreateEventW;
+    use windows_sys::Win32::System::Threading::EVENT_MODIFY_STATE;
+    use windows_sys::Win32::System::Threading::OpenEventW;
+    use windows_sys::Win32::System::Threading::SetEvent;
+
+    struct Event(HANDLE);
+    impl Drop for Event {
+        fn drop(&mut self) {
+            unsafe { CloseHandle(self.0) };
+        }
+    }
+
+    let fixture = tempfile::tempdir()?;
+    let caps = crate::cap::load_or_create_cap_sids(fixture.path())?;
+    let first = LocalSid::from_string(&caps.workspace)?;
+    let second = LocalSid::from_string(&caps.readonly)?;
+    let read = LocalSid::from_string(&crate::cap::readable_root_cap_sid_for_path(
+        fixture.path(),
+        fixture.path(),
+    )?)?;
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let first_token = OwnedToken(unsafe {
+        create_workspace_write_token_with_read_caps_from(
+            base.0,
+            &[first.as_ptr()],
+            &[read.as_ptr()],
+        )?
+    });
+    let second_token = OwnedToken(unsafe {
+        create_workspace_write_token_with_read_caps_from(
+            base.0,
+            &[second.as_ptr()],
+            &[read.as_ptr()],
+        )?
+    });
+    let name = to_wide(format!("Local\\codex-read-cap-ipc-{}", caps.workspace));
+    let event = {
+        let _identity = unsafe { Impersonation::enter(first_token.0)? };
+        let handle = unsafe { CreateEventW(std::ptr::null(), 1, 0, name.as_ptr()) };
+        anyhow::ensure!(handle != 0, "create first workspace event: {}", unsafe {
+            GetLastError()
+        });
+        Event(handle)
+    };
+    {
+        let _identity = unsafe { Impersonation::enter(first_token.0)? };
+        let own = unsafe { OpenEventW(EVENT_MODIFY_STATE, 0, name.as_ptr()) };
+        anyhow::ensure!(own != 0, "open own event: {}", unsafe { GetLastError() });
+        let own = Event(own);
+        anyhow::ensure!(unsafe { SetEvent(own.0) } != 0, "signal own event");
+    }
+    {
+        let _identity = unsafe { Impersonation::enter(second_token.0)? };
+        let other = unsafe { OpenEventW(EVENT_MODIFY_STATE, 0, name.as_ptr()) };
+        let error = unsafe { GetLastError() };
+        if other != 0 {
+            unsafe { CloseHandle(other) };
+        }
+        assert_eq!(
+            (other, error),
+            (0, windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED)
+        );
+    }
+    drop(event);
     Ok(())
 }

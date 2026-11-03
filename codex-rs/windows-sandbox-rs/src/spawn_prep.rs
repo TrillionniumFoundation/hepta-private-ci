@@ -1,10 +1,12 @@
 use crate::acl::add_allow_ace;
 use crate::acl::add_deny_write_ace;
 use crate::acl::allow_null_device;
+use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
 use crate::allow::AllowDenyPaths;
 use crate::allow::compute_allow_paths_for_permissions;
 use crate::cap::load_or_create_cap_sids;
+use crate::cap::readable_root_cap_sid_for_path;
 use crate::cap::workspace_write_cap_sid_for_root;
 use crate::cap::workspace_write_root_contains_path;
 use crate::cap::workspace_write_root_overlaps_path;
@@ -24,7 +26,7 @@ use crate::sandbox_utils::inject_git_safe_directory;
 use crate::setup::effective_write_roots_for_permissions;
 use crate::token::LocalSid;
 use crate::token::create_readonly_token_with_cap;
-use crate::token::create_workspace_write_token_with_caps_from;
+use crate::token::create_workspace_write_token_with_read_caps_from;
 use crate::token::get_current_token_for_restriction;
 use crate::token::get_logon_sid_bytes;
 use crate::workspace_acl::is_command_cwd_root;
@@ -40,6 +42,8 @@ use std::path::Path;
 use std::path::PathBuf;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::HANDLE;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 
 pub(crate) struct SpawnContext {
     pub(crate) permissions: ResolvedWindowsSandboxPermissions,
@@ -66,6 +70,7 @@ pub(crate) struct LegacySessionSecurity {
     pub(crate) readonly_sid: Option<LocalSid>,
     pub(crate) readonly_sid_str: Option<String>,
     pub(crate) write_root_sids: Vec<RootCapabilitySid>,
+    pub(crate) read_root_sids: Vec<RootCapabilitySid>,
 }
 
 pub(crate) struct RootCapabilitySid {
@@ -78,6 +83,7 @@ pub(crate) struct LegacyAclSids<'a> {
     pub(crate) readonly_sid: Option<&'a LocalSid>,
     pub(crate) readonly_sid_str: Option<&'a str>,
     pub(crate) write_root_sids: &'a [RootCapabilitySid],
+    pub(crate) read_root_sids: &'a [RootCapabilitySid],
 }
 
 fn prepare_spawn_context_common(
@@ -138,6 +144,14 @@ pub(crate) fn prepare_legacy_spawn_context(
         command,
         options,
     )?;
+    if common.uses_write_capabilities && common.permissions.has_full_disk_read_access() {
+        anyhow::bail!(
+            "full-disk reads with workspace writes require the elevated Windows sandbox backend; the legacy backend requires an explicit read plan"
+        );
+    }
+    if common.permissions.has_read_denials() {
+        anyhow::bail!("deny-read entries require the elevated Windows sandbox backend");
+    }
     if common.permissions.should_apply_network_block() {
         apply_no_network_to_env(env_map)?;
     }
@@ -149,27 +163,55 @@ pub(crate) fn prepare_legacy_session_security(
     codex_home: &Path,
     cwd: &Path,
     capability_roots: impl IntoIterator<Item = PathBuf>,
+    readable_roots: impl IntoIterator<Item = PathBuf>,
 ) -> Result<LegacySessionSecurity> {
     let caps = load_or_create_cap_sids(codex_home)?;
-    let (h_token, readonly_sid, readonly_sid_str, write_root_sids) = unsafe {
+    let (h_token, readonly_sid, readonly_sid_str, write_root_sids, read_root_sids) = unsafe {
         if uses_write_capabilities {
             let write_root_sids = root_capability_sids(codex_home, cwd, capability_roots)?;
             if write_root_sids.is_empty() {
                 anyhow::bail!("workspace-write sandbox has no writable root capability SIDs");
             }
+            let mut roots = readable_roots.into_iter().collect::<Vec<_>>();
+            roots.sort_by_key(|root| canonicalize_path(root));
+            roots.dedup_by(|left, right| canonicalize_path(left) == canonicalize_path(right));
+            anyhow::ensure!(
+                roots.iter().all(|root| root.parent().is_some()),
+                "legacy read capabilities cannot be granted to a volume root"
+            );
+            let mut read_root_sids = Vec::with_capacity(roots.len());
+            for root in roots {
+                let sid_str = readable_root_cap_sid_for_path(codex_home, &root)?;
+                let sid = LocalSid::from_string(&sid_str)?;
+                read_root_sids.push(RootCapabilitySid { root, sid, sid_str });
+            }
+            let read_ptrs = read_root_sids
+                .iter()
+                .map(|root| root.sid.as_ptr())
+                .collect::<Vec<_>>();
             let base = get_current_token_for_restriction()?;
             let cap_ptrs: Vec<*mut c_void> = write_root_sids
                 .iter()
                 .map(|root| root.sid.as_ptr())
                 .collect();
-            let h_token = create_workspace_write_token_with_caps_from(base, cap_ptrs.as_slice());
+            let h_token = create_workspace_write_token_with_read_caps_from(
+                base,
+                cap_ptrs.as_slice(),
+                read_ptrs.as_slice(),
+            );
             CloseHandle(base);
             let h_token = h_token?;
-            (h_token, None, None, write_root_sids)
+            (h_token, None, None, write_root_sids, read_root_sids)
         } else {
             let psid = LocalSid::from_string(&caps.readonly)?;
             let (h_token, _psid) = create_readonly_token_with_cap(psid.as_ptr())?;
-            (h_token, Some(psid), Some(caps.readonly), Vec::new())
+            (
+                h_token,
+                Some(psid),
+                Some(caps.readonly),
+                Vec::new(),
+                Vec::new(),
+            )
         }
     };
 
@@ -178,6 +220,7 @@ pub(crate) fn prepare_legacy_session_security(
         readonly_sid,
         readonly_sid_str,
         write_root_sids,
+        read_root_sids,
     })
 }
 
@@ -299,6 +342,19 @@ pub(crate) fn apply_legacy_session_acl_rules(
                 ensure_allow_write_aces(p, &[root_sid.sid.as_ptr()])
                     .with_context(|| format!("apply legacy write ACL to {}", p.display()))?;
             }
+        }
+        for root_sid in acl_sids.read_root_sids {
+            ensure_allow_mask_aces(
+                &root_sid.root,
+                &[root_sid.sid.as_ptr()],
+                FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
+            )
+            .with_context(|| {
+                format!(
+                    "apply explicit legacy read ACL to {}",
+                    root_sid.root.display()
+                )
+            })?;
         }
         for p in &deny {
             for root_sid in deny_root_capabilities_for_path(p, acl_sids.write_root_sids) {

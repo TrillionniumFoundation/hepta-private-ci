@@ -631,12 +631,13 @@ impl DenyAceKind {
         match self {
             Self::Read => FILE_GENERIC_READ | GENERIC_READ_MASK,
             Self::Write => {
-                FILE_GENERIC_WRITE
-                    | FILE_WRITE_DATA
+                // Generic write includes SYNCHRONIZE and READ_CONTROL, which
+                // read handles also request. Deny only mutation rights so a
+                // fully restricted token can still read a read-only carveout.
+                FILE_WRITE_DATA
                     | FILE_APPEND_DATA
                     | FILE_WRITE_EA
                     | FILE_WRITE_ATTRIBUTES
-                    | GENERIC_WRITE_MASK
                     | DELETE
                     | FILE_DELETE_CHILD
             }
@@ -651,6 +652,53 @@ impl DenyAceKind {
     ) -> bool {
         dacl_has_complete_deny_for_sid(p_dacl, psid, self.mask(), scope)
     }
+}
+
+// Earlier legacy write-deny ACLs included read-handle rights through generic
+// write. Narrow only this capability's exact old explicit mask, retaining every
+// mutation bit, its flags and all other entries. The copied descriptor is not
+// published until the normal SetNamedSecurityInfoW call succeeds.
+unsafe fn normalize_legacy_write_denies(p_dacl: *mut ACL, psid: *mut c_void) -> Result<bool> {
+    if p_dacl.is_null() {
+        return Ok(false);
+    }
+    let mut info: ACL_SIZE_INFORMATION = std::mem::zeroed();
+    if GetAclInformation(
+        p_dacl,
+        (&mut info as *mut ACL_SIZE_INFORMATION).cast(),
+        std::mem::size_of::<ACL_SIZE_INFORMATION>() as u32,
+        AclSizeInformation,
+    ) == 0
+    {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let mapping = GENERIC_MAPPING {
+        GenericRead: FILE_GENERIC_READ,
+        GenericWrite: FILE_GENERIC_WRITE,
+        GenericExecute: FILE_GENERIC_EXECUTE,
+        GenericAll: FILE_ALL_ACCESS,
+    };
+    let legacy_mask = FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD;
+    let mut changed = false;
+    for index in 0..info.AceCount {
+        let mut pointer = std::ptr::null_mut();
+        if GetAce(p_dacl, index, &mut pointer) == 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
+        let header = &*pointer.cast::<ACE_HEADER>();
+        if header.AceType != ACCESS_DENIED_ACE_TYPE || header.AceFlags & INHERITED_ACE != 0 {
+            continue;
+        }
+        let ace = &mut *pointer.cast::<ACCESS_DENIED_ACE>();
+        let trustee = (&mut ace.SidStart as *mut u32).cast();
+        let mut mapped = ace.Mask;
+        MapGenericMask(&mut mapped, &mapping);
+        if EqualSid(trustee, psid) != 0 && mapped == legacy_mask {
+            ace.Mask = DenyAceKind::Write.mask();
+            changed = true;
+        }
+    }
+    Ok(changed)
 }
 
 unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Result<bool> {
@@ -680,9 +728,14 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
             path.display()
         ));
     }
-    let result = if kind.already_present(p_dacl, psid, scope) {
-        Ok(false)
-    } else {
+    let result = (|| {
+        let refreshed = match kind {
+            DenyAceKind::Read => false,
+            DenyAceKind::Write => normalize_legacy_write_denies(p_dacl, psid)?,
+        };
+        if kind.already_present(p_dacl, psid, scope) && !refreshed {
+            return Ok(false);
+        }
         let trustee = TRUSTEE_W {
             pMultipleTrustee: std::ptr::null_mut(),
             MultipleTrusteeOperation: 0,
@@ -715,7 +768,7 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
             LocalFree(p_new_dacl as HLOCAL);
         }
         result
-    };
+    })();
     if !p_sd.is_null() {
         LocalFree(p_sd as HLOCAL);
     }

@@ -15,7 +15,12 @@ use crate::run_windows_sandbox_capture;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use codex_protocol::config_types::WindowsSandboxLevel;
+use codex_protocol::models::ManagedFileSystemPermissions;
 use codex_protocol::models::PermissionProfile;
+use codex_protocol::permissions::FileSystemAccessMode;
+use codex_protocol::permissions::FileSystemPath;
+use codex_protocol::permissions::FileSystemSandboxEntry;
+use codex_protocol::permissions::FileSystemSpecialPath;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_pty::ProcessDriver;
 use codex_utils_pty::ProcessSignal;
@@ -99,6 +104,44 @@ fn sandbox_log(codex_home: &Path) -> String {
 
 fn workspace_roots_for(root: &Path) -> Vec<AbsolutePathBuf> {
     vec![AbsolutePathBuf::from_absolute_path(root).expect("absolute workspace root")]
+}
+
+// Exercise the same legacy process/IPC controls under the explicit read
+// contract. Implicit full-disk read rejection has its own native regression.
+fn explicit_legacy_profile(read_roots: &[&Path]) -> PermissionProfile {
+    let mut profile = PermissionProfile::workspace_write();
+    let PermissionProfile::Managed {
+        file_system: ManagedFileSystemPermissions::Restricted { entries, .. },
+        ..
+    } = &mut profile
+    else {
+        panic!("workspace-write profile must be restricted");
+    };
+    entries.retain(|entry| {
+        !matches!(
+            &entry.path,
+            FileSystemPath::Special {
+                value: FileSystemSpecialPath::Root
+            }
+        )
+    });
+    entries.push(FileSystemSandboxEntry::new(
+        FileSystemPath::Special {
+            value: FileSystemSpecialPath::Minimal,
+        },
+        FileSystemAccessMode::Read,
+    ));
+    for path in read_roots {
+        entries.push(FileSystemSandboxEntry::new(
+            FileSystemPath::Path {
+                path: AbsolutePathBuf::from_absolute_path(path)
+                    .expect("absolute read fixture")
+                    .into(),
+            },
+            FileSystemAccessMode::Read,
+        ));
+    }
+    profile
 }
 
 fn powershell_literal(path: &Path) -> String {
@@ -272,7 +315,7 @@ fn legacy_non_tty_cmd_emits_output() {
         let cwd = sandbox_cwd();
         let codex_home = sandbox_home("legacy-non-tty-cmd");
         println!("cmd codex_home={}", codex_home.path().display());
-        let permission_profile = PermissionProfile::workspace_write();
+        let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
         let spawned = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
@@ -359,7 +402,7 @@ fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
         let secret_path =
             AbsolutePathBuf::from_absolute_path(cwd.join("legacy-non-tty-deny-read-secret.env"))
                 .expect("absolute deny-read fixture path");
-        let permission_profile = PermissionProfile::workspace_write();
+        let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
         let err = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
@@ -399,7 +442,7 @@ fn legacy_non_tty_powershell_interrupt_terminates_process() {
         let cwd = sandbox_cwd();
         let codex_home = sandbox_home("legacy-non-tty-pwsh");
         println!("pwsh codex_home={}", codex_home.path().display());
-        let permission_profile = PermissionProfile::workspace_write();
+        let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
         let spawned = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
@@ -633,7 +676,7 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
         "Write-Output LEGACY-CAPTURE-DIRECT; {}",
         start_powershell_child(&pwsh, codex_home.path(), &descendant_command, &parent_tail,),
     );
-    let permission_profile = PermissionProfile::workspace_write();
+    let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
     let result = run_windows_sandbox_capture(
         &permission_profile,
         workspace_roots_for(cwd.as_path()).as_slice(),
@@ -710,6 +753,7 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             &script,
             concat!(
                 "@echo off\r\n",
+                "type \"%OUTSIDE_DELETE%\" || exit /b 45\r\n",
                 "del /f /q \"%WORKSPACE_DELETE%\"\r\n",
                 "del /f /q \"%TEMP_DELETE%\"\r\n",
                 "del /f /q \"%TMP_DELETE%\"\r\n",
@@ -745,7 +789,7 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             ),
         ]);
 
-        let permission_profile = PermissionProfile::workspace_write();
+        let permission_profile = explicit_legacy_profile(&[codex_home.path(), &outside_root]);
         let spawned = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(workspace.as_path()).as_slice(),
@@ -830,7 +874,7 @@ fn legacy_capture_cancellation_terminates_descendants_without_timeout() {
     });
 
     let started_at = Instant::now();
-    let permission_profile = PermissionProfile::workspace_write();
+    let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
     let result = run_windows_sandbox_capture(
         &permission_profile,
         workspace_roots_for(cwd.as_path()).as_slice(),
@@ -910,7 +954,7 @@ async fn assert_legacy_tty_descendant_lifecycle(
     };
     let parent_command =
         start_powershell_child(pwsh, codex_home.path(), &child_command, &parent_tail);
-    let permission_profile = PermissionProfile::workspace_write();
+    let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
     let spawned = spawn_windows_sandbox_session_legacy(
         &permission_profile,
         workspace_roots_for(cwd.as_path()).as_slice(),
@@ -992,7 +1036,7 @@ fn legacy_tty_powershell_emits_output_and_accepts_input() {
         let cwd = sandbox_cwd();
         let codex_home = sandbox_home("legacy-tty-pwsh");
         println!("tty pwsh codex_home={}", codex_home.path().display());
-        let permission_profile = PermissionProfile::workspace_write();
+        let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
         let spawned = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
@@ -1046,7 +1090,7 @@ fn legacy_tty_cmd_emits_output_and_accepts_input() {
         let cwd = sandbox_cwd();
         let codex_home = sandbox_home("legacy-tty-cmd");
         println!("tty cmd codex_home={}", codex_home.path().display());
-        let permission_profile = PermissionProfile::workspace_write();
+        let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
         let spawned = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
@@ -1100,7 +1144,7 @@ fn legacy_tty_cmd_default_desktop_emits_output_and_accepts_input() {
             "tty cmd default desktop codex_home={}",
             codex_home.path().display()
         );
-        let permission_profile = PermissionProfile::workspace_write();
+        let permission_profile = explicit_legacy_profile(&[codex_home.path()]);
         let spawned = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
@@ -1140,5 +1184,100 @@ fn legacy_tty_cmd_default_desktop_emits_output_and_accepts_input() {
         assert_eq!(exit_code, 0, "stdout={stdout:?}");
         assert!(stdout.contains("ready"), "stdout={stdout:?}");
         assert!(stdout.contains("second"), "stdout={stdout:?}");
+    });
+}
+
+#[test]
+fn legacy_implicit_full_disk_read_write_is_refused_before_child_start() {
+    let _guard = legacy_process_test_guard();
+    current_thread_runtime().block_on(async {
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("private full-read fixture");
+        let codex_home = sandbox_home("legacy-refuse-full-read");
+        let marker = workspace.path().join("must-not-start");
+        let result = spawn_windows_sandbox_session_legacy(
+            &PermissionProfile::workspace_write(),
+            &workspace_roots_for(workspace.path()),
+            codex_home.path(),
+            vec![
+                "C:\\Windows\\System32\\cmd.exe".to_owned(),
+                "/d".to_owned(),
+                "/c".to_owned(),
+                "echo unsafe>must-not-start".to_owned(),
+            ],
+            workspace.path(),
+            HashMap::new(),
+            /*timeout_ms*/ Some(5_000),
+            &[],
+            &[],
+            /*tty*/ false,
+            /*stdin_open*/ false,
+            /*use_private_desktop*/ true,
+        )
+        .await;
+        let error = match result {
+            Ok(_) => panic!("implicit full-disk read/write command was started"),
+            Err(error) => error,
+        };
+        assert!(
+            error
+                .to_string()
+                .contains("full-disk reads with workspace writes")
+        );
+        assert!(!marker.exists(), "refused policy started a child");
+    });
+}
+
+#[test]
+fn strict_legacy_read_plan_runs_an_external_image_and_reads_external_data() {
+    let _guard = legacy_process_test_guard();
+    current_thread_runtime().block_on(async {
+        let fixture = TempDir::new_in(sandbox_cwd()).expect("external image fixture");
+        let workspace = fixture.path().join("workspace");
+        let outside = fixture.path().join("outside");
+        fs::create_dir(&workspace).expect("workspace");
+        fs::create_dir(&outside).expect("outside read root");
+        let command = outside.join("external-cmd.exe");
+        fs::copy("C:\\Windows\\System32\\cmd.exe", &command).expect("copy native external image");
+        let data = outside.join("read-only.txt");
+        fs::write(&data, "STRICT-EXTERNAL-READ").expect("outside bytes");
+        let codex_home = sandbox_home("strict-external-image");
+        let profile = explicit_legacy_profile(&[&outside, codex_home.path()]);
+        let env = HashMap::from([("EXTERNAL_READ".to_owned(), data.display().to_string())]);
+        let child = spawn_windows_sandbox_session_legacy(
+            &profile,
+            &workspace_roots_for(&workspace),
+            codex_home.path(),
+            vec![
+                command.display().to_string(),
+                "/d".to_owned(),
+                "/c".to_owned(),
+                "type \"%EXTERNAL_READ%\" && echo allowed>inside.txt".to_owned(),
+            ],
+            &workspace,
+            env,
+            /*timeout_ms*/ Some(5_000),
+            &[],
+            &[],
+            /*tty*/ false,
+            /*stdin_open*/ false,
+            /*use_private_desktop*/ true,
+        )
+        .await
+        .expect("strict external image spawn");
+        let (stdout, exit) =
+            collect_stdout_and_exit(child, codex_home.path(), Duration::from_secs(/*secs*/ 10))
+                .await;
+        assert_eq!(exit, 0, "{}", sandbox_log(codex_home.path()));
+        assert!(String::from_utf8_lossy(&stdout).contains("STRICT-EXTERNAL-READ"));
+        assert_eq!(
+            fs::read_to_string(data).expect("unchanged outside data"),
+            "STRICT-EXTERNAL-READ"
+        );
+        assert_eq!(
+            fs::read_to_string(workspace.join("inside.txt"))
+                .expect("inside write")
+                .trim(),
+            "allowed"
+        );
     });
 }

@@ -330,11 +330,10 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
             add_git_safe_directory: false,
         },
     )?;
-    if !common.permissions.has_full_disk_read_access() {
+    if !common.uses_write_capabilities && !common.permissions.has_full_disk_read_access() {
         anyhow::bail!("Restricted read-only access requires the elevated Windows sandbox backend");
     }
-    // WRITE_RESTRICTED tokens consult restricting SIDs only for writes, so this
-    // backend cannot make capability-SID deny-read ACLs authoritative.
+    // Deny-read overlays require the elevated backend's complete resolver.
     if !additional_deny_read_paths.is_empty() {
         anyhow::bail!("deny-read overrides require the elevated Windows sandbox backend");
     }
@@ -353,6 +352,12 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
         codex_home,
         cwd,
         capability_roots,
+        crate::setup::gather_read_roots(
+            &common.current_dir,
+            &common.permissions,
+            &env_map,
+            codex_home,
+        ),
     )?;
     allow_null_device_for_workspace_write(common.uses_write_capabilities);
 
@@ -367,6 +372,7 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
             readonly_sid: security.readonly_sid.as_ref(),
             readonly_sid_str: security.readonly_sid_str.as_deref(),
             write_root_sids: &security.write_root_sids,
+            read_root_sids: &security.read_root_sids,
         },
     ) {
         unsafe {

@@ -293,9 +293,13 @@ fn observe_boundary(authority: DeleteAuthority, mode: TokenMode) -> Result<Bound
         }
         let token = unsafe {
             match mode {
-                TokenMode::WorkspaceToken => OwnedToken(
-                    create_workspace_write_token_with_caps_from(base.0, &[write.as_ptr()])?,
-                ),
+                TokenMode::WorkspaceToken => {
+                    OwnedToken(create_workspace_write_token_with_read_caps_from(
+                        base.0,
+                        &[write.as_ptr()],
+                        &[read.as_ptr()],
+                    )?)
+                }
                 TokenMode::ExplicitReadPlan => {
                     explicit_read_plan_token(base.0, user, read.as_ptr(), write.as_ptr())?
                 }

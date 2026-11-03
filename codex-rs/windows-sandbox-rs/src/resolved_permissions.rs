@@ -1,5 +1,6 @@
 use anyhow::Result;
 use codex_protocol::models::PermissionProfile;
+use codex_protocol::permissions::FileSystemAccessMode;
 use codex_protocol::permissions::FileSystemPath;
 use codex_protocol::permissions::FileSystemSandboxEntry;
 use codex_protocol::permissions::FileSystemSandboxKind;
@@ -105,6 +106,13 @@ impl ResolvedWindowsSandboxPermissions {
 
     pub(crate) fn has_full_disk_read_access(&self) -> bool {
         self.file_system.has_full_disk_read_access()
+    }
+
+    pub(crate) fn has_read_denials(&self) -> bool {
+        self.file_system
+            .entries
+            .iter()
+            .any(|entry| entry.access == FileSystemAccessMode::Deny)
     }
 
     pub(crate) fn has_symbolic_root_read_access(&self, cwd: &Path) -> bool {

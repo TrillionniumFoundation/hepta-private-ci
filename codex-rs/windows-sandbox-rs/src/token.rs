@@ -375,7 +375,10 @@ pub unsafe fn create_readonly_token_with_cap_from(
     Ok((new_token, psid_capability))
 }
 
-/// Restrict legacy workspace writes to the provided capability SIDs alone.
+/// Restrict every access check to the provided capability SIDs alone.
+/// Callers must include a dedicated read capability with explicit read-only
+/// grants for permitted files and execution dependencies. DELETE and
+/// FILE_DELETE_CHILD are not covered by Windows WRITE_RESTRICTED tokens.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -383,10 +386,25 @@ pub unsafe fn create_workspace_write_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
+    create_workspace_write_token_with_read_caps_from(base_token, psid_capabilities, &[])
+}
+
+/// Read capabilities participate in access checks but receive no default IPC
+/// write grant. In particular, a shared platform read root must not authorize
+/// access to another workspace's child-created objects.
+///
+/// # Safety
+/// All token and SID inputs must remain valid until construction completes.
+/// The caller owns and must close the returned primary token.
+pub(crate) unsafe fn create_workspace_write_token_with_read_caps_from(
+    base_token: HANDLE,
+    write_capabilities: &[*mut c_void],
+    read_capabilities: &[*mut c_void],
+) -> Result<HANDLE> {
     create_token_with_caps_from(
         base_token,
-        psid_capabilities,
-        &[],
+        write_capabilities,
+        read_capabilities,
         RestrictingIdentity::Exclude,
     )
 }
@@ -507,7 +525,12 @@ unsafe fn create_token_with_caps_from(
     }
 
     let mut new_token: HANDLE = 0;
-    let flags = DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED;
+    let flags = DISABLE_MAX_PRIVILEGE
+        | LUA_TOKEN
+        | match restricting_identity {
+            RestrictingIdentity::Include => WRITE_RESTRICTED,
+            RestrictingIdentity::Exclude => 0,
+        };
     let ok = CreateRestrictedToken(
         base_token,
         flags,
@@ -523,8 +546,8 @@ unsafe fn create_token_with_caps_from(
         return Err(anyhow!("CreateRestrictedToken failed: {}", GetLastError()));
     }
 
-    // Additional restricting SIDs are identity markers, not capabilities. Deliberately exclude
-    // them from the default DACL so possessing a route identity cannot grant object access.
+    // Additional restricting SIDs are route identities or read-only capabilities.
+    // Exclude them from default IPC grants: neither can authorize object writes.
     let mut dacl_sids: Vec<*mut c_void> = Vec::with_capacity(psid_capabilities.len() + 2);
     dacl_sids.push(psid_logon);
     dacl_sids.push(psid_everyone);

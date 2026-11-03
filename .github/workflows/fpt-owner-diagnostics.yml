@@ -6,6 +6,7 @@ on:
       [
         research/fpt-clock-owner-20261030,
         fix/4378-owner-assert-20261103-product,
+        fix/windows-strict-read-plan-20261103,
       ]
   workflow_dispatch:
 
@@ -24,7 +25,8 @@ jobs:
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       (github.ref == 'refs/heads/research/fpt-clock-owner-20261030' ||
-       github.ref == 'refs/heads/fix/4378-owner-assert-20261103-product')
+       github.ref == 'refs/heads/fix/4378-owner-assert-20261103-product' ||
+       github.ref == 'refs/heads/fix/windows-strict-read-plan-20261103')
     runs-on: windows-latest
     timeout-minutes: 60
     environment:
@@ -154,6 +156,51 @@ jobs:
             --test_output=all --test_arg=--nocapture -- \
             //codex-rs/core:core-unit-tests \
             2>&1 | tee "$output/core-unit-target.log"
+
+      - name: Preserve complete native test logs from every shard
+        if: ${{ always() && !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "fpt-owner-diagnostics"
+          result = subprocess.run(
+              [
+                  "bash", ".github/scripts/run-bazel-ci.sh",
+                  "--windows-msvc-host-platform", "--", "info",
+                  "--platforms=//:windows_x86_64_msvc", "bazel-testlogs",
+              ],
+              check=True, capture_output=True, text=True,
+          )
+          root = Path(result.stdout.strip().splitlines()[-1])
+          records = []
+          for target in (
+              "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests",
+              "codex-rs/core/core-unit-tests",
+          ):
+              for path in sorted((root / target).rglob("test.log")):
+                  relative = path.relative_to(root)
+                  destination = output / "native-test-logs" / relative
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(path, destination)
+                  data = destination.read_bytes()
+                  records.append({
+                      "path": relative.as_posix(),
+                      "bytes": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest(),
+                  })
+          (output / "native-test-logs.json").write_text(
+              json.dumps(records, indent=2) + "\n", encoding="utf-8",
+          )
+          print(json.dumps({"complete_test_logs": records}))
+          PY
 
       - name: Preserve diagnostics even after a failed probe
         if: always()
