@@ -1,20 +1,20 @@
 diff --git a/build.rs b/build.rs
 --- a/build.rs
 +++ b/build.rs
-@@ -890,4 +890,16 @@ fn compile_zstd() {
-         // Some extra parameters
-         config.include("zstd/lib/");
-         config.include("zstd/lib/common");
-+        // Explicit source include directories are required by the MSVC C compiler
-+        // when Bazel builds the bundled zstd sources.
-+        if target_is_msvc() {
-+            config.include("zstd/lib/compress");
-+            config.include("zstd/lib/decompress");
-+            #[cfg(feature = "zdict_builder")]
-+            config.include("zstd/lib/dictBuilder");
-+            #[cfg(feature = "legacy")]
-+            config.include("zstd/lib/legacy");
-+            #[cfg(feature = "seekable")]
-+            config.include("zstd/contrib/seekable_format");
-+        }
-         config.warnings(false);
+@@ -346,4 +346,16 @@ fn compile_zstd() {
+     // Some extra parameters
+     config.include("zstd/lib/");
+     config.include("zstd/lib/common");
++    // Explicit source include directories are required by the MSVC C compiler
++    // when Bazel builds the bundled zstd sources.
++    if target_is_msvc() {
++        config.include("zstd/lib/compress");
++        config.include("zstd/lib/decompress");
++        #[cfg(feature = "zdict_builder")]
++        config.include("zstd/lib/dictBuilder");
++        #[cfg(feature = "legacy")]
++        config.include("zstd/lib/legacy");
++        #[cfg(feature = "seekable")]
++        config.include("zstd/contrib/seekable_format");
++    }
+     config.warnings(false);
