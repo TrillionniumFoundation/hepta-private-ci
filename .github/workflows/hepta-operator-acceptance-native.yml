@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-operator-acceptance/**"
+      - ".bazelrc"
       - "codex-rs/Cargo.lock"
       - "codex-rs/rust-toolchain.toml"
       - ".github/workflows/hepta-operator-acceptance-native.yml"
@@ -84,5 +85,102 @@ jobs:
         with:
           name: operator-native-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
           path: ${{ runner.temp }}/operator-native
+          if-no-files-found: error
+          retention-days: 14
+
+  bazel-oracle:
+    name: Original Linux Bazel operator oracle with native placement
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prepare original Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-test
+      - name: Bind source and installed OpenSSH oracle
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          output = Path(os.environ["RUNNER_TEMP"]) / "operator-bazel"
+          output.mkdir()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["EXPECTED_SOURCE_SHA"]:
+              raise RuntimeError("source identity mismatch")
+          source = {"head": head,
+                    "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+                    "oracle": "/usr/bin/ssh-keygen",
+                    "oracle_sha256": hashlib.sha256(Path("/usr/bin/ssh-keygen").read_bytes()).hexdigest(),
+                    "bazelrc_sha256": hashlib.sha256(Path(".bazelrc").read_bytes()).hexdigest(),
+                    "target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests"}
+          (output / "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          PY
+      - name: Run the original target with the real CI execution policy
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=$EXPECTED_SOURCE_SHA \
+            -- \
+            //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+      - name: Retain original test output and source identity
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+          output = Path(os.environ["RUNNER_TEMP"]) / "operator-bazel"
+          source = json.loads((output / "source.json").read_text())
+          if subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != source["head"]:
+              raise RuntimeError("source identity changed")
+          if hashlib.sha256(Path(".bazelrc").read_bytes()).hexdigest() != source["bazelrc_sha256"]:
+              raise RuntimeError("execution policy changed")
+          logs = Path("bazel-testlogs/codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests")
+          retained = {}
+          for name in ("test.log", "test.xml"):
+              path = logs / name
+              if not path.is_file():
+                  raise RuntimeError("missing original Bazel oracle evidence: " + str(path))
+              data = path.read_bytes()
+              shutil.copyfile(path, output / name)
+              retained[name] = hashlib.sha256(data).hexdigest()
+          (output / "retained.json").write_text(json.dumps(retained, indent=2) + "\n")
+          subprocess.run(["git", "diff", "--exit-code"], check=True)
+          PY
+      - name: Preserve actual Bazel execution and oracle evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: operator-bazel-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/operator-bazel
+            ${{ runner.temp }}/bazel-execution-logs
           if-no-files-found: error
           retention-days: 14
