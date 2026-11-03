@@ -352,6 +352,9 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
     let manifest_resource = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
     let manifest = find_resource!(manifest_resource)?;
+    // Bazel can expose declared fixture leaves as runfile symlinks. Resolve the
+    // manifest before validating the complete sibling set in its source directory.
+    let manifest = fs::canonicalize(manifest).context("resolve tracked Robrix control manifest")?;
     let root = manifest
         .parent()
         .context("tracked Robrix control manifest has no parent directory")?;
