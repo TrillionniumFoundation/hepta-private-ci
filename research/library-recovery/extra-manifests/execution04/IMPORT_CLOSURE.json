@@ -1,0 +1,71 @@
+{
+  "admission": {
+    "allowed": true,
+    "clean_inactive_file": 2512121856,
+    "current": 8485634048,
+    "effective_current": 5973512192,
+    "file_dirty": 13078528,
+    "file_writeback": 0,
+    "inactive_file": 2525200384,
+    "limit": 8589934592,
+    "oom": 3,
+    "oom_kill": 3,
+    "required_headroom": 1879048192
+  },
+  "at_utc": "2026-10-30T02:17:18.526531+00:00",
+  "checkpoints_decoded": 0,
+  "complete": true,
+  "cwd": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/empty_cwd",
+  "dataset_values_read": 0,
+  "execution_episode": "execution04_durable_20261030",
+  "freeze": {
+    "bytes": 21478,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/A_SOURCE_FREEZE.json",
+    "sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182"
+  },
+  "model_instances_created": 0,
+  "modules_imported": [
+    "run",
+    "architecture_run",
+    "endpoint_v2",
+    "endpoints",
+    "architecture_endpoints",
+    "replay_terminals",
+    "witness",
+    "analysis_launch_v2",
+    "report_results"
+  ],
+  "not_a_successful_scientific_resource_qualification": true,
+  "original_loaded_closure_check_passed": true,
+  "own_cpu_seconds": 2.142772325,
+  "peak_rss_bytes": 212680704,
+  "pinned_hcsn_modules_imported_without_instantiation": true,
+  "policy": {
+    "bytes": 20576,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/CWD_POLICY.json",
+    "sha256": "1df758dfe17a32255bd0e43ccf689be80d34b570c93e39dfb637d7709545de8f"
+  },
+  "process_cpu_seconds_total": 2.207417003,
+  "python_executable": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+  "resources_after": {
+    "clean_inactive_file": 2457538560,
+    "current": 8571162624,
+    "effective_current": 6113624064,
+    "file_dirty": 22396928,
+    "file_writeback": 0,
+    "inactive_file": 2479935488,
+    "limit": 8589934592,
+    "oom": 3,
+    "oom_kill": 3
+  },
+  "runtime": {
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu"
+  },
+  "scheduled_gradient_microsteps": 0,
+  "schema": "hepta.fullstudy.import-closure-probe.4",
+  "wall_seconds": 2.3505896589995245,
+  "workers_started": 0
+}

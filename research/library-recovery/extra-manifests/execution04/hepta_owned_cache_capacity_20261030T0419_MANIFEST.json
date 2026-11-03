@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.execution04.owned-cache-diagnostic-checkpoint.1",
+  "at_utc": "2026-10-30T04:19:13.006146+00:00",
+  "archive": {
+    "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/cache_residency_checkpoint_0419/hepta_owned_cache_capacity_evidence_20261030T0419.tar.gz",
+    "bytes": 475571,
+    "sha256": "aa9d28cb27babb611e6eb754c9cb0d9ef633755bf03f6a6ae72779fc8fb52baa"
+  },
+  "files": [
+    {
+      "member": "continuation_recovery_20261030/current_readiness_0253/file_cache_residency_20261030T040749/RESIDENCY.json",
+      "source": {
+        "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/file_cache_residency_20261030T040749/RESIDENCY.json",
+        "bytes": 11914,
+        "sha256": "5cdcba58648e80e1c787b784662d56383bed8458ed7a206569b619f8dabe1d7a"
+      }
+    },
+    {
+      "member": "continuation_recovery_20261030/current_readiness_0253/small_file_cache_residency_20261030T041129/PRE_MEASUREMENT_BOUND.json",
+      "source": {
+        "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/small_file_cache_residency_20261030T041129/PRE_MEASUREMENT_BOUND.json",
+        "bytes": 1533,
+        "sha256": "7aea0893b5ae87989c3872f0b869629612befea7d36f2db42109cec83cc1dd85"
+      }
+    },
+    {
+      "member": "continuation_recovery_20261030/current_readiness_0253/small_file_cache_residency_20261030T041129/RESIDENCY.json",
+      "source": {
+        "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/small_file_cache_residency_20261030T041129/RESIDENCY.json",
+        "bytes": 4503,
+        "sha256": "e0e27962cf66570bce6de75602491620d241f00c9077fbfd73a52270b71e0d0c"
+      }
+    },
+    {
+      "member": "continuation_recovery_20261030/current_readiness_0253/small_file_cache_residency_20261030T041129/SMALL_FILE_INVENTORY.jsonl",
+      "source": {
+        "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/small_file_cache_residency_20261030T041129/SMALL_FILE_INVENTORY.jsonl",
+        "bytes": 6223512,
+        "sha256": "083c53cc261f9dd296b10673a5037802e65681481bbd0a846145cad0ceb5d706"
+      }
+    },
+    {
+      "member": "continuation_recovery_20261030/current_readiness_0253/WORKSPACE_OWNED_CACHE_BOUND.json",
+      "source": {
+        "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/WORKSPACE_OWNED_CACHE_BOUND.json",
+        "bytes": 1705,
+        "sha256": "4b10507996e4a11b3a3f52d66b25b25a368d6eb09c6237262dc62fc0f474c690"
+      }
+    },
+    {
+      "member": "continuation_recovery_20261030/current_readiness_0253/cache_residency_checkpoint_0419/SUPERVISOR_SNAPSHOT.json",
+      "source": {
+        "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/cache_residency_checkpoint_0419/SUPERVISOR_SNAPSHOT.json",
+        "bytes": 1202,
+        "sha256": "14afee4a3651899869fea39abe5659965530a0a501e0b5e45e73f10979295e8b"
+      }
+    }
+  ],
+  "complete_archive_verification": true,
+  "is_primary_scientific_completion": false,
+  "fadvise_global_cache_mutation_or_scientific_execution_performed_by_diagnostics": false,
+  "wall_seconds": 0.27569998299986764,
+  "own_cpu_seconds": 0.26811506,
+  "cost_scope": "packaging and stream verification after input description; remote transfer excluded"
+}
