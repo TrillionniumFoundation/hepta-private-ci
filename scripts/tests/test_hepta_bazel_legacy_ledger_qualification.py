@@ -92,10 +92,10 @@ class BazelLegacyLedgerQualificationTests(unittest.TestCase):
         altered = self.agentd.replace(
             "unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,",
             (
-                'integration_test_dependency_replacements = {'
+                "integration_test_dependency_replacements = {"
                 '"terminal_cell_owner": {"//codex-rs/hepta-learning-ledger": '
                 '"//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib"}},\n'
-                '    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,'
+                "    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,"
             ),
         )
         self.assertNotEqual(altered, self.agentd)
@@ -117,10 +117,10 @@ class BazelLegacyLedgerQualificationTests(unittest.TestCase):
         altered = self.agentd.replace(
             "unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,",
             (
-                'integration_test_dependency_replacements = {'
+                "integration_test_dependency_replacements = {"
                 '"plasticity_process_e2e": {"//codex-rs/hepta-learning-ledger": '
                 '"//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib"}},\n'
-                '    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,'
+                "    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,"
             ),
         )
         self.assertFalse(self.check(agentd=altered))
