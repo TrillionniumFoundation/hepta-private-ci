@@ -45,7 +45,8 @@ jobs:
           just bazel-lock-update > "${output}/bazel-lock-update.log" 2>&1
           cp MODULE.bazel.lock "${output}/MODULE.bazel.lock"
           ./scripts/check-module-bazel-lock.sh > "${output}/bazel-lock-check.log" 2>&1
-          ./.github/scripts/run_bazel_with_buildbuddy.py query 'kind("rust_library", deps(@crates//:zip, 1))' --output=build > "${output}/zip-generated-target.bazel" 2> "${output}/zip-generated-target.log"
+          ./.github/scripts/run_bazel_with_buildbuddy.py query 'kind("rust_library", deps(@crates//:zip, 4))' --output=build > "${output}/zip-generated-target.bazel" 2> "${output}/zip-generated-target.log"
+          test -s "${output}/zip-generated-target.bazel"
       - name: Retain exact lock candidate and diagnostics
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
