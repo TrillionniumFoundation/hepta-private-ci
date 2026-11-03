@@ -8,7 +8,7 @@ async fn historical_pool(displaced: bool) -> (tempfile::TempDir, SqlitePool) {
         AbsolutePathBuf::try_from(directory.path().to_path_buf())
             .expect("SQLite fixture directory must be absolute"),
     )
-    .open_read_write_pool(&path)
+    .open_durable_evidence_pool(&path)
     .await
     .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
@@ -56,7 +56,7 @@ async fn historical_pool(displaced: bool) -> (tempfile::TempDir, SqlitePool) {
 #[tokio::test]
 async fn both_historical_branches_converge_without_rewriting_checksums() {
     for displaced in [false, true] {
-        let (_fixture_directory, pool) = historical_pool(displaced).await;
+        let (directory, pool) = historical_pool(displaced).await;
         let before: Vec<Vec<u8>> =
             sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
                 .fetch_all(&pool)
@@ -101,6 +101,7 @@ async fn both_historical_branches_converge_without_rewriting_checksums() {
             assert_eq!(count, 1, "missing {table}");
         }
         pool.close().await;
+        drop(directory);
     }
 }
 
@@ -110,7 +111,7 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
         "UPDATE _sqlx_migrations SET checksum = x'00' WHERE version=4",
         "UPDATE _sqlx_migrations SET success=0 WHERE version=5",
     ] {
-        let (_fixture_directory, pool) = historical_pool(/*displaced*/ true).await;
+        let (directory, pool) = historical_pool(/*displaced*/ true).await;
         sqlx::query(mutation)
             .execute(&pool)
             .await
@@ -126,6 +127,7 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
                 .expect("unchanged identities");
         assert_eq!(versions, vec![1, 2, 3, 4, 5]);
         pool.close().await;
+        drop(directory);
     }
 }
 
@@ -135,7 +137,7 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) -> std::i
     std::fs::create_dir(&root).expect("owner directory");
     // open_root requires an exact canonical root. Windows may add a verbatim-volume prefix.
     let root = root.canonicalize().expect("canonical private owner root");
-    let (_fixture_directory, pool) = historical_pool(displaced).await;
+    let (directory, pool) = historical_pool(displaced).await;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
             .fetch_all(&pool)
@@ -154,6 +156,7 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) -> std::i
         .await
         .expect("persist historical cut");
     pool.close().await;
+    drop(directory);
     let root = root.canonicalize()?;
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner ID");
     let store = AutomationStore::open_root(root.clone(), owner.clone())
@@ -199,7 +202,7 @@ async fn displaced_cut_after_rebind_reopens() -> std::io::Result<()> {
 
 #[tokio::test]
 async fn occupied_relocation_rolls_back_all_history_rebinding() {
-    let (_fixture_directory, pool) = historical_pool(/*displaced*/ true).await;
+    let (directory, pool) = historical_pool(/*displaced*/ true).await;
     sqlx::query("INSERT INTO _sqlx_migrations(version,description,installed_on,success,checksum,execution_time) SELECT 17,description,installed_on,success,checksum,execution_time FROM _sqlx_migrations WHERE version=4")
         .execute(&pool).await.expect("inject conflicting target identity");
     let before: Vec<(i64, Vec<u8>)> =
@@ -215,4 +218,5 @@ async fn occupied_relocation_rolls_back_all_history_rebinding() {
             .expect("after rollback");
     assert_eq!(before, after);
     pool.close().await;
+    drop(directory);
 }

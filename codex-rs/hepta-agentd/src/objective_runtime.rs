@@ -331,7 +331,7 @@ impl ObjectiveRuntimeHost {
     }
 }
 
-fn objective_payload(
+pub(crate) fn objective_payload(
     identity: &AgentdIdentity,
     body: &AuthBusObjectiveBody,
     current_generation: u64,

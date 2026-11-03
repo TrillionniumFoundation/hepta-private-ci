@@ -106,23 +106,23 @@ fn witness_path(path: &std::path::Path) -> std::path::PathBuf {
     path.with_extension("witness")
 }
 
-fn open_ledger_directory(path: &std::path::Path) -> std::fs::File {
+fn open_ledger_directory(path: &std::path::Path) -> std::io::Result<std::fs::File> {
     #[cfg(windows)]
     {
         use std::os::windows::fs::OpenOptionsExt;
-        // Windows directory handles require BACKUP_SEMANTICS. This actual,
-        // writable handle remains subject to the ledger's sync verification.
+
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+        // LedgerWriter still verifies and synchronizes this actual directory.
         OpenOptions::new()
             .read(true)
             .write(true)
-            .custom_flags(0x0200_0000)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
             .open(path)
-            .unwrap_or_else(|err| panic!("open ledger directory handle: {err}"))
     }
     #[cfg(not(windows))]
     {
         std::fs::File::open(path)
-            .unwrap_or_else(|err| panic!("open ledger directory handle: {err}"))
     }
 }
 
@@ -146,8 +146,8 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
         .open(witness_path(path))
         .unwrap();
     let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = open_ledger_directory(path.parent().unwrap());
-    let witness_directory = open_ledger_directory(path.parent().unwrap());
+    let ledger_directory = open_ledger_directory(path.parent().unwrap()).unwrap();
+    let witness_directory = open_ledger_directory(path.parent().unwrap()).unwrap();
     LedgerWriter::from_durable(
         ledger,
         witness,
@@ -209,8 +209,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         .open(witness_path(&path))
         .unwrap();
     let witness = LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = open_ledger_directory(path.parent().unwrap());
-    let witness_directory = open_ledger_directory(path.parent().unwrap());
+    let ledger_directory = open_ledger_directory(path.parent().unwrap()).unwrap();
+    let witness_directory = open_ledger_directory(path.parent().unwrap()).unwrap();
     let mut reopened = LedgerWriter::from_durable(
         reopened_ledger,
         witness,

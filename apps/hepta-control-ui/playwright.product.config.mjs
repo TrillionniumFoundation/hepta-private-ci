@@ -1,11 +1,12 @@
 // Actual Rust gateway entry with task-owned missing state. No owner fixture server.
 import {defineConfig,devices} from '@playwright/test';
 import {pinnedChromiumUse,pinnedChromiumMetadata} from './tools/pinned-chromium.mjs';
+import {FIXED_BROWSER_VERSION} from './tools/font-diagnostic-browser-identity.mjs';
 export default defineConfig({
- testDir:'./e2e',testMatch:'robrix-product-status.spec.mjs',
+ testDir:'./e2e',testMatch:['robrix-product-status.spec.mjs','robrix-font-transport.spec.mjs'],
  outputDir:'test-results/product-status',fullyParallel:false,workers:1,timeout:90000,
  reporter:[['line'],['json',{outputFile:'test-results/product-status-results.json'}]],
  use:{baseURL:'http://127.0.0.1:4175',trace:'off',screenshot:'only-on-failure'},
- projects:[{name:'chromium',metadata:pinnedChromiumMetadata,use:{...devices['Desktop Chrome'],...pinnedChromiumUse}}],
+ projects:[{name:'chromium',metadata:{...pinnedChromiumMetadata,productBrowserQualification:true,expectedBrowser:FIXED_BROWSER_VERSION},use:{...devices['Desktop Chrome'],...pinnedChromiumUse}}],
  webServer:{command:'python3 tools/run-product-preview.py',url:'http://127.0.0.1:4175',reuseExistingServer:false,timeout:30000,gracefulShutdown:{signal:'SIGTERM',timeout:10000}},
 });

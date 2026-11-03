@@ -44,11 +44,45 @@ test('opt-in config cannot replace primary config or omit strict product cases',
  assert.match(config,/\['baseline','fixed'\]/);assert.match(config,/\[false,true\]/);
  assert.match(config,/robrix-product-status\.spec\.mjs/);
  const primary=await readFile(new URL('../playwright.product.config.mjs',import.meta.url),'utf8');
- assert.doesNotMatch(primary,/DIAGNOSTIC|executablePath|continue-on-error/);
+ // The product pin is independent of opt-in diagnostics and cannot accept an
+ // arbitrary executable: both the configured file and the running image are checked.
+ assert.doesNotMatch(primary,/DIAGNOSTIC|diagnosticOnly|fontDeliveryObserver|continue-on-error/);
+ assert.deepEqual([...primary.matchAll(/process\.env\.([A-Z_]+)/g)].map(match=>match[1]),['HEPTA_PRODUCT_BROWSER']);
+ assert.match(primary,/import \{hashDiagnosticFile,FIXED_BINARY_SHA,FIXED_BROWSER_VERSION\} from '\.\/tools\/font-diagnostic-browser-identity\.mjs';/);
+ assert.match(primary,/^const executablePath=process\.env\.HEPTA_PRODUCT_BROWSER;$/m);
+ assert.match(primary,/^if\(executablePath&&await hashDiagnosticFile\(executablePath\)!==FIXED_BINARY_SHA\)throw new Error\('Product browser digest mismatch'\);$/m);
+ assert.match(primary,/launchOptions:\{executablePath:resolve\(executablePath\)\}/);
+ assert.equal((primary.match(/launchOptions:/g)??[]).length,1);
+ assert.match(primary,/metadata:\{productBrowserQualification:true,expectedBrowser:FIXED_BROWSER_VERSION\}/);
+ assert.match(primary,/testMatch:\['robrix-product-status\.spec\.mjs','robrix-font-transport\.spec\.mjs'\]/);
+ const identity=await readFile(new URL('../tools/font-diagnostic-browser-identity.mjs',import.meta.url),'utf8');
+ assert.match(identity,/export const FIXED_BINARY_SHA='37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0';/);
+ assert.match(identity,/export const FIXED_BROWSER_VERSION='157\.0\.8099\.0';/);
+ for(const guard of [
+  "testInfo.project.metadata.productBrowserQualification!==true||testInfo.project.metadata.expectedBrowser!==FIXED_BROWSER_VERSION",
+  "const executable=await io.open(`/proc/${pid}/exe`,'r');",
+  "const path=await io.readlink(`/proc/${pid}/exe`);",
+  'record.executablePath=path;',
+  'executable.createReadStream({autoClose:false})',
+  'if(browser.version()!==testInfo.project.metadata.expectedBrowser)throw',
+  'if(record.executableSha256!==FIXED_BINARY_SHA)throw',
+  "if(!['@94bcda4759263b9a241f5008a68e753c2ebe3081','@3cdad9004f922728bfc61639d120b2ef4bddaf72'].includes(version.revision))throw",
+  "if(scope==='product'&&!['Chrome/'+FIXED_BROWSER_VERSION,'HeadlessChrome/'+FIXED_BROWSER_VERSION].includes(version.product))throw",
+ ])assert.ok(identity.includes(guard),`Missing product browser identity guard: ${guard}`);
  const spec=await readFile(new URL('../e2e/robrix-product-status.spec.mjs',import.meta.url),'utf8');
  assert.match(spec,/expect\(faults\)\.toEqual\(\[\]\)/);
  assert.match(spec,/expect\(requests\)\.toEqual\(\[\]\)/);
  assert.match(spec,/for\(const width of \[1280,640\]\)for\(const scenario of \['timeout','navigation','background'\]\)/);
+ const transport=await readFile(new URL('../e2e/robrix-font-transport.spec.mjs',import.meta.url),'utf8');
+ for(const source of [spec,transport]){
+  assert.match(source,/import \{recordProductBrowser\} from '\.\.\/tools\/font-diagnostic-browser-identity\.mjs';/);
+  assert.match(source,/const browserIdentity=await recordProductBrowser\(browser,testInfo\);/);
+ }
+ assert.match(transport,/const productQualification=testInfo\.project\.metadata\.productBrowserQualification===true;/);
+ assert.match(transport,/test\.skip\(\(!testInfo\.project\.metadata\.diagnosticOnly&&!productQualification\)\|\|testInfo\.project\.metadata\.fontDeliveryObserver,/);
+ assert.match(transport,/\.\.\.\['complete','revalidated','truncated','abort','declared-limit','stream-limit'\]\.map\(kind=>\(\{kind,cache:null\}\)\)/);
+ assert.match(transport,/\.\.\.\['truncated','abort','declared-limit','stream-limit'\]\.map\(kind=>\(\{kind,cache:'private'\}\)\)/);
+ assert.match(transport,/for\(const \{kind,cache\} of controls\)/);
  const observer=await readFile(new URL('../tools/font-delivery-diagnostic.mjs',import.meta.url),'utf8');
  assert.doesNotMatch(observer,/\.clone\(|\.tee\(|\.getReader\(|\.arrayBuffer\(|route\.fulfill|Fetch\.enable|setCacheDisabled/);
  assert.match(observer,/Debugger\.getScriptSource/);assert.match(observer,/SDK diagnostic breakpoint moved/);

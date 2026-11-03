@@ -378,10 +378,14 @@ mod tests {
             #[cfg(windows)]
             {
                 use std::os::windows::fs::OpenOptionsExt;
+
+                const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+                const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+                // The real LedgerWriter directory flush remains mandatory.
                 OpenOptions::new()
                     .read(true)
                     .write(true)
-                    .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+                    .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
                     .open(self._temp.path())
                     .unwrap_or_else(|err| panic!("open outcome credit directory: {err}"))
             }

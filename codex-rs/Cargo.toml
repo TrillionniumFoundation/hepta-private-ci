@@ -427,7 +427,8 @@ inventory = "0.3.19"
 itertools = "0.14.0"
 jsonptr = { version = "0.7.1", default-features = false }
 jsonwebtoken = "9.3.1"
-keyring = { version = "3.6", default-features = false }
+keyring = { version = "4.2", default-features = false, features = ["v1"] }
+keyring-core = "1.0.0"
 landlock = "0.4.4"
 lazy_static = "1"
 libc = "0.2.182"
@@ -664,8 +665,6 @@ opt-level = 0
 [patch.crates-io]
 # Backport maintained TOML parsing for age's i18n-config dependency.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
-# Preserve encrypted sync Secret Service while avoiding Cargo weak-feature lock edges.
-keyring = { path = "third_party/keyring-3.6.3" }
 # Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
 # API stable while replacing the unmaintained implementation with anymap3.
 anymap2 = { path = "third_party/anymap2-compat" }

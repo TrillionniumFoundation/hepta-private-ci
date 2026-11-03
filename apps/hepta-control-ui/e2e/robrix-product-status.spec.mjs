@@ -1,7 +1,7 @@
 // Real Rust UI + real gateway NotAttached path. This does not create a production host.
 import {test,expect} from '@playwright/test';
 import {observeFontDelivery} from '../tools/font-delivery-diagnostic.mjs';
-import {recordDiagnosticBrowser,recordPinnedChromium} from '../tools/font-diagnostic-browser-identity.mjs';
+import {recordProductBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
 import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
 import {createHash} from 'node:crypto';
@@ -11,8 +11,7 @@ import {holdOwnerResponse} from '../tools/hold-owner-response.mjs';
 import {execFileSync} from 'node:child_process';
 import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
 for(const width of [1280,640])for(const scenario of ['timeout','navigation','background'])test(`actual missing-owner status ${width} ${scenario}`,async({page,baseURL,browser},testInfo)=>{
- await recordPinnedChromium(browser,testInfo);
- await recordDiagnosticBrowser(browser,testInfo);
+ const browserIdentity=await recordProductBrowser(browser,testInfo);
  let sdkDelivery;
  const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
  expect(execFileSync('git',['status','--porcelain','--untracked-files=normal'],{encoding:'utf8'}).trim()).toBe('');
@@ -24,7 +23,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  expect(gateway.sourceCommit).toBe(sourceSha);
  expect(gateway.sourceTree).toBe(execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim());
  expect(hash(await readFile(binary))).toBe(gateway.binarySha256);
- const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway,...(testInfo.project.metadata.diagnosticOnly?{diagnosticOnly:true,project:testInfo.project.name}:{})};
+ const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway,browserIdentity,...(testInfo.project.metadata.diagnosticOnly?{diagnosticOnly:true,project:testInfo.project.name}:{})};
  await writeFile(testInfo.outputPath('binding.json'),JSON.stringify(binding,null,2)+'\n');
  await writeFile(testInfo.outputPath('ui-build-manifest.json'),manifestBytes);
  const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[],finishedResponses=[];const pendingFonts=new Set();
@@ -48,7 +47,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
    return settled;
   }finally{clearTimeout(timer);}
  }
- const fontRequestIds=new Map(),cdpFontIds=new Set(),cdpApiIds=new Set();let cdp=null,browserLifecycle=null;
+ const fontRequestIds=new Map(),cdpFontIds=new Set(),cdpApiIds=new Map();let cdp=null,browserLifecycle=null;
  function fontRecord(request){
   if(!fontRequestIds.has(request)){
    if(diagnosticComplete||fontRequestIds.size>=512){diagnosticOverflow.fontRequests++;return null;}
@@ -66,7 +65,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   appendDiagnostic('fontEvents',fontEvents,{id,event,phase,ms:diagnosticMs(),...details});
  }
  function cdpFontEvent(event,details){appendDiagnostic('cdpFontEvents',cdpFontEvents,{event,phase,ms:diagnosticMs(),...details});}
- function cdpApiEvent(event,details){appendDiagnostic('apiNetworkEvents',apiNetworkEvents,{event,phase,ms:diagnosticMs(),...details});}
+ function cdpApiEvent(event,details){appendDiagnostic('apiNetworkEvents',apiNetworkEvents,{event,phase,ms:diagnosticMs(),...cdpApiIds.get(details.requestId),...details});}
  function apiWait(name,state){appendDiagnostic('apiWaits',apiWaits,{name,state,phase,ms:diagnosticMs()});}
  async function observeFontInitiators(){
   // The product config is Chromium-only. CDP is passive observation here: no
@@ -75,7 +74,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   cdp.on('Network.requestWillBeSent',event=>{
    if(!diagnosticComplete&&(event.request.url===ownerUrl||event.request.url===runtimeUrl)){
     if(cdpApiIds.has(event.requestId)||cdpApiIds.size<128){
-     cdpApiIds.add(event.requestId);
+     cdpApiIds.set(event.requestId,{path:diagnosticPath(event.request.url),phase});
      cdpApiEvent('requestWillBeSent',{requestId:event.requestId,path:diagnosticPath(event.request.url),method:event.request.method,type:event.type,timestamp:event.timestamp});
     }else diagnosticOverflow.apiNetworkEvents++;
    }
@@ -214,7 +213,17 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   await settle();expect(ownerCount()).toBe(beforeCancellation+1);
   await expect.poll(async()=> (await observedText('timed-out','timedOut')).passed,{timeout:15000,intervals:[250]}).toBe(true);
   const timeoutReply=await timeoutLegacy;expect(timeoutReply.status()).toBe(503);
-  apiWait('timeout-runtime.finished','start');expect(await timeoutReply.finished()).toBeNull();apiWait('timeout-runtime.finished','done');await timeoutSdk503;
+  // Release the fault injector after the real owner timeout. Only the owner
+  // request may be cancelled; the runtime response must complete successfully.
+  apiWait('held-owner.finish','start');await held.finish();apiWait('held-owner.finish','done');
+  const timeoutRequestId=requestRecord(timeoutReply.request()).id;
+  apiWait('timeout-runtime.finished','start');
+  await expect.poll(
+   () => responses.some(event => event.id === timeoutRequestId && event.url === runtimeUrl && event.phase === 'timeout' && event.status === 503 && event.finished === true),
+   {timeout:5000,intervals:[100]}
+  ).toBe(true);
+  expect(await timeoutReply.finished()).toBeNull();
+  apiWait('timeout-runtime.finished','done');await timeoutSdk503;
   expectedState='timedOut';
  }else if(scenario==='navigation'){
   const currentTabs=await screenshotConversationTabs((await observedText('reading')).path,page.viewportSize(),{recordOcr:true});

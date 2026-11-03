@@ -9,10 +9,13 @@ import {spawn,spawnSync} from 'node:child_process';
 import {withStagedArtifact,recoverArtifact,loadArtifactSnapshot} from '../tools/owned-artifact-lease.mjs';
 const helper=new URL('../tools/owned-artifact-lease.mjs',import.meta.url).href;
 const runner=fileURLToPath(new URL('../tools/artifact-lock.py',import.meta.url));
+const snapshotChild=fileURLToPath(new URL('./artifact-snapshot-child.mjs',import.meta.url));
+const previewChild=fileURLToPath(new URL('./artifact-preview-child.mjs',import.meta.url));
 const sha=b=>createHash('sha256').update(b).digest('hex');
 async function fixture(t){const root=await mkdtemp(join(tmpdir(),'hepta-artifact-'));t.after(()=>rm(root,{recursive:true,force:true}));return root;}
 async function artifact(path,text,extra={}){await mkdir(path,{recursive:true});const files={'index.html':text,...extra};const pins={};for(const [name,body] of Object.entries(files)){await writeFile(join(path,name),body);pins[name]={bytes:Buffer.byteLength(body),sha256:sha(body)};}const manifest=JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',sourceIdentity:{sha256:'a'.repeat(64)},files:pins});await writeFile(join(path,'build-manifest.json'),manifest);return sha(manifest);}
 const locked=(root,script)=>spawnSync('python3',[runner,root,process.execPath,'--input-type=module','-e',script],{encoding:'utf8',timeout:5000});
+const lockedModule=(root,module,...args)=>spawnSync('python3',[runner,root,process.execPath,module,...args],{encoding:'utf8',timeout:5000});
 async function waitFor(check){const end=Date.now()+5000;while(Date.now()<end){try{if(await check())return;}catch{}await new Promise(r=>setTimeout(r,20));}throw new Error('Process fixture timed out');}
 
 test('kernel lock survives killed parent and child, then releases after final grandchild',{skip:process.platform==='win32',timeout:12000},async t=>{
@@ -45,8 +48,7 @@ test('SIGINT, SIGTERM and startup exceptions release the kernel lock',{skip:proc
 
 test('verified snapshot survives replacement and does not retain a preview lock',async t=>{
  const root=await fixture(t);await artifact(join(root,'dist'),'old');
- const script=`import{withArtifactLease,loadArtifactSnapshot}from ${JSON.stringify(helper)};const snapshot=await withArtifactLease(${JSON.stringify(root)},'preview',()=>loadArtifactSnapshot(${JSON.stringify(join(root,'dist'))}));console.log(snapshot.buffers.get('index.html').toString());`;
- assert.equal(locked(root,script).stdout.trim(),'old');assert.equal(locked(root,'').status,0);
+ assert.equal(lockedModule(root,snapshotChild,root,join(root,'dist')).stdout.trim(),'old');assert.equal(locked(root,'').status,0);
  const snapshot=await loadArtifactSnapshot(join(root,'dist'));
  await withStagedArtifact({root},'dist',stage=>artifact(stage,'new'));
  assert.equal(snapshot.buffers.get('index.html').toString(),'old');assert.equal((await loadArtifactSnapshot(join(root,'dist'))).buffers.get('index.html').toString(),'new');
@@ -118,8 +120,7 @@ test('two live previews keep immutable bytes while a rebuild publishes new outpu
  t.after(()=>{for(const server of servers)server.kill('SIGTERM');});
  for(let i=0;i<2;i++){
   const marker=join(root,`preview-${i}`);
-  const script=`import{withArtifactLease,loadArtifactSnapshot}from ${JSON.stringify(helper)};import{createServer}from'node:http';import{writeFileSync}from'node:fs';const snapshot=await withArtifactLease(${JSON.stringify(root)},'preview',()=>loadArtifactSnapshot(${JSON.stringify(join(root,'dist'))}));const server=createServer((req,res)=>res.end(snapshot.buffers.get('index.html')));server.listen(0,'127.0.0.1',()=>writeFileSync(${JSON.stringify(marker)},String(server.address().port)));`;
-  servers.push(spawn('python3',[runner,root,process.execPath,'--input-type=module','-e',script],{stdio:'ignore'}));
+  servers.push(spawn('python3',[runner,root,process.execPath,previewChild,root,join(root,'dist'),marker],{stdio:'ignore'}));
   await waitFor(()=>readFile(marker));
  }
  const rebuild=locked(root,`import{withArtifactLease}from ${JSON.stringify(helper)};await withArtifactLease(${JSON.stringify(root)},'build',async()=>{});`);

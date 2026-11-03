@@ -1,0 +1,311 @@
+cargo clippy --fix --tests --allow-dirty {args}
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+    Checking codex-hepta-memory v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/hepta-memory)
+warning: this function has too many arguments (8/7)
+   --> hepta-memory/src/cognitive_intelligence_writer.rs:156:5
+    |
+156 | /     pub(crate) async fn correct_with_kg_tx(
+157 | |         &self,
+158 | |         transaction: &mut Transaction<'_, Sqlite>,
+159 | |         access: &CognitiveAccess,
+...   |
+164 | |         facts: &KgFactSetDraft,
+165 | |     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+    | |___________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: this function has too many arguments (8/7)
+    --> hepta-memory/src/local_lease_outbox.rs:2754:5
+     |
+2754 | /     async fn append_outcome_in_transaction(
+2755 | |         &self,
+2756 | |         transaction: &mut Transaction<'_, Sqlite>,
+2757 | |         occurrence_key: String,
+...    |
+2762 | |         allow_exact_replay: bool,
+2763 | |     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+     | |___________________________________________________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+warning: use of a disallowed method `sqlx::Connection::connect_with`
+   --> hepta-memory/src/objective_sender_tests.rs:254:32
+    |
+254 |     let mut competing_writer = SqliteConnection::connect_with(&options).await.unwrap();
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: Create SQLite connections through codex-state's sqlite shim.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#disallowed_methods
+    = note: requested on the command line with `-D clippy::disallowed-methods`
+
+warning: use of a disallowed method `sqlx::Connection::connect_with`
+   --> hepta-memory/src/objective_sender_tests.rs:442:28
+    |
+442 |     let mut other_writer = SqliteConnection::connect_with(&options).await.unwrap();
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: Create SQLite connections through codex-state's sqlite shim.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#disallowed_methods
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-memory/src/objective_sender_crash_tests.rs:36:21
+   |
+36 |         let bytes = serde_json::to_vec(&(current, writer)).unwrap();
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+   = note: requested on the command line with `-D clippy::unwrap-used`
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-memory/src/objective_sender_crash_tests.rs:37:24
+   |
+37 |           let mut file = File::create(
+   |  ________________________^
+38 | |             self.host_root
+39 | |                 .join(format!("independent-test-cut-{call}.json")),
+40 | |         )
+41 | |         .unwrap();
+   | |_________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-memory/src/objective_sender_crash_tests.rs:42:9
+   |
+42 |         file.write_all(&bytes).unwrap();
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-memory/src/objective_sender_crash_tests.rs:43:9
+   |
+43 |         file.sync_all().unwrap();
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-memory/src/objective_sender_crash_tests.rs:44:9
+   |
+44 |         File::open(&self.host_root).unwrap().sync_all().unwrap();
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-memory/src/objective_sender_crash_tests.rs:44:9
+   |
+44 |         File::open(&self.host_root).unwrap().sync_all().unwrap();
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory/src/objective_sender_crash_tests.rs:155:5
+    |
+155 | /     Command::new(std::env::current_exe().unwrap())
+156 | |         .args(["--exact", CHILD_TEST, "--ignored", "--nocapture"])
+157 | |         .env("HEPTA_OBJECTIVE_SENDER_TEST_ROOT", root)
+158 | |         .env("HEPTA_OBJECTIVE_SENDER_TEST_PHASE", phase)
+159 | |         .output()
+160 | |         .expect("start original package test subprocess")
+    | |_________________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+    = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-memory/src/objective_sender_crash_tests.rs:155:18
+    |
+155 |     Command::new(std::env::current_exe().unwrap())
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3845:9
+     |
+3845 |         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").expect("agent")
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3850:9
+     |
+3850 |         std::fs::create_dir_all(&root).expect("fleet root");
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3851:21
+     |
+3851 |           let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
+     |  _____________________^
+3852 | |             .expect("fleet root");
+     | |_________________________________^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3851:43
+     |
+3851 |         let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
+     |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3853:9
+     |
+3853 | /         CognitiveStore::open(&fleet.layout().agent(&agent()))
+3854 | |             .await
+3855 | |             .expect("store")
+     | |____________________________^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3915:9
+     |
+3915 | /         OperationIntentV1::new(
+3916 | |             StableId::new(operation_id).expect("operation id"),
+3917 | |             StableId::new(owner.as_str()).expect("subject"),
+3918 | |             StableId::new(destination).expect("destination"),
+...    |
+3924 | |         .expect("operation intent")
+     | |___________________________________^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3916:13
+     |
+3916 |             StableId::new(operation_id).expect("operation id"),
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3917:13
+     |
+3917 |             StableId::new(owner.as_str()).expect("subject"),
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3918:13
+     |
+3918 |             StableId::new(destination).expect("destination"),
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3921:13
+     |
+3921 |             codex_hepta_types::Generation::new(1).expect("policy generation"),
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3928:9
+     |
+3928 | /         ProductionAuthorityLease::from_verified_parts(
+3929 | |             owner,
+3930 | |             Sha256Digest::for_bytes(b"production-grant"),
+3931 | |             31,
+...    |
+3937 | |         .expect("authority")
+     | |____________________________^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3933:13
+     |
+3933 |             now_unix_seconds().expect("clock") + 3_600,
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3934:13
+     |
+3934 | /             ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())
+3935 | |                 .expect("token"),
+     | |________________________________^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3941:25
+     |
+3941 |           let now_nanos = SystemTime::now()
+     |  _________________________^
+3942 | |             .duration_since(UNIX_EPOCH)
+3943 | |             .expect("clock")
+     | |____________________________^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3956:22
+     |
+3956 |           let now_ms = SystemTime::now()
+     |  ______________________^
+3957 | |             .duration_since(UNIX_EPOCH)
+3958 | |             .expect("clock")
+     | |____________________________^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+    --> hepta-memory/src/production_writer.rs:3971:20
+     |
+3971 |             .sign(&grant.signing_bytes().expect("signing bytes"))
+     |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: if this value is an `Err`, it will panic
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: `codex-hepta-memory` (lib test) generated 28 warnings
+warning: `codex-hepta-memory` (lib) generated 2 warnings (2 duplicates)
+    Finished `dev-small` profile [unoptimized] target(s) in 37.10s

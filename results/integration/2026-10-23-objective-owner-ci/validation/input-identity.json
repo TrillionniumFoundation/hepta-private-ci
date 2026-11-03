@@ -1,0 +1,885 @@
+{
+  "scope": "Identities of original local Git sources read for this CI source review; no remote CI result is inferred.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+  "tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+  "original_complete_manifest_blobs": 9111,
+  "original_complete_manifest": {
+    "bytes": 1211580,
+    "sha256": "44c99a55d1e841359264a8047f7650412531ba7916bfb8ea9d7e63e613598fbd",
+    "git_blob": "c2d5bb1d8e6c77f8a817cbe17e3bb3289f7eec0f"
+  },
+  "read_inputs": 124,
+  "read_input_bytes": 2702244,
+  "all_read_inputs_match_original_git_blobs": true,
+  "files": [
+    {
+      "path": ".github/actions/check-clean-worktree/action.yml",
+      "mode": "100644",
+      "bytes": 596,
+      "sha256": "58844cf1afb11d5cdbdfe577e4227ea3361ce495960c2d0cce94ca0da3da82a5",
+      "git_blob": "5a7bdddcf8f560d20fcd6639761a500b7ef12cf3"
+    },
+    {
+      "path": ".github/actions/hepta-synthetic-merge/action.yml",
+      "mode": "100644",
+      "bytes": 2413,
+      "sha256": "8f1d4a453717b5386ac3cfbc2827c23a0c973b6b8c5851e059fda6cda2d8b07f",
+      "git_blob": "905fc5039016ac7aaadbb857c0a7b94bb594f7ce"
+    },
+    {
+      "path": ".github/actions/linux-code-sign/action.yml",
+      "mode": "100644",
+      "bytes": 1388,
+      "sha256": "4e5fa040cf838f087ce4a0c585f651e90111b4a02973458b926d6938a24108e5",
+      "git_blob": "f8efb822f8cb6930f105d8d14c64c8c98fb95243"
+    },
+    {
+      "path": ".github/actions/prepare-bazel-ci/action.yml",
+      "mode": "100644",
+      "bytes": 3255,
+      "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b",
+      "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7"
+    },
+    {
+      "path": ".github/actions/run-argument-comment-lint/action.yml",
+      "mode": "100644",
+      "bytes": 1632,
+      "sha256": "2f444e269a04273b046aeed13e416be4e81d8e1a905bba82f0de9c9e94489442",
+      "git_blob": "7779fe62df4074af728da61740a6d576a1b29fb7"
+    },
+    {
+      "path": ".github/actions/setup-akv-pkcs11-codesigning/action.yaml",
+      "mode": "100644",
+      "bytes": 12557,
+      "sha256": "06ed3d922bf51854c04fae8e245dc4a6b0a512a59c80ad2dfc361167c44558ea",
+      "git_blob": "4d79cab42efc1844dca39f87a05ed2a29ad7cbf6"
+    },
+    {
+      "path": ".github/actions/setup-bazel-ci/action.yml",
+      "mode": "100644",
+      "bytes": 5365,
+      "sha256": "cae76442a9a6d40f2c56c1fbed991fe667f3ca3eef07e5e9806370ecf91afb7d",
+      "git_blob": "ea3f3a6521b970484ac60d1cebf788092753555a"
+    },
+    {
+      "path": ".github/actions/setup-ci/action.yml",
+      "mode": "100644",
+      "bytes": 4141,
+      "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba",
+      "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e"
+    },
+    {
+      "path": ".github/actions/setup-ci-build/action.yml",
+      "mode": "100644",
+      "bytes": 2982,
+      "sha256": "fb3a607b21917a9c5bfb400ff12b381e72dd32e2c1fcd33247701cd564db1da4",
+      "git_blob": "8a399dfe085cb91cf20698233c8215f3af08790c"
+    },
+    {
+      "path": ".github/actions/setup-ci-tools/action.yml",
+      "mode": "100644",
+      "bytes": 1317,
+      "sha256": "c3cd9dbcbe45215f172f76ecb827ca90db329e76c6caffed7b3c156565d4587d",
+      "git_blob": "bbf0279856aa6ea0aee621d992d0e8560963e255"
+    },
+    {
+      "path": ".github/actions/setup-msvc-env/action.yml",
+      "mode": "100644",
+      "bytes": 631,
+      "sha256": "05cdb8c607174b9bb81f93657a96d8983642ea4c7d9d91881b8d403f738e2e75",
+      "git_blob": "ab987a052bdab0d1d6b516eca6dac146c44292d3"
+    },
+    {
+      "path": ".github/actions/setup-msvc-env/setup-msvc-env.ps1",
+      "mode": "100644",
+      "bytes": 8614,
+      "sha256": "5731ecd37d063f3f3226708ec8b91a50d30fb25bd176f997dae5b8d3f35e2ea3",
+      "git_blob": "e2706d91175bbdd9c9e233bb680f9d82f624625e"
+    },
+    {
+      "path": ".github/actions/setup-rusty-v8/action.yml",
+      "mode": "100644",
+      "bytes": 2151,
+      "sha256": "ec4107dfd69f6034d34a558df2c85191a9e6d03dfedf3bce7a94bb0fb0de85b0",
+      "git_blob": "449ab653fd10c07a8a2453b6efe095205157a8ee"
+    },
+    {
+      "path": ".github/actions/windows-code-sign/action.yml",
+      "mode": "100644",
+      "bytes": 2535,
+      "sha256": "384e8712d94bc7e5bf2cfb621c3832f009969d73d43d2e7bf7ee6bd0c8b0eec5",
+      "git_blob": "24f8632979d48617db446ed92d3d0f962ee76d20"
+    },
+    {
+      "path": ".github/scripts/rusty_v8_bazel.py",
+      "mode": "100644",
+      "bytes": 12899,
+      "sha256": "d76414bc5c392fc17bb8cc4f81a8a679aa04e718b0c34141ba8db31b5cc9cff9",
+      "git_blob": "6150aff5af12120afad7767cf992157444523523"
+    },
+    {
+      "path": ".github/scripts/rusty_v8_module_bazel.py",
+      "mode": "100644",
+      "bytes": 8153,
+      "sha256": "a330e559ae4fa71d9e8a9f97c38805756c89de896019d60f596ca8b745770b0c",
+      "git_blob": "5d5dec08d5f6a87b99d13e1efea7eb83bcad37e7"
+    },
+    {
+      "path": ".github/workflows/README.md",
+      "mode": "100644",
+      "bytes": 3499,
+      "sha256": "25b349bec82ececa549edaeacaaaec57835d458ae41f22f30e0cc4db8e332227",
+      "git_blob": "219c941d3af7214ad1236a7a7f7203ce67f00d4b"
+    },
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "mode": "100644",
+      "bytes": 1691,
+      "sha256": "d3f1a50e4e3d9e7f665092e236382f64f50d766d989be796f2d6dae167662e93",
+      "git_blob": "43269479125e8e8b660cee1ad80666fe017205b8"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "mode": "100644",
+      "bytes": 20489,
+      "sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e",
+      "git_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c"
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "mode": "100644",
+      "bytes": 1682,
+      "sha256": "f0860d9723edf6d6a0a701bac787582c7998fd920eb91b23de4288b30ac5a53a",
+      "git_blob": "60de74f581a2fa4f2b504f375bff39942fc2d499"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "mode": "100644",
+      "bytes": 8778,
+      "sha256": "96eb7f9ea698ea353c757c3ba9f4a82a3ea448b45f676a208e09187748f4b9e3",
+      "git_blob": "bca6efff49c25a440bdada758c21504d034cff4c"
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "mode": "100644",
+      "bytes": 1141,
+      "sha256": "d3d1bfcc19bec0f2123376e3f099c33600a771e94fc893f3635fea40b926b96d",
+      "git_blob": "4e592e22b03d15dfdd585073797331c1e9f0cba9"
+    },
+    {
+      "path": ".github/workflows/cla.yml",
+      "mode": "100644",
+      "bytes": 2060,
+      "sha256": "ed68d940a662a74dd2566442089e29e958d21192d1728ff81d1ed0e0aea36d3f",
+      "git_blob": "8316a3562fb2adeda5deb36a94d7aafa3fc5a8df"
+    },
+    {
+      "path": ".github/workflows/close-stale-contributor-prs.yml",
+      "mode": "100644",
+      "bytes": 3615,
+      "sha256": "e28059bb98c7abb8517bf3565353a23684031c6ff50d5830656bfb0a3dded32b",
+      "git_blob": "cbda37e3105bd47fc22dcd46b3edc47db676162f"
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "mode": "100644",
+      "bytes": 862,
+      "sha256": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2",
+      "git_blob": "f6940899da3ac0e5d7cc47e9240643732abe31da"
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "mode": "100644",
+      "bytes": 4258,
+      "sha256": "dccde05c593074f71011bb0df2af6207e02a204e51027fea4ac566c825b93813",
+      "git_blob": "c324bb5be80d978289ed54fb25d6cf4f2b594acd"
+    },
+    {
+      "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+      "mode": "100644",
+      "bytes": 7830,
+      "sha256": "2f0859a213cf92264474458bb5a40a2f9063d8d577194c9b983584e1798c8121",
+      "git_blob": "d0ed2fd1b14879ddf22c871bb6b36ed6bab5ef0d"
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "mode": "100644",
+      "bytes": 19366,
+      "sha256": "5ae51b188989bbe6435cc0f5b62caffbc5da4b6fa2d855c2ed69afaaa8b53852",
+      "git_blob": "df330bc1b23af7fbdd9b92de7e1565f2a260393a"
+    },
+    {
+      "path": ".github/workflows/hepta-artifact-storage.yml",
+      "mode": "100644",
+      "bytes": 2706,
+      "sha256": "8ed36d944999cc62e3923d93c66b11f8f3611f138aea047a9b54838f26c1711b",
+      "git_blob": "b6e05d76c3ee4b5e94994937bef77278bb6a1c22"
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "mode": "100644",
+      "bytes": 2439,
+      "sha256": "7dc9d4f101ff3ded42f5350941299fbb4153fba809cf518a7795d5b041dd0976",
+      "git_blob": "12c4ffb399949abd6d0f2cf99fd68d7bbd7dfecf"
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "mode": "100644",
+      "bytes": 3495,
+      "sha256": "2d4464847cf0fead16ff4e58615f8168ace59df3096d53726a37e8091aa0be07",
+      "git_blob": "05b56cd3c6dfff68641a5c9b5e7036140ea760a7"
+    },
+    {
+      "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+      "mode": "100644",
+      "bytes": 4782,
+      "sha256": "223bcd7e7c2c911c032c67a877f0a89a9855cecf3453c88b71ca1130ff97078c",
+      "git_blob": "9196345f6b3688ee3dcb55bde42404ea8b99aa12"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "mode": "100644",
+      "bytes": 2333,
+      "sha256": "ec1f4d93dd894edc4a72e55033c8da935b2765d0c8b6d02799852e6a6db0734f",
+      "git_blob": "1c856bc9231633413cadb9b7f70e8fcfdb14d8d8"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "mode": "100644",
+      "bytes": 7643,
+      "sha256": "71411665d8b355eec9381b1c9e317bf872f7e94fe758142b2c3c2032a1d93387",
+      "git_blob": "73db9f4a62ab3027c81363c33f1846f99f6dd8f9"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "mode": "100644",
+      "bytes": 8546,
+      "sha256": "4c785c2a5fc5d04735e0562765a14316534d43fe876f90b3be5279ea4485c837",
+      "git_blob": "f36e53e91ca31b16d5e9202a433f1c7b2ed0a749"
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "mode": "100644",
+      "bytes": 5864,
+      "sha256": "c60b59754a81121a70e0ef9eb405dc14215c629a93a3ab387c00a40cc8882561",
+      "git_blob": "fdd4c690d2c46d858c93960a738fc72282a35d2e"
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "mode": "100644",
+      "bytes": 33612,
+      "sha256": "769b27482d6466d2bbf2a8a82b8f2945df9576f0098a8a8324d416906c598593",
+      "git_blob": "c7d7e7acbec213f2380ca2457737bf2e8aae9087"
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "mode": "100644",
+      "bytes": 2493,
+      "sha256": "61faff97c373308ded3cde266cad512c3f8795db2646f1a77779a7c8b46aa7f9",
+      "git_blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68"
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "mode": "100644",
+      "bytes": 10196,
+      "sha256": "036a29631f8ed4a508085deed537ebd105ce6f2487b429760efd1ccce2c9c88f",
+      "git_blob": "612b8821d7ff64fb547017845dbed540f838f868"
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "mode": "100644",
+      "bytes": 2938,
+      "sha256": "d5da56cd0876a8b749cb595d278b1590ba99b99fac9c041d8b153703d55e1f8b",
+      "git_blob": "484ddf80b8547212f3bfab73cca8249599f9a772"
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "mode": "100644",
+      "bytes": 5530,
+      "sha256": "6622d6b75446f70a30a90f3a9f34a7f047b134feadffb7b9ebb33b80ea0d0a43",
+      "git_blob": "7aab1401243b47d5cd08d91173e477dcc63647c3"
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "mode": "100644",
+      "bytes": 8742,
+      "sha256": "5b1ef27c5fb40e5acc04f75ec8ad4cbcf660273147983e23e46d0acf8e940b4e",
+      "git_blob": "b55dfea959f9a289485f17596206a341bd3505f6"
+    },
+    {
+      "path": ".github/workflows/hepta-durable-learning-roundtrip.yml",
+      "mode": "100644",
+      "bytes": 3104,
+      "sha256": "2a509955792e8be3bde4dd5b57c623837c1756c31d844291f23af206d4301f56",
+      "git_blob": "02d7d00321cf2531e3bd21f7cc0c69b15ba172ca"
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "mode": "100644",
+      "bytes": 8794,
+      "sha256": "f52889571fa8722f0845eb797756e0dfeaf7d50c2fa2b1d992c8408b3e70ae42",
+      "git_blob": "18a6d4e1108482653ff7560d9e64d91649e41236"
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "mode": "100644",
+      "bytes": 3404,
+      "sha256": "fbbd9cdd0033ef5323d83b7ea407f027758ab35e12248c239ce47701f127ab9d",
+      "git_blob": "d79bb1fb105a7ef5258a9c5735abd898845dbe40"
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "mode": "100644",
+      "bytes": 8025,
+      "sha256": "d26062aa88984c1c979653c46dde32b40b4b0acdfd7fadcc6d5bce4ba225a59d",
+      "git_blob": "f260bd655d0efc9b67daebb3ab24541482caff68"
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "mode": "100644",
+      "bytes": 7034,
+      "sha256": "1852411bc5a11df5927a248e2ee7e93e672be7746c2d4ef86ba2ba2659797b2b",
+      "git_blob": "fa58a00ef075c620d8d3b682f0656dcc4e7fcd57"
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "mode": "100644",
+      "bytes": 5245,
+      "sha256": "78da2191ccf83a01da37e51f0f4cea245b10d7483b5f65ae29590dc0a7723c5b",
+      "git_blob": "be6988be378481a9c55c221d56e1816dd29ce2a5"
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "mode": "100644",
+      "bytes": 6479,
+      "sha256": "53f34825b703305167cc222713f848a4f6236bf02381aa3c8170b75888c1247e",
+      "git_blob": "f9faf5a9f7d48b4e47ed292fa62284e1b37bc0f2"
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "mode": "100644",
+      "bytes": 6684,
+      "sha256": "e928ec8825ab0b7fac3a8f7642ea324d8316a7a58e000df3e5e7594940aa4edd",
+      "git_blob": "08147efcdd975e662e6268add84af966c5c6ae1d"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "mode": "100644",
+      "bytes": 6751,
+      "sha256": "4848c33d7f0f89c584c18f9d8220dc6121912d45bda84bde40dd7824f536bab4",
+      "git_blob": "8e28fec00be67547ba1393462abffa810e0181fb"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "mode": "100644",
+      "bytes": 4604,
+      "sha256": "479465eda2593e3e8f58b68a1447748b073f38a5c5feeecb720015c44cce8b2b",
+      "git_blob": "4756be76b745582520ff66d07fa103048fc6ec5c"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "mode": "100644",
+      "bytes": 22924,
+      "sha256": "0e8bf4c50b84e10388aab12698a5bbbf7dd91655e313f53417cecdd1db8b2f09",
+      "git_blob": "1962600a30be18c08e46c99aed0babb61c01361d"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "mode": "100644",
+      "bytes": 5762,
+      "sha256": "b9d139c0cf98cccbd08011bb73cd8dc163a393482e0d45e0e4ce6f3855694dd6",
+      "git_blob": "f70c4a3a1f35b1e1e81956d066ff096c42b2e42e"
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "mode": "100644",
+      "bytes": 3570,
+      "sha256": "d69d22fe8b2d4764142b564575c4bebd30817f7026e666aca5f5ce937e725510",
+      "git_blob": "30de1cf1befb1a16a412fa0ba91163db88040824"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "mode": "100644",
+      "bytes": 3798,
+      "sha256": "de965b37c80134f33f8007234242c101fc22b2c0a04235df61b2a99c8b1e6376",
+      "git_blob": "8d91832441db0cf8f064e27ed8193f9cadbbf462"
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "mode": "100644",
+      "bytes": 6186,
+      "sha256": "669497f104c4b0da94122d9427ef8d8d7d75a1a6d020483b0fb38e95f21a780c",
+      "git_blob": "2d4d44b3e920bc0e025704ddae82054103a8688f"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "mode": "100644",
+      "bytes": 2830,
+      "sha256": "6c59dd41c8e21917bea5202279cdb7219298a02c8821fcfdbe74efa385a5267a",
+      "git_blob": "ef98ab5c6918c38949583ecdb4b089a31cb4ceac"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "mode": "100644",
+      "bytes": 4712,
+      "sha256": "37871e409d7a53a59a9a53fdc49945f3ed1fd7b21102a1df69f08cab8386dd89",
+      "git_blob": "cb8ccf4b403aef6aef4825930e4a4a1c5d67cc1c"
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "mode": "100644",
+      "bytes": 9453,
+      "sha256": "3fde10f81d5fb9a1aca8af4c3790e203a5fbe07406b69585d50e370c441bf374",
+      "git_blob": "43980e2ef6870d20d1a3fedebcb04fbfd647c1c2"
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "mode": "100644",
+      "bytes": 5293,
+      "sha256": "9d9020e6645ed6de008bcdf4dce7e2ed0a0f67bc6e0e1661939ce13a50e7799b",
+      "git_blob": "8c9850af7a5816a1895dcaaa6ebfe848071569a6"
+    },
+    {
+      "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+      "mode": "100644",
+      "bytes": 15689,
+      "sha256": "743ed54ab7873e001eb54245e7ca19b47fe890ca1a39c8aaf216df93a24e8382",
+      "git_blob": "c827659c00614c1f149ef62f4c1f03d13114751c"
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "mode": "100644",
+      "bytes": 4796,
+      "sha256": "01251fd151cf4cca8f87f56b3e2d4ac1cfc1371487447829a1e2f85feea133d0",
+      "git_blob": "0a2115eac94a7f25bead86e3859fd3a2b9ec90e8"
+    },
+    {
+      "path": ".github/workflows/hepta-self-iteration-activation.yml",
+      "mode": "100644",
+      "bytes": 1574,
+      "sha256": "5d423ac4c07d70c5d01e724f89b7a76a7c5b1b010282ac9c799f821e3fa55d66",
+      "git_blob": "ef8fbdbbe33eb1da199df244a86d6a3708130839"
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "mode": "100644",
+      "bytes": 6636,
+      "sha256": "7f496c8bc41af3ec5799f0c62aa0daae8b7d2986948a92f4ad563177e1a5866b",
+      "git_blob": "ddf97e16833fa93c22dedb877accccc2724c2ace"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "mode": "100644",
+      "bytes": 5461,
+      "sha256": "4d06ca2bcc06152e166720d0afffcb8458f75257a81b4067826356af79343f9c",
+      "git_blob": "ac39a6f95a9590c5d0c1ad21aba4ccc4db256261"
+    },
+    {
+      "path": ".github/workflows/hnmf-qualification.yml",
+      "mode": "100644",
+      "bytes": 4522,
+      "sha256": "9fb0efb9240a242323e5a06259d82b2464e4f47698480df3b0ea373354979dbd",
+      "git_blob": "178e47acc1f35b21bda334345f71e95e784481d3"
+    },
+    {
+      "path": ".github/workflows/issue-deduplicator.yml",
+      "mode": "100644",
+      "bytes": 16557,
+      "sha256": "ba5a4bef1ad9eb973130f8cdcd27f7e51d09db6b33c773573153871b956deadb",
+      "git_blob": "05ef554988de56a6ecb9d033243d7df401227f24"
+    },
+    {
+      "path": ".github/workflows/issue-labeler.yml",
+      "mode": "100644",
+      "bytes": 9404,
+      "sha256": "d021126359a00770ea5d701830213b094435935632849ce6cb0ab4df50e20dbb",
+      "git_blob": "c9f1a8f1281f9af1dc7998d5d47b604617f4bca9"
+    },
+    {
+      "path": ".github/workflows/issue-translator.yml",
+      "mode": "100644",
+      "bytes": 5761,
+      "sha256": "cf4f9034b3928012b179be39ff3e2a66cc742731f4cd707aab5a0e1cba0feac1",
+      "git_blob": "8fe85ba0d51bdea3e087f9ce874d82bde887fadd"
+    },
+    {
+      "path": ".github/workflows/keyring-sync-lock-proposal.yml",
+      "mode": "100644",
+      "bytes": 2989,
+      "sha256": "f11df05870c79a32d92f957a589100c5b5f279f75cdf4c5f210c13822bda3b03",
+      "git_blob": "c1924ad55d4e879b7b51d6ace1ae2c75db3f727f"
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "mode": "100644",
+      "bytes": 7148,
+      "sha256": "b35d9372299f53a34222942d559cb6b51504fcb8fe4dceae8ab3e29f79875fdd",
+      "git_blob": "a3bd267880a6faf81f4b83af4bb5d54765074851"
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "mode": "100644",
+      "bytes": 6628,
+      "sha256": "056d1a9431bb2b0f9141c1d8fbcec25372c7ce235e4ec6e935eb7ecf0663073d",
+      "git_blob": "5e08c0d7d19c4df1e87b2cae7db83c8a1d4c236b"
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "mode": "100644",
+      "bytes": 1194,
+      "sha256": "6d56c3614a44bd7dfe96472648acc8262ea818cbb4e4c120efd112d66c4d49c5",
+      "git_blob": "bb6875c2a0213e6dfe3e8c73eaee4ed843bee9d4"
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "mode": "100644",
+      "bytes": 1563,
+      "sha256": "e68ef60919f1d5c73455903092faea02b03921b803c12e547070a1f5816a7c4b",
+      "git_blob": "2a7032e049df0efb8056211f96bc9b41174c10e2"
+    },
+    {
+      "path": ".github/workflows/python-runtime-build.yml",
+      "mode": "100644",
+      "bytes": 3986,
+      "sha256": "3ed05402dff33f620ae4321e4f30989af9ee337563b7b231cb464698cefa6d2c",
+      "git_blob": "aa8d6d891daf76b5f13a03db92e2e2c8fc7ca1f4"
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "mode": "100644",
+      "bytes": 3393,
+      "sha256": "0cb41b3804598f06e6cae3f393c74bb4c1f5a8e54925b27263d5f5ca75c21bfb",
+      "git_blob": "8316bf911c3e383a54ec7417ec72b035cb32ec73"
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "mode": "100644",
+      "bytes": 8551,
+      "sha256": "a78ff42d81fa709818feaf307a8438a9cae0fad87e4f8f6ca53c614ec345f832",
+      "git_blob": "a322c87c5bc250f7026e2700f92b6edfd45ef6be"
+    },
+    {
+      "path": ".github/workflows/r2-release.yml",
+      "mode": "100644",
+      "bytes": 1553,
+      "sha256": "5e33593a64238d54500700f2c48a4690291b14a0173956f423c6d454dda85670",
+      "git_blob": "96a07685cfc41a0383a14fc7bf99d8584d10f865"
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "mode": "100644",
+      "bytes": 4263,
+      "sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081",
+      "git_blob": "72bd28da471f893a556c2acb689e52a28d73ff99"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "mode": "100644",
+      "bytes": 17640,
+      "sha256": "d648480316e0106f5037aea6f39091093952b78618b230b0ccf94b7a221c7ec2",
+      "git_blob": "3d78747cbe8cf8c52e360462f501c1bab4049a3e"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "mode": "100644",
+      "bytes": 21978,
+      "sha256": "9e3b84356b7dad20c9b4847a27f3d588c24e243b9fb243374777cb49bd66b431",
+      "git_blob": "a388ab40723d2d2cab332a05e39fa96668c95aa4"
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "mode": "100644",
+      "bytes": 12233,
+      "sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373",
+      "git_blob": "81330bf3ed388e9deafa474516be437ac165cbb7"
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "mode": "100644",
+      "bytes": 4716,
+      "sha256": "429254911e199f41a2ec8b2ed3d1a0469c65e6cdd025dfbdda1263f9173477cb",
+      "git_blob": "a4f3540b342b13015e26f3d0011c01b87686cbca"
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "mode": "100644",
+      "bytes": 1889,
+      "sha256": "2176116b8b984e4422c3d07dffdb0b7b81114b5d0fa1fdd59af635f46c8bc5ad",
+      "git_blob": "fbdcb2e43f2bae3ce34645a6f5d1556069cd8756"
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "mode": "100644",
+      "bytes": 16979,
+      "sha256": "00153ad5e174cb4979b7801bf77988fc51e58c1ce86b5b2f4d551ba4bae0f9cd",
+      "git_blob": "2e723ea2d52817ea3b8e87d8787fdc63ff8fb724"
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "mode": "100644",
+      "bytes": 5651,
+      "sha256": "83831f162f8c675bea841aa4030a84986b61026aa5424daf9798d111896acc74",
+      "git_blob": "7c0eab9ee115e68be98202b845d19967fec45b93"
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "mode": "100644",
+      "bytes": 64085,
+      "sha256": "513e3225388b7a2ba694e184e277854403eccb3e1ca01248cbbbb8364a38f9d0",
+      "git_blob": "1082826f7a19fcda44545c79d8620fe51e326d99"
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "mode": "100644",
+      "bytes": 16471,
+      "sha256": "41417489a73fddce4aa396a8e8d6acc280331b430906fbdea9373eb2fdf9dfcf",
+      "git_blob": "83d3b98c2359ec312cc5fbe560334598489e2e1e"
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "mode": "100644",
+      "bytes": 6850,
+      "sha256": "2ac4937a15b5589d6c075df0f521a4ea46d0727f2cce06a9a3bd25a0358369a3",
+      "git_blob": "520d5905b1f3b38c8483490df6d2caf1fdd4e9bb"
+    },
+    {
+      "path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "mode": "100644",
+      "bytes": 1686,
+      "sha256": "228d2c0cf5c87ff7ae791a6b22a93e8dfbe7849caa5d9a0c10efcb7b2cde8606",
+      "git_blob": "54fef7f63726fd870974223b2205b73664995f24"
+    },
+    {
+      "path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "mode": "100644",
+      "bytes": 3346,
+      "sha256": "25de5bf36e21d196a6ea222a2a84d91cd225be53635ee5ed72bf48b8f9ddd084",
+      "git_blob": "09d77076acd3a231a3b0245bc946349d7cff2188"
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "mode": "100644",
+      "bytes": 6247,
+      "sha256": "dc7be5bbd1366233786f10939aa749cb0d5c12e029ac54c4c73c5f519d362a1e",
+      "git_blob": "69509c54da76eee1a6cb5a350f231117174c784d"
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "mode": "100644",
+      "bytes": 9987,
+      "sha256": "9a0dba6ba5120188c778254fa016ca74e5b195a23210e3aefd09e3d8b0502977",
+      "git_blob": "7a4102412d01b6f63c4a7dceb490633733d8b0e5"
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "mode": "100644",
+      "bytes": 4614,
+      "sha256": "1adcdca9c6900edd969fb30cedc5e75ff92ca4a611bdf63a28e5fb249bc5bb98",
+      "git_blob": "f75d05e226d2b6579c8f029d91490591839e0b54"
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "mode": "100644",
+      "bytes": 2266,
+      "sha256": "ace90464faa80d769a93a82bee10659a5fe61e1938462c53564b383383f03bb9",
+      "git_blob": "811964e6d542e70b7dd4cae955f80af76e4f411c"
+    },
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "mode": "100644",
+      "bytes": 24978,
+      "sha256": "4542fc9ff1124096b44c8334c1ab5079b41b1338cc840b5567d325b81c606e84",
+      "git_blob": "1ecdb778bfbfa6ade7dc9dd7d7225c91acc22bcd"
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "mode": "100644",
+      "bytes": 17388,
+      "sha256": "94a737b5e03749ec9265b1e524030cedfa87748cea73c5748c7c74c2526c78ee",
+      "git_blob": "24e28ce64e97d4547ee15bea1c41e80b084e68d5"
+    },
+    {
+      "path": "AGENTS.md",
+      "mode": "100644",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "path": "MODULE.bazel",
+      "mode": "100644",
+      "bytes": 21711,
+      "sha256": "a22453f0180b9e6a521230ee1c95050fcc021d4efd51861fe8b088d006f7770f",
+      "git_blob": "cd0c632632ea266376af0b0691e1ae48101afa11"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "mode": "100644",
+      "bytes": 1751657,
+      "sha256": "9c6e1fdc3e2f51bd4a3a934dd12536bd33e87d5239820d9c589426a07e6717e6",
+      "git_blob": "3e2007baf39ddf8181a27934265d4324de56f52d"
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "mode": "100644",
+      "bytes": 5044,
+      "sha256": "78b998d1fcb16dfef6b243a4b18748c1b28ce2d5a28d57f1f477adf0546e5ac6",
+      "git_blob": "f0430497b34b5335929e24b9e19745f467362641"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "mode": "100644",
+      "bytes": 22142,
+      "sha256": "6d29426b44fc9b072d3dde607d11236d3e127f9758fd03058f10b017e1f0ca13",
+      "git_blob": "0edcff9d268e910d2f38641116e7a081116417a0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "mode": "100644",
+      "bytes": 4591,
+      "sha256": "e8e7bbab5a22e595ef15ae72aa6a915d6bb369e2b0c1a86c094702a355157bd9",
+      "git_blob": "02a6d35d00d9c2ef8795b108b01ab26ac1052605"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "mode": "100644",
+      "bytes": 9312,
+      "sha256": "4a4c14308918a753087e0adc97ce4cd7f494a873a77ac214bb5bc5c369773380",
+      "git_blob": "01ccc1398e49fdd01cfdb48cff2b62b4d25e8119"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer_tests.rs",
+      "mode": "100644",
+      "bytes": 10660,
+      "sha256": "47fed7be86fe1a5a33d9cca142217b66d1b33d7d2345b02b01569bf4b4390ffd",
+      "git_blob": "9e73c4490e844b5ddabd5194db11f94f7b26b0a1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_authority.rs",
+      "mode": "100644",
+      "bytes": 1502,
+      "sha256": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374",
+      "git_blob": "5fca295975820a2ab10308b82eaf0bf7d31e6f7a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_authority_tests.rs",
+      "mode": "100644",
+      "bytes": 7777,
+      "sha256": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce",
+      "git_blob": "f33e19a61bd2e6f3b75ef96f81d3811425f183e9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition.rs",
+      "mode": "100644",
+      "bytes": 7676,
+      "sha256": "c34dc7bcbc2a6d625054d018f07eb6eca3e3382fea635a2b03133520551eaa95",
+      "git_blob": "1eea5d16451b2d776987eaf913c6f7a5ef195b9d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_notes_tests.rs",
+      "mode": "100644",
+      "bytes": 9868,
+      "sha256": "64f49402ebb604f51178e810a1575acc40179912dbccc2d52c3573b5319b221e",
+      "git_blob": "9a24f6aaae3e4dece623e5ac501929cc604aa221"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "mode": "100644",
+      "bytes": 8908,
+      "sha256": "b38ce61b97170dd9c2a8b3f230134fbf3aff7e09c3d89eacc5ddfca1c3acb3e1",
+      "git_blob": "8f9ab9d173b4a7827b91e17ba10f4f6152bd1808"
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "mode": "100644",
+      "bytes": 1399,
+      "sha256": "5ec9e7bd2a5757cc6241351e65d93cb35812d960ba4516343b4cd66dbbeb016c",
+      "git_blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "mode": "100644",
+      "bytes": 78,
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+      "git_blob": "910c65114ec128a8317ee8257428451f3cd28230"
+    },
+    {
+      "path": "justfile",
+      "mode": "100644",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    {
+      "path": "scripts/codex_package/targets.py",
+      "mode": "100644",
+      "bytes": 4738,
+      "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8",
+      "git_blob": "e217e8d0fd485cfddfc8f50ec9c0b3a90c8be985"
+    },
+    {
+      "path": "scripts/codex_package/v8.py",
+      "mode": "100644",
+      "bytes": 5665,
+      "sha256": "d7739840d17ea4f1afff15e552add403f2a479cde6422c27c92c2ef3823c27fc",
+      "git_blob": "66ecb6351e870a44c9a2d1694ad3eb0dc32365a2"
+    },
+    {
+      "path": "scripts/format.py",
+      "mode": "100644",
+      "bytes": 16599,
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+    },
+    {
+      "path": "scripts/hepta_ci_candidate.py",
+      "mode": "100644",
+      "bytes": 2867,
+      "sha256": "6c7e0f44440adee500ff29e9197d59f8a06f0e88c7577c5b0936c9e37a35fb6d",
+      "git_blob": "5149fc59370a12d18a367a9c7cefd15fb738fc00"
+    },
+    {
+      "path": "scripts/hepta_ci_dependencies.py",
+      "mode": "100644",
+      "bytes": 27417,
+      "sha256": "368ee16f9d7f11873574e19bf98d79ad8a26a589813e5bfdc8a6a148bcdd0527",
+      "git_blob": "18f0e218e4221682c759e8753e12033a993abab9"
+    },
+    {
+      "path": "scripts/hepta_ci_scope.py",
+      "mode": "100644",
+      "bytes": 10734,
+      "sha256": "0624e919517198d5275c33af957ea2e9f141d45bc8b59c9133946cd0aadcc80b",
+      "git_blob": "553bb1f2473f58fce7587c254f817a2c5a45ea09"
+    },
+    {
+      "path": "scripts/hepta_ci_v8.py",
+      "mode": "100644",
+      "bytes": 2335,
+      "sha256": "530994abf5992a4482d8468cea88a5c15e5dcbf798d814afb185920bee5ae808",
+      "git_blob": "ec37399ea946a839e6161f3076eff3c291b52091"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "mode": "100644",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "mode": "100644",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+    },
+    {
+      "path": "scripts/test_hepta_ci_v8.py",
+      "mode": "100644",
+      "bytes": 4428,
+      "sha256": "a29d67aeeef462955a2be60bd8aa52b53cf71df6b17d15e78b3043068c72ae0b",
+      "git_blob": "b0f85b444f7e45c3eafe6fc8e185d677844ea35a"
+    }
+  ]
+}

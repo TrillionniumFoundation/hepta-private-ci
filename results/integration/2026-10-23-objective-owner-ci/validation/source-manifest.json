@@ -1,0 +1,76 @@
+{
+  "created_at": "2026-10-23T08:56:50.345574+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 3444,
+  "branch": "agents/20261023/original-objective-sender",
+  "publication_base": {
+    "head": "cc5cb3ab71c48d387fcdd660ef0e42e9319d9b18",
+    "tree": "c01ee459f0f3ab9b226f041e2e2739d8a59f32b9",
+    "provenance": "Supplied and verified by the publishing root; this task performed no remote read or write."
+  },
+  "runtime_source_commit": "db91f9ec316ba1472e7adf97f8415949de012469",
+  "source_files": [
+    {
+      "path": ".github/workflows/hepta-objective-owner.yml",
+      "mode": "100644",
+      "preimage": null,
+      "preimage_absence_locally_verified_at": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+      "publisher_must_recheck_absence_at": "cc5cb3ab71c48d387fcdd660ef0e42e9319d9b18",
+      "bytes": 26514,
+      "sha256": "806dc2874663c5712a5bfbe7fc31c53bfb3ffcc8fbcbc47213efce5f92cefa99",
+      "git_blob": "f661e8d7acaa3c1ea25a14baad1f10c9d5a479a4"
+    }
+  ],
+  "source_files_changed": 1,
+  "existing_workflows_or_guards_modified": false,
+  "cargo_manifests_or_locks_modified": false,
+  "rust_sources_modified": false,
+  "validation": {
+    "YAML_parse_with_duplicate_key_rejection": "passed",
+    "all_12_Bash_blocks_bash_n": "passed",
+    "all_4_embedded_Python_AST_and_compile_without_execution": "passed",
+    "external_action_SHA_reuse": "passed",
+    "input_original_blob_identity": "passed",
+    "workflow_executed": false,
+    "Cargo_executed": false,
+    "GitHub_actionlint_executed": false,
+    "GitHub_operations_performed": false
+  },
+  "independent_source_reviews": [
+    {
+      "reviewer": "/root/hepta_integration",
+      "kind": "Independent read-only source review; no execution",
+      "scope": "All 490 workflow lines, real db91 Agentd test modules/names, original nextest profile and JUnit store routing.",
+      "result": "No demonstrated false-green or hard invocation defect found. Full --lib, --no-tests fail, passing testcase requirements and final exact-source comparison retained.",
+      "limits": "Original nextest retries=1 remains; original just fix exit zero is not a zero-warning/-D warnings claim. No Cargo or workflow executed by this review."
+    },
+    {
+      "reviewer": "/root",
+      "kind": "Independent read-only source review; no execution",
+      "scope": "Complete workflow plus original format.py, setup-ci, setup-bazel-ci and prepare-bazel-ci.",
+      "result": "No demonstrated hard issue found. Scoped formatter selects Python under scripts/.github; raw Python artifacts under results are not selected. Setup writes cache/GITHUB_ENV rather than repository sources.",
+      "limits": "This is a source-review result and not CI execution evidence."
+    }
+  ],
+  "future_gate_scope": {
+    "input_workspace": "Original complete 193 effective Cargo members and unchanged lock",
+    "execution": "Full original codex-hepta-memory and codex-hepta-agentd library suites, original format and scoped just fix; one job/build job/test thread",
+    "fresh_passing_JUnit_required": true,
+    "all_source_and_lock_bytes_unchanged_required": true,
+    "original_nextest_retries": 1,
+    "no_zero_warning_claim": true
+  },
+  "qualification_limits": [
+    "Local checks are source/syntax only; first published CI setup/build/test execution remains pending.",
+    "Neither the complete 193-package test suite nor Bazel/native guest/runtime/deployment is qualified.",
+    "Production independent current-cut checkpoint remains unimplemented by this change.",
+    "Prior 317/319/322 memory results belong to their original distinct source pins and are not CI results for this workflow.",
+    "The prior unexecuted Agentd bridge/factory/Notes paths are a reason to add this workflow, not passing evidence."
+  ],
+  "evidence_layout": {
+    "prefix": "results/integration/2026-10-23-objective-owner-ci",
+    "syntax_checker": "validate_candidate.py",
+    "checker_replay_note": "Archived validator retains the actual scratch-root layout used during execution. Reconstruct its base/ original inputs and change/ workflow at the recorded root, or review/extract the published workflow directly; archival publication itself does not execute the helper.",
+    "raw_shell_outputs": "validation/shell-check-outputs.json contains every complete actual Bash syntax stdout/stderr byte with lossless UTF-8 contents and hashes."
+  }
+}

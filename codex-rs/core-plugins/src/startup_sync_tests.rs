@@ -18,6 +18,8 @@ use wiremock::matchers::method;
 use wiremock::matchers::path;
 #[cfg(unix)]
 use zip::HasZipMetadata;
+use zip::System;
+use zip::ZipArchive;
 use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
@@ -1448,22 +1450,31 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
 fn extract_zipball_rejects_symlink_entries() {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default().system(System::Unix);
     writer
-        .add_symlink(
-            "root/link",
-            "../../outside",
-            SimpleFileOptions::default().system(zip::System::Unix),
-        )
-        .expect("add actual symlink entry");
+        .add_symlink("root/link", "../../outside", options)
+        .expect("add symlink entry");
     let bytes = writer.finish().expect("finish zip").into_inner();
-    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
-    assert!(archive.by_index(0).expect("fixture entry").is_symlink());
+    {
+        let mut archive =
+            ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read symlink fixture");
+        let entry = archive.by_name("root/link").expect("read symlink entry");
+        assert!(
+            entry.is_symlink(),
+            "fixture must contain a real symlink entry"
+        );
+    }
     let destination = tempdir().expect("destination");
 
     let err = extract_zipball_to_dir(&bytes, destination.path())
         .expect_err("symlink archive entries must be rejected");
     assert!(err.contains("is a symlink"));
-    assert!(!destination.path().join("link").exists());
+    assert_eq!(
+        std::fs::symlink_metadata(destination.path().join("link"))
+            .expect_err("rejected symlink must not be created")
+            .kind(),
+        std::io::ErrorKind::NotFound
+    );
 }
 
 #[cfg(unix)]
@@ -1473,24 +1484,34 @@ fn extract_zipball_masks_special_permission_bits() {
 
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
+    let entry_mode = 0o107755;
+    // unix_permissions() masks special bits before the archive is written.
     let options = SimpleFileOptions::default()
-        .system(zip::System::Unix)
-        .external_attributes(0o104755_u32 << 16);
+        .system(System::Unix)
+        .external_attributes(entry_mode << 16);
     writer
         .start_file("root/plugin", options)
         .expect("start executable entry");
     writer.write_all(b"plugin").expect("write plugin");
     let bytes = writer.finish().expect("finish zip").into_inner();
-    // Inspect the original archive attributes: ZIP 9's unix_mode() already
-    // clears special bits, while the direct permission test covers our mask.
+    // ZIP 9 masks special bits in unix_mode(); inspect the retained archive
+    // attributes so the fixture proves SUID, SGID and sticky bits were present.
     let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
     let raw_mode = archive
-        .by_index(0)
+        .by_name("root/plugin")
         .expect("fixture entry")
         .get_metadata()
         .external_attributes
         >> 16;
-    assert_ne!(raw_mode & 0o4000, 0, "fixture must contain SUID");
+    assert_eq!(
+        raw_mode, entry_mode,
+        "fixture must retain all original mode bits"
+    );
+    assert_eq!(
+        raw_mode & 0o7000,
+        0o7000,
+        "fixture must contain SUID/SGID/sticky"
+    );
     let destination = tempdir().expect("destination");
 
     extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");

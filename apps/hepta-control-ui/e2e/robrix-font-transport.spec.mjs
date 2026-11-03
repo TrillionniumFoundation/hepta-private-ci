@@ -5,11 +5,12 @@ import {writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {loadArtifactSnapshot} from '../tools/owned-artifact-lease.mjs';
 import {startControlServer,CONTROL_BODY} from '../tools/font-transport-fixture.mjs';
-import {recordDiagnosticBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
+import {recordProductBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
 test('bounded SDK stream terminal controls',async({page,browser},testInfo)=>{
- test.skip(!testInfo.project.metadata.diagnosticOnly||testInfo.project.metadata.fontDeliveryObserver,'Run identical transport controls once per browser, in untouched projects');
+ const productQualification=testInfo.project.metadata.productBrowserQualification===true;
+ test.skip((!testInfo.project.metadata.diagnosticOnly&&!productQualification)||testInfo.project.metadata.fontDeliveryObserver,'Run identical transport controls once per browser, in untouched projects');
  expect(browser.version()).toBe(testInfo.project.metadata.expectedBrowser);
- await recordDiagnosticBrowser(browser,testInfo);
+ const browserIdentity=await recordProductBrowser(browser,testInfo);
  const snapshot=await loadArtifactSnapshot(new URL('../dist/',import.meta.url).pathname);
  const server=await startControlServer(snapshot),results=[];
  const controls=[
@@ -54,7 +55,7 @@ test('bounded SDK stream terminal controls',async({page,browser},testInfo)=>{
    if(kind==='complete'||kind==='revalidated'){
     expect(app).toEqual({delivered:true,bytes:CONTROL_BODY.length,sha256:createHash('sha256').update(CONTROL_BODY).digest('hex'),finalState:'done',responseBytes:CONTROL_BODY.length});
     // Baseline result remains recorded, never treated as successful transport.
-    if(kind==='revalidated'||testInfo.project.name.startsWith('fixed-'))expect(native).toEqual({event:'finished'});
+    if(productQualification||kind==='revalidated'||testInfo.project.name.startsWith('fixed-'))expect(native).toEqual({event:'finished'});
    }else{
     const {error,...state}=app;expect(state).toEqual({delivered:false,finalState:'done',responseBytes:0});
     expect(error).toBeTruthy();
@@ -64,6 +65,6 @@ test('bounded SDK stream terminal controls',async({page,browser},testInfo)=>{
   }
  }finally{
   await server.close();
-  await writeFile(testInfo.outputPath('sdk-control-results.json'),JSON.stringify({diagnosticOnly:true,scope:'synthetic export sink; not Rust font adoption',browser:browser.version(),manifestSha256:snapshot.manifestDigest,results,server:server.records},null,2)+'\n');
+  await writeFile(testInfo.outputPath('sdk-control-results.json'),JSON.stringify({diagnosticOnly:!productQualification,transportControlOnly:true,scope:'synthetic export sink; not Rust font adoption',browser:browser.version(),browserIdentity,manifestSha256:snapshot.manifestDigest,results,server:server.records},null,2)+'\n');
  }
 });

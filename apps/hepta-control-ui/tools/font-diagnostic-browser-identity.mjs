@@ -26,9 +26,14 @@ export async function recordPinnedChromium(browser,testInfo,io=defaultIo){
  if(testInfo.project.metadata.diagnosticOnly||!testInfo.project.metadata.pinnedChromium)return;
  return recordBrowser(browser,testInfo,io,{diagnosticOnly:false,expectedBrowser:FIXED_BROWSER_VERSION,verifyFixed:true});
 }
+export async function recordProductBrowser(browser,testInfo,io=defaultIo){
+ if(testInfo.project.metadata.diagnosticOnly)return recordDiagnosticBrowser(browser,testInfo,io);
+ if(testInfo.project.metadata.productBrowserQualification!==true||testInfo.project.metadata.expectedBrowser!==FIXED_BROWSER_VERSION)throw new Error('Product transport requires the reviewed fixed browser profile');
+ return recordBrowser(browser,testInfo,io,{diagnosticOnly:false,expectedBrowser:FIXED_BROWSER_VERSION,verifyFixed:true,productBrowserQualification:true});
+}
 async function recordBrowser(browser,testInfo,io,contract){
  const session=await browser.newBrowserCDPSession();
- const record={diagnosticOnly:contract.diagnosticOnly,verified:false,identityMethod:'cdp-browser-pid/proc-exe-fd'};
+ const record={diagnosticOnly:contract.diagnosticOnly,verified:false,identityMethod:'cdp-browser-pid/proc-exe-fd',...(contract.productBrowserQualification?{productBrowserQualification:true}:{})};
  try{
   if(io.platform!=='linux')throw new Error('Diagnostic executable identity requires Linux procfs');
   const version=await session.send('Browser.getVersion');
@@ -59,8 +64,10 @@ async function recordBrowser(browser,testInfo,io,contract){
   if(contract.verifyFixed){
    if(record.executableSha256!==FIXED_BINARY_SHA)throw new Error('Running diagnostic executable digest mismatch');
    if(!['@94bcda4759263b9a241f5008a68e753c2ebe3081','@3cdad9004f922728bfc61639d120b2ef4bddaf72'].includes(version.revision))throw new Error('Diagnostic runtime revision is outside verified release provenance');
+   if(contract.productBrowserQualification&&!['Chrome/'+FIXED_BROWSER_VERSION,'HeadlessChrome/'+FIXED_BROWSER_VERSION].includes(version.product))throw new Error('Product CDP runtime version mismatch');
   }
   record.verified=true;
+  return record;
  }catch(error){record.error=String(error?.message??error).slice(0,512);throw error;}
  finally{
   try{await io.writeFile(testInfo.outputPath('browser-identity.json'),JSON.stringify(record,null,2)+'\n');}
