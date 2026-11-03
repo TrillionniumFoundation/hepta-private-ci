@@ -989,6 +989,18 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop post-v1 drain trigger before dispatch table");
+    // The converged owner migrations also add these two post-v1 tables.
+    // Require the actual latest schema before removing them, so a missing
+    // migration cannot be silently classified as a successful v1 replay.
+    let later_owner_tables: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND
+         name IN ('destination_operation_dedupe', 'automation_timer_lifecycle')",
+    )
+    .fetch_one(&mut *rewind)
+    .await
+    .expect("inspect post-v1 owner tables");
+    assert_eq!(later_owner_tables, 2, "require both real later owner migrations");
+
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
@@ -1051,6 +1063,26 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow definitions");
+    // These tables arrived in migrations 0017/0018. Leaving them in the
+    // fixture makes replay of those original CREATE TABLE statements fail.
+    // SQLite drops the associated immutable/lifecycle triggers with each
+    // table; no production migration or source policy is changed here.
+    sqlx::query("DROP TABLE automation_timer_lifecycle")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop post-v1 timer lifecycle");
+    sqlx::query("DROP TABLE destination_operation_dedupe")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop post-v1 destination dedupe");
+    let remaining_owner_tables: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND
+         name IN ('destination_operation_dedupe', 'automation_timer_lifecycle')",
+    )
+    .fetch_one(&mut *rewind)
+    .await
+    .expect("inspect v1 owner-table absence");
+    assert_eq!(remaining_owner_tables, 0, "v1 must not retain later owner tables");
     sqlx::query("ALTER TABLE automation_runs DROP COLUMN schedule_revision")
         .execute(&mut *rewind)
         .await
