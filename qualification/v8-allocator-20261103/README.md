@@ -72,11 +72,25 @@ Windows retains the original MSVC host/target selection, SDK environment
 and argument transport. It first runs the fresh-process parallel test,
 then all original PoC/runtime/host unit tests, including the original
 sandbox assertions, followed by the original Clippy selector and all
-three test binaries. The Linux job also checks the committed lock first.
+three test binaries. The original selector includes the runtime and host;
+it intentionally excludes the PoC. The qualifier preserves that selector
+contract and explicitly checks the PoC binary in addition. The Linux job
+also checks the committed lock first.
 All committed inputs are hashed before and after; complete output and test
 XML are retained even on failure.
 
-Actual Windows and Linux hosted results are pending. Local success and
+The first Windows qualifier at `84424d4a35153aa5ab5b1cc778e2e80be6d411e4`,
+run 41702757767, job 126150033271, failed before Bazel or the tests started.
+Python resolved unqualified `bash` to the system WSL launcher; its original
+UTF-16LE output reports that no Linux distribution is installed. The
+command exited 1 after 0.063 seconds. `launcher-844-negative.zip` preserves
+the complete original artifact, and `launcher-844-negative.json` records
+the artifact, output and immutable Git-input verification. The workflow
+now passes its executing Git Bash as a native absolute path. It does not
+install or use WSL. The original wrapper and native MSVC configuration
+remain unchanged.
+
+Actual Windows and Linux hosted test results are pending. Local success and
 static review do not establish that the original Windows crash is closed.
 The source remains Draft / HOLD_NO_GO / DENY_ALL. Full required CI,
 unrelated Windows failures, performance and scientific obligations, and

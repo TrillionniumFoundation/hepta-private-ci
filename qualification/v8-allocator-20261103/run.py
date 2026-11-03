@@ -57,19 +57,25 @@ def main():
     wrapper = "./.github/scripts/run_bazel_with_buildbuddy.py"
     config = f"--config={args.config}"
     windows = args.config == "ci-windows"
+    # Use the exact shell that runs this workflow. On Windows, an unqualified
+    # Python subprocess "bash" can resolve to the unrelated system WSL launcher.
+    bash = Path(os.environ["V8_QUALIFICATION_BASH"]).resolve(strict=True)
+    if not bash.is_file():
+        raise RuntimeError("the workflow's Bash executable is not a file")
+    receipt["bash_executable"] = str(bash)
     platform_flags = ["--platforms=//:windows_x86_64_msvc"] if windows else []
     host_flags = ["--host_platform=//:local_windows_msvc"] if windows else []
     wrapper_flags = ["--windows-msvc-host-platform", "--remote-download-toplevel"] if windows else []
-    original_wrapper = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-test-logs",
+    original_wrapper = [str(bash), "./.github/scripts/run-bazel-ci.sh", "--print-failed-test-logs",
                         "--print-failed-action-summary", *wrapper_flags, "--"]
     # The original workflow checks the universal lock on Linux, and uses its
     # complete native MSVC wrapper/environment on Windows.
-    commands = [] if windows else [("committed-lock-check", ["bash", "./scripts/check-module-bazel-lock.sh"])]
+    commands = [] if windows else [("committed-lock-check", [str(bash), "./scripts/check-module-bazel-lock.sh"])]
     commands.extend([
         ("fresh-parallel-first-use", [*original_wrapper, "test", *platform_flags, "--nocache_test_results",
                                       "--test_output=all", f"--test_arg={REGRESSION}", "--test_arg=--exact", "--", TARGETS[0]]),
         ("original-consumer-tests", [*original_wrapper, "test", *platform_flags, "--nocache_test_results", "--test_output=all", "--", *TARGETS]),
-        ("original-clippy-selector", ["bash", "./scripts/list-bazel-clippy-targets.sh"]),
+        ("original-clippy-selector", [str(bash), "./scripts/list-bazel-clippy-targets.sh"]),
         ("original-consumer-clippy", [*original_wrapper, "build", *platform_flags, "--config=clippy", "--", *[name + "-bin" for name in TARGETS]]),
     ])
     testlogs = None
@@ -114,7 +120,11 @@ def main():
                     raise RuntimeError("original runtime sandbox requirement did not pass")
             if name == "original-clippy-selector":
                 selected = (output / f"{name}.stdout").read_text().splitlines()
-                if any(target + "-bin" not in selected for target in TARGETS):
+                # The original selector intentionally excludes the PoC. Keep
+                # that contract and additionally lint its binary explicitly.
+                if "-//codex-rs/v8-poc:all" not in selected:
+                    raise RuntimeError("original selector changed its PoC exclusion")
+                if any(target + "-bin" not in selected for target in TARGETS[1:]):
                     raise RuntimeError("original selector omitted a complete consumer test")
         if snapshot() != before:
             raise RuntimeError("qualification changed a committed input")

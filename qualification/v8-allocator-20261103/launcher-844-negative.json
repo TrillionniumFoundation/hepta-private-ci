@@ -1,0 +1,20 @@
+{
+  "schema": "v8-allocator-launcher-negative-v1",
+  "source_commit": "84424d4a35153aa5ab5b1cc778e2e80be6d411e4",
+  "run": 41702757767,
+  "job": 126150033271,
+  "artifact_id": 13263596760,
+  "artifact_bytes": 7671,
+  "artifact_sha256": "4a6ad0023df1917dbae34dc8487e5290ebee38c65803b51ab24d5c350ab3b56a",
+  "zip_crc_verified": true,
+  "immutable_git_input_hashes_verified": 127,
+  "receipt_outputs_verified": 3,
+  "command_exit": 1,
+  "elapsed_seconds": 0.06299999999998818,
+  "stdout_encoding": "UTF-16LE",
+  "original_stdout": "Windows Subsystem for Linux has no installed distributions.\r\nYou can resolve this by installing a distribution with the instructions below:\r\n\r\nUse 'wsl.exe --list --online' to list available distributions\r\nand 'wsl.exe --install <Distro>' to install.\r\n",
+  "interpretation": "The Windows WSL launcher exited before the original Bazel wrapper, compilation or tests began. This is no V8 test result.",
+  "original_wrapper_unchanged": true,
+  "original_test_selection_and_assertions_unchanged": true,
+  "original_30_minute_budget_unchanged": true
+}
