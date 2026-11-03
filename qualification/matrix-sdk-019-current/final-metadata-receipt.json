@@ -1,0 +1,41 @@
+{
+  "command": [
+    "cargo",
+    "metadata",
+    "--locked",
+    "--offline",
+    "--all-features",
+    "--format-version",
+    "1"
+  ],
+  "exit": 0,
+  "seconds": 2.681211471557617,
+  "toolchain": "1.96.0",
+  "packages": {
+    "anymap3": [
+      "1.1.0"
+    ],
+    "imbl": [
+      "7.0.2"
+    ],
+    "libsqlite3-sys": [
+      "0.38.2"
+    ],
+    "matrix-sdk": [
+      "0.19.1"
+    ],
+    "matrix-sdk-crypto": [
+      "0.19.1"
+    ],
+    "matrix-sdk-sqlite": [
+      "0.19.1"
+    ],
+    "starlark": [
+      "0.14.2"
+    ]
+  },
+  "production_package_count": 1511,
+  "cargo_lock_sha256": "07106b95977ffea7f096a19efc929fd2c7fa1e8114e3d64c6bf2a993645d999d",
+  "metadata_sha256": "873626c6d81453245d1b7a176ba4bc86352d7407706725e811056b235f362a60",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

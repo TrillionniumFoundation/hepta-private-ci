@@ -1,0 +1,16 @@
+    Updating crates.io index
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+error: failed to select a version for `libsqlite3-sys`.
+    ... required by package `rusqlite v0.40.2`
+    ... which satisfies dependency `rusqlite = "^0.40.2"` of package `matrix-sdk-sqlite v0.19.1`
+    ... which satisfies dependency `matrix-sdk-sqlite = "^0.19.1"` of package `matrix-sdk v0.19.1`
+    ... which satisfies dependency `matrix-sdk = "=0.19.1"` of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/hepta-matrixd)`
+versions that meet the requirements `^0.38.2` are: 0.38.2
+
+package `libsqlite3-sys` links to the native library `sqlite3`, but it conflicts with a previous package which links to `sqlite3` as well:
+package `libsqlite3-sys v0.37.0`
+    ... which satisfies dependency `libsqlite3-sys = "^0.37"` of package `codex-state v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/state)`
+    ... which satisfies path dependency `codex-state` (locked to 0.0.0) of package `codex-cli v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/cli)`
+Only one package in the dependency graph may specify the same links value. This helps ensure that only one copy of a native library is linked in the final binary. Try to adjust your dependencies so that only one package uses the `links = "sqlite3"` value. For more information, see https://doc.rust-lang.org/cargo/reference/resolver.html#links.
+
+failed to select a version for `libsqlite3-sys` which could resolve this conflict

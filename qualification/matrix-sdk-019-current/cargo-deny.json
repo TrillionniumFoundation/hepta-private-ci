@@ -1,0 +1,31 @@
+{
+  "command": [
+    "cargo",
+    "deny",
+    "--all-features",
+    "--locked",
+    "check",
+    "--disable-fetch",
+    "--show-stats"
+  ],
+  "exit": 1,
+  "seconds": 8.477144241333008,
+  "rustsec_db": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "cargo_lock_sha256": "07106b95977ffea7f096a19efc929fd2c7fa1e8114e3d64c6bf2a993645d999d",
+  "full_log_bytes": 15076872,
+  "full_log_sha256": "5c7cb2acd54827536ec49fcc6994ed0d95bf78e187309dea2810b9fd24bbb9ee",
+  "gzip_bytes": 827176,
+  "gzip_sha256": "66a6839bc0b9adc5bd32d730f1b928ee24718379de7ff87dde21bcfc7635f811",
+  "errors": [
+    "RUSTSEC-2024-0449",
+    "RUSTSEC-2026-0387"
+  ],
+  "scope": "Current independent Matrix candidate; unchanged advisory policy; AWS and YAML successor changes are not in this stack.",
+  "stats": [
+    "advisories FAILED: 2 errors, 3 warnings, 22 notes",
+    "bans ok: 0 errors, 112 warnings, 21 notes",
+    "licenses ok: 0 errors, 1 warnings, 1332 notes",
+    "sources ok: 0 errors, 1 warnings, 6 notes"
+  ]
+}

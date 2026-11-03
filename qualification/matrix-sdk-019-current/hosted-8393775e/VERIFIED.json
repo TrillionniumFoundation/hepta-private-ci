@@ -1,0 +1,127 @@
+{
+  "source_commit": "8393775ed68714144d9e27449789ce42c254dc47",
+  "workflow_run": 41685527480,
+  "unique_git_inputs_verified": 1279,
+  "modes": [
+    {
+      "mode": "bazel",
+      "artifact_id": 13256415037,
+      "artifact_sha256": "03b10b13af3d071efb9517df7181d6a11c3ea1b0641ec8b34d574b705d335a4e",
+      "artifact_bytes": 358648,
+      "receipt_sha256": "1173c9c5bb2d7fbdfc375ae3dc798f115a84a5d76dcc70d43523f5b1966f1292",
+      "status": "failed",
+      "git_input_count": 1279,
+      "source_inputs_unchanged": true,
+      "commands": [
+        {
+          "name": "committed-lock-check",
+          "exit_code": 0
+        },
+        {
+          "name": "original-lock-update",
+          "exit_code": 0
+        },
+        {
+          "name": "original-lock-check",
+          "exit_code": 0
+        },
+        {
+          "name": "sqlite-dependency-graph",
+          "exit_code": 0
+        },
+        {
+          "name": "production-dependencies",
+          "exit_code": 0
+        },
+        {
+          "name": "matrix-regressions",
+          "exit_code": 1
+        }
+      ],
+      "lock_sha256": "e356b9c87d885026862644ae1f5a4c1cf801dd9fa96dfad6c3b18aab5dc7cc8b",
+      "lock_bytes": 1696145,
+      "lock_identical_to_committed_source": true,
+      "regression_failure": "zstd-sys 2.1.2 existing patch no longer applies; regression test analysis aborted"
+    },
+    {
+      "mode": "sqlite-starlark",
+      "artifact_id": 13255023209,
+      "artifact_sha256": "64d089d25aa7aa04a6ac9abecb01b5df853b2907b6261214625e93a6afd3c2c9",
+      "artifact_bytes": 731981,
+      "receipt_sha256": "e2adb1c011329727b4255c2c71f919f893008ff1478243da1501ae49df7d31a5",
+      "status": "passed",
+      "git_input_count": 1279,
+      "source_inputs_unchanged": true,
+      "commands": [
+        {
+          "name": "sqlite-starlark",
+          "exit_code": 0
+        }
+      ],
+      "native_tests": 221,
+      "skipped": 0
+    },
+    {
+      "mode": "crypto-migration",
+      "artifact_id": 13254579204,
+      "artifact_sha256": "2a2bfad3f33fa2ce011a202bd7940e50e727eb7de20abf556bca81f1ff719162",
+      "artifact_bytes": 738296,
+      "receipt_sha256": "1a8dd0291909e509924d50578f369db19b3345c382dd7987f872753159adbee6",
+      "status": "passed",
+      "git_input_count": 1279,
+      "source_inputs_unchanged": true,
+      "commands": [
+        {
+          "name": "crypto-migration",
+          "exit_code": 0
+        }
+      ],
+      "native_tests": 1,
+      "skipped": 0
+    },
+    {
+      "mode": "owners",
+      "artifact_id": 13254014882,
+      "artifact_sha256": "81ff78efe53bd9a98e9d20ac7c7a41c0e539656d8dc1a9ce1f5c6bf5f3f8579f",
+      "artifact_bytes": 724106,
+      "receipt_sha256": "8cefb7d630f60932d7fc9e19b5234b9cd50de62fa1ae03621c8c7dfb168bba0b",
+      "status": "failed",
+      "git_input_count": 1279,
+      "source_inputs_unchanged": true,
+      "commands": [
+        {
+          "name": "pinned-dbus-client",
+          "exit_code": 0
+        },
+        {
+          "name": "owners",
+          "exit_code": 101
+        }
+      ],
+      "pinned_dbus_identity": "PASS",
+      "owner_tests_executed": false,
+      "failure": "E0615 removed bundled_latest_thread_event field at gap_fill_tests.rs:368"
+    },
+    {
+      "mode": "synapse-protocol",
+      "artifact_id": 13253589564,
+      "artifact_sha256": "b791cc8994d180a7d46e5cd088b56acdf14ba85a63a855a1d38562d50bedb19a",
+      "artifact_bytes": 722726,
+      "receipt_sha256": "7c2917908b049cc31bfa21c6feb2368d01fb377c18e422267677a831cbeef7c2",
+      "status": "passed",
+      "git_input_count": 1279,
+      "source_inputs_unchanged": true,
+      "commands": [
+        {
+          "name": "synapse-protocol",
+          "exit_code": 0
+        }
+      ],
+      "native_tests": 1,
+      "skipped": 0
+    }
+  ],
+  "scope": "Exact current inputs and recorded commands only; owner and Bazel regression failures remain open.",
+  "native_tests_passed": 223,
+  "all_original_gate_checks_passed": false
+}

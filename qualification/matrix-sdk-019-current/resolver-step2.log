@@ -1,0 +1,17 @@
+    Updating crates.io index
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+error: failed to select a version for `blake3`.
+    ... required by package `matrix-sdk-store-encryption v0.19.1`
+    ... which satisfies dependency `matrix-sdk-store-encryption = "^0.19.1"` of package `matrix-sdk-base v0.19.1`
+    ... which satisfies dependency `matrix-sdk-base = "^0.19.1"` of package `matrix-sdk v0.19.1`
+    ... which satisfies dependency `matrix-sdk = "=0.19.1"` of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/hepta-matrixd)`
+versions that meet the requirements `^1.8.7` are: 1.8.7
+
+all possible versions conflict with previously selected packages.
+
+  previously selected package `blake3 v1.8.2`
+    ... which satisfies dependency `blake3 = "=1.8.2"` of package `starlark v0.14.2`
+    ... which satisfies dependency `starlark = "^0.14.2"` of package `codex-execpolicy v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/execpolicy)`
+    ... which satisfies path dependency `codex-execpolicy` (locked to 0.0.0) of package `codex-cli v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/cli)`
+
+failed to select a version for `blake3` which could resolve this conflict

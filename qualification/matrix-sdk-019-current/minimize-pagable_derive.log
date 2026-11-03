@@ -1,0 +1,9 @@
+error: failed to select a version for the requirement `pagable_derive = "=0.4.2"`
+candidate versions found which didn't match: 0.4.1
+location searched: crates.io index
+required by package `pagable v0.4.2`
+    ... which satisfies dependency `pagable = "^0.4.1"` (locked to 0.4.2) of package `starlark v0.14.2 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/third_party/starlark-0.14.2)`
+    ... which satisfies dependency `starlark = "^0.14.2"` (locked to 0.14.2) of package `codex-execpolicy v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/execpolicy)`
+    ... which satisfies path dependency `codex-execpolicy` (locked to 0.0.0) of package `codex-cli v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/cli)`
+note: offline mode (via `--offline`) can sometimes cause surprising resolution failures
+help: if this error is too confusing you may wish to retry without `--offline`
