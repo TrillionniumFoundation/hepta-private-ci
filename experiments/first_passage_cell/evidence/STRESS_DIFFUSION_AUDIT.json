@@ -1,0 +1,1457 @@
+{
+  "arms": {
+    "always_repair": {
+      "episodes": 1024,
+      "mean_active_time": 1.7587918030834877,
+      "mean_decisions": 4.0,
+      "mean_elapsed": 2.0,
+      "mean_failures": 0.0439453125,
+      "mean_initial_plan_value": null,
+      "mean_paid_repair_cost": 0.9064889592631771,
+      "mean_realized_minus_initial_plan": null,
+      "mean_repairs": 3.9833984375,
+      "mean_stopped": 0.0,
+      "mean_total_reward": 0.12681346633691526,
+      "per_seed_mean_reward": [
+        0.15061312314022557,
+        0.14317207466838264,
+        0.10470133705228804,
+        0.13776979449122723,
+        0.10963654755635827,
+        0.11148906051678725,
+        0.1427943261463933,
+        0.11433146712365991
+      ]
+    },
+    "always_wait": {
+      "episodes": 1024,
+      "mean_active_time": 1.9395741018079575,
+      "mean_decisions": 4.0,
+      "mean_elapsed": 2.0,
+      "mean_failures": 1.025390625,
+      "mean_initial_plan_value": null,
+      "mean_paid_repair_cost": 0.0,
+      "mean_realized_minus_initial_plan": null,
+      "mean_repairs": 0.0,
+      "mean_stopped": 0.0,
+      "mean_total_reward": 0.6510491485847743,
+      "per_seed_mean_reward": [
+        0.6520703196396022,
+        0.6060048584323322,
+        0.6811718879179385,
+        0.6770429480405213,
+        0.5979925782184401,
+        0.6851358307951341,
+        0.6896644472457643,
+        0.6193103183884621
+      ]
+    },
+    "endogenous_renewal": {
+      "episodes": 1024,
+      "mean_active_time": 1.8752251368371446,
+      "mean_decisions": 3.9951171875,
+      "mean_elapsed": 1.94873046875,
+      "mean_failures": 0.404296875,
+      "mean_initial_plan_value": 0.7061803727850244,
+      "mean_paid_repair_cost": 0.1354855604009667,
+      "mean_realized_minus_initial_plan": 0.08132071141629552,
+      "mean_repairs": 0.8359375,
+      "mean_stopped": 0.09765625,
+      "mean_total_reward": 0.7875010842013199,
+      "per_seed_mean_reward": [
+        0.7713301590788908,
+        0.7750067775173821,
+        0.8201563396046601,
+        0.8084718141175445,
+        0.7665615655549087,
+        0.8033461374522127,
+        0.7857475580536651,
+        0.7693883222312957
+      ]
+    },
+    "fixed_cross7": {
+      "episodes": 1024,
+      "mean_active_time": 1.8803986822291616,
+      "mean_decisions": 3.9931640625,
+      "mean_elapsed": 1.947265625,
+      "mean_failures": 0.4130859375,
+      "mean_initial_plan_value": 0.6985268468647161,
+      "mean_paid_repair_cost": 0.15285886948922345,
+      "mean_realized_minus_initial_plan": 0.07031052423355724,
+      "mean_repairs": 0.7119140625,
+      "mean_stopped": 0.0986328125,
+      "mean_total_reward": 0.7688373710982733,
+      "per_seed_mean_reward": [
+        0.7379388800628514,
+        0.771312580488507,
+        0.7916914575791151,
+        0.7905583332095371,
+        0.7506426178683888,
+        0.7589080986903483,
+        0.7606550345862093,
+        0.7889919663012295
+      ]
+    },
+    "fixed_shared6": {
+      "episodes": 1024,
+      "mean_active_time": 1.8813166509791617,
+      "mean_decisions": 3.9951171875,
+      "mean_elapsed": 1.9482421875,
+      "mean_failures": 0.4130859375,
+      "mean_initial_plan_value": 0.6987885617573819,
+      "mean_paid_repair_cost": 0.15322604521447256,
+      "mean_realized_minus_initial_plan": 0.07023241486564231,
+      "mean_repairs": 0.712890625,
+      "mean_stopped": 0.0986328125,
+      "mean_total_reward": 0.7690209766230243,
+      "per_seed_mean_reward": [
+        0.7379388800628514,
+        0.771312580488507,
+        0.7916914575791151,
+        0.7905583332095371,
+        0.7524863678683889,
+        0.7589080986903483,
+        0.7602801287842164,
+        0.7889919663012295
+      ]
+    },
+    "learned_threshold7": {
+      "episodes": 1024,
+      "mean_active_time": 1.8703831639839708,
+      "mean_decisions": 3.994140625,
+      "mean_elapsed": 1.9404296875,
+      "mean_failures": 0.3505859375,
+      "mean_initial_plan_value": 0.7005432516033796,
+      "mean_paid_repair_cost": 0.1754692934560181,
+      "mean_realized_minus_initial_plan": 0.07092438458098473,
+      "mean_repairs": 0.8271484375,
+      "mean_stopped": 0.11328125,
+      "mean_total_reward": 0.7714676361843644,
+      "per_seed_mean_reward": [
+        0.7538399037072872,
+        0.780270728285392,
+        0.7916914575791151,
+        0.7852432975584869,
+        0.7524863678683889,
+        0.772191764510759,
+        0.7602801287842164,
+        0.7757374411812696
+      ]
+    },
+    "ordinary_first_event": {
+      "episodes": 1024,
+      "mean_active_time": 1.8932473585880734,
+      "mean_decisions": 4.0,
+      "mean_elapsed": 1.96826171875,
+      "mean_failures": 0.5302734375,
+      "mean_initial_plan_value": 0.7971352531505792,
+      "mean_paid_repair_cost": 0.11241191814319486,
+      "mean_realized_minus_initial_plan": -0.03873547489093017,
+      "mean_repairs": 0.734375,
+      "mean_stopped": 0.0634765625,
+      "mean_total_reward": 0.758399778259649,
+      "per_seed_mean_reward": [
+        0.7534206282690354,
+        0.7236298915844825,
+        0.8242339204008999,
+        0.7975238734263885,
+        0.7217761360596877,
+        0.7660733791832817,
+        0.758210848679296,
+        0.7223295484741203
+      ]
+    },
+    "stop": {
+      "episodes": 1024,
+      "mean_active_time": 0.0,
+      "mean_decisions": 1.0,
+      "mean_elapsed": 0.0,
+      "mean_failures": 0.0,
+      "mean_initial_plan_value": null,
+      "mean_paid_repair_cost": 0.0,
+      "mean_realized_minus_initial_plan": null,
+      "mean_repairs": 0.0,
+      "mean_stopped": 1.0,
+      "mean_total_reward": 0.0,
+      "per_seed_mean_reward": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "audit_helper_sha256": "f7ba0ed208925ee72d813eee14ad32bb7b638d8330fe94182f6ac1a626de8c7b",
+  "audit_wall_seconds": 9.605690395997954,
+  "episodes": 8192,
+  "freeze_sha256": "57858ef88f9a1ef03a9ade666a35fdbe7faafef651bdca8eee3514feb99b7fdd",
+  "input_root": "experiments/first_passage_cell/runs/stress_diffusion",
+  "inputs": [
+    {
+      "bytes": 1658750,
+      "path": "1103.jsonl.gz",
+      "sha256": "aeb6e526a5b4ff24037678351f6cbbecbfbb276720a6e8e2388570d7f0a6120f"
+    },
+    {
+      "bytes": 1654402,
+      "path": "1151.jsonl.gz",
+      "sha256": "84cf35f88c472550cb0cdd1d55e7507b44446b7f5acd27dc670130dcef1464b6"
+    },
+    {
+      "bytes": 1650032,
+      "path": "1201.jsonl.gz",
+      "sha256": "eaf9e069adadb1759cdf76c16045dcebb1ab7af1d1cee93044d94757c3c7d172"
+    },
+    {
+      "bytes": 1651325,
+      "path": "1213.jsonl.gz",
+      "sha256": "341f60fe3d420a66c1c7e66eed2f5d28bd0013867e6d27a35e2c32b4fa41080b"
+    },
+    {
+      "bytes": 1658181,
+      "path": "1223.jsonl.gz",
+      "sha256": "295e82be66316a3f11a8c55d57a07e8f4ffbbaea118f16c785753fff4d0cd5a5"
+    },
+    {
+      "bytes": 1662665,
+      "path": "1231.jsonl.gz",
+      "sha256": "287af85caee68c67d551d0c77f8b4655feae59310d87dad7f338325fdade797b"
+    },
+    {
+      "bytes": 1649650,
+      "path": "1237.jsonl.gz",
+      "sha256": "010505da7f6ff40d76ee6db4f2a2faf490cb57f8271fd03d06211fc6474a6696"
+    },
+    {
+      "bytes": 1665320,
+      "path": "1249.jsonl.gz",
+      "sha256": "c0b8965896f6a07b7cf0a70234fd14e84fcd0f759a0ea28bccbcce4d3a588836"
+    }
+  ],
+  "ledger_pass": true,
+  "phase": "stress_diffusion",
+  "plan_value_scope": "WAIT_AFTER_CURRENT forecast versus actual replanning outcome; not same-policy calibration",
+  "primary_comparisons": {},
+  "run_receipt_sha256": "7a82f49da7feb41bcef0176fd817eb49eb1e116be6febd445cca81a025afaf66",
+  "schema": "HeptaFirstPassageIndependentAuditV2",
+  "seeds": [
+    1103,
+    1151,
+    1201,
+    1213,
+    1223,
+    1231,
+    1237,
+    1249
+  ],
+  "source": "independent ledger arithmetic, no simulator/policy/kernel imports",
+  "source_commit": "507bfcc131f30c88c5931f6101c45afdd5c71887",
+  "statistics_scope": "empirical two-stage paired bootstrap; Bonferroni two-sided family alpha .05 across three comparisons",
+  "supplemental_checks": {
+    "compute_by_arm": {
+      "always_repair": {
+        "decision_cpu_seconds": 0.037258169000465635,
+        "decision_wall_seconds": 0.057610112882684916,
+        "decisions": 4096.0,
+        "episodes": 1024.0,
+        "forecast_cache_hits": 0.0,
+        "forecast_requests": 0.0,
+        "mean_decision_cpu_seconds": 3.638493066451722e-05,
+        "mean_decision_wall_seconds": 5.625987586199699e-05,
+        "mean_decisions": 4.0,
+        "mean_forecast_cache_hits": 0.0,
+        "mean_forecast_requests": 0.0,
+        "mean_native_calls": 1.0,
+        "mean_observed_pipeline_wall_seconds": 0.006691369145428894,
+        "mean_realized_native_wall_seconds": 0.004276133365230805,
+        "mean_simulation_wall_seconds": 0.0023589759043360914,
+        "native_calls": 1024.0,
+        "realized_native_wall_seconds": 4.378760565996345,
+        "simulation_wall_seconds": 2.4155913260401576
+      },
+      "always_wait": {
+        "decision_cpu_seconds": 0.04234458199988511,
+        "decision_wall_seconds": 0.06036737524846103,
+        "decisions": 4096.0,
+        "episodes": 1024.0,
+        "forecast_cache_hits": 0.0,
+        "forecast_requests": 0.0,
+        "mean_decision_cpu_seconds": 4.1352130859262804e-05,
+        "mean_decision_wall_seconds": 5.8952514891075225e-05,
+        "mean_decisions": 4.0,
+        "mean_forecast_cache_hits": 0.0,
+        "mean_forecast_requests": 0.0,
+        "mean_native_calls": 1.0,
+        "mean_observed_pipeline_wall_seconds": 0.007055536453407285,
+        "mean_realized_native_wall_seconds": 0.004039133467756528,
+        "mean_simulation_wall_seconds": 0.0029574504707596816,
+        "native_calls": 1024.0,
+        "realized_native_wall_seconds": 4.136072670982685,
+        "simulation_wall_seconds": 3.028429282057914
+      },
+      "endogenous_renewal": {
+        "decision_cpu_seconds": 22.18088029099941,
+        "decision_wall_seconds": 35.56972331399447,
+        "decisions": 4091.0,
+        "episodes": 1024.0,
+        "forecast_cache_hits": 0.0,
+        "forecast_requests": 4091.0,
+        "mean_decision_cpu_seconds": 0.021661015909179113,
+        "mean_decision_wall_seconds": 0.03473605792382273,
+        "mean_decisions": 3.9951171875,
+        "mean_forecast_cache_hits": 0.0,
+        "mean_forecast_requests": 3.9951171875,
+        "mean_native_calls": 4.9951171875,
+        "mean_observed_pipeline_wall_seconds": 0.04150540255103152,
+        "mean_realized_native_wall_seconds": 0.004206726093720192,
+        "mean_simulation_wall_seconds": 0.002562618533488603,
+        "native_calls": 5115.0,
+        "realized_native_wall_seconds": 4.307687519969477,
+        "simulation_wall_seconds": 2.6241213782923296
+      },
+      "fixed_cross7": {
+        "decision_cpu_seconds": 22.460549863000523,
+        "decision_wall_seconds": 35.95939561823616,
+        "decisions": 4089.0,
+        "episodes": 1024.0,
+        "forecast_cache_hits": 0.0,
+        "forecast_requests": 4089.0,
+        "mean_decision_cpu_seconds": 0.021934130725586448,
+        "mean_decision_wall_seconds": 0.03511659728343375,
+        "mean_decisions": 3.9931640625,
+        "mean_forecast_cache_hits": 0.0,
+        "mean_forecast_requests": 3.9931640625,
+        "mean_native_calls": 4.9931640625,
+        "mean_observed_pipeline_wall_seconds": 0.04200789597793175,
+        "mean_realized_native_wall_seconds": 0.004324244629998475,
+        "mean_simulation_wall_seconds": 0.00256705406449953,
+        "native_calls": 5113.0,
+        "realized_native_wall_seconds": 4.428026501118438,
+        "simulation_wall_seconds": 2.6286633620475186
+      },
+      "fixed_shared6": {
+        "decision_cpu_seconds": 21.97013241800029,
+        "decision_wall_seconds": 35.512274063970835,
+        "decisions": 4091.0,
+        "episodes": 1024.0,
+        "forecast_cache_hits": 0.0,
+        "forecast_requests": 4091.0,
+        "mean_decision_cpu_seconds": 0.021455207439453408,
+        "mean_decision_wall_seconds": 0.03467995514059652,
+        "mean_decisions": 3.9951171875,
+        "mean_forecast_cache_hits": 0.0,
+        "mean_forecast_requests": 3.9951171875,
+        "mean_native_calls": 4.9951171875,
+        "mean_observed_pipeline_wall_seconds": 0.04133731022643161,
+        "mean_realized_native_wall_seconds": 0.004131914455086871,
+        "mean_simulation_wall_seconds": 0.0025254406307482213,
+        "native_calls": 5115.0,
+        "realized_native_wall_seconds": 4.231080402008956,
+        "simulation_wall_seconds": 2.5860512058861786
+      },
+      "learned_threshold7": {
+        "decision_cpu_seconds": 22.244684767000443,
+        "decision_wall_seconds": 35.77070131432265,
+        "decisions": 4090.0,
+        "episodes": 1024.0,
+        "forecast_cache_hits": 0.0,
+        "forecast_requests": 4090.0,
+        "mean_decision_cpu_seconds": 0.02172332496777387,
+        "mean_decision_wall_seconds": 0.03493232550226821,
+        "mean_decisions": 3.994140625,
+        "mean_forecast_cache_hits": 0.0,
+        "mean_forecast_requests": 3.994140625,
+        "mean_native_calls": 4.994140625,
+        "mean_observed_pipeline_wall_seconds": 0.04152482983435846,
+        "mean_realized_native_wall_seconds": 0.004072792794971747,
+        "mean_simulation_wall_seconds": 0.0025197115371184964,
+        "native_calls": 5114.0,
+        "realized_native_wall_seconds": 4.170539822051069,
+        "simulation_wall_seconds": 2.5801846140093403
+      },
+      "ordinary_first_event": {
+        "decision_cpu_seconds": 21.082708654999863,
+        "decision_wall_seconds": 35.15710825994029,
+        "decisions": 4096.0,
+        "episodes": 1024.0,
+        "forecast_cache_hits": 0.0,
+        "forecast_requests": 4096.0,
+        "mean_decision_cpu_seconds": 0.020588582670898303,
+        "mean_decision_wall_seconds": 0.03433311353509794,
+        "mean_decisions": 4.0,
+        "mean_forecast_cache_hits": 0.0,
+        "mean_forecast_requests": 4.0,
+        "mean_native_calls": 5.0,
+        "mean_observed_pipeline_wall_seconds": 0.041354834701913035,
+        "mean_realized_native_wall_seconds": 0.004280025527229725,
+        "mean_simulation_wall_seconds": 0.002741695639585373,
+        "native_calls": 5120.0,
+        "realized_native_wall_seconds": 4.382746139883238,
+        "simulation_wall_seconds": 2.807496334935422
+      },
+      "stop": {
+        "decision_cpu_seconds": 0.011282419000019583,
+        "decision_wall_seconds": 0.012763430058839731,
+        "decisions": 1024.0,
+        "episodes": 1024.0,
+        "forecast_cache_hits": 0.0,
+        "forecast_requests": 0.0,
+        "mean_decision_cpu_seconds": 1.1017987304706624e-05,
+        "mean_decision_wall_seconds": 1.2464287166835675e-05,
+        "mean_decisions": 1.0,
+        "mean_forecast_cache_hits": 0.0,
+        "mean_forecast_requests": 0.0,
+        "mean_native_calls": 1.0,
+        "mean_observed_pipeline_wall_seconds": 0.004047408853672607,
+        "mean_realized_native_wall_seconds": 0.0040258667207808685,
+        "mean_simulation_wall_seconds": 9.077845724903e-06,
+        "native_calls": 1024.0,
+        "realized_native_wall_seconds": 4.122487522079609,
+        "simulation_wall_seconds": 0.009295714022300672
+      }
+    },
+    "compute_scope": "observed inference/simulation/native wall times; Python process CPU excludes native subprocess CPU; no cross-arm cache reuse",
+    "decisions_checked": 29673,
+    "episodes": 8192,
+    "fixed_replay_sample_rule": "first and last scenario per seed, all eight arms; selected before observing outcomes",
+    "float_accumulation_budget": "8 ULP of max(1, sum absolute instantaneous rewards), separate from exact Q32 verification",
+    "independent_native_paths_checked": 77397,
+    "maximum_actual_return_q32_error": 4.651978802172607e-10,
+    "maximum_float_accumulation_difference": 2.220446049250313e-16,
+    "native_replay_calls": 448,
+    "native_replay_episodes": 128,
+    "paired_initial_observations": 1024,
+    "pass": true,
+    "q32_reference": "exact Fraction.from_float, ties-even integer rounding, registered additive recursion",
+    "replay_records": [
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 0,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1103
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1103
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 2,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1103
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 3,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1103
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 4,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1103
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 5,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1103
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 6,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1103
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 7,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1103
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1016,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1103
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1017,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1103
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1018,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1103
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1019,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1103
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1020,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1103
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1021,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1103
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1022,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1103
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1023,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1103
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 0,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1151
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1151
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 2,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1151
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 3,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1151
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 4,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1151
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 5,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1151
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 6,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1151
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 7,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1151
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1016,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1151
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1017,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1151
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1018,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1151
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1019,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1151
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1020,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1151
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1021,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1151
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1022,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1151
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1023,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1151
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 0,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1201
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1201
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 2,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1201
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 3,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1201
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 4,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1201
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 5,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1201
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 6,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1201
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 7,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1201
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1016,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1201
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1017,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1201
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1018,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1201
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1019,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1201
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1020,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1201
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1021,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1201
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1022,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1201
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1023,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1201
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 0,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1213
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1213
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 2,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1213
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 3,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1213
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 4,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1213
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 5,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1213
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 6,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1213
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 7,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1213
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1016,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1213
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1017,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1213
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1018,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1213
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1019,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1213
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1020,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1213
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1021,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1213
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1022,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1213
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1023,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1213
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 0,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1223
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1223
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 2,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1223
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 3,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1223
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 4,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1223
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 5,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1223
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 6,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1223
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 7,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1223
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1016,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1223
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1017,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1223
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1018,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1223
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1019,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1223
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1020,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1223
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1021,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1223
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1022,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1223
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1023,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1223
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 0,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1231
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1231
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 2,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1231
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 3,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1231
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 4,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1231
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 5,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1231
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 6,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1231
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 7,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1231
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1016,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1231
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1017,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1231
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1018,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1231
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1019,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1231
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1020,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1231
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1021,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1231
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1022,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1231
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1023,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1231
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 0,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1237
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1237
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 2,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1237
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 3,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1237
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 4,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1237
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 5,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1237
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 6,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1237
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 7,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1237
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1016,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1237
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1017,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1237
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1018,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1237
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1019,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1237
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1020,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1237
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1021,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1237
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1022,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1237
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1023,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1237
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 0,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1249
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1249
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 2,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1249
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 3,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1249
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 4,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1249
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 5,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1249
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 6,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1249
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 7,
+        "realized_receipt_replayed": true,
+        "scenario_index": 0,
+        "seed": 1249
+      },
+      {
+        "arm": "ordinary_first_event",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1016,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1249
+      },
+      {
+        "arm": "endogenous_renewal",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1017,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1249
+      },
+      {
+        "arm": "learned_threshold7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1018,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1249
+      },
+      {
+        "arm": "fixed_shared6",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1019,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1249
+      },
+      {
+        "arm": "fixed_cross7",
+        "forecast_receipts_replayed": 4,
+        "line_index": 1020,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1249
+      },
+      {
+        "arm": "always_wait",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1021,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1249
+      },
+      {
+        "arm": "always_repair",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1022,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1249
+      },
+      {
+        "arm": "stop",
+        "forecast_receipts_replayed": 0,
+        "line_index": 1023,
+        "realized_receipt_replayed": true,
+        "scenario_index": 127,
+        "seed": 1249
+      }
+    ]
+  }
+}

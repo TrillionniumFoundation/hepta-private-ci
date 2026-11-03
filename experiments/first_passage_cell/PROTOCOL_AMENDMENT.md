@@ -1,0 +1,9 @@
+# Protocol amendment before confirmation
+
+Protocol V1 was committed as `c02d78e00908610aa0f0205022df3813b292d0cb`. No confirmation or stress evaluation had started when this amendment was made. Independent code review found that `ordinary_first_event` already selects actions from a cost- and deadline-dependent value estimate. Its difference from `endogenous_renewal` identifies the contribution of repeated failures and resets, rather than the distinction between an ordinary learned threshold and a value-derived boundary.
+
+V2 adds `learned_threshold7`: the same six jointly fitted physical coefficients and one distance threshold selected from 17 fixed values in [0.05, 0.85] on the registered policy-development cohort. Fixed and learned distance thresholds share the native negative-continuation STOP guard. All arms receive the same public state, price, legal actions, and remaining time. The learned constant threshold does not explicitly adapt its REPAIR gate to price or remaining time; this is a declared structural constraint, not missing information.
+
+Both original primary comparisons remain. The new endogenous-minus-learned-threshold comparison joins the same family, with a two-sided Bonferroni family alpha of 0.05 across three comparisons. Every lower bound must exceed 0.005 and every seed mean must be positive for that comparison to pass. The first-event arm remains a stronger cost/time-aware renewal ablation. The fixed-cross7 arm matches parameter count while placing its extra coefficient in drift; fixed-shared6 remains the pure shared-dynamics structural control.
+
+This study can compare these specified policy classes. It cannot establish superiority over arbitrary learned boundaries, exact optimal control, or all spiking architectures. The deployed MPC policy replans, while its per-action forecast uses WAIT_AFTER_CURRENT. Neither that policy mismatch nor Q32 quantization is hidden in the physical likelihood or external task costs.

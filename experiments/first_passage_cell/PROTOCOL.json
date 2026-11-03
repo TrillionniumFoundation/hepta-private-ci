@@ -1,0 +1,153 @@
+{
+  "schema": "HeptaFirstPassageProtocolV2",
+  "registered_date": "2026-10-28",
+  "base_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+  "prior_analytic_round2_commit": "ecbfadf12a0347919553220fc0684b16e088347b",
+  "work_packages": [
+    "event_reset_contract",
+    "analytic_kernels_gradients",
+    "joint_trainable_cell",
+    "boundary_mechanisms",
+    "native_ndu_value_interface"
+  ],
+  "seeds": [
+    1103,
+    1151,
+    1201,
+    1213,
+    1223,
+    1231,
+    1237,
+    1249
+  ],
+  "data": {
+    "training_trajectories_per_seed": 512,
+    "development_trajectories_per_seed": 128,
+    "policy_development_episodes_per_seed": 128,
+    "confirmation_episodes_per_seed": 256,
+    "stress_episodes_per_seed": 128,
+    "stream_roles": [
+      "training",
+      "development",
+      "policy_development",
+      "confirmation",
+      "stress_drift",
+      "stress_diffusion"
+    ],
+    "policy_sees_true_parameters": false
+  },
+  "simulator": {
+    "mu0": -0.55,
+    "weights": [
+      -0.18,
+      0.16
+    ],
+    "sigma": 0.32,
+    "boundary": 0.12,
+    "reset_distance": 0.9,
+    "inputs_uniform": [
+      -1,
+      1
+    ],
+    "initial_distance_uniform": [
+      0.08,
+      1.4
+    ]
+  },
+  "task": {
+    "total_time": 2,
+    "control_interval": 0.5,
+    "operating_rate": 0.6,
+    "failure_cost": 0.5,
+    "refractory_time": 0.06,
+    "maintenance_refractory_time": 0.06,
+    "maintenance_cost_uniform": [
+      0.05,
+      0.4
+    ],
+    "stop_continuation": 0,
+    "inputs_and_price_constant_within_episode": true,
+    "cost_units": "registered_task_units_not_currency",
+    "maintenance_cost_paid_on_execution": true
+  },
+  "policies": {
+    "primary": [
+      "learned_threshold7",
+      "ordinary_first_event",
+      "endogenous_renewal"
+    ],
+    "references": [
+      "fixed_shared6",
+      "fixed_cross7",
+      "always_wait",
+      "always_repair",
+      "stop"
+    ],
+    "bias_grid": {
+      "start": -0.08,
+      "stop": 0.08,
+      "count": 17
+    },
+    "selection": "maximum paired development mean realized utility; canonical first-index tie break",
+    "common_physical_parameters": 6,
+    "primary_policy_parameters": 1,
+    "fixed_cross_extra_feature": "u1*u2",
+    "fixed_boundary_distance": 0.35,
+    "parameter_budget_caveat": "fixed_cross7 matches count but allocates extra capacity to physical drift; fixed_shared6 is the pure structural comparison",
+    "plan_policy": "WAIT_AFTER_CURRENT",
+    "deployment_policy": "MPC_REPLAN_EACH_HALF",
+    "learned_threshold_grid": {
+      "start": 0.05,
+      "stop": 0.85,
+      "count": 17
+    },
+    "ordinary_threshold_information": "Same full public observation; a learned constant distance repair threshold with common native negative-continuation STOP guard. Price and deadline do not explicitly parameterize this repair gate.",
+    "first_event_interpretation": "Cost/time-sensitive value boundary with only the first failure; retained as a stronger renewal ablation."
+  },
+  "value_profile": {
+    "family": "registered_native_additive_signed_q32",
+    "api": "evaluate_recursive_utility",
+    "selector_api": "evaluate_candidates_with_policy",
+    "selector_receipt": "NduEvaluationReceiptV2",
+    "discount_per_step": 1,
+    "unknown_profiles": "reject",
+    "entropic_profile_supported": false
+  },
+  "statistics": {
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 2026102807,
+    "unit": "model seed then paired whole episode",
+    "family_alpha": 0.05,
+    "primary_comparisons": [
+      "endogenous_renewal-minus-ordinary_first_event",
+      "endogenous_renewal-minus-fixed_cross7",
+      "endogenous_renewal-minus-learned_threshold7"
+    ],
+    "minimum_mean_gain": 0.005,
+    "pass_rule": "family-adjusted empirical lower bound > .005 and all seed means positive",
+    "population_guarantee": false,
+    "interval_rule": "Two-sided Bonferroni: alpha/(2*3) in each tail; all previous comparisons retained."
+  },
+  "stress": {
+    "drift_shift": -0.15,
+    "diffusion_multiplier": 1.25,
+    "interpretation": "descriptive prespecified model mismatch; not population robustness certification"
+  },
+  "validation": {
+    "kernel_reference": "independent quadrature plus derivatives and killed mass/composition",
+    "runtime": "multiple events, leftover time, refractoriness, checkpoint replay, identity mismatch",
+    "training": "all six common parameter groups active and actual optimizer/parameter deltas retained",
+    "native": "exact source and binary bound; independent finite-tree/path arithmetic; V2 candidate identities",
+    "quantization": "Q32 rounding error separate from distribution/model/plan error"
+  },
+  "limits": {
+    "max_event_count_per_segment": 128,
+    "confirmation_not_started": true,
+    "production_authorized": false
+  },
+  "amendment": {
+    "date": "2026-10-28",
+    "confirmation_started": false,
+    "reason": "Independent review identified first-event comparator as a value-boundary renewal ablation, not an ordinary trainable threshold. Add an ordinary threshold family; retain previous primary comparisons and strengthen multiplicity adjustment."
+  }
+}

@@ -1,0 +1,3843 @@
+{
+  "checks": 294,
+  "counts": {
+    "F_integral": 9,
+    "H_integral": 9,
+    "analytic_log_gradient": 120,
+    "belief_mass": 1,
+    "boundary_expansion_seam": 10,
+    "boundary_survival_linear_limit": 5,
+    "boundary_values": 3,
+    "continuous_semigroup": 4,
+    "density_reference": 9,
+    "discount_bounds": 9,
+    "discount_log_bounds_grid": 1,
+    "extreme_gradient_finite": 8,
+    "extreme_log_finite": 8,
+    "extreme_mass": 8,
+    "first_hit_time_composition": 4,
+    "grid_row_mass": 1,
+    "invalid_input_rejected": 5,
+    "killed_cdf_integral": 27,
+    "killed_log_gradient": 15,
+    "killed_mass": 9,
+    "log_survival_tail_retained": 1,
+    "mass_conservation": 9,
+    "missing_not_survival": 1,
+    "missing_preserves_event_atom": 1,
+    "missing_retains_prior_event_atom": 1,
+    "observed_event_is_cumulative_cycle": 1,
+    "rare_hit_discount_log_gradient": 2,
+    "sensor_conditions": 1,
+    "sensor_semantics_rejected": 1,
+    "survival_conditions": 1,
+    "tiny_killed_log_density": 2,
+    "tiny_killed_log_gradient": 2,
+    "underflowed_density_retains_gradient": 2,
+    "zero_discount_gradient": 4
+  },
+  "max_errors": {
+    "F_integral": 2.220446049250313e-16,
+    "H_integral": 4.107825191113079e-15,
+    "analytic_log_gradient": 5.9211894646675e-10,
+    "belief_mass": 0.0,
+    "boundary_expansion_seam": 1.3216094885137863e-12,
+    "boundary_survival_linear_limit": 1.000001748074908e-09,
+    "boundary_values": 0.0,
+    "continuous_semigroup": 1.1102230246251565e-16,
+    "density_reference": 1.7763568394002505e-15,
+    "discount_bounds": 0.0,
+    "discount_log_bounds_grid": 0.0,
+    "extreme_gradient_finite": 0.0,
+    "extreme_log_finite": 0.0,
+    "extreme_mass": 0.0,
+    "first_hit_time_composition": 1.942890293094024e-16,
+    "grid_row_mass": 3.3306690738754696e-16,
+    "invalid_input_rejected": 0.0,
+    "killed_cdf_integral": 1.942890293094024e-16,
+    "killed_log_gradient": 5.14892919695211e-10,
+    "killed_mass": 1.1102230246251565e-16,
+    "log_survival_tail_retained": 0.0,
+    "mass_conservation": 0.0,
+    "missing_not_survival": 0.0,
+    "missing_preserves_event_atom": 0.0,
+    "missing_retains_prior_event_atom": 0.0,
+    "observed_event_is_cumulative_cycle": 0.0,
+    "rare_hit_discount_log_gradient": 3.3306690738754696e-16,
+    "sensor_conditions": 2.220446049250313e-16,
+    "sensor_semantics_rejected": 0.0,
+    "survival_conditions": 2.220446049250313e-16,
+    "tiny_killed_log_density": 1.1368683772161603e-13,
+    "tiny_killed_log_gradient": 0.0,
+    "underflowed_density_retains_gradient": 1.1401990462900358e-13,
+    "zero_discount_gradient": 1.1102230246251565e-16
+  },
+  "numpy": "2.3.5",
+  "pass": true,
+  "records": [
+    {
+      "check": "F_integral",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2
+      ],
+      "error": 2.220446049250313e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2
+      ],
+      "error": 8.326672684688674e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2
+      ],
+      "error": 2.220446049250313e-16,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2,
+        0.03
+      ],
+      "error": 1.8561541192951836e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2,
+        0.7
+      ],
+      "error": 1.942890293094024e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.08,
+        -0.6,
+        0.35,
+        0.2,
+        2.5
+      ],
+      "error": 8.326672684688674e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "F_integral",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0
+      ],
+      "error": 4.107825191113079e-15,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0
+      ],
+      "error": 2.7755575615628914e-17,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0,
+        0.03
+      ],
+      "error": 1.235990476633475e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0,
+        0.7
+      ],
+      "error": 8.326672684688674e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.7,
+        -0.4,
+        0.6,
+        2.0,
+        2.5
+      ],
+      "error": 1.6653345369377348e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "F_integral",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        0.03
+      ],
+      "error": 3.2526065174565133e-18,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        0.7
+      ],
+      "error": 2.7755575615628914e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        2.5
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "F_integral",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5
+      ],
+      "error": 0.0,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5
+      ],
+      "error": 0.0,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5
+      ],
+      "error": 5.551115123125783e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5
+      ],
+      "error": 1.3877787807814457e-17,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5,
+        0.03
+      ],
+      "error": 1.5943870572757146e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5,
+        0.7
+      ],
+      "error": 1.8041124150158794e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.2,
+        0.4,
+        0.8,
+        1.5,
+        2.5
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "F_integral",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0
+      ],
+      "error": 2.710505431213761e-20,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0
+      ],
+      "error": 6.098637220230962e-20,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0
+      ],
+      "error": 1.4823076576950256e-21,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0,
+        0.03
+      ],
+      "error": 7.866487625379293e-22,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0,
+        0.7
+      ],
+      "error": 3.049318610115481e-20,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        1.2,
+        1.0,
+        0.5,
+        3.0,
+        2.5
+      ],
+      "error": 6.938893903907228e-18,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "F_integral",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4
+      ],
+      "error": 4.5102810375396984e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4
+      ],
+      "error": 2.42861286636753e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4
+      ],
+      "error": 0.0,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4
+      ],
+      "error": 3.0531133177191805e-16,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4,
+        0.03
+      ],
+      "error": 3.7269449679189215e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4,
+        0.7
+      ],
+      "error": 4.163336342344337e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        2.0,
+        -0.8,
+        1.2,
+        0.4,
+        2.5
+      ],
+      "error": 0.0,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "F_integral",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0
+      ],
+      "error": 1.0124690697649059e-21,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0
+      ],
+      "error": 4.764560328305439e-22,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0,
+        0.03
+      ],
+      "error": 3.996068180213049e-20,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0,
+        0.7
+      ],
+      "error": 2.895793888425639e-20,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.01,
+        -1.0,
+        0.4,
+        3.0,
+        2.5
+      ],
+      "error": 2.08184816567346e-20,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "F_integral",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3
+      ],
+      "error": 3.158525108795067e-32,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3
+      ],
+      "error": 1.0400021699691074e-32,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3
+      ],
+      "error": 1.035379938102578e-30,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3,
+        0.03
+      ],
+      "error": 5.585196838722984e-33,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3,
+        0.7
+      ],
+      "error": 1.655976812239948e-26,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        3.0,
+        1.2,
+        0.7,
+        0.3,
+        2.5
+      ],
+      "error": 6.938893903907228e-18,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "F_integral",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "H_integral",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_mass",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "mass_conservation",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "discount_bounds",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03
+      ],
+      "error": 0.0,
+      "tolerance": 3e-15
+    },
+    {
+      "check": "density_reference",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03
+      ],
+      "error": 1.7763568394002505e-15,
+      "tolerance": 3e-13
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03,
+        0.03
+      ],
+      "error": 6.917209860457518e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03,
+        0.7
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_cdf_integral",
+      "detail": [
+        0.15,
+        0.0,
+        2.0,
+        0.03,
+        2.5
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "continuous_semigroup",
+      "detail": [
+        1.0,
+        -0.2,
+        0.7,
+        0.4,
+        0.8,
+        0.9
+      ],
+      "error": 5.551115123125783e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "first_hit_time_composition",
+      "detail": null,
+      "error": 1.942890293094024e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "continuous_semigroup",
+      "detail": [
+        0.2,
+        0.5,
+        0.4,
+        0.1,
+        0.7,
+        0.3
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "first_hit_time_composition",
+      "detail": null,
+      "error": 5.551115123125783e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "continuous_semigroup",
+      "detail": [
+        0.8,
+        0.0,
+        1.0,
+        0.3,
+        0.2,
+        1.5
+      ],
+      "error": 5.551115123125783e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "first_hit_time_composition",
+      "detail": null,
+      "error": 1.942890293094024e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "continuous_semigroup",
+      "detail": [
+        2.0,
+        -0.8,
+        0.8,
+        0.6,
+        0.5,
+        0.2
+      ],
+      "error": 0.0,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "first_hit_time_composition",
+      "detail": null,
+      "error": 5.551115123125783e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_F",
+        "x"
+      ],
+      "error": 1.3910503139581562e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_S",
+        "x"
+      ],
+      "error": 8.419212039517018e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_f",
+        "x"
+      ],
+      "error": 1.1102230246251564e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_H",
+        "x"
+      ],
+      "error": 2.625964391433944e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_F",
+        "mu"
+      ],
+      "error": 5.138522940484336e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_S",
+        "mu"
+      ],
+      "error": 4.227677360975831e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_f",
+        "mu"
+      ],
+      "error": 4.1259773375657005e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_H",
+        "mu"
+      ],
+      "error": 1.0689638063610118e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_F",
+        "sigma"
+      ],
+      "error": 3.676246134509658e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_S",
+        "sigma"
+      ],
+      "error": 2.431754816259912e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_f",
+        "sigma"
+      ],
+      "error": 1.1102230246251564e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_H",
+        "sigma"
+      ],
+      "error": 1.2624683767773126e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_F",
+        "horizon"
+      ],
+      "error": 3.683216447377367e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_S",
+        "horizon"
+      ],
+      "error": 7.004687325078615e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_f",
+        "horizon"
+      ],
+      "error": 1.3452572389383022e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_H",
+        "horizon"
+      ],
+      "error": 8.132189898838347e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_F",
+        "discount"
+      ],
+      "error": 0.0,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_S",
+        "discount"
+      ],
+      "error": 0.0,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_f",
+        "discount"
+      ],
+      "error": 1.8503717077085938e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.2
+        ],
+        "log_H",
+        "discount"
+      ],
+      "error": 1.2591497156253277e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_F",
+        "x"
+      ],
+      "error": 2.058292109686434e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_S",
+        "x"
+      ],
+      "error": 5.066771465849023e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_f",
+        "x"
+      ],
+      "error": 3.0305218297588752e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_H",
+        "x"
+      ],
+      "error": 7.777942224267231e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_F",
+        "mu"
+      ],
+      "error": 9.139872879322701e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_S",
+        "mu"
+      ],
+      "error": 2.8198784944171655e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_f",
+        "mu"
+      ],
+      "error": 5.3717949628725335e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_H",
+        "mu"
+      ],
+      "error": 7.665784950032347e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_F",
+        "sigma"
+      ],
+      "error": 1.4553122384288567e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_S",
+        "sigma"
+      ],
+      "error": 8.846122278803803e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_f",
+        "sigma"
+      ],
+      "error": 6.918414276091655e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_H",
+        "sigma"
+      ],
+      "error": 1.712376696888493e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_F",
+        "horizon"
+      ],
+      "error": 8.182763377372519e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_S",
+        "horizon"
+      ],
+      "error": 1.0372746546639062e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_f",
+        "horizon"
+      ],
+      "error": 1.053001585103369e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_H",
+        "horizon"
+      ],
+      "error": 3.908760045806295e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_F",
+        "discount"
+      ],
+      "error": 8.673617379884034e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_S",
+        "discount"
+      ],
+      "error": 3.7007434154171876e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_f",
+        "discount"
+      ],
+      "error": 9.251858538542969e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.4,
+          -0.7,
+          0.6,
+          1.3,
+          0.4
+        ],
+        "log_H",
+        "discount"
+      ],
+      "error": 4.876145307602132e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_F",
+        "x"
+      ],
+      "error": 2.2790453317447485e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_S",
+        "x"
+      ],
+      "error": 5.055555737660518e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_f",
+        "x"
+      ],
+      "error": 1.3752070285280221e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_H",
+        "x"
+      ],
+      "error": 1.900796407147048e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_F",
+        "mu"
+      ],
+      "error": 2.900026873026821e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_S",
+        "mu"
+      ],
+      "error": 4.758934470568671e-14,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_f",
+        "mu"
+      ],
+      "error": 1.9554919381146385e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_H",
+        "mu"
+      ],
+      "error": 8.113833314519132e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_F",
+        "sigma"
+      ],
+      "error": 6.6613581971201715e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_S",
+        "sigma"
+      ],
+      "error": 1.2879011423029352e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_f",
+        "sigma"
+      ],
+      "error": 1.2733152076236102e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_H",
+        "sigma"
+      ],
+      "error": 2.590402641170032e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_F",
+        "horizon"
+      ],
+      "error": 2.5580031529736952e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_S",
+        "horizon"
+      ],
+      "error": 2.0275637781617937e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_f",
+        "horizon"
+      ],
+      "error": 2.4716684708849724e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_H",
+        "horizon"
+      ],
+      "error": 1.7836984904918672e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_F",
+        "discount"
+      ],
+      "error": 0.0,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_S",
+        "discount"
+      ],
+      "error": 1.927470528863119e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_f",
+        "discount"
+      ],
+      "error": 0.0,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          1.1,
+          0.5,
+          0.7,
+          0.8,
+          0.3
+        ],
+        "log_H",
+        "discount"
+      ],
+      "error": 2.4047600955882395e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_F",
+        "x"
+      ],
+      "error": 3.667176946561265e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_S",
+        "x"
+      ],
+      "error": 4.9091460228597706e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_f",
+        "x"
+      ],
+      "error": 4.709087150723802e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_H",
+        "x"
+      ],
+      "error": 1.7513361366705057e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_F",
+        "mu"
+      ],
+      "error": 3.207382350396818e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_S",
+        "mu"
+      ],
+      "error": 3.316572089692384e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_f",
+        "mu"
+      ],
+      "error": 9.251853117532107e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_H",
+        "mu"
+      ],
+      "error": 1.941565091112945e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_F",
+        "sigma"
+      ],
+      "error": 6.991972098975478e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_S",
+        "sigma"
+      ],
+      "error": 5.6803141291979005e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_f",
+        "sigma"
+      ],
+      "error": 7.751429128196227e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_H",
+        "sigma"
+      ],
+      "error": 7.137764586807994e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_F",
+        "horizon"
+      ],
+      "error": 3.050041649673447e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_S",
+        "horizon"
+      ],
+      "error": 1.1484565886138132e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_f",
+        "horizon"
+      ],
+      "error": 2.6721957979702893e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_H",
+        "horizon"
+      ],
+      "error": 1.9372550015726534e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_F",
+        "discount"
+      ],
+      "error": 5.782411586589356e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_S",
+        "discount"
+      ],
+      "error": 7.401486830834375e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_f",
+        "discount"
+      ],
+      "error": 7.401486830834375e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.02,
+          -0.2,
+          0.8,
+          0.1,
+          0.05
+        ],
+        "log_H",
+        "discount"
+      ],
+      "error": 1.47294846984172e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_F",
+        "x"
+      ],
+      "error": 1.490364875819864e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_S",
+        "x"
+      ],
+      "error": 3.5841106367811066e-26,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_f",
+        "x"
+      ],
+      "error": 7.933200695860564e-13,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_H",
+        "x"
+      ],
+      "error": 1.0928716623603478e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_F",
+        "mu"
+      ],
+      "error": 1.7036929242448875e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_S",
+        "mu"
+      ],
+      "error": 6.573364930762254e-25,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_f",
+        "mu"
+      ],
+      "error": 1.0722232404273306e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_H",
+        "mu"
+      ],
+      "error": 1.4237082596079998e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_F",
+        "sigma"
+      ],
+      "error": 1.5986330912703516e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_S",
+        "sigma"
+      ],
+      "error": 8.79011929469621e-25,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_f",
+        "sigma"
+      ],
+      "error": 2.574578595453924e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_H",
+        "sigma"
+      ],
+      "error": 2.0036369218807622e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_F",
+        "horizon"
+      ],
+      "error": 6.2480640662371086e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_S",
+        "horizon"
+      ],
+      "error": 1.633636271404025e-25,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_f",
+        "horizon"
+      ],
+      "error": 1.5578660618573677e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_H",
+        "horizon"
+      ],
+      "error": 6.224500764740484e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_F",
+        "discount"
+      ],
+      "error": 1.691768418476429e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_S",
+        "discount"
+      ],
+      "error": 1.1739001565788866e-27,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_f",
+        "discount"
+      ],
+      "error": 1.268826313857322e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          3.0,
+          0.2,
+          0.6,
+          0.4,
+          0.7
+        ],
+        "log_H",
+        "discount"
+      ],
+      "error": 3.438645184189871e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_F",
+        "x"
+      ],
+      "error": 2.2991508854847312e-24,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_S",
+        "x"
+      ],
+      "error": 4.126037127709922e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_f",
+        "x"
+      ],
+      "error": 2.8478789040755926e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_H",
+        "x"
+      ],
+      "error": 1.2464327983753528e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_F",
+        "mu"
+      ],
+      "error": 2.572923484919846e-24,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_S",
+        "mu"
+      ],
+      "error": 1.6535653759205426e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_f",
+        "mu"
+      ],
+      "error": 1.3176322367224248e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_H",
+        "mu"
+      ],
+      "error": 3.6553059957346704e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_F",
+        "sigma"
+      ],
+      "error": 6.659008403798123e-24,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_S",
+        "sigma"
+      ],
+      "error": 1.1587072968868244e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_f",
+        "sigma"
+      ],
+      "error": 2.166919664814226e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_H",
+        "sigma"
+      ],
+      "error": 5.5308844679322885e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_F",
+        "horizon"
+      ],
+      "error": 4.273085974183055e-25,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_S",
+        "horizon"
+      ],
+      "error": 9.404569682128111e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_f",
+        "horizon"
+      ],
+      "error": 6.797534990723778e-12,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_H",
+        "horizon"
+      ],
+      "error": 2.706353759078802e-14,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_F",
+        "discount"
+      ],
+      "error": 0.0,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_S",
+        "discount"
+      ],
+      "error": 5.9211894646675e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_f",
+        "discount"
+      ],
+      "error": 5.9211894646675e-10,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "analytic_log_gradient",
+      "detail": [
+        [
+          0.3,
+          -2.0,
+          0.5,
+          4.0,
+          0.2
+        ],
+        "log_H",
+        "discount"
+      ],
+      "error": 1.7178992374198523e-11,
+      "tolerance": 3e-06
+    },
+    {
+      "check": "zero_discount_gradient",
+      "detail": [
+        1.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "error": 8.326672684688674e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "zero_discount_gradient",
+      "detail": [
+        0.1,
+        0.0,
+        0.7,
+        0.5
+      ],
+      "error": 1.3877787807814457e-17,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "zero_discount_gradient",
+      "detail": [
+        20.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "error": 2.0156368997172363e-94,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "zero_discount_gradient",
+      "detail": [
+        0.2,
+        -0.5,
+        0.6,
+        2.0
+      ],
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "rare_hit_discount_log_gradient",
+      "detail": 20.0,
+      "error": 3.3306690738754696e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "rare_hit_discount_log_gradient",
+      "detail": 50.0,
+      "error": 1.1102230246251565e-16,
+      "tolerance": 3e-11
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.2,
+          0.4,
+          -0.3,
+          0.7,
+          0.5
+        ],
+        "x"
+      ],
+      "error": 2.3201696797300343e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.2,
+          0.4,
+          -0.3,
+          0.7,
+          0.5
+        ],
+        "y"
+      ],
+      "error": 6.474012497889059e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.2,
+          0.4,
+          -0.3,
+          0.7,
+          0.5
+        ],
+        "mu"
+      ],
+      "error": 3.438268188678724e-12,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.2,
+          0.4,
+          -0.3,
+          0.7,
+          0.5
+        ],
+        "sigma"
+      ],
+      "error": 3.2324814639259406e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.2,
+          0.4,
+          -0.3,
+          0.7,
+          0.5
+        ],
+        "horizon"
+      ],
+      "error": 2.0108223535326946e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          1.0,
+          1.2,
+          0.2,
+          0.8,
+          1.0
+        ],
+        "x"
+      ],
+      "error": 2.0920679650789635e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          1.0,
+          1.2,
+          0.2,
+          0.8,
+          1.0
+        ],
+        "y"
+      ],
+      "error": 1.7677823308756735e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          1.0,
+          1.2,
+          0.2,
+          0.8,
+          1.0
+        ],
+        "mu"
+      ],
+      "error": 8.673617379884034e-17,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          1.0,
+          1.2,
+          0.2,
+          0.8,
+          1.0
+        ],
+        "sigma"
+      ],
+      "error": 1.793261712259254e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          1.0,
+          1.2,
+          0.2,
+          0.8,
+          1.0
+        ],
+        "horizon"
+      ],
+      "error": 4.540609254682329e-12,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.01,
+          0.02,
+          -1.0,
+          0.3,
+          0.2
+        ],
+        "x"
+      ],
+      "error": 4.578288246051725e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.01,
+          0.02,
+          -1.0,
+          0.3,
+          0.2
+        ],
+        "y"
+      ],
+      "error": 1.441392811436096e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.01,
+          0.02,
+          -1.0,
+          0.3,
+          0.2
+        ],
+        "mu"
+      ],
+      "error": 4.585798407674701e-12,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.01,
+          0.02,
+          -1.0,
+          0.3,
+          0.2
+        ],
+        "sigma"
+      ],
+      "error": 5.14892919695211e-10,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "killed_log_gradient",
+      "detail": [
+        [
+          0.01,
+          0.02,
+          -1.0,
+          0.3,
+          0.2
+        ],
+        "horizon"
+      ],
+      "error": 3.246508787221037e-11,
+      "tolerance": 3e-07
+    },
+    {
+      "check": "extreme_log_finite",
+      "detail": [
+        1e-12,
+        -10.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_gradient_finite",
+      "detail": [
+        1e-12,
+        -10.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_mass",
+      "detail": [
+        1e-12,
+        -10.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "extreme_log_finite",
+      "detail": [
+        1e-10,
+        0.0,
+        1.0,
+        1.0,
+        1e-18
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_gradient_finite",
+      "detail": [
+        1e-10,
+        0.0,
+        1.0,
+        1.0,
+        1e-18
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_mass",
+      "detail": [
+        1e-10,
+        0.0,
+        1.0,
+        1.0,
+        1e-18
+      ],
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "extreme_log_finite",
+      "detail": [
+        30.0,
+        0.0,
+        1.0,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_gradient_finite",
+      "detail": [
+        30.0,
+        0.0,
+        1.0,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_mass",
+      "detail": [
+        30.0,
+        0.0,
+        1.0,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "extreme_log_finite",
+      "detail": [
+        1.0,
+        10.0,
+        0.1,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_gradient_finite",
+      "detail": [
+        1.0,
+        10.0,
+        0.1,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_mass",
+      "detail": [
+        1.0,
+        10.0,
+        0.1,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "extreme_log_finite",
+      "detail": [
+        0.1,
+        -10.0,
+        0.1,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_gradient_finite",
+      "detail": [
+        0.1,
+        -10.0,
+        0.1,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_mass",
+      "detail": [
+        0.1,
+        -10.0,
+        0.1,
+        1.0,
+        0.1
+      ],
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "extreme_log_finite",
+      "detail": [
+        0.001,
+        0.0,
+        0.2,
+        1e-08,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_gradient_finite",
+      "detail": [
+        0.001,
+        0.0,
+        0.2,
+        1e-08,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_mass",
+      "detail": [
+        0.001,
+        0.0,
+        0.2,
+        1e-08,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "extreme_log_finite",
+      "detail": [
+        0.1,
+        0.3,
+        0.2,
+        1e-08,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_gradient_finite",
+      "detail": [
+        0.1,
+        0.3,
+        0.2,
+        1e-08,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_mass",
+      "detail": [
+        0.1,
+        0.3,
+        0.2,
+        1e-08,
+        1.0
+      ],
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "extreme_log_finite",
+      "detail": [
+        1.0,
+        -1.0,
+        0.01,
+        100.0,
+        1e-09
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_gradient_finite",
+      "detail": [
+        1.0,
+        -1.0,
+        0.01,
+        100.0,
+        1e-09
+      ],
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "extreme_mass",
+      "detail": [
+        1.0,
+        -1.0,
+        0.01,
+        100.0,
+        1e-09
+      ],
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "log_survival_tail_retained",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 2e-14
+    },
+    {
+      "check": "boundary_survival_linear_limit",
+      "detail": -10.0,
+      "error": 9.999913119784765e-10,
+      "tolerance": 2e-08
+    },
+    {
+      "check": "boundary_survival_linear_limit",
+      "detail": -1.0,
+      "error": 1.0000011929633956e-10,
+      "tolerance": 2e-08
+    },
+    {
+      "check": "boundary_survival_linear_limit",
+      "detail": 0.0,
+      "error": 1.6653345369377348e-15,
+      "tolerance": 2e-08
+    },
+    {
+      "check": "boundary_survival_linear_limit",
+      "detail": 1.0,
+      "error": 1.0000344996541344e-10,
+      "tolerance": 2e-08
+    },
+    {
+      "check": "boundary_survival_linear_limit",
+      "detail": 10.0,
+      "error": 1.000001748074908e-09,
+      "tolerance": 2e-08
+    },
+    {
+      "check": "tiny_killed_log_density",
+      "detail": 1e-150,
+      "error": 0.0,
+      "tolerance": 3e-12
+    },
+    {
+      "check": "tiny_killed_log_gradient",
+      "detail": 1e-150,
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "underflowed_density_retains_gradient",
+      "detail": 1e-150,
+      "error": 3.375077994860476e-14,
+      "tolerance": 3e-12
+    },
+    {
+      "check": "tiny_killed_log_density",
+      "detail": 1e-200,
+      "error": 1.1368683772161603e-13,
+      "tolerance": 3e-12
+    },
+    {
+      "check": "tiny_killed_log_gradient",
+      "detail": 1e-200,
+      "error": 0.0,
+      "tolerance": 3e-14
+    },
+    {
+      "check": "underflowed_density_retains_gradient",
+      "detail": 1e-200,
+      "error": 1.1401990462900358e-13,
+      "tolerance": 3e-12
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        -10.0,
+        0.99999
+      ],
+      "error": 7.105427357601002e-15,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        -10.0,
+        1.00001
+      ],
+      "error": 1.3216094885137863e-12,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        -1.0,
+        0.99999
+      ],
+      "error": 8.881784197001252e-16,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        -1.0,
+        1.00001
+      ],
+      "error": 0.0,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        0.0,
+        0.99999
+      ],
+      "error": 0.0,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        0.0,
+        1.00001
+      ],
+      "error": 1.3322676295501878e-15,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        1.0,
+        0.99999
+      ],
+      "error": 0.0,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        1.0,
+        1.00001
+      ],
+      "error": 8.881784197001252e-16,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        10.0,
+        0.99999
+      ],
+      "error": 5.773159728050814e-15,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "boundary_expansion_seam",
+      "detail": [
+        10.0,
+        1.00001
+      ],
+      "error": 3.1086244689504383e-15,
+      "tolerance": 2e-10
+    },
+    {
+      "check": "discount_log_bounds_grid",
+      "detail": {
+        "parameter_tuples": 720
+      },
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "boundary_values",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "boundary_values",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "boundary_values",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "invalid_input_rejected",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "invalid_input_rejected",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "invalid_input_rejected",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "invalid_input_rejected",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "invalid_input_rejected",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "grid_row_mass",
+      "detail": null,
+      "error": 3.3306690738754696e-16,
+      "tolerance": 5e-12
+    },
+    {
+      "check": "missing_preserves_event_atom",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "belief_mass",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 5e-12
+    },
+    {
+      "check": "survival_conditions",
+      "detail": null,
+      "error": 2.220446049250313e-16,
+      "tolerance": 5e-12
+    },
+    {
+      "check": "sensor_conditions",
+      "detail": null,
+      "error": 2.220446049250313e-16,
+      "tolerance": 5e-12
+    },
+    {
+      "check": "missing_not_survival",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "sensor_semantics_rejected",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "observed_event_is_cumulative_cycle",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    },
+    {
+      "check": "missing_retains_prior_event_atom",
+      "detail": null,
+      "error": 0.0,
+      "tolerance": 0.0
+    }
+  ],
+  "reference": "independent scalar image/fpt formulas + scipy.integrate.quad",
+  "schema": "hepta.first_passage.kernel_validation.v1",
+  "scope": "deterministic numeric and contract validation; no network efficacy claim",
+  "source_sha256": {
+    "filtering.py": "775218483169a5b4d945c72e53d944d475683c9d3924e78e6748f2d6c4f17244",
+    "kernels.py": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+    "validate_kernels.py": "3c2af07a26988329369e10e2d22ea7bb37695739ade71a1a1760cfc9d3b953a6"
+  },
+  "wall_seconds": 13.914841240999522
+}

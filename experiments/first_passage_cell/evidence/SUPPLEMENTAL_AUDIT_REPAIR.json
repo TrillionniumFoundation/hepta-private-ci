@@ -1,0 +1,37 @@
+{
+  "examples": [
+    {
+      "arm": "fixed_shared6",
+      "difference": 1.1102230246251565e-16,
+      "line_index": 27,
+      "phase": "stress_drift",
+      "reward_terms": [
+        0.3,
+        0.105896408232077,
+        0.3,
+        -0.236
+      ],
+      "seed": 1103
+    },
+    {
+      "arm": "ordinary_first_event",
+      "difference": -1.1102230246251565e-16,
+      "line_index": 48,
+      "phase": "stress_diffusion",
+      "reward_terms": [
+        0.3,
+        0.08589888977019605,
+        0.3,
+        0.3
+      ],
+      "seed": 1103
+    }
+  ],
+  "initial_audit_failure": "Two stress supplemental passes rejected exact float equality between repeated task accumulation and Python3.12 improved sum; native Q32 values and exact-rational native paths matched. No final audit receipt was written.",
+  "new_helper_sha256": "f7ba0ed208925ee72d813eee14ad32bb7b638d8330fe94182f6ac1a626de8c7b",
+  "old_helper_sha256": "fc58c6c55b0459d8dca3c63ddd88694743d4eac1e45b015a32356d2994450d01",
+  "repair": "Explicit 8-ULP floating accumulation budget; retain exact equality of native integer paths and their Q32 action values; report maximum float accumulation difference separately.",
+  "runtime_or_outcomes_changed": false,
+  "schema": "HeptaSupplementalAuditRepairV1",
+  "statistical_gate_changed": false
+}

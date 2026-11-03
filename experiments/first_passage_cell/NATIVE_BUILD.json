@@ -1,0 +1,27 @@
+{
+  "adapter_sha256": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+  "binary": "native/hepta-first-passage-ndu",
+  "binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+  "identity": {
+    "algorithms": [
+      "codex_hepta_ndu::evaluate_recursive_utility",
+      "codex_hepta_ndu::evaluate_candidates_with_policy"
+    ],
+    "authority": "DENY_ALL",
+    "bridge_digest": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+    "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "safety_certificate": false,
+    "schema": "hepta.first-passage.ndu.identity.v1",
+    "source_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+    "source_digest": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+  },
+  "lock_sha256": "ed3041cb76f2901ed09cfaa712a609b720f72351455dfd5294ec351d23e460d5",
+  "registry_packages": 46,
+  "schema": "hepta.first-passage.native-build.v1",
+  "source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d",
+  "source_owner_unchanged": true,
+  "test_adapter_sha256": "5eeae4fa33d7cc02426b84e34bbed2d884b8dd3cef4a35ac24a735de260d3898",
+  "test_command": "original just test -p hepta-first-passage-ndu-bridge --profile default",
+  "test_status": "passed"
+}

@@ -1,0 +1,245 @@
+{
+  "finite_tree": {
+    "branch_probabilities": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "depth": 3,
+    "discounts": [
+      0.9,
+      0.75,
+      1.0
+    ],
+    "fully_enumerated_leaves": 8,
+    "independent_reference": "exact rational expectation of each complete path",
+    "passed": true,
+    "roundoff_tolerance": 1.1641532182693481e-09
+  },
+  "fixed_cohort_native_quad_parity": {
+    "actions_matching": 64,
+    "analytic_plus_native_seconds": 0.6741610100289108,
+    "max_raw_action_value_abs_error": 4.440892098500626e-16,
+    "native_invocations": 128,
+    "observations": 64,
+    "policy_bias": 0.0,
+    "quad_plus_native_seconds": 10.015246914015734,
+    "seed": 895211
+  },
+  "format_gate": {
+    "command": "original repository just fmt",
+    "exit_code": 0,
+    "later_attempt": {
+      "command": "original repository just fmt",
+      "exit_code": 2,
+      "note": "Prior formatter run passed. No Rust source changed afterward. The root owner is resolving generated-output layout.",
+      "reason": "Original runner rejected the generated external prepared symlink: format input escapes repository."
+    }
+  },
+  "independent_event_sampling": {
+    "count": 10000,
+    "drift": -0.95,
+    "five_standard_error_gate_passed": true,
+    "horizon": 2.0,
+    "initial_distance": 0.15,
+    "refractory": 0.06,
+    "reset_gap": 0.42,
+    "results": {
+      "active_time": {
+        "analytic": 1.747490012584248,
+        "normal_95_interval": [
+          1.7465011265331052,
+          1.7486377783450542
+        ],
+        "sample_mean": 1.7475694524390797,
+        "standard_error": 0.0005450642377421109,
+        "z_error": 0.14574402305438844
+      },
+      "failure_count": {
+        "analytic": 4.268248282045427,
+        "normal_95_interval": [
+          4.24836853454781,
+          4.28463146545219
+        ],
+        "sample_mean": 4.2665,
+        "standard_error": 0.00925074767968858,
+        "z_error": -0.1889881884105125
+      }
+    },
+    "sampler": "Michael-Schucany-Haas inverse-Gaussian event times; no first-passage CDF call",
+    "seed": 837611,
+    "sigma": 0.32
+  },
+  "independent_renewal_reference": {
+    "cases": [
+      {
+        "active_time": 0.4406773540145674,
+        "active_time_abs_error": 5.551115123125783e-17,
+        "distance": 0.02,
+        "drift": -0.55,
+        "expected_failures": 0.9904603563199386,
+        "failure_count_abs_error": 1.1102230246251565e-16,
+        "horizon": 0.5,
+        "omitted_refractory_bound": 1.7078098902679312e-17,
+        "quad_error_estimate": 6.586136745471432e-16
+      },
+      {
+        "active_time": 1.9139932092382304,
+        "active_time_abs_error": 0.0,
+        "distance": 0.3,
+        "drift": -0.55,
+        "expected_failures": 1.4517912282184826,
+        "failure_count_abs_error": 4.440892098500626e-16,
+        "horizon": 2,
+        "omitted_refractory_bound": 9.959639359512548e-22,
+        "quad_error_estimate": 9.548671937783493e-16
+      },
+      {
+        "active_time": 1.8942307631331734,
+        "active_time_abs_error": 0.0,
+        "distance": 0.0,
+        "drift": -0.55,
+        "expected_failures": 1.780169736094868,
+        "failure_count_abs_error": 4.440892098500626e-16,
+        "horizon": 2,
+        "omitted_refractory_bound": 6.433831533253354e-19,
+        "quad_error_estimate": 1.1742744206658282e-15
+      },
+      {
+        "active_time": 1.8275356301084693,
+        "active_time_abs_error": 0.0,
+        "distance": 0.1,
+        "drift": -1.2,
+        "expected_failures": 2.9098943745146646,
+        "failure_count_abs_error": 0.0,
+        "horizon": 2,
+        "omitted_refractory_bound": 2.998430558086219e-19,
+        "quad_error_estimate": 1.914739143810471e-15
+      },
+      {
+        "active_time": 1.95986132211388,
+        "active_time_abs_error": 0.0,
+        "distance": 0.2,
+        "drift": 0.0,
+        "expected_failures": 0.6721242706172833,
+        "failure_count_abs_error": 1.1102230246251565e-16,
+        "horizon": 2,
+        "omitted_refractory_bound": 2.1113989424015664e-20,
+        "quad_error_estimate": 4.456288436718305e-16
+      },
+      {
+        "active_time": 1.9877832491831569,
+        "active_time_abs_error": 0.0,
+        "distance": 0.2,
+        "drift": 0.4,
+        "expected_failures": 0.20385186614308584,
+        "failure_count_abs_error": 0.0,
+        "horizon": 2,
+        "omitted_refractory_bound": 3.411304256088534e-18,
+        "quad_error_estimate": 1.3563318042967463e-16
+      }
+    ],
+    "implementation": "scipy inverse-Gaussian/Levy CDF plus adaptive quad; separate from analytic log-CDF kernel"
+  },
+  "limitations": [
+    "Only the registered finite-horizon scalar additive signed-Q32 profile is implemented; no entropic/multiplicative profile is substituted.",
+    "Native forecast receipt is a bounded supplied candidate-path evaluation with DENY_ALL; it is not production authority or a safety certificate.",
+    "Forecasts plan WAIT_AFTER_CURRENT while deployment replans every 0.5 time units; predicted plan utility is not exact deployed-policy Bellman value.",
+    "Analytic renewal moments use 48-node Gauss-Legendre quadrature for refractory loss; reference errors and skipped-integral bounds are reported, not a universal quadrature certificate.",
+    "Discrete tasks use an explicit STOP to native abstain mapping. The policy calibration bias affects action selection only and is not charged to realized utility.",
+    "Normal Monte Carlo intervals are diagnostics for declared test fixtures, not performance confidence intervals for the learned policies."
+  ],
+  "native_build": {
+    "adapter_sha256": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+    "binary": "/dev/shm/hepta_first_passage_20261028/native_build/hepta-first-passage-ndu-bridge",
+    "binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+    "identity": {
+      "algorithms": [
+        "codex_hepta_ndu::evaluate_recursive_utility",
+        "codex_hepta_ndu::evaluate_candidates_with_policy"
+      ],
+      "authority": "DENY_ALL",
+      "bridge_digest": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+      "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+      "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "safety_certificate": false,
+      "schema": "hepta.first-passage.ndu.identity.v1",
+      "source_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+      "source_digest": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+    },
+    "lock_sha256": "ed3041cb76f2901ed09cfaa712a609b720f72351455dfd5294ec351d23e460d5",
+    "registry_packages": 46,
+    "schema": "hepta.first-passage.native-build.v1",
+    "source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d",
+    "source_owner_unchanged": true,
+    "test_adapter_sha256": "5eeae4fa33d7cc02426b84e34bbed2d884b8dd3cef4a35ac24a735de260d3898",
+    "test_command": "original just test -p hepta-first-passage-ndu-bridge --profile default",
+    "test_status": "passed"
+  },
+  "native_test_gate": {
+    "command": [
+      "/tmp/hepta-ci-tools/bin/just",
+      "--justfile",
+      "/dev/shm/hepta_first_passage_20261028/native_source/justfile",
+      "test",
+      "-p",
+      "hepta-first-passage-ndu-bridge",
+      "--manifest-path",
+      "/dev/shm/hepta_first_passage_20261028/native_build/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--profile",
+      "default"
+    ],
+    "failed": 0,
+    "nextest_run_id": "0c5c2b29-3286-4f82-9347-4639ccab1e40",
+    "passed": 6,
+    "runner_source_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+    "skipped": 0,
+    "tests": [
+      "original_recursive_utility_keeps_later_value_and_refusal_cost",
+      "native_feasibility_rejects_hard_resource_and_risk_violations_before_value",
+      "missing_evidence_duplicate_events_and_unknown_fields_fail_closed",
+      "abstention_and_equal_frontiers_remain_explicit_without_arbitrary_authority",
+      "exact_request_snapshot_and_objective_bind_native_receipt_identity",
+      "unregistered_recursive_profile_or_unit_is_rejected"
+    ]
+  },
+  "python_test_gate": {
+    "additional_explicit_abstain_test_passed": 1,
+    "additional_portable_path_test_passed": 1,
+    "command": "PYTHONPATH=repo python -m unittest experiments.first_passage_cell.tests.test_ndu -v",
+    "distinct_tests_passed": 11,
+    "failed": 0,
+    "initial_suite_passed": 9,
+    "initial_suite_seconds": 0.756,
+    "python": "3.12.14",
+    "repeated_native_forecast_regression_passed": 2,
+    "skipped": 0,
+    "tests": [
+      "test_full_renewal_matches_independent_inverse_gaussian_quadrature",
+      "test_independent_event_sampling_checks_multiple_failures_and_time",
+      "test_cost_is_charged_once_and_refractory_uses_observed_level",
+      "test_threshold_and_bias_change_decisions_without_changing_task_utility",
+      "test_relative_binary_path_is_resolved_against_manifest",
+      "test_explicit_abstain_is_preserved_or_rejected_without_rewriting",
+      "test_original_recursive_contract_matches_complete_finite_tree",
+      "test_native_signed_ties_even_and_later_values",
+      "test_native_forecast_uses_original_values_and_explicit_stop_mapping",
+      "test_profile_clock_model_checkpoint_and_source_mismatches_fail",
+      "test_native_realized_return_uses_actual_followup_and_rejects_splicing"
+    ]
+  },
+  "schema": "hepta.first-passage.ndu-validation.v1",
+  "scope": "diagnostic only; no confirmation data and no policy selection",
+  "source_file_sha256": {
+    "NATIVE_SOURCE_MANIFEST.json": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d",
+    "build_native.py": "6650678416745272e8af47869369ac15118fd2c711ca22a275fff46a20a46ba0",
+    "native-Cargo.lock": "ed3041cb76f2901ed09cfaa712a609b720f72351455dfd5294ec351d23e460d5",
+    "native_bridge.rs": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+    "native_bridge_tests.rs": "5eeae4fa33d7cc02426b84e34bbed2d884b8dd3cef4a35ac24a735de260d3898",
+    "ndu.py": "72da43b774f6a79d7fe723a98d9fd38fde26b47f6acc591860abfb64d3718fd5",
+    "tests/test_ndu.py": "74e59784275478f237b624eb573329c37faa5b75ab257d127a632991721a4a2e",
+    "value.py": "58402df8531e2213b336dfd1f1b967345058beff5a9b7606f4ce6359d7899255"
+  }
+}
