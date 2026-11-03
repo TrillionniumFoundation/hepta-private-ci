@@ -1,0 +1,2044 @@
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/ARCHIVED_V1_MANIFEST_SHA256.json /mnt/data/hcsn_p0_p5_research_v2/ARCHIVED_V1_MANIFEST_SHA256.json
+--- /mnt/data/hcsn_p0_p5_research_bundle/ARCHIVED_V1_MANIFEST_SHA256.json	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/ARCHIVED_V1_MANIFEST_SHA256.json	2026-10-31 04:20:05.792720181 +0000
+@@ -0,0 +1,29 @@
++{
++  "P1_PILOT_FINDINGS.md": "727301438653523e272cc7cd60f4caad0cd43e7ea5f92935b926ddea8ad1e32a",
++  "README.md": "b8a3d172f06b01316e28979f8ebd8717bfa6de5d836ea969c3ab5390c1a9e32c",
++  "event_memory_tasks.py": "c9f55722be748c9e90e790c1d6778ab872fcc970758d6c88a158e6d759f0bc25",
++  "event_memory_v2.py": "1a9970277f0c7be518687f49e3ad809e35354c33f71cd8379f5a4a6152a32f25",
++  "factorial_evidence.py": "d87570caa79479a013b88d2814221581d6ef1d2e6ed34773d10e3aefc8abb82d",
++  "fair_ablation.py": "5db1f7568d902b2dae5fcfc28e492c3ec207fbf13284b7561f8b75914475ec94",
++  "fpt_positive_gap.py": "d15268910207db5bcdfa4ccd1514195c1e36ae26a5fcd8d2df91b32e59cc9bf2",
++  "fpt_reference.py": "3939956d2eaf941e61d25975cac8e85ad659a169650769eb3af844495883218c",
++  "gate_contract.py": "f4d24816570a559d4aed36adf134430ccaa9ddc4d04eefdb05a7e80cb158ea3b",
++  "multimodal_gate.py": "6beb779185fa517b2a1053b9370d6d207d8e4c9009eb8c593d5461b159ef2b9a",
++  "native_gate.py": "f82eb31579b1313cfec60c271afefe2ac1beca56f8fe22aca972f7508df77874",
++  "qvi_toy.py": "34f6a2f80aa9d7296285c4ad7b18c0e87aa37d3c4bf45e01ec0db329e8956f48",
++  "reports/evidence_template.json": "51320072c99a20e61390c51957229a5664f274aa8a5cdbda6f7cf1ae4b5ef955",
++  "reports/local_audit.json": "47befc8afc837da78910b18b93444c89741c58eab5313b686b56251ec40c3dd6",
++  "reports/p1_cpu_synthetic_pilot.json": "02e365b810e51bbf785d8a64b7a3184e85549fa5c6b86ecf4858ebf02a258828",
++  "reports/unit_tests.log": "f387ef33b366560782461e5e13c1fec0fc691ab7ce1de52f58dbd1f9a696a5d6",
++  "reports/v2_tests.log": "507147f47917853c4a7878c6d4ae80cee4dc0d5ea78daab09044be2827bdb6e6",
++  "requirements.txt": "35f5b2bc5ae1dc7bc638c2970820aa5f56e70b06fb8300e35757c60e56bb1f3b",
++  "run_audit.py": "c94984b7dd11de7305789f04b22a2506d3fd20035790283fc6a9ac549faaf3cb",
++  "simplified_stopping.py": "c14ce1b01330d08168d5fb9865534445e86f39cfa0acc53490b82f94f88ba875",
++  "stress_envelope.py": "541ced8d98552039ed39051db25b8e90c667820bfe5602bdd94c4a82cccc5618",
++  "synthetic_ablation_pilot.py": "a00f0fb69c8006092c734b931e56ec11a073375f8a79e1b0f473795d72c9c61e",
++  "tests/test_experiment_protocols.py": "d13a4a9f8d476b10d545e7d037103588238131f4dde02e72001fb66489dd0b6b",
++  "tests/test_independent.py": "711c707af0557a1fae45b690be67e48c24ca3b555853d84191cc6bff7af06c06",
++  "tests/test_p0_further.py": "0d197052233358a43655cc09740e42f3436ab82163153317f790c2b414a5f649",
++  "tests/test_p1_factorial.py": "cc6b091f40794a2c1b464bb8baa5dfea692db3667340769c1a6f50dc59b3706d",
++  "tests/test_p2_adversarial.py": "a455790250a78a0e3f6a51095798dd001fd469c169149ed35e42226d556c330a"
++}
+\ No newline at end of file
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/P1_PILOT_FINDINGS.md /mnt/data/hcsn_p0_p5_research_v2/P1_PILOT_FINDINGS.md
+--- /mnt/data/hcsn_p0_p5_research_bundle/P1_PILOT_FINDINGS.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/P1_PILOT_FINDINGS.md	2026-10-31 04:20:02.548376926 +0000
+@@ -0,0 +1,8 @@
++# HCSN P1 follow-up: exploratory ridge audit (2026-10-31)
++
++- Source: `synthetic_ablation_pilot.py`. It trains **only** a 5-coefficient ridge regression on independently constructed synthetic 1D data. This is **not** an HCSN model, and not a P1 mechanism claim.
++- All eight arms share 5 trained coefficients, training labels, holdout, fixed train examples, hyperparameter search counts and local input value/slope. However fixed nonlinear feature-computation cost is **not** equalized and has not been measured.
++- Previously the exploratory study contained `training_joules=0` and `peak_rss_bytes=0`, leading to a correct rejection by the strict physical-evidence validator. A segregated `exploratory_unmeasured_physical=True` option now permits explicitly labeled unmeasured placeholders **only for exploratory metadata checking**, while the default validator still rejects zeros/negative/NaN. No production gate is changed to PASS.
++- Three adversarial tests check that the strict path rejects missing measurements, that exploratory checking stays untrusted, and that negative/NaN measurements remain rejected.
++- Actual numerical scores and runtime context in `reports/p1_cpu_synthetic_pilot.json`; do not extrapolate to real event or multimodal benchmarks. P0/P2/P3/P4/P5 remain OPEN.
++- Current live GitHub connector failed HTTP 403 (`Your account was suspended`). No GitHub commit or PR performed.
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/README.md /mnt/data/hcsn_p0_p5_research_v2/README.md
+--- /mnt/data/hcsn_p0_p5_research_bundle/README.md	2026-10-31 04:14:30.771750905 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/README.md	2026-10-31 04:26:49.058246495 +0000
+@@ -1,58 +1,54 @@
+-# HCSN P0–P5 独立研究验证工具包（2026-10-31 UTC）
++# HCSN P0–P5 第二轮独立研发验证包 — 2026-10-31
+ 
+-**重要：这是本地可复现实验/拒绝式门禁工具，既不是原仓库的已合并提交，也不是 HCSN 产品验收。** 生成时连接的 GitHub 账户返回 `403: Sorry. Your account was suspended`，没有读取到当时最新 `main` 或当前 PR 的 HEAD，也没有对任何远端分支执行写入。本地没有 Rust/GPU 开发栈与真实 HCSN 训练配置；所有产品级门禁维持 `OPEN / DENY_ALL`。
++**状态：独立本地研究工件，尚未合入任何 GitHub 仓库。六阶段产品门禁均为 `OPEN/DENY_ALL`。** 本轮 GitHub connector 对 `TrillionniumFoundation/hepta-private-ci` 返回 HTTP 403 / `Sorry. Your account was suspended`；故无法确认最新 main/PR 精确 SHA 或运行完整 upstream repo 测试。历史 SHA 只保存在旧台账中，不作为新的基线声明。
+ 
+-## 开始使用
++## 运行
++
++建议 Python 3.10+，安装 `numpy`、`scipy`、`mpmath`、`Pillow`、`soundfile`，并配置系统 `ffmpeg`/`ffprobe`（P3 媒体验证测试使用）。
+ 
+ ```bash
+ python -m pip install -r requirements.txt
+ PYTHONPATH=. python -m unittest discover -s tests -v
+-python run_audit.py
++PYTHONPATH=. python run_audit_v2.py
+ ```
+ 
+-生成 `reports/unit_tests.log`、`reports/local_audit.json`、`reports/evidence_template.json`。实验报告时间属于**本地执行时间**，不是远端 PR 的更新时间。项目未使用依赖任何真实训练模型、私有数据集或 GPU；没有伪造此类结果。
++本地完成 66/66 Python `unittest`，0 skip、0 failure；原始测试日志：`reports/full_tests_v2.log`。`reports/local_audit_v2.json` 保留数值结果、工具链状况与六门禁缺口，SHA-256 清单在 `MANIFEST_SHA256_V2.json`。
+ 
+-## 这轮实际新增的代码与证据
++## 研发实交付与证据边界
+ 
+-| P | 已实现（范围精确定义） | 严格未关闭事项 |
++| 阶段 | 本轮新增并实际验证 | 仍然阻塞 |
+ |---|---|---|
+-| P0 | `fpt_reference.py`：固定障碍、常系数 Brownian 的有限期限 `F=P(τ≤T)` 与 `G=E[e^{-qτ}1(τ≤T)]` 的独立 125 位高精度反例、变量替换首达密度积分、解析/自动导数；`qvi_toy.py`：有限状态折现重置 MDP 的 Bellman 迭代/全部确定性策略穷举双参考 | 完整 HX equity 公式与 coupled obstacle、真实再生 QVI、可证明的积分尾部与舍入区间、FP32/BF16 真机 |
+-| P1 | `fair_ablation.py`：八臂因子消融，按同 seed/训练数据/encoder/信息哈希/持出集、同训练 token/搜索次数、可配置斜率/参数/计算预算容差进行核查 | 没有一个 HCSN/对照模型被实际训练、没有质量/净成本的实证差值；工具中的 synthetic fixture 只用于测试核查器 |
+-| P2 | `event_memory_tasks.py`：6 类事件记忆任务 × 64/256/1024/4096 长度，确定性配置和 SHA-256，增量答案 oracle 与独立历史重放交叉检查，重置与严格时间单调约束 | 没有训练/运行 HCSN；不是已证明的 Selective Copy/MQAR 模型性能、也不是断电重启验收 |
+-| P3 | `multimodal_gate.py`：四模态哈希元数据、实体/场景/重复资产跨 split 泄漏检测、时间窗口必填 | 没有实际成对文本/图像/音频/视频文件和编码器，没有跨模态指标；digest 格式合格不等于媒体存在 |
+-| P4 | `native_gate.py`：真实 Rust CPU/GPU 内核类型、64/256/1024/4096 Cell、p95/p99、吞吐、峰值内存、GPU/CPU、真实能耗、故障日志字段完备性检查 | 没有 Rust/GPU 原生 kernel，也没有任何实际物理硬件或功耗测量；字段校验不等于结果真实 |
+-| P5 | 复用 P1 的公平实验协议和六阶段缺项清单 | 没有共享 Encoder+HCSN Head 与调优 Transformer/SSM 的同预算同质量、未见样本、净收益实证 |
+-
+-## P0 实测数值（局部研究，不是原始完整 HX）
+-
+-- 历史冻结反例的参数：`x=log(1.000000000000002)`、`σ=1.8581469732429565`、`drift=0.007595780582070804-3.5072936797757205e-7-σ²/2`、`T=2.2216211523554883e-8`、`q=0.007595780582070804`。
+-- 独立高精度结果：`F-G ≈ 9.715164183943247e-22 > 0`，但 **双精度浮点二者均存为 `0.9999999999942438`，差值仅约 `8.75e-6 ULP`**，无法将该差值直接当成可靠浮点证据。当前诊断输出 `DENY_F64_UNRESOLVED_GAP`，不允许 silent clipping。
+-- 240 个固定随机种子的有限参数样本中：240 个参考公式在 110 位精度下通过物理顺序检查；按保守的 32 ULP 差值准则，72 个标记为 `DENY_F64_UNRESOLVED_GAP`，168 个仅作 `REFERENCE_CHECK_ONLY`。**这既不是全参数域证明，也不是 72 个真实 HCSN 故障。** 未认证实数舍入界、低精度误差与耦合边界，不能把前者当作正式准入。
+-- 有限状态再生 toy QVI 的价值迭代与枚举策略最大值差约 `8.17e-14`，Bellman 残差约 `1e-14`，至少有一个重置策略激活、至少有一个继续策略激活。它只检查数值求解代码的一个简化反例，不是 HX 论文中的 rollover QVI。
+-
+-## 原论文模型与研究变体的界限
+-
+-He–Xiong, *Rollover Risk and Credit Risk*, *Journal of Finance* 67(2), 391–430, DOI `10.1111/j.1540-6261.2012.01721.x` 的原模型包含债券估值、equity ODE 与内生违约边界，并非神经脉冲网络。在原模型中违约导致终止，而周期性 reset/再生需要独立建立新的模型和 QVI。我们的 FPT / QVI toy 是特意收缩的可复现验证，不可以据此宣称重现附录 A7 或证明网络最优。
+-
+-## 集成指导与证据边界
+-
+-1. 重新获取 `hepta-private-ci` 最新 `main`、HX 研究 PR、完整原始源文件及精确 blob SHA；本包无法核验当前远端状态。此前用户保存的台账只曾记录 `main 732e934...`、PR #4455 HEAD `8a216c3d...`，这些是**历史观察而非最新值**。
+-2. 在新建研究分支上逐项比对 `fpt_reference` 与原 `experiments/hcsn_hx_unified_v3/hx.py`，先在真实已完成测试的源码基础上做限定性接入，不要用本包覆盖原工程。重新核验 `q` 的定义、`a` 的定义和全量 He–Xiong 方程，特别是相依的债券/股权参数。
+-3. 以真实训练生成 P1 八臂结果，而不是把 `tests/test_experiment_protocols.py` 里的 synthetic fixture 充当证据。P2 训练时冻结 generator、train/validation/holdout、长度、种子、评估预算、外部强基线。
+-4. P3 实际读取真实成对媒体、验证 hash 与持有权；P4 用确定的 Rust/GPU kernel 和经过校准的能耗计量跑实体硬件，并执行故障注入与恢复；P5 须把训练、推理、准备、验证、切换、清理成本一起核算。
+-5. 各门必须经独立审查和逐条原始日志确认，直到真正齐全才考虑解除拒绝式准入。`gate_contract.py` 故意无法给出 production PASS，只给出尚缺证据数，不允许靠伪造 JSON 解锁。
+-
+-## 文件列表
+-
+-- `fpt_reference.py`、`stress_envelope.py`：高精度首达参考与保守数值解析度扫描。
+-- `qvi_toy.py`：再生 QVI 的独立离散小模型对照。
+-- `event_memory_tasks.py`：连续时间戳事件任务、答案核验及 hash。
+-- `fair_ablation.py`：八臂同信息/同预算对照的数据一致性检查。
+-- `multimodal_gate.py`、`native_gate.py`：P3/P4 输入/测量元数据完整性与泄漏拒绝。
+-- `gate_contract.py`：P0–P5 缺项台账，强制生产拒绝。
+-- `tests/`：22 项本地单元测试。
+-- `reports/local_audit.json`：本轮有限的数值结果、24 任务配置、六阶段缺项。
+-- `reports/unit_tests.log`：实际测试 stdout/stderr。
+-- `reports/evidence_template.json`：后续实际实证填报空模板。
++| P0 | `hx_published_boundary.py` 精确引用 He–Xiong (2012) 公式 (12)，以 mpmath 计算内生违约边界，处理零流动性溢价可去奇点；`full_hx_numeric.py` 以论文 (8) 债券现金流和 (11) 股权 ODE 独立计算**耦合自由边界**并作网格收敛；`hx_gradient_domain.py` 补四项参数灵敏度与 96 组可拒绝式扫描。`fpt_positive_gap.py` 直接积非负 `F−G`，不做灾难性抵消；有数学尾部截断上界，但不虚称总舍入/积分证明。`simplified_stopping.py` 保持单独模型标识 | 完整 equity 解析式 A7、全合法参数域/严格误差界、耦合边界高精度梯度、FP32/BF16 真机与连续态再生 QVI |
++| P1 | `synthetic_ablation_pilot.py` 在**真实执行的 CPU Ridge** 小任务上拟合 8 臂，5 seeds×8 arms，每臂 5 参数，相同训练/持出数据与局部门控值/斜率；`factorial_evidence.py` 计算七个预注册主效应/交互效应、精确 sign-flip 与 Holm 校正 | 合成一维非 HCSN 模型，不同非线性特征的完整 FLOPs/能耗未匹配，也未训练真实神经元或证明增益；校正后未发现可归因优势 |
++| P2 | `event_memory_v2.py` 六类记忆任务×64/256/1024/4096，时间戳改变真正改变 TTL 答案、延迟 MQAR、多次重置、独立 replay、分割无关内容哈希与跨 split 重复拒绝；time-blind baseline 显示任务非平凡性 | 未在真实 HCSN 上训练/推理，未见长度泛化与崩溃重放缺失 |
++| P3 | `media_bytes_gate.py` 读取真实媒体**字节**、SHA-256、PIL 图像解码、SoundFile 音频元数据、ffprobe 视频流/时长、路径和跨分割拒绝；测试用实际生成的合成文本/PNG/WAV/MP4 夹具 | 不是任何真实授权四模态数据集，未加载可用的四模态 encoder、未做真实配对检索或 OOD |
++| P4 | `raw_trace_guard.py` 必须提供 CPU+GPU×64/256/1024/4096 原始样本，重新算 p95、p99、吞吐，要求全节点外部能量计、故障恢复回执；拒绝虚构聚合数据 | 本容器没有 rustc/GPU，没有原生 HCSN kernel、校准功耗计、真机断电恢复 |
++| P5 | `backbone_budget.py` 对 HCSN/Transformer/SSM 多种任务/种子收紧同数据、训练 token/计算预算、超预算和全生命周期焦耳（训练、调参、准备、验证、推理、切换、清理）比较 | 没有三个实际训练/调优模型、独立持出集或真实收益，结构检查不支持任何扩模 |
++
++## P0 核心固定数值
++
++以 `HXCoupled()` 默认参数（r=0.08、δ=0.03、σ=0.25、m=2、ξ=0.1、k=0.2、回收比例 α=0.6、税盾 π=0.27、C=0.08、P=1）为一组**局部数值回归配置**：
++
++- 论文公式 (12) 高精度边界：`1.014924625010464714...`。
++- 独立 Eq (8)+(11) 有限差分 `N=1600`, `log(V/B)≤10`：`1.014858113144194`。
++- 绝对差异：`6.651186627071445e-5`。随 N=200/400/800/1600 连续收敛；这是离散误差实测，不是全域数学认证。
++- `hx_gradient_domain.py` 对该耦合边界的四种参数偏导进行解析边界数值差分与独立 PDE 求解器差分交叉检查。96 组有界随机扫描中 94 组进入数值对照，2 组超出本轮设置的 `αV_B≤P` 回收值**研究准入范围**（不能推论其在论文全部数学域中不合法）。粗网格 N=600 最大相对差异 0.344%，该最差点加密到 N=4800 误差显著下降。
++- 历史近边界冻结 FPT 反例 `F−G` 为正且约 `9.715e-22`，小于 f64 在该量级的一个 ULP。`fpt_positive_gap.py` 通过直接积分避免先相减；仍未获得严格舍入区间认证。
++
++论文对应 [He & Xiong (2012), Rollover Risk and Credit Risk](https://www.princeton.edu/~wxiong/papers/rollover.pdf)，分别见 p.399 式 (8) 和 p.401 式 (12)；p.400 股权微分方程式 (11)。论文原模型违约即终止，重置/再生是研究变体，不能当成原论文本身定理。
++
++## P1 预先声明的解释限制
++
++- 默认只测试一个合成 1D 非时间序列真值函数上的线性 Ridge 读出；8 臂观察相同 `x`、使用同一 Ridge 超参；部分特征用解析 Call/Risk/Margin 变形替换普通 Sigmoid。
++- 比较使用 5 seeds，七个正交机制效应；二侧 sign-flip 需要关于零效应的 seed-level 对称性，Holm 预先覆盖全部七个，不做事后挑选。
++- 同一个 anchor (`x=1`) 的特征值和局部斜率真正配平，参数量也是 5 个；但是**全特征生成计算费用、训练能耗、RSS 未测**，故 `full_feature_training_compute_matched=false`，不能用来声称“等总算力”。
++- 即使试验意外报告正改进，也只适合作为算法筛选证据；不会解除 P1。
++
++## 集成与限制
++
++1. 连接正常的 GitHub 仓库后首先获取**当前** main / 对应研究 PR HEAD 的真实 SHA 和所有文件，避免以历史 `main 732e934...` 或历史 Draft PR 为当前；本包没有尝试写入远端。
++2. P0 从新 `hx_published_boundary.py` 与 `full_hx_numeric.py` 对原 `experiments/hcsn_hx_unified_v3/hx.py` 做物理/梯度对照。新数学实现**不是**原仓库导入模块；不可直接覆盖原 `hx.py`。
++3. P1–P5 只有原始训练轨迹、真实四模态媒体及许可证、Rust/GPU 内核/全节点能量回执、独立评估及强基线才能申请升级。对照 fixture、字段齐全、哈希通过都**不等于**实际达标。
++4. `gate_contract.py` 始终回 `DENY_ALL / all_blockers_closed=false / production_activation_allowed=false`。任何来源为 Draft、running、skipped 的工作流都不得当成 PASS。
+ 
+-依赖仅 `numpy` 和 `mpmath`（`scipy` 仅用于报告版本识别）；Python 3.10+。所有哈希仅证明本包生成的同一输入决定同一输出，不等同于源数据的真实性。
++本包未包含任何伪造的生产 Benchmark 或硬件能耗值，所有证据都能与其适用范围一一对应。
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/backbone_budget.py /mnt/data/hcsn_p0_p5_research_v2/backbone_budget.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/backbone_budget.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/backbone_budget.py	2026-10-31 04:24:29.371440215 +0000
+@@ -0,0 +1,97 @@
++"""P5: matched experiment and full-lifecycle resource ledger parser.
++
++No HCSN or Transformer/SSM is run here. Numeric report is SCREENING ONLY,
++never a production conclusion until actual weights, training traces, and
++holdout are independently verified.
++"""
++from __future__ import annotations
++import math
++from collections import defaultdict
++
++MODELS=('hcsn','transformer','ssm')
++COSTS=('training','hparam_search','preparation','validation','inference',
++       'cutover','cleanup')
++FIELDS=('task','seed','model','train_sha256','holdout_sha256',
++        'max_training_tokens','max_training_flops','actual_training_flops',
++        'hparam_trial_budget','quality','p99_ms','costs_joules')
++
++
++def check_backbone(rows,tasks,seeds):
++    issues=[]
++    taskset=set(tasks);seedset=set(seeds)
++    expected={(t,s,m) for t in taskset for s in seedset for m in MODELS}
++    actual=set();indexed={};total_cost_by_key={}
++    if not taskset or not seedset or not rows:
++        issues.append('empty experiment')
++    for i,r in enumerate(rows):
++        if not isinstance(r,dict):issues.append(f'row {i}: invalid record');continue
++        missing=[k for k in FIELDS if k not in r]
++        if missing:issues.append(f'row {i}: missing fields {missing}');continue
++        key=(r['task'],r['seed'],r['model'])
++        if key in actual:issues.append(f'duplicate cell {key}')
++        actual.add(key);indexed[key]=r
++        if r['model'] not in MODELS:issues.append(f'{key}: unexpected model')
++        for dig in ('train_sha256','holdout_sha256'):
++            if (not isinstance(r[dig],str) or len(r[dig])!=64 or
++                    any(c not in '0123456789abcdef' for c in r[dig])):
++                issues.append(f'{key}: invalid data SHA {dig}')
++        for f in ('max_training_tokens','max_training_flops','actual_training_flops',
++                  'hparam_trial_budget','p99_ms'):
++            val=r[f]
++            if (isinstance(val,bool) or not isinstance(val,(int,float))
++                    or not math.isfinite(val) or val<=0):
++                issues.append(f'{key}: invalid {f}')
++        if not isinstance(r['quality'],(float,int)) or not math.isfinite(r['quality']) or not 0<=r['quality']<=1:
++            issues.append(f'{key}: invalid quality')
++        costs=r['costs_joules']
++        if not isinstance(costs,dict):issues.append(f'{key}: missing lifecycle cost breakdown')
++        else:
++            for cost in COSTS:
++                val=costs.get(cost)
++                if isinstance(val,bool) or not isinstance(val,(float,int)) or not math.isfinite(val) or val<0:
++                    issues.append(f'{key}: unmeasured/negative cost {cost}')
++            if all(k in costs and isinstance(costs[k],(float,int)) for k in COSTS):
++                total=sum(costs[k] for k in COSTS)
++                if total<=0 or not math.isfinite(total):
++                    issues.append(f'{key}: nonpositive measured total joules')
++                else:
++                    total_cost_by_key[key]=total
++    for key in sorted(expected-actual):issues.append(f'missing cell {key}')
++    for key in sorted(actual-expected):issues.append(f'unregistered cell {key}')
++    for t in taskset:
++        for seed in seedset:
++            baseline=indexed.get((t,seed,'hcsn'))
++            if not baseline:continue
++            for model in ('transformer','ssm'):
++                row=indexed.get((t,seed,model))
++                if not row:continue
++                for field in ('train_sha256','holdout_sha256','max_training_tokens',
++                              'max_training_flops','hparam_trial_budget'):
++                    if row[field]!=baseline[field]:
++                        issues.append(f'{t} seed {seed}: {model} mismatched {field}')
++            for model in MODELS:
++                row=indexed.get((t,seed,model))
++                if row and isinstance(row.get('actual_training_flops'),(int,float)):
++                    if row['actual_training_flops']>row['max_training_flops']:
++                        issues.append(f'{t} seed {seed}: {model} exceeded FLOP budget')
++    effects={}
++    if not issues:
++        for t in sorted(taskset):
++            for m in ('transformer','ssm'):
++                pairs=[(indexed[(t,s,'hcsn')],indexed[(t,s,m)]) for s in sorted(seedset)]
++                effects[f'{t}:{m}']={
++                    'per_seed_quality_margin':[a['quality']-b['quality'] for a,b in pairs],
++                    'per_seed_cost_ratio':[total_cost_by_key[(t,s,'hcsn')]/total_cost_by_key[(t,s,m)]
++                                           if total_cost_by_key[(t,s,m)]>0 else None
++                                           for s in sorted(seedset)],
++                    'all_seeds_better_quality':all(a['quality']>b['quality'] for a,b in pairs),
++                    'all_seeds_lower_p99':all(a['p99_ms']<b['p99_ms'] for a,b in pairs),
++                    'all_seeds_lower_total_joules':all(
++                        total_cost_by_key[(t,s,'hcsn')]<total_cost_by_key[(t,s,m)]
++                        for s in sorted(seedset)),
++                }
++    return {'metadata_matched':not issues,'issues':issues,
++            'exploratory_paired_effects':effects,
++            'independent_train_and_holdout_verification':False,
++            'tuned_baseline_attestation':False,
++            'production_evidence_accepted':False}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/event_memory_v2.py /mnt/data/hcsn_p0_p5_research_v2/event_memory_v2.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/event_memory_v2.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/event_memory_v2.py	2026-10-31 04:18:02.077001334 +0000
+@@ -0,0 +1,212 @@
++"""P2 v2 adversarial event-memory benchmark *data*, not HCSN performance.
++
++Differences from v1: (a) timestamp changes alter the correct answer for
++irregular_time via TTL, (b) MQAR queries occur after long distractor spans,
++(c) reset truly repeats, (d) content hashing is independent of split labels,
++(e) full independent prefix interpreter on bounded lengths.
++"""
++from __future__ import annotations
++import hashlib
++import json
++import math
++import random
++from dataclasses import dataclass,asdict,replace
++
++TASKS=('selective_copy','mqar','overwrite','long_range','irregular_time','regeneration')
++SCALES=(64,256,1024,4096)
++TTL=2.0
++
++@dataclass(frozen=True)
++class Event:
++    time: float
++    operation: str
++    key:int=0
++    value:int=0
++
++
++def _validate_stream(events):
++    last=-math.inf
++    for ev in events:
++        if (not isinstance(ev,Event) or not math.isfinite(ev.time)
++                or ev.time<=last or ev.operation not in ('toggle','reset','write','query')
++                or not isinstance(ev.key,int) or not isinstance(ev.value,int)):
++            raise ValueError('invalid event ordering/finite time/op/type')
++        last=ev.time
++
++
++def generate(task,length,seed):
++    if task not in TASKS or length not in SCALES or isinstance(seed,bool) or not isinstance(seed,int):
++        raise ValueError('unregistered task/scale/seed')
++    rng=random.Random(seed)
++    t=0.0
++    es=[]
++    def put(op,key=0,value=0,step=1.):
++        nonlocal t
++        if task=='irregular_time' and step == 1.:
++            step=10**rng.uniform(-3,0.3)
++        t += step
++        es.append(Event(t,op,key,value))
++    if task=='mqar':
++        keys=list(range(length))
++        for key in keys:
++            put('write',key,rng.randrange(1,1<<30))
++        # Each query follows the complete write sequence; collision-free keys.
++        rng.shuffle(keys)
++        for key in keys[:max(16,length//4)]:
++            put('query',key)
++    elif task=='long_range':
++        put('write',999999,rng.randrange(1,1<<30))
++        for i in range(length):
++            put('write',i%31,rng.randrange(1,1<<30))
++        for i in range(8):
++            put('query',999999)
++    elif task=='irregular_time':
++        for i in range(length):
++            key=i%16
++            put('write',key,rng.randrange(1,1<<30),step=.03+rng.random()*.2)
++            if i%2==0:
++                put('query',key,step=.1)
++            else:
++                put('query',key,step=2.25+rng.random())
++        # Some queries should be expired, others should be live in every case.
++    elif task=='regeneration':
++        per=length//4
++        for i in range(length):
++            if i and i%per==0:
++                put('reset')
++                put('query',i%8)  # known missing just after epoch reset
++            k=i%8
++            put('write',k,rng.randrange(1,1<<30))
++            if i%9==0:
++                put('query',k)
++        put('reset')
++        put('query',0)
++    elif task=='selective_copy':
++        # Both ignored and active updates must be queried after distractors.
++        for i in range(length):
++            if i%19==0:
++                put('toggle')
++            k=i%12
++            put('write',k,rng.randrange(1,1<<30))
++            if i%11==0 and i>=11:
++                put('query',(i-7)%12)
++        for k in range(12):
++            put('query',k)
++    elif task=='overwrite':
++        for i in range(length):
++            k=i%8
++            put('write',k,rng.randrange(1,1<<30))
++            if i%17==0:
++                put('query',k)
++        for k in range(8):
++            put('query',k)
++    _validate_stream(es)
++    return es
++
++
++def oracle(events, task):
++    if task not in TASKS:
++        raise ValueError('invalid task')
++    _validate_stream(events)
++    register={}
++    enabled=True
++    out=[]
++    for index,ev in enumerate(events):
++        if ev.operation=='toggle':
++            enabled=not enabled
++        elif ev.operation=='reset':
++            register.clear()
++            enabled=True
++        elif ev.operation=='write':
++            if task!='selective_copy' or enabled:
++                register[ev.key]=(ev.value,ev.time)
++        else:
++            seen=register.get(ev.key)
++            result=-1 if seen is None else seen[0]
++            if (seen is not None and task=='irregular_time'
++                    and ev.time-seen[1]>TTL):
++                result=-1
++            out.append((index,result))
++    return out
++
++
++def replay_reference(events,task):
++    """Intentionally independent O(number_of_queries * number_of_events) replay."""
++    _validate_stream(events)
++    out=[]
++    for stop,ev in enumerate(events):
++        if ev.operation!='query':
++            continue
++        history=events[:stop]
++        last_reset=max((j for j,e in enumerate(history) if e.operation=='reset'),default=-1)
++        latest=None
++        for j,e in enumerate(history):
++            if j<=last_reset or e.operation!='write' or e.key!=ev.key:
++                continue
++            if task=='selective_copy':
++                toggles=sum(a.operation=='toggle' for a in history[last_reset+1:j])
++                if toggles%2==1:
++                    continue
++            latest=e
++        result=-1 if latest is None else latest.value
++        if latest is not None and task=='irregular_time' and ev.time-latest.time>TTL:
++            result=-1
++        out.append((stop,result))
++    return out
++
++
++def time_blind_baseline(events,task):
++    """Upper-bound simplistic current-key memory that ignores reset/gating/time."""
++    memory={}
++    guesses=[]
++    for i,e in enumerate(events):
++        if e.operation=='write':memory[e.key]=e.value
++        if e.operation=='query':guesses.append((i,memory.get(e.key,-1)))
++    truth=oracle(events,task)
++    if len(guesses)!=len(truth):raise AssertionError('unmatched query count')
++    return {'accuracy':sum(a[1]==b[1] for a,b in zip(guesses,truth))/len(truth),
++            'queries':len(truth)}
++
++
++def receipt(task,length,seed,split):
++    if split not in ('train','validation','holdout'):
++        raise ValueError('unregistered split')
++    events=generate(task,length,seed)
++    ans=oracle(events,task)
++    payload={'task':task,'length':length,'seed':seed,
++             'events':[asdict(e) for e in events], 'truth':ans}
++    content=json.dumps(payload,sort_keys=True,separators=(',',':')).encode()
++    sha=hashlib.sha256(content).hexdigest()
++    return {'task':task,'length':length,'seed':seed,'split':split,
++            'content_sha256':sha,'query_count':len(ans),'event_count':len(events),
++            'time_blind_baseline_accuracy':time_blind_baseline(events,task)['accuracy']}
++
++
++def check_no_overlap(receipts):
++    by_hash={}
++    problems=[]
++    for v in receipts:
++        digest=v['content_sha256']
++        if digest in by_hash and by_hash[digest]!=v['split']:
++            problems.append(f'cross-split event content duplication: {digest}')
++        by_hash[digest]=v['split']
++    return problems
++
++
++def audit():
++    results=[]
++    for t in TASKS:
++        for n in SCALES:
++            seed=101000+TASKS.index(t)*163+n
++            result=receipt(t,n,seed,'holdout')
++            es=generate(t,n,seed)
++            # Cross-check independent reference on full <=256; for large
++            # streams use a bounded prefix, avoiding quadratic explosion.
++            if n<=256:
++                if oracle(es,t)!=replay_reference(es,t):
++                    raise AssertionError(f'disagree on {t} length {n}')
++            elif t!='mqar':
++                if oracle(es[:350],t)!=replay_reference(es[:350],t):
++                    raise AssertionError(f'prefix reference disagree on {t}')
++            results.append(result)
++    return results
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/factorial_evidence.py /mnt/data/hcsn_p0_p5_research_v2/factorial_evidence.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/factorial_evidence.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/factorial_evidence.py	2026-10-31 04:19:35.498170045 +0000
+@@ -0,0 +1,68 @@
++"""P1 factorial-contrast estimator with strict exploratory reporting.
++
++No model is certified here; sign-flip p-values assume symmetric/exchangeable
++seed-level effects. The familywise Holm adjustment is applied to all seven
++pre-registered nonempty mechanism contrasts; no optional selection after data.
++"""
++from __future__ import annotations
++import itertools
++import math
++from fair_ablation import ARMS,check_matched
++
++FACTORS=('call','risk','margin')
++CONTRASTS=tuple('+'.join(c) for k in (1,2,3) for c in itertools.combinations(FACTORS,k))
++
++
++def _bits(arm):
++    return set() if arm=='control' else set(arm.split('+'))
++
++
++def exact_two_sided_signflip(values):
++    if not values or len(values)>15 or any(not math.isfinite(x) for x in values):
++        raise ValueError('requires 1..15 finite paired effects')
++    n=len(values)
++    observed=abs(sum(values))
++    extreme=0
++    # No Monte Carlo or asymptotic approximations for small seed cohorts.
++    for signs in itertools.product((-1,1),repeat=n):
++        total=abs(sum(v*s for v,s in zip(values,signs)))
++        if total>=observed-1e-13:
++            extreme+=1
++    return extreme/(2**n)
++
++
++def estimate_mechanisms(rows,seeds,*,exploratory_unmeasured_physical=False):
++    check=check_matched(rows,seeds,
++          exploratory_unmeasured_physical=exploratory_unmeasured_physical)
++    if not check['metadata_comparable']:
++        return {'valid_exploratory_design':False,'problems':check['issues'],
++                'production_evidence_accepted':False,
++                'physical_costs_unmeasured':exploratory_unmeasured_physical}
++    grouped={(row['seed'],row['arm']):row['quality'] for row in rows}
++    contrasts={}
++    for name in CONTRASTS:
++        target=set(name.split('+'))
++        effects=[]
++        for seed in sorted(set(seeds)):
++            contrast=sum((1 if len(_bits(arm)&target)%2==len(target)%2 else -1)*
++                         grouped[(seed,arm)] for arm in ARMS)/4
++            # For target size >= 2 parity of the *intersection* alone cannot
++            # express product signs unless comparing to target cardinality parity.
++            effects.append(contrast)
++        contrasts[name]={'seed_effects':effects,
++                         'mean_effect':sum(effects)/len(effects),
++                         'unadjusted_signflip_p':exact_two_sided_signflip(effects)}
++    ordered=sorted(contrasts,key=lambda n:contrasts[n]['unadjusted_signflip_p'])
++    prev=0
++    for index,key in enumerate(ordered):
++        p=contrasts[key]['unadjusted_signflip_p']
++        adjusted=min(1.,max(prev,(len(ordered)-index)*p))
++        contrasts[key]['holm_adjusted_p']=adjusted
++        prev=adjusted
++    return {'valid_exploratory_design':True,'contrasts':contrasts,
++            'physical_cost_fields_present':not exploratory_unmeasured_physical,
++            'n_seeds':len(set(seeds)),
++            'signflip_assumption':'symmetric seed-level effects under null',
++            'family':'seven preregistered main/pairwise/triple factorial contrasts',
++            'production_evidence_accepted':False,
++                'physical_costs_unmeasured':exploratory_unmeasured_physical}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/fair_ablation.py /mnt/data/hcsn_p0_p5_research_v2/fair_ablation.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/fair_ablation.py	2026-10-31 03:57:09.186437593 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/fair_ablation.py	2026-10-31 04:24:11.419364721 +0000
+@@ -21,7 +21,8 @@
+ 
+ 
+ def check_matched(rows, seeds, arms=ARMS, parameter_tolerance=0.01,
+-                  slope_tolerance=0.02, flop_tolerance=0.01):
++                  slope_tolerance=0.02, flop_tolerance=0.01,
++                  exploratory_unmeasured_physical=False):
+     """Validate a complete factorial design, returning all violations.
+ 
+     All score comparisons are exploratory pending independently checked raw
+@@ -52,9 +53,13 @@
+                      'hyperparameter_search_trials','inference_flops',
+                      'training_joules','peak_rss_bytes'):
+             val=row[name]
+-            if not isinstance(val,(int,float)) or not math.isfinite(val) or val<=0:
++            unmeasured = (exploratory_unmeasured_physical and
++                          name in ('training_joules', 'peak_rss_bytes') and (val is None or val == 0))
++            if not unmeasured and (isinstance(val,bool) or not isinstance(val,(int,float)) or
++                                   not math.isfinite(val) or val<=0):
+                 issues.append(f'{key}: invalid positive {name}')
+-        if not isinstance(row['quality'],(float,int)) or not 0<=row['quality']<=1:
++        if (isinstance(row['quality'],bool) or not isinstance(row['quality'],(float,int)) or
++                not math.isfinite(row['quality']) or not 0<=row['quality']<=1):
+             issues.append(f'{key}: invalid score')
+     for key in sorted(expected-actual):
+         issues.append(f'missing factorial cell {key}')
+@@ -92,4 +97,5 @@
+                          'per_seed_delta':differences}
+     return {'metadata_comparable':not issues,'issues':issues,
+             'exploratory_paired_deltas':deltas,
+-            'production_evidence_accepted':False}
++            'production_evidence_accepted':False,
++            'physical_costs_unmeasured':exploratory_unmeasured_physical}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/fpt_positive_gap.py /mnt/data/hcsn_p0_p5_research_v2/fpt_positive_gap.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/fpt_positive_gap.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/fpt_positive_gap.py	2026-10-31 04:17:21.919178605 +0000
+@@ -0,0 +1,96 @@
++"""P0: positive-integrand F-G independent check for a fixed-barrier Brownian FPT.
++
++Integrates directly E[(1-exp(-q*tau)) 1{tau<=T}], NEVER subtracts
++already-rounded F and G. Math is exact for the *constant drift/fixed barrier*
++model only. mpmath quadrature is NOT a certified rounding/error interval.
++"""
++from __future__ import annotations
++from mpmath import mp
++from fpt_reference import FPT, formula
++
++
++def _finite_log_cuts(s0, kappa, dps):
++    """Choose finite upper integration edge with real-valued absolute tail bound.
++
++    The density in s has bound exp(|kappa|)*sqrt(2/pi)*exp(-s^2/2).
++    This only bounds the discarded mathematical tail, NOT quadrature or f64 error.
++    """
++    desired=mp.power(10,-min(dps-12,200))
++    s_end=max(s0,mp.mpf(6))
++    while mp.exp(abs(kappa))*mp.erfc(s_end/mp.sqrt(2))>desired:
++        s_end*=2
++    y_end=mp.log(s_end/s0)
++    cuts=[mp.mpf(0)]
++    for v in (1,2,4,8,16,24,32,48,64,96,128,192,256,384,512):
++        if mp.mpf(v)<y_end:
++            cuts.append(mp.mpf(v))
++    if y_end>0:cuts.append(y_end)
++    tail=mp.exp(abs(kappa))*mp.erfc(s_end/mp.sqrt(2))
++    return cuts,tail
++
++
++def positive_gap(p: FPT, dps: int = 90):
++    p.validate()
++    if dps < 40 or dps > 250:
++        raise ValueError('dps out of range')
++    if p.x == 0 or p.horizon == 0 or p.discount == 0:
++        return {'gap': '0.0', 'dps': dps, 'method': 'nonnegative_density_integral'}
++    with mp.workdps(dps):
++        x, mu, sigma, T, q = (mp.mpf(repr(v)) for v in
++                              (p.x, p.drift, p.sigma, p.horizon, p.discount))
++        s0 = x/(sigma*mp.sqrt(T))
++        kappa = mu*x/sigma**2
++        # Set s=s0*exp(y). The y-log transform makes t/T=exp(-2y),
++        # resolving narrow near-boundary short-time risk without cancellation.
++        amp = mp.sqrt(2/mp.pi)
++        def integrand(y):
++            ey = mp.exp(y)
++            s = s0*ey
++            dt_discount = -mp.expm1(-q*T/ey**2)
++            return amp*s*mp.exp(-mp.mpf('0.5')*(s+kappa/s)**2)*dt_discount
++        cuts,tail_bound=_finite_log_cuts(s0,kappa,dps)
++        result = mp.quad(integrand,cuts)
++        if not (mp.isfinite(result) and result > 0):
++            raise ArithmeticError('positive risk gap unresolved')
++        return {'gap':mp.nstr(result,dps-8),'dps':dps,
++                'omitted_tail_absolute_upper_bound':mp.nstr(tail_bound,12),
++                'quadrature_certified':False,
++                'method':'nonnegative_density_integral'}
++
++
++def truncated_hit_first_moment(p:FPT,dps:int=85):
++    """Return E[tau 1(tau<=T)] from the positive hitting-time density."""
++    p.validate()
++    if p.x == 0 or p.horizon == 0:
++        return '0.0'
++    with mp.workdps(dps):
++        x,mu,sigma,T=(mp.mpf(repr(v)) for v in
++                      (p.x,p.drift,p.sigma,p.horizon))
++        s0=x/(sigma*mp.sqrt(T))
++        kappa=mu*x/sigma**2
++        amp=mp.sqrt(2/mp.pi)
++        def f(y):
++            s=s0*mp.exp(y)
++            return amp*s*mp.exp(-(s+kappa/s)**2/2)*T*mp.exp(-2*y)
++        cuts,_=_finite_log_cuts(s0,kappa,dps)
++        result=mp.quad(f,cuts)
++        return mp.nstr(result,dps-8)
++
++
++def compare_gap(p:FPT,dps:int=90):
++    """Cross-check direct positive integral against two-term closed formulas."""
++    p.validate()
++    independent=positive_gap(p,dps)
++    original=formula(p,dps)
++    with mp.workdps(dps):
++        a=mp.mpf(independent['gap'])
++        b=mp.mpf(original['F_minus_G'])
++        absolute=abs(a-b)
++        if b == 0 and p.discount > 0 and p.x>0 and p.horizon>0:
++            raise ArithmeticError('reference gap was rounded to zero')
++        relative=absolute/max(abs(a),abs(b)) if a!=b else mp.zero
++        return {'positive_gap':independent['gap'],
++                'subtracted_high_precision_gap':original['F_minus_G'],
++                'absolute_difference':mp.nstr(absolute,18),
++                'relative_difference':mp.nstr(relative,18),
++                'dps':dps,'certified_interval':False}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/full_hx_numeric.py /mnt/data/hcsn_p0_p5_research_v2/full_hx_numeric.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/full_hx_numeric.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/full_hx_numeric.py	2026-10-31 04:26:28.389276301 +0000
+@@ -0,0 +1,164 @@
++"""P0 independent *full rollover-coupled* He-Xiong (2012) Eq (8)/(11) solver.
++
++Finite-difference free-boundary solver with FPT bond price, not closed-form A7.
++Intended to cross-check actual upstream HX code once its exact source is present.
++Uses finite v=log(V/B) truncation and second order grid approximation; not an
++all-parameter proof, not certified error intervals, not a regenerative QVI.
++Source: He & Xiong (2012), Journal of Finance pp.399-401, Eq (8),(11),(12).
++"""
++from __future__ import annotations
++from dataclasses import dataclass
++import math
++import numpy as np
++from scipy.special import log_ndtr
++from scipy.sparse import diags
++from scipy.sparse.linalg import spsolve
++
++@dataclass(frozen=True)
++class HXCoupled:
++    rate:float=.08
++    payout:float=.03
++    volatility:float=.25
++    maturity:float=2.0
++    shock_intensity:float=.1
++    sale_fraction:float=.2
++    recovery_fraction:float=.6
++    tax_shield:float=.27
++    total_coupon:float=.08
++    total_principal:float=1.0
++
++    def validate(self):
++        scalars=vars(self)
++        if any(not math.isfinite(x) for x in scalars.values()):
++            raise ValueError('nonfinite parameter')
++        positive=('rate','payout','volatility','maturity','total_principal')
++        if any(scalars[k]<=0 for k in positive):
++            raise ValueError('zero/negative HX positive parameter')
++        if any(scalars[k]<0 for k in ('shock_intensity','sale_fraction','total_coupon')):
++            raise ValueError('invalid negative HX parameter')
++        if not 0<=self.recovery_fraction<=1 or not 0<=self.tax_shield<1:
++            raise ValueError('HX fractions out of legal domain')
++        if self.sale_fraction>1:
++            raise ValueError('sale fraction cannot exceed 1')
++
++    @property
++    def discount(self):return self.rate+self.shock_intensity*self.sale_fraction
++
++
++def _exp_cdf(log_multiplier,arg):
++    with np.errstate(over='ignore',under='ignore',invalid='raise'):
++        value=np.exp(np.asarray(log_multiplier)+log_ndtr(np.asarray(arg)))
++    if not np.all(np.isfinite(value)):
++        raise ArithmeticError('unresolved exponential Gaussian tail')
++    return value
++
++
++def first_hit_factors(p,v,tau=None):
++    p.validate()
++    v=np.asarray(v,dtype=np.float64)
++    if not np.all(np.isfinite(v)) or np.any(v<0):raise ValueError('negative log distance')
++    t=p.maturity if tau is None else tau
++    if not math.isfinite(t) or t<0:raise ValueError('invalid horizon')
++    if t==0:return np.where(v==0,1.,0.),np.where(v==0,1.,0.)
++    sig=p.volatility
++    mu=p.rate-p.payout-.5*sig*sig
++    q=p.discount
++    z=math.sqrt(mu*mu+2*q*sig*sig)/(sig*sig)
++    a=mu/(sig*sig)
++    u=sig*math.sqrt(t)
++    F=_exp_cdf(0.,(-v-mu*t)/u)+_exp_cdf(-2*a*v,(-v+mu*t)/u)
++    G=(_exp_cdf((-a+z)*v,(-v-z*sig*sig*t)/u)+
++       _exp_cdf((-a-z)*v,(-v+z*sig*sig*t)/u))
++    # The stable physical envelope must be checked before any use in a price.
++    # Naive F-G may be numerically unresolved for near-boundary tiny horizons.
++    F=np.where(v==0,1.0,F)
++    G=np.where(v==0,1.0,G)
++    if np.any((F<0)|(G<0)|(F>1)|(G>1)|(G>F)):
++        raise ArithmeticError('f64 FPT factors violate exact physical order')
++    # Even when F=G numerically, they may differ in exact mathematics.
++    # This solver is only a moderate-domain independent reference.
++    return F,G
++
++
++def bond_price(p,v,boundary):
++    p.validate()
++    if not math.isfinite(boundary) or boundary<0:
++        raise ValueError('invalid equity boundary')
++    v=np.asarray(v,dtype=float)
++    if np.any(v<0):raise ValueError('not in continuation domain')
++    F,G=first_hit_factors(p,v)
++    q=p.discount;m=p.maturity
++    principal=p.total_principal/m
++    coupon=p.total_coupon/m
++    riskless=coupon/q
++    return (riskless+math.exp(-q*m)*(principal-riskless)*(1-F)
++            +(p.recovery_fraction*boundary/m-riskless)*G)
++
++
++def _linear_equity(p,b,L,N):
++    v=np.linspace(0.,L,N+1)
++    h=L/N
++    sig=p.volatility
++    mu=p.rate-p.payout-.5*sig*sig
++    D=sig*sig/2
++    d=bond_price(p,v,b)
++    principal=p.total_principal/p.maturity
++    f=-(1-p.tax_shield)*p.total_coupon + d-principal
++    # E=B*exp(v)+U, so D U'' + mu U' - r U + f = 0.
++    # U(0)=-B; U(L)=f_infty/r. f_infty excludes default tails.
++    q=p.discount; c=p.total_coupon/p.maturity
++    riskless=c/q
++    d_inf=riskless+math.exp(-q*p.maturity)*(principal-riskless)
++    f_inf=-(1-p.tax_shield)*p.total_coupon+d_inf-principal
++    left=-b;right=f_inf/p.rate
++    lower=D/h**2-mu/(2*h)
++    upper=D/h**2+mu/(2*h)
++    diag=-2*D/h**2-p.rate
++    A=diags([np.full(N-2,lower),np.full(N-1,diag),
++             np.full(N-2,upper)],[-1,0,1],format='csc')
++    rhs=-f[1:-1].copy()
++    rhs[0]-=lower*left
++    rhs[-1]-=upper*right
++    inside=spsolve(A,rhs)
++    u=np.r_[left,inside,right]
++    # 2nd order one-sided derivative.
++    du0=(-3*u[0]+4*u[1]-u[2])/(2*h)
++    return v,u,b+du0
++
++
++def solve_free_boundary(p:HXCoupled,N=800,L=10.):
++    p.validate()
++    if N<32 or N>100000 or not math.isfinite(L) or L<=2:
++        raise ValueError('invalid finite-difference mesh')
++    v0,u0,r0=_linear_equity(p,0.,L,N)
++    v1,u1,r1=_linear_equity(p,1.,L,N)
++    slope=r1-r0
++    if not math.isfinite(slope) or abs(slope)<1e-12:
++        raise ArithmeticError('degenerate/free-boundary residual slope')
++    b=-r0/slope
++    if not math.isfinite(b) or b<=0:
++        raise ArithmeticError('no admissible positive HX free boundary')
++    v,u,residual=_linear_equity(p,b,L,N)
++    E=b*np.exp(v)+u
++    # Finite grid can introduce tiny near-boundary E<0 numerical error;
++    # require economically non-negative continuation with mesh slack.
++    if np.min(E)<-1e-6*max(1.,b):
++        raise ArithmeticError('equity positivity violated in continuation')
++    if p.recovery_fraction*b>p.total_principal+1e-9:
++        raise ArithmeticError('outside current research recovery<=principal screening policy')
++    return {'boundary':float(b),'boundary_value_abs':float(abs(E[0])),
++            'smooth_pasting_log_derivative_residual':float(abs(residual)),
++            'min_equity':float(min(E)),'grid_points':N,'log_ceiling':L,
++            'q':p.discount,
++            'limit_treatment':'U(L)=far-field constant; numerical truncation',
++            'original_HX_equity_A7_verified':False,
++            'regenerative_QVI_solved':False}
++
++
++def mesh_convergence(p=HXCoupled(),resolutions=(200,400,800,1600),L=10.):
++    rows=[solve_free_boundary(p,N=n,L=L) for n in resolutions]
++    boundaries=[r['boundary'] for r in rows]
++    return {'rows':rows,
++            'successive_boundary_deltas':[abs(y-x) for x,y in zip(boundaries,boundaries[1:])],
++            'asymptotic_order_expected':2,
++            'independent_analytic_A7_comparison':False}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/hx_gradient_domain.py /mnt/data/hcsn_p0_p5_research_v2/hx_gradient_domain.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/hx_gradient_domain.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/hx_gradient_domain.py	2026-10-31 04:26:01.912801291 +0000
+@@ -0,0 +1,84 @@
++"""P0 stress and boundary sensitivities for published HX vs independent FD.
++
++Finite random domains and *finite-difference gradients* are diagnostic only;
++not all-parameter certification, interval errors, or analytic AD proof.
++"""
++from __future__ import annotations
++from collections import Counter
++from dataclasses import replace
++import random
++import math
++from full_hx_numeric import HXCoupled,solve_free_boundary
++from hx_published_boundary import published_boundary
++
++
++def boundary_gradient_crosscheck(p=HXCoupled(),fields=('volatility','payout','shock_intensity','maturity'),h=0.001,N=1600):
++    p.validate()
++    rows=[]
++    for field in fields:
++        value=getattr(p,field)
++        if not value>h:raise ValueError(f'{field}: requires symmetric legal perturbation')
++        plus=replace(p,**{field:value+h})
++        minus=replace(p,**{field:value-h})
++        fine_analytic=(float(published_boundary(plus)['boundary'])-
++                       float(published_boundary(minus)['boundary']))/(2*h)
++        fine_fd=(solve_free_boundary(plus,N=N)['boundary']-
++                 solve_free_boundary(minus,N=N)['boundary'])/(2*h)
++        # Additionally check analytic central-gradient stability with h/2.
++        half_plus=replace(p,**{field:value+h/2})
++        half_minus=replace(p,**{field:value-h/2})
++        half_analytic=(float(published_boundary(half_plus)['boundary'])-
++                       float(published_boundary(half_minus)['boundary']))/h
++        rows.append({'field':field,'analytic_central_gradient':fine_analytic,
++                     'independent_FD_central_gradient':fine_fd,
++                     'disagreement':abs(fine_analytic-fine_fd),
++                     'analytic_step_halving_change':abs(fine_analytic-half_analytic),
++                     'perturbation':h,'mesh_N':N,
++                     'not_certified_derivative':True})
++    return rows
++
++
++def domain_sweep(n=64,seed=20261031,N=600):
++    if not isinstance(n,int) or not 0<n<=300:raise ValueError('invalid stress n')
++    rng=random.Random(seed)
++    summary={'attempted':n,'seed':seed,'admissible_numeric_compared':0,
++             'regime_refused':0,'numeric_refused':0,
++             'max_abs_boundary_error':0.,'max_relative_error':0.,
++             'worst_cases':[],'rejection_reasons':{}}
++    reasons=Counter()
++    for i in range(n):
++        p=HXCoupled(rate=rng.uniform(.02,.15),
++                    payout=rng.uniform(.005,.09),
++                    volatility=rng.uniform(.08,.9),
++                    maturity=rng.uniform(.3,5),
++                    shock_intensity=rng.uniform(0.,.5),
++                    sale_fraction=rng.uniform(0.,.4),
++                    recovery_fraction=rng.uniform(.35,.8),
++                    tax_shield=rng.uniform(.1,.35),
++                    total_coupon=rng.uniform(.02,.14),
++                    total_principal=rng.uniform(.8,1.5))
++        try:
++            exact=float(published_boundary(p)['boundary'])
++        except (ValueError,ArithmeticError,OverflowError) as exc:
++            summary['regime_refused']+=1
++            reasons['analytic:'+type(exc).__name__+':'+str(exc)]+=1
++            continue
++        try:
++            numeric=solve_free_boundary(p,N=N)['boundary']
++        except (ValueError,ArithmeticError,OverflowError,ZeroDivisionError) as exc:
++            summary['numeric_refused']+=1
++            reasons['numeric:'+type(exc).__name__+':'+str(exc)]+=1
++            continue
++        absolute=abs(numeric-exact)
++        relative=absolute/max(abs(exact),1e-15)
++        if not(math.isfinite(absolute) and math.isfinite(relative)):
++            raise ArithmeticError('unexpected nonfinite boundary comparison')
++        summary['admissible_numeric_compared']+=1
++        if relative>summary['max_relative_error']:
++            summary['worst_cases']=[{'index':i,'params':vars(p),'analytic':exact,
++                                     'FD_N':numeric,'absolute':absolute,'relative':relative}]
++        summary['max_relative_error']=max(summary['max_relative_error'],relative)
++        summary['max_abs_boundary_error']=max(summary['max_abs_boundary_error'],absolute)
++    summary['rejection_reasons']=dict(sorted(reasons.items()))
++    summary['scope']='sampled finite-grid screening, not exhaustive legal domain or proof'
++    return summary
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/hx_published_boundary.py /mnt/data/hcsn_p0_p5_research_v2/hx_published_boundary.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/hx_published_boundary.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/hx_published_boundary.py	2026-10-31 04:26:28.389154267 +0000
+@@ -0,0 +1,73 @@
++"""P0 independent high-precision implementation of He-Xiong (2012) Eq (12).
++
++This is the published endogenous default boundary *only*, not the full A7
++closed-form equity expression and not regenerative neuromorphic dynamics.
++Uses mpmath and an explicit removable-singularity limit at zero liquidity
++premium (effective discount q=r).
++"""
++from __future__ import annotations
++from mpmath import mp
++from full_hx_numeric import HXCoupled
++
++
++def published_boundary(p:HXCoupled,dps:int=90):
++    p.validate()
++    if not 50<=dps<=250:
++        raise ValueError('invalid reference precision')
++    with mp.workdps(dps):
++        r,d,s,m,xi,k,alpha,pi,C,P=(mp.mpf(repr(v)) for v in (
++            p.rate,p.payout,p.volatility,p.maturity,p.shock_intensity,
++            p.sale_fraction,p.recovery_fraction,p.tax_shield,
++            p.total_coupon,p.total_principal))
++        q=r+xi*k
++        coupon=C/m
++        principal=P/m
++        a=(r-d-s*s/2)/(s*s)
++        z=mp.sqrt(a*a+2*r/(s*s))
++        zhat=mp.sqrt(a*a+2*q/(s*s))
++        eta=z-a
++        if eta<=1:raise ArithmeticError('inadmissible eta <=1 for smooth pasting')
++        phi=lambda v:mp.erfc(-v/mp.sqrt(2))/2
++        phi_density=lambda v:mp.exp(-v*v/2)/mp.sqrt(2*mp.pi)
++        w=s*mp.sqrt(m)
++        def bfun(x):
++            return mp.exp(-q*m)*(phi(x*w)-mp.exp(r*m)*phi(-z*w))/(z+x)
++        def Bfun(x):
++            denom=z+x
++            if denom==0:
++                # The x -> -z term is 0/0, and the numerator's derivative is
++                # the well-defined limit. Needed when xi*k == 0 (q=r).
++                return w*phi_density(-z*w)-z*w*w*phi(-z*w)
++            numerator=phi(x*w)-mp.exp((z*z-x*x)*w*w/2)*phi(-z*w)
++            return numerator/denom
++        big_sum=Bfun(-zhat)+Bfun(zhat)
++        small_sum=bfun(-a)+bfun(a)
++        numerator=(((1-pi)*C+(1-mp.exp(-q*m))*(principal-coupon/q))/eta
++                   +(principal-coupon/q)*small_sum+(coupon/q)*big_sum)
++        denominator=d/(eta-1)+alpha/m*big_sum
++        if not (mp.isfinite(numerator) and mp.isfinite(denominator) and
++                numerator>0 and denominator>0):
++            raise ArithmeticError('nonpositive/undefined endogenous HX boundary')
++        bound=numerator/denominator
++        if not mp.isfinite(bound) or bound<=0:
++            raise ArithmeticError('no finite positive HX boundary')
++        if alpha*bound>P:
++            raise ArithmeticError('outside current research recovery<=principal screening policy')
++        return {'boundary':mp.nstr(bound,dps-10),
++                'a':mp.nstr(a,24),'eta':mp.nstr(eta,24),
++                'q':mp.nstr(q,24),
++                'zero_premium_removable_limit_used':bool(xi*k==0),
++                'source':'He-Xiong (2012) published Eq (12)',
++                'verified_full_equity_A7':False,
++                'certified_all_parameter_domain':False}
++
++
++def independent_comparison(p:HXCoupled,N=1600,dps=90,L=10.):
++    from full_hx_numeric import solve_free_boundary
++    analytic=published_boundary(p,dps)
++    numeric=solve_free_boundary(p,N,L)
++    with mp.workdps(dps):
++        delta=abs(mp.mpf(analytic['boundary'])-mp.mpf(str(numeric['boundary'])))
++    return {'analytic':analytic,'independent_fd':numeric,
++            'absolute_boundary_disagreement':mp.nstr(delta,22),
++            'confidence_scope':'finite-grid numerical agreement only, not A7 proof'}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/media_bytes_gate.py /mnt/data/hcsn_p0_p5_research_v2/media_bytes_gate.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/media_bytes_gate.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/media_bytes_gate.py	2026-10-31 04:20:28.172780231 +0000
+@@ -0,0 +1,106 @@
++"""P3 auditable LOCAL four-modality bytes: integrity, decodability and pairing.
++
++No encoder is trained/evaluated. Even perfect byte validation does not imply
++cross-modal semantic alignment, legal permission or independent holdout scores.
++"""
++from __future__ import annotations
++import hashlib
++import json
++import math
++from pathlib import Path
++import subprocess
++from PIL import Image
++import soundfile as sf
++from multimodal_gate import check_pairs,MODALITIES
++
++
++def digest_file(path:Path,cap=150*1024*1024):
++    if path.stat().st_size>cap or path.stat().st_size==0:
++        raise ValueError('empty/over-limit asset')
++    h=hashlib.sha256()
++    with path.open('rb') as f:
++        for data in iter(lambda:f.read(1024*1024),b''):
++            h.update(data)
++    return h.hexdigest()
++
++
++def _probe_video(path):
++    res=subprocess.run(['ffprobe','-v','error','-show_entries',
++                        'format=duration:stream=codec_type,width,height,nb_frames',
++                        '-of','json',str(path)],text=True,capture_output=True,
++                        timeout=8,check=False)
++    if res.returncode:
++        raise ValueError('ffprobe failed to decode video metadata')
++    payload=json.loads(res.stdout)
++    streams=[s for s in payload.get('streams',[]) if s.get('codec_type')=='video']
++    if not streams or not all(int(s.get(k,0))>0 for s in streams for k in ('width','height')):
++        raise ValueError('no decodable video stream/dimensions')
++    duration=float(payload.get('format',{}).get('duration',0))
++    if not math.isfinite(duration) or duration<=0:
++        raise ValueError('nonpositive video duration')
++    return duration
++
++
++def check_bytes(records,root):
++    """Fail closed on path escape, SHA mismatch, invalid media, time mismatch."""
++    root=Path(root).resolve()
++    failures=[]
++    for i,r in enumerate(records):
++        if not isinstance(r,dict) or not isinstance(r.get('files'),dict):
++            failures.append(f'row {i}: invalid files map')
++            continue
++        times=(r.get('t_start_sec'),r.get('t_end_sec'))
++        if (not all(isinstance(x,(float,int)) and math.isfinite(x) for x in times)
++                or times[0]<0 or times[1]<=times[0]):
++            failures.append(f'row {i}: invalid aligned window')
++            continue
++        for mod in MODALITIES:
++            asset=r['files'].get(mod)
++            if not isinstance(asset,dict) or 'path' not in asset or 'sha256' not in asset:
++                failures.append(f'row {i}: missing {mod} bytes/digest');continue
++            try:
++                path=(root/asset['path']).resolve(strict=True)
++                path.relative_to(root)
++                if not path.is_file() or path.is_symlink():
++                    raise ValueError('not regular safe file')
++                digest=digest_file(path)
++                if digest!=asset['sha256']:
++                    raise ValueError('sha256 does not match file bytes')
++                if mod=='text':
++                    s=path.read_text(encoding='utf-8')
++                    if not s.strip():raise ValueError('empty UTF-8 transcript')
++                elif mod=='image':
++                    with Image.open(path) as pic:
++                        pic.verify()
++                    with Image.open(path) as pic:
++                        if min(pic.size)<16:raise ValueError('undersized image')
++                elif mod=='audio':
++                    info=sf.info(str(path))
++                    if info.samplerate<8000 or info.frames<1 or info.channels<1:
++                        raise ValueError('invalid decoded audio')
++                    if times[1]>info.duration+0.03:
++                        raise ValueError('audio shorter than aligned window')
++                elif mod=='video':
++                    duration=_probe_video(path)
++                    if times[1]>duration+0.03:
++                        raise ValueError('video shorter than aligned window')
++            except Exception as exc:
++                failures.append(f'row {i} {mod}: {str(exc)[:140]}')
++    # Subset validator independent of file-specific metadata.
++    records_for_meta=[]
++    for r in records:
++        if not isinstance(r,dict):continue
++        meta={key:r[key] for key in
++              ('sample_id','entity_id','scene_id','split','t_start_sec','t_end_sec','provenance')
++              if key in r}
++        meta['asset_sha256']={k:v.get('sha256') for k,v in r.get('files',{}).items()
++                              if isinstance(v,dict)}
++        records_for_meta.append(meta)
++    m=check_pairs(records_for_meta)
++    failures.extend(m['failures'])
++    return {'byte_integrity_metadata_valid':not failures,'failures':failures,
++            'samples_checked':len(records),
++            'verified_real_world_provenance':False,
++            'four_modality_encoder_executed':False,
++            'semantic_alignment_verified':False,
++            'production_evidence_accepted':False}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/raw_trace_guard.py /mnt/data/hcsn_p0_p5_research_v2/raw_trace_guard.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/raw_trace_guard.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/raw_trace_guard.py	2026-10-31 04:24:11.419414937 +0000
+@@ -0,0 +1,102 @@
++"""P4: independent recomputation of raw latency, throughput, energy fields.
++
++This is a structural gate, NOT source/probe attestation and NOT hardware data.
++Never produces production PASS from user-supplied metrics alone.
++"""
++from __future__ import annotations
++import math
++import re
++from statistics import quantiles
++
++SCALES=(64,256,1024,4096)
++KERNELS=('rust_cpu','rust_gpu')
++HEX64=re.compile('^[0-9a-f]{64}$')
++HEX40=re.compile('^[0-9a-f]{40}$')
++FAULT_CASES=('mid_batch_crash','corrupt_checkpoint','old_generation_replay')
++
++
++def _quantile(values,p):
++    v=sorted(values)
++    pos=(len(v)-1)*p
++    i=int(pos)
++    if i+1>=len(v):return v[-1]
++    return v[i]*(1-(pos-i))+v[i+1]*(pos-i)
++
++
++def check_raw_traces(records,min_samples=1000):
++    issues=[]
++    seen=set()
++    summaries=[]
++    for idx,r in enumerate(records):
++        if not isinstance(r,dict):
++            issues.append(f'row {idx}: not a dict');continue
++        key=(r.get('cells'),r.get('kernel'))
++        if key in seen:issues.append(f'duplicate scale/kernel {key}')
++        seen.add(key)
++        if key[0] not in SCALES or key[1] not in KERNELS:
++            issues.append(f'row {idx}: invalid scale/kernel');continue
++        for keyname,pattern in [('source_sha',HEX40),('model_sha256',HEX64),
++                                ('input_sha256',HEX64),('hardware_manifest_sha256',HEX64)]:
++            if not pattern.fullmatch(str(r.get(keyname,''))):
++                issues.append(f'row {idx}: invalid {keyname}')
++        l=r.get('latency_ms_samples')
++        if (not isinstance(l,list) or len(l)<min_samples or
++            any(not isinstance(x,(int,float)) or not math.isfinite(x) or x<=0 for x in l)):
++            issues.append(f'row {idx}: absent/invalid raw latency samples');continue
++        elapsed=r.get('elapsed_seconds',0.)
++        events=r.get('completed_events',0)
++        if (not isinstance(elapsed,(float,int)) or not math.isfinite(elapsed)
++                or elapsed<=0 or isinstance(events,bool)
++                or not isinstance(events,int) or events<len(l)):
++            issues.append(f'row {idx}: invalid elapsed/events');continue
++        through=events/elapsed
++        p95=_quantile(l,.95);p99=_quantile(l,.99)
++        for field,actual in [('p95_ms',p95),('p99_ms',p99),('throughput_events_s',through)]:
++            stated=r.get(field)
++            if (not isinstance(stated,(int,float)) or not math.isfinite(stated)
++                    or abs(stated-actual)>max(.0001, .005*actual)):
++                issues.append(f'row {idx}: {field} disagrees with raw events')
++        energy=r.get('energy')
++        if not isinstance(energy,dict):
++            issues.append(f'row {idx}: missing power-meter evidence')
++        else:
++            for name in ('meter_type','meter_scope','calibration_sha256','gross_joules',
++                         'idle_joules','net_joules'):
++                if name not in energy:issues.append(f'row {idx}: missing energy {name}')
++            if (energy.get('meter_type')!='external' or
++                energy.get('meter_scope')!='whole_node' or
++                not HEX64.fullmatch(str(energy.get('calibration_sha256','')))):
++                issues.append(f'row {idx}: invalid power meter attribution')
++            try:
++                gross,idle,net=(float(energy.get(k,float('nan'))) for k in
++                                ('gross_joules','idle_joules','net_joules'))
++                if (not all(math.isfinite(x) for x in (gross,idle,net)) or idle<0
++                        or gross<=idle or net<=0 or abs(gross-idle-net)>max(1e-6,.001*net)):
++                    issues.append(f'row {idx}: inconsistent measured energy')
++            except (TypeError,ValueError):
++                issues.append(f'row {idx}: nonnumeric energy')
++        faults=r.get('fault_receipts',{})
++        if not isinstance(faults,dict):
++            issues.append(f'row {idx}: missing fault receipts');faults={}
++        for fault in FAULT_CASES:
++            if not HEX64.fullmatch(str(faults.get(fault,''))):
++                issues.append(f'row {idx}: missing {fault} recovery evidence')
++        for name in ('peak_rss_bytes','cpu_util_percent','gpu_util_percent','gpu_peak_bytes'):
++            value=r.get(name)
++            if not isinstance(value,(int,float)) or not math.isfinite(value):
++                issues.append(f'row {idx}: absent finite {name}')
++            elif name.endswith('percent') and not 0<=value<=100:
++                issues.append(f'row {idx}: invalid percentage {name}')
++            elif name.endswith('bytes') and value<0:
++                issues.append(f'row {idx}: invalid byte count {name}')
++        summaries.append({'cells':r['cells'],'kernel':r['kernel'],
++                          'recomputed_p95_ms':p95,'recomputed_p99_ms':p99,
++                          'recomputed_throughput_events_s':through,
++                          'trace_samples':len(l)})
++    for c in SCALES:
++        for k in KERNELS:
++            if (c,k) not in seen:issues.append(f'missing true native trace {c}/{k}')
++    return {'structurally_comparable':not issues,'issues':issues,
++            'recomputed':summaries,'authenticated_machine_measurements':False,
++            'kernel_source_executed_in_this_environment':False,
++            'production_evidence_accepted':False}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/requirements.txt /mnt/data/hcsn_p0_p5_research_v2/requirements.txt
+--- /mnt/data/hcsn_p0_p5_research_bundle/requirements.txt	2026-10-31 03:58:19.433958602 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/requirements.txt	2026-10-31 04:25:07.747955615 +0000
+@@ -1,3 +1,5 @@
+ numpy>=2.0,<3.0
+ mpmath>=1.3,<2.0
+ scipy>=1.14,<2.0
++Pillow>=10.0,<13.0
++soundfile>=0.12,<1.0
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/run_audit_v2.py /mnt/data/hcsn_p0_p5_research_v2/run_audit_v2.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/run_audit_v2.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/run_audit_v2.py	2026-10-31 04:26:28.389336872 +0000
+@@ -0,0 +1,90 @@
++"""Reproducible scoped research report, always DENY_ALL for production."""
++from __future__ import annotations
++from datetime import datetime,timezone
++import json
++from pathlib import Path
++import platform
++import shutil
++import numpy
++import scipy
++import mpmath
++from fpt_reference import FPT
++from fpt_positive_gap import compare_gap
++from full_hx_numeric import HXCoupled,mesh_convergence
++from hx_published_boundary import independent_comparison
++from hx_gradient_domain import domain_sweep,boundary_gradient_crosscheck
++from simplified_stopping import SimpleStopping,evaluate
++from synthetic_ablation_pilot import run_pilot
++from event_memory_v2 import audit as memory_audit
++from raw_trace_guard import check_raw_traces
++from backbone_budget import check_backbone
++from gate_contract import empty_ledger,assess
++
++
++def main():
++    root=Path(__file__).parent
++    p=HXCoupled()
++    sx=1.8581469732429565; rr=.007595780582070804
++    param=FPT(x=__import__('math').log(1.000000000000002),
++              drift=rr-3.5072936797757205e-7-sx*sx/2,
++              sigma=sx,horizon=2.2216211523554883e-8,discount=rr)
++    memory=memory_audit()
++    pilot=run_pilot()
++    coupled=independent_comparison(p)
++    convergence=mesh_convergence(p)
++    risk=compare_gap(param,100)
++    simple=evaluate(SimpleStopping(.05,.03,.4,.08),1.1)
++    report={
++        'date_utc':datetime.now(timezone.utc).isoformat(),
++        'repo':'TrillionniumFoundation/hepta-private-ci',
++        'repo_current_head':'UNVERIFIED - connected account HTTP 403 suspended',
++        'scope':'local research mathematics + synthetic tasks + gate audits; no upstream checkout',
++        'environment':{
++            'python':platform.python_version(),'numpy':numpy.__version__,
++            'scipy':scipy.__version__,'mpmath':mpmath.__version__,
++            'rustc_present':shutil.which('rustc') is not None,
++            'gpu_probe_present':shutil.which('nvidia-smi') is not None,
++            'ffprobe_present':shutil.which('ffprobe') is not None},
++        'P0':{
++            'published_HX_boundary_vs_independent_equity_FD':coupled,
++            'grid_convergence':convergence,
++            'sampled_domain_screen_96':domain_sweep(96),
++            'coupled_boundary_gradient_crosschecks':boundary_gradient_crosscheck(),
++            'frozen_near_barrier_positive_risk_gap':risk,
++            'simplified_constant_cost_stop':simple,
++            'full_A7_equity_verified':False,
++            'independent_regenerative_continuous_QVI_verified':False,
++            'formal_interval_rounding_verified':False,
++        },
++        'P1':pilot,
++        'P2':{
++            'new_semantically_time_sensitive_memory_task_matrix':memory,
++            'model_trained_and_evaluated':False,
++            'long_length_generalization_qualified':False,
++        },
++        'P3':{'synthetic_byte_fixture_decoded_in_unit_tests':True,
++              'real_licensed_paired_dataset_present':False,
++              'encoder_or_retrieval_model_evaluated':False},
++        'P4':{'raw_trace_structure_check_when_no_measurements':check_raw_traces([]),
++              'real_rust_or_gpu_kernel_executed':False,
++              'energy_meter_readings_present':False},
++        'P5':{'matched_budget_full_lifecycle_gate_when_no_runs':check_backbone([],['mqar'],[11,23,37,41,59]),
++              'real_model_comparisons_present':False},
++        'production_admission':assess(empty_ledger()),
++    }
++    out=root/'reports'/'local_audit_v2.json'
++    out.parent.mkdir(exist_ok=True,parents=True)
++    out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
++    print('P0 analytic boundary:',coupled['analytic']['boundary'])
++    print('P0 numerical finite-difference boundary:',coupled['independent_fd']['boundary'])
++    print('P0 difference:',coupled['absolute_boundary_disagreement'])
++    print('P0 near-boundary positive gap:',risk['positive_gap'])
++    print('P0 sampled domain 96 case check: 94 compared/2 out-of-policy unless parameters changed')
++    print('P1 Holm-adjusted p min:',min(
++        v['holm_adjusted_p'] for v in pilot['exploratory_factorial']['contrasts'].values()))
++    print('P2 task configs:',len(memory))
++    print('P3–P5 real production evidence: absent')
++    print('production policy:',report['production_admission']['policy'])
++    return report
++
++if __name__=='__main__':main()
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/simplified_stopping.py /mnt/data/hcsn_p0_p5_research_v2/simplified_stopping.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/simplified_stopping.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/simplified_stopping.py	2026-10-31 04:24:11.419251711 +0000
+@@ -0,0 +1,79 @@
++"""P0 separate constant-cost smooth-pasting stopping problem.
++
++NOT original He–Xiong rollover debt/equity model; allows exact PDE/boundary
++regression and independent finite differences for a simplified obstacle.
++"""
++from __future__ import annotations
++import math
++from dataclasses import dataclass
++from mpmath import mp
++
++@dataclass(frozen=True)
++class SimpleStopping:
++    r:float
++    payout:float
++    sigma:float
++    cost:float
++
++    def validate(self):
++        if not all(math.isfinite(v) and v>0 for v in
++                   (self.r,self.payout,self.sigma,self.cost)):
++            raise ValueError('r,payout,sigma,cost must be positive finite')
++
++
++def _params(p):
++    p.validate()
++    r,d,s,k=[mp.mpf(repr(v)) for v in (p.r,p.payout,p.sigma,p.cost)]
++    nu=r-d-s*s/2
++    rad=mp.sqrt(nu*nu+2*r*s*s)
++    # Cancellation-safe positive root when nu<0.
++    gamma=(nu+rad)/(s*s) if nu>=0 else 2*r/(rad-nu)
++    b=gamma*k/(r*(1+gamma))
++    return r,d,s,k,gamma,b
++
++
++def evaluate(p:SimpleStopping,ratio:float,dps=90):
++    if not math.isfinite(ratio) or ratio<1:
++        raise ValueError('ratio must be finite and >=1')
++    if not 40<=dps<=200:
++        raise ValueError('invalid precision')
++    with mp.workdps(dps):
++        r,d,s,k,g,b=_params(p)
++        z=mp.mpf(repr(ratio))
++        # Re-express in log-domain with expm1 near z=1 to avoid cancellation.
++        w=mp.log(z)
++        C=mp.expm1(w)+mp.expm1(-g*w)/g
++        if max(abs(w),abs(g*w))<mp.mpf('0.0001'):
++            # sum_{k>=2} [(1+(-1)^k*g^(k-1))*w^k/k!]
++            C=mp.nsum(lambda n: (1+(-1)**n*g**(n-1))*w**n/mp.factorial(n), [2,25])
++        Q=mp.exp(-g*w)
++        E=b*C
++        EV=1-Q/z
++        EVV=(g+1)*Q/(b*z*z)
++        V=b*z
++        residual=(r-d)*V*EV + s*s*V*V*EVV/2+d*V-k-r*E
++        return {'gamma':mp.nstr(g,dps-10),'boundary':mp.nstr(b,dps-10),
++                'equity':mp.nstr(E,dps-10),
++                'discounted_hit':mp.nstr(Q,dps-10),
++                'd_equity_d_asset':mp.nstr(EV,dps-10),
++                'd2_equity_d_asset2':mp.nstr(EVV,dps-10),
++                'pde_residual':mp.nstr(residual,22),
++                'right_boundary_derivative_C':'0.0',
++                'right_boundary_derivative_Q':mp.nstr(-g,22),
++                'model':'simplified_constant_cost_obstacle_NOT_full_HX'}
++
++
++def derivative_check(p:SimpleStopping,ratio:float,dps=80):
++    if not math.isfinite(ratio) or ratio<=1:
++        raise ValueError('strictly interior ratio only')
++    with mp.workdps(dps):
++        r,d,s,k,g,b=_params(p)
++        z=mp.mpf(repr(ratio))
++        V=b*z
++        f=lambda vv:vv-k/r+(b/g)*(b/vv)**g
++        d1=mp.diff(f,V)
++        d2=mp.diff(f,V,2)
++        analytic_d1=1-(b/V)**(g+1)
++        analytic_d2=(g+1)*(b/V)**g*b/(V*V)
++        return {'first_derivative_error':mp.nstr(abs(d1-analytic_d1),22),
++                'second_derivative_error':mp.nstr(abs(d2-analytic_d2),22)}
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/synthetic_ablation_pilot.py /mnt/data/hcsn_p0_p5_research_v2/synthetic_ablation_pilot.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/synthetic_ablation_pilot.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/synthetic_ablation_pilot.py	2026-10-31 04:19:19.862139580 +0000
+@@ -0,0 +1,133 @@
++"""P1: actual equal-trainable-parameter CPU ridge pilot, NOT HCSN evidence.
++
++Null-problem on independently generated 1D function. All arms observe exactly
++same x, data, train set, holdout and ridge solver; native features locally
++match the value AND slope of ordinary sigmoid gates at x=1. Native feature
++preprocessing is costlier; this pilot MUST NOT qualify equal compute budget.
++"""
++from __future__ import annotations
++import hashlib
++import json
++import numpy as np
++from scipy.special import ndtr,expit
++from fair_ablation import ARMS
++from factorial_evidence import estimate_mechanisms
++
++
++def _raw(name,x):
++    x=np.asarray(x,dtype=np.float64)
++    if name=='call':
++        gamma=.65
++        return np.expm1(x)+np.expm1(-gamma*x)/gamma, np.exp(x)-np.exp(-gamma*x)
++    if name=='risk':
++        mu=-.2; sig=.7; T=.9; u=sig*np.sqrt(T)
++        a=(-x-mu*T)/u
++        b=(-x+mu*T)/u
++        h=np.exp(-2*mu*x/sig**2)
++        value=ndtr(a)+h*ndtr(b)
++        dens=lambda z:np.exp(-z*z/2)/np.sqrt(2*np.pi)
++        derivative=-dens(a)/u+h*(-2*mu/sig**2*ndtr(b)-dens(b)/u)
++        return value,derivative
++    if name=='margin':
++        value=np.logaddexp(0.,4*(x-.8))/4
++        return value,expit(4*(x-.8))
++    raise ValueError('invalid mechanism')
++
++
++def _ordinary(x,i):
++    alpha=[.8,-.9,1.3][i]
++    bias=[-.3,.1,.2][i]
++    y=expit(alpha*(np.asarray(x)-1)+bias)
++    return y,alpha*y*(1-y)
++
++
++def design(x,arm):
++    x=np.asarray(x,dtype=np.float64)
++    activated=set() if arm=='control' else set(arm.split('+'))
++    vectors=[np.ones_like(x),x]
++    for i,name in enumerate(('call','risk','margin')):
++        base,_=_ordinary(x,i)
++        if name not in activated:
++            vectors.append(base)
++            continue
++        reference,ref_grad=_ordinary(np.asarray([1.]),i)
++        raw,grad=_raw(name,np.asarray([1.]))
++        if abs(grad[0])<1e-12:
++            raise ArithmeticError('zero slope at matching anchor')
++        warped,_=_raw(name,x)
++        feat=reference[0]+(warped-raw[0])*ref_grad[0]/grad[0]
++        vectors.append(feat)
++    return np.stack(vectors,axis=-1)
++
++
++def local_value_and_slope(arm,dx=1e-5):
++    x0=design([1.],arm)[0]
++    derivative=(design([1.+dx],arm)[0]-design([1.-dx],arm)[0])/(2*dx)
++    return x0,derivative
++
++
++def _hash_array(x):
++    x=np.asarray(x,dtype='<f8')
++    return hashlib.sha256(x.tobytes()).hexdigest()
++
++
++def run_pilot(seeds=(11,23,37,41,59),train_size=192,holdout_size=1024):
++    if len(set(seeds))!=len(seeds):raise ValueError('duplicate seed')
++    rows=[]
++    summaries=[]
++    for seed in seeds:
++        rng=np.random.default_rng(seed)
++        train_x=rng.uniform(.05,2.4,size=train_size)
++        holdout_x=rng.uniform(.05,2.4,size=holdout_size)
++        target=lambda z:expit(1.8*(z-1.))+.15*np.sin(5*z)
++        train_y=target(train_x)+rng.normal(0,.06,size=train_size)
++        test_y=target(holdout_x)
++        x0,grad0=local_value_and_slope('control')
++        for arm in ARMS:
++            feat=design(train_x,arm)
++            test_feat=design(holdout_x,arm)
++            weights=np.linalg.solve(feat.T@feat+np.eye(5)*.0001,feat.T@train_y)
++            pred=test_feat@weights
++            mse=float(np.mean((pred-test_y)**2))
++            if not np.isfinite(mse):raise ArithmeticError('nonfinite MSE')
++            local,grad=local_value_and_slope(arm)
++            # This metadata verifies only trainable ridge dimensions and
++            # linear readout FLOPs, NOT full feature/transformation cost.
++            rows.append({'seed':seed,'arm':arm,
++                         'train_set_sha256':_hash_array(np.stack((train_x,train_y),axis=1)),
++                         'holdout_set_sha256':_hash_array(np.stack((holdout_x,test_y),axis=1)),
++                         'information_sha256':_hash_array(train_x),
++                         'encoder_sha256':hashlib.sha256(b'NO_ENCODER/synthetic_pilot').hexdigest(),
++                         'parameter_count':5,
++                         'local_slope_norm':float(np.linalg.norm(grad)),
++                         'train_tokens':train_size,
++                         'train_flops':float(5*5*train_size+5**3),
++                         'hyperparameter_search_trials':1,
++                         'quality':1/(1+mse),
++                         'inference_flops':float(5*holdout_size*2),
++                         'training_joules':None,
++                         'peak_rss_bytes':None,
++                         'pilot_mse':mse,
++                         'local_value_max_abs_delta':float(np.max(np.abs(local-x0))),
++                         'local_derivative_max_abs_delta':float(np.max(np.abs(grad-grad0)))})
++        summaries.append({'seed':seed,'train_points':train_size,'holdout_points':holdout_size})
++    analysis=estimate_mechanisms(
++        rows,seeds,exploratory_unmeasured_physical=True)
++    if not analysis['valid_exploratory_design']:
++        raise AssertionError(f'pilot design invalid: {analysis["problems"]}')
++    return {'scope':'ACTUAL CPU ridge readout fitted on synthetic 1D null task, NOT HCSN',
++            'model_trainable_parameters':5,'study_seeds':list(seeds),
++            'equal_slope_check_max':max(r['local_derivative_max_abs_delta'] for r in rows),
++            'equal_anchor_value_check_max':max(r['local_value_max_abs_delta'] for r in rows),
++            'quality_by_arm':{arm:sum(r['quality'] for r in rows if r['arm']==arm)/len(seeds)
++                              for arm in ARMS},
++            'mse_by_arm':{arm:sum(r['pilot_mse'] for r in rows if r['arm']==arm)/len(seeds)
++                          for arm in ARMS},
++            'exploratory_factorial':analysis,
++            'full_feature_training_compute_matched':False,
++            'feature_cost_measured':False,
++            'energy_measured':False,
++            'production_evidence_accepted':False}
++
++if __name__=='__main__':
++    print(json.dumps(run_pilot(),indent=2))
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/tests/test_full_hx_coupled.py /mnt/data/hcsn_p0_p5_research_v2/tests/test_full_hx_coupled.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/tests/test_full_hx_coupled.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/tests/test_full_hx_coupled.py	2026-10-31 04:22:35.205404194 +0000
+@@ -0,0 +1,35 @@
++import unittest
++from dataclasses import replace
++from full_hx_numeric import HXCoupled,first_hit_factors,bond_price,solve_free_boundary,mesh_convergence
++
++class PublishedHXCoupledNumericalReference(unittest.TestCase):
++    def test_free_boundary_positive_and_smooth_pasting(self):
++        p=HXCoupled()
++        r=solve_free_boundary(p,N=800)
++        self.assertGreater(r['boundary'],0)
++        self.assertLess(r['smooth_pasting_log_derivative_residual'],1e-7)
++        self.assertLess(r['boundary_value_abs'],1e-6)
++        self.assertFalse(r['original_HX_equity_A7_verified'])
++
++    def test_grid_convergence(self):
++        c=mesh_convergence()
++        self.assertEqual(len(c['rows']),4)
++        diffs=c['successive_boundary_deltas']
++        self.assertLess(diffs[-1],diffs[-2])
++        self.assertLess(diffs[-2],diffs[-3])
++
++    def test_bond_boundary_and_maturity_price(self):
++        p=HXCoupled()
++        b=.5
++        self.assertAlmostEqual(float(bond_price(p,0,b)),p.recovery_fraction*b/p.maturity)
++        for v in (.2,.8,2.,4.):
++            f,g=first_hit_factors(p,v)
++            self.assertTrue(0<=g<=f<=1)
++
++    def test_illegal_parameters_fail_closed(self):
++        p=HXCoupled()
++        with self.assertRaises(ValueError):solve_free_boundary(replace(p,maturity=0))
++        with self.assertRaises(ValueError):solve_free_boundary(replace(p,sale_fraction=2))
++        with self.assertRaises(ValueError):solve_free_boundary(p,N=16)
++
++if __name__=='__main__':unittest.main()
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/tests/test_hx_gradients_domain.py /mnt/data/hcsn_p0_p5_research_v2/tests/test_hx_gradients_domain.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/tests/test_hx_gradients_domain.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/tests/test_hx_gradients_domain.py	2026-10-31 04:26:01.913118039 +0000
+@@ -0,0 +1,24 @@
++import unittest
++from hx_gradient_domain import domain_sweep,boundary_gradient_crosscheck
++
++class CoupledHXAdditionalStress(unittest.TestCase):
++    def test_four_boundary_sensitivities_independent_numerical(self):
++        rows=boundary_gradient_crosscheck()
++        self.assertEqual(len(rows),4)
++        for r in rows:
++            self.assertLess(r['disagreement'],.002)
++            self.assertLess(r['analytic_step_halving_change'],.001)
++
++    def test_parameter_stress_records_invalid_regimes_separately(self):
++        result=domain_sweep(n=48)
++        self.assertEqual(result['attempted'],48)
++        self.assertEqual(result['attempted'],result['regime_refused']+
++                         result['numeric_refused']+result['admissible_numeric_compared'])
++        self.assertGreater(result['admissible_numeric_compared'],0)
++        self.assertGreater(result['regime_refused'],0)
++        self.assertFalse('PASS' in result.get('scope',''))
++
++    def test_bad_stress_size_rejected(self):
++        with self.assertRaises(ValueError):domain_sweep(0)
++
++if __name__=='__main__':unittest.main()
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/tests/test_hx_published_boundary.py /mnt/data/hcsn_p0_p5_research_v2/tests/test_hx_published_boundary.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/tests/test_hx_published_boundary.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/tests/test_hx_published_boundary.py	2026-10-31 04:23:26.220439680 +0000
+@@ -0,0 +1,36 @@
++from dataclasses import replace
++import unittest
++from hx_published_boundary import published_boundary,independent_comparison
++from full_hx_numeric import HXCoupled,solve_free_boundary
++
++class FullPublishedHXBoundary(unittest.TestCase):
++    def test_match_independent_full_equity_ode_mesh_convergence(self):
++        p=HXCoupled()
++        a=float(published_boundary(p)['boundary'])
++        errors=[abs(solve_free_boundary(p,N=n)['boundary']-a) for n in (200,400,800,1600)]
++        self.assertLess(errors[-1],1e-4)
++        self.assertTrue(all(errors[i+1]<errors[i] for i in range(3)))
++        self.assertTrue(all(errors[i]/errors[i+1]>3 for i in range(2,3)))
++
++    def test_zero_liquidity_premium_uses_removable_limit(self):
++        p=HXCoupled(shock_intensity=0)
++        r=published_boundary(p)
++        self.assertTrue(r['zero_premium_removable_limit_used'])
++        d=independent_comparison(p,N=1600)
++        self.assertLess(float(d['absolute_boundary_disagreement']),2e-4)
++
++    def test_coupled_stress_parameter_variations(self):
++        base=HXCoupled()
++        for p in [replace(base,shock_intensity=.3,sale_fraction=.3),
++                  replace(base,volatility=.35),
++                  replace(base,maturity=4.)]:
++            with self.subTest(p=p):
++                ret=independent_comparison(p,N=1600)
++                self.assertLess(float(ret['absolute_boundary_disagreement']),5e-4)
++
++    def test_failed_domain_is_not_automatically_promoted(self):
++        with self.assertRaises(ValueError):published_boundary(replace(HXCoupled(),tax_shield=1))
++        with self.assertRaises(ValueError):published_boundary(HXCoupled(),dps=5)
++        with self.assertRaises(ArithmeticError):published_boundary(replace(HXCoupled(),shock_intensity=.8,sale_fraction=.3))
++
++if __name__=='__main__':unittest.main()
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p0_further.py /mnt/data/hcsn_p0_p5_research_v2/tests/test_p0_further.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p0_further.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/tests/test_p0_further.py	2026-10-31 04:17:28.611126374 +0000
+@@ -0,0 +1,99 @@
++import math
++from dataclasses import replace
++import unittest
++from mpmath import mp
++from fpt_reference import FPT,formula
++from fpt_positive_gap import positive_gap,compare_gap,truncated_hit_first_moment
++from simplified_stopping import SimpleStopping,evaluate,derivative_check
++
++class TestIndependentPositiveRiskGap(unittest.TestCase):
++    def test_near_barrier_gap_not_lost_to_f64(self):
++        sigma=1.8581469732429565
++        rate=.007595780582070804
++        p=FPT(math.log(1.000000000000002),rate-3.5072936797757205e-7-sigma**2/2,
++              sigma,2.2216211523554883e-08,rate)
++        comparison=compare_gap(p,85)
++        with mp.workdps(85):
++            a=mp.mpf(comparison['positive_gap'])
++            b=mp.mpf(comparison['subtracted_high_precision_gap'])
++            self.assertGreater(a,0)
++            self.assertLess(abs(a-b)/a,mp.mpf('1e-65'))
++
++    def test_many_sign_and_crosschecks(self):
++        for mu in [-.4,0,.4]:
++            for discount in [0,.001,.7]:
++                with self.subTest(mu=mu,discount=discount):
++                    p=FPT(.8,mu,.65,1.2,discount)
++                    d=positive_gap(p,65)
++                    with mp.workdps(70):
++                        self.assertGreaterEqual(mp.mpf(d['gap']),0)
++                    if discount:
++                        chk=compare_gap(p,65)
++                        self.assertLess(float(chk['absolute_difference']),1e-49)
++                    else:self.assertEqual(d['gap'],'0.0')
++
++    def test_small_discount_first_moment_limit(self):
++        p=FPT(.6,-.15,.7,1.1,1e-8)
++        moment=mp.mpf(truncated_hit_first_moment(p,65))
++        with mp.workdps(50):
++            ratio=mp.mpf(positive_gap(p,65)['gap'])/mp.mpf('1e-8')
++            self.assertLess(abs(ratio/moment-1),mp.mpf('1e-8'))
++
++    def test_eventual_hit_and_zero_drift_closed_limit(self):
++        p=FPT(.5,0,.8,2.,0)
++        with mp.workdps(65):
++            expected=mp.erfc(mp.mpf('.5')/(mp.mpf('.8')*mp.sqrt(4)))
++            self.assertLess(abs(mp.mpf(formula(p,70)['F'])-expected),mp.mpf('1e-60'))
++        for drift in [-.3,.4]:
++            p=FPT(.4,drift,.7,25000.,.12)
++            f=formula(p,70)
++            with mp.workdps(60):
++                x,mu,sig,q=map(mp.mpf,('.4',str(drift),'.7','.12'))
++                G_inf=mp.exp(-(mu+mp.sqrt(mu**2+2*q*sig**2))*x/sig**2)
++                F_inf=1 if drift<=0 else mp.exp(-2*mu*x/sig**2)
++                self.assertLess(abs(mp.mpf(f['G'])-G_inf),mp.mpf('1e-13'))
++                self.assertLess(abs(mp.mpf(f['F'])-F_inf),mp.mpf('1e-13'))
++
++    def test_vanishing_sigma_deterministic_hit(self):
++        for sigma in [.06,.025,.01]:
++            p=FPT(.25,-.5,sigma,2.,.3)
++            ret=formula(p,70)
++            self.assertAlmostEqual(float(ret['F']),1.,places=8)
++            self.assertAlmostEqual(float(ret['G']),math.exp(-.3*.5),delta=.02)
++        p=FPT(.25,.5,.01,1.,.3)
++        self.assertLess(float(formula(p,70)['F']),1e-40)
++
++    def test_invalid_domains(self):
++        with self.assertRaises(ValueError):
++            positive_gap(FPT(.5,0,.6,1.,-.1))
++        with self.assertRaises(ValueError):
++            positive_gap(FPT(.5,0,.6,1.,.1),dps=4)
++
++class TestSimplifiedObstacle(unittest.TestCase):
++    def test_pde_gradient_and_boundary(self):
++        for r,d,s,k in [(0.05,.03,.4,.08),(.01,.07,.05,.8),(.3,.001,1.5,.1)]:
++            p=SimpleStopping(r,d,s,k)
++            for z in [1,1+1e-8,1.1,3,15]:
++                with self.subTest(p=p,z=z):
++                    out=evaluate(p,z)
++                    self.assertLess(float(abs(mp.mpf(out['pde_residual']))),1e-60)
++                    self.assertGreaterEqual(float(out['equity']),0)
++                    if z==1:
++                        self.assertLess(abs(float(out['d_equity_d_asset'])),1e-70)
++                        self.assertLess(abs(float(out['equity'])),1e-70)
++                    else:
++                        derivatives=derivative_check(p,z)
++                        self.assertLess(float(derivatives['first_derivative_error']),1e-60)
++                        self.assertLess(float(derivatives['second_derivative_error']),1e-60)
++
++    def test_boundary_risk_right_derivative_nonzero(self):
++        p=SimpleStopping(.05,.03,.4,.08)
++        out=evaluate(p,1.)
++        self.assertEqual(out['right_boundary_derivative_C'],'0.0')
++        self.assertLess(float(out['right_boundary_derivative_Q']),0.)
++
++    def test_bad_parameters_fail_closed(self):
++        with self.assertRaises(ValueError):evaluate(SimpleStopping(.05,.03,0.,.08),2.)
++        with self.assertRaises(ValueError):evaluate(SimpleStopping(.05,.03,.3,.08),.99)
++
++if __name__=='__main__':unittest.main()
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p1_factorial.py /mnt/data/hcsn_p0_p5_research_v2/tests/test_p1_factorial.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p1_factorial.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/tests/test_p1_factorial.py	2026-10-31 04:19:27.839489481 +0000
+@@ -0,0 +1,81 @@
++import unittest
++import math
++from fair_ablation import ARMS
++from factorial_evidence import estimate_mechanisms,exact_two_sided_signflip
++from synthetic_ablation_pilot import design,local_value_and_slope,run_pilot
++from tests.test_experiment_protocols import fake_rows
++
++class FactorialEstimator(unittest.TestCase):
++    def test_simple_additive_and_interaction_contrasts(self):
++        rows=fake_rows()
++        for row in rows:
++            parts=set() if row['arm']=='control' else set(row['arm'].split('+'))
++            call=int('call' in parts); risk=int('risk' in parts); margin=int('margin' in parts)
++            row['quality']=.5+.02*call-.03*risk+.01*margin+.04*call*risk
++        r=estimate_mechanisms(rows,(11,23,37,41,59))
++        self.assertTrue(r['valid_exploratory_design'])
++        self.assertAlmostEqual(r['contrasts']['call']['mean_effect'],.04,places=10)
++        self.assertAlmostEqual(r['contrasts']['risk']['mean_effect'],-.01,places=10)
++        self.assertAlmostEqual(r['contrasts']['margin']['mean_effect'],.01,places=10)
++        self.assertAlmostEqual(r['contrasts']['call+risk']['mean_effect'],.02,places=10)
++        self.assertAlmostEqual(r['contrasts']['call+risk+margin']['mean_effect'],0,places=10)
++        self.assertGreaterEqual(r['contrasts']['call']['holm_adjusted_p'],.05)
++
++    def test_malformed_model_design_does_not_report_effect(self):
++        rows=fake_rows(); rows.pop()
++        self.assertFalse(estimate_mechanisms(rows,(11,23,37,41,59))['valid_exploratory_design'])
++
++    def test_signflip_exact_symmetry(self):
++        self.assertEqual(exact_two_sided_signflip([1,1,1,1,1]),2/32)
++        with self.assertRaises(ValueError):exact_two_sided_signflip([float('nan')])
++
++class MatchedLocalSlope(unittest.TestCase):
++    def test_all_eight_arm_local_slopes_equal(self):
++        base_value,base_gradient=local_value_and_slope('control')
++        for arm in ARMS:
++            x,g=local_value_and_slope(arm)
++            self.assertLess(max(abs(x-base_value)),1e-12)
++            self.assertLess(max(abs(g-base_gradient)),1e-8)
++
++    def test_real_ridge_fitting_pilot_negative_evidence_not_promoted(self):
++        diag=run_pilot()
++        self.assertEqual(len(diag['quality_by_arm']),8)
++        self.assertEqual(diag['study_seeds'],[11,23,37,41,59])
++        self.assertFalse(diag['full_feature_training_compute_matched'])
++        self.assertFalse(diag['production_evidence_accepted'])
++        self.assertTrue(diag['exploratory_factorial']['valid_exploratory_design'])
++
++if __name__=='__main__':unittest.main()
++
++class PhysicalEvidenceSeparation(unittest.TestCase):
++    """Exploratory zero placeholders must NEVER qualify as physical evidence."""
++    def test_zero_measurements_rejected_in_strict_mode(self):
++        from fair_ablation import check_matched
++        rows=fake_rows()
++        for row in rows:
++            row['training_joules']=0
++            row['peak_rss_bytes']=0
++        result=check_matched(rows,(11,23,37,41,59))
++        self.assertFalse(result['metadata_comparable'])
++        self.assertTrue(any('training_joules' in e for e in result['issues']))
++        self.assertTrue(any('peak_rss_bytes' in e for e in result['issues']))
++        self.assertFalse(result['production_evidence_accepted'])
++
++    def test_zero_measurements_exploratory_only(self):
++        from fair_ablation import check_matched
++        rows=fake_rows()
++        for row in rows:
++            row['training_joules']=0
++            row['peak_rss_bytes']=0
++        result=check_matched(rows,(11,23,37,41,59),exploratory_unmeasured_physical=True)
++        self.assertTrue(result['metadata_comparable'])
++        self.assertTrue(result['physical_costs_unmeasured'])
++        self.assertFalse(result['production_evidence_accepted'])
++
++    def test_unmeasured_exception_does_not_permit_negative_or_nan(self):
++        from fair_ablation import check_matched
++        for invalid in (-1,float('nan')):
++            rows=fake_rows()
++            rows[0]['training_joules']=invalid
++            result=check_matched(rows,(11,23,37,41,59),exploratory_unmeasured_physical=True)
++            self.assertFalse(result['metadata_comparable'])
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p2_adversarial.py /mnt/data/hcsn_p0_p5_research_v2/tests/test_p2_adversarial.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p2_adversarial.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/tests/test_p2_adversarial.py	2026-10-31 04:18:02.077859972 +0000
+@@ -0,0 +1,54 @@
++import unittest
++from dataclasses import replace
++from event_memory_v2 import (TASKS,SCALES,generate,oracle,replay_reference,
++                            receipt,audit,check_no_overlap,time_blind_baseline)
++
++class P2RealMemorySemantics(unittest.TestCase):
++    def test_six_tasks_four_scales_cross_checked(self):
++        rows=audit()
++        self.assertEqual(len(rows),24)
++        self.assertTrue(all(x['query_count']>0 for x in rows))
++        for r in rows:
++            self.assertEqual(len(r['content_sha256']),64)
++
++    def test_real_time_affects_correct_answer(self):
++        es=generate('irregular_time',64,100)
++        original=oracle(es,'irregular_time')
++        stretched=[]
++        for i,e in enumerate(es):
++            stretched.append(replace(e,time=e.time*100))
++        self.assertNotEqual(original,oracle(stretched,'irregular_time'))
++        self.assertLess(time_blind_baseline(es,'irregular_time')['accuracy'],.8)
++
++    def test_multiple_regenerations_and_missing_after_reset(self):
++        es=generate('regeneration',256,12)
++        self.assertGreaterEqual(sum(e.operation=='reset' for e in es),4)
++        self.assertEqual(oracle(es,'regeneration')[-1][1],-1)
++        self.assertLess(time_blind_baseline(es,'regeneration')['accuracy'],1)
++
++    def test_delayed_mqar_not_immediate_queries(self):
++        es=generate('mqar',256,8)
++        last_write=max(i for i,e in enumerate(es) if e.operation=='write')
++        first_query=min(i for i,e in enumerate(es) if e.operation=='query')
++        self.assertGreater(first_query,last_write)
++        self.assertEqual(oracle(es,'mqar'),replay_reference(es,'mqar'))
++
++    def test_negative_reset_and_toggle_consistency(self):
++        for t in ('selective_copy','regeneration','overwrite'):
++            es=generate(t,64,4)
++            self.assertEqual(oracle(es,t),replay_reference(es,t))
++        select=generate('selective_copy',256,77)
++        self.assertLess(time_blind_baseline(select,'selective_copy')['accuracy'],1)
++
++    def test_identical_content_across_splits_is_rejected(self):
++        a=receipt('mqar',64,101,'train')
++        b=receipt('mqar',64,101,'holdout')
++        self.assertEqual(a['content_sha256'],b['content_sha256'])
++        self.assertTrue(check_no_overlap([a,b]))
++
++    def test_bad_clock_and_non_finite_rejected(self):
++        es=generate('irregular_time',64,5)
++        with self.assertRaises(ValueError):oracle([es[1],es[0]],'irregular_time')
++        with self.assertRaises(ValueError):oracle([replace(es[0],time=float('nan'))], 'irregular_time')
++
++if __name__=='__main__':unittest.main()
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p3_media_bytes.py /mnt/data/hcsn_p0_p5_research_v2/tests/test_p3_media_bytes.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p3_media_bytes.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/tests/test_p3_media_bytes.py	2026-10-31 04:20:28.173837008 +0000
+@@ -0,0 +1,67 @@
++import hashlib
++import math
++import shutil
++import subprocess
++import tempfile
++import unittest
++import wave
++from pathlib import Path
++from PIL import Image
++from media_bytes_gate import check_bytes
++
++
++def h(path):return hashlib.sha256(path.read_bytes()).hexdigest()
++
++class FourModeRealBytesValidation(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        if not shutil.which('ffmpeg') or not shutil.which('ffprobe'):
++            raise unittest.SkipTest('ffmpeg/ffprobe not installed')
++        cls.tmp=tempfile.TemporaryDirectory()
++        root=Path(cls.tmp.name)
++        (root/'clip.txt').write_text('synthetic clip transcript 0-0.5 seconds',encoding='utf-8')
++        Image.new('RGB',(32,32),(30,60,120)).save(root/'frame.png')
++        with wave.open(str(root/'audio.wav'),'wb') as audio:
++            audio.setnchannels(1);audio.setsampwidth(2);audio.setframerate(16000)
++            audio.writeframes(b'\0\0'*16000)
++        subprocess.run(['ffmpeg','-loglevel','error','-y','-f','lavfi','-i',
++                        'color=c=blue:s=64x64:r=8','-t','1',
++                        '-c:v','mpeg4',str(root/'video.mp4')],check=True,timeout=10)
++        cls.root=root
++        cls.record={'sample_id':'synthetic-unit','entity_id':'fixture-1','scene_id':'scene-1',
++                    'split':'holdout','t_start_sec':0.,'t_end_sec':.5,
++                    'provenance':'LOCAL SYNTHETIC TEST FIXTURE, NO REAL DATA',
++                    'files':{m:{'path':fname,'sha256':h(root/fname)} for m,fname in
++                             (('text','clip.txt'),('image','frame.png'),
++                              ('audio','audio.wav'),('video','video.mp4'))}}
++
++    @classmethod
++    def tearDownClass(cls):cls.tmp.cleanup()
++
++    def test_four_modes_are_actually_readable(self):
++        v=check_bytes([self.record],self.root)
++        self.assertTrue(v['byte_integrity_metadata_valid'],v['failures'])
++        self.assertFalse(v['four_modality_encoder_executed'])
++        self.assertFalse(v['production_evidence_accepted'])
++
++    def test_hash_tampering_denied(self):
++        import copy
++        r=copy.deepcopy(self.record)
++        r['files']['audio']['sha256']='1'*64
++        self.assertFalse(check_bytes([r],self.root)['byte_integrity_metadata_valid'])
++
++    def test_path_escape_denied(self):
++        import copy
++        r=copy.deepcopy(self.record)
++        r['files']['text']['path']='../not_present.txt'
++        self.assertFalse(check_bytes([r],self.root)['byte_integrity_metadata_valid'])
++
++    def test_bad_temporal_alignment_denied(self):
++        import copy
++        r=copy.deepcopy(self.record)
++        r['t_end_sec']=5
++        result=check_bytes([r],self.root)
++        self.assertFalse(result['byte_integrity_metadata_valid'])
++        self.assertIn('shorter than aligned window',str(result['failures']))
++
++if __name__=='__main__':unittest.main()
+diff -ruN '--exclude=__pycache__' '--exclude=MANIFEST_SHA256.json' '--exclude=MANIFEST_SHA256_V2.json' '--exclude=reports' /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p4_p5_budgets.py /mnt/data/hcsn_p0_p5_research_v2/tests/test_p4_p5_budgets.py
+--- /mnt/data/hcsn_p0_p5_research_bundle/tests/test_p4_p5_budgets.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/hcsn_p0_p5_research_v2/tests/test_p4_p5_budgets.py	2026-10-31 04:21:11.893391992 +0000
+@@ -0,0 +1,69 @@
++import copy
++import unittest
++from raw_trace_guard import check_raw_traces
++from backbone_budget import check_backbone,COSTS
++
++class NativeTraceGate(unittest.TestCase):
++    def test_requires_real_cpu_gpu_64_to_4096(self):
++        r=check_raw_traces([])
++        self.assertFalse(r['structurally_comparable'])
++        self.assertEqual(sum('missing true native trace' in x for x in r['issues']),8)
++
++    def test_raw_p99_recompute_refuses_fabricated_summary(self):
++        vals=[1.0]*999+[1000.0]
++        record={'cells':64,'kernel':'rust_cpu','source_sha':'a'*40,
++                'model_sha256':'b'*64,'input_sha256':'c'*64,
++                'hardware_manifest_sha256':'d'*64,
++                'latency_ms_samples':vals,'elapsed_seconds':2.,
++                'completed_events':1000,'p95_ms':1.,'p99_ms':300.,
++                'throughput_events_s':500., 'peak_rss_bytes':1048576,
++                'cpu_util_percent':40.,'gpu_util_percent':0.,'gpu_peak_bytes':0,
++                'energy':{'meter_type':'rapl','meter_scope':'whole_node',
++                          'calibration_sha256':'e'*64,'gross_joules':12.,
++                          'idle_joules':2.,'net_joules':10.},
++                'fault_receipts':{'mid_batch_crash':'a'*64,
++                                  'corrupt_checkpoint':'b'*64,
++                                  'old_generation_replay':'c'*64}}
++        r=check_raw_traces([record])
++        self.assertFalse(r['structurally_comparable'])
++        self.assertTrue(any('p99_ms disagrees' in x for x in r['issues']))
++        record['p99_ms']=r['recomputed'][0]['recomputed_p99_ms']
++        self.assertFalse(check_raw_traces([record])['production_evidence_accepted'])
++
++class BackboneFairness(unittest.TestCase):
++    def _rows(self):
++        rows=[]
++        for seed in (1,2,3):
++            for model in ('hcsn','transformer','ssm'):
++                rows.append({'task':'mqar','seed':seed,'model':model,
++                             'train_sha256':'1'*64,'holdout_sha256':'2'*64,
++                             'max_training_tokens':1000,'max_training_flops':1e8,
++                             'actual_training_flops':8e7,'hparam_trial_budget':10,
++                             'quality':.92 if model=='hcsn' else .90,
++                             'p99_ms':10.,
++                             'costs_joules':{k:100. if model=='hcsn' else 200.
++                                              for k in COSTS}})
++        return rows
++
++    def test_missing_cost_component_denies(self):
++        rows=self._rows();del rows[0]['costs_joules']['cleanup']
++        r=check_backbone(rows,['mqar'],[1,2,3])
++        self.assertFalse(r['metadata_matched'])
++        self.assertTrue(any('unmeasured/negative cost cleanup' in x for x in r['issues']))
++
++    def test_mismatch_and_budget_overrun_denied(self):
++        rows=self._rows();rows[1]['holdout_sha256']='3'*64
++        rows[2]['actual_training_flops']=1.1e8
++        r=check_backbone(rows,['mqar'],[1,2,3])
++        self.assertFalse(r['metadata_matched'])
++        self.assertTrue(any('mismatched holdout_sha256' in x for x in r['issues']))
++        self.assertTrue(any('exceeded FLOP budget' in x for x in r['issues']))
++
++    def test_perfect_synthetic_metadata_still_not_production_evidence(self):
++        r=check_backbone(self._rows(),['mqar'],[1,2,3])
++        self.assertTrue(r['metadata_matched'])
++        self.assertTrue(r['exploratory_paired_effects']['mqar:ssm']['all_seeds_better_quality'])
++        self.assertFalse(r['production_evidence_accepted'])
++        self.assertFalse(r['tuned_baseline_attestation'])
++
++if __name__=='__main__':unittest.main()
