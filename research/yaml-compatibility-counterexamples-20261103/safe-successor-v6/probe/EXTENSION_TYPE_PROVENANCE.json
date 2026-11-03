@@ -1,0 +1,11 @@
+{
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "66bc4581078f1a49fe724da87f3a795b02ce1d10",
+  "source_sha256": {
+    "codex-rs/ext/skills/src/loader/metadata.rs": "0b203b4696b17ccf695bbcf8eb3a4e471e9c8b47477081126a06f98f35f600eb",
+    "codex-rs/skills/src/interface.rs": "78dc273c51397dbd5c0184923693036a6aef500aac27e230761f7932674bacb6",
+    "codex-rs/protocol/src/protocol.rs": "388767a29c1a90c684d92e0e41bd7e4006cd81e2b22aaac05e0f35217bff8ecc"
+  },
+  "extraction": "Deserialize type declarations only; omit unrelated loaders, JsonSchema/TS derives/TS attribute; pub(super) becomes pub(crate); serde attrs and fields preserved.",
+  "probe_sha256": "673c731090f14bfb5875a887ee2a9e5e509609fdf49225ef12cc6a5bdcf25d4d"
+}
