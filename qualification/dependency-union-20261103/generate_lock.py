@@ -30,6 +30,7 @@ def snapshot():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--require-committed", action="store_true")
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -41,10 +42,14 @@ def main():
     receipt = {"commit": commit, "status": "failed", "steps": [],
                "committed_lock_sha256": hashlib.sha256(original_lock).hexdigest()}
     try:
-        for name, command in [
+        commands = []
+        if args.require_committed:
+            commands.append(("committed-lock-check", ["./scripts/check-module-bazel-lock.sh"]))
+        commands.extend([
             ("original-lock-update", ["just", "bazel-lock-update"]),
             ("original-lock-check", ["./scripts/check-module-bazel-lock.sh"]),
-        ]:
+        ])
+        for name, command in commands:
             started = time.monotonic()
             with (output / f"{name}.stdout").open("wb") as stdout, (output / f"{name}.stderr").open("wb") as stderr:
                 result = subprocess.run(command, cwd=ROOT, stdout=stdout, stderr=stderr)
@@ -60,8 +65,11 @@ def main():
             raise RuntimeError("the original lock check changed the generated lock")
         if snapshot() != before:
             raise RuntimeError("lock generation changed a non-lock input")
+        if args.require_committed and generated != original_lock:
+            raise RuntimeError("regeneration changed the committed combined lock")
         receipt.update(status="passed", generated_lock_sha256=hashlib.sha256(generated).hexdigest(),
-                       generated_lock_bytes=len(generated), committed_lock_matches=generated == original_lock)
+                       generated_lock_bytes=len(generated), committed_lock_matches=generated == original_lock,
+                       committed_lock_required=args.require_committed)
     finally:
         receipt["outputs"] = {p.name: {"bytes": p.stat().st_size, "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
                               for p in sorted(output.iterdir()) if p.is_file() and p.name != "receipt.json"}

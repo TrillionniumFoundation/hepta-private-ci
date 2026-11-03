@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   native:
-    if: github.head_ref == 'fix/private-ci-matrix-security-20261103'
+    if: github.head_ref == 'fix/private-ci-matrix-security-20261103' || github.head_ref == 'integration/private-ci-dependency-closure-20261103-gpt6'
     strategy:
       fail-fast: false
       matrix:
@@ -63,7 +63,7 @@ jobs:
           retention-days: 7
 
   bazel:
-    if: github.head_ref == 'fix/private-ci-matrix-security-20261103'
+    if: github.head_ref == 'fix/private-ci-matrix-security-20261103' || github.head_ref == 'integration/private-ci-dependency-closure-20261103-gpt6'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:

@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   native-provider:
-    if: github.head_ref == 'fix/private-ci-keyring-provider-20261103'
+    if: github.head_ref == 'fix/private-ci-keyring-provider-20261103' || github.head_ref == 'integration/private-ci-dependency-closure-20261103-gpt6'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -56,7 +56,7 @@ jobs:
           output="$RUNNER_TEMP/keyring-provider"
           mkdir -p "$output"
           git rev-parse HEAD > "$output/source-commit.txt"
-          sha256sum codex-rs/Cargo.toml codex-rs/Cargo.lock MODULE.bazel third_party/dbus/* > "$output/source-inputs.sha256"
+          sha256sum codex-rs/Cargo.toml codex-rs/Cargo.lock MODULE.bazel MODULE.bazel.lock third_party/dbus/* > "$output/source-inputs.sha256"
           python3 qualification/keyring-sync-provider/build_pinned_client.py --output "$output/native"
           echo "PKG_CONFIG_PATH=$output/native/lib/pkgconfig" >> "$GITHUB_ENV"
       - name: Build old and new exact production consumers
@@ -110,7 +110,7 @@ jobs:
           retention-days: 7
 
   bazel-lock-and-client:
-    if: github.head_ref == 'fix/private-ci-keyring-provider-20261103'
+    if: github.head_ref == 'fix/private-ci-keyring-provider-20261103' || github.head_ref == 'integration/private-ci-dependency-closure-20261103-gpt6'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -130,8 +130,11 @@ jobs:
           output="$RUNNER_TEMP/keyring-lock"
           mkdir -p "$output"
           git rev-parse HEAD > "$output/source-commit.txt"
-          sha256sum codex-rs/Cargo.toml codex-rs/Cargo.lock MODULE.bazel > "$output/source-inputs.sha256"
+          sha256sum codex-rs/Cargo.toml codex-rs/Cargo.lock MODULE.bazel MODULE.bazel.lock > "$output/source-inputs.sha256"
+          ./scripts/check-module-bazel-lock.sh > "$output/committed-lock-check.log" 2>&1
+          cp MODULE.bazel.lock "$output/committed-MODULE.bazel.lock"
           just bazel-lock-update > "$output/lock-update.log" 2>&1
+          cmp MODULE.bazel.lock "$output/committed-MODULE.bazel.lock"
           cp MODULE.bazel.lock "$output/MODULE.bazel.lock"
           ./scripts/check-module-bazel-lock.sh > "$output/lock-check.log" 2>&1
           ./.github/scripts/run_bazel_with_buildbuddy.py test //third_party/dbus:native_identity_test > "$output/native-test.log" 2>&1

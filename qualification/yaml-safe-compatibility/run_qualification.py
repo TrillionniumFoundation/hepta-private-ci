@@ -42,6 +42,11 @@ def main():
     inputs = {ROOT / name for name in expected_inputs}
     inputs.update((manifest_path, Path(__file__).resolve(), ROOT / "MODULE.bazel.lock"))
     inputs.add(ROOT / ".github/workflows/yaml-consumer-qualification.yml")
+    inputs.add(ROOT / "qualification/keyring-sync-provider/build_pinned_client.py")
+    dbus_inputs = subprocess.check_output(
+        ["git", "ls-files", "-z", "--", "third_party/dbus"], cwd=ROOT,
+    ).decode().split("\0")
+    inputs.update(ROOT / name for name in dbus_inputs if name)
     for relative in ("codex-rs/utils/yaml", "codex-rs/third_party/serde-saphyr-2.1.0"):
         inputs.update(p for p in (ROOT / relative).rglob("*") if p.is_file())
     before = {str(p.relative_to(ROOT)): sha(p) for p in sorted(inputs)}
@@ -81,6 +86,16 @@ def main():
         if mismatched:
             raise RuntimeError(f"reviewed candidate inputs changed: {mismatched}")
         if args.mode == "native":
+            # The combined production keyring graph uses the same native
+            # D-Bus client as Bazel. Build and exercise its pinned identity
+            # before running the complete, unchanged consumer package.
+            client = (args.out.parent / "yaml-pinned-dbus-client").resolve()
+            try:
+                run("pinned-dbus-client", ["python3", str(ROOT / "qualification/keyring-sync-provider/build_pinned_client.py"), "--output", str(client)])
+            finally:
+                if (client / "receipt.json").is_file():
+                    shutil.copy2(client / "receipt.json", args.out / "pinned-dbus-client-receipt.json")
+            os.environ["PKG_CONFIG_PATH"] = str(client / "lib/pkgconfig")
             run("original-just-test", ["just", "test", "--locked", "-p", args.package], ROOT / "codex-rs")
         elif args.mode == "graph":
             run("cargo-metadata-all-features", ["cargo", "metadata", "--locked", "--all-features", "--format-version", "1"], ROOT / "codex-rs")
@@ -110,7 +125,7 @@ def main():
         receipt["error"] = str(error)
         print(str(error), flush=True)
     finally:
-        receipt["environment"] = {name: os.environ.get(name) for name in ("CARGO_INCREMENTAL", "CARGO_BUILD_JOBS", "CARGO_PROFILE_DEV_DEBUG", "CARGO_PROFILE_TEST_DEBUG", "RUST_MIN_STACK")}
+        receipt["environment"] = {name: os.environ.get(name) for name in ("CARGO_INCREMENTAL", "CARGO_BUILD_JOBS", "CARGO_PROFILE_DEV_DEBUG", "CARGO_PROFILE_TEST_DEBUG", "RUST_MIN_STACK", "PKG_CONFIG_PATH")}
         receipt["original_just_test_stack_bytes"] = 8388608
         (args.out / "RECEIPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
     return result

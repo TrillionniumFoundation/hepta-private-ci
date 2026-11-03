@@ -5,6 +5,8 @@ on:
     paths:
       - .github/workflows/yaml-consumer-qualification.yml
       - qualification/yaml-safe-compatibility/**
+      - qualification/keyring-sync-provider/build_pinned_client.py
+      - third_party/dbus/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/utils/yaml/**

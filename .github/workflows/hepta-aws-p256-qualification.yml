@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   native:
-    if: github.head_ref == 'fix/private-ci-aws-p256-20261103-gpt6'
+    if: github.head_ref == 'fix/private-ci-aws-p256-20261103-gpt6' || github.head_ref == 'integration/private-ci-dependency-closure-20261103-gpt6'
     strategy:
       fail-fast: false
       matrix:
@@ -69,7 +69,7 @@ jobs:
           retention-days: 7
 
   bazel:
-    if: github.head_ref == 'fix/private-ci-aws-p256-20261103-gpt6'
+    if: github.head_ref == 'fix/private-ci-aws-p256-20261103-gpt6' || github.head_ref == 'integration/private-ci-dependency-closure-20261103-gpt6'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
