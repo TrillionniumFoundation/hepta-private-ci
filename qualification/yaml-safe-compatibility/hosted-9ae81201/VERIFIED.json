@@ -1,0 +1,280 @@
+{
+  "schema": "yaml-final-head-independent-readback-v1",
+  "source_commit": "9ae81201f2761e7217f019c40b40de952ca4579d",
+  "source_tree": "3dfb1975ffd153afeced621c8efab12dfe8cc568",
+  "workflow_run": 41680954821,
+  "all_seven_artifacts_verified": true,
+  "unique_git_source_paths_verified": 89,
+  "reviewed_source_manifest_paths_verified": 85,
+  "source_before_after_unchanged": true,
+  "native_test_counts": {
+    "codex-core-plugins": 420,
+    "codex-skills-extension": 175,
+    "codex-external-agent-migration": 166,
+    "codex-skills": 49,
+    "codex-utils-yaml": 10
+  },
+  "native_total": 820,
+  "native_zero_skipped": true,
+  "module_lock_sha256": "5a6fbcf975d99e97e5562677643f3960e34929d423d22e788c6d41a43247ae26",
+  "artifacts": [
+    {
+      "artifact_id": 13254985249,
+      "mode": "native",
+      "package": "codex-core-plugins",
+      "zip_bytes": 32999,
+      "zip_sha256": "b946fb705d81b9fa605a84eb1d8ab5f60357e7632772aa3b6b7db90947cd1f3f",
+      "receipt_sha256": "b8c9a2f051a831ef3fe98fce62e8c3d1fa135d7a70eb7093cd712d5deb70b9df",
+      "source_inputs": 89,
+      "before_after_equal": true,
+      "commands": [
+        {
+          "name": "original-just-test",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-core-plugins"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+          "exit_code": 0,
+          "seconds": 863.110672468,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "731406e99cfe8ab5c30eeaafb75ed02ffc80dffa2c9e602921b2c8e74b99b04e"
+        }
+      ],
+      "tests": 420,
+      "zero_skipped": true,
+      "individual_pass_records_verified": 420,
+      "count_evidence": "Original nextest raw per-case records and summary; no JUnit artifact was retained by this workflow."
+    },
+    {
+      "artifact_id": 13254650869,
+      "mode": "native",
+      "package": "codex-skills-extension",
+      "zip_bytes": 27311,
+      "zip_sha256": "f2431289f7639a4436455e3134a0b94c5ae0729cc1cbd4d7151d801ea82730ba",
+      "receipt_sha256": "3e2cde142dd160db71f16559bc9bc0a9c1a28adfda7224e7b6eaebb153de0505",
+      "source_inputs": 89,
+      "before_after_equal": true,
+      "commands": [
+        {
+          "name": "original-just-test",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-skills-extension"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+          "exit_code": 0,
+          "seconds": 756.216286362,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "4365ba194e629977d90903b40656d1fdba44ce32c2ca1ac36781d3a3c8ec810c"
+        }
+      ],
+      "tests": 175,
+      "zero_skipped": true,
+      "individual_pass_records_verified": 175,
+      "count_evidence": "Original nextest raw per-case records and summary; no JUnit artifact was retained by this workflow."
+    },
+    {
+      "artifact_id": 13253362234,
+      "mode": "native",
+      "package": "codex-external-agent-migration",
+      "zip_bytes": 27409,
+      "zip_sha256": "1f8c9cfc02618e885c73b097cbefa84958d7249ddfb611c0e6ee965aadf59bd4",
+      "receipt_sha256": "efbd3acfc4ee00e493b6663be9f3b555be6b483d88d8c5d6685293c6c358d5eb",
+      "source_inputs": 89,
+      "before_after_equal": true,
+      "commands": [
+        {
+          "name": "original-just-test",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-external-agent-migration"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+          "exit_code": 0,
+          "seconds": 928.671048775,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "718891f7c1d42189207a504323c6d11cf7cf357f74f636ac0f0f212822c47258"
+        }
+      ],
+      "tests": 166,
+      "zero_skipped": true,
+      "individual_pass_records_verified": 166,
+      "count_evidence": "Original nextest raw per-case records and summary; no JUnit artifact was retained by this workflow."
+    },
+    {
+      "artifact_id": 13253216602,
+      "mode": "native",
+      "package": "codex-skills",
+      "zip_bytes": 15429,
+      "zip_sha256": "0737462c791cee046fb208736c8748bdfee4ed869a636d5e116c639ba003b79c",
+      "receipt_sha256": "4bbea30893b0c2831e383ec7ffed5d0cae5b729323b13b151e247aea2c209315",
+      "source_inputs": 89,
+      "before_after_equal": true,
+      "commands": [
+        {
+          "name": "original-just-test",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-skills"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+          "exit_code": 0,
+          "seconds": 397.83902479000005,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "32458d13650796296137695e652bd77fc23f8a07a808fc3338926542d4102aff"
+        }
+      ],
+      "tests": 49,
+      "zero_skipped": true,
+      "individual_pass_records_verified": 49,
+      "count_evidence": "Original nextest raw per-case records and summary; no JUnit artifact was retained by this workflow."
+    },
+    {
+      "artifact_id": 13252108854,
+      "mode": "bazel",
+      "package": null,
+      "zip_bytes": 233402,
+      "zip_sha256": "5fe0194e4b5bb019d7815fcfed0712d30437c67f451b9c4fd10f0748a141f240",
+      "receipt_sha256": "955b287b3cab3b04ccc948a75bdc9b2a98e89b0a1cfa0f0fee4bf36e94be03bd",
+      "source_inputs": 89,
+      "before_after_equal": true,
+      "commands": [
+        {
+          "name": "original-bazel-committed-lock-check",
+          "argv": [
+            "just",
+            "bazel-lock-check"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+          "exit_code": 0,
+          "seconds": 27.467510398,
+          "stdout_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+          "stderr_sha256": "1011b71d4216f9ad3e6ba1bc7ec6b7e47f8e2624ab6ac62c893e7f527cc099e8"
+        },
+        {
+          "name": "original-bazel-lock-update",
+          "argv": [
+            "just",
+            "bazel-lock-update"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+          "exit_code": 0,
+          "seconds": 20.630625799,
+          "stdout_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+          "stderr_sha256": "495a32c1ba168c781751f306b0918a406cfdac97bbe8448b569227470aa01f14"
+        },
+        {
+          "name": "original-bazel-lock-check",
+          "argv": [
+            "just",
+            "bazel-lock-check"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+          "exit_code": 0,
+          "seconds": 4.221092908000003,
+          "stdout_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+          "stderr_sha256": "cb9bd7af38af365ad3a6b3e450893612a7ce89694646c74d386696df07fc0019"
+        },
+        {
+          "name": "bazel-yaml-utility-tests",
+          "argv": [
+            "/home/runner/work/hepta-private-ci/hepta-private-ci/.github/scripts/run_bazel_with_buildbuddy.py",
+            "test",
+            "//codex-rs/utils/yaml:yaml-unit-tests"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+          "exit_code": 0,
+          "seconds": 122.69517373500001,
+          "stdout_sha256": "f6c52fc86aeefc0a4e66f628a30af227f25d2e6f5559ee83064b2d52b93b6606",
+          "stderr_sha256": "f88fbcdda295d8d39c1291d4b74430ab5769852dcc0a1268dfb653e37a4dafe6"
+        }
+      ],
+      "committed_lock_checked_before_generation": true,
+      "generated_lock_exact_to_committed": true,
+      "lock_sha256": "5a6fbcf975d99e97e5562677643f3960e34929d423d22e788c6d41a43247ae26",
+      "actual_bazel_test_target_executed": true
+    },
+    {
+      "artifact_id": 13251899279,
+      "mode": "native",
+      "package": "codex-utils-yaml",
+      "zip_bytes": 7370,
+      "zip_sha256": "22fdd1b1d28b99b11537344713f907fe4daf24e25f7c39bb7514bbf3b7b28334",
+      "receipt_sha256": "35a6fac8442ed6292472ab07f1e7a7bc5391eef65c389fe499de0d460b66bf58",
+      "source_inputs": 89,
+      "before_after_equal": true,
+      "commands": [
+        {
+          "name": "original-just-test",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-utils-yaml"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+          "exit_code": 0,
+          "seconds": 39.209444371000004,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "cdae48e2adb960f90a4f3d7d77ee6fc622714477f8ca0459eae236ef6a584690"
+        }
+      ],
+      "tests": 10,
+      "zero_skipped": true,
+      "individual_pass_records_verified": 10,
+      "count_evidence": "Original nextest raw per-case records and summary; no JUnit artifact was retained by this workflow."
+    },
+    {
+      "artifact_id": 13251324967,
+      "mode": "graph",
+      "package": null,
+      "zip_bytes": 608645,
+      "zip_sha256": "0769ab8f8cb112a225576cb26d4e158efd48c85f3cdd3d2b82da05049e68e8dc",
+      "receipt_sha256": "b9e8204b07e40ac86b799ddeea6590062509d7383c810a3806cf9e4d73c9cd00",
+      "source_inputs": 89,
+      "before_after_equal": true,
+      "commands": [
+        {
+          "name": "cargo-metadata-all-features",
+          "argv": [
+            "cargo",
+            "metadata",
+            "--locked",
+            "--all-features",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+          "exit_code": 0,
+          "seconds": 42.33247950299999,
+          "stdout_sha256": "60c4633d48cded5e1f0f5d3906529ace1d33db612e74ec97121b73a17e968969",
+          "stderr_sha256": "9327f0b3ba8ca2a9fee04ef69da33039a44c9dae8b614d773ac5a51404e86278"
+        }
+      ],
+      "metadata_packages": 1524,
+      "metadata_lock_records_match": true,
+      "legacy_parser_absent": true
+    }
+  ],
+  "qualification_scope": "Original five native package suites, complete all-features graph and committed-lock-first Bazel utility target on exact 9ae source.",
+  "boundaries": [
+    "No JUnit files were retained by this workflow; case counts were independently read from all original per-case PASS records and the original summary.",
+    "The 89 inputs are the explicitly snapshotted qualification scope, not every repository source file.",
+    "No separate-branch result establishes union-source, full-platform or paired-host acceptance.",
+    "No Cargo/native/Bazel/archived code executed by this verifier."
+  ]
+}
