@@ -9,10 +9,10 @@ from . import common as c
 SCHEMA = "hepta.execution08.original-asset-assembly.1"
 
 
-def historical(contract):
+def historical(contract, source_root=None):
     pin = contract["original_asset_restoration"]
     item = {key: pin[key] for key in ("path", "bytes", "sha256")}
-    item["path"] = str(c.SOURCE / item["path"])
+    item["path"] = str((c.SOURCE if source_root is None else Path(source_root)) / item["path"])
     value = c.bound(item)
     c.need(
         value.get("schema") == "hepta.fullstudy.original-asset-restoration.1"
@@ -63,8 +63,8 @@ def build(contract, manifest, actual, source_commit, producer):
     }
 
 
-def validate_current(contract, source_commit, expected_producer=None):
-    origin, origin_item = historical(contract)
+def validate_current(contract, source_commit, expected_producer=None, *, source_root=None):
+    origin, origin_item = historical(contract, source_root)
     item = c.descriptor(Path(contract["assets_root"]) / "RESTORATION.json")
     value = c.bound(item)
     c.need(

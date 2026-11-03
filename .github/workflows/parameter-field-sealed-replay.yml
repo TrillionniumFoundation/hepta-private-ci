@@ -1,0 +1,106 @@
+name: Parameter field sealed archive replay
+
+on:
+  push:
+    branches:
+      - dot/parameter-field-sealed-replay-20261103
+    paths:
+      - operational/parameter_field_recovery08/**
+      - .github/workflows/parameter-field-sealed-replay.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  replay-original:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout the new reviewer
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          path: reviewer
+      - name: Checkout the immutable original scientific source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 01131230aac0aca8cf016ee407b267e40a29c3c8
+          persist-credentials: false
+          path: frozen
+      - name: Validate restoration and owned-process failure boundaries
+        working-directory: reviewer
+        shell: bash
+        run: |
+          set -o pipefail
+          git rev-parse HEAD HEAD^{tree} > ../reviewer-source.txt
+          python3 -B -m unittest \
+            operational.parameter_field_recovery08.test_restored_archives \
+            operational.parameter_field_recovery08.test_normal_exit \
+            operational.parameter_field_recovery06.test_owned_children \
+            operational.parameter_field_recovery08.test_postseal.PostsealTests.test_literal_independent_archive_and_closed_wait4 \
+            operational.parameter_field_recovery08.test_postseal.PostsealTests.test_raw_download_byte_drift_is_rejected \
+            operational.parameter_field_recovery08.test_postseal.PostsealTests.test_mutated_independent_copy_is_rejected \
+            operational.parameter_field_recovery08.test_postseal.PostsealTests.test_claimed_same_inode_and_missing_transport_wait_are_rejected \
+            -v 2>&1 | tee ../replay-tests.log
+      - name: Prepare separate source and diagnostic runtime
+        shell: bash
+        run: |
+          test ! -e /work
+          sudo mkdir /work
+          sudo chown "$(id -u):$(id -g)" /work
+          mv frozen /work/source
+          python3 -m venv /work/review-runtime
+          /work/review-runtime/bin/python -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.3.5
+          gh --version > reviewer-runtime.txt
+          /work/review-runtime/bin/python -VV >> reviewer-runtime.txt
+          /work/review-runtime/bin/python -m pip freeze >> reviewer-runtime.txt
+      - name: Restore original evidence and run the complete original postseal analysis
+        working-directory: reviewer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -o pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13070691262/zip > /work/original-operations.zip
+          /work/review-runtime/bin/python -B - <<'PY' 2>&1 | tee ../replay.log
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+          from types import SimpleNamespace
+          from operational.parameter_field_recovery06.owned_children import run_controller
+          core = SimpleNamespace(subprocess=subprocess)
+          def execute():
+              child = core.subprocess.Popen([
+                  sys.executable, '-B',
+                  'operational/parameter_field_recovery08/postseal/replay_complete.py',
+                  '--archive', '/work/original-operations.zip'], cwd=Path.cwd())
+              code = child.wait(timeout=1800)
+              if code != 0:
+                  raise RuntimeError('Sealed replay failed with exit ' + str(code))
+              return code
+          run_controller(core, execute, '/work/replay_measurement',
+                         binding={'reviewer_commit': os.environ['GITHUB_SHA'],
+                                  'original_run': 41260752710})
+          PY
+      - name: Preserve replay, original disposition and new cost evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: parameter-field-sealed-replay-${{ github.sha }}
+          path: |
+            reviewer-source.txt
+            reviewer-runtime.txt
+            replay-tests.log
+            replay.log
+            /work/replay/READBACK.json
+            /work/replay/COMPLETE.json
+            /work/replay/FAILED.json
+            /work/replay/postseal
+            /work/replay_measurement
+          if-no-files-found: error
+          retention-days: 60

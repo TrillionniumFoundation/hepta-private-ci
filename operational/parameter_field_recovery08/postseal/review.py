@@ -63,6 +63,9 @@ class Metadata:
     def file(self, path):
         return self.read(c.descriptor(path))
 
+    def readback_proof(self, artifact, item, historical):
+        return historical
+
     def stable(self):
         for path, before in self.fingerprints.items():
             now = c.regular(path).stat()
@@ -292,6 +295,17 @@ def verify_ack(metadata, row, binding, expected_identity=None, *, terminal=False
                     "ZIP payload hash differs",
                 )
             proof = proofs[item["path"]]
+            historical_inodes = [proof.get(field) for field in (
+                "source_device_inode", "staged_device_inode", "readback_device_inode"
+            )]
+            c.need(
+                all(type(v) is list and len(v) == 2
+                    and all(type(n) is int and n >= 0 for n in v)
+                    for v in historical_inodes)
+                and len({tuple(v) for v in historical_inodes}) == 3,
+                "Historical readback did not bind three independent copies",
+            )
+            proof = metadata.readback_proof(artifact, item, proof)
             identities = []
             for part, field in (
                 ("upload", "staged_device_inode"),
@@ -369,6 +383,7 @@ def operational_gate(config, config_item, terminal_item, metadata):
     ops, raw, source = (
         Path(config[k]) for k in ("ops_root", "raw_root", "source_root")
     )
+    own = source / "operational/parameter_field_recovery08"
     metadata.check(config_item)
     c.need(
         not (ops / "FAILED.json").exists(),
@@ -392,10 +407,10 @@ def operational_gate(config, config_item, terminal_item, metadata):
         "Prospective source closure differs",
     )
     runtime = metadata.read(config["descriptors"]["runtime_receipt"])
-    contract = metadata.file(c.OWN / "INPUT_CONTRACT.json")
+    contract = metadata.file(own / "INPUT_CONTRACT.json")
     asset_receipt = metadata.read(config["descriptors"]["assets_receipt"])
     restoration, restoration_value = asset_provenance.validate_current(
-        contract, config["source_commit"], config["actions_identity"]
+        contract, config["source_commit"], config["actions_identity"], source_root=source
     )
     restoration_copy = asset_receipt["current_asset_assembly_copy"]
     c.need(
@@ -565,7 +580,7 @@ def operational_gate(config, config_item, terminal_item, metadata):
     c.need(
         initial_plan.get("execution_episode") == c.EPISODE
         and initial_plan.get("source_commit") == config["source_commit"]
-        and initial_plan.get("program") == c.descriptor(c.OWN / "initialize.py")
+        and initial_plan.get("program") == c.descriptor(own / "initialize.py")
         and initial_plan.get("python") == config["python"]
         and initial_plan.get("base_argv")
         == ["--source-commit", config["source_commit"]],
@@ -623,7 +638,7 @@ def operational_gate(config, config_item, terminal_item, metadata):
     semantic_argv = [
         config["python"],
         "-B",
-        str(c.OWN / "semantic_preflight.py"),
+        str(own / "semantic_preflight.py"),
         "--config",
         config_item["path"],
         "--expected-config-sha256",
@@ -638,7 +653,7 @@ def operational_gate(config, config_item, terminal_item, metadata):
     supervisor_argv = [
         config["python"],
         "-B",
-        str(c.OWN / "supervisor.py"),
+        str(own / "supervisor.py"),
         "--config",
         config_item["path"],
         "--expected-config-sha256",
@@ -708,7 +723,7 @@ def operational_gate(config, config_item, terminal_item, metadata):
     publication_argv = [
         config["python"],
         "-B",
-        str(c.OWN / "terminal.py"),
+        str(own / "terminal.py"),
         "publish-child",
         "--config",
         config_item["path"],
@@ -754,13 +769,14 @@ def operational_gate(config, config_item, terminal_item, metadata):
 
 
 def original_supplement(config):
+    source = Path(config["source_root"])
     path = (
-        c.SOURCE
+        source
         / "supplements/parameter_field_fullstudy_20261030/postseal_supplement.py"
     )
     c.need(
         c.descriptor(path)["sha256"]
-        == config["source_files"][path.relative_to(c.SOURCE).as_posix()],
+        == config["source_files"][path.relative_to(source).as_posix()],
         "Original supplement source changed",
     )
     spec = importlib.util.spec_from_file_location("execution08_original_postseal", path)
@@ -800,6 +816,14 @@ def review(config, config_item, terminal_item, output):
     complete, operations = operational_gate(
         config, config_item, terminal_item, metadata
     )
+    return analyze(config, config_item, terminal_item, output, metadata,
+                   complete, operations, started, cpu)
+
+
+def analyze(config, config_item, terminal_item, output, metadata,
+            complete, operations, started, cpu):
+    """Original diagnostics, entered only after source, delivery and accounting gates."""
+    source = Path(config["source_root"])
     original = original_supplement(config)
     inputs = original.Inputs()
     plan, store, protocol, gate = original.gate(
@@ -816,7 +840,7 @@ def review(config, config_item, terminal_item, output):
         make_guarded_choose,
     )
 
-    choose = original.frozen_choose(c.SOURCE, inputs, np)
+    choose = original.frozen_choose(source, inputs, np)
     banks, summaries, details, differences, issue_rows = original.bank_analysis(
         store, np
     )
@@ -868,7 +892,7 @@ def review(config, config_item, terminal_item, output):
     }
     aggregate_item = complete["artifacts"]["aggregate_results"]
     aggregate = inputs.descriptor_json(aggregate_item, "admitted_original_aggregate")
-    history = metadata.file(c.OWN / "HISTORICAL_COSTS.json")
+    history = metadata.file(source / "operational/parameter_field_recovery08/HISTORICAL_COSTS.json")
     historical_gate = history["original_integrity"]["historical_exact_regression_gate"]
     c.need(
         aggregate.get("historical_exact_regression_gate") == historical_gate
@@ -885,7 +909,7 @@ def review(config, config_item, terminal_item, output):
     )
     inputs.unchanged()
     metadata.stable()
-    c.committed_sources(c.SOURCE, config["source_commit"], config["source_files"])
+    c.committed_sources(source, config["source_commit"], config["source_files"])
     outputs["INPUTS.json"] = c.write_new(
         output / "INPUTS.json",
         {
