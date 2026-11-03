@@ -689,9 +689,11 @@ impl AutomationStore {
         definition.validate()?;
         self.validate_taskflow_fence(fence)?;
         let json = definition.canonical_json()?;
+        // Mutations reserve SQLite's writer before auditing the original
+        // state; a deferred snapshot cannot be upgraded past another writer.
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let existing = sqlx::query(
@@ -822,7 +824,7 @@ impl AutomationStore {
         validate_digest(definition_digest, "definition digest")?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let definition_row = sqlx::query(
@@ -978,7 +980,7 @@ impl AutomationStore {
             .ok_or_else(|| invalid("lease duration overflows timestamp"))?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let row =
@@ -1206,7 +1208,7 @@ impl AutomationStore {
         let command_digest = command.digest()?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let row =
