@@ -1,15 +1,24 @@
 //! A typed view of the original SQLite owner; no second database or authority.
 
-use std::collections::BTreeSet;
-use codex_hepta_cognitive_types::{InventoryCellKindV1, InventoryCellRequestV1, InventoryCellRouteV1, MemoryOperationV1, validate_inventory_cell_value_v1};
-use codex_hepta_cognitive_types::hnmf::{ContractDigestV1, ContractIdV1, HnmfContractError};
-use codex_hepta_contracts::AgentId;
-use codex_hepta_types::Digest32;
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use crate::{CognitiveStoreError, DurableCognitiveSnapshot, StableMemoryId};
+use crate::CognitiveStoreError;
+use crate::DurableCognitiveSnapshot;
+use crate::StableMemoryId;
 use crate::cognitive_store::unavailable;
 use crate::memory_cell_owner::invalid;
+use codex_hepta_cognitive_types::InventoryCellKindV1;
+use codex_hepta_cognitive_types::InventoryCellRequestV1;
+use codex_hepta_cognitive_types::InventoryCellRouteV1;
+use codex_hepta_cognitive_types::MemoryOperationV1;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::HnmfContractError;
+use codex_hepta_cognitive_types::validate_inventory_cell_value_v1;
+use codex_hepta_contracts::AgentId;
+use codex_hepta_types::Digest32;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::Value;
+use std::collections::BTreeSet;
 
 #[path = "inventory_cell_acquire.rs"]
 mod acquire;
@@ -41,7 +50,9 @@ pub struct InventoryCellRecordV1 {
 
 impl InventoryCellRecordV1 {
     pub fn validate(&self) -> Result<(), HnmfContractError> {
-        if self.schema != "hepta.memory.inventory-cell-record.v1" || self.effective_at >= 1_u64 << 53 {
+        if self.schema != "hepta.memory.inventory-cell-record.v1"
+            || self.effective_at >= 1_u64 << 53
+        {
             return Err(HnmfContractError::Invalid("memory cell record envelope"));
         }
         validate_inventory_cell_value_v1(self.kind, &self.value)
@@ -108,15 +119,60 @@ impl InventoryCellOwnerSnapshotV1 {
     /// Only learned policy/program sources bind parameter validity. Exact events
     /// and holds are read from a fresh full owner cut on every request.
     pub fn parameter_training_cut_digest(&self) -> Result<ContractDigestV1, CognitiveStoreError> {
-        let mut sources: Vec<_> = self.records.iter().filter(|row| {
-            matches!(row.record.kind, InventoryCellKindV1::Semantic | InventoryCellKindV1::Skill)
-                && self.current_source_ids.contains(&row.source_id)
-        }).map(|row| (row.record.kind, row.record.key.clone(), row.source_id)).collect();
+        let mut sources: Vec<_> = self
+            .records
+            .iter()
+            .filter(|row| {
+                matches!(
+                    row.record.kind,
+                    InventoryCellKindV1::Semantic | InventoryCellKindV1::Skill
+                ) && self.current_source_ids.contains(&row.source_id)
+            })
+            .map(|row| (row.record.kind, row.record.key.clone(), row.source_id))
+            .collect();
         sources.sort_by(|left, right| {
             let rank = |kind| u8::from(kind == InventoryCellKindV1::Skill);
-            rank(left.0).cmp(&rank(right.0)).then_with(|| left.1.as_str().cmp(right.1.as_str()))
+            rank(left.0)
+                .cmp(&rank(right.0))
+                .then_with(|| left.1.as_str().cmp(right.1.as_str()))
         });
-        let bytes = serde_json::to_vec(&("hepta.sqlite.inventory-training-cut.v1", &self.scope, sources)).map_err(unavailable)?;
+        let bytes = serde_json::to_vec(&(
+            "hepta.sqlite.inventory-training-cut.v1",
+            &self.scope,
+            sources,
+        ))
+        .map_err(unavailable)?;
+        ContractDigestV1::from_digest(Digest32::of_bytes(&bytes)).map_err(invalid)
+    }
+
+    /// Independently version one learned cell's complete training dependency
+    /// set. A changed source anywhere in that model invalidates that model;
+    /// another cell's update does not. This is never an effect capability.
+    pub fn cell_training_cut_digest(
+        &self,
+        kind: InventoryCellKindV1,
+    ) -> Result<ContractDigestV1, CognitiveStoreError> {
+        if !matches!(
+            kind,
+            InventoryCellKindV1::Semantic | InventoryCellKindV1::Skill
+        ) {
+            return Err(CognitiveStoreError::Invalid(
+                "exact inventory source has no trained cell".to_string(),
+            ));
+        }
+        let mut sources: Vec<_> = self
+            .training_records(kind)
+            .into_iter()
+            .map(|row| (row.record.key.clone(), row.source_id))
+            .collect();
+        sources.sort_by(|left, right| left.0.as_str().cmp(right.0.as_str()));
+        let bytes = serde_json::to_vec(&(
+            "hepta.sqlite.inventory-cell-training-cut.v2",
+            &self.scope,
+            kind,
+            sources,
+        ))
+        .map_err(unavailable)?;
         ContractDigestV1::from_digest(Digest32::of_bytes(&bytes)).map_err(invalid)
     }
 
@@ -164,28 +220,54 @@ impl InventoryCellOwnerSnapshotV1 {
     }
 
     pub(crate) fn required_sources(
-        &self, request: &InventoryCellRequestV1, route: &InventoryCellRouteV1,
+        &self,
+        request: &InventoryCellRequestV1,
+        route: &InventoryCellRouteV1,
     ) -> Result<BTreeSet<ContractDigestV1>, CognitiveStoreError> {
         route.validate().map_err(invalid)?;
-        use InventoryCellKindV1::{Event, Semantic, Skill, Hold};
-        let current = |key: &Option<ContractIdV1>, kind| key.as_ref().and_then(|key| self.current(key, kind));
-        let event_at = |at| route.entity.as_ref().and_then(|key| self.at(key, Event, at));
+        use InventoryCellKindV1::Event;
+        use InventoryCellKindV1::Hold;
+        use InventoryCellKindV1::Semantic;
+        use InventoryCellKindV1::Skill;
+        let current =
+            |key: &Option<ContractIdV1>, kind| key.as_ref().and_then(|key| self.current(key, kind));
+        let event_at = |at| {
+            route
+                .entity
+                .as_ref()
+                .and_then(|key| self.at(key, Event, at))
+        };
         let selected = match route.operation {
             MemoryOperationV1::Current => vec![current(&route.entity, Event)],
             MemoryOperationV1::History => vec![event_at(request.at)],
-            MemoryOperationV1::Change => vec![current(&route.entity, Event), event_at(request.since)],
+            MemoryOperationV1::Change => {
+                vec![current(&route.entity, Event), event_at(request.since)]
+            }
             MemoryOperationV1::Semantic => vec![current(&route.entity, Semantic)],
             MemoryOperationV1::Procedure => vec![current(&route.workflow, Skill)],
             MemoryOperationV1::Apply => {
                 if current(&route.entity, Hold).is_some() {
-                    return Err(CognitiveStoreError::Conflict("exact owner hold forbids composition".to_string()));
+                    return Err(CognitiveStoreError::Conflict(
+                        "exact owner hold forbids composition".to_string(),
+                    ));
                 }
-                vec![current(&route.entity, Event), current(&route.entity, Semantic), current(&route.workflow, Skill)]
+                vec![
+                    current(&route.entity, Event),
+                    current(&route.entity, Semantic),
+                    current(&route.workflow, Skill),
+                ]
             }
         };
-        selected.into_iter().map(|row| row.map(|row| row.source_id).ok_or_else(||
-            CognitiveStoreError::Conflict("inventory dependency missing or withdrawn".to_string())
-        )).collect()
+        selected
+            .into_iter()
+            .map(|row| {
+                row.map(|row| row.source_id).ok_or_else(|| {
+                    CognitiveStoreError::Conflict(
+                        "inventory dependency missing or withdrawn".to_string(),
+                    )
+                })
+            })
+            .collect()
     }
 }
 
@@ -201,11 +283,14 @@ pub(crate) fn inventory_cell_stable_key(
     Ok(format!("inventory-cell:v1:{}", Digest32::of_bytes(&bytes)))
 }
 
-fn decode_inventory_cell(content: &str) -> Result<Option<InventoryCellRecordV1>, CognitiveStoreError> {
+fn decode_inventory_cell(
+    content: &str,
+) -> Result<Option<InventoryCellRecordV1>, CognitiveStoreError> {
     let Ok(value) = serde_json::from_str::<Value>(content) else {
         return Ok(None);
     };
-    if value.get("schema").and_then(Value::as_str) != Some("hepta.memory.inventory-cell-record.v1") {
+    if value.get("schema").and_then(Value::as_str) != Some("hepta.memory.inventory-cell-record.v1")
+    {
         return Ok(None);
     }
     let record: InventoryCellRecordV1 = serde_json::from_value(value)
@@ -213,4 +298,3 @@ fn decode_inventory_cell(content: &str) -> Result<Option<InventoryCellRecordV1>,
     record.validate().map_err(invalid)?;
     Ok(Some(record))
 }
-

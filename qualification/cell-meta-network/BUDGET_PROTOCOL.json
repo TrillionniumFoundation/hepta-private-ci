@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.structure-total-budget-protocol.v1",
+  "source_import_commit": "9a9a81cee17684fea111cec41237f77920ecac01",
+  "seeds": [731, 732],
+  "arms": ["dynamic", "monolith", "fixed_experts", "pruning"],
+  "cpu_seconds_per_arm_including_shared_setup": 12.0,
+  "evaluation_reserve_seconds": 0.75,
+  "phase_finalize_reserve_seconds": 0.20,
+  "maximum_steps": 20000,
+  "batch_size": 32,
+  "learning_rate": 0.01,
+  "maximum_trainable_parameters": 6144,
+  "pruned_rank": 2,
+  "event_probes": [0, 5, 11, 17],
+  "utility": "Half exact canonical policy accuracy plus half exact composed status/value/full-trace accuracy over eight fixed programs and four event probes.",
+  "credit": "Post-update task utility minus counterfactual utility with that cell's adapter restored to its pre-fit state; routing remains fixed. Record routing-only counterfactual separately. These conditional contributions need not add up.",
+  "pruning": "Expand to rank 8, then greedily remove channels using current training-prefix task utility until rank 2. Charge every selection evaluation. The parameter limit is an equal upper bound; actual retained parameters deliberately differ.",
+  "budget": "One shared process, one CPU, shared frozen head and precomputed encoder vectors. Charge setup equally, and per arm charge initialization, route/prune selection, optimization, credit diagnostics, checkpoint persistence, reload and held evaluation. Any measured total above the allowance is budget-invalid, not a fair-budget success. Final report serialization and process startup are recorded separately; exact entire-research cost is not claimed.",
+  "evaluation": "Reuse the published held expressions only after all arms finish training. This is exploratory reuse, not a fresh blind test. No acceptance rule or hyperparameter is selected on held outcomes.",
+  "admission": "No automatic split or prune activation. Report quality, retention and actual cost, including failures. A budget-invalid or failed arm cannot establish superiority.",
+  "scope": "Existing finite eight-address parameter-memory study. No native owner, autonomous recursive growth, new-entity generalization or general-agent claim. Existing parent training/encoder assets are sunk costs, recorded as shared prerequisites, not zero-cost training."
+}

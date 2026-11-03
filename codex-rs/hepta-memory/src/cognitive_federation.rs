@@ -28,6 +28,13 @@ use crate::cognitive_path::canonical_path_without_redirection;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
+#[path = "cognitive_federation_file_identity.rs"]
+mod file_identity;
+
+use file_identity::FederationFileIdentity;
+use file_identity::capture_file_identity;
+use file_identity::require_file_identity;
+
 pub const MAX_FEDERATION_CAPABILITIES_PER_STORE: u64 = 128;
 pub const MAX_FEDERATION_CAPABILITY_REVISIONS: u64 = 1024;
 pub const MAX_FEDERATION_GRANT_LIFETIME_SECONDS: i64 = 31 * 24 * 60 * 60;
@@ -559,6 +566,7 @@ impl CognitiveStore {
 pub struct FederatedMemoryReader {
     owner: Arc<CognitiveStore>,
     capability: FederationCapability,
+    database_identity: Option<FederationFileIdentity>,
 }
 
 impl FederatedMemoryReader {
@@ -571,8 +579,67 @@ impl FederatedMemoryReader {
             return Ok(Vec::new());
         }
         let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
+        let database_identity = capture_file_identity(&database_path)?;
         let pool = open_read_only_pool(&database_path).await?;
-        verify_read_only_store(&pool, owner_layout.agent_id()).await?;
+        let owner = Arc::new(CognitiveStore::from_read_only_pool(
+            pool,
+            owner_layout.agent_id().clone(),
+            database_path,
+        ));
+        Self::discover_on_owner(
+            owner,
+            consumer_agent_id,
+            now_unix_seconds,
+            database_identity,
+        )
+        .await
+    }
+
+    /// Reuse this request's read-only pool, never a previous authority decision.
+    /// Every call rechecks path identity, store integrity/schema and current heads.
+    pub(crate) async fn rediscover_current(
+        &self,
+        owner_layout: &HeptaAgentLayout,
+        consumer_agent_id: &AgentId,
+        now_unix_seconds: i64,
+    ) -> Result<Vec<Self>, CognitiveStoreError> {
+        if owner_layout.agent_id() != self.owner.owner_agent_id()
+            || owner_layout
+                .cognitive_root()
+                .join(COGNITIVE_DB_FILENAME)
+                .as_path()
+                != self.owner.path()
+            || consumer_agent_id != self.capability.consumer_agent_id()
+        {
+            return Err(CognitiveStoreError::AccessDenied(
+                "federated authority pool does not match the requested owner and consumer"
+                    .to_string(),
+            ));
+        }
+        if self.database_identity.is_none() {
+            // Platforms without a stable file-identity implementation retain
+            // the original fresh-open path instead of accepting weaker reuse.
+            return Self::discover(owner_layout, consumer_agent_id, now_unix_seconds).await;
+        }
+        Self::discover_on_owner(
+            Arc::clone(&self.owner),
+            consumer_agent_id,
+            now_unix_seconds,
+            self.database_identity,
+        )
+        .await
+    }
+
+    async fn discover_on_owner(
+        owner: Arc<CognitiveStore>,
+        consumer_agent_id: &AgentId,
+        now_unix_seconds: i64,
+        database_identity: Option<FederationFileIdentity>,
+    ) -> Result<Vec<Self>, CognitiveStoreError> {
+        require_file_identity(owner.path(), database_identity)?;
+        verify_read_only_store(&owner.pool, owner.owner_agent_id()).await?;
+        // fetch_all completes this fresh autocommit read before returning.
+        // No transaction or previous authority result crosses the transport.
         let rows = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
              FROM memory_federation_heads h JOIN memory_federation_events e
@@ -580,18 +647,14 @@ impl FederatedMemoryReader {
              WHERE e.consumer_agent_id = ? ORDER BY e.capability_id",
         )
         .bind(consumer_agent_id.as_str())
-        .fetch_all(&pool)
+        .fetch_all(&owner.pool)
         .await
         .map_err(unavailable)?;
-        let owner = Arc::new(CognitiveStore::from_read_only_pool(
-            pool,
-            owner_layout.agent_id().clone(),
-            database_path,
-        ));
+        require_file_identity(owner.path(), database_identity)?;
         let mut readers = Vec::new();
         for row in rows {
             let event = decode_event(row)?;
-            if event.capability.owner_agent_id != *owner_layout.agent_id()
+            if event.capability.owner_agent_id != *owner.owner_agent_id()
                 || event.capability.consumer_agent_id != *consumer_agent_id
             {
                 return Err(CognitiveStoreError::Corrupt(
@@ -605,6 +668,7 @@ impl FederatedMemoryReader {
                 readers.push(Self {
                     owner: Arc::clone(&owner),
                     capability: event.capability,
+                    database_identity,
                 });
             }
         }
@@ -1235,3 +1299,7 @@ fn from_i64(value: i64, label: &str) -> Result<u64, CognitiveStoreError> {
     u64::try_from(value)
         .map_err(|_| CognitiveStoreError::Corrupt(format!("negative federation {label}")))
 }
+
+#[cfg(test)]
+#[path = "cognitive_federation_pool_tests.rs"]
+mod pool_tests;

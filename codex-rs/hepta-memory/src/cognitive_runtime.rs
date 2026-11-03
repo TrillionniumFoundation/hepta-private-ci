@@ -586,7 +586,7 @@ async fn retrieve_federated_product(
         let authority = ProductReaderAuthority {
             owner_layout,
             consumer_agent_id,
-            expected_capability: reader.capability(),
+            reader,
             logical_start_ms,
             started_at,
         };
@@ -949,7 +949,7 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
 struct ProductReaderAuthority<'a> {
     owner_layout: &'a HeptaAgentLayout,
     consumer_agent_id: &'a AgentId,
-    expected_capability: &'a FederationCapability,
+    reader: &'a FederatedMemoryReader,
     logical_start_ms: u64,
     started_at: Instant,
 }
@@ -964,31 +964,30 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
             let observed_unix_ms = elapsed_logical_ms(self.logical_start_ms, self.started_at);
             let now_unix_seconds = i64::try_from(observed_unix_ms / 1_000)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
-            let readers = FederatedMemoryReader::discover(
-                self.owner_layout,
-                self.consumer_agent_id,
-                now_unix_seconds,
-            )
-            .await
-            .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
+            let readers = self
+                .reader
+                .rediscover_current(self.owner_layout, self.consumer_agent_id, now_unix_seconds)
+                .await
+                .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
+            let expected_capability = self.reader.capability();
             let current = readers
                 .iter()
-                .find(|reader| reader.capability().id() == self.expected_capability.id());
+                .find(|reader| reader.capability().id() == expected_capability.id());
             let state = match current {
                 None => FederationAuthorityStateV2::Revoked,
-                Some(reader) if reader.capability() == self.expected_capability => {
+                Some(reader) if reader.capability() == expected_capability => {
                     FederationAuthorityStateV2::Current
                 }
                 Some(_) => FederationAuthorityStateV2::StaleGeneration,
             };
             let authority_capability =
-                current.map_or(self.expected_capability, |reader| reader.capability());
+                current.map_or(expected_capability, |reader| reader.capability());
             let authority_expires_unix_ms = capability_expiry_ms(authority_capability)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
             Ok(FederationAuthorityObservationV2 {
                 query_binding_digest: query.binding_digest(),
                 lease_epoch: query.lease_epoch,
-                observed_unix_ms,
+                observed_unix_ms: elapsed_logical_ms(self.logical_start_ms, self.started_at),
                 authority_expires_unix_ms,
                 state,
             })
@@ -1189,6 +1188,10 @@ impl fmt::Debug for CognitiveRuntime {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "cognitive_runtime_pool_tests.rs"]
+mod pool_tests;
 
 #[cfg(test)]
 mod product_nonce_tests {

@@ -1,18 +1,28 @@
 //! Residual inventory reads within the existing Agentd lifecycle and owners.
 
+use crate::AgentdError;
+use crate::LoadedInventoryCellBundleV1;
+use crate::memory_cell_release::TypedMemoryCellReleaseHostV1;
+use codex_hepta_cognitive_store::DurableCognitiveStore;
+use codex_hepta_cognitive_store::InventoryCellOwnerSnapshotV1;
+use codex_hepta_cognitive_types::InventoryCellReadoutV1;
+use codex_hepta_cognitive_types::InventoryCellRequestV1;
+use codex_hepta_cognitive_types::InventoryCellRouteV1;
+use codex_hepta_cognitive_types::MemoryPredictionKindV1;
+use codex_hepta_cognitive_types::MemoryReadStatusV1;
+use codex_hepta_cognitive_types::MemoryReadoutV1;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_contracts::AgentId;
+use codex_hepta_memory::CognitiveAccess;
+use codex_hepta_memory::CognitiveScope;
+use serde_json::Value;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
-use codex_hepta_cognitive_store::{DurableCognitiveStore, InventoryCellOwnerSnapshotV1};
-use codex_hepta_cognitive_types::{InventoryCellReadoutV1, InventoryCellRequestV1, InventoryCellRouteV1, MemoryPredictionKindV1, MemoryReadStatusV1, MemoryReadoutV1};
-use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_memory::{CognitiveAccess, CognitiveScope};
-use serde_json::Value;
-use crate::{AgentdError, LoadedInventoryCellBundleV1};
-use crate::memory_cell_release::TypedMemoryCellReleaseHostV1;
-use crate::memory_cell_release::MemoryCellReleaseBundleV1;
+use std::time::Duration;
+use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 #[path = "inventory_cell_execution.rs"]
 mod execution;
@@ -29,7 +39,11 @@ pub trait InventoryCellAddressResolverV1: Send + Sync {
         &'a self,
         request: &'a InventoryCellRequestV1,
         snapshot: &'a InventoryCellOwnerSnapshotV1,
-    ) -> Pin<Box<dyn Future<Output = Result<Option<InventoryCellResolvedAddressV1>, String>> + Send + 'a>>;
+    ) -> Pin<
+        Box<
+            dyn Future<Output = Result<Option<InventoryCellResolvedAddressV1>, String>> + Send + 'a,
+        >,
+    >;
 }
 
 #[derive(Clone, Debug)]
@@ -61,39 +75,79 @@ impl AgentdInventoryCellRuntimeV1 {
         resolver: Arc<dyn InventoryCellAddressResolverV1>,
     ) -> Result<Self, AgentdError> {
         if spawn_generation == 0 {
-            return Err(AgentdError::Invalid("inventory host generation is zero".to_string()));
+            return Err(AgentdError::Invalid(
+                "inventory host generation is zero".to_string(),
+            ));
         }
         let access = match &scope {
             CognitiveScope::AgentPrivate => CognitiveAccess::agent_private(owner_agent_id.clone()),
-            CognitiveScope::WorkspacePrivate { workspace_sha256 } => CognitiveAccess::workspace_private(owner_agent_id.clone(), workspace_sha256.clone()),
+            CognitiveScope::WorkspacePrivate { workspace_sha256 } => {
+                CognitiveAccess::workspace_private(owner_agent_id.clone(), workspace_sha256.clone())
+            }
         };
         let resolver_digest = resolver.model_digest();
-        Ok(Self { owner_agent_id, spawn_generation, scope, access, release, resolver, resolver_digest })
+        Ok(Self {
+            owner_agent_id,
+            spawn_generation,
+            scope,
+            access,
+            release,
+            resolver,
+            resolver_digest,
+        })
     }
 
-    pub(crate) fn require_identity(&self, owner: &AgentId, generation: u64, workspace: &std::path::Path) -> Result<(), AgentdError> {
+    pub(crate) fn require_identity(
+        &self,
+        owner: &AgentId,
+        generation: u64,
+        workspace: &std::path::Path,
+    ) -> Result<(), AgentdError> {
         if owner != &self.owner_agent_id || generation != self.spawn_generation {
-            return Err(AgentdError::GenerationFenced("inventory host identity differs from Agentd".to_string()));
+            return Err(AgentdError::GenerationFenced(
+                "inventory host identity differs from Agentd".to_string(),
+            ));
         }
         if let CognitiveScope::WorkspacePrivate { workspace_sha256 } = &self.scope
             && *workspace_sha256 != codex_hepta_memory::workspace_binding_digest(workspace)
         {
-            return Err(AgentdError::GenerationFenced("inventory scope differs from Agentd workspace".to_string()));
+            return Err(AgentdError::GenerationFenced(
+                "inventory scope differs from Agentd workspace".to_string(),
+            ));
         }
         Ok(())
     }
 
-    pub(crate) fn access(&self) -> &CognitiveAccess { &self.access }
-    pub(crate) fn scope(&self) -> &CognitiveScope { &self.scope }
+    pub(crate) fn access(&self) -> &CognitiveAccess {
+        &self.access
+    }
+    pub(crate) fn scope(&self) -> &CognitiveScope {
+        &self.scope
+    }
 
-    pub async fn read(&self, store: &DurableCognitiveStore, request: &InventoryCellRequestV1) -> Result<InventoryCellReadoutV1, AgentdError> {
-        request.validate().map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    pub async fn read(
+        &self,
+        store: &DurableCognitiveStore,
+        request: &InventoryCellRequestV1,
+    ) -> Result<InventoryCellReadoutV1, AgentdError> {
+        request
+            .validate()
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         if store.owner_agent_id() != &self.owner_agent_id {
-            return Err(AgentdError::GenerationFenced("inventory store owner differs from host".to_string()));
+            return Err(AgentdError::GenerationFenced(
+                "inventory store owner differs from host".to_string(),
+            ));
         }
         let started = Instant::now();
-        let bundle = self.release.load_current().map_err(|_| AgentdError::Protocol("selected inventory release unavailable".to_string()))?;
-        let result = match tokio::time::timeout(Duration::from_secs(5), self.read_bound(store, request, &bundle)).await {
+        let bundle = self.release.load_current().map_err(|_| {
+            AgentdError::Protocol("selected inventory release unavailable".to_string())
+        })?;
+        let result = match tokio::time::timeout(
+            Duration::from_secs(5),
+            self.read_bound(store, request, &bundle),
+        )
+        .await
+        {
             Ok(result) => result,
             Err(_) => Err(unavailable("inventory read deadline exceeded")),
         };
@@ -102,48 +156,123 @@ impl AgentdInventoryCellRuntimeV1 {
             Err((status, reason)) => failed(request, &bundle, status, reason),
         };
         readout.result.elapsed_seconds = started.elapsed().as_secs_f64();
-        readout.validate().map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        readout
+            .validate()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         Ok(readout)
     }
 
-    async fn read_bound(&self, store: &DurableCognitiveStore, request: &InventoryCellRequestV1, bundle: &LoadedInventoryCellBundleV1) -> Result<InventoryCellReadoutV1, ReadFailure> {
-        let acquired = store.inventory_cell_snapshot(&self.access, &self.scope, now()?).await
+    async fn read_bound(
+        &self,
+        store: &DurableCognitiveStore,
+        request: &InventoryCellRequestV1,
+        bundle: &LoadedInventoryCellBundleV1,
+    ) -> Result<InventoryCellReadoutV1, ReadFailure> {
+        let acquired = store
+            .inventory_cell_snapshot(&self.access, &self.scope, now()?)
+            .await
             .map_err(|_| unavailable("canonical inventory owner unavailable"))?;
         if request.scope != *acquired.scope() {
-            return Err((MemoryReadStatusV1::Abstain, "inventory request scope differs from authenticated owner"));
+            return Err((
+                MemoryReadStatusV1::Abstain,
+                "inventory request scope differs from authenticated owner",
+            ));
         }
-        bundle.validate_owner_snapshot(&acquired).map_err(|_| (MemoryReadStatusV1::Stale, "inventory bundle differs from current source lineage"))?;
         if self.resolver.model_digest() != self.resolver_digest {
             return Err(unavailable("inventory resolver model changed"));
         }
-        let decision = self.resolver.resolve(request, &acquired).await
+        let decision = self
+            .resolver
+            .resolve(request, &acquired)
+            .await
             .map_err(|_| unavailable("inventory address resolver unavailable"))?
-            .ok_or((MemoryReadStatusV1::Abstain, "inventory address resolver declined question"))?;
-        if decision.request != *request || decision.owner_cut_digest != acquired.owner_cut_digest() || decision.model_digest != self.resolver_digest {
-            return Err(unavailable("inventory address decision differs from request or owner binding"));
+            .ok_or((
+                MemoryReadStatusV1::Abstain,
+                "inventory address resolver declined question",
+            ))?;
+        if decision.request != *request
+            || decision.owner_cut_digest != acquired.owner_cut_digest()
+            || decision.model_digest != self.resolver_digest
+        {
+            return Err(unavailable(
+                "inventory address decision differs from request or owner binding",
+            ));
         }
-        decision.route.validate().map_err(|_| unavailable("inventory resolver returned an invalid dual address"))?;
+        decision
+            .route
+            .validate()
+            .map_err(|_| unavailable("inventory resolver returned an invalid dual address"))?;
+        bundle
+            .validate_route_owner_snapshot(&acquired, &decision.route)
+            .map_err(|_| {
+                (
+                    MemoryReadStatusV1::Stale,
+                    "inventory bundle differs from current source lineage",
+                )
+            })?;
         let readout = execution::execute(request, &decision.route, bundle, &acquired)?;
-        self.release.revalidate(bundle).map_err(|_| (MemoryReadStatusV1::Stale, "inventory publication changed before use"))?;
-        store.revalidate_inventory_cell_readout(&self.access, &self.scope, &acquired, request, &readout, bundle.generation(), bundle.bundle_digest(), now()?).await
-            .map_err(|_| (MemoryReadStatusV1::Stale, "inventory source owner changed before use"))?;
+        self.release.revalidate(bundle).map_err(|_| {
+            (
+                MemoryReadStatusV1::Stale,
+                "inventory publication changed before use",
+            )
+        })?;
+        store
+            .revalidate_inventory_cell_readout(
+                &self.access,
+                &self.scope,
+                &acquired,
+                request,
+                &readout,
+                bundle.generation(),
+                bundle.bundle_digest(),
+                now()?,
+            )
+            .await
+            .map_err(|_| {
+                (
+                    MemoryReadStatusV1::Stale,
+                    "inventory source owner changed before use",
+                )
+            })?;
         Ok(readout)
     }
 }
 
 type ReadFailure = (MemoryReadStatusV1, &'static str);
-fn unavailable(reason: &'static str) -> ReadFailure { (MemoryReadStatusV1::Unavailable, reason) }
+fn unavailable(reason: &'static str) -> ReadFailure {
+    (MemoryReadStatusV1::Unavailable, reason)
+}
 fn now() -> Result<i64, ReadFailure> {
-    let seconds = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| unavailable("inventory host clock unavailable"))?.as_secs();
+    let seconds = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| unavailable("inventory host clock unavailable"))?
+        .as_secs();
     i64::try_from(seconds).map_err(|_| unavailable("inventory host clock overflow"))
 }
-fn failed(request: &InventoryCellRequestV1, bundle: &LoadedInventoryCellBundleV1, status: MemoryReadStatusV1, reason: &str) -> InventoryCellReadoutV1 {
+fn failed(
+    request: &InventoryCellRequestV1,
+    bundle: &LoadedInventoryCellBundleV1,
+    status: MemoryReadStatusV1,
+    reason: &str,
+) -> InventoryCellReadoutV1 {
     InventoryCellReadoutV1 {
-        schema: "hepta.memory.inventory-readout.v1".to_string(), route: None,
+        schema: "hepta.memory.inventory-readout.v1".to_string(),
+        route: None,
         result: MemoryReadoutV1 {
-            schema: "hepta.memory.readout.v1".to_string(), query_id: request.query_id.clone(), operation: None,
-            status, value: Value::Null, source_ids: Vec::new(), generation: bundle.generation(), snapshot_digest: bundle.bundle_digest(),
-            prediction_kind: MemoryPredictionKindV1::None, cell_digests: Vec::new(), hops: 0, elapsed_seconds: 0.0, reason: Some(reason.to_string()),
+            schema: "hepta.memory.readout.v1".to_string(),
+            query_id: request.query_id.clone(),
+            operation: None,
+            status,
+            value: Value::Null,
+            source_ids: Vec::new(),
+            generation: bundle.generation(),
+            snapshot_digest: bundle.bundle_digest(),
+            prediction_kind: MemoryPredictionKindV1::None,
+            cell_digests: Vec::new(),
+            hops: 0,
+            elapsed_seconds: 0.0,
+            reason: Some(reason.to_string()),
         },
     }
 }

@@ -99,8 +99,7 @@ impl AgentdClient {
         {
             AgentdPayload::InventoryCellRead { readout_json } => {
                 let readout =
-                    decode_readout(readout_json.as_bytes())
-                        .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+                    decode_readout(readout_json.as_bytes()).map_err(AgentdError::Protocol)?;
                 if readout.result.query_id != request.query_id
                     || readout.result.hops > request.max_hops
                     || readout.result.cell_digests.len() > usize::from(request.max_cells)
@@ -116,12 +115,14 @@ impl AgentdClient {
     }
 }
 
-
-fn decode_readout(bytes: &[u8]) -> Result<codex_hepta_cognitive_types::InventoryCellReadoutV1, String> {
+fn decode_readout(
+    bytes: &[u8],
+) -> Result<codex_hepta_cognitive_types::InventoryCellReadoutV1, String> {
     if bytes.len() > codex_hepta_agent_protocol::MAX_MEMORY_CELL_PAYLOAD_BYTES {
         return Err("inventory readout exceeds control payload bound".to_string());
     }
-    let readout: codex_hepta_cognitive_types::InventoryCellReadoutV1 = serde_json::from_slice(bytes).map_err(|error| error.to_string())?;
+    let readout: codex_hepta_cognitive_types::InventoryCellReadoutV1 =
+        serde_json::from_slice(bytes).map_err(|error| error.to_string())?;
     readout.validate().map_err(|error| error.to_string())?;
     Ok(readout)
 }
