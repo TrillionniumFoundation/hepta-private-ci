@@ -46,7 +46,15 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA"
+          # V8 path checks use three-dot PR merge-base semantics. A depth-1
+          # fetch of two SHA objects does not provide the common ancestor.
+          # Fetch commit history (blob-filtered, no tags); never turn an
+          # unknown comparison into an empty-diff or skipped build.
+          python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA" --full-history
+
+      - name: Regress shallow PR ancestry and V8 change-selection safety
+        if: github.event_name == 'pull_request'
+        run: python3 -m unittest discover -s .github/scripts -p test_v8_canary_changes.py -v
 
       - name: Resolve exact v8 crate version
         id: v8_version
