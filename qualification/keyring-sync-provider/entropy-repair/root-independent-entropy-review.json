@@ -1,0 +1,22 @@
+{
+  "schema": "root-independent-keyring-rng-review-v2",
+  "official_archive_sha256": {
+    "4.0.3": "b42a16374481d92aed73ae45b1f120207d8e71d24fb89f357fadbd8f946fd84b",
+    "4.1.0": "708b509edf7889e53d7efb0ffadd994cc6c2345ccb62f55cfd6b0682165e4fa6"
+  },
+  "official_4_1_files": 22,
+  "functional_files": [
+    "Cargo.toml",
+    "Cargo.toml.orig",
+    "src/session.rs"
+  ],
+  "functional_patch_sha256": "234ab27684206469193005a482c67b50d5f5c8de4f170925939820af81cc02e4",
+  "candidate_session_sha256": "8761fd3171b15d1547cc07acb6dff2d00ad64aef9e6f2d282d458cf91306ca16",
+  "source_equals_exact_three_replacements_after_original_formatter": true,
+  "manifest_semantics_only_rng_dependency_and_features": true,
+  "both_crypto_backends_share_os_rng_iv_function": true,
+  "original_zeroize_on_drop_unchanged": true,
+  "new_crypto_implementation": false,
+  "review_scope": "Upstream byte provenance, source call sites and manifest semantics. Runtime compatibility and Bazel/source identity need qualification on this candidate.",
+  "native_qualification_required": true
+}

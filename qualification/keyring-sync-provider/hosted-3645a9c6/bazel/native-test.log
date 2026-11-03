@@ -1,0 +1,75 @@
+BuildBuddy key unavailable; using local Bazel configuration.
+INFO: Invocation ID: f111faa6-20e0-405d-a2d4-5854c25daa5b
+Computing main repo mapping: 
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Computing main repo mapping: 
+Loading: 
+Loading: 3 packages loaded
+Analyzing: target //third_party/dbus:native_identity_test (9 packages loaded, 8 targets configured)
+Analyzing: target //third_party/dbus:native_identity_test (9 packages loaded, 9 targets configured)
+
+Analyzing: target //third_party/dbus:native_identity_test (76 packages loaded, 456 targets configured)
+
+Analyzing: target //third_party/dbus:native_identity_test (153 packages loaded, 1648 targets configured)
+
+Analyzing: target //third_party/dbus:native_identity_test (166 packages loaded, 1938 targets configured)
+
+Analyzing: target //third_party/dbus:native_identity_test (172 packages loaded, 5539 targets configured)
+
+Analyzing: target //third_party/dbus:native_identity_test (176 packages loaded, 8351 targets configured)
+
+Analyzing: target //third_party/dbus:native_identity_test (181 packages loaded, 12902 targets configured, 31 aspect applications)
+
+Analyzing: target //third_party/dbus:native_identity_test (181 packages loaded, 16189 targets configured, 48 aspect applications)
+
+Analyzing: target //third_party/dbus:native_identity_test (187 packages loaded, 19773 targets configured, 73 aspect applications)
+
+INFO: Analyzed target //third_party/dbus:native_identity_test (188 packages loaded, 19780 targets configured, 73 aspect applications).
+[110 / 748] Action external/llvm+/runtimes/glibc/build/c.s; 0s disk-cache, linux-sandbox ... (5 actions, 3 running)
+[120 / 748] Copying files to directory external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory; 0s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[127 / 748] Compiling libcxx/src/algorithm.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[130 / 748] Compiling libcxx/src/algorithm.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[134 / 748] Compiling libcxx/src/algorithm.cpp; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[144 / 748] Compiling libcxx/src/algorithm.cpp; 4s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[148 / 748] Compiling libcxx/src/filesystem/operations.cpp; 5s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[158 / 748] Compiling libcxx/src/filesystem/operations.cpp; 6s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[176 / 748] Compiling libcxxabi/src/cxa_demangle.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[189 / 748] Compiling libcxxabi/src/cxa_demangle.cpp; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[192 / 748] Compiling libcxxabi/src/cxa_demangle.cpp; 4s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[197 / 748] Compiling libcxx/src/filesystem/path.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[217 / 748] Compiling libcxx/src/memory.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[224 / 748] Compiling libcxxabi/src/stdlib_stdexcept.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[236 / 748] Compiling libcxx/src/print.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[246 / 748] Compiling libcxx/src/print.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[257 / 748] Compiling libcxx/src/stdexcept.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 3 running)
+[271 / 748] Compiling libcxx/src/string.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[282 / 748] Compiling libcxx/src/string.cpp; 2s disk-cache, linux-sandbox ... (29 actions, 4 running)
+[301 / 748] Compiling libcxx/src/vector.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[309 / 748] Compiling libcxx/src/atomic.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[323 / 748] Compiling libcxx/src/mutex_destructor.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[337 / 748] Compiling libcxx/src/thread.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[345 / 748] Compiling libcxx/src/thread.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[360 / 748] Compiling libcxx/src/ios.instantiations.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[361 / 748] Compiling libcxx/src/ios.instantiations.cpp; 3s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[364 / 748] Compiling libcxx/src/ios.instantiations.cpp; 4s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[373 / 748] Compiling libcxx/src/locale.cpp; 4s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[385 / 748] Compiling libcxx/src/locale.cpp; 5s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[400 / 748] Compiling libcxx/src/locale.cpp; 6s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[414 / 748] Compiling libcxx/src/locale.cpp; 7s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[433 / 748] Compiling libcxx/src/locale.cpp; 8s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[473 / 748] Compiling libcxx/src/locale.cpp; 9s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[508 / 748] Compiling io/stat.c [for tool]; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[553 / 748] Compiling 3rd_party/libc/glibc/stdlib/atexit.c; 0s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[626 / 748] Compiling 3rd_party/libc/glibc/stdlib/at_quick_exit.c [for tool]; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[694 / 748] Compiling dbus/dbus-transport-unix.c; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[721 / 748] Compiling dbus/dbus-hash.c; 0s disk-cache, linux-sandbox ... (23 actions, 5 running)
+INFO: Found 1 test target...
+Target //third_party/dbus:native_identity_test up-to-date:
+  bazel-bin/third_party/dbus/native_identity_test
+INFO: Elapsed time: 56.167s, Critical Path: 15.76s
+INFO: 749 processes: 131 internal, 619 linux-sandbox.
+INFO: Build completed successfully, 749 total actions
+//third_party/dbus:native_identity_test                                  PASSED in 0.0s
+
+Executed 1 out of 1 test: 1 test passes.

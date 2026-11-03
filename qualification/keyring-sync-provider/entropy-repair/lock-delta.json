@@ -1,0 +1,46 @@
+{
+  "base_commit": "29e41072ce0d097acfd59b5ecc1fdb525e45d75e",
+  "before_packages": 1500,
+  "after_packages": 1500,
+  "unchanged_records": 1499,
+  "changed_records": [
+    {
+      "before": {
+        "name": "dbus-secret-service",
+        "version": "4.1.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "708b509edf7889e53d7efb0ffadd994cc6c2345ccb62f55cfd6b0682165e4fa6",
+        "dependencies": [
+          "aes 0.8.4",
+          "block-padding",
+          "cbc",
+          "dbus",
+          "fastrand",
+          "hkdf 0.12.4",
+          "num",
+          "once_cell",
+          "sha2 0.10.9",
+          "zeroize"
+        ]
+      },
+      "after": {
+        "name": "dbus-secret-service",
+        "version": "4.1.0",
+        "dependencies": [
+          "aes 0.8.4",
+          "block-padding",
+          "cbc",
+          "dbus",
+          "hkdf 0.12.4",
+          "num",
+          "once_cell",
+          "rand 0.8.6",
+          "sha2 0.10.9",
+          "zeroize"
+        ]
+      }
+    }
+  ],
+  "resolver_note": "cargo update -p initially chose two other already-locked windows-sys edges; retained those original records and validated final lock with successful real cargo metadata --locked --offline --all-features. No package version or checksum changes.",
+  "final_lock_sha256": "2b8e274bf5c6548408cddfb46f9a63bdb10517c7f59ef7b772f0712657b25ff4"
+}
