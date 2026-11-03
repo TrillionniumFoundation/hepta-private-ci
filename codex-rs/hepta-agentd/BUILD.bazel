@@ -1,7 +1,110 @@
 load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+load("//bazel/rules/testing:foreign_platform_binary.bzl", "foreign_platform_binary")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+
+# Linux CI runs the original C fixtures with a dynamic GNU loader. Keep that
+# ABI for musl Rust tests too, while preserving the tested target's CPU. The
+# pinned LLVM musl C toolchain otherwise forces a static executable.
+config_setting(
+    name = "pon-native-linux-x86_64",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+    ],
+)
+
+config_setting(
+    name = "pon-native-linux-aarch64",
+    constraint_values = [
+        "@platforms//cpu:aarch64",
+        "@platforms//os:linux",
+    ],
+)
+
+_PON_NATIVE_COMPATIBILITY = select({
+    ":pon-native-linux-x86_64": [],
+    ":pon-native-linux-aarch64": [],
+    "//conditions:default": ["@platforms//:incompatible"],
+})
+
+_PON_NATIVE_GNU_PLATFORM = select({
+    ":pon-native-linux-x86_64": "@llvm//platforms:linux_x86_64_gnu.2.28",
+    ":pon-native-linux-aarch64": "@llvm//platforms:linux_aarch64_gnu.2.28",
+    "//conditions:default": "@llvm//platforms:linux_x86_64_gnu.2.28",
+})
+
+_PON_NATIVE_FIXTURE_FILES = [
+    "tests/fixtures/pon_pipe.c",
+    "tests/fixtures/pon_preload.c",
+]
+
+_PON_NATIVE_RUNFILE_ENV = select({
+    ":pon-native-linux-x86_64": {
+        ":pon-native-pipe-runfile": "HEPTA_PON_TEST_PIPE_FIXTURE",
+        ":pon-native-preload-runfile": "HEPTA_PON_TEST_PRELOAD_FIXTURE",
+    },
+    ":pon-native-linux-aarch64": {
+        ":pon-native-pipe-runfile": "HEPTA_PON_TEST_PIPE_FIXTURE",
+        ":pon-native-preload-runfile": "HEPTA_PON_TEST_PRELOAD_FIXTURE",
+    },
+    "//conditions:default": {},
+})
+
+cc_binary(
+    name = "pon-native-pipe-fixture-bin",
+    testonly = True,
+    srcs = ["tests/fixtures/pon_pipe.c"],
+    copts = [
+        "-std=c11",
+        "-O0",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+    tags = ["manual"],
+    target_compatible_with = _PON_NATIVE_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+)
+
+cc_binary(
+    name = "pon-native-preload-fixture.so",
+    testonly = True,
+    srcs = ["tests/fixtures/pon_preload.c"],
+    copts = [
+        "-std=c11",
+        "-fPIC",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+    linkshared = True,
+    tags = ["manual"],
+    target_compatible_with = _PON_NATIVE_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+)
+
+foreign_platform_binary(
+    name = "pon-native-pipe-runfile",
+    testonly = True,
+    binary = ":pon-native-pipe-fixture-bin",
+    platform = _PON_NATIVE_GNU_PLATFORM,
+    tags = ["manual"],
+    target_compatible_with = _PON_NATIVE_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+)
+
+foreign_platform_binary(
+    name = "pon-native-preload-runfile",
+    testonly = True,
+    binary = ":pon-native-preload-fixture.so",
+    platform = _PON_NATIVE_GNU_PLATFORM,
+    tags = ["manual"],
+    target_compatible_with = _PON_NATIVE_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+)
 
 _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
@@ -13,7 +116,7 @@ _UNIT_TEST_DEPENDENCIES = {
 
 codex_rust_crate(
     name = "hepta-agentd",
-    compile_data = ["src/cognitive_three_generation_support.rs"],
+    compile_data = ["src/cognitive_three_generation_support.rs"] + _PON_NATIVE_FIXTURE_FILES,
     crate_name = "codex_hepta_agentd",
     # This process fixture seeds a historical ledger before launching the
     # ordinary product binary. Keep the legacy writer in this harness only.
@@ -24,6 +127,7 @@ codex_rust_crate(
     },
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+    unit_test_runfile_env = _PON_NATIVE_RUNFILE_ENV,
 )
 
 # Compile the local writer qualification separately from the default product
@@ -33,11 +137,12 @@ rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    compile_data = ["src/cognitive_three_generation_support.rs"],
+    compile_data = ["src/cognitive_three_generation_support.rs"] + _PON_NATIVE_FIXTURE_FILES,
     crate_features = ["qualification-cognitive-write"],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
+    rustc_env = {"BAZEL_PACKAGE": "codex-rs/hepta-agentd"},
     visibility = ["//visibility:private"],
     deps = rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
 )
@@ -46,6 +151,7 @@ rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
     crate_features = ["qualification-cognitive-write"],
+    rustc_env = {"BAZEL_PACKAGE": "codex-rs/hepta-agentd"},
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
@@ -61,6 +167,7 @@ rust_test(
 workspace_root_test(
     name = "hepta-agentd-cognitive-write-qualification-test",
     args = ["runtime::tests::qualification_"],
+    runfile_env = _PON_NATIVE_RUNFILE_ENV,
     test_bin = ":hepta-agentd-cognitive-write-qualification-test-bin",
     workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )
