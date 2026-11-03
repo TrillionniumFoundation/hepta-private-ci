@@ -1,0 +1,84 @@
+{
+  "id": 126074137768,
+  "run_id": 41680955193,
+  "workflow_name": "blocking-ci",
+  "head_branch": "fix/private-ci-yaml-safe-compatibility-20261103-gpt6",
+  "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41680955193",
+  "run_attempt": 1,
+  "node_id": "CR_kwDOTrgxoM8AAAAdWpqsqA",
+  "head_sha": "9ae81201f2761e7217f019c40b40de952ca4579d",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/126074137768",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41680955193/job/126074137768",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-11-03T17:06:33Z",
+  "started_at": "2026-11-03T17:06:43Z",
+  "completed_at": "2026-11-03T17:07:12Z",
+  "name": "Select blocking CI scope",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-03T17:06:44Z",
+      "completed_at": "2026-11-03T17:06:45Z"
+    },
+    {
+      "name": "Checkout exact candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-03T17:06:45Z",
+      "completed_at": "2026-11-03T17:06:59Z"
+    },
+    {
+      "name": "Fetch exact comparison commits",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-03T17:06:59Z",
+      "completed_at": "2026-11-03T17:07:00Z"
+    },
+    {
+      "name": "Select dependency impact",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-03T17:07:00Z",
+      "completed_at": "2026-11-03T17:07:10Z"
+    },
+    {
+      "name": "Regression-test scoped fan-in policy",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-03T17:07:10Z",
+      "completed_at": "2026-11-03T17:07:10Z"
+    },
+    {
+      "name": "Post Checkout exact candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-11-03T17:07:10Z",
+      "completed_at": "2026-11-03T17:07:10Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-11-03T17:07:10Z",
+      "completed_at": "2026-11-03T17:07:10Z"
+    }
+  ],
+  "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/126074137768",
+  "labels": [
+    "ubuntu-24.04"
+  ],
+  "runner_id": 1000327912,
+  "runner_name": "GitHub Actions 1000327912",
+  "runner_group_id": 0,
+  "runner_group_name": "GitHub Actions"
+}

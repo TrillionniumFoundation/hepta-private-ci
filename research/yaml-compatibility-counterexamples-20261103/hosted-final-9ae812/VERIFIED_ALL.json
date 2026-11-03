@@ -1,0 +1,184 @@
+{
+  "source_commit": "9ae81201f2761e7217f019c40b40de952ca4579d",
+  "source_tree": "3dfb1975ffd153afeced621c8efab12dfe8cc568",
+  "all_local_bytes_match_published_inputs": true,
+  "artifacts": [
+    {
+      "artifact_id": 13251324967,
+      "mode": "graph",
+      "package": null,
+      "input_count": 89,
+      "commands": [
+        {
+          "argv": [
+            "cargo",
+            "metadata",
+            "--locked",
+            "--all-features",
+            "--format-version",
+            "1"
+          ],
+          "exit_code": 0,
+          "seconds": 42.33247950299999
+        }
+      ],
+      "graph": {
+        "package_count": 1524,
+        "forbidden_packages": [],
+        "parser_package": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/serde-saphyr-2.1.0#serde-saphyr@2.1.0"
+      }
+    },
+    {
+      "artifact_id": 13251899279,
+      "mode": "native",
+      "package": "codex-utils-yaml",
+      "input_count": 89,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-utils-yaml"
+          ],
+          "exit_code": 0,
+          "seconds": 39.209444371000004
+        }
+      ],
+      "native_summary": [
+        "Summary [   0.023s] 10 tests run: 10 passed, 0 skipped"
+      ]
+    },
+    {
+      "artifact_id": 13252108854,
+      "mode": "bazel",
+      "package": null,
+      "input_count": 89,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "bazel-lock-check"
+          ],
+          "exit_code": 0,
+          "seconds": 27.467510398
+        },
+        {
+          "argv": [
+            "just",
+            "bazel-lock-update"
+          ],
+          "exit_code": 0,
+          "seconds": 20.630625799
+        },
+        {
+          "argv": [
+            "just",
+            "bazel-lock-check"
+          ],
+          "exit_code": 0,
+          "seconds": 4.221092908000003
+        },
+        {
+          "argv": [
+            "/home/runner/work/hepta-private-ci/hepta-private-ci/.github/scripts/run_bazel_with_buildbuddy.py",
+            "test",
+            "//codex-rs/utils/yaml:yaml-unit-tests"
+          ],
+          "exit_code": 0,
+          "seconds": 122.69517373500001
+        }
+      ],
+      "lock_sha256": "5a6fbcf975d99e97e5562677643f3960e34929d423d22e788c6d41a43247ae26"
+    },
+    {
+      "artifact_id": 13253216602,
+      "mode": "native",
+      "package": "codex-skills",
+      "input_count": 89,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-skills"
+          ],
+          "exit_code": 0,
+          "seconds": 397.83902479000005
+        }
+      ],
+      "native_summary": [
+        "Summary [   0.106s] 49 tests run: 49 passed, 0 skipped"
+      ]
+    },
+    {
+      "artifact_id": 13253362234,
+      "mode": "native",
+      "package": "codex-external-agent-migration",
+      "input_count": 89,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-external-agent-migration"
+          ],
+          "exit_code": 0,
+          "seconds": 928.671048775
+        }
+      ],
+      "native_summary": [
+        "Summary [   3.270s] 166 tests run: 166 passed, 0 skipped"
+      ]
+    },
+    {
+      "artifact_id": 13254650869,
+      "mode": "native",
+      "package": "codex-skills-extension",
+      "input_count": 89,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-skills-extension"
+          ],
+          "exit_code": 0,
+          "seconds": 756.216286362
+        }
+      ],
+      "native_summary": [
+        "Summary [   1.274s] 175 tests run: 175 passed, 0 skipped"
+      ]
+    },
+    {
+      "artifact_id": 13254985249,
+      "mode": "native",
+      "package": "codex-core-plugins",
+      "input_count": 89,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-core-plugins"
+          ],
+          "exit_code": 0,
+          "seconds": 863.110672468
+        }
+      ],
+      "native_summary": [
+        "Summary [   7.950s] 420 tests run: 420 passed, 0 skipped"
+      ]
+    }
+  ]
+}
