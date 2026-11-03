@@ -1,0 +1,20 @@
+[package]
+name = "codex-utils-yaml"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+indexmap = { workspace = true }
+ryu = { workspace = true }
+serde = { workspace = true }
+serde-saphyr = { workspace = true }
+
+[dev-dependencies]
+serde = { workspace = true, features = ["derive"] }
+
+[lints]
+workspace = true
+
+[lib]
+doctest = false

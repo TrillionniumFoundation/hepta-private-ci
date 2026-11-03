@@ -1,0 +1,29 @@
+{
+  "schema": "independent-dbus-native-input-review-v1",
+  "input_origin_commit": "55ad95747cec6d7bf122b1e825eda25fc08f4b36",
+  "input_hashes": {
+    "native_identity_test.c": "a28c13a4bd18d0d0d7001fde03b6b571d32b634081dd337e7ec250fdf85188e0",
+    "README.md": "eb2d338f33c9c5c448de5189f4f6fcbb2187b8eeadeac5175d507d46613a9608",
+    "dbus-arch-deps.h": "afc129c0f2c8ba06def8d41c6c7baca0fd9424877aaeb08ae74c575046468f41",
+    "config.h": "70dcba70b2e07220c1ffade45a1aa493983eea65d8ad5df17e769b165cfd1cc9",
+    "BUILD.bazel": "172c1cc75e760b8bd72c6130e213194a1e5d17e38620f62e10bec020510a7c4b",
+    "dbus.BUILD.bazel": "5a0cbe26f6c6104e2151fd419551329f3c36fbf5bfc423a7f0ad93fb059171be",
+    "close_range.patch": "fbc17195f697908b129f843b24ce5d4b5fdbcbf79fde936a92bb011ee2c8b840"
+  },
+  "upstream_client_and_shared_unix_sources_match": 47,
+  "lp64_static_review": "CPU and pointer/long guards reject unsupported word size and CPU. Signed/unsigned 64-bit long and endian macro match selected LP64 targets. Bazel is Linux-only; actual aarch64/musl/hosted tests remain required.",
+  "native_pidfd_observation": {
+    "own_getpid": 3,
+    "pidfd_Pid": "56395",
+    "pidfd_NSpid": "56395\t3",
+    "equal": false
+  },
+  "pidfd_implementation": "Official 1.16.2 parses the Pid field in /proc/self/fdinfo and does not select the caller namespace NSpid component.",
+  "current_native_result": "Original identity assertion fails; preceding marshal/wire checks were reached; later ordinary-fd, peer-credential and high-fd checks were not reached in that run.",
+  "namespace_inference": "Observed NSpid ending in own getpid while Pid differs is consistent with a procfs mount reporting an ancestor PID namespace. This does not establish acceptance on the required host.",
+  "high_fd_static_scope": "Test exercises CLOEXEC and close_all above lowered soft RLIMIT in a child. It does not perform exec or force close_range ENOSYS fallback.",
+  "reviewer_compiled_or_executed_archived_C": false,
+  "assertions_changed": false,
+  "other_agent_files_modified": false,
+  "requires_same_exact_source_hosted_native_and_live_secret_service": true
+}

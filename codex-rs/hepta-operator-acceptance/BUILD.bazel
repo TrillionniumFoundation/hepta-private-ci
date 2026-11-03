@@ -1,4 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+load("//:defs.bzl", "workspace_root_test")
 
 rust_library(
     name = "hepta-operator-acceptance-lib",
@@ -23,7 +24,7 @@ rust_library(
 )
 
 rust_test(
-    name = "hepta-operator-acceptance-tests",
+    name = "hepta-operator-acceptance-tests-bin",
     crate = ":hepta-operator-acceptance-lib",
     rustc_flags = select({
         "@platforms//os:windows": [
@@ -32,18 +33,27 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
-    # G5 trust tests invoke the host's real /usr/bin/ssh-keygen. The Linux
-    # RBE image does not provide that binary; execute the same test locally
-    # instead of silently replacing key generation or skipping its negatives.
-    # Do not reuse a remote test result for fresh acceptance evidence.
-    tags = [
-        "no-remote-cache",
-        "no-remote-exec",
-    ],
+    # Compile and lint with the selected execution platform. Local execution
+    # requirements belong to the launcher, not its compiler or Clippy actions.
+    tags = ["manual"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],
+)
+
+workspace_root_test(
+    name = "hepta-operator-acceptance-tests",
+    # Preserve the original Rust test's working directory and argument handling.
+    chdir_workspace_root = False,
+    # G5 trust tests invoke the host's real /usr/bin/ssh-keygen. Keep every
+    # original test local and require fresh acceptance evidence.
+    tags = [
+        "no-remote-cache",
+        "no-remote-exec",
+    ],
+    test_bin = ":hepta-operator-acceptance-tests-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )
 
 rust_binary(

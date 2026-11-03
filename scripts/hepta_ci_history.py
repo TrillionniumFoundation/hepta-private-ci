@@ -45,8 +45,13 @@ def fetch_environment(repository):
     return environment
 
 
-def prepare(repository, commits, *, full_history=False):
-    commits = list(dict.fromkeys(commits))
+def prepare(repository, commits, *, full_history=False, merge_base=False):
+    comparison = list(commits)
+    if merge_base and (full_history or len(comparison) != 2):
+        raise ValueError(
+            "merge-base mode requires exactly two tips and no full-history mode"
+        )
+    commits = list(dict.fromkeys(comparison))
     if not commits or any(
         re.fullmatch(r"[0-9a-f]{40}", commit) is None for commit in commits
     ):
@@ -77,14 +82,62 @@ def prepare(repository, commits, *, full_history=False):
     for commit in commits:
         if git(repository, "cat-file", "-t", commit) != "commit":
             raise ValueError("comparison input is not a commit object")
+    if merge_base:
+        deepen = 1
+        while True:
+            try:
+                bases = git(repository, "merge-base", "--all", *comparison).splitlines()
+            except subprocess.CalledProcessError as error:
+                if error.returncode != 1:
+                    raise
+                bases = []
+            shallow_path = Path(git(repository, "rev-parse", "--git-path", "shallow"))
+            if not shallow_path.is_absolute():
+                shallow_path = repository / shallow_path
+            shallow = (
+                set(shallow_path.read_text().splitlines())
+                if shallow_path.exists()
+                else set()
+            )
+            # Finding any merge base is insufficient: a short merge-parent path
+            # can expose an older common ancestor while a better one remains
+            # hidden beyond a shallow first-parent boundary. Only boundaries
+            # behind the known common ancestors can no longer affect three-dot
+            # semantics. Ignore shallow refs unrelated to these two exact tips.
+            remaining = (
+                set(git(repository, "rev-list", *commits, "--not", *bases).splitlines())
+                & shallow
+            )
+            if not remaining:
+                if not bases:
+                    raise ValueError("exact comparison tips have no common ancestor")
+                return
+            git(
+                repository,
+                "fetch",
+                "--no-tags",
+                "--filter=blob:none",
+                f"--deepen={deepen}",
+                "origin",
+                *commits,
+                environment=fetch_environment(repository),
+            )
+            deepen *= 2
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--commit", action="append", required=True)
-    parser.add_argument("--full-history", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--full-history", action="store_true")
+    mode.add_argument("--merge-base", action="store_true")
     args = parser.parse_args()
-    prepare(Path.cwd(), args.commit, full_history=args.full_history)
+    prepare(
+        Path.cwd(),
+        args.commit,
+        full_history=args.full_history,
+        merge_base=args.merge_base,
+    )
 
 
 if __name__ == "__main__":

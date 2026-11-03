@@ -1,0 +1,17 @@
+{
+  "source_inputs": {
+    "codex-rs/hepta-fleet/src/release.rs": "ea2984c5be089adfce6c194ea16769f8b4661ceed519f3eda6b2dfb0aec01dd8",
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "461c2479e3cdc4bc16164bbbab334599195f371ffff2eca291b586fe169e3e57",
+    "qualification/fleet-macos-permissions/probe.rs": "29f042d0513b396a3603d311c4be5a394f819b2d2084bc847626813182e4bb84",
+    "qualification/fleet-macos-permissions/run_qualification.py": "a2994f64225011d23c08992d512ffd5d1b3b339e9655f84b5307c29ce7ec03bb"
+  },
+  "checks": {
+    "python_ast": "PASS",
+    "original_just_fmt": "PASS",
+    "linux_rust196_probe_compile_exit": 0,
+    "actionlint_exit": 0
+  },
+  "native_probe_executed_locally": false,
+  "macos_candidate_execution": "PENDING hosted qualification",
+  "scope": "Local syntax/format/compile only; no current-source macOS runtime claim."
+}

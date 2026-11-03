@@ -1,0 +1,14 @@
+error: failed to select a version for `blake3`.
+    ... required by package `pagable v0.4.1`
+    ... which satisfies dependency `pagable = "^0.4.1"` of package `starlark v0.14.2 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/third_party/starlark-0.14.2)`
+    ... which satisfies dependency `starlark = "^0.14.2"` (locked to 0.14.2) of package `codex-execpolicy v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/execpolicy)`
+    ... which satisfies path dependency `codex-execpolicy` (locked to 0.0.0) of package `codex-cli v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/cli)`
+versions that meet the requirements `=1.8.2` are: 1.8.2
+
+all possible versions conflict with previously selected packages
+
+  previously selected package `blake3 v1.8.7`
+    ... which satisfies dependency `blake3 = "=1.8.7"` of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/hepta-matrix-sdk)`
+    ... which satisfies path dependency `codex-hepta-matrix-sdk` (locked to 0.0.0) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/hepta-matrixd)`
+
+failed to select a version for `blake3` which could resolve this conflict

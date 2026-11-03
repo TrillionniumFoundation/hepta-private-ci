@@ -1,0 +1,17 @@
+{
+  "source_commit": "da7223bcd8a9d4e0a207c4d07a6a379694db1773",
+  "job": 126095544071,
+  "workflow": 41687078209,
+  "original_artifact_bytes": 8955,
+  "original_artifact_sha256": "4080c61231871e5948c7c212c45f64774c8439ad361e8de3cc5667d2da1c514c",
+  "git_inputs_verified": 81,
+  "source_unchanged": true,
+  "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "uid": 501,
+  "actual_failure": "readonly (0555) same-parent directory rename EACCES under both Rust 1.95.0 and 1.96.0",
+  "copy_and_file_directory_sync_steps_passed": true,
+  "original_suite_executed": false,
+  "suite_error": "duplicate --no-fail-fast argument; run-nextest already supplies it",
+  "scope": "Real operation observations only, not Fleet test acceptance."
+}

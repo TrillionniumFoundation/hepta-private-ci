@@ -1,0 +1,51 @@
+{
+  "source_commit": "49a9afe941c99327c2c3aee98faf1f4e37336d18",
+  "workflow_run": 41683082889,
+  "archive_scope": "Original complete ZIP artifacts retained for each native mode. The Bazel generated lock is adopted byte-for-byte at repository MODULE.bazel.lock; its other raw members are retained separately.",
+  "artifacts": [
+    {
+      "id": 13255116042,
+      "mode": "synapse-protocol",
+      "archive": "synapse-protocol.zip",
+      "bytes": 717311,
+      "sha256": "1ab2ac90d81b477bcd8636d3b9a6ce27ba4df818c4150790497191457cd49729",
+      "status": "passed"
+    },
+    {
+      "id": 13254511861,
+      "mode": "sqlite-starlark",
+      "archive": "sqlite-starlark.zip",
+      "bytes": 726216,
+      "sha256": "83157007ac1666245990e08f068408e712bea9b2bdc0a9caccc8f8fab0af4c31",
+      "status": "passed"
+    },
+    {
+      "id": 13254057379,
+      "mode": "crypto-migration",
+      "archive": "crypto-migration.zip",
+      "bytes": 733014,
+      "sha256": "19f2393386a83c67465b99cb18bfeeaa5a94c072dff89eb80aaab3544b9865e6",
+      "status": "passed"
+    },
+    {
+      "id": 13253917193,
+      "mode": "owners",
+      "archive": "owners.zip",
+      "bytes": 652924,
+      "sha256": "d710ebf0269f767c8742060c8db79f503d4e59a958a4a57e32b4270395f667fd",
+      "status": "failed"
+    }
+  ],
+  "bazel_generated_lock": {
+    "artifact_id": 13254006473,
+    "artifact_sha256": "cb51ad539e147886ea1d96ea290e2a4f64c427373c5e8936a717c0178e825de4",
+    "repository_path": "MODULE.bazel.lock",
+    "bytes": 1696145,
+    "sha256": "e356b9c87d885026862644ae1f5a4c1cf801dd9fa96dfad6c3b18aab5dc7cc8b",
+    "original_update_exit": 0,
+    "original_check_exit": 0,
+    "production_build_exit": 1,
+    "failure": "unexported transitive sqlx-sqlite alias; compiler not reached"
+  },
+  "archive_representation": "Logical archive names below reconstruct exactly from ../artifact-parts.json using ../reassemble_artifacts.py."
+}

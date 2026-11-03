@@ -1,0 +1,209 @@
+{
+  "source_commit": "49a9afe941c99327c2c3aee98faf1f4e37336d18",
+  "results": [
+    {
+      "artifact_id": 13255116042,
+      "mode": "synapse-protocol",
+      "status": "passed",
+      "source_inputs_verified": 1219,
+      "source_after_present": true,
+      "source_unchanged": true,
+      "versions": {
+        "matrix-sdk": [
+          "0.19.1"
+        ],
+        "matrix-sdk-crypto": [
+          "0.19.1"
+        ],
+        "matrix-sdk-sqlite": [
+          "0.19.1"
+        ],
+        "anymap3": [
+          "1.1.0"
+        ],
+        "libsqlite3-sys": [
+          "0.38.2"
+        ],
+        "starlark": [
+          "0.14.2"
+        ],
+        "sqlx-sqlite": [
+          "0.9.0"
+        ]
+      },
+      "archive_sha256": "1ab2ac90d81b477bcd8636d3b9a6ce27ba4df818c4150790497191457cd49729",
+      "commands": [
+        {
+          "name": "synapse-protocol",
+          "argv": [
+            "bash",
+            "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-matrix-sdk/tests/support/run-synapse-sdk.sh"
+          ],
+          "exit_code": 0,
+          "seconds": 386.108441438,
+          "log_sha256": "3327a6f3e0f6601198a40532527d3446d44076cbf3f555c5f256f4ef723b51ed"
+        }
+      ],
+      "tests": 1,
+      "skipped": 0
+    },
+    {
+      "artifact_id": 13254511861,
+      "mode": "sqlite-starlark",
+      "status": "passed",
+      "source_inputs_verified": 1219,
+      "source_after_present": true,
+      "source_unchanged": true,
+      "versions": {
+        "matrix-sdk": [
+          "0.19.1"
+        ],
+        "matrix-sdk-crypto": [
+          "0.19.1"
+        ],
+        "matrix-sdk-sqlite": [
+          "0.19.1"
+        ],
+        "anymap3": [
+          "1.1.0"
+        ],
+        "libsqlite3-sys": [
+          "0.38.2"
+        ],
+        "starlark": [
+          "0.14.2"
+        ],
+        "sqlx-sqlite": [
+          "0.9.0"
+        ]
+      },
+      "archive_sha256": "83157007ac1666245990e08f068408e712bea9b2bdc0a9caccc8f8fab0af4c31",
+      "commands": [
+        {
+          "name": "sqlite-starlark",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "--no-tests=fail",
+            "--retries",
+            "0",
+            "-p",
+            "codex-state",
+            "-p",
+            "codex-execpolicy",
+            "--lib"
+          ],
+          "exit_code": 0,
+          "seconds": 231.222278246,
+          "log_sha256": "9cf10cb6d37078a228bdec3f1ef387bb917a5bdd6ca940ae514da6ff1ee8810e"
+        }
+      ],
+      "tests": 221,
+      "skipped": 0
+    },
+    {
+      "artifact_id": 13254057379,
+      "mode": "crypto-migration",
+      "status": "passed",
+      "source_inputs_verified": 1219,
+      "source_after_present": true,
+      "source_unchanged": true,
+      "versions": {
+        "matrix-sdk": [
+          "0.19.1"
+        ],
+        "matrix-sdk-crypto": [
+          "0.19.1"
+        ],
+        "matrix-sdk-sqlite": [
+          "0.19.1"
+        ],
+        "anymap3": [
+          "1.1.0"
+        ],
+        "libsqlite3-sys": [
+          "0.38.2"
+        ],
+        "starlark": [
+          "0.14.2"
+        ],
+        "sqlx-sqlite": [
+          "0.9.0"
+        ]
+      },
+      "archive_sha256": "19f2393386a83c67465b99cb18bfeeaa5a94c072dff89eb80aaab3544b9865e6",
+      "commands": [
+        {
+          "name": "crypto-migration",
+          "argv": [
+            "bash",
+            "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/matrix-sdk-019-current/run-crypto-migration.sh"
+          ],
+          "exit_code": 0,
+          "seconds": 386.725519393,
+          "log_sha256": "31f5cc1379cbc624be070cd58eed7347ac0fe74513e941a2f4afaf9d80f6314c"
+        }
+      ],
+      "tests": 1,
+      "skipped": 0
+    },
+    {
+      "artifact_id": 13253917193,
+      "mode": "owners",
+      "status": "failed",
+      "source_inputs_verified": 1219,
+      "source_after_present": false,
+      "source_unchanged": null,
+      "versions": {
+        "matrix-sdk": [
+          "0.19.1"
+        ],
+        "matrix-sdk-crypto": [
+          "0.19.1"
+        ],
+        "matrix-sdk-sqlite": [
+          "0.19.1"
+        ],
+        "anymap3": [
+          "1.1.0"
+        ],
+        "libsqlite3-sys": [
+          "0.38.2"
+        ],
+        "starlark": [
+          "0.14.2"
+        ],
+        "sqlx-sqlite": [
+          "0.9.0"
+        ]
+      },
+      "archive_sha256": "d710ebf0269f767c8742060c8db79f503d4e59a958a4a57e32b4270395f667fd",
+      "commands": [
+        {
+          "name": "owners",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "--no-tests=fail",
+            "--retries",
+            "0",
+            "-p",
+            "codex-hepta-matrix-protocol",
+            "-p",
+            "codex-hepta-matrix-sdk",
+            "-p",
+            "codex-hepta-matrix-store",
+            "-p",
+            "codex-hepta-matrixd"
+          ],
+          "exit_code": 101,
+          "seconds": 262.487311534,
+          "log_sha256": "694f5043cdb8cc95644fc976fe8354ad88e4c2aa4fd0b13f880b6142523f613e"
+        }
+      ]
+    }
+  ],
+  "scope": "Three scoped native modes passed; owners failed at absent D-Bus pkg-config input before tests, so the owner gate remains open."
+}

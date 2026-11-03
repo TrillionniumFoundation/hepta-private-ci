@@ -1,0 +1,22 @@
+{
+  "source": "9032a3ac60409ff0db90a3ced965995e49493ee4",
+  "run": 41693768582,
+  "artifacts": [
+    {
+      "artifact_id": 13262198277,
+      "file": "skills-extension.zip",
+      "bytes": 19716,
+      "sha256": "f0578c9b1d950008e0772dbd2e398870e003a009019c0464948b6dcb34977ce0",
+      "observed_failure": "Original package compilation requires the native D-Bus client introduced by the combined keyring provider."
+    },
+    {
+      "artifact_id": 13262183698,
+      "file": "stale-starting-lock.zip",
+      "bytes": 410202,
+      "sha256": "bd662e7f4a1972cc9dbf62f00aeee5d7918b046820e6117a9a9a69b08b7036dd",
+      "observed_failure": "Original committed-lock-first check correctly rejects the retained Matrix starting lock on the combined Cargo graph."
+    }
+  ],
+  "successor_change": "Adopt exact generated joint lock; build and identify the unchanged pinned native D-Bus client before all complete original YAML consumer tests.",
+  "successor_qualification": "pending"
+}

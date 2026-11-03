@@ -1,0 +1,16 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "--manifest-path",
+    "/workspace/scratch/1f1d02319616/private-ci-keyring-probes-20261103/candidate/Cargo.toml"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 3.2556548309999016,
+  "log_sha256": "8b2a0da3c783d2857ea0280c00831904fe2fa68bc710768dd630c1bf60dda015",
+  "binary_sha256": "97bd0485149681be9a0c8c7ad35b324b28e036d910218ccc33f882ff9bf2920a",
+  "ldd": "\tlinux-vdso.so.1 (0x00007f13e2f22000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f13e2c20000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f13e2a0e000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f13e2f24000)\n",
+  "pinned_c_archive_sha256": "f93930b6e595653b1cfc8970ca583540cede484656806dfd4d7b022ed9240588"
+}
