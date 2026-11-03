@@ -1,0 +1,436 @@
+{
+  "time_utc": "2026-11-03T18:12:24Z",
+  "scope": "Only stale unreferenced partial synchronization copies that are byte-identical prefixes of retained official installed libraries. No actual compiler/runtime/std/tools or evidence removed.",
+  "active_fd_or_maps_references": [],
+  "retained_library_hashes": {
+    "lib/libLLVM.so.22.1-rust-1.96.0-stable": "e2d4495281a98f90eff88d75912a08855d957cd81e28a92b7f5603490cf7950a",
+    "lib/librustc_driver-4d71126a08f22b4a.so": "6d1e2648f23458dbf4244b0251fa9c971d79150462b18da80ad047a8c1f2204c"
+  },
+  "removed": [
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.8vhgJV",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 186384384,
+      "allocated_bytes": 186388480,
+      "sha256": "74e6a6eb9243843fda99764ce26c87ee420e2c0612293aedcc060c9c449ab328",
+      "mtime": 1793726769.1120734,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.8vhgJV.j1wY6b",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 92274688,
+      "allocated_bytes": 92274688,
+      "sha256": "f2cca317862d7bc0f18bc0b7c6140689dd429e1de71b4b86300ac1eec266e7f2",
+      "mtime": 1793726951.3837318,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.boe5OE",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 145227776,
+      "allocated_bytes": 145227776,
+      "sha256": "49b7fea0da7d5461a2b21a86a51b1150e6cbb578f62f2263919a4affdc163c45",
+      "mtime": 1793725987.843095,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.MQaMGB",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 171704320,
+      "allocated_bytes": 171708416,
+      "sha256": "4d7ae5b48eb9f529e8b93b02ded34e43ca38cce38f2206323bd5a20cc99cd671",
+      "mtime": 1793727435.2270656,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.n0HxYT",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 164102144,
+      "allocated_bytes": 164106240,
+      "sha256": "d8361b1682fbe4c50d041e378cde868b6c6d5e42da57ea7a558b5773200a2c0d",
+      "mtime": 1793727454.9994826,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.vCa6gb",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 100925440,
+      "allocated_bytes": 100929536,
+      "sha256": "2a229ff3d69ff58a31827d3b9b09a01b22e6c2a0bb5557956eed200c75e34f9b",
+      "mtime": 1793728500.1301546,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.FseffJ.iVu8np",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 87031808,
+      "allocated_bytes": 87031808,
+      "sha256": "429909be66204a3e0e397131891eeb7d67a7e836424d319a75c59b61c3d3834d",
+      "mtime": 1793726738.3314588,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.FseffJ",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 173801472,
+      "allocated_bytes": 173805568,
+      "sha256": "7f2ce5e8fee578b8cd60cd125ccd261b94864cde63f01fb735d236ef27496c8b",
+      "mtime": 1793725787.3147054,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.iCypu9.hcSnku.cqjrOo",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 88604672,
+      "allocated_bytes": 88604672,
+      "sha256": "439dc97a98aca3d69709eae4925e31b8c55e293a7e97f257b7ae9718b51fcb79",
+      "mtime": 1793727916.97278,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 175374336,
+      "allocated_bytes": 175374336,
+      "sha256": "d23fa1694cbbc7f6eb40a492b87afc7eed5ca27df4e2e8e875a1e41573663979",
+      "mtime": 1793726356.787662,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.CVkRbo",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 114819072,
+      "allocated_bytes": 114823168,
+      "sha256": "8013706d462ff7aefa0859b0df1385abf44dd6d50e2bfe5b236bf11c5190dfb8",
+      "mtime": 1793725546.845898,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.librustc_driver-4d71126a08f22b4a.so.cYI7Gu.WUwgqj",
+      "official_installed_file": "lib/librustc_driver-4d71126a08f22b4a.so",
+      "bytes": 99876864,
+      "allocated_bytes": 99880960,
+      "sha256": "4725d13a5a9f70b14993f4eb47fb0af1b5d5b1669d9847cbd4fdefe90764d923",
+      "mtime": 1793728804.632328,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.boe5OE.43Ppqi",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 131858432,
+      "allocated_bytes": 131858432,
+      "sha256": "f609712c706a077da924da4e8ce95cf5310b329de75f8d06fc353d5cf9e9c1db",
+      "mtime": 1793728466.117444,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.MQaMGB.z1xyIH",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 122421248,
+      "allocated_bytes": 122425344,
+      "sha256": "2cec6d5c941f857d0d457cc0f0bb30819bbd3dbb134896c0b4634e1573ca3afb",
+      "mtime": 1793728162.75464,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.n0HxYT.PqrF1g",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 155189248,
+      "allocated_bytes": 155193344,
+      "sha256": "53df8e72f65e6ab392ad76f20988b30e13f8a4b63d8a383f83832c788438468a",
+      "mtime": 1793727927.0289798,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.MQaMGB.EDggx4",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 95420416,
+      "allocated_bytes": 95424512,
+      "sha256": "7b9a523488e9b2d3b6592052e206cc74491b92f16a51a5cd4f3847ad843f9633",
+      "mtime": 1793727906.7125757,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.AafjmM.tpjusn",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 95944704,
+      "allocated_bytes": 95948800,
+      "sha256": "d80f183aa97658009b66df44d56e3df045006c6bde52b301a49cfff1c16e4e5c",
+      "mtime": 1793728118.029444,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.MQaMGB.UbKHUk",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 157548544,
+      "allocated_bytes": 157552640,
+      "sha256": "9534b6fad72ee05410e3e4cb121a6bb94a2802ca441cf7954fdffa05f8884d78",
+      "mtime": 1793728450.533132,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.FseffJ.kzLcD9",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 105644032,
+      "allocated_bytes": 105648128,
+      "sha256": "27f6e2610d4fd4dcf18bc50eb3dd80b466e34b5c5c4e9245c08380fa087d26c3",
+      "mtime": 1793727173.8292487,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.9QmM1W",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 131596288,
+      "allocated_bytes": 131600384,
+      "sha256": "5d6c5c10ee3ee5784d4ba0a05f88e7ae7def2663766e40d91fa54c535ea8dea7",
+      "mtime": 1793726976.9006178,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.Pe6eVe",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 164626432,
+      "allocated_bytes": 164630528,
+      "sha256": "f3fd930745b2f34797b2e9011cbefb6e605d691daa5ee4376005fdc9b0b44ba9",
+      "mtime": 1793727888.5802174,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.iCypu9",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 127139840,
+      "allocated_bytes": 127143936,
+      "sha256": "a42899b726b92f370f2e5f90fd9da16f416ca5974750c3aa9c5cadf77a262b31",
+      "mtime": 1793726965.9400985,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.bvygWJ",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 104071168,
+      "allocated_bytes": 104075264,
+      "sha256": "09b0bf65ad277b6438c87790ef80e8752441e9da4e0a6237b2014d1e0cc652f7",
+      "mtime": 1793728151.1382391,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.AafjmM",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 121372672,
+      "allocated_bytes": 121376768,
+      "sha256": "3df1d6b209b1bbd1b322d3a076dcbb1e6d84219ae493becfce37547b1fad1484",
+      "mtime": 1793726988.6647277,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.FseffJ.eZn5rO",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 164888576,
+      "allocated_bytes": 164892672,
+      "sha256": "fcadc9674b36b5dbae008d5c2ce8f1b6239ac5e0147f61b48f30a168f0bcafa3",
+      "mtime": 1793727638.2752407,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.boe5OE.9tdS1E",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 82575360,
+      "allocated_bytes": 82575360,
+      "sha256": "b6ac94acf5c8df23607421f86d5d8570a9b92c066315baace817ddbeb74f1249",
+      "mtime": 1793728768.763615,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.8vhgJV.j1wY6b.1P1btH",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 88866816,
+      "allocated_bytes": 88870912,
+      "sha256": "bb902b72f85b8fe6c487b728013125566ad47d455223095eb5f61fa3332d3bcf",
+      "mtime": 1793727629.5110612,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.Qc6Z8x",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 156762112,
+      "allocated_bytes": 156766208,
+      "sha256": "af8a2d75a11cfd416d6708d75c1f43f7889dc376d3dbcd8c426a741ca06aa592",
+      "mtime": 1793728739.2230234,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.dD1KIq",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 94896128,
+      "allocated_bytes": 94900224,
+      "sha256": "c62a2868f6129194beba079682c66b63d2f484570537bc294bf0304cafc5dbc1",
+      "mtime": 1793726189.9519544,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.LMNZrK",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 147849216,
+      "allocated_bytes": 147849216,
+      "sha256": "f070398501a5244af4368bc6429cb9f697cf646110641a6ed9ce28f766847089",
+      "mtime": 1793726371.803976,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.n0HxYT.PqrF1g.4sZnzC",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 127139840,
+      "allocated_bytes": 127143936,
+      "sha256": "a42899b726b92f370f2e5f90fd9da16f416ca5974750c3aa9c5cadf77a262b31",
+      "mtime": 1793728489.1619291,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.n0HxYT.PqrF1g.DeepHM",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 139460608,
+      "allocated_bytes": 139464704,
+      "sha256": "caf94d090e33a19e5b1e1a5d32c76118088b1e6af0e277e7c212fdd6193b3eea",
+      "mtime": 1793728194.6114426,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.FseffJ.CVi8Nx",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 106168320,
+      "allocated_bytes": 106168320,
+      "sha256": "d7348c408614b652c9092e2ebb865daa3d2d533e28bb34824471c858e1e41339",
+      "mtime": 1793728706.5263667,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.iCypu9.hcSnku",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 105644032,
+      "allocated_bytes": 105648128,
+      "sha256": "27f6e2610d4fd4dcf18bc50eb3dd80b466e34b5c5c4e9245c08380fa087d26c3",
+      "mtime": 1793727446.055296,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.iCypu9.hcSnku.ePErgb",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 105119744,
+      "allocated_bytes": 105123840,
+      "sha256": "a65f90428873b3c8f4ff19352305e359be58743dc377983e2d8ae948f07b31b5",
+      "mtime": 1793727675.3639944,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.8lRzcE",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 111673344,
+      "allocated_bytes": 111673344,
+      "sha256": "3e24d4b317b6e7319cada2531ecbdf992777d903555e94bd2f1f4f09d205c871",
+      "mtime": 1793726179.039716,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.FseffJ.eZn5rO.qGB3WA",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 106692608,
+      "allocated_bytes": 106696704,
+      "sha256": "a6dac3c4df574b304350dd54b5aa1b993d3ac2ad70612cd23e627ffdbdf50b83",
+      "mtime": 1793728129.9577303,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 195559424,
+      "allocated_bytes": 195563520,
+      "sha256": "6701379a72aa9b1d04712433f0eac877082260ebb3773e777c7ff77dfc8f66f2",
+      "mtime": 1793725180.3540604,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.librustc_driver-4d71126a08f22b4a.so.cYI7Gu",
+      "official_installed_file": "lib/librustc_driver-4d71126a08f22b4a.so",
+      "bytes": 138674176,
+      "allocated_bytes": 138674176,
+      "sha256": "4a4091e8c2731f122125b01570be92c046dff13fb1ce2a7f8e964d8f9b5910e5",
+      "mtime": 1793727691.3603184,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.boe5OE.1vC1dh",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 105644032,
+      "allocated_bytes": 105648128,
+      "sha256": "27f6e2610d4fd4dcf18bc50eb3dd80b466e34b5c5c4e9245c08380fa087d26c3",
+      "mtime": 1793728173.3549194,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.AcTXv1",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 116129792,
+      "allocated_bytes": 116133888,
+      "sha256": "9982bb9012e6ded6c1ffeb75d4d3e6f1003c381231af8c12902ce10f74dd1cba",
+      "mtime": 1793727659.3396683,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.FseffJ.FTwZNq",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 136052736,
+      "allocated_bytes": 136052736,
+      "sha256": "4050a767b1c2b235d3e2c6304cba3a33b7b673146c2f83b4ba91b004914cfa2d",
+      "mtime": 1793727870.9318702,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.pbDUt8",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 93323264,
+      "allocated_bytes": 93327360,
+      "sha256": "675d8a58e851cc781acb52cbb011de15dc1048a6cb7e8d5e62e08fbcae49ac3b",
+      "mtime": 1793727183.7334943,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.8vhgJV.neMVD6",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 88342528,
+      "allocated_bytes": 88346624,
+      "sha256": "598d21045275d82733e52b9f44448ff7bc3dee0492ece12f0c7994164d240e9a",
+      "mtime": 1793727163.7804148,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.iCypu9.kfvrfb",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 88342528,
+      "allocated_bytes": 88342528,
+      "sha256": "598d21045275d82733e52b9f44448ff7bc3dee0492ece12f0c7994164d240e9a",
+      "mtime": 1793728777.835797,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.b5p0UD.FAPaXP.MQaMGB.5Ahy78",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 129499136,
+      "allocated_bytes": 129499136,
+      "sha256": "f233faeab2b49146673dbbce98780296b6b2d5290b720b8f91bce6df97cee41c",
+      "mtime": 1793728750.3872461,
+      "exact_prefix": true
+    },
+    {
+      "path": "lib/.libLLVM.so.22.1-rust-1.96.0-stable.FseffJ.eZn5rO.adqaVw",
+      "official_installed_file": "lib/libLLVM.so.22.1-rust-1.96.0-stable",
+      "bytes": 150208512,
+      "allocated_bytes": 150208512,
+      "sha256": "8078912a8a1b0b2e4593a3f9594a25b174319af34b979da51c6b57cf5492944c",
+      "mtime": 1793728417.2764192,
+      "exact_prefix": true
+    }
+  ],
+  "kept": [],
+  "reclaimed_allocated_bytes": 5892603904
+}

@@ -21,23 +21,59 @@
     "exact_inputs_equal_to_verified_macos_git_inputs": true,
     "scope": "Functional suite only; uid0 is not evidence for unprivileged filesystem operations."
   },
-  "hosted_linux": "pending at checkpoint; no success claim",
+  "hosted_linux": {
+    "job": 126107486713,
+    "tests": 42,
+    "skipped": 0,
+    "uid": 1001,
+    "input_count": 84,
+    "inputs_equal_to_exact_verified_source": true,
+    "publication_compiler_versions": [
+      "1.95.0",
+      "1.96.0"
+    ]
+  },
   "full_platform_ci": "not closed",
   "files": [
+    {
+      "path": "LINUX_VERIFIED.json",
+      "bytes": 872,
+      "sha256": "adafa8fd5cd97c6aed0b951920c94af77b3183a6e4920588bf8f651e4e3c5fee"
+    },
     {
       "path": "MACOS_VERIFIED.json",
       "bytes": 838,
       "sha256": "8f8c3be602616a6f99f148701db609c83d0d9cb0366a2d7d8014c337c1b8dd4e"
     },
     {
+      "path": "linux.zip",
+      "bytes": 15548,
+      "sha256": "8ef44393aa959fd8ede97a1bb8bedce2bc260f70050873d21c028d4c216a149c"
+    },
+    {
       "path": "local-linux.tar.gz",
-      "bytes": 8467,
-      "sha256": "a651675824a307878bfe558dc59e80490b47d49295ea66e690f59e5a5418417f"
+      "bytes": 9590,
+      "sha256": "6f8ea24cf36c386e5c41489fa0665bbba806bc5ac59a2e9e4071971752b57f65"
     },
     {
       "path": "macos.zip",
       "bytes": 15861,
       "sha256": "8194cbeabcca223ef7f9c97d2c53bc03102d03fdd6bfa66abebf3893bf06442b"
     }
-  ]
+  ],
+  "scoped_original_clippy": {
+    "argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-fleet",
+      "--lib",
+      "--locked",
+      "--offline",
+      "--no-deps"
+    ],
+    "exit_code": 0,
+    "source_unchanged": true,
+    "log_sha256": "76dbcac8c3bb7559fb86fcbf0b0ca247fb18e97ca1fd74b91e8885544b125091"
+  }
 }
