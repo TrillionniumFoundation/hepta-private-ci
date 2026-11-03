@@ -1,5 +1,10 @@
 //! Cross-platform async Unix domain socket helpers.
 
+mod owner_local;
+pub use owner_local::OwnerLocalIncoming;
+pub use owner_local::OwnerLocalListener;
+pub use owner_local::OwnerLocalStream;
+
 use std::io::Result as IoResult;
 use std::path::Path;
 use std::pin::Pin;
