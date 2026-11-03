@@ -2,7 +2,7 @@ name: First-passage owner native diagnostics
 
 on:
   push:
-    branches: [research/fpt-clock-owner-20261030]
+    branches: [research/fpt-clock-owner-20261030, fix/4378-owner-assert-20261103-product]
   workflow_dispatch:
 
 # These focused probes preserve their failures. They supplement the complete
@@ -19,7 +19,8 @@ jobs:
     name: Windows deletion and fork lifecycle diagnostics
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      github.ref == 'refs/heads/research/fpt-clock-owner-20261030'
+      (github.ref == 'refs/heads/research/fpt-clock-owner-20261030' ||
+       github.ref == 'refs/heads/fix/4378-owner-assert-20261103-product')
     runs-on: windows-latest
     timeout-minutes: 60
     environment:

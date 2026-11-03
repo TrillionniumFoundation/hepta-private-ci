@@ -156,12 +156,12 @@ async fn delayed_shutdown_preserves_replacement_runtime_and_ownership() -> anyho
         )
     );
     assert!(replacement.wait_until_terminated().now_or_never().is_none());
-    assert_matches!(
+    assert!(matches!(
         control
             .reserve_v2_residency_slot(&manager_state, &config, Some(thread_id))
             .await,
         Err(error) if matches!(error.details(), CodexErrorDetails::AgentLimitReached { max_threads: 1 })
-    );
+    ));
     control.shutdown_live_agent(thread_id).await?;
     Ok(())
 }
