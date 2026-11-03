@@ -367,7 +367,7 @@ assert_matches = "1.5.0"
 async-channel = "2.3.1"
 async-io = "2.6.0"
 async-stream = "0.3.6"
-aws-config = "1"
+aws-config = "=1.8.12"
 aws-credential-types = "1"
 aws-sigv4 = "1"
 aws-types = "1"
@@ -665,6 +665,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Keep AWS login support while moving its ES256 signer to the maintained
+# P-256 dependency family and an operating-system-seeded cryptographic RNG.
+aws-config = { path = "third_party/aws-config-1.8.12" }
 # Backport upstream's maintained TOML parser without changing age encryption,
 # i18n-config's configuration schema, or the source allowlist.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
