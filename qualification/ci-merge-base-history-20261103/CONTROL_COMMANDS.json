@@ -1,0 +1,34 @@
+[
+  {
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "scripts.test_hepta_ci_history",
+      "scripts.tests.test_hepta_ci_scope",
+      "scripts.tests.test_hepta_ci_dependencies"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "ae5056ae4b697e143265b438e37eadb5dcdd861f583b18779e91c01c9f93d4cd",
+    "log": "controls-0.log"
+  },
+  {
+    "argv": [
+      "python3",
+      ".github/scripts/test_v8_canary_changes.py"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "3e5917dfc1786bd7a112da89dae00c8042e7da2032f142c53166e98151766c7c",
+    "log": "controls-1.log"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_hepta_ci_v8.py"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "5364bc59c974600f54aeb8e9a535c025995eb09740598b8b3426f0ac87bb813e",
+    "log": "controls-2.log"
+  }
+]
