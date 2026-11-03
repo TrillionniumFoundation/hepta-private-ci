@@ -95,3 +95,14 @@ python qualification/windows-private-state-current/run_qualification.py bazel --
 Use a new output path for each execution. The remaining memory recovery,
 Windows sandbox setup, process environment, whole-repository CI, and product
 acceptance gates remain independently required.
+
+## Windows scoped Clippy input repair
+
+At `d5f36b31c54de3cb58b77c481a5ad2240a580cce`, the original Windows
+17/131/28/165 library cases and acquisition controls passed. The original
+`just fix` then removed the `RunPhase` import, used only inside an existing
+Unix-only test, and the unchanged-input gate rejected that run. Its exact
+whole-file after hash matches removal of this one import. The successor guards
+that import with `cfg(unix)` and preserves every test and assertion. Retained
+logs and JUnit identify this as a failed predecessor; the successor must rerun
+all original gates.

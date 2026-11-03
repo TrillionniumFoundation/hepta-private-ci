@@ -1,0 +1,150 @@
+{
+  "source_commit": "d5f36b31c54de3cb58b77c481a5ad2240a580cce",
+  "workflow_run": 41723293049,
+  "job_id": 126221377688,
+  "artifact": {
+    "id": 13275296652,
+    "name": "private-state-union-windows-2025-d5f36b31c54de3cb58b77c481a5ad2240a580cce",
+    "size_in_bytes": 1517476,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13275296652",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13275296652/zip",
+    "expired": false,
+    "created_at": "2026-11-03T22:01:46Z",
+    "expires_at": "2026-11-10T22:01:44Z",
+    "updated_at": "2026-11-03T22:01:46Z",
+    "digest": "sha256:b8d89be4fb14f1c231603783889588f9e75d0c5397d0e144d249f875892c07d6",
+    "workflow_run": {
+      "id": 41723293049,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "fix/private-ci-windows-private-state-20261103",
+      "head_sha": "d5f36b31c54de3cb58b77c481a5ad2240a580cce"
+    }
+  },
+  "original_status": "failed",
+  "source_unchanged": false,
+  "native_original_tests": {
+    "codex-utils-path": {
+      "count": 17,
+      "failed_or_skipped": [],
+      "required_present": true
+    },
+    "codex-hepta-contracts": {
+      "count": 131,
+      "failed_or_skipped": [],
+      "required_present": true
+    },
+    "codex-hepta-prompt-registry": {
+      "count": 28,
+      "failed_or_skipped": [],
+      "required_present": true
+    },
+    "codex-hepta-agentd": {
+      "count": 165,
+      "failed_or_skipped": [],
+      "required_present": true
+    }
+  },
+  "commands": [
+    {
+      "name": "initial-tracked-source",
+      "exit_code": 0,
+      "seconds": 0.2810000000000059,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "rustc-version",
+      "exit_code": 0,
+      "seconds": 0.046999999999997044,
+      "log_sha256": "2efe229f7908c2c19f459ca734101a5b35cb482476b8bee1357f94a18c766078"
+    },
+    {
+      "name": "acquisition-verifier-controls",
+      "exit_code": 0,
+      "seconds": 0.26499999999998636,
+      "log_sha256": "6b175b572cd8fcab608d26773679c01b7122e36fd92633b3f1be00bdf374d394"
+    },
+    {
+      "name": "actual-acquisition-attacks",
+      "exit_code": 0,
+      "seconds": 31.297000000000025,
+      "log_sha256": "d0620d5b83913d201e147f627295f0044c66094a606680d43883bbfa9f4791aa"
+    },
+    {
+      "name": "codex-utils-path",
+      "exit_code": 0,
+      "seconds": 2.5779999999999745,
+      "log_sha256": "2fba026e68103d8433622213a1f33e6811700ee8271b982fd3920578693b2ab4"
+    },
+    {
+      "name": "codex-hepta-contracts",
+      "exit_code": 0,
+      "seconds": 29.514999999999986,
+      "log_sha256": "0c6476f9adae612861744d84935d220c078746609977625924bcb63846a63f0e"
+    },
+    {
+      "name": "codex-hepta-prompt-registry",
+      "exit_code": 0,
+      "seconds": 11.156999999999982,
+      "log_sha256": "7f99ac52c20598efea73293ffb68545a5d1a7297a87265007485c3f8c83138ec"
+    },
+    {
+      "name": "codex-hepta-agentd",
+      "exit_code": 0,
+      "seconds": 937.4680000000001,
+      "log_sha256": "a132598d0104d3f1847f732809d23f5172f552dca8d545070ca9687c311da104"
+    },
+    {
+      "name": "scoped-clippy-fix",
+      "exit_code": 0,
+      "seconds": 352.23400000000015,
+      "log_sha256": "0064211ec1d278f08f5cb1ab77aac3cdac5026ee27e513d1ce9521746052931b"
+    }
+  ],
+  "only_changed_source": {
+    "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+    "before": "5bc77754db6544284c4f00bc2178f97f7e99d476c438222085a45eeca8b063ce",
+    "actual_after": "29bbe01a6f3f18ca50cac323bcf466d0912281dfd2501d6d6e599a29c63f2eda",
+    "actual_after_reconstruction": "Remove exactly one use crate::RunPhase; line. Reconstructed whole-file bytes have the exact hosted after SHA256.",
+    "candidate": "c7795f3637f9951b87ec33c2baf19c07c908aef93d5dbf7691a917d74c193c86",
+    "repair": "Guard the import with the same cfg(unix) as its only unqualified RunPhase consumer. Preserve the Unix consumer and all tests."
+  },
+  "files": [
+    {
+      "path": "scoped-clippy-fix.log.gz",
+      "bytes": 15035,
+      "sha256": "2a9add1fd9e2f2b1b0f8a0c63e94230e6d8a881915234beef6477c10fd6f2aae",
+      "raw_bytes": 99852,
+      "raw_sha256": "0064211ec1d278f08f5cb1ab77aac3cdac5026ee27e513d1ce9521746052931b"
+    },
+    {
+      "path": "codex-utils-path.junit.xml.gz",
+      "bytes": 797,
+      "sha256": "3b42c70e2edd6788c174fce015105d63ace49fa33664d92b17c4556f0e50ec4b",
+      "raw_bytes": 3513,
+      "raw_sha256": "fa3c0aefc972d5d5a779fd00cee5c90182fe421f8f9888c270edeac96f38fd47"
+    },
+    {
+      "path": "codex-hepta-contracts.junit.xml.gz",
+      "bytes": 3916,
+      "sha256": "141edfd2c40e0316fc2e3e06fb447099fa62095b5f64e23a3a6e4b1a4ee6cf15",
+      "raw_bytes": 25648,
+      "raw_sha256": "5c32c4ca2df5965097166a2670c1e6685867a50944b7383f29867a1330ecdb73"
+    },
+    {
+      "path": "codex-hepta-prompt-registry.junit.xml.gz",
+      "bytes": 1175,
+      "sha256": "b1298f9252d32a96ec7559097993fbfa58ef5de76e6241ced81374dc6f33adbf",
+      "raw_bytes": 5568,
+      "raw_sha256": "4731fdd389a283ac2cab047da4b860854217396dc992a36946f725ad8d549a42"
+    },
+    {
+      "path": "codex-hepta-agentd.junit.xml.gz",
+      "bytes": 5760,
+      "sha256": "24e19180596b8ca5a564c6761a1fd736bfa9179438f0ccebefbf1a62b64e3ebb",
+      "raw_bytes": 33495,
+      "raw_sha256": "d56d3e7ee4bec295da9f92eb0eb89eca50d5535072f0e4633c60e4cc987a85d8"
+    }
+  ],
+  "scope": "341 original Windows native cases passed without skip; acquisition positive and real production mutants passed. Original just fix returned zero but removed one unused Windows import; the source invariant correctly rejected the run. This is a failed predecessor, not current source qualification."
+}

@@ -40,6 +40,7 @@ use ed25519_dalek::SigningKey;
 
 use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
+#[cfg(unix)]
 use crate::RunPhase;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
