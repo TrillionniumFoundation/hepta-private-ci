@@ -1,0 +1,43 @@
+{
+  "tested_source": "158b844db94a99c7fcf7386efe6a207fdeb24db7",
+  "macos": {
+    "job": 126107485802,
+    "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+    "uid": 501,
+    "tests": 42,
+    "skipped": 0,
+    "exact_git_inputs_verified": 84,
+    "publication_compiler_versions": [
+      "1.95.0",
+      "1.96.0"
+    ]
+  },
+  "local_linux": {
+    "uid": 0,
+    "tests": 42,
+    "skipped": 0,
+    "exit_code": 0,
+    "seconds": 23.45546632999867,
+    "exact_inputs_equal_to_verified_macos_git_inputs": true,
+    "scope": "Functional suite only; uid0 is not evidence for unprivileged filesystem operations."
+  },
+  "hosted_linux": "pending at checkpoint; no success claim",
+  "full_platform_ci": "not closed",
+  "files": [
+    {
+      "path": "MACOS_VERIFIED.json",
+      "bytes": 838,
+      "sha256": "8f8c3be602616a6f99f148701db609c83d0d9cb0366a2d7d8014c337c1b8dd4e"
+    },
+    {
+      "path": "local-linux.tar.gz",
+      "bytes": 8467,
+      "sha256": "a651675824a307878bfe558dc59e80490b47d49295ea66e690f59e5a5418417f"
+    },
+    {
+      "path": "macos.zip",
+      "bytes": 15861,
+      "sha256": "8194cbeabcca223ef7f9c97d2c53bc03102d03fdd6bfa66abebf3893bf06442b"
+    }
+  ]
+}
