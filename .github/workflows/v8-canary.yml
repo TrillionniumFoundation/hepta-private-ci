@@ -46,7 +46,12 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA"
+          python3 scripts/hepta_ci_history.py --merge-base --commit "$BASE_SHA" --commit "$HEAD_SHA"
+
+      - name: Check exact history and original canary selector controls
+        run: |
+          python3 -m unittest -v scripts.test_hepta_ci_history
+          python3 .github/scripts/test_v8_canary_changes.py
 
       - name: Resolve exact v8 crate version
         id: v8_version

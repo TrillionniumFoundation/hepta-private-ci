@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/workspace/scratch/1f1d02319616/recovered-tools-20261103/bin/just",
+    "fmt"
+  ],
+  "cwd": "/dev/shm/chain-ci-merge-base-current-20261103/codex-rs",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "observed_in_tool": true,
+  "tests_not_reexecuted_after_fmt": true,
+  "python_inputs": [
+    {
+      "path": "scripts/hepta_ci_history.py",
+      "before": {
+        "bytes": 5483,
+        "sha256": "31840c13a99ad823bec9437d3b69f38ec07e8b0443bb6351663d1936fa81b9ce",
+        "git_blob": "f8953169d9942d95442254549102a21c7034e540"
+      },
+      "after": {
+        "bytes": 5580,
+        "sha256": "9261135b61e03ef908e15ecf21eee56a2c3a872ca25b7798f44b0f9d53cc770e",
+        "git_blob": "8e91bdd42cb41b7190616d071c1fc9c8aca5ead5"
+      },
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/test_hepta_ci_history.py",
+      "before": {
+        "bytes": 10530,
+        "sha256": "456885ca3319feb7fcd8e9b4d815b46b3e2dc30f92180e0bce4d7c7fcfbd9dac",
+        "git_blob": "f6262416bb64025ff276668b0eb9b2e83e3febf0"
+      },
+      "after": {
+        "bytes": 10946,
+        "sha256": "cf1b0b73421346fdb703e6dd8ad4fd8407de80bef1395934b91a9d4a6074f12e",
+        "git_blob": "ccdd0feb07c6029e3aa70b7d5900234357a7b431"
+      },
+      "ast_equal": true
+    }
+  ]
+}
