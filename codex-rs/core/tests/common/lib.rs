@@ -345,15 +345,21 @@ where
     F: FnMut(&codex_protocol::protocol::EventMsg) -> bool,
 {
     use tokio::time::Duration;
-    use tokio::time::timeout;
+    use tokio::time::Instant;
+    use tokio::time::timeout_at;
     loop {
-        // Allow a bit more time to accommodate async startup work (e.g. config IO, tool discovery)
-        let ev = timeout(wait_time.max(Duration::from_secs(10)), codex.next_event())
+        // Allow a bit more time to accommodate async startup work (e.g. config IO, tool discovery).
+        // Receiving and observing the exact terminal owner share this original event deadline.
+        let deadline = Instant::now() + wait_time.max(Duration::from_secs(10));
+        let delivery = timeout_at(deadline, codex.next_event_with_completion())
             .await
             .expect("timeout waiting for event")
             .expect("stream ended unexpectedly");
-        if predicate(&ev.msg) {
-            return ev.msg;
+        timeout_at(deadline, delivery.terminalization.wait())
+            .await
+            .expect("timeout waiting for terminal event owner");
+        if predicate(&delivery.event.msg) {
+            return delivery.event.msg;
         }
     }
 }
