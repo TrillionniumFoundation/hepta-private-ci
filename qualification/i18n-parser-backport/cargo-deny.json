@@ -1,0 +1,37 @@
+{
+  "command": [
+    "cargo",
+    "deny",
+    "--manifest-path",
+    "/dev/shm/private-ci-next-20261103/codex-rs/Cargo.toml",
+    "--all-features",
+    "--locked",
+    "check",
+    "--disable-fetch",
+    "--show-stats"
+  ],
+  "exit_code": 1,
+  "seconds": 5.34272010299901,
+  "database_commit": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "Cargo_lock_sha256": "74db452102601d2c8e2e1ab9cca70b0446709a86590cf2977e503b2cc24693c2",
+  "policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "policy_unchanged": true,
+  "stdout_sha256": "94df4cdfb9f70388a45a52ad9f9433c37c4980360a32e3d2e283519d7306fccd",
+  "stderr_sha256": "b2ba7482c687bd273189329dc529cb92783f5fe4917344d89a24c403ca7dd25f",
+  "stats": [
+    "advisories FAILED: 7 errors, 3 warnings, 22 notes",
+    "           bans ok: 0 errors, 94 warnings, 22 notes",
+    "       licenses ok: 0 errors, 1 warnings, 1337 notes",
+    "        sources ok: 0 errors, 1 warnings, 6 notes"
+  ],
+  "remaining_advisories": [
+    "RUSTSEC-2024-0449",
+    "RUSTSEC-2026-0318",
+    "RUSTSEC-2026-0319",
+    "RUSTSEC-2026-0370",
+    "RUSTSEC-2026-0371",
+    "RUSTSEC-2026-0372",
+    "RUSTSEC-2026-0387"
+  ],
+  "resolved_advisory": "RUSTSEC-2026-0374"
+}
