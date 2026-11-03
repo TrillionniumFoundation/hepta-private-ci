@@ -1,0 +1,36 @@
+{
+  "schema": "v8-083-native-hosted-independent-verification-v1",
+  "source_commit": "083116160fe81198ae0c441aad22224c0c8d2940",
+  "source_tree": "d98c2735ab21850e31813c29a738cb46ab40f19b",
+  "run": 41710309685,
+  "job": 126176342211,
+  "artifact_id": 13267688340,
+  "artifact_bytes": 45914,
+  "artifact_sha256": "017f38fcb48e70065b6d3ad07067dc81f07d5717a94e9e17896ed10b7dafb16e",
+  "immutable_git_input_paths_verified": 132,
+  "output_hashes_verified": 19,
+  "native_host": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "fresh_process_parallel_test": {
+    "passed": 1,
+    "filtered_other_poc_cases": 6
+  },
+  "complete_original_consumer_tests": {
+    "v8-poc": 7,
+    "code-mode-runtime": 68,
+    "code-mode-host": 40
+  },
+  "complete_consumer_failed_ignored_measured_filtered": 0,
+  "original_sandbox_assertions_passed": true,
+  "three_complete_test_binaries_clippy_passed": true,
+  "native_platform_wrapper_preserved": true,
+  "committed_lock_first": true,
+  "qualification_budget_minutes": 30,
+  "status": "native_original_consumer_scope_passed",
+  "limits": [
+    "Both native consumer scopes are independently checked; full original blocking CI and V8 canary source-build matrix remain separate.",
+    "This is exact 083 source, not qualification on the combined 0b9 dependency graph.",
+    "The fresh regression intentionally selects one test; the following three complete targets have zero filtered cases.",
+    "No downloaded source or executable was run by this verifier."
+  ],
+  "release_state": "Draft / HOLD_NO_GO / DENY_ALL"
+}
