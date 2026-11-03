@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="9" skipped="0" failures="3" errors="0" uuid="25985b51-c45a-474b-8664-37c55154bf94" timestamp="2026-11-03T14:27:23.182-05:00" time="0.054">
+    <testsuite name="codex-uds" tests="9" skipped="0" errors="0" failures="3">
+        <testcase name="lib_tests::bound_listener_path_is_stale_socket_path" classname="codex-uds" timestamp="2026-11-03T14:27:23.182-05:00" time="0.005"/>
+        <testcase name="lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms" classname="codex-uds" timestamp="2026-11-03T14:27:23.188-05:00" time="0.006">
+            <failure message="Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }" type="test failure with exit code 101">Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }</failure>
+            <system-out>
+running 1 test
+test lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms ... FAILED
+
+failures:
+
+failures:
+    lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }
+</system-err>
+        </testcase>
+        <testcase name="lib_tests::prepare_private_socket_directory_creates_directory" classname="codex-uds" timestamp="2026-11-03T14:27:23.195-05:00" time="0.005"/>
+        <testcase name="lib_tests::prepare_private_socket_directory_sets_existing_permissions_to_owner_only" classname="codex-uds" timestamp="2026-11-03T14:27:23.200-05:00" time="0.008"/>
+        <testcase name="lib_tests::regular_file_path_is_not_stale_socket_path" classname="codex-uds" timestamp="2026-11-03T14:27:23.209-05:00" time="0.006"/>
+        <testcase name="lib_tests::stream_round_trips_data_between_listener_and_client" classname="codex-uds" timestamp="2026-11-03T14:27:23.216-05:00" time="0.005"/>
+        <testcase name="owner_local::tests::authenticated_owner_local_stream_round_trips_application_bytes" classname="codex-uds" timestamp="2026-11-03T14:27:23.220-05:00" time="0.005">
+            <failure message="Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }" type="test failure with exit code 101">Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }</failure>
+            <system-out>
+running 1 test
+test owner_local::tests::authenticated_owner_local_stream_round_trips_application_bytes ... FAILED
+
+failures:
+
+failures:
+    owner_local::tests::authenticated_owner_local_stream_round_trips_application_bytes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }
+</system-err>
+        </testcase>
+        <testcase name="owner_local::tests::live_owner_local_listener_cannot_be_replaced" classname="codex-uds" timestamp="2026-11-03T14:27:23.225-05:00" time="0.005">
+            <failure message="Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }" type="test failure with exit code 101">Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }</failure>
+            <system-out>
+running 1 test
+test owner_local::tests::live_owner_local_listener_cannot_be_replaced ... FAILED
+
+failures:
+
+failures:
+    owner_local::tests::live_owner_local_listener_cannot_be_replaced
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+</system-out>
+            <system-err>Error: Os { code: 1, kind: PermissionDenied, message: &quot;Operation not permitted&quot; }
+</system-err>
+        </testcase>
+        <testcase name="platform::tests::peer_uid_gate_accepts_only_the_process_owner" classname="codex-uds" timestamp="2026-11-03T14:27:23.231-05:00" time="0.005"/>
+    </testsuite>
+</testsuites>

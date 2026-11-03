@@ -1,0 +1,30 @@
+{
+  "source_status": "Actual current Cargo resolution/deny and scoped UDS compilation/Clippy; hosted runtime and Bazel still pending.",
+  "fmt_exit": 0,
+  "actionlint_exit": 0,
+  "codespell_changed_paths_exit": 0,
+  "scoped_clippy_exit": 0,
+  "local_runtime_exit": 100,
+  "local_runtime_reported": {
+    "tests": 9,
+    "pass": 6,
+    "fail": 3,
+    "skip": 0,
+    "accepted": false,
+    "limit": "Existing two bind-error early returns mean reported passes do not prove executed identity operations."
+  },
+  "hashes": {
+    "just-fmt-final.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "uds-scoped-fix.log": {
+      "sha256": "ee347aa76c93cfe83d24dc4605b4d23af90e86ba0214907e48adaefb1fdf8855",
+      "bytes": 1758
+    },
+    "codespell.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "owner-local-independent-static-review-v1",
+  "reviewed_utc": "2026-11-03T19:26:07.150348+00:00",
+  "source_commit": "c6f98ff2b5d6ae9056cdfe100a4494b8dbee9899",
+  "source_pr": 4712,
+  "files": [
+    {
+      "path": "codex-rs/hepta-matrixd/src/control.rs",
+      "git_blob": "19153d4197279a62eef776ceeb4371c637638d7c",
+      "bytes": 33724,
+      "sha256": "79d5963fbb8273519a07827eed1843a1844381bc97f9393177cbf0a85a7eb081"
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local.rs",
+      "git_blob": "500b2d8a3ba2f6e533b0bcd6a080d0f679b2396f",
+      "bytes": 4074,
+      "sha256": "7da35c66f40b07666df2166117e1494c2ef1f8e48def8d93772d578e2c8251ea"
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_security.rs",
+      "git_blob": "91042edf01dfdef6b3c74d928fc67a8ffa769407",
+      "bytes": 10350,
+      "sha256": "a4b9ea2c0a319c3251877ed539a535d59d6de655b093075630b5b09077dc7566"
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_windows.rs",
+      "git_blob": "329ba220740dff209d4696e1246f4add4719564c",
+      "bytes": 6249,
+      "sha256": "afbf9a116456ab6f7894a2768ce41e590de4d1afa4c1f5466fc484b34c2622d3"
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_windows_tests.rs",
+      "git_blob": "f8bcbe00939329b9f12de079dfbd0dc7cb0e1908",
+      "bytes": 7526,
+      "sha256": "2e6242f6b46fa5c3ca04db489176f0698880b138ad5534006947d08e67379f11"
+    }
+  ],
+  "reviewer": "hepta_blockers",
+  "scope": "Read-only SID/descriptor parsing, actual-handle authentication, identification-level impersonation and restoration, pre-application-I/O capability boundary, Matrixd slot/deadline composition. No native execution or modified input.",
+  "blocking_findings": [],
+  "checks": [
+    {
+      "topic": "SID and DACL",
+      "observation": "Process TokenUser SID is copied with bounds and native alignment. The actual connected or created pipe handle supplies owner and DACL through GetSecurityInfo, with owned LocalFree lifetime. Validation requires present protected non-null DACL, exact owner SID, one non-inherited ACCESS_ALLOWED ACE, full FILE_ALL_ACCESS mask and exact complete ACE SID size/identity."
+    },
+    {
+      "topic": "impersonation",
+      "observation": "Authentication rejects an existing thread token without overwriting it. Successful ImpersonateNamedPipeClient is immediately guarded. No await or application operation occurs until the synchronous call returns; the thread token must be SecurityIdentification with the exact user SID. OpenThreadToken uses OpenAsSelf=TRUE. RevertGuard restores on success/error/unwind and aborts on failure."
+    },
+    {
+      "topic": "client SQOS",
+      "observation": "The current Matrix Cargo.lock selects Tokio 1.54.1. Its cached official source sets SECURITY_SQOS_PRESENT in ClientOptions.security_qos_flags and combines it with FILE_FLAG_OVERLAPPED. This supports the explicit identification-only connection flags.",
+      "cached_source": "/workspace/scratch/1f1d02319616/private-ci-keyring-cargo-home-20261103/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/net/windows/named_pipe.rs",
+      "cached_source_sha256": "73ef4e0c32d1ebb4e6ca4e858fdacdb12d0a8b36ae0caf985a78d4d624da897f"
+    },
+    {
+      "topic": "application I/O and namespace",
+      "observation": "Pending streams implement no application AsyncRead/AsyncWrite. Client validates actual handle before sending the fixed preface; server reads only that preface and authenticates before ACK. Bind atomically supplies the owner-only protected descriptor, rejects remote clients and requires first instance. Accept creates the replacement while the connected server handle still retains the namespace."
+    },
+    {
+      "topic": "slots and cancellation",
+      "observation": "Named-pipe max_instances=34 accommodates 32 admitted application/handshake slots plus one accepted handle and one replacement. Matrixd acquires a permit before spawn/authenticate; excess pending streams are dropped. Its two-second outer timeout encloses authentication plus frame/service response and retains the permit in the future. The transport also has a two-second handshake timeout; cancelled pending authentication drops its owned pipe."
+    }
+  ],
+  "limits": [
+    "This static read is not Windows native validation and does not transfer earlier #4712 results to the new Rust 1.96/dependency combination.",
+    "The documented security boundary is the OS user SID, not a distinct executable, process, logon session or privilege level under that same SID. Application identity/generation/fence checks remain required.",
+    "Tokio timeouts are cooperative deadlines, not independent preemption of synchronous or blocked executor work.",
+    "The old run loop cancels new accepts; this review does not establish joined teardown of every already-spawned Matrixd connection task."
+  ],
+  "official_references": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-getsecurityinfo",
+    "https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-impersonatenamedpipeclient",
+    "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openthreadtoken",
+    "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-reverttoself",
+    "https://docs.rs/crate/tokio/latest/source/src/net/windows/named_pipe.rs"
+  ],
+  "preserved_source_executed": false,
+  "cargo_invoked": false,
+  "source_files_modified": false,
+  "new_native_gate_pass_claimed": false
+}

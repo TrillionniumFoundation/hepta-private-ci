@@ -1,0 +1,52 @@
+{
+  "argv": [
+    "cargo",
+    "deny",
+    "--format",
+    "json",
+    "--all-features",
+    "--locked",
+    "check",
+    "--disable-fetch",
+    "--show-stats"
+  ],
+  "exit_code": 0,
+  "seconds": 6.72949316499944,
+  "advisory_db_before": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "advisory_db_after": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "cargo_lock_sha256": "c0ff3c86fc2938bf7239919aeaf5f424abae97b4d6405cdd992968492d3b8823",
+  "raw_sha256": "931157e923abbb072bcb2887ac97c7c793dbf79995a937d2c023895c928a9735",
+  "raw_bytes": 12750768,
+  "summaries": [
+    {
+      "fields": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 22,
+          "warnings": 2
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 21,
+          "warnings": 115
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 1340,
+          "notes": 0,
+          "warnings": 1
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 6,
+          "warnings": 1
+        }
+      },
+      "type": "summary"
+    }
+  ]
+}

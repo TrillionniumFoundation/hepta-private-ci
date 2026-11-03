@@ -1,0 +1,43 @@
+{
+  "format": "Concatenate binary parts in manifest order; verify the whole SHA-256 then gzip-decompress. Original bytes retained without base64 text.",
+  "artifacts": [
+    {
+      "name": "metadata.json.gz",
+      "bytes": 586410,
+      "sha256": "485462849b8f8064f0f0fdba0812ee83a76526bd0970c1ac12af45c036078b4e",
+      "uncompressed_bytes": 8603961,
+      "uncompressed_sha256": "87ca7eaafbec9564ef4fbafdf74f37674b42a9300ba483e4893d557772b7f665",
+      "parts": [
+        {
+          "path": "metadata.json.gz.part-00",
+          "bytes": 384000,
+          "sha256": "bdb59091dcc9b8109d05d2e48b02c444042dfa077924783901b290636a111ace"
+        },
+        {
+          "path": "metadata.json.gz.part-01",
+          "bytes": 202410,
+          "sha256": "2ac6b0b0c7ca0d9e000da6f0f0fd5b9b10ee0c5caad49db327eb264c0d5cdad1"
+        }
+      ]
+    },
+    {
+      "name": "cargo-deny.raw.jsonl.gz",
+      "bytes": 551697,
+      "sha256": "48d2a6a1d3134af4fde1b217459dfdfda662bb737f14e9880ab477a5137cae8c",
+      "uncompressed_bytes": 12750768,
+      "uncompressed_sha256": "931157e923abbb072bcb2887ac97c7c793dbf79995a937d2c023895c928a9735",
+      "parts": [
+        {
+          "path": "cargo-deny.raw.jsonl.gz.part-00",
+          "bytes": 384000,
+          "sha256": "ac0db7ab74bc1dc9ab84f3d4ca008b135816b8645eba84e0a214abceb668b7f5"
+        },
+        {
+          "path": "cargo-deny.raw.jsonl.gz.part-01",
+          "bytes": 167697,
+          "sha256": "144eb91fbb1494aead079c63b3c1697388910d061f6577c2ed15115f4498577e"
+        }
+      ]
+    }
+  ]
+}
