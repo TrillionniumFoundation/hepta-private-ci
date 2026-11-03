@@ -1,0 +1,90 @@
+name: Hepta pinned AWS-LC archive handoff
+
+on:
+  push:
+    branches:
+      - test/hepta-pinned-aws-lc-20261103
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-pinned-aws-lc-20261103
+  cancel-in-progress: false
+
+jobs:
+  fixed-public-source:
+    name: Fetch and verify the existing fixed AWS-LC source archive
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      AWS_LC_SOURCE_URL: https://github.com/aws/aws-lc/archive/refs/tags/v5.1.0.tar.gz
+      AWS_LC_SOURCE_SHA256: a6bf6adfc5f9bba559d28554b7d3581b15f2813f03bc9f2ae19f0d915e97dadf
+      AWS_LC_SOURCE_BYTES: '145542555'
+      BCR_SOURCE_URL: https://bcr.bazel.build/modules/aws-lc/5.1.0.bcr.1/source.json
+      BCR_SOURCE_SHA256: 7d88fc6db323947a11d1638fe95185e9c733c337a1d1e7b50cdcf487e29ce56e
+      DECLARATION_SOURCE_COMMIT: dc69725d957c79d8737eb5fbedfe6f213252317a
+    steps:
+      - name: Download only the two declared public files
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="$RUNNER_TEMP/hepta-pinned-aws-lc"
+          mkdir -p "$destination"
+          curl --fail --silent --show-error --location --retry 0 --connect-timeout 20 --max-time 60 \
+            "$BCR_SOURCE_URL" --output "$destination/source.json"
+          printf '%s  %s\n' "$BCR_SOURCE_SHA256" "$destination/source.json" | sha256sum --check --strict
+          curl --fail --silent --show-error --location --retry 0 --connect-timeout 20 --max-time 480 \
+            "$AWS_LC_SOURCE_URL" --output "$destination/v5.1.0.tar.gz.partial"
+      - name: Verify the immutable metadata, exact archive length and SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'hepta-pinned-aws-lc'
+          source_bytes = (root / 'source.json').read_bytes()
+          assert hashlib.sha256(source_bytes).hexdigest() == os.environ['BCR_SOURCE_SHA256']
+          source = json.loads(source_bytes)
+          urls = [source.get('url')] + source.get('urls', [])
+          assert os.environ['AWS_LC_SOURCE_URL'] in urls
+          integrity = source['integrity']
+          assert integrity.startswith('sha256-')
+          assert base64.b64decode(integrity[7:], validate=True).hex() == os.environ['AWS_LC_SOURCE_SHA256']
+          archive = root / 'v5.1.0.tar.gz.partial'
+          size = archive.stat().st_size
+          assert size == int(os.environ['AWS_LC_SOURCE_BYTES']), size
+          digest = hashlib.sha256()
+          with archive.open('rb') as stream:
+              for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+                  digest.update(chunk)
+          assert digest.hexdigest() == os.environ['AWS_LC_SOURCE_SHA256']
+          archive.rename(root / 'v5.1.0.tar.gz')
+          receipt = {
+              'schema': 'hepta-fixed-public-dependency-transfer-v1',
+              'source_url': os.environ['AWS_LC_SOURCE_URL'],
+              'source_bytes': size, 'source_sha256': digest.hexdigest(),
+              'bcr_source_url': os.environ['BCR_SOURCE_URL'],
+              'bcr_source_sha256': os.environ['BCR_SOURCE_SHA256'],
+              'declaration_source_commit': os.environ['DECLARATION_SOURCE_COMMIT'],
+              'workflow_commit': os.environ['GITHUB_SHA'],
+              'workflow_ref': os.environ['GITHUB_REF'],
+              'workflow_run_id': os.environ['GITHUB_RUN_ID'],
+              'workflow_run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'verified': True, 'archive_extracted': False, 'tests_executed': False,
+          }
+          (root / 'transfer.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          print(json.dumps(receipt))
+          PY
+      - name: Retain the verified original archive and transfer receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-aws-lc-v5.1.0-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-pinned-aws-lc/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
