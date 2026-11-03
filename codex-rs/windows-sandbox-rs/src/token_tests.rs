@@ -3,6 +3,7 @@ use crate::acl::add_deny_write_ace;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
 use crate::acl::fetch_dacl_handle;
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
@@ -357,7 +358,7 @@ impl Drop for OwnedEvent {
     }
 }
 
-fn describe_actual_event_descriptor(label: &str, descriptor: *mut c_void) -> Result<()> {
+fn describe_actual_event_descriptor(label: &str, descriptor: *mut c_void) -> Result<(bool, bool)> {
     use windows_sys::Win32::Security::GetSecurityDescriptorControl;
     use windows_sys::Win32::Security::GetSecurityDescriptorGroup;
     use windows_sys::Win32::Security::GetSecurityDescriptorLength;
@@ -394,7 +395,7 @@ fn describe_actual_event_descriptor(label: &str, descriptor: *mut c_void) -> Res
         valid && control_ok != 0 && owner_ok != 0 && group_ok != 0,
         "actual Event descriptor inspection failed"
     );
-    Ok(())
+    Ok((!owner.is_null(), !group.is_null()))
 }
 
 fn assert_event_access(descriptor: *mut c_void, token: HANDLE, expected: bool) -> Result<()> {
@@ -440,9 +441,9 @@ fn assert_event_access(descriptor: *mut c_void, token: HANDLE, expected: bool) -
             &mut allowed,
         )
     };
-    anyhow::ensure!(ok != 0, "Event AccessCheck API failed: {}", unsafe {
-        GetLastError()
-    });
+    if ok == 0 {
+        return Err(std::io::Error::last_os_error()).context("Event AccessCheck API failed");
+    }
     assert_eq!(
         (allowed != 0, granted),
         (expected, if expected { desired } else { 0 }),
@@ -450,8 +451,44 @@ fn assert_event_access(descriptor: *mut c_void, token: HANDLE, expected: bool) -
     Ok(())
 }
 
+#[derive(Clone, Copy)]
+enum EventSecurity {
+    Implicit,
+    TokenDefault,
+}
+
+fn token_information(token: HANDLE, class: i32) -> Result<Vec<u64>> {
+    let mut needed = 0;
+    let ok = unsafe { GetTokenInformation(token, class, std::ptr::null_mut(), 0, &mut needed) };
+    anyhow::ensure!(
+        ok == 0
+            && unsafe { GetLastError() }
+                == windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER
+            && (8..=1_048_576).contains(&needed),
+        "bound token information: class={class} bytes={needed}"
+    );
+    let mut bytes = vec![0_u64; (needed as usize).div_ceil(8)];
+    let size = (bytes.len() * std::mem::size_of::<u64>()) as u32;
+    anyhow::ensure!(
+        unsafe { GetTokenInformation(token, class, bytes.as_mut_ptr().cast(), size, &mut needed) }
+            != 0,
+        "read token information: class={class} error={}",
+        unsafe { GetLastError() }
+    );
+    Ok(bytes)
+}
+
 #[test]
-fn actual_unnamed_event_default_dacl_keeps_shared_read_capabilities_nonwriting() -> Result<()> {
+fn actual_unnamed_event_without_attributes_has_no_accesscheck_owner_or_group() -> Result<()> {
+    check_actual_event_descriptor(EventSecurity::Implicit)
+}
+
+#[test]
+fn actual_event_with_token_default_dacl_keeps_shared_read_capabilities_nonwriting() -> Result<()> {
+    check_actual_event_descriptor(EventSecurity::TokenDefault)
+}
+
+fn check_actual_event_descriptor(security: EventSecurity) -> Result<()> {
     use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
     use windows_sys::Win32::Security::Authorization::SE_KERNEL_OBJECT;
     use windows_sys::Win32::Security::GROUP_SECURITY_INFORMATION;
@@ -515,9 +552,65 @@ fn actual_unnamed_event_default_dacl_keeps_shared_read_capabilities_nonwriting()
         unsafe { GetLastError() }
     );
     let read_token = OwnedToken(read_token);
+    // This explicit control creates a different object atomically from the
+    // actual token's identity and default DACL. It never repairs the descriptor
+    // returned for the implicit unnamed object.
+    let mut user = token_information(first_token.0, TokenUser)?;
+    let mut group = token_information(
+        first_token.0,
+        windows_sys::Win32::Security::TokenPrimaryGroup,
+    )?;
+    let mut default_dacl = token_information(first_token.0, TokenDefaultDacl)?;
+    let mut native_descriptor: windows_sys::Win32::Security::SECURITY_DESCRIPTOR =
+        unsafe { std::mem::zeroed() };
+    let descriptor_pointer =
+        (&mut native_descriptor as *mut windows_sys::Win32::Security::SECURITY_DESCRIPTOR).cast();
+    unsafe {
+        anyhow::ensure!(
+            windows_sys::Win32::Security::InitializeSecurityDescriptor(descriptor_pointer, 1) != 0,
+            "initialize explicit Event descriptor"
+        );
+        let user = &*user.as_mut_ptr().cast::<TOKEN_USER>();
+        let group = &*group
+            .as_mut_ptr()
+            .cast::<windows_sys::Win32::Security::TOKEN_PRIMARY_GROUP>();
+        let dacl = &*default_dacl.as_mut_ptr().cast::<TokenDefaultDaclInfo>();
+        anyhow::ensure!(
+            !dacl.default_dacl.is_null(),
+            "production token default DACL is absent"
+        );
+        anyhow::ensure!(
+            windows_sys::Win32::Security::SetSecurityDescriptorOwner(
+                descriptor_pointer,
+                user.User.Sid,
+                0,
+            ) != 0
+                && windows_sys::Win32::Security::SetSecurityDescriptorGroup(
+                    descriptor_pointer,
+                    group.PrimaryGroup,
+                    0,
+                ) != 0
+                && windows_sys::Win32::Security::SetSecurityDescriptorDacl(
+                    descriptor_pointer,
+                    1,
+                    dacl.default_dacl,
+                    0,
+                ) != 0,
+            "bind the actual token identity and default DACL to Event creation"
+        );
+    }
+    let attributes = windows_sys::Win32::Security::SECURITY_ATTRIBUTES {
+        nLength: std::mem::size_of::<windows_sys::Win32::Security::SECURITY_ATTRIBUTES>() as u32,
+        lpSecurityDescriptor: descriptor_pointer,
+        bInheritHandle: 0,
+    };
     let event = {
         let _identity = unsafe { Impersonation::enter(first_token.0)? };
-        let handle = unsafe { CreateEventW(std::ptr::null(), 1, 0, std::ptr::null()) };
+        let attributes = match security {
+            EventSecurity::Implicit => std::ptr::null(),
+            EventSecurity::TokenDefault => &attributes as *const _,
+        };
+        let handle = unsafe { CreateEventW(attributes, 1, 0, std::ptr::null()) };
         anyhow::ensure!(handle != 0, "create actual unnamed event: {}", unsafe {
             GetLastError()
         });
@@ -551,7 +644,7 @@ fn actual_unnamed_event_default_dacl_keeps_shared_read_capabilities_nonwriting()
     );
     anyhow::ensure!(!descriptor.is_null(), "missing actual Event descriptor");
     let descriptor = Descriptor(descriptor);
-    describe_actual_event_descriptor("GetSecurityInfo", descriptor.0)?;
+    let info_presence = describe_actual_event_descriptor("GetSecurityInfo", descriptor.0)?;
 
     // Independently inspect the same real object; do not add or synthesize a
     // missing owner/group to make AccessCheck accept a different descriptor.
@@ -589,16 +682,43 @@ fn actual_unnamed_event_default_dacl_keeps_shared_read_capabilities_nonwriting()
         GetLastError()
     });
     let kernel_descriptor = kernel.as_mut_ptr().cast();
-    describe_actual_event_descriptor("GetKernelObjectSecurity", kernel_descriptor)?;
+    let kernel_presence =
+        describe_actual_event_descriptor("GetKernelObjectSecurity", kernel_descriptor)?;
     let info_check = assert_event_access(descriptor.0, first_token.0, true);
     let kernel_check = assert_event_access(kernel_descriptor, first_token.0, true);
     eprintln!(
         "same real Event AccessCheck: GetSecurityInfo={info_check:?}, GetKernelObjectSecurity={kernel_check:?}"
     );
-    info_check?;
-    kernel_check?;
-    assert_event_access(descriptor.0, read_token.0, false)?;
-    assert_event_access(descriptor.0, second_token.0, false)?;
+    match security {
+        EventSecurity::Implicit => {
+            assert_eq!(
+                (info_presence, kernel_presence),
+                ((false, false), (false, false))
+            );
+            for result in [info_check, kernel_check] {
+                let error = result.expect_err("missing real owner/group is not an access denial");
+                let native = error
+                    .downcast_ref::<std::io::Error>()
+                    .context("AccessCheck must fail with the original native error")?;
+                assert_eq!(
+                    native.raw_os_error(),
+                    Some(windows_sys::Win32::Foundation::ERROR_INVALID_SECURITY_DESCR as i32)
+                );
+            }
+        }
+        EventSecurity::TokenDefault => {
+            assert_eq!(
+                (info_presence, kernel_presence),
+                ((true, true), (true, true))
+            );
+            info_check?;
+            kernel_check?;
+            assert_event_access(descriptor.0, read_token.0, false)?;
+            assert_event_access(descriptor.0, second_token.0, false)?;
+            assert_event_access(kernel_descriptor, read_token.0, false)?;
+            assert_event_access(kernel_descriptor, second_token.0, false)?;
+        }
+    }
     Ok(())
 }
 
