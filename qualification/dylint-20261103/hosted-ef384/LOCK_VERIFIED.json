@@ -1,0 +1,47 @@
+{
+  "source_commit": "ef384309bde52e30e9dd0bc5b625157bfaa77bd1",
+  "tree": "1533fbffcf3f5c0ea701aa67aa8d94b5c2f35d2a",
+  "run": 41723995740,
+  "job": 126223851252,
+  "artifact": 13271804423,
+  "artifact_bytes": 609421,
+  "artifact_sha256": "99aab5d5c73ce7017b35167838e9d539b39634755de68ed7b8220f4d99de699d",
+  "verified_exact_git_inputs": 1655,
+  "all_source_before_after_equal": true,
+  "verified_outputs": 9,
+  "original_command_exits": [
+    0,
+    0,
+    0
+  ],
+  "steps": [
+    {
+      "name": "committed-lock-check",
+      "command": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 15.66783117
+    },
+    {
+      "name": "original-lock-update",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 15.219926803000007
+    },
+    {
+      "name": "original-lock-check",
+      "command": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.0843656800000048
+    }
+  ],
+  "committed_generated_git_lock_equal": true,
+  "lock_sha256": "50ffccd2af246c69a365f7ec35d84ca6ee3b16381ae1775a585d2fc8795a216d",
+  "scope": "committed lock qualification only; original hosted lint tests pending"
+}
