@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.ui.native.qualification-manifest.v3",
+  "manifestStatus": "pending-executed-evidence",
+  "implementationSourceSha": "25c7f3c41035def17ca0f96eca71f110c7fc6fd9",
+  "implementationSourceTree": "82774f7e7fc2a305722b0a35110a9b2885290997",
+  "orderedParents": {
+    "base": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+    "head": "pending-final-review-head"
+  },
+  "toolchain": {
+    "rust": "1.95.0",
+    "applicationCargoLock": "apps/hepta-native/Cargo.lock",
+    "ownerCargoLock": "codex-rs/Cargo.lock",
+    "workflow": ".github/workflows/ui-native-qualification.yml",
+    "qualifiedOwnerPackages": [
+      "codex-hepta-native-gateway",
+      "codex-hepta-contracts",
+      "codex-hepta-private-state",
+      "codex-utils-private-state"
+    ],
+    "storagePerformanceBuildProfile": "release"
+  },
+  "evidenceCollectors": [
+    "scripts/hepta_ui_native_qualification_evidence.py",
+    "scripts/hepta_ui_native_qualification_aggregate.py",
+    "scripts/hepta_ui_native_compile_negative.py",
+    "scripts/hepta_ui_native_supply_chain.py",
+    "scripts/qualify_hepta_ui_native_storage.py",
+    "apps/hepta-native/tools/linux_product_qualification.py"
+  ],
+  "requiredSubjects": [
+    "linux-exact-head",
+    "macos-exact-head",
+    "windows-exact-head",
+    "linux-fixed-ordered-parent-merge",
+    "macos-fixed-ordered-parent-merge",
+    "windows-fixed-ordered-parent-merge",
+    "linux-exact-implementation-storage-scale"
+  ],
+  "requiredChecksPerPlatformSubject": [
+    "source-identity",
+    "module-registry",
+    "python-contracts",
+    "application-rustfmt",
+    "owner-rustfmt",
+    "application-strict-clippy",
+    "owner-strict-clippy",
+    "application-tests",
+    "owner-tests",
+    "release-binaries",
+    "compiler-negative-api-boundary",
+    "binary-self-test",
+    "process-kill-and-updater-rollback",
+    "deterministic-unsigned-package",
+    "packaged-self-test",
+    "packaged-process-kill-and-updater-rollback",
+    "CycloneDX-SBOM-and-provenance"
+  ],
+  "linuxAdditionalChecks": [
+    "release-gateway",
+    "isolated-AppDir-gateway-keyring-Xvfb-lifecycle"
+  ],
+  "storageChecks": [
+    "4096-active-record-fresh-process-reopen",
+    "1000000-retired-identity-indexed-open",
+    "deterministic-legacy-index-rebuild",
+    "mutation-p50-p95-p99",
+    "snapshot-and-WAL-bytes",
+    "peak-RSS",
+    "write-amplification",
+    "fsync-fdatasync-count",
+    "20-fresh-process-open-and-rebuild-samples",
+    "64-record-history-page-latency-and-serialized-retention",
+    "exact-12288-mutation-latencies-and-durability-counts",
+    "compiled-release-profile-in-summary-and-every-process-observation",
+    "combined-4096-active-and-1000000-retired-actual-journal-open",
+    "combined-64-record-history-p95-retained-bytes-and-peak-RSS"
+  ],
+  "implementedPendingQualification": [
+    "persistent-history-paging",
+    "picker-read-mutation-lane-split",
+    "Linux-verified-Open-Reveal-FD-handoff",
+    "portal-first-Linux-picker",
+    "packaged-Windows-AUMID-registrar-and-WinRT-toast-adapter"
+  ],
+  "stillRequiredBeforePromotion": [
+    "non-Linux-verified-Open-Reveal-resource-capability-adapter",
+    "one-successful-same-source-seven-subject-run",
+    "measured-source-coverage",
+    "sustained-performance-soak",
+    "physical-platform-accessibility-and-IME-acceptance",
+    "physical-packaged-Windows-AUMID-and-WinRT-execution",
+    "production-signing-notarization-Authenticode",
+    "independent-SBOM-and-provenance-acceptance",
+    "independent-review-and-branch-protection-administration"
+  ],
+  "runIds": [],
+  "artifactDigests": {},
+  "coverage": null,
+  "performance": null,
+  "platformAcceptance": null,
+  "signing": null,
+  "sbom": null,
+  "provenance": null,
+  "rule": "A missing, skipped, cancelled, dirty, stale-SHA, mismatched-parent, foreign-workflow, missing-log, modified-package or over-budget subject is failure. Promotion requires one immutable implementation source and independent review.",
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "storageMeasurementContext": {
+    "buildProfile": "release",
+    "freshProcessesPerPopulation": 20,
+    "operatingSystemPageCache": "uncontrolled",
+    "combinedSubject": {
+      "activeRecords": 4096,
+      "retiredIdentities": 1000000,
+      "historyPageSize": 64
+    },
+    "historyBytes": "serialized-retained-receipts-not-allocator-accounting",
+    "blockingCeilingsUnchanged": true
+  }
+}

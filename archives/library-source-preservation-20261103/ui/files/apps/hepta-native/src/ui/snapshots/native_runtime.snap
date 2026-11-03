@@ -1,0 +1,32 @@
+---
+source: src/ui/visual_qa_tests.rs
+expression: visible
+---
+HEPTA
+/ NATIVE
+No current authenticated view
+Verify snapshot
+Reconcile
+WORKSPACE
+01   Runtime
+02   Operations
+03   Updates
+04   Accessibility
+LOCAL ENDPOINT
+127.0.0.1:8765
+<platform> / <architecture>
+Presentation only. Authority stays with the independent owner.
+01 / RUNTIME OBSERVATORY
+Runtime overview
+A verified snapshot, not a live-health or execution guarantee.
+VIEW REVISION
+—
+SESSION GENERATION
+—
+DECLARED MODULES
+—
+SESSION / TRUST BOUNDARY
+Waiting for a verified snapshot
+Choose Verify snapshot in the toolbar. Operations stay unavailable until the runtime view is verified.
+Runtime control: read-only gateway
+Start/stop and other runtime writes are unavailable here. Native operations still require their independent signed grants.

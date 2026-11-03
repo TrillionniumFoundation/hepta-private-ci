@@ -1,0 +1,87 @@
+name: ui.control Rust qualification
+on:
+  pull_request:
+    paths:
+      - "apps/hepta-control-ui/**"
+      - "apps/hepta-native/src/ui/**"
+      - "apps/hepta-native/src/ui.rs"
+      - "qualification/ui-control/**"
+      - "docs/modules/ui.control/**"
+      - "scripts/ui-control*"
+      - ".github/workflows/ui-control-rust-qualification.yml"
+permissions:
+  contents: read
+concurrency:
+  group: ui-control-rust-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  rust:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14, windows-2022]
+        subject: [head, merge]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Construct deterministic merge when requested
+        if: matrix.subject == 'merge' && github.event_name == 'pull_request'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta ui.control CI
+          author-email: ui-control-ci@users.noreply.github.com
+          message: Synthetic ui.control Rust merge
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Install pinned repository test runners
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo install just --version 1.58.0 --locked
+          cargo install cargo-nextest --version 0.9.146 --locked
+      - name: Verify Rust source and execute owner tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ui-control-rust-evidence
+          git rev-parse HEAD > ui-control-rust-evidence/commit.txt
+          git rev-parse HEAD^{tree} > ui-control-rust-evidence/tree.txt
+          cargo fmt --manifest-path apps/hepta-control-ui/Cargo.toml --check
+          cargo check --manifest-path apps/hepta-control-ui/Cargo.toml --locked --all-features --all-targets
+          cargo clippy --manifest-path apps/hepta-control-ui/Cargo.toml --locked --all-features --all-targets -- -D warnings
+          just test --manifest-path ../apps/hepta-control-ui/Cargo.toml --locked --all-features --all-targets 2>&1 | tee ui-control-rust-evidence/tests.txt
+          cargo check --manifest-path apps/hepta-control-ui/Cargo.toml --locked --no-default-features --all-targets
+          git diff --exit-code
+      - name: Verify retired oracle identity and generated source navigation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ui-control-oracle.py
+          node scripts/ui-control-artifacts.mjs --check
+          node scripts/ui-control-status.mjs --check
+          python3 scripts/ui-control-source-map.py
+      - name: Bind successful checks to exact source receipt
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/ui-control-rust-receipt.py --subject "${{ matrix.subject }}" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --out ui-control-rust-evidence/receipt.json
+      - name: Retain exact subject diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ui-control-rust-${{ matrix.os }}-${{ matrix.subject }}
+          path: ui-control-rust-evidence/
+          if-no-files-found: error

@@ -1,0 +1,183 @@
+{
+  "schema": "hepta.module-implementation-map.v6",
+  "schemaVersion": 6,
+  "module": "ui.native",
+  "owner": "ui-platform",
+  "deputy": "accessibility",
+  "implementationSourceSha": "25c7f3c41035def17ca0f96eca71f110c7fc6fd9",
+  "implementationSourceTree": "82774f7e7fc2a305722b0a35110a9b2885290997",
+  "sourceMaturity": "implementation-candidate-incomplete-qualification-blocked",
+  "declaredRoots": [
+    "apps/hepta-native",
+    "codex-rs/hepta-native-gateway",
+    "codex-rs/hepta-private-state"
+  ],
+  "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
+  "developmentGuide": "apps/hepta-native/DEVELOPMENT.md",
+  "qualificationWorkflow": ".github/workflows/ui-native-qualification.yml",
+  "storageBudget": "apps/hepta-native/STORAGE_BUDGETS.json",
+  "stateOwnership": {
+    "runtimeOwner": "apps/hepta-native/src/runtime.rs::NativeShellRuntime",
+    "journalOwner": "apps/hepta-native/src/journal.rs::OperationJournal",
+    "authorityOwner": "codex-rs/hepta-contracts final-use authority",
+    "uiLanes": [
+      "single mutation owner",
+      "bounded persistent-history read",
+      "platform picker"
+    ],
+    "rule": "read and picker coordination never become another execution or journal authority",
+    "privateStateOsUtility": "codex-rs/utils/private-state::codex_utils_private_state",
+    "privateStateCompatibilityFacade": "codex-rs/hepta-private-state",
+    "privateStateLayeringRule": "shared contracts use the pure OS utility; the product facade retains compatibility without an authority dependency"
+  },
+  "operations": [
+    {
+      "operation": "connect_runtime",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::connect_runtime",
+      "state": "implemented-unqualified"
+    },
+    {
+      "operation": "refresh_runtime_view",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::refresh_runtime_view",
+      "state": "implemented-unqualified"
+    },
+    {
+      "operation": "request_platform_capability",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::request_platform_capability",
+      "state": "Linux Open/Reveal verified-FD candidate; clipboard and notifications candidate; non-Linux path actions fail closed"
+    },
+    {
+      "operation": "operation_history_page",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::operation_history_page",
+      "state": "implemented bounded newest-first durable page"
+    },
+    {
+      "operation": "reconcile_pending",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::reconcile_pending",
+      "state": "implemented; unknown-result replay forbidden"
+    },
+    {
+      "operation": "verify_and_stage_update",
+      "entrypoint": "apps/hepta-native/src/updater.rs::verify_and_stage",
+      "state": "implemented-unqualified"
+    }
+  ],
+  "storageProtocols": {
+    "journal": "hepta.native-operation-journal.v7",
+    "wal": "hepta.native-operation-wal.v1",
+    "retirementHead": "hepta.native-retirement.v3",
+    "retirementSegment": "hepta.native-retirement.v2",
+    "retirementIndex": "hepta.native-retirement-index.v1",
+    "retirementIndexBucket": "hepta.native-retirement-index-bucket.v1",
+    "authorityRule": "immutable retirement segments are authoritative; manifests, buckets and caches are rebuildable acceleration only",
+    "startupRetirementMembership": "prefix-grouped fallible membership batch with one validated result per active identity"
+  },
+  "nativeAdapters": {
+    "linuxPicker": "Rust zbus XDG Desktop Portal; no Zenity fallback",
+    "linuxOpenReveal": "NOFOLLOW open, device/inode/metadata binding, final handle revalidation, XDG OpenURI FD handoff",
+    "windowsNotification": "packaged AppUserModelID registrar and WinRT toast adapter; physical qualification pending",
+    "macosNotification": "Rust mac-notification-sys native API; physical qualification pending",
+    "runtimeImplementation": "Rust owned helpers with inherited pipe and parent image binding; see apps/hepta-native/RUST_PLATFORM.md"
+  },
+  "qualificationSubjects": [
+    "linux-exact-head",
+    "macos-exact-head",
+    "windows-exact-head",
+    "linux-fixed-ordered-parent-merge",
+    "macos-fixed-ordered-parent-merge",
+    "windows-fixed-ordered-parent-merge",
+    "linux-exact-implementation-storage-scale"
+  ],
+  "testSurfaces": [
+    "apps/hepta-native/src/*_tests.rs",
+    "apps/hepta-native/src/storage_qualification_tests.rs",
+    "apps/hepta-native/tests/*.rs",
+    "apps/hepta-native/tools/tests/test_package_security.py",
+    "apps/hepta-native/tools/linux_product_qualification.py",
+    "apps/hepta-native/tools/package_unsigned.py",
+    "scripts/check_hepta_ui_native_convergence.py",
+    "scripts/hepta_ui_native_qualification_evidence.py",
+    "scripts/hepta_ui_native_qualification_aggregate.py",
+    "scripts/hepta_ui_native_compile_negative.py",
+    "scripts/hepta_ui_native_supply_chain.py",
+    "scripts/qualify_hepta_ui_native_storage.py",
+    "scripts/test_hepta_ui_native_*.py",
+    "apps/hepta-native/src/ui/*_tests.rs",
+    "apps/hepta-native/tools/tests/test_portal_lifecycle.py",
+    "apps/hepta-native/src/storage_qualification_tests/process_samples.rs",
+    "codex-rs/utils/private-state/src/windows.rs"
+  ],
+  "repositoryControlledEvidence": {
+    "perPlatform": [
+      "source identity and inventory",
+      "app and owner rustfmt",
+      "app and owner strict Clippy",
+      "app and owner tests",
+      "compiler-negative private-boundary tests",
+      "release binary self-test",
+      "journal parent-death and updater-death qualification",
+      "deterministic unsigned package",
+      "packaged self-test and packaged fault qualification",
+      "CycloneDX SBOM and SLSA-shaped provenance"
+    ],
+    "linuxAdditional": [
+      "release gateway",
+      "isolated AppDir with real D-Bus keyring",
+      "authenticated gateway connection",
+      "visible Xvfb GUI lifecycle",
+      "virtual focus and keyboard delivery"
+    ],
+    "storageAdditional": [
+      "4096 active records",
+      "1000000 retired identities",
+      "release-profile fresh-process indexed open and deterministic legacy rebuild",
+      "p50/p95/p99 mutation latency",
+      "WAL/snapshot sizes, peak RSS, write bytes and fsync/fdatasync calls",
+      "20 fresh process samples per population with uncontrolled OS page cache",
+      "raw transition latencies and independently recomputed p50/p95/p99",
+      "64-record history page latency and retained serialized bytes",
+      "actual journal opens with 4096 active records and 1000000 retired identities together"
+    ],
+    "qualifiedOwnerPackages": [
+      "codex-hepta-native-gateway",
+      "codex-hepta-contracts",
+      "codex-hepta-private-state",
+      "codex-utils-private-state"
+    ]
+  },
+  "repositoryControlledGaps": [
+    "non-Linux verified Open/Reveal resource-capability implementation",
+    "successful execution of the final seven-subject workflow",
+    "measured source coverage",
+    "sustained soak",
+    "physical execution of packaged Windows identity/WinRT notification"
+  ],
+  "externalEvidenceGates": [
+    "physical platform, accessibility and IME acceptance",
+    "production signing, notarization and Authenticode",
+    "independent SBOM/provenance acceptance",
+    "independent promotion review and branch-protection administration"
+  ],
+  "claimBoundary": {
+    "ordinarySourceCommitEstablished": true,
+    "selfMutatingQualificationRemoved": true,
+    "sevenSubjectEvidenceChainImplemented": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "productImplementationCandidateComplete": false,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
+    "productionQualified": false,
+    "deploymentQualified": false,
+    "releaseAuthorized": false
+  },
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "auditReport": "apps/hepta-native/UI_AUDIT_20261002.md",
+  "sharedUtilityDependencies": [
+    "codex-rs/utils/private-state"
+  ],
+  "rustPlatformGuide": "apps/hepta-native/RUST_PLATFORM.md",
+  "visualDesignGuide": "apps/hepta-native/VISUAL_DESIGN.md"
+}

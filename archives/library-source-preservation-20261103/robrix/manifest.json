@@ -1,0 +1,243 @@
+{
+  "schema": "historical-source-preservation-v1",
+  "scope": "Reviewed source, tests, build configuration and source-verification inputs. Project documentation and external delivery attachments remain held.",
+  "original_archive": {
+    "archive": "recovered-robrix-unpublished-exact-20261002-second.tar.gz",
+    "bytes": 113454,
+    "sha256": "8bae42c759fac806791f59f111b76279a055d7154e3c72c3b988f550eb9a648d",
+    "git_blob_sha": "3e7524bf73f062bbd70911d3f0a919de12aebff4"
+  },
+  "original_base_commit": null,
+  "original_patch": null,
+  "publication_repository": "TrillionniumFoundation/hepta-private-ci",
+  "publication_base_commit": "817e91bbf184a36e7546b5ea8ba16d9042269d30",
+  "publication_base_tree": "ce7d4cebb6e88618ca28628318e99eb0edb58453",
+  "selected_source_file_count": 20,
+  "selected_source_bytes": 173506,
+  "files": [
+    {
+      "source_relative_path": ".github/workflows/hepta-lane-b-truth.yml",
+      "source_archive_member": "recovered-abi-exact-files/.github/workflows/hepta-lane-b-truth.yml",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/.github/workflows/hepta-lane-b-truth.yml",
+      "mode": "100644",
+      "bytes": 8014,
+      "sha256": "1c40c1d0ffc38dad51e7ea17f049baec6d49eb01a1ce42d4428fadf471aed29f",
+      "git_blob_sha": "41471a60b4ec7cde7751506f7e6463edcb6a4be8",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": ".github/workflows/ui-control-rust-parity.yml",
+      "source_archive_member": "recovered-abi-exact-files/.github/workflows/ui-control-rust-parity.yml",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/.github/workflows/ui-control-rust-parity.yml",
+      "mode": "100644",
+      "bytes": 10883,
+      "sha256": "44997784f545dd5a455c6b43eee57b45c0b2607a2b65574059993ac8c2a7c78d",
+      "git_blob_sha": "e9dd5f43b7a711655208fdb4c337b8bee78a89f4",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/e2e/robrix-host.spec.mjs",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/e2e/robrix-host.spec.mjs",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/e2e/robrix-host.spec.mjs",
+      "mode": "100644",
+      "bytes": 6951,
+      "sha256": "be58ed70fb035c4d6124bae6ac07da229316210729a68ba5f2dd12a2cec5d16f",
+      "git_blob_sha": "46ebda9a56058b16e5103b31160dc08de7b56920",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/playwright.robrix.config.mjs",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/playwright.robrix.config.mjs",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/playwright.robrix.config.mjs",
+      "mode": "100644",
+      "bytes": 830,
+      "sha256": "fa26fde268c4f89314763d1704896a367151df763755994309aba9ac99e6af33",
+      "git_blob_sha": "d8d140da5dc290c93dddfe5ff58493ecd7350322",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.json",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.json",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.json",
+      "mode": "100644",
+      "bytes": 874,
+      "sha256": "7d8952059a0ee5c8e1fc96cf9cb5700d22ccda8e061614446649123c75508124",
+      "git_blob_sha": "04a4043cf7137ddc9a9b24a27a4496ad0c5960e6",
+      "source_category": "source_verification_data"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.patch",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.patch",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-instance-layout.patch",
+      "mode": "100644",
+      "bytes": 1382,
+      "sha256": "09357ab2aab1346352f608104f6b662559ab50ebde9ab8fe2a457070f6dfa600",
+      "git_blob_sha": "5de2adbf540e61979dc9180b392bc4b458f53711",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/test/fixtures/robrix-render/unreadable-e51a1d0f.png",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/test/fixtures/robrix-render/unreadable-e51a1d0f.png",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/test/fixtures/robrix-render/unreadable-e51a1d0f.png",
+      "mode": "100644",
+      "bytes": 12916,
+      "sha256": "eba74e39be5d925e851903f893150f10547b89bf253a2e2fd0cc78eeef21bd47",
+      "git_blob_sha": "6389a6e181f2435f2e14565f4eafa5448f64cdb1",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/test/makepad-instance-layout.test.mjs",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/test/makepad-instance-layout.test.mjs",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/test/makepad-instance-layout.test.mjs",
+      "mode": "100644",
+      "bytes": 7630,
+      "sha256": "55527202d54198b767ae8c94dc8a8617a74882490d3ec91da840859b55bded6b",
+      "git_blob_sha": "f980915dbb2166c66db60821a2827267a9817922",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/test/screenshot-readability.test.mjs",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/test/screenshot-readability.test.mjs",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/test/screenshot-readability.test.mjs",
+      "mode": "100644",
+      "bytes": 500,
+      "sha256": "2f897cac71573b7730fcf7e6801680892959a00f0f111008198275f5754514ca",
+      "git_blob_sha": "c651b11c50f9e7e0ada31c4e73a085722c63d230",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/tools/build-robrix.mjs",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/tools/build-robrix.mjs",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/tools/build-robrix.mjs",
+      "mode": "100644",
+      "bytes": 10510,
+      "sha256": "241e05f3c4513018df066549645a0bfa28f122579a2a091c4061c69e19829e3e",
+      "git_blob_sha": "1912991afaec4a20d12213c707b0f63d40229f83",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/tools/prepare-makepad-platform.mjs",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/tools/prepare-makepad-platform.mjs",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/tools/prepare-makepad-platform.mjs",
+      "mode": "100644",
+      "bytes": 5144,
+      "sha256": "add4fed8d20b0f63871ca53384070a7945429d08509946eb29726b786ccb8661",
+      "git_blob_sha": "e9fadcb5043bc2d1a082defda27acb8804464a75",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "apps/hepta-control-ui/tools/verify-robrix-pixels.mjs",
+      "source_archive_member": "recovered-abi-exact-files/apps/hepta-control-ui/tools/verify-robrix-pixels.mjs",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/apps/hepta-control-ui/tools/verify-robrix-pixels.mjs",
+      "mode": "100644",
+      "bytes": 715,
+      "sha256": "b4c9d6bef8d3156c1fef2ddad3cce4809c74434caf8e58213568c9a4a6b4c190",
+      "git_blob_sha": "f6fbab11bce6a0f81989d64604db2f0058abd80a",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+      "source_archive_member": "recovered-abi-exact-files/qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+      "mode": "100644",
+      "bytes": 3919,
+      "sha256": "f79ddd373bc58ed013014bd4ad349d7f1dc8c56583fed6f9376b1115e57e8bf1",
+      "git_blob_sha": "fd07e494ef6e5d8f4be9db01fb6b6b7d37b68e5b",
+      "source_category": "source_verification_data"
+    },
+    {
+      "source_relative_path": "qualification/lane-b/TEST_TRACEABILITY.json",
+      "source_archive_member": "recovered-abi-exact-files/qualification/lane-b/TEST_TRACEABILITY.json",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/qualification/lane-b/TEST_TRACEABILITY.json",
+      "mode": "100644",
+      "bytes": 22020,
+      "sha256": "2d3f925127fed433e1ea6824f14c8a7e674c874dd2544b105ea092dd35a2ae20",
+      "git_blob_sha": "d0001df26848f09c25978f0271051e8c21feff62",
+      "source_category": "source_verification_data"
+    },
+    {
+      "source_relative_path": "scripts/hepta-lane-b-path-guard.py",
+      "source_archive_member": "recovered-abi-exact-files/scripts/hepta-lane-b-path-guard.py",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/scripts/hepta-lane-b-path-guard.py",
+      "mode": "100644",
+      "bytes": 12929,
+      "sha256": "256e52fd2bbd0c8a705ab7db9b6ed5d85404b7797384f851a8350e3d8d7c393a",
+      "git_blob_sha": "27094a64c0c68f9575cfaa49913c608db30c157d",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "scripts/hepta-lane-b-truth.py",
+      "source_archive_member": "recovered-abi-exact-files/scripts/hepta-lane-b-truth.py",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/scripts/hepta-lane-b-truth.py",
+      "mode": "100755",
+      "bytes": 29007,
+      "sha256": "f453369d327b873cab7d0d50ce691efc890f4b0847d1af361ada08e54e8deeda",
+      "git_blob_sha": "492fe2c508329732779b435f46ba6b5ec737656f",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "scripts/hepta_lane_b_native.py",
+      "source_archive_member": "recovered-abi-exact-files/scripts/hepta_lane_b_native.py",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/scripts/hepta_lane_b_native.py",
+      "mode": "100644",
+      "bytes": 1415,
+      "sha256": "79e199effa415603ce2848c16d4d6e1776decf5bdd88086a2d7a4570f048d483",
+      "git_blob_sha": "1557546f72122b4e1560f2713a8a1f5bb20addf0",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "scripts/hepta_lane_b_projections.py",
+      "source_archive_member": "recovered-abi-exact-files/scripts/hepta_lane_b_projections.py",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/scripts/hepta_lane_b_projections.py",
+      "mode": "100644",
+      "bytes": 5689,
+      "sha256": "62f5566e9b731cb7dd26bb27811d30afeef1858fd0576bd52720ed05b50e4a5d",
+      "git_blob_sha": "3296dfdbcf783d118b9d320b9d8ab225572661be",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "scripts/test_hepta_ci_source_identity.py",
+      "source_archive_member": "recovered-abi-exact-files/scripts/test_hepta_ci_source_identity.py",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/scripts/test_hepta_ci_source_identity.py",
+      "mode": "100644",
+      "bytes": 22637,
+      "sha256": "c2857b54cd7f4c2a8c4d8cb98255815cdead208dda8abb0d0fdc7ccc8a0e00d7",
+      "git_blob_sha": "884ace42aceff3d5d1248660e29040f76b4cb5ee",
+      "source_category": "source_test_or_build_config"
+    },
+    {
+      "source_relative_path": "scripts/test_hepta_lane_b_native.py",
+      "source_archive_member": "recovered-abi-exact-files/scripts/test_hepta_lane_b_native.py",
+      "origin_kind": "archive_member",
+      "path": "archives/library-source-preservation-20261103/robrix/files/scripts/test_hepta_lane_b_native.py",
+      "mode": "100644",
+      "bytes": 9541,
+      "sha256": "62532e83cfe6f8b3ed16453349234535d252fb27c910711d633fa7116e9b6f59",
+      "git_blob_sha": "e4ed9a8bee86435d6e692d2f0d033073cbe05de4",
+      "source_category": "source_test_or_build_config"
+    }
+  ],
+  "held_project_document_count": 3,
+  "complete_original_archive_published": false,
+  "archive_code_executed_during_preparation": false,
+  "new_runtime_qualification_claimed": false
+}

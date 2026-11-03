@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.ui.native.candidate.v3",
+  "canonicalBranch": "work/ui-native-qualified-integration-20260928",
+  "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
+  "baselineCommit": "6f145464d9d58233c59aafe262a1250a5ea873a8",
+  "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
+  "productClosureSourceCommit": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+  "implementationSourceSha": "25c7f3c41035def17ca0f96eca71f110c7fc6fd9",
+  "implementationSourceTree": "82774f7e7fc2a305722b0a35110a9b2885290997",
+  "status": "implementation-candidate",
+  "qualificationStatus": "blocked-pending-executed-evidence",
+  "releaseStatus": "not-authorized",
+  "qualificationSubjects": [
+    "linux-exact-head",
+    "macos-exact-head",
+    "windows-exact-head",
+    "linux-fixed-ordered-parent-merge",
+    "macos-fixed-ordered-parent-merge",
+    "windows-fixed-ordered-parent-merge",
+    "linux-exact-implementation-storage-scale"
+  ],
+  "sourceMutationInCiAllowed": false,
+  "independentReviewerRequired": true,
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "qualificationContext": {
+    "qualifiedOwnerPackages": [
+      "codex-hepta-native-gateway",
+      "codex-hepta-contracts",
+      "codex-hepta-private-state",
+      "codex-utils-private-state"
+    ],
+    "storageBuildProfile": "release",
+    "combinedStorageSubjectRequired": true,
+    "debugStorageMeasurements": "historical diagnostics only; never release-profile qualification"
+  }
+}

@@ -1,0 +1,39 @@
+---
+source: src/ui/visual_qa_tests.rs
+expression: visible
+---
+HEPTA
+/ NATIVE
+Authenticated view available
+Refresh
+Reconcile
+WORKSPACE
+01   Runtime
+02   Operations
+03   Updates
+04   Accessibility
+LOCAL ENDPOINT
+127.0.0.1:8765
+<platform> / <architecture>
+Presentation only. Authority stays with the independent owner.
+Native operations
+Prepare the exact request, obtain an independently signed grant, then execute once.
+01 / DEFINE OPERATION
+Authority subject
+fixture.authority
+Operation ID
+fixture.operation.42
+Show notification
+Action
+Notification title
+Visual QA fixture
+Notification body
+This state is local test data; no notification is sent.
+02 / PREPARE AUTHORIZATION
+The shell cannot sign authority. Give the exact binding to the independent authority owner for a SignedFinalUseGrant.
+Prepare exact binding
+03 / EXECUTE ONCE
+Signed grant path
+Absolute path to the signed grant
+Choose file
+Use next dropped file

@@ -1,0 +1,71 @@
+[package]
+name = "hepta-native"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "hepta_native"
+path = "src/lib.rs"
+
+[[bin]]
+name = "hepta-native"
+path = "src/main.rs"
+
+[[bin]]
+name = "hepta-native-updater"
+path = "src/bin/hepta-native-updater.rs"
+
+[[bin]]
+name = "hepta-native-credential"
+path = "src/bin/hepta-native-credential.rs"
+
+[dependencies]
+atomic-write-file = "0.3.1"
+arboard = "3"
+base64 = "0.22.1"
+codex-hepta-contracts = { path = "../../codex-rs/hepta-contracts" }
+codex-keyring-store = { path = "../../codex-rs/keyring-store" }
+ed25519-dalek = { version = "2.2.0", features = ["pkcs8"] }
+getrandom = "0.4.3"
+hepta-control-ui = { path = "../hepta-control-ui", default-features = false }
+eframe = { version = "0.36.2", default-features = false, features = ["accesskit", "default_fonts", "glow", "persistence", "wayland", "x11"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+zeroize = "1.8.2"
+
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "1.1.5", features = ["fs", "process"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+mac-notification-sys = "0.6.15"
+codex-utils-private-state = { path = "../../codex-rs/utils/private-state" }
+
+[target.'cfg(windows)'.dependencies]
+winrt-notification = "0.5.1"
+codex-hepta-private-state = { path = "../../codex-rs/hepta-private-state" }
+
+[dev-dependencies]
+codex-utils-cargo-bin = { path = "../../codex-rs/utils/cargo-bin" }
+insta = "=1.46.3"
+tempfile = "3.23"
+
+[build-dependencies]
+embed-manifest = "1.5.0"
+
+# Restart fixtures hash their actual executable, including full debug symbols.
+# Keep production deadlines meaningful without changing the bytes under test.
+[profile.test.package.sha2]
+opt-level = 3
+
+[target.'cfg(target_os = "linux")'.dependencies]
+zbus = "5.19.0"
+futures-lite = "2.6.1"
+async-io = "2.6.0"
+
+[target.'cfg(any(target_os = "macos", target_os = "windows"))'.dependencies]
+rfd = { version = "0.17.2", default-features = false }
+sysinfo = { version = "0.39.6", default-features = false, features = ["system"] }
+same-file = "1.0.6"

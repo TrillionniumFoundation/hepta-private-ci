@@ -1,0 +1,36 @@
+---
+source: src/ui/visual_qa_tests.rs
+expression: visible
+---
+HEPTA
+/ NATIVE
+No current authenticated view
+Verify snapshot
+Reconcile
+WORKSPACE
+01   Runtime
+02   Operations
+03   Updates
+04   Accessibility
+LOCAL ENDPOINT
+127.0.0.1:8765
+<platform> / <architecture>
+Presentation only. Authority stays with the independent owner.
+Signed updates
+Verify a signed stable-channel package, then activate it after a safe shutdown.
+01 / SELECT UPDATE FILES
+Signed manifest path
+Absolute file path
+Choose file
+Use next dropped file
+Package path
+Absolute file path
+Choose file
+Use next dropped file
+02 / VERIFY & STAGE
+Signature, compatibility and package integrity are checked before staging.
+Choose both files or enter their absolute paths.
+Verify & stage
+03 / ACTIVATION
+No pending update
+Pending record location

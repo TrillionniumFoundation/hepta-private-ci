@@ -1,0 +1,252 @@
+{
+  "schema": "hepta.ui-control.manifest.v1",
+  "schemaVersion": 1,
+  "module": "ui.control",
+  "laneId": "LANE-B-RUNTIME",
+  "owner": "ui-platform",
+  "deputy": "accessibility",
+  "authoritativeDevelopmentBranch": "work/ui-native-adversarial-audit-20261001",
+  "baseline": {
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
+  },
+  "historicalSourceBase": {
+    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+  },
+  "sourceRoots": [
+    "apps/hepta-control-ui"
+  ],
+  "status": {
+    "clientCore": "rust_worker_owned_candidate",
+    "nativeComposition": "authenticated_read_only_projection_consumed_by_existing_native_shell",
+    "browserComposition": "javascript_product_retired_exact_oracle_only_no_wasm_replacement",
+    "dependencyLock": "cargo_lock_committed_current_qualification_required",
+    "sessionLifecycle": "rust_identity_permission_revision_and_shutdown_fenced",
+    "terminalEvidence": "authenticated_backend_observation_projection_implemented",
+    "localRecovery": "linux_private_root_candidate_macos_windows_adapter_missing",
+    "authentication": "explicit_memory_credentials_backend_deployment_unbound",
+    "transport": "rust_https_adapter_backend_deployment_unbound",
+    "serverIdempotency": "contract_defined_backend_enforcement_unobserved",
+    "exactHeadQualification": "required_and_derived_by_ci_not_committed",
+    "independentAcceptance": "absent",
+    "releaseAuthorization": "absent"
+  },
+  "evidenceSemantics": {
+    "observedOutcome": "A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.",
+    "acceptedEvidence": "A receipt was validated against its exact candidate, tree, deployment, and authority rules. Accepted stage evidence is monotone within an evidence bundle.",
+    "overallAcceptance": "The bundle is accepted only when every required stage, five distinct assurance principals, evidence-before-approval chronology, and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release."
+  },
+  "receiptSchemas": {
+    "repositoryReceipts": "hepta.ui-control.rust-qualification-receipt.v1",
+    "realBackend": "hepta.ui-control.real-backend-receipt.v2",
+    "deploymentSecurity": "hepta.ui-control.deployment-security-receipt.v2",
+    "independentAcceptance": "hepta.ui-control.independent-acceptance-receipt.v2",
+    "independentSecurity": "hepta.ui-control.independent-security-review-receipt.v1",
+    "operationalExercise": "hepta.ui-control.operational-exercise-receipt.v1",
+    "productionApproval": "hepta.ui-control.production-approval-receipt.v1",
+    "assuranceChain": "hepta.ui-control.assurance-chain.v1",
+    "externalEvidenceBundle": "hepta.ui-control.external-evidence-bundle.v1"
+  },
+  "verificationStages": {
+    "designDefined": {
+      "repositoryState": "defined_by_manifest",
+      "observationAuthority": "tracked manifest and generated projections at the candidate tree",
+      "acceptanceAuthority": "exact candidate tree plus generated-artifact drift check",
+      "passAuthority": "tracked manifest and generated status projection"
+    },
+    "codePresent": {
+      "repositoryState": "present_in_authoritative_candidate",
+      "observationAuthority": "source roots observed in the exact candidate tree",
+      "acceptanceAuthority": "exact candidate tree and package-boundary qualification",
+      "passAuthority": "exact candidate tree"
+    },
+    "sourceTestsPassed": {
+      "repositoryState": "not_stored_as_source_truth",
+      "observationAuthority": "exact-SHA workflow outcomes for dependency, lint, unit, contract, build, Lane B, and documentation checks",
+      "acceptanceAuthority": "validated hepta.ui-control.qualification-receipt.v2 bound to the exact source commit and tree",
+      "passAuthority": "exact-SHA qualification receipt"
+    },
+    "nativeUiTestsPassed": {
+      "repositoryState": "native_parent_qualification_required",
+      "observationAuthority": "exact-source native renderer and real-host input/accessibility diagnostics",
+      "acceptanceAuthority": "fresh ui.native exact-head and merge receipts; retired browser evidence does not qualify Rust",
+      "passAuthority": "exact-candidate native rendering and accessibility evidence"
+    },
+    "mergeTreePassed": {
+      "repositoryState": "not_stored_as_source_truth",
+      "observationAuthority": "deterministic synthetic-merge workflow outcomes",
+      "acceptanceAuthority": "validated synthetic-merge qualification receipt bound to source, base, evaluated merge commit, and tree",
+      "passAuthority": "deterministic synthetic-merge receipt"
+    },
+    "realBackendPassed": {
+      "repositoryState": "external_evidence_absent",
+      "observationAuthority": "real Agentd probe plus retained chaos and authority evidence",
+      "acceptanceAuthority": "validated hepta.ui-control.real-backend-receipt.v2 bound to the exact candidate and deployment digest",
+      "passAuthority": "real Agentd/backend qualification receipt"
+    },
+    "productionDeploymentApproved": {
+      "repositoryState": "external_authority_absent",
+      "observationAuthority": "deployment-security, real-backend, independent accessibility, independent security, operational exercise, and production approval receipts",
+      "acceptanceAuthority": "non-expired production approval bound to all prerequisite evidence digests, five distinct review and approval principals, evidence-before-approval chronology, and an accepted external-evidence bundle",
+      "passAuthority": "deployment, release, and security authorities after trusted assurance-chain validation"
+    }
+  },
+  "publicApi": [
+    "RuntimeClient",
+    "ControlTransport",
+    "HttpTransport",
+    "MemoryCredentials",
+    "RecoveryStore",
+    "FileRecoveryStore",
+    "project_runtime",
+    "normalize_snapshot",
+    "validate_snapshot_transition",
+    "project_native_view",
+    "ControlError"
+  ],
+  "operations": [
+    {
+      "id": "read_view",
+      "symbol": "pub fn view(",
+      "sourcePath": "apps/hepta-control-ui/src/client.rs",
+      "buildTarget": "hepta-control-ui",
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/src/client_tests.rs",
+          "kind": "rust_product_boundary",
+          "command": "just test --manifest-path ../apps/hepta-control-ui/Cargo.toml --locked --all-features --all-targets"
+        }
+      ],
+      "semantics": "Projects bounded coherent session/snapshot and principal-scoped pending/terminal facts without issuing authority."
+    },
+    {
+      "id": "submit_request",
+      "symbol": "pub fn submit(",
+      "sourcePath": "apps/hepta-control-ui/src/client_operations.rs",
+      "buildTarget": "hepta-control-ui",
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/src/client_tests.rs",
+          "kind": "rust_product_boundary",
+          "command": "just test --manifest-path ../apps/hepta-control-ui/Cargo.toml --locked --all-features --all-targets"
+        }
+      ],
+      "semantics": "Exclusively reserves and durably records a confirmed exact operation before one authenticated transport request; backend admission remains authoritative."
+    },
+    {
+      "id": "request_stop",
+      "symbol": "pub fn submit(",
+      "sourcePath": "apps/hepta-control-ui/src/client_operations.rs",
+      "buildTarget": "hepta-control-ui",
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/src/client_tests.rs",
+          "kind": "rust_product_boundary",
+          "command": "just test --manifest-path ../apps/hepta-control-ui/Cargo.toml --locked --all-features --all-targets"
+        }
+      ],
+      "semantics": "The typed Method::Stop path requires stop permission and RequestStop semantics; acknowledgement remains pending until authenticated terminal observation."
+    }
+  ],
+  "invariants": [
+    "Rust presentation owns no runtime state, admission authority or terminal facts.",
+    "The existing native gateway remains read-only; native observations are never relabeled as a ui.control mutation session.",
+    "Explicit session, transport endpoint, protocol and principal bind the recovery scope before import or dispatch.",
+    "Exclusive mutable ownership serializes session and operation transitions; bounded identity reservation precedes persistence and possible dispatch.",
+    "Response loss and V1 missing lookup remain indeterminate; unresolved identities never replay automatically.",
+    "Canonical JSON and existing digest domains retain strict input bounds, NFC/safe integers, duplicate rejection and exact identity binding.",
+    "Expiry, permission revision changes, stale snapshots and changed confirmations fail closed before new requests.",
+    "Durable terminal cleanup requires exact original admission bytes and matching authenticated audit identity; failed maintenance retains facts.",
+    "Legacy JavaScript source and workflows exist only inside a hash-bound regression oracle archive, never active product packages.",
+    "Runtime, deployment, acceptance, activation and release flags remain false without separately observed exact-source evidence."
+  ],
+  "verification": {
+    "node": "22",
+    "commands": [
+      "cargo fmt --manifest-path apps/hepta-control-ui/Cargo.toml --check",
+      "cargo check --manifest-path apps/hepta-control-ui/Cargo.toml --locked --all-targets --all-features",
+      "cargo clippy --manifest-path apps/hepta-control-ui/Cargo.toml --locked --all-targets --all-features -- -D warnings",
+      "just test --manifest-path ../apps/hepta-control-ui/Cargo.toml --locked --all-targets --all-features",
+      "python3 scripts/ui-control-oracle.py --test",
+      "node scripts/ui-control-artifacts.mjs --check",
+      "node scripts/ui-control-status.mjs --check",
+      "python3 scripts/ui-control-source-map.py"
+    ],
+    "browserMatrix": [],
+    "accessibility": "Native egui/AccessKit rendering in ui.native; physical screen-reader/IME/DPI acceptance unobserved; no active browser distribution",
+    "rust": "1.95.0"
+  },
+  "externalEvidenceGates": [
+    "deployed owner authentication/admission and terminal-ledger uniqueness/lookup",
+    "actual TLS/CSRF/cookie deployment security",
+    "cross-platform native input/accessibility and operational exercises",
+    "independent acceptance and release authority"
+  ],
+  "sourceObservation": {
+    "commit": "ea9e079db1d4bc5176ed7c3c41058e146ae8b3d1",
+    "tree": "25859abe1e619ec233578e99621704cfec767028"
+  },
+  "productCallers": [
+    {
+      "sourcePath": "apps/hepta-native/src/ui/runtime_status.rs",
+      "nativeSymbol": "project_native_runtime_view",
+      "compositionScope": "authenticated_read_only_native_projection_only"
+    },
+    {
+      "sourcePath": "apps/hepta-native/src/ui.rs",
+      "nativeSymbol": "project_native_runtime_view",
+      "compositionScope": "existing_refresh_worker_only"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-control-ui",
+      "object": "b89d30d74ef418309e06d9843f705e1bea58ccae"
+    },
+    {
+      "path": "apps/hepta-control-ui/src/client.rs",
+      "object": "a48fc103d8ed71e0cbf6a715ea0e51c850676203"
+    },
+    {
+      "path": "apps/hepta-control-ui/src/client_operations.rs",
+      "object": "b3f2b304793b14666719a1306378522236daa4b8"
+    },
+    {
+      "path": "apps/hepta-control-ui/src/client_tests.rs",
+      "object": "4302d98781ec8b25913ad15fa31aa9c95fce685a"
+    },
+    {
+      "path": "apps/hepta-native/src/ui.rs",
+      "object": "b5c98b409feeca5150583b3c2015dde3f9822e7a"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/runtime_status.rs",
+      "object": "f737ff9636a13ebfcb8571660f17e695d0bbf266"
+    },
+    {
+      "path": "docs/modules/ui.control/TECHNICAL.md",
+      "object": "55cdf5712d720bb94f9704e71b09a01b0a12a9a5"
+    }
+  ],
+  "implementationLanguage": "rust",
+  "repositoryControlledGaps": [
+    "macOS ACL-backed control recovery-store adapter is not composed",
+    "Windows private control recovery-store adapter is not composed",
+    "Rust/WASM browser distribution is not implemented",
+    "Full parity of all retired browser interaction scenarios is not demonstrated"
+  ],
+  "productCallerState": "native_read_only_projection_composed",
+  "mutationClientCallerState": "not_composed",
+  "productCallerBindingPolicy": "closed_world",
+  "productCallerBindings": [
+    {
+      "callerPath": "apps/hepta-native/src/ui/runtime_status.rs",
+      "mustContain": "project_native_view"
+    },
+    {
+      "callerPath": "apps/hepta-native/src/ui.rs",
+      "mustContain": "project_native_runtime_view"
+    }
+  ]
+}

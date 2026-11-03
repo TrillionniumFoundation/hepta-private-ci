@@ -1,0 +1,34 @@
+---
+source: src/ui/visual_qa_tests.rs
+expression: visible
+---
+HEPTA
+/ NATIVE
+Authenticated view available
+Refresh
+Reconcile
+WORKSPACE
+01   Runtime
+02   Operations
+03   Updates
+04   Accessibility
+LOCAL ENDPOINT
+127.0.0.1:8765
+<platform> / <architecture>
+Presentation only. Authority stays with the independent owner.
+01 / RUNTIME OBSERVATORY
+Runtime overview
+A verified snapshot, not a live-health or execution guarantee.
+VIEW REVISION
+18446744073709551615
+SESSION GENERATION
+18446744073709551615
+DECLARED MODULES
+3
+SESSION / TRUST BOUNDARY
+fixture.session
+This view authorizes no effect. Each operation requires its own signed final-use grant.
+control.runtime
+runtime.agentd
+ui.native
+Runtime control: read-only gateway

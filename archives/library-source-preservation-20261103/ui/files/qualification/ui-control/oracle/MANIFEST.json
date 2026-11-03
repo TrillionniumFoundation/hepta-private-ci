@@ -1,0 +1,1238 @@
+{
+  "schema": "hepta.ui-control.javascript-oracle.v1",
+  "sourceCommit": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+  "sourceTree": "f0e232e6062662d15c95e5f7c19623eb70e2eb97",
+  "role": "non_product_regression_oracle_only",
+  "activeProductEntrypoint": false,
+  "archive": "ui-control-5c0bbe30-oracle.tar.gz",
+  "archiveSha256": "746cd76efddc6a638cf606f53f2903bf54d97c8c404c25d445bbc24cfd4875d0",
+  "archiveBytes": 212939,
+  "files": [
+    {
+      "bytes": 10340,
+      "sha256": "40348d63ccbfc2fa908758f78c524bc8679b1039c42c476a9622292233ee7c28",
+      "pathComponents": [
+        ".github",
+        "workflows",
+        "ui-control-external-observer.yml"
+      ]
+    },
+    {
+      "bytes": 22641,
+      "sha256": "91b15fbbbd91e5b7f51b71a1f5f9674bfa6cf16526a626e1c2ec8dd1f3f7328f",
+      "pathComponents": [
+        ".github",
+        "workflows",
+        "ui-control-external-qualification.yml"
+      ]
+    },
+    {
+      "bytes": 3755,
+      "sha256": "cc89de48cff860d5fb6835e3bcc89e9fb0343e8cca8e5146298b886a101b02ec",
+      "pathComponents": [
+        ".github",
+        "workflows",
+        "ui-control-node-diagnostics.yml"
+      ]
+    },
+    {
+      "bytes": 22915,
+      "sha256": "4e8dee729daad25c86a7638caf77060aea78cb72b070bba669abc64259841ac3",
+      "pathComponents": [
+        ".github",
+        "workflows",
+        "ui-control-qualification-observer.yml"
+      ]
+    },
+    {
+      "bytes": 17496,
+      "sha256": "0562a56b851504e1aca9d4ca2275f5e8468e4c99565301705725e5a8c06bcf2c",
+      "pathComponents": [
+        ".github",
+        "workflows",
+        "ui-control-qualification.yml"
+      ]
+    },
+    {
+      "bytes": 13478,
+      "sha256": "fbce16495ee83d4f082b617879d2dd3d713a4d218f5990bb72f05da986c86239",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "README.md"
+      ]
+    },
+    {
+      "bytes": 10163,
+      "sha256": "376157a89476efe3e04ad3d43473fed6c6c35d1efd9c894e5ca91200dd58d42f",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "e2e",
+        "control-console.spec.mjs"
+      ]
+    },
+    {
+      "bytes": 5869,
+      "sha256": "abb089f852739e8f2df1add61ccca53c4a8b0e5f223ad1cedeccafa5eee5e762",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "e2e",
+        "maintenance.spec.mjs"
+      ]
+    },
+    {
+      "bytes": 6867,
+      "sha256": "92884a924046a4108b7dfe855037f18be6912140fccfe6ebae0004047d46e6ff",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "e2e",
+        "principal-binding.spec.mjs"
+      ]
+    },
+    {
+      "bytes": 3296,
+      "sha256": "a1bace3ded776dc85d231649db95a9df986df778d44f30aa0b1d5b96e6150558",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "e2e",
+        "readiness.mjs"
+      ]
+    },
+    {
+      "bytes": 8405,
+      "sha256": "e737b5ab93b418e31eeac558f561819c4e2456d871c65655959c06aec69c1227",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "e2e",
+        "recovery-safety.spec.mjs"
+      ]
+    },
+    {
+      "bytes": 2625,
+      "sha256": "716a8be89200c7f916a1db41fdc5a4c8e1badc5a72c230a6aabee2215baa2d19",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "package-lock.json"
+      ]
+    },
+    {
+      "bytes": 1761,
+      "sha256": "3e01aedf8bb5ca678911fb4cb8c16ba1ff20850df642ad47a63cda3b5807c3ef",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "package.json"
+      ]
+    },
+    {
+      "bytes": 888,
+      "sha256": "7be4bfed9756194a81fc90cc8fa8e09eb57089a7df40e6ed084c7ca1cd09aed0",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "playwright.config.mjs"
+      ]
+    },
+    {
+      "bytes": 25471,
+      "sha256": "5d373d7be732b3ee5c4d502bd4612be495782ecb0a18c6eadc4438845989782d",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "browser-app.js"
+      ]
+    },
+    {
+      "bytes": 51,
+      "sha256": "ab9bc0a1e4d628f98e22fe7f7141f377a4915379be4b6e0109c1213804d0c3ca",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "browser.d.ts"
+      ]
+    },
+    {
+      "bytes": 11237,
+      "sha256": "661e512c0aa4c8a8635c6eddc0fa110520bc5fb2a0295814ab431a27ab5daca1",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "canonical.js"
+      ]
+    },
+    {
+      "bytes": 1793,
+      "sha256": "03e086b59a1f5d15422119797a3d2b5cdaa8a3bee384c69b113ac6ffc8d80f06",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "confirmation.js"
+      ]
+    },
+    {
+      "bytes": 6371,
+      "sha256": "866d2dc53f95e46dd0d48d919562d541fee29971b4c876d7d7a581cde20c9969",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "control.js"
+      ]
+    },
+    {
+      "bytes": 908,
+      "sha256": "cd5a0718d91015465b7c797bfbcec5fb3bec9e6e0094e8e31f1123435828ed2b",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "core.d.ts"
+      ]
+    },
+    {
+      "bytes": 807,
+      "sha256": "fcec05f25e3cda1e43c87a6bb83e9a062b0cc35c12e490fda5c8ac059afbeb1e",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "core.js"
+      ]
+    },
+    {
+      "bytes": 2522,
+      "sha256": "d4adde3bdad2072158de282d9a9e49b00c7abe9449dffbdfafa4a0a47b27adb1",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "errors.js"
+      ]
+    },
+    {
+      "bytes": 54,
+      "sha256": "b4f13ac0c90c21006074715e5b9ca45e7bb5fecba6ac77d1857e65fc44624ddb",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "http-transport.d.ts"
+      ]
+    },
+    {
+      "bytes": 16357,
+      "sha256": "07e4faafde53577f5dbf9541df27009d23bd1289ca4dd76180537f1dc1b9ed8c",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "http-transport.js"
+      ]
+    },
+    {
+      "bytes": 8674,
+      "sha256": "b744f911b230f3010ddce7863b8e1a2545c1adef17622cce7665f3d839d0dc29",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "index.d.ts"
+      ]
+    },
+    {
+      "bytes": 984,
+      "sha256": "a5e835430ce443c4aca3788cf2cebf4434f95c909f18b31da6404da7bc8b4187",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "index.js"
+      ]
+    },
+    {
+      "bytes": 1136,
+      "sha256": "4e5ade8cdf2b23500461073f037affbfc608fdc7e5f12391fcfbe98bdf00c165",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "keyed-list.js"
+      ]
+    },
+    {
+      "bytes": 14395,
+      "sha256": "c69d6b83c4c371bf9c3a206a5905bbae6740e02ac19ad4f2a496ee69b2b178c0",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "operation-ledger.js"
+      ]
+    },
+    {
+      "bytes": 12012,
+      "sha256": "e28477d148bd98abf84f06bc6f50021af4c3960e00914114cbc202ba4f4e5d44",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "recovery-directory.js"
+      ]
+    },
+    {
+      "bytes": 6405,
+      "sha256": "8c6d17461add9665d1884e541f4b60b343830b1ec96e3d691b079a984302102f",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "recovery-scheduler.js"
+      ]
+    },
+    {
+      "bytes": 14467,
+      "sha256": "f949f5a89095719fb77a11e7de29f5348b6f6b9d18fdcfe2bd3bfc7df827de3f",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "recovery-store.js"
+      ]
+    },
+    {
+      "bytes": 25521,
+      "sha256": "4fcfe450ad9b0ab1debb783361533a02db9ed390996d27328477a4c8893bb7c2",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "runtime-client.js"
+      ]
+    },
+    {
+      "bytes": 8302,
+      "sha256": "7a77deb07df8ce730b0da58230ba2bb413433139b8cc175db83812e4e74b441e",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "runtime-contract.js"
+      ]
+    },
+    {
+      "bytes": 7084,
+      "sha256": "5b177025ee2ccb9b50e0c0a166cf9b2f67d0469a568303a01f38021945f3fcea",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "session-provider.js"
+      ]
+    },
+    {
+      "bytes": 4604,
+      "sha256": "28fc0060030ee2498632eb3cecb59602e27f3cbc7c29f2b0a88876012101b92e",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "snapshot.js"
+      ]
+    },
+    {
+      "bytes": 515,
+      "sha256": "6102f99ac3b20452f8853f0b7b7e36168bcc08ed929e67db4ecff463ea21c9a9",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "submission-outcome.js"
+      ]
+    },
+    {
+      "bytes": 4333,
+      "sha256": "0c424c26852b5e43e214690ad2ddec8dff2daff947b88bf34ad3be287875dc5a",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "src",
+        "terminal-cleanup.js"
+      ]
+    },
+    {
+      "bytes": 776,
+      "sha256": "cfafc62f8a1d41cc2094a30adac642fd7564a269951129f0fba17b7493f37983",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "api-surface.json"
+      ]
+    },
+    {
+      "bytes": 1297,
+      "sha256": "1f8d64edb3e83afcf75e03188d8afbd234fd188a075d68f0bd140f691ea8b675",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "api-surface.test.js"
+      ]
+    },
+    {
+      "bytes": 6046,
+      "sha256": "c1f6ef749d5b58afe4d3966be0fee8459730589e99cb51290e71692cc9378e5a",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "browser-app-lifecycle.test.js"
+      ]
+    },
+    {
+      "bytes": 5017,
+      "sha256": "aa9697ab2ed5cb6a942b7d63b57739a91a0a235d7480e63a20996e2682bfcae9",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "browser-fixture.js"
+      ]
+    },
+    {
+      "bytes": 10196,
+      "sha256": "c8ee6038ef61a3e9ffe8749b6c135a7626020246f00d9594deed78dfc8ae88cb",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "browser-maintenance.test.js"
+      ]
+    },
+    {
+      "bytes": 6021,
+      "sha256": "ec623e6ff3d0fd8d866c54c58c84cee87ee3bd9e07d638dd60302b57fe944881",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "candidate-build-artifact.test.js"
+      ]
+    },
+    {
+      "bytes": 1969,
+      "sha256": "6d5f85e6696be357b256b92dffc520f562aab327bb19f8d6f1c4529124f0f468",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "canonical-profile.test.js"
+      ]
+    },
+    {
+      "bytes": 3611,
+      "sha256": "9c6c7d81242626cfa95af41649e8044824651d7bd0d601a6ef69ea0822039953",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "control.test.js"
+      ]
+    },
+    {
+      "bytes": 2376,
+      "sha256": "bd9d208ed2523cdff796ad54ed1b2bb675d6e03fbaaa64d81b881e55a797a6fd",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "deployment-asset-invariants.test.js"
+      ]
+    },
+    {
+      "bytes": 4945,
+      "sha256": "972b728b050f3d832e3c5d142bf852476234df06242cd609b616323bbd0e5e63",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "deployment-security-invariants.test.js"
+      ]
+    },
+    {
+      "bytes": 6133,
+      "sha256": "c6b5fa2728b1867bbf7d7ee4aedee22676c832103efde2a279cc67d7e7b60fc2",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence-acceptance.test.js"
+      ]
+    },
+    {
+      "bytes": 4396,
+      "sha256": "b7049b1f669a04581eb35037eeff6a1d29a11e5f32f81a6b0e288923e6110807",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence-assurance.test.js"
+      ]
+    },
+    {
+      "bytes": 16251,
+      "sha256": "2440dd2fac8ce6962d71406f90537f51137d6c588e4e5bb28fb8c9e6bcbc3ae9",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence-bundle-acceptance.test.js"
+      ]
+    },
+    {
+      "bytes": 8512,
+      "sha256": "43d1db930d9a40a47dca1714084fa7b6e3fc021366905d216eaada04035fab72",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence-bundle-failure.test.js"
+      ]
+    },
+    {
+      "bytes": 8053,
+      "sha256": "8b63287bed85269d823a437094a60cb2f09c91a503329532427e7a140734454d",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence-operational.test.js"
+      ]
+    },
+    {
+      "bytes": 4830,
+      "sha256": "1daf652b904b29df97d6a69557e2cc0100546f195088f1dea5d1e2e2595f76c1",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence-stage-ledger.test.js"
+      ]
+    },
+    {
+      "bytes": 3534,
+      "sha256": "d92ea4f88bd2c108282b6e542082bf50e65286a6a6239e518e006a6c172d5ae1",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence-status-contract.test.js"
+      ]
+    },
+    {
+      "bytes": 18760,
+      "sha256": "f33aa32bae18b55c1bbc58fa8e04faca4a19e841c9dea3fbfc0b020abc56f8d7",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence-validation.test.js"
+      ]
+    },
+    {
+      "bytes": 837,
+      "sha256": "357cd64eb6968b86c71abe08ac410767674f782e59ce86c5ad9b717ddba5a2c6",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-evidence.test.js"
+      ]
+    },
+    {
+      "bytes": 6209,
+      "sha256": "920645202a4867b590129c1ba2abd61bcd9a6df1716fde6a21652d15ea687b83",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-preflight.test.js"
+      ]
+    },
+    {
+      "bytes": 7575,
+      "sha256": "b3c41997c073fcd8940e6b485d384294014604ba53747372c45cda0187451053",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-workflow-observation.test.js"
+      ]
+    },
+    {
+      "bytes": 7618,
+      "sha256": "368679afbe08b9d378ef529ea8e50be6fa602a3293775b939ad02e6f5475317b",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "external-workflow-security.test.js"
+      ]
+    },
+    {
+      "bytes": 10923,
+      "sha256": "4e1e5b82893a39c42612525191f87b8987d84666b509e8d4417b97b6ed37beda",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "fixtures",
+        "server.mjs"
+      ]
+    },
+    {
+      "bytes": 2634,
+      "sha256": "4923a373aae5d4de85925cceed4b6c306290c1521a9e81dba683127b754f811c",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "helpers.js"
+      ]
+    },
+    {
+      "bytes": 11341,
+      "sha256": "18c4476cd099f6f0ce9ac3c21759b784ea41b1fc12d1128c88d2424d5fa1d1a4",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "http-transport.test.js"
+      ]
+    },
+    {
+      "bytes": 2711,
+      "sha256": "ec843e69846588e8ca0925b12569dbc6607dbba2400568800eea182998b043a9",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "package-boundary.test.js"
+      ]
+    },
+    {
+      "bytes": 2020,
+      "sha256": "3ff051294885b2b19ecaaa77c8a8ad38f76b51833cadfb817c4ac4f6fa3af6a0",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "qualification-workflow-observer.test.js"
+      ]
+    },
+    {
+      "bytes": 2306,
+      "sha256": "53ec1c0258a7467e414404eaa4bbc15158fb6670bc7edbc87f49d9af7fc1da22",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "real-backend-contract-coverage.test.js"
+      ]
+    },
+    {
+      "bytes": 3542,
+      "sha256": "df4750a4cd7e3a4d358af02291bae32e74e5f1f831969ee8728f65dc4cf75837",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "real-backend-invariants.test.js"
+      ]
+    },
+    {
+      "bytes": 3805,
+      "sha256": "ec488656b0851fa8510c5d7c37f8dc43cc4d3af3ae2c2b23409c4fb0381b7f09",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "recovery-directory-integrity.test.js"
+      ]
+    },
+    {
+      "bytes": 10277,
+      "sha256": "7ced24c3c17233b54409b666cd335cf77f49efd4553f66099aa91502fd2b5553",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "recovery-directory.test.js"
+      ]
+    },
+    {
+      "bytes": 11487,
+      "sha256": "44f181e1a2bbad4a942579a082440364f6438a2bb188bfaae99710192d95e53c",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "recovery-safety.test.js"
+      ]
+    },
+    {
+      "bytes": 20510,
+      "sha256": "b5452d65377b0ed715fd64a87c924b2632815d0fe9418fffdce1e2d95c3a7506",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "runtime-client-adversarial.test.js"
+      ]
+    },
+    {
+      "bytes": 6089,
+      "sha256": "93610805d85dd42326b33995dfa40a63332d0cbd107eda5aa524b4b47eb22fe5",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "runtime-client-lifecycle.test.js"
+      ]
+    },
+    {
+      "bytes": 13840,
+      "sha256": "a37fca6902079facee3a1a0aad23f4ef38461ae16291a7573da38f9efb424134",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "runtime-client.test.js"
+      ]
+    },
+    {
+      "bytes": 10126,
+      "sha256": "f936e732dd48b19b9ffbf739dd723de6cedb9cb6e3cf616cf9f2bb8b5bef6927",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "runtime-recovery-integration.test.js"
+      ]
+    },
+    {
+      "bytes": 8682,
+      "sha256": "091be078f15a1c565f5e4e6ce5f35f6b5fb8b2398ceb16ce83bbccc372a111cb",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "session-provider.test.js"
+      ]
+    },
+    {
+      "bytes": 7179,
+      "sha256": "4112256b2a9988bf0ac03fafb2a603d5d0d2009f9b1d01b993e006c66accce45",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "test",
+        "terminal-cleanup.test.js"
+      ]
+    },
+    {
+      "bytes": 1543,
+      "sha256": "026e252098a809ffaf8d0b2bfcdab6a29926a10bb1aa99c7e72a1773d99f238a",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "tools",
+        "build.mjs"
+      ]
+    },
+    {
+      "bytes": 2624,
+      "sha256": "29af1b79fa4435e9c93f1676ff4c40cde3a367759bc453c7076ad63f03afe1fc",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "tools",
+        "lint.mjs"
+      ]
+    },
+    {
+      "bytes": 5050,
+      "sha256": "30cd98339d517f778e37bf66af8da7a5154e6e37020dc06b45dd7be84fd009f2",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "tools",
+        "write-receipt.mjs"
+      ]
+    },
+    {
+      "bytes": 4099,
+      "sha256": "c35279e0a24d5ae4873e4def69d4b4f2147962c6a08d5c234d8264b81bfa9bdd",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "web",
+        "index.html"
+      ]
+    },
+    {
+      "bytes": 3312,
+      "sha256": "ce697f30b5b258597f6d8531533fc1dbc805b23b239653fbc41d631aa4e0d00f",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "web",
+        "main.js"
+      ]
+    },
+    {
+      "bytes": 2006,
+      "sha256": "2d6f35c8a293813668b473a3e6eca8e3b100d293123e6aa8fed3b178cd1b9390",
+      "pathComponents": [
+        "apps",
+        "hepta-control-ui",
+        "web",
+        "styles.css"
+      ]
+    },
+    {
+      "bytes": 12286,
+      "sha256": "fe205c4617ba1538b4a703ce0a2f20e2d94ad220c9b25b286b5d64cc300e8afd",
+      "pathComponents": [
+        "docs",
+        "modules",
+        "ui.control",
+        "IMPLEMENTATION_MAP.json"
+      ]
+    },
+    {
+      "bytes": 14755,
+      "sha256": "4f861608611c9fd5c0ed3394b4958980976f073ea4eaba33617b5167dc8bee0c",
+      "pathComponents": [
+        "docs",
+        "modules",
+        "ui.control",
+        "OPERATIONS.md"
+      ]
+    },
+    {
+      "bytes": 7054,
+      "sha256": "cc91fb1749375cb23a8dad84080f6aeb55b3f4119cfccd46467e1f008478c8b9",
+      "pathComponents": [
+        "docs",
+        "modules",
+        "ui.control",
+        "PRODUCTION_EVIDENCE.md"
+      ]
+    },
+    {
+      "bytes": 11009,
+      "sha256": "7ff646b81aa3af296720e9c7ea748a43924901d0696e1fe1ce2de76fce70f712",
+      "pathComponents": [
+        "docs",
+        "modules",
+        "ui.control",
+        "RECOVERY_STORAGE.md"
+      ]
+    },
+    {
+      "bytes": 8073,
+      "sha256": "114bfbc29be0cd04441770f1d779992dd2f501fbdf5cb3ecaa5c21087ac209fb",
+      "pathComponents": [
+        "docs",
+        "modules",
+        "ui.control",
+        "SERVER_IDEMPOTENCY.md"
+      ]
+    },
+    {
+      "bytes": 13985,
+      "sha256": "412432394351f51b985c57ba81a58dbd0e8c6b6bd29db686f36c142d58fe2ddc",
+      "pathComponents": [
+        "docs",
+        "modules",
+        "ui.control",
+        "TECHNICAL.md"
+      ]
+    },
+    {
+      "bytes": 9245,
+      "sha256": "3ca8dd504c094946827c55d9133f56a33ae67b68743dfe78c2fd15b853b1fc0b",
+      "pathComponents": [
+        "docs",
+        "modules",
+        "ui.control",
+        "THREAT_MODEL.md"
+      ]
+    },
+    {
+      "bytes": 4202,
+      "sha256": "32d2a004362c0024c0c2356b7ca948cd58e8882d881d9ee8b61e6ede545898fe",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "AGENTD_CHAOS_EVIDENCE_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 3037,
+      "sha256": "e603b835e0756f94aeacd82bce09553ca9f7839f7bf1b6d862d2b027a694b158",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "AUTHORITY_EVIDENCE_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 2772,
+      "sha256": "6cb93dd6e1847333725c23e987e5064c9a2334cb5372a98f17c304e11273ee17",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "DEPLOYMENT_SECURITY_POLICY.md"
+      ]
+    },
+    {
+      "bytes": 6707,
+      "sha256": "472d79348ed512d0695315abcef8cc7f765e0e2ae359f5f634764945384f5b60",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "EXTERNAL_EVIDENCE_BUNDLE_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 7178,
+      "sha256": "b5da8b515d5def02553358c54305a6270839c688ee827a7900b8cb7d0249a949",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "EXTERNAL_WORKFLOW_OBSERVATION_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 1861,
+      "sha256": "0fe123ce52dbaef2974b5e45da1516764788ef48a8d3ead2051db94112840e1c",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "EXTERNAL_WORKFLOW_OBSERVER.md"
+      ]
+    },
+    {
+      "bytes": 4578,
+      "sha256": "ece475c48ef737bf45246300b5662b5fc210a87bf35da14301d573f019df559d",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "GATE_MAP.json"
+      ]
+    },
+    {
+      "bytes": 3815,
+      "sha256": "03fedb0f56ad8d87148c2ce6de308a82f631205af68b19511bf32ede015462d2",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "INDEPENDENT_ACCEPTANCE_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 2741,
+      "sha256": "03dd122944740805b78a35a235af0d82222ec84e3fe23fa8e8c32e5a0eba68e3",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "INDEPENDENT_SECURITY_REVIEW_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 8594,
+      "sha256": "d7cf405760b06a92005b01f74dcbde32c8497bb61d3f7f833080d66e26bd4a41",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "OPERATIONAL_EXERCISE_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 3029,
+      "sha256": "469a18c8eeac51f3e4c03dbea747e3c39767862b38146d105f38fc3f32c98c4d",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "PRODUCTION_APPROVAL_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 8800,
+      "sha256": "2cb7445dbfbe9c4f0a5451c68bf7efef6ab7d35fbdd10cd9e6b8589806b74523",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "QUALIFICATION_WORKFLOW_OBSERVATION_SCHEMA.json"
+      ]
+    },
+    {
+      "bytes": 3913,
+      "sha256": "588eac5429673962fd14073d8133226ec1ece9cad91e3d16597628ca03ba3604",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "QUALIFICATION_WORKFLOW_OBSERVER.md"
+      ]
+    },
+    {
+      "bytes": 10388,
+      "sha256": "39f3e57c89a0680b85d4e9773f3504d43f3b16664a30a753f017781357ca10f6",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "README.md"
+      ]
+    },
+    {
+      "bytes": 5451,
+      "sha256": "22ccfa143d5741985a58ee33198bbe8a11abbed516338a761e4d9764bfacb6f7",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "REPOSITORY_PREFLIGHT.md"
+      ]
+    },
+    {
+      "bytes": 3001,
+      "sha256": "10f6abee73e78ec90d3106c675f7b3947d9463de8fb66288a42f7fd96681acf9",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "STATUS.md"
+      ]
+    },
+    {
+      "bytes": 12776,
+      "sha256": "c0d684dda9e96829c2f2c08813f78722860cbd0cc9fc4eb39a6e01de89b173e5",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "UI_CONTROL_MANIFEST.json"
+      ]
+    },
+    {
+      "bytes": 7988,
+      "sha256": "0c12c8e5270fa03c57a4d5a13aa53c52eeea3cbf0494b5314ec7d5f82fc3768f",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "candidate-build-artifact.mjs"
+      ]
+    },
+    {
+      "bytes": 4199,
+      "sha256": "1ec0f7239b3f474230a8c8e7ae8eaa49280be6ced9f51aae3e25b8d47a458eba",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "deployment-asset-invariants.mjs"
+      ]
+    },
+    {
+      "bytes": 11531,
+      "sha256": "931506b2346196f43794cfdcba164bf0e07ca27f5bb2eb24167f611f83f2fec7",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "deployment-security-invariants.mjs"
+      ]
+    },
+    {
+      "bytes": 14237,
+      "sha256": "dafb7eb36ac0bdc91f3c9de78bf1f3f5f92f326a8dd69f6feecc4a1a994e9997",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "deployment-security.mjs"
+      ]
+    },
+    {
+      "bytes": 8262,
+      "sha256": "7dda23c23d51440cb2ceda4a57d7cb126ffeacaa81ef62905425a6c3934d72a4",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-evidence-acceptance.mjs"
+      ]
+    },
+    {
+      "bytes": 6075,
+      "sha256": "3039727f4df2ca44c8abdbb047596d353af90c12ae571447b774d5541cd01755",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-evidence-assurance.mjs"
+      ]
+    },
+    {
+      "bytes": 751,
+      "sha256": "fd0ce402d92c243ca572f1ab2a5048dcfcd00e8988bcc39bf7425c0e6ae35149",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-evidence-lib.mjs"
+      ]
+    },
+    {
+      "bytes": 16367,
+      "sha256": "20f63279f59f9dae32597bdd856889de0b45a49cd4f13e1621716c2c7c25d2a1",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-evidence-manual.mjs"
+      ]
+    },
+    {
+      "bytes": 15427,
+      "sha256": "471936f8522e94e35618f50cfba26afbb239d115d107e0732e1e5d71df1c72b5",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-evidence-operational.mjs"
+      ]
+    },
+    {
+      "bytes": 5440,
+      "sha256": "4b823b49ba53aa7af2bd3c0d6b7da10fdc27ceea257f7018a094e25e0f194d41",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-evidence-primitives.mjs"
+      ]
+    },
+    {
+      "bytes": 14692,
+      "sha256": "28f36d3a8d88652bdd43e5c2a6f353194c282b4d142f006f834de35a96c52cf3",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-evidence-repository.mjs"
+      ]
+    },
+    {
+      "bytes": 6471,
+      "sha256": "ef8ace2e9b3f3497025dca2268382008c79b4bbd3846d19063e4fa7402cd3e05",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-evidence-stage-ledger.mjs"
+      ]
+    },
+    {
+      "bytes": 14636,
+      "sha256": "927f894c3e55615011b2cbbfa591debb666873f36ce507949c08142ed702501c",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "external-workflow-observation.mjs"
+      ]
+    },
+    {
+      "bytes": 21216,
+      "sha256": "ef7dee05cad5c562499b006f76c6a63ac0300667aaa2a64f9708c249037aea62",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "real-backend-contract.mjs"
+      ]
+    },
+    {
+      "bytes": 3874,
+      "sha256": "e7fbed29819354080a2ff1febfbbe933db6dadcc4d8b726e4927ab5d7f30c702",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "real-backend-invariants.mjs"
+      ]
+    },
+    {
+      "bytes": 7416,
+      "sha256": "944cdff5e7a7f91328e6e2cb1554624e6532ac4c1382a2fc1b65491b4c093c9d",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "validate-external-evidence.mjs"
+      ]
+    },
+    {
+      "bytes": 9956,
+      "sha256": "c21b8b656c62998b797b44bb03b35644e6b4a33284e72dbbe04b8c5b25dd4514",
+      "pathComponents": [
+        "qualification",
+        "ui-control",
+        "validate-repository-preflight.mjs"
+      ]
+    },
+    {
+      "bytes": 16380,
+      "sha256": "1f5bc32197412eec13e5bceafb09c7621eff1838a0f5c362f3ed9c111ad3a298",
+      "pathComponents": [
+        "scripts",
+        "ui-control-artifacts.mjs"
+      ]
+    },
+    {
+      "bytes": 2724,
+      "sha256": "6e0500d9018aeec94ab044f60462ae9642628d47ea38f111d051eed13ce8929b",
+      "pathComponents": [
+        "scripts",
+        "ui-control-source-map.py"
+      ]
+    },
+    {
+      "bytes": 2714,
+      "sha256": "d0f8e6154ecc794b73d0384bf995a27a5dc821a2a06717210b46ff8498260458",
+      "pathComponents": [
+        "scripts",
+        "ui-control-status.mjs"
+      ]
+    },
+    {
+      "bytes": 5955,
+      "sha256": "6859c17aa6d99fba535a071e4a0cc45f41c58f79091ddd034b108969a9197a55",
+      "pathComponents": [
+        "scripts",
+        "ui-control-truth.mjs"
+      ]
+    },
+    {
+      "bytes": 4158,
+      "sha256": "d7bc6d8e098aa1177e3bfcde29be9255e67acecc56a7b96029c8b5caa72f76d2",
+      "pathComponents": [
+        "scripts",
+        "ui-control-verify-generated.mjs"
+      ]
+    },
+    {
+      "bytes": 2945,
+      "sha256": "bb00513d8b524832ad8b1d461d8957876040c90ae3066f45257eb2befb74cb7e",
+      "pathComponents": [
+        "scripts",
+        "ui-control-write-observation-receipt.mjs"
+      ]
+    }
+  ]
+}
