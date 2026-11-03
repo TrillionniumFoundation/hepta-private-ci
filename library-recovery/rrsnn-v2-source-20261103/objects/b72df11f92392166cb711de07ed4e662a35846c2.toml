@@ -1,0 +1,13 @@
+[package]
+name = "rrsnn-offline-replay-bridge"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+publish = false
+
+[workspace]
+
+[dependencies]
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = { version = "=1.0.145", features = ["float_roundtrip"] }
+sha2 = "=0.10.9"
