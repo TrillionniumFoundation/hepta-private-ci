@@ -199,6 +199,10 @@ pub(crate) fn keyring_service() -> &'static str {
 }
 
 #[cfg(test)]
+#[path = "i18n_config_tests.rs"]
+mod i18n_config_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use codex_keyring_store::tests::MockKeyringStore;

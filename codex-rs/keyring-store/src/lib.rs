@@ -1,5 +1,8 @@
-use keyring::Entry;
-use keyring::Error as KeyringError;
+mod platform;
+
+use keyring_core::Entry;
+use keyring_core::Error as KeyringError;
+use platform::ensure_default_store;
 use std::error::Error;
 use std::fmt;
 use std::fmt::Debug;
@@ -51,13 +54,14 @@ pub struct DefaultKeyringStore;
 impl KeyringStore for DefaultKeyringStore {
     fn load(&self, service: &str, account: &str) -> Result<Option<String>, CredentialStoreError> {
         trace!("keyring.load start, service={service}, account={account}");
+        ensure_default_store().map_err(CredentialStoreError::new)?;
         let entry = Entry::new(service, account).map_err(CredentialStoreError::new)?;
         match entry.get_password() {
             Ok(password) => {
                 trace!("keyring.load success, service={service}, account={account}");
                 Ok(Some(password))
             }
-            Err(keyring::Error::NoEntry) => {
+            Err(keyring_core::Error::NoEntry) => {
                 trace!("keyring.load no entry, service={service}, account={account}");
                 Ok(None)
             }
@@ -73,6 +77,7 @@ impl KeyringStore for DefaultKeyringStore {
             "keyring.save start, service={service}, account={account}, value_len={}",
             value.len()
         );
+        ensure_default_store().map_err(CredentialStoreError::new)?;
         let entry = Entry::new(service, account).map_err(CredentialStoreError::new)?;
         match entry.set_password(value) {
             Ok(()) => {
@@ -88,13 +93,14 @@ impl KeyringStore for DefaultKeyringStore {
 
     fn delete(&self, service: &str, account: &str) -> Result<bool, CredentialStoreError> {
         trace!("keyring.delete start, service={service}, account={account}");
+        ensure_default_store().map_err(CredentialStoreError::new)?;
         let entry = Entry::new(service, account).map_err(CredentialStoreError::new)?;
         match entry.delete_credential() {
             Ok(()) => {
                 trace!("keyring.delete success, service={service}, account={account}");
                 Ok(true)
             }
-            Err(keyring::Error::NoEntry) => {
+            Err(keyring_core::Error::NoEntry) => {
                 trace!("keyring.delete no entry, service={service}, account={account}");
                 Ok(false)
             }
@@ -109,13 +115,56 @@ impl KeyringStore for DefaultKeyringStore {
 pub mod tests {
     use super::CredentialStoreError;
     use super::KeyringStore;
-    use keyring::Error as KeyringError;
-    use keyring::credential::CredentialApi as _;
-    use keyring::mock::MockCredential;
+    use keyring_core::Error as KeyringError;
     use std::collections::HashMap;
     use std::sync::Arc;
     use std::sync::Mutex;
     use std::sync::PoisonError;
+
+    #[derive(Debug, Default)]
+    struct MockCredentialState {
+        value: Option<String>,
+        next_error: Option<KeyringError>,
+    }
+
+    #[derive(Debug, Default)]
+    pub struct MockCredential {
+        state: Mutex<MockCredentialState>,
+    }
+
+    impl MockCredential {
+        pub fn get_password(&self) -> Result<String, KeyringError> {
+            let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if let Some(error) = state.next_error.take() {
+                return Err(error);
+            }
+            state.value.clone().ok_or(KeyringError::NoEntry)
+        }
+
+        pub fn set_password(&self, value: &str) -> Result<(), KeyringError> {
+            let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if let Some(error) = state.next_error.take() {
+                return Err(error);
+            }
+            state.value = Some(value.to_string());
+            Ok(())
+        }
+
+        pub fn delete_credential(&self) -> Result<(), KeyringError> {
+            let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if let Some(error) = state.next_error.take() {
+                return Err(error);
+            }
+            state.value.take().map(|_| ()).ok_or(KeyringError::NoEntry)
+        }
+
+        pub fn set_error(&self, error: KeyringError) {
+            self.state
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner)
+                .next_error = Some(error);
+        }
+    }
 
     #[derive(Default, Clone, Debug)]
     pub struct MockKeyringStore {

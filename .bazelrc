@@ -6,6 +6,12 @@ common --repo_env=ASPECT_TOOLS_TELEMETRY=-all
 common --xcode_version_config=//:disable_xcode
 
 common --disk_cache=~/.cache/bazel-disk-cache
+
+# Bazel 9.0 asynchronous cache uploads can outlive per-action metadata
+# (bazelbuild/bazel#30683; observed in the V8 canary upload path).
+# Finish uploads before the action returns, including keyless CI fallback.
+# Local uploads also become synchronous; cache reads/writes remain enabled.
+common --remote_cache_async=false
 common --repo_contents_cache=~/.cache/bazel-repo-contents-cache
 common --repository_cache=~/.cache/bazel-repo-cache
 common --remote_cache_compression
@@ -183,6 +189,12 @@ common:ci-linux --platforms=//:rbe
 common:ci-macos --config=ci-bazel
 common:ci-macos --build_metadata=TAG_os=macos
 common:ci-macos --strategy=TestRunner=darwin-sandbox,local
+
+# Remote actions still consume coordinator threads and memory on the hosted Mac.
+# Bound that work and native test concurrency while retaining every target.
+common:ci-macos --jobs=128
+common:ci-macos --loading_phase_threads=4
+common:ci-macos --local_test_jobs=2
 
 # On Windows, use Linux remote execution for build actions but keep test actions
 # on the Windows runner so Bazel's normal test sharding and flaky-test retries

@@ -292,7 +292,7 @@ async fn drive_until_request_count(
                 drain_active_thread_events(app);
             }
             () = &mut timeout => {
-                panic!("expected {expected_request_count} Responses API requests");
+                panic!("expected {expected_request_count} Responses API requests, observed {} for active thread {:?}", server.requests().await.len(), app.active_thread_id);
             }
         }
     }
@@ -672,6 +672,22 @@ goals = true
     }
 
     let first_retry_thread_id = app.chat_widget.thread_id().expect("first retry thread id");
+    if failing_draft.is_none() {
+        assert_ne!(
+            first_retry_thread_id,
+            source_thread_id,
+            "retry must fork before continuing: {}",
+            std::iter::from_fn(|| app_event_rx.try_recv().ok())
+                .filter_map(|event| match event {
+                    AppEvent::InsertHistoryCell(cell) => {
+                        Some(lines_to_single_string(&cell.display_lines(/*width*/ 200)))
+                    }
+                    _ => None,
+                })
+                .collect::<Vec<_>>()
+                .join("\n")
+        );
+    }
     if scenario == SafetyRetryScenario::RetryTwice {
         let first_retry_turn_id =
             next_turn_started(&mut app, &mut app_server, first_retry_thread_id).await;

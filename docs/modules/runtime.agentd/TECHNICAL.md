@@ -71,6 +71,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Integration priority is the existing authenticated Objective ingress through
+bounded Memory/Context preparation, the Codex execution spine and original terminal
+observation. Exercise cancellation and restart on that same path. Keep Encoder,
+Memory Cell, inference and learning construction in their named owners; new
+features must not add another durable product store or independent execution loop
+to this lifecycle host. See the [global delivery order](../../DEVELOPMENT.md#19-delivery-roadmap).
+
 The bounded components are:
 
 - `bootstrap and configuration loader`
@@ -82,6 +89,14 @@ The bounded components are:
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
+The local control socket authenticates the connected user with kernel peer
+credentials before allocating a request permit or reading control frames. The
+current Unix implementation supports this boundary. Windows AF_UNIX does not
+provide the required credentials through the current transport and rejects
+control connections as unsupported. Native Windows private-state, ACL and
+socket-cleanup qualification does not establish a working Agentd control path;
+that path requires a transport with independently verified kernel identity.
+
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
 
 The default daemon in `codex-rs/hepta-agentd/src/runtime.rs` supervises its tasks through the existing `RuntimeTasks` host. The composition registers required tasks and invokes the automation-owned constructor; adding a normal optional task no longer adds a central completion enum or cleanup branch. Optional failure invokes its owner-local quarantine callback, while a failed quarantine, writer error or generation fence stops the host. Retirement uses cooperative cancellation and acknowledged owner cleanup, not a timeout relabeled as success.
@@ -89,6 +104,244 @@ The default daemon in `codex-rs/hepta-agentd/src/runtime.rs` supervises its task
 Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` does not load plugins, issue authority, select topology, migrate a schema or hand off a durable writer. The typed runtime catalog and the standalone Supervisor module-lifecycle source are not evidence that default Agentd implements arbitrary live topology replacement. Canonical intelligence is now routed through the existing authenticated `ObjectiveStart` control ingress only when both the bounded runner and a host-owned seven-owner invocation provider are installed. That all-or-none profile advertises `intelligence.canonical_v1`; a runner by itself advertises nothing, compatibility `RunStart` remains distinct, and unsigned evaluation input remains rejected.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+
+### Explicit native HOS2 observation
+
+[`AgentdHos2Device::read_usage(request_id)`](../../../codex-rs/hepta-agentd/src/hos2_device.rs)
+issues one synchronous read through the bootstrap's existing observe handle.
+It requires the explicitly supplied process-bound `File` and trusted bootstrap
+bytes; discovery data does not grant authority. The request ID correlates this
+read and consumes no native delivery sequence. Transport failure returns an
+error without retry or a substitute snapshot.
+
+The returned `observer_space_id` identifies the observer's CapSpace, not the
+controlled resource's stable object ID. The validated revision can supply the
+original `install_request` CAS expectation; it may become stale before dispatch
+and cannot establish an existing operation's outcome. Original K↔D admission,
+FinalUse authorization, terminal publication and retirement remain with the
+same recovered writer. Lowering a cap preserves already-consumed CPU time.
+
+This API adds no CLI startup, native role loader, writer or issuer. Native
+composition still requires the original recovered host and external grant
+provider. The adapter's protocol tests do not establish native Agentd execution,
+production authority or G2 qualification.
+
+The [independent final-use issuer transport](../../../codex-rs/hepta-agentd/FINAL_USE_ISSUER_PORT.md)
+connects an explicitly supplied private issuer descriptor to the original
+writer's grant-provider seam. Its bounded transport does not supply the seven
+independent production authority and recovery inputs.
+
+### Explicit Notes destination bootstrap
+
+`hepta-memory::ProductionNotesTarget` consumes `trill.notes.replace.v1` through
+the existing `ProductionFinalUseOutboxDispatcher`. It owns no signer or durable
+store. The application identity selects exactly
+`trill.notes:{session_instance}:{task_id}:{incarnation}`. Raw UTF-8 request bytes,
+operation identity, destination, semantic digest, scope digest, and the
+revision-bound predecessor digest must match the original durable intent before
+the first private-channel write. The shared wire fixture is
+`codex-rs/hepta-memory/tests/fixtures/notes-target-v1.json`; it must remain
+byte-identical to the OS `tests/ui/notes-target-v1.json` fixture.
+
+The existing runtime configuration is the product entry point. A trusted host
+embedding supplies all inputs below; this function is a complete composition
+example, not a command that can manufacture missing deployment authority:
+
+```rust
+use std::os::unix::net::UnixStream;
+use std::sync::Arc;
+use std::time::Duration;
+use codex_hepta_agentd::{AgentdConfig, AgentdError, AgentdFinalUseGrantProvider,
+    AgentdNotesChannel, AgentdProductionOperationRuntimeConfig,
+    AgentdProductionWriterHost};
+use codex_hepta_cognitive_store::{CognitiveRecoveryRequirement,
+    ProductionAuthorityLease, ProductionAuthorityVerifier};
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_memory::{NotesTargetIdentity, ProductionNotesTarget};
+
+async fn configure_notes(
+    config: AgentdConfig,
+    authenticated_recovery: CognitiveRecoveryRequirement<'_>,
+    authority: ProductionAuthorityLease,
+    verifier: Arc<dyn ProductionAuthorityVerifier>,
+    lease_id: String,
+    lease_generation: u64,
+    final_use: FinalUseAuthority,
+    grants: Arc<dyn AgentdFinalUseGrantProvider>,
+    identity: NotesTargetIdentity,
+    inherited_channel: UnixStream,
+    reconcile_interval: Duration,
+) -> Result<AgentdConfig, AgentdError> {
+    let recovered = Arc::new(AgentdProductionWriterHost::open_with_recovery(
+        &config, authenticated_recovery, authority.clone(), verifier.clone(),
+        lease_id.clone(), lease_generation,
+    ).await?);
+    let channel = AgentdNotesChannel::from_private_channel(inherited_channel)?;
+    let target = ProductionNotesTarget::new(identity, Arc::new(channel))
+        .map_err(AgentdError::Invalid)?;
+    let operations = AgentdProductionOperationRuntimeConfig::new(
+        authority, verifier, lease_id, lease_generation, final_use,
+        Arc::new(target), grants, reconcile_interval,
+    );
+    config.with_production_writer_host(recovered)?
+        .with_production_operations(operations)
+}
+```
+
+Pass the returned configuration to the existing `codex_hepta_agentd::run`
+entry with the host's existing `Arg0DispatchPaths`. Its startup validates that
+the operation authority, lease and generation match the exact recovered writer.
+For a host already dispatching directly through `AgentdProductionWriterHost`,
+`attach_notes_target(identity, inherited_channel, final_use, grants).await`
+validates the recovered mutation capability and retained live verifier before
+attaching this primary destination. A combined HOS2/Notes runtime uses
+`AgentdProductionOperationRuntimeConfig::with_additional_target`; it keeps the
+same provider and source writer. Name the destination when dispatching through
+a host with multiple targets. Registering an HOS2 destination additionally
+requires the genuine native process-bound file and sealed HOS2 bootstrap page;
+a host socket or application Notes channel cannot supply that capability.
+
+Create an authority-free intent with `notes_operation_intent`, then use the
+original writer's `prepare_operation(intent, NOTES_REPLACE_TOPIC_V1, raw_json)`
+and the existing host's `dispatch_to_with_grant_provider(destination, receipt)`.
+The scope digest is SHA-256 of UTF-8
+`trill.notes.scope.v1\0{session_instance}\0{task_id_decimal}\0{incarnation}`.
+The mandatory predecessor digest is SHA-256 of UTF-8
+`trill.notes.predecessor.v1\0{session_instance}\0{task_id_decimal}\0{incarnation}\0{expected_revision_decimal}`.
+Here `\0` denotes one zero byte. Neither value asserts that a preceding
+operation completed. The application compares and updates the bound revision
+on its GUI thread. A matching applied ACK proves that model mutation; only the
+original writer publishes the durable source outcome afterward. Compositor
+presentation and crash durability of the application document remain separate
+qualification concerns.
+
+Bootstrap must retain one end of an unnamed private socketpair and give only
+the peer to the selected Notes process. Path-based sockets are rejected. The
+adapter writes within the original synchronous FinalUse entry, bounds one
+exchange to two seconds, and permanently disables an ambiguous stream.
+Concurrent entry also fails closed; it never proves non-application. Terminal
+observation sends only `observe` for the original operation and payload digest.
+An absent receipt, matching visible text, application restart, or timeout cannot
+be converted to success or to permission to resend. Reconnection requires new
+trusted bootstrap and the original owner's recovery decision.
+
+The normal Agentd CLI has no Notes grant-provider loader. In the owning source
+roots, `AgentdFinalUseGrantProvider` is an injected production interface; its
+concrete signing implementation is confined to test fixtures. Therefore a
+deployment without an independently authenticated recovery cut, live source
+authority/verifier, existing FinalUse trust state, real external grant provider,
+or private Session channel remains blocked. Production FinalUse construction
+uses `FinalUseAuthority::open_state_dir_with_issuer_keys` with the trusted bounded
+issuer keyring and revocation head, a deployment-protected `AuthorityClock`, and
+an independently retained `AuthorityFrontierStore`. Private issuer-key custody,
+the clock and the compare-and-swap frontier still require deployment
+qualification. The compatibility `open_state_dir` constructor used by the test
+fixture has a system clock and no external rollback oracle; it is not evidence
+that those production inputs exist. The standalone OS Session does not
+export its private endpoint or register this writer automatically. No default
+signer, test issuer, read-only organ, environment switch, or ordinary IPC request
+fills those missing capabilities.
+
+Targeted qualification commands (from `codex-rs`) are:
+
+```sh
+just test -p codex-hepta-memory production_notes
+just test -p codex-hepta-agentd notes_
+```
+
+The host test uses the actual recovered SQLite writer, existing FinalUse path
+and real socketpair with an explicitly synthetic issuer and application model.
+It covers original-binding dispatch, durable publication after ACK and no
+replay after ACK loss. This is not a production issuer, launched GUI, native
+kernel execution, deployment activation or release receipt.
+
+#### Session-owned descriptor handoff on Linux
+
+The trusted parent can create a private `UnixDatagram::pair`, retain one end,
+and give the other as stdin to `trill-session --notes-bootstrap-stdin`. Session
+starts only its initial Build Notes task (task id 1) through this mode and sends
+one bounded `offer_notes_target` datagram with exactly one `SCM_RIGHTS` stream
+descriptor. Ordinary Session IPC never exports this endpoint. The source owner
+checks the datagram and effect descriptor types, anonymous addresses, strict
+schema, incarnation and derived destination; it receives the descriptor with
+`MSG_CMSG_CLOEXEC`. Every rejection closes all received descriptors. The shared
+offer/ACK fixture is `codex-rs/hepta-agentd/tests/fixtures/notes-bootstrap-v1.json`.
+
+For an existing HOS2 or other primary destination, use the same runtime
+configuration and provider. The recovered writer must still be unregistered;
+the existing runtime installs the complete configuration exactly once:
+
+```rust
+// All authority, recovery and primary-target inputs are already provided by
+// trusted host bootstrap; `operations` owns the existing external provider.
+let (parent_channel, session_channel) = std::os::unix::net::UnixDatagram::pair()?;
+let inherited: std::os::fd::OwnedFd = session_channel.into();
+let mut session = std::process::Command::new(session_binary)
+    .arg("--notes-bootstrap-stdin")
+    .stdin(std::process::Stdio::from(inherited))
+    .spawn()?;
+let registered = operations.with_notes_from_session(
+    &config, recovered_host.as_ref(), parent_channel, notes_final_use,
+).await;
+let (operations, notes_identity) = match registered {
+    Ok(registered) => registered,
+    Err(error) => {
+        let _ = session.kill();
+        let _ = session.wait();
+        return Err(error);
+    }
+};
+let config = config.with_production_writer_host(recovered_host)?
+    .with_production_operations(operations)?;
+// Hand this config to the existing Agentd run entry. Keep/reap `session` in
+// the parent lifecycle; use notes_identity.destination_id() in source intents.
+```
+
+The supplied executable path must already be the trusted, pinned Session
+binary. This API does not discover a program on PATH, install an issuer, start
+an alternative daemon, or create a ledger. The complete authority verification
+is reused before the handoff and at normal runtime attachment. `attached`
+means only that the owner accepted explicit destination composition. It is not
+an authority grant, a successful mutation, a running-service readiness token,
+or a durable receipt. If runtime startup subsequently fails, the parent shuts
+down/reaps its Session and preserves the original owner's recovery rules.
+
+Direct embeddings that already dispatch through the original host can use
+`attach_notes_from_session(bootstrap, final_use, grants).await` for the first
+destination, or `attach_additional_notes_from_session(bootstrap, final_use).await`
+to retain their existing provider. These consume the handoff channel once.
+There is no replacement, second-offer, reconnect or automatic effect replay
+path. The two-second handoff deadline and a lost ACK cause Session to close its
+effect aliases and reap its own initial Notes child; this cleanup never asserts
+that a possibly entered operation was cancelled or did not apply.
+
+An additional ignored qualification test launches the selected real Session
+and App binaries through that same parent handoff, uses the existing recovered
+SQLite writer and explicitly synthetic test issuer, proves issuer refusal does
+not enter Notes, then commits one real Notes replacement. Run only under an
+owned isolated Xvfb, with absolute companion paths already tied to the release
+candidate:
+
+```sh
+TRILL_NOTES_PROBE_ISOLATED=1 \
+HEPTA_NOTES_SESSION_BIN=/absolute/pinned-os-build/trill-session \
+HEPTA_NOTES_QUALIFICATION_OUTPUT=/absolute/owned-results/notes-owner-ui.json \
+just test -p codex-hepta-agentd notes_actual_ui_original_owner_roundtrip --run-ignored only
+```
+
+`trill-app-window` must be beside the selected Session binary. The test uses a
+fresh private runtime directory, removes inherited Hepta monitor selectors,
+and waits up to ten seconds for read-only snapshots to identify the same Session
+and initial Build Notes task, running with the same incarnation, the parent's
+attachment ACK and the first application layout. Each snapshot exchange has a
+two-second I/O deadline and a 64 KiB response bound. This readiness wait occurs
+before dispatch and does not extend the Notes effect channel's two-second
+deadline or confer authority. It records both executable SHA-256 values and
+the observed first-layout timestamp, asks its own Session to cancel/reap the
+Notes child, and cleans up its own process group. The output explicitly marks
+production authority, pixels and native-kernel qualification false. Missing
+display isolation or binaries fail this selected test; the normal suite does
+not silently run it against an ambient desktop.
 
 ### Multiscale DecisionCell integration target
 
@@ -398,14 +651,46 @@ The configured product profile now routes authenticated `ObjectiveStart` through
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
+| Operation         | Native symbol             | Source path                                   | Tests                                               |
+| ----------------- | ------------------------- | --------------------------------------------- | --------------------------------------------------- |
 | `compose_runtime` | `pub fn compose_runtime(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
-| `start_run` | `pub fn start_run(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
-| `cancel_run` | `pub fn cancel_run(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
-| `attach_context` | `pub fn attach_context(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `start_run`       | `pub fn start_run(`       | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `cancel_run`      | `pub fn cancel_run(`      | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `attach_context`  | `pub fn attach_context(`  | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+### Exact Objective publication history
+
+The schema-2 `ObjectiveAdmission` query reads publication metadata from the
+original Objective journal owner using the retained signed request and optional
+caller-retained sequence/chain anchor. A published result describes the durable
+publication; current runtime admission and external effects remain separate.
+Unknown reasons are finite and must not trigger blind resubmission, recovery or
+historical run restart. The query performs no journal append or replay advance.
+
+Owner-local control connections verify kernel user identity before consuming
+connection permits or protocol frames. App Server control sockets apply the
+same check before WebSocket upgrade. Platforms without verifiable peer identity
+reject the connection; private path permissions alone are not authentication.
+
+## Protected production composition and optional Notes handoff
+
+`AgentdProductionHostInputs` and `attach_production_operation_host` assemble the
+original recovered writer, bounded independent issuer provider, protected
+FinalUse owner, and operation runtime from explicit host inputs. The same
+protected clock wraps the original live verifier throughout recovery and writer
+use; configuration publishes both handles only after a final synchronous check.
+Optional `AgentdProductionNotesInputs` uses the original inherited Session
+`with_notes_from_session` descriptor/ACK path, with independent Notes FinalUse
+inputs. An attached ACK can precede a final authority refusal; only successful
+configuration returns the original Notes identity.
+
+See `codex-rs/hepta-agentd/PRODUCTION_COMPOSITION.md` for input ownership,
+transaction/failure semantics, owning-package test gates and remaining deployment
+requirements. This source composition does not qualify production trust inputs,
+activate the default CLI, implement the issuer service, or add Objective signing. Sender-side durable retention uses the original
+writer and the explicit checkpoint supplied to its restricted sender factory.

@@ -158,6 +158,27 @@ impl AgentdClient {
         }
     }
 
+    /// Read one exact request's historical publication. This never retries the
+    /// request and cannot prove non-admission or an external-effect outcome.
+    pub async fn objective_admission(
+        &self,
+        query: crate::ObjectiveAdmissionQuery,
+    ) -> Result<crate::ObjectiveAdmissionOutcome, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::ObjectiveAdmission { query },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::ObjectiveAdmission { outcome } => Ok(outcome),
+            payload => unexpected(payload),
+        }
+    }
+
     /// Read verified context through this exact generation's canonical owner.
     pub async fn cognitive_context(
         &self,
@@ -785,3 +806,19 @@ fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
         ))),
     }
 }
+
+#[cfg(target_os = "linux")]
+#[path = "objective_client.rs"]
+mod objective;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveClient;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveClientError;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveHistory;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectivePeer;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveWindow;
+#[cfg(target_os = "linux")]
+pub use objective::ObjectiveClientMode;

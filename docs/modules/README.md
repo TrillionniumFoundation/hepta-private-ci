@@ -14,6 +14,16 @@ implementation states are preserved until explicitly versioned migration.
 
 ## Cargo registry closure
 
+For the current integration sequence, follow the global
+[delivery roadmap](../DEVELOPMENT.md#19-delivery-roadmap). Maintain one primary
+candidate per work package, integrate shared security/platform prerequisites
+before their consumers, and retain research as evidence-bound candidates.
+All source and production facts must agree with each module's
+`IMPLEMENTATION_MAP.json`; updating a guide or importing a source root does not
+establish product execution. The shared
+[implementation baseline](../governance/MODULE_IMPLEMENTATION_BASELINE.md)
+defines the independent maturity dimensions.
+
 `MODULES.json` is the canonical module identity registry. Compiled Rust package
 identity is discovered from `codex-rs/**/Cargo.toml` and must be explicitly
 bound by `CARGO_BINDINGS.json`; source roots in `MODULES.json` remain the

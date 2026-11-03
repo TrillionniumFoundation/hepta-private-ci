@@ -1,3 +1,17 @@
+# Hepta repository scope
+
+`docs/DEVELOPMENT.md` is the global Hepta development plan. Update its existing
+architecture, module, delivery and implementation documents in place. Keep live
+branch, PR and CI observations in exact-candidate reports outside the canonical
+document set. The upstream Codex guidance below applies to the inherited Codex
+implementation; its documentation restriction does not prohibit maintaining the
+registered Hepta documents.
+
+Ordinary owner-authorized implementation and integration use normal PR review
+and applicable checks. Runtime activation, independent evaluation and release
+retain their existing boundaries. Preserve reviewed branch ancestry when merging;
+do not import obsolete global plans or infer product readiness from a branch name.
+
 # Rust/codex-rs
 
 In the codex-rs folder where the rust code lives:
@@ -29,7 +43,7 @@ In the codex-rs folder where the rust code lives:
 - When writing tests, prefer comparing the equality of entire objects over fields one by one.
 - Do not add tests for values that are statically defined.
 - Do not add negative tests for logic that was removed.
-- Do not add general product or user-facing documentation to the `docs/` folder. The official Codex documentation lives elsewhere. The exception is app-server API documentation, which is covered by the app-server guidance below.
+- For upstream Codex product documentation, use the official documentation site rather than `docs/`, except for app-server API documentation. Maintain the registered Hepta development documents under `docs/` in place as described above.
 - Prefer private modules and explicitly exported public crate API.
 - If you change `ConfigToml` or nested config types, run `just write-config-schema` to update `codex-rs/core/config.schema.json`.
 - When working with MCP tool calls, prefer using `codex-rs/codex-mcp/src/mcp_connection_manager.rs` to handle mutation of tools and tool calls. Aim to minimize the footprint of changes and leverage existing abstractions rather than plumbing code through multiple levels of function calls.

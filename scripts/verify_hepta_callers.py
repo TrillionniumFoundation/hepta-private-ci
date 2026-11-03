@@ -332,6 +332,26 @@ def _strip_cfg_test_items(code: str) -> str:
     alternatives such as `cfg(any(test, unix))` and `cfg(not(test))` are retained.
     """
 
+    # A separate helper may inherit cfg(test) from its parent module. Requiring
+    # its own explicit file guard also makes accidental product inclusion fail
+    # at compile time, instead of trusting a filename or granting a caller.
+    prefix = 0
+    while True:
+        prefix = _skip_space(code, prefix)
+        if not code.startswith("#![", prefix):
+            break
+        attr_end = _matching_delimiter(code, prefix + 2, "[", "]")
+        if attr_end is None:
+            raise VerificationFailure("unbalanced Rust file attribute in caller scan")
+        cfg = re.fullmatch(
+            r"#!\[\s*cfg\s*\((.*)\)\s*\]",
+            code[prefix : attr_end + 1],
+            re.DOTALL,
+        )
+        if cfg is not None and _cfg_without_test(cfg.group(1)) is False:
+            return "".join("\n" if char == "\n" else " " for char in code)
+        prefix = attr_end + 1
+
     output = list(code)
     index = 0
     while index < len(code):

@@ -6,7 +6,7 @@
 **Repository:** `TrillionniumFoundation/hepta-private-ci`
 **Exact cleanup base:** `b621768b70a09d56626bb8a2c331e3dc424e6a4d` / `f2e82fd525d337efae355adf6f19398812d4180c`
 **Live source and target:** `external exact-candidate receipt required`
-**Current package:** `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
+**Current package:** `P0.8D-VERTICAL-SLICE`
 
 Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion and release facts are external exact-candidate receipts and are not cached in this file.
 

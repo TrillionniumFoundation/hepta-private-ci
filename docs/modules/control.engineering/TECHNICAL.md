@@ -80,6 +80,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Integrate candidates in semantic dependency order: common security/platform
+repairs, one real product path, shared compute, then evaluated learning. Keep one
+primary candidate per work package and append routine fixes to its PR. Preserve
+reviewed ancestry, immutable experimental evidence and existing ownership during
+conflict resolution. Live ref classifications and checks stay outside canonical
+policy documents; branch retention grants no execution or release capability.
+
 The bounded components are:
 
 - `authenticated source-envelope admission`

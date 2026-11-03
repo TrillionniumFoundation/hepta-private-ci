@@ -4,8 +4,6 @@ use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
-use std::time::Duration;
-use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -20,7 +18,6 @@ use sha2::Sha256;
 use crate::SupervisorError;
 use crate::restart_budget::RestartBudgetState;
 use crate::restart_policy::RESTART_ATTEMPT_BUDGET;
-use crate::restart_policy::RESTART_RECOVERY_WINDOW;
 
 pub(crate) const RESTART_JOURNAL_SCHEMA_VERSION: u32 = 1;
 pub(crate) const RESTART_JOURNAL_FILE: &str = "supervisor-restart-budget.json";
@@ -310,15 +307,6 @@ pub(crate) fn write_main_restart_budget(
     write_record(run_root, record)
 }
 
-pub(crate) fn read_restart_journal(
-    run_root: &Path,
-) -> Result<Option<RestartBudgetJournal>, SupervisorError> {
-    let Some(record) = read_record(run_root)? else {
-        return Ok(None);
-    };
-    Ok(record.companion)
-}
-
 pub(crate) fn write_restart_journal(
     run_root: &Path,
     journal: &RestartBudgetJournal,
@@ -353,44 +341,6 @@ pub(crate) fn unix_millis_now() -> Result<u64, SupervisorError> {
     })
 }
 
-pub(crate) fn restore_window(
-    durable: &DurableRestartWindow,
-    now: Instant,
-    now_unix_millis: u64,
-) -> (u32, Option<Instant>, Option<u64>, bool) {
-    if durable.attempts == 0 {
-        return (0, None, None, false);
-    }
-    let Some(started_unix_millis) = durable.window_started_unix_millis else {
-        return (
-            RESTART_ATTEMPT_BUDGET,
-            Some(now),
-            Some(now_unix_millis),
-            true,
-        );
-    };
-    let Some(elapsed_millis) = now_unix_millis.checked_sub(started_unix_millis) else {
-        // Wall-clock rollback is not allowed to buy extra restart attempts.
-        return (
-            RESTART_ATTEMPT_BUDGET,
-            Some(now),
-            Some(now_unix_millis),
-            true,
-        );
-    };
-    if u128::from(elapsed_millis) >= RESTART_RECOVERY_WINDOW.as_millis() {
-        return (0, None, None, false);
-    }
-    let elapsed = Duration::from_millis(elapsed_millis);
-    let started = now.checked_sub(elapsed).unwrap_or(now);
-    (
-        durable.attempts,
-        Some(started),
-        Some(started_unix_millis),
-        durable.attempts >= RESTART_ATTEMPT_BUDGET,
-    )
-}
-
 fn valid_window(window: &DurableRestartWindow) -> bool {
     window.attempts <= RESTART_ATTEMPT_BUDGET
         && ((window.attempts == 0 && window.window_started_unix_millis.is_none())
@@ -400,9 +350,10 @@ fn valid_window(window: &DurableRestartWindow) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
-    fn restart_journal_round_trips_and_rejects_clock_rollback_with_full_budget() {
+    fn restart_journal_writer_migrates_legacy_main_window() {
         let dir = tempfile::tempdir().expect("temp");
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
         let release = ReleaseId::parse("release-a").expect("release");
@@ -418,7 +369,9 @@ mod tests {
         .expect("journal");
         write_restart_journal(dir.path(), &journal).expect("write");
         assert_eq!(
-            read_restart_journal(dir.path()).expect("read"),
+            read_record(dir.path())
+                .expect("read")
+                .and_then(|record| record.companion),
             Some(
                 RestartBudgetJournal::new(
                     journal.agent_id,
@@ -436,19 +389,191 @@ mod tests {
                 .attempts,
             2
         );
+    }
 
-        let now = Instant::now();
-        let (attempts, started, wall, exhausted) = restore_window(
-            &DurableRestartWindow {
+    #[test]
+    fn main_and_companion_writes_preserve_both_domains_and_wire_bytes() {
+        let dir = tempfile::tempdir().expect("temp");
+        let mut main = RestartBudgetState {
+            schema_version: 1,
+            window_started_unix_ms: 2_000,
+            attempts: 2,
+            pending: true,
+            next_eligible_unix_ms: 2_500,
+        };
+        std::fs::write(
+            dir.path().join(RESTART_JOURNAL_FILE),
+            serde_json::to_vec(&main).expect("legacy main bytes"),
+        )
+        .expect("legacy main write");
+        let companion = RestartBudgetJournal::new(
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent"),
+            ReleaseId::parse("release-a").expect("release"),
+            DurableRestartWindow::empty(),
+            DurableRestartWindow {
+                attempts: 1,
+                window_started_unix_millis: Some(2_000),
+            },
+        )
+        .expect("companion");
+        write_restart_journal(dir.path(), &companion).expect("companion write");
+        assert_eq!(
+            read_main_restart_budget(dir.path()).expect("main after companion write"),
+            Some(main.clone())
+        );
+
+        main.attempts = 3;
+        main.pending = false;
+        main.next_eligible_unix_ms = 3_000;
+        write_main_restart_budget(dir.path(), &main).expect("next main write");
+        let record = read_record(dir.path()).expect("record").expect("present");
+        assert_eq!(
+            (record.main, record.companion),
+            (Some(main), Some(companion))
+        );
+        let expected = concat!(
+            r#"{"schema_version":2,"main":{"schema_version":1,"window_started_unix_ms":2000,"#,
+            r#""attempts":3,"pending":false,"next_eligible_unix_ms":3000},"#,
+            r#""companion":{"schema_version":1,"#,
+            r#""agent_id":"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12","release_id":"release-a","#,
+            r#""main":{"attempts":0,"window_started_unix_millis":null},"#,
+            r#""matrix":{"attempts":1,"window_started_unix_millis":2000},"#,
+            r#""journal_sha256":"ff05e9b0fd44bb99494c4ee38bd6752a10b32350c60dd4a4f66a5a68951b52ca"},"#,
+            r#""record_sha256":"217bdeb3c67532e532ec754442f5ee5838fee911d1bf62bffc000b4a252e6af7"}"#,
+            "\n",
+        );
+        assert_eq!(
+            std::fs::read(dir.path().join(RESTART_JOURNAL_FILE)).expect("wire bytes"),
+            expected.as_bytes()
+        );
+    }
+
+    #[test]
+    fn legacy_companion_read_preserves_attempts_without_rewriting_input() {
+        let dir = tempfile::tempdir().expect("temp");
+        let legacy = RestartBudgetJournal::new(
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent"),
+            ReleaseId::parse("release-a").expect("release"),
+            DurableRestartWindow {
                 attempts: 2,
                 window_started_unix_millis: Some(2_000),
             },
-            now,
-            1_000,
+            DurableRestartWindow {
+                attempts: 1,
+                window_started_unix_millis: Some(2_000),
+            },
+        )
+        .expect("legacy journal");
+        let path = dir.path().join(RESTART_JOURNAL_FILE);
+        let original = serde_json::to_vec(&legacy).expect("legacy bytes");
+        std::fs::write(&path, &original).expect("legacy write");
+        let expected_main = RestartBudgetState {
+            schema_version: 1,
+            window_started_unix_ms: 2_000,
+            attempts: 2,
+            pending: false,
+            next_eligible_unix_ms: 2_000,
+        };
+        let expected_companion = RestartBudgetJournal::new(
+            legacy.agent_id,
+            legacy.release_id,
+            DurableRestartWindow::empty(),
+            legacy.matrix,
+        )
+        .expect("normalized companion");
+        let record = read_record(dir.path()).expect("migrate").expect("present");
+        assert_eq!(
+            (record.main, record.companion),
+            (
+                Some(expected_main.clone()),
+                Some(expected_companion.clone())
+            )
         );
-        assert_eq!(attempts, RESTART_ATTEMPT_BUDGET);
-        assert_eq!(started, Some(now));
-        assert_eq!(wall, Some(1_000));
-        assert!(exhausted);
+        assert_eq!(std::fs::read(&path).expect("original bytes"), original);
+
+        write_main_restart_budget(dir.path(), &expected_main).expect("canonical write");
+        let record = read_record(dir.path())
+            .expect("canonical read")
+            .expect("present");
+        assert_eq!(
+            (record.main, record.companion),
+            (Some(expected_main), Some(expected_companion))
+        );
+    }
+
+    #[test]
+    fn stale_projection_and_corrupt_record_cannot_replace_current_budget() {
+        let dir = tempfile::tempdir().expect("temp");
+        let main = RestartBudgetState {
+            schema_version: 1,
+            window_started_unix_ms: 2_000,
+            attempts: 2,
+            pending: true,
+            next_eligible_unix_ms: 2_500,
+        };
+        write_main_restart_budget(dir.path(), &main).expect("main write");
+        let path = dir.path().join(RESTART_JOURNAL_FILE);
+        let original = std::fs::read(&path).expect("original bytes");
+        let stale = RestartBudgetJournal::new(
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent"),
+            ReleaseId::parse("release-a").expect("release"),
+            DurableRestartWindow {
+                attempts: 1,
+                window_started_unix_millis: Some(2_000),
+            },
+            DurableRestartWindow::empty(),
+        )
+        .expect("stale projection");
+        assert!(matches!(
+            write_restart_journal(dir.path(), &stale),
+            Err(SupervisorError::CorruptLease(_))
+        ));
+        assert_eq!(std::fs::read(&path).expect("unchanged bytes"), original);
+
+        let mut corrupt: serde_json::Value = serde_json::from_slice(&original).expect("record");
+        corrupt["main"]["attempts"] = serde_json::json!(0);
+        let corrupt = serde_json::to_vec(&corrupt).expect("corrupt bytes");
+        std::fs::write(&path, &corrupt).expect("corrupt write");
+        assert!(matches!(
+            read_main_restart_budget(dir.path()),
+            Err(SupervisorError::CorruptLease(_))
+        ));
+        assert!(matches!(
+            write_main_restart_budget(dir.path(), &main),
+            Err(SupervisorError::CorruptLease(_))
+        ));
+        assert_eq!(
+            std::fs::read(&path).expect("corrupt bytes retained"),
+            corrupt
+        );
+    }
+
+    #[test]
+    fn active_main_budget_rejects_clock_rollback_without_replenishing_attempts() {
+        let dir = tempfile::tempdir().expect("temp");
+        let main = RestartBudgetState {
+            schema_version: 1,
+            window_started_unix_ms: u64::MAX - 1,
+            attempts: 2,
+            pending: false,
+            next_eligible_unix_ms: u64::MAX - 1,
+        };
+        write_main_restart_budget(dir.path(), &main).expect("future main write");
+        let path = dir.path().join(RESTART_JOURNAL_FILE);
+        let original = std::fs::read(&path).expect("original bytes");
+        assert!(matches!(
+            crate::restart_budget::claim_restart(
+                dir.path(),
+                /*maximum_attempts*/ 3,
+                std::time::Duration::from_secs(/*secs*/ 300),
+                std::time::Duration::from_millis(/*millis*/ 250),
+            ),
+            Err(crate::restart_budget::RestartBudgetError::Invalid(_))
+        ));
+        assert_eq!(
+            read_main_restart_budget(dir.path()).expect("read"),
+            Some(main)
+        );
+        assert_eq!(std::fs::read(&path).expect("unchanged bytes"), original);
     }
 }
