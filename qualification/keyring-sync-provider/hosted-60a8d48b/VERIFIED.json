@@ -1,0 +1,432 @@
+{
+  "source_commit": "60a8d48b64fd6aee214172a85b003a1149526e22",
+  "workflow_run": 41679961907,
+  "jobs": {
+    "native": 126070688859,
+    "bazel": 126070689476
+  },
+  "status": "PASS_SCOPED_CURRENT_SOURCE",
+  "source_input_counts": {
+    "native": 10,
+    "bazel": 3
+  },
+  "source_inputs_verified_against_git": {
+    "native": {
+      "codex-rs/Cargo.toml": "0dd1d257119da2d62effc06e861f09b2b86838e201164674b067172c9a714baa",
+      "codex-rs/Cargo.lock": "2b8e274bf5c6548408cddfb46f9a63bdb10517c7f59ef7b772f0712657b25ff4",
+      "MODULE.bazel": "e6c8fb0222967814564857e3d5592c2f4c2eaf501026669e932398ee47db8128",
+      "third_party/dbus/BUILD.bazel": "172c1cc75e760b8bd72c6130e213194a1e5d17e38620f62e10bec020510a7c4b",
+      "third_party/dbus/README.md": "eb2d338f33c9c5c448de5189f4f6fcbb2187b8eeadeac5175d507d46613a9608",
+      "third_party/dbus/close_range.patch": "fbc17195f697908b129f843b24ce5d4b5fdbcbf79fde936a92bb011ee2c8b840",
+      "third_party/dbus/config.h": "70dcba70b2e07220c1ffade45a1aa493983eea65d8ad5df17e769b165cfd1cc9",
+      "third_party/dbus/dbus-arch-deps.h": "afc129c0f2c8ba06def8d41c6c7baca0fd9424877aaeb08ae74c575046468f41",
+      "third_party/dbus/dbus.BUILD.bazel": "5a0cbe26f6c6104e2151fd419551329f3c36fbf5bfc423a7f0ad93fb059171be",
+      "third_party/dbus/native_identity_test.c": "a28c13a4bd18d0d0d7001fde03b6b571d32b634081dd337e7ec250fdf85188e0"
+    },
+    "bazel": {
+      "codex-rs/Cargo.toml": "0dd1d257119da2d62effc06e861f09b2b86838e201164674b067172c9a714baa",
+      "codex-rs/Cargo.lock": "2b8e274bf5c6548408cddfb46f9a63bdb10517c7f59ef7b772f0712657b25ff4",
+      "MODULE.bazel": "e6c8fb0222967814564857e3d5592c2f4c2eaf501026669e932398ee47db8128"
+    }
+  },
+  "native_identity": {
+    "status": "PASS",
+    "last_command": {
+      "command": [
+        "/home/runner/work/_temp/keyring-provider/native/native-identity"
+      ],
+      "exit": 0,
+      "stdout": "PASS: D-Bus 1.16.2, wire ABI, pidfd identity, non-pidfd rejection, peer UID/PID, high-fd closure\n",
+      "stderr": ""
+    },
+    "inputs": {
+      "native_identity_test.c": "a28c13a4bd18d0d0d7001fde03b6b571d32b634081dd337e7ec250fdf85188e0",
+      "close_range.patch": "fbc17195f697908b129f843b24ce5d4b5fdbcbf79fde936a92bb011ee2c8b840",
+      "dbus.BUILD.bazel": "5a0cbe26f6c6104e2151fd419551329f3c36fbf5bfc423a7f0ad93fb059171be",
+      "BUILD.bazel": "172c1cc75e760b8bd72c6130e213194a1e5d17e38620f62e10bec020510a7c4b",
+      "README.md": "eb2d338f33c9c5c448de5189f4f6fcbb2187b8eeadeac5175d507d46613a9608",
+      "config.h": "70dcba70b2e07220c1ffade45a1aa493983eea65d8ad5df17e769b165cfd1cc9",
+      "dbus-arch-deps.h": "afc129c0f2c8ba06def8d41c6c7baca0fd9424877aaeb08ae74c575046468f41"
+    }
+  },
+  "real_secret_service": {
+    "binaries": {
+      "baseline": {
+        "path": "/home/runner/work/_temp/keyring-provider/probe-target/debug/hepta-keyring-baseline-probe",
+        "sha256": "111d7da6e1684948bdf502111c0d2a2a95ee1d34f51b4b9a4582fb42745838f9"
+      },
+      "candidate": {
+        "path": "/home/runner/work/_temp/keyring-provider/probe-target/debug/hepta-keyring-candidate-probe",
+        "sha256": "8dfc6e212e9f474be02e0d92b50844333eeabe428c299af9bf3ac93e9339cbb6"
+      }
+    },
+    "steps": [
+      {
+        "provider": "baseline",
+        "operation": "save",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: save\n",
+        "stderr": ""
+      },
+      {
+        "provider": "baseline",
+        "operation": "save",
+        "account": "separate",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: save\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "load",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: load\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "load",
+        "account": "main",
+        "discover_address": true,
+        "exit": 0,
+        "stdout": "PASS: load\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "save",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: save\n",
+        "stderr": ""
+      },
+      {
+        "provider": "baseline",
+        "operation": "load",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: load\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "delete",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: delete\n",
+        "stderr": ""
+      },
+      {
+        "provider": "baseline",
+        "operation": "missing",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: missing\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "delete-missing",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: delete-missing\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "load",
+        "account": "separate",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: load\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "delete",
+        "account": "separate",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: delete\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "reject-dh",
+        "account": "rejected",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: reject-dh\n",
+        "stderr": ""
+      }
+    ],
+    "status": "PASS",
+    "real_service_sessions": {
+      "dh": 17,
+      "plain": 0
+    },
+    "rejected_sessions": [
+      {
+        "algorithm": "dh-ietf1024-sha256-aes128-cbc-pkcs7"
+      }
+    ],
+    "source_inputs_unchanged": true
+  },
+  "original_codex_secrets": {
+    "tests": 15,
+    "failures": 0,
+    "skipped": 0,
+    "junit_sha256": "4659ec3d93231d47646559366ff6d97f3b044daf4d53e8efaa6ba98f671e2c8e"
+  },
+  "generated_lock": {
+    "bytes": 1645528,
+    "sha256": "c5b9158e8adffc1642a0f476f383b4753d0822dc092775c20724a5198afe9648",
+    "byte_equal_to_committed_lock": true
+  },
+  "bazel_logs": {
+    "lock-update.log": {
+      "sha256": "fc49f2d04409f7041251374631affb6ebf1ec8fd6537385b7ab3b01d34780863",
+      "bytes": 2248,
+      "last_nonempty_lines": [
+        "crate.annotation(",
+        "    crate = \"libssh2-sys\",",
+        "    gen_build_script = \"on\",",
+        ")",
+        "```",
+        " no actions running",
+        " no actions running",
+        "<root> (codex@_)"
+      ]
+    },
+    "lock-check.log": {
+      "sha256": "a15f509d9ce0156a2751b4ad8e6eae9cbace0b1cd2fca3f48966a2b115070285",
+      "bytes": 965,
+      "last_nonempty_lines": [
+        "WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off",
+        " no actions running",
+        " no actions running",
+        " no actions running",
+        " no actions running",
+        " no actions running",
+        " no actions running",
+        "<root> (codex@_)"
+      ]
+    },
+    "native-test.log": {
+      "sha256": "9ce050c622b712f3145f18aaf6f52bd04751d52120c526cc1e2787aecc3cb802",
+      "bytes": 6505,
+      "last_nonempty_lines": [
+        "INFO: Found 1 test target...",
+        "Target //third_party/dbus:native_identity_test up-to-date:",
+        "  bazel-bin/third_party/dbus/native_identity_test",
+        "INFO: Elapsed time: 51.412s, Critical Path: 14.72s",
+        "INFO: 749 processes: 131 internal, 619 linux-sandbox.",
+        "INFO: Build completed successfully, 749 total actions",
+        "//third_party/dbus:native_identity_test                                  PASSED in 0.0s",
+        "Executed 1 out of 1 test: 1 test passes."
+      ]
+    },
+    "keyring-build.log": {
+      "sha256": "42814b2a0d7adde2b5ed0e8cc089370211bd147d345b2e1e402b9c8d43479752",
+      "bytes": 12637,
+      "last_nonempty_lines": [
+        "[1,002 / 1,012] Compiling Rust rlib @@rules_rs++crate+crates__ppv-lite86-0.2.21//:ppv-lite86 v0.2.21 (6 files); 0s disk-cache, linux-sandbox ... (5 actions running)",
+        "[1,010 / 1,012] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__keyring-3.6.3//:keyring v3.6.3 (15 files)",
+        "INFO: Found 1 target...",
+        "Target //codex-rs/keyring-store:keyring-store up-to-date:",
+        "  bazel-bin/codex-rs/keyring-store/libcodex_keyring_store-2449924798.rlib",
+        "INFO: Elapsed time: 129.871s, Critical Path: 65.06s",
+        "INFO: 1012 processes: 395 internal, 617 linux-sandbox.",
+        "INFO: Build completed successfully, 1012 total actions"
+      ]
+    }
+  },
+  "artifact_files": {
+    "native/candidate-build.log": {
+      "bytes": 2911,
+      "sha256": "aea052ad8f93117c6139426769ddb4666e4f6001c1411e42e5058f550e49ecaa"
+    },
+    "native/source-inputs.sha256": {
+      "bytes": 938,
+      "sha256": "7a18bf5ba1b976b5d70a5557cf5f3b53a08bdb147f371e8cdca165f5d9e087a8"
+    },
+    "native/source-commit.txt": {
+      "bytes": 41,
+      "sha256": "720d0fb3c9b1662d4ca27d7deea1b3c5fed0400125a537060a391252538e655a"
+    },
+    "native/secrets.junit.xml": {
+      "bytes": 2812,
+      "sha256": "4659ec3d93231d47646559366ff6d97f3b044daf4d53e8efaa6ba98f671e2c8e"
+    },
+    "native/baseline-build.log": {
+      "bytes": 8528,
+      "sha256": "a12340cbd5b4f913bb62aa5e37d0553b58ca49b151c018b917e4c629c86d1e5a"
+    },
+    "native/secrets-test.log": {
+      "bytes": 50959,
+      "sha256": "c87c82528243766f465c51f94162a5bf6da9ebeeb6b796f2171d05e0da3081b1"
+    },
+    "native/candidate-linkage.txt": {
+      "bytes": 230,
+      "sha256": "38edd84c8043f4dac71928505d419bb6453a55393ed997dd07fab9f17885011a"
+    },
+    "native/probes/inputs-before.json": {
+      "bytes": 6418,
+      "sha256": "2764fa2d0d51d47af44c9aa47415d04fada6e0ff1c6159ff91286999d4974b23"
+    },
+    "native/native/receipt.json": {
+      "bytes": 30478,
+      "sha256": "e7d7e77f790f25db3eca4a818417477cc733d3d2613e5a1ac66159a859f17471"
+    },
+    "native/service/receipt.json": {
+      "bytes": 3106,
+      "sha256": "00bad09838ebf1e3d35e40374a28869fb203ae988d53d9c3c3f92e477a6b52b1"
+    },
+    "native/service/rejected-sessions.jsonl": {
+      "bytes": 53,
+      "sha256": "65b2ffe053477c92e17e72e1f186aa0b7b7d5a3f981492a4de6c0a8811e1f536"
+    },
+    "native/service/session-monitor.log": {
+      "bytes": 12532,
+      "sha256": "d41bf6df288c3eeae30789806cae91859990a241c0f267fbf9a3b0a6f1822dbe"
+    },
+    "native/service/gnome-restarted.log": {
+      "bytes": 66,
+      "sha256": "3ae78aab461d80a191517822b2fc09e589ee2ac23309b0ca10e323f3739eb914"
+    },
+    "native/service/reject-fixture.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native/service/gnome-initial.log": {
+      "bytes": 66,
+      "sha256": "3ae78aab461d80a191517822b2fc09e589ee2ac23309b0ca10e323f3739eb914"
+    },
+    "native/service/bus.log": {
+      "bytes": 260,
+      "sha256": "54bd0c825d038a4b11d153c8dcb732695f2bc8750161d382a9fb27cb8e3ecd90"
+    },
+    "native/probes/candidate/Cargo.lock": {
+      "bytes": 14487,
+      "sha256": "ba197a676080f91254f72eb05cec9999cc66b49e28b41f675f11c72bdd234fa1"
+    },
+    "native/probes/baseline/Cargo.lock": {
+      "bytes": 39435,
+      "sha256": "64fa50f085008b7e2680fdf179de723e7c0e44e7a7345329df3c30d740f3716c"
+    },
+    "bazel/native-test.log": {
+      "bytes": 6505,
+      "sha256": "9ce050c622b712f3145f18aaf6f52bd04751d52120c526cc1e2787aecc3cb802"
+    },
+    "bazel/generated-target.log": {
+      "bytes": 200,
+      "sha256": "058a04648654ede02f9d9b04c0d1f4d826d3aca3e30768d74735451acfb4e353"
+    },
+    "bazel/source-inputs.sha256": {
+      "bytes": 251,
+      "sha256": "a877cb33b1037b9e4a980d6d074a77e47e7da5dd0c38ae1ef36ff8ed613573c6"
+    },
+    "bazel/source-commit.txt": {
+      "bytes": 41,
+      "sha256": "720d0fb3c9b1662d4ca27d7deea1b3c5fed0400125a537060a391252538e655a"
+    },
+    "bazel/lock-check.log": {
+      "bytes": 965,
+      "sha256": "a15f509d9ce0156a2751b4ad8e6eae9cbace0b1cd2fca3f48966a2b115070285"
+    },
+    "bazel/keyring-build.log": {
+      "bytes": 12637,
+      "sha256": "42814b2a0d7adde2b5ed0e8cc089370211bd147d345b2e1e402b9c8d43479752"
+    },
+    "bazel/MODULE.bazel.lock": {
+      "bytes": 1645528,
+      "sha256": "c5b9158e8adffc1642a0f476f383b4753d0822dc092775c20724a5198afe9648"
+    },
+    "bazel/lock-update.log": {
+      "bytes": 2248,
+      "sha256": "fc49f2d04409f7041251374631affb6ebf1ec8fd6537385b7ab3b01d34780863"
+    },
+    "bazel/generated-target.bazel": {
+      "bytes": 129064,
+      "sha256": "7da62b880365d363fbd3b77a0fb109b8cb291e1575a1d4d788e1a135771fbdd2"
+    }
+  },
+  "scope": "Exact 60a8 source and already adopted lock only; this does not mark original full platform CI or later Matrix graph as qualified.",
+  "probe_source_input_count": 50,
+  "probe_sources_verified_against_git": {
+    "codex-rs/keyring-store/src/lib.rs": "8e345522aa87967a0ce36e6f58c09f5cbc2cd775fbccd7dd5fba2ab0e35b76ba",
+    "codex-rs/third_party/keyring-3.6.3/LICENSE-MIT": "157cc607717b1b372a69f6b4526f6ad18c1279af9f3267835cca2943f37bc07d",
+    "codex-rs/third_party/keyring-3.6.3/.cargo_vcs_info.json": "3d8cabe043619def2ab90c6207adbdb375a9d9f559516a73e7a85c325c1b2a78",
+    "codex-rs/third_party/keyring-3.6.3/.gitignore": "62582c97e1caa20ae5aa4b804f0e185d152d46a3677fc8266b5429b100725dc1",
+    "codex-rs/third_party/keyring-3.6.3/CHANGELOG.md": "02fb0a66ad0b0bdf89348f01cb0a89171aa4ed128db66e02c096399216f6dd5c",
+    "codex-rs/third_party/keyring-3.6.3/LICENSE-APACHE": "78ebc2ea2a1cec9cbec2e1a6fc15e73474fe22bdad7575518e7f4628651d49c4",
+    "codex-rs/third_party/keyring-3.6.3/HEPTA_PATCH.md": "a7d02bb77c479890b81857b7215375b7394b5a10b06186a91f6f889cbd5459a2",
+    "codex-rs/third_party/keyring-3.6.3/README.md": "8f9b54161398c84d413630047fd47532d49fcc96fb65111b2d67ad29116badad",
+    "codex-rs/third_party/keyring-3.6.3/Cargo.toml.orig": "bf6a451f2248d4158b4df0c95885485ff714085b98d53ea64975d6a4c3f3d57f",
+    "codex-rs/third_party/keyring-3.6.3/Cargo.toml": "1a8961eaa9d768568f647592be4aae00b80d1fc57ec5e597367442356a0a52c7",
+    "codex-rs/third_party/keyring-3.6.3/Cargo.lock": "f47769c4fd9938e6f7a9aea4a95c39b7d0719490db2c68be6f344ebc79cbb09c",
+    "codex-rs/third_party/keyring-3.6.3/release.toml": "13b66535f82147d43b9e18e0ff21cd6c8976b4c05dbfcb11c3ee04ae8da68a01",
+    "codex-rs/third_party/keyring-3.6.3/examples/ios.rs": "55a76824b88962e44ff56abad5905161680f0345e57fb158b35b8431fbd7d550",
+    "codex-rs/third_party/keyring-3.6.3/examples/cli.rs": "8625b0a9cd7059cd5a2fda96a976da76c4549af18b6d8ef49fa0dec923af22f1",
+    "codex-rs/third_party/keyring-3.6.3/src/secret_service.rs": "2eed8f6d1054be3a04c6ec7fa5701682f9e74171477c31726a22c0993663967f",
+    "codex-rs/third_party/keyring-3.6.3/src/macos.rs": "21a309fa5ac1507922cbc6c74ee29fc78f1421750aa0d714ec1fadd7a066df69",
+    "codex-rs/third_party/keyring-3.6.3/src/ios.rs": "bda8c0006514bae521c4d5e0b7fceacc9db16ac8c520ea9736a3634f3479ebea",
+    "codex-rs/third_party/keyring-3.6.3/src/credential.rs": "41185066e93511028e724fa1189ff95f221f371960f943761da84e4a0431030f",
+    "codex-rs/third_party/keyring-3.6.3/src/keyutils.rs": "63a0baab10a67b7549c172d0ca12d5986bcd6b418627f173a0b59b0344bb4e56",
+    "codex-rs/third_party/keyring-3.6.3/src/keyutils_persistent.rs": "3aa7e404ca4810068eb21b75595fdf665796d0e74a102887b35768bd397cb12a",
+    "codex-rs/third_party/keyring-3.6.3/src/error.rs": "6c5797d0a2cfeea3641397f23777c90e8ef38d9fa89d57644b3b5f3d2c967b54",
+    "codex-rs/third_party/keyring-3.6.3/src/mock.rs": "f8162b4da6970eca4772a9f9cec5cbb0e81c3b6e0ed0ae7950c3fa91bbf164df",
+    "codex-rs/third_party/keyring-3.6.3/src/lib.rs": "934774e7aa7fc50a469e0edf193194f2fa5159fa82e52c1b96fb3edd6ead5880",
+    "codex-rs/third_party/keyring-3.6.3/src/windows.rs": "71a5ec03365f813cf8b2c7906ac743ee5bf5a86b82d8b81d8a4181f435fb477a",
+    "codex-rs/third_party/keyring-3.6.3/tests/threading.rs": "ee9cbddde95d070992696d54252b59626b17cae60e6da82c2b89fcb6bdebc309",
+    "codex-rs/third_party/keyring-3.6.3/tests/basic.rs": "86f15590d1c94acd027bb395048883a05f5024347297b846fadba2e9ea782edb",
+    "codex-rs/third_party/keyring-3.6.3/tests/common/mod.rs": "06d00b5f2e8d860ce8172b694bcbd54f7ae3248a832f9845f9caa493f5bec93a",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/LICENSE-MIT": "0d13fdf5615ccc7e7123b58b5c88b0d2bbabe345cd70b94e094ee44034db5be6",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/.cargo_vcs_info.json": "f3cb2e1370e29c86c7e1004ee2f9c2504b2f17aa31a6ccf245df669eacff6cc2",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/.gitignore": "db9d1819da2b92de288874ed2648b89e8f9a542381877ed611a9db81023e414c",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/CHANGELOG.md": "4b762ac91fbdc1408f66a9c157efe9d2075a4d8c46940e1b39a1864fbb6b7765",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/LICENSE-APACHE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/HEPTA_PATCH.md": "8a364eaff7406afca89306b497b7e78e3f92b3a0f8cf30b39918c48918838e31",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/README.md": "44455112dae975539ceaa8d79b2f5b718a0453e45de4ac92aa07a81b3ee22d66",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/Cargo.toml.orig": "35edaf5d6fe0d72278f7cc19170fe00983c1b4baa5087821d3bd08532cd84451",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/Cargo.toml": "82c56b56c4971e504027c468ae80d2c0dd189bc2988ff811fe603ec544ac5e68",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/Cargo.lock": "e20bf0cfd0c6e852652eda9005de0a84530896b7ca37e7ff3773fc4d8f3b229b",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/examples/example.rs": "48f62f041c95aa70d1bad479b6ceec6e6492cd6ff364c60e1bc1f95b5812b4f6",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/item.rs": "e8360eec1d17037c011abfc11aa56f6a45800bcefd2dc2f487a3765c8a58cb78",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/ss.rs": "0a6b399e2de1743f7507a3791f7f93cb8bc49c96affa577c3ce0cf912287d4dd",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/error.rs": "cb0ac5a971041b8c58b95f63f18b7ef9ef2784468763b5125c5df578f96bd4eb",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/session.rs": "8761fd3171b15d1547cc07acb6dff2d00ad64aef9e6f2d282d458cf91306ca16",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/prompt.rs": "2b39cf18967e7d3ab9d52aac1d620f13f86323d567622787fdecd9c60032e13c",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/lib.rs": "bcdc2723bf7ca38dcbb1f589c0279a11e9d01ff832072512e04582213f4f789a",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/collection.rs": "c9409acb5f805ad3f6ab72a9bfcf26a7612892c33bdf43e8ceed4d0eca204745",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/proxy/item.rs": "b3754bb5e3b6271832d1809131a413644ccdc1e4f55952ce7d2de9735df04554",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/proxy/mod.rs": "54b69c11e06404a49b5a239235cc77b2735b317c3cb9157969707ad1fa958726",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/proxy/service.rs": "efa02ded0bb277ece2d41c82eb236b06b403ec76a93f0fb83d58c4f3689fb22c",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/proxy/prompt.rs": "598aa9b72a67ef97363b4065831697d035cb503b6481b47957a81fb1b9d8559f",
+    "codex-rs/third_party/dbus-secret-service-4.1.0/src/proxy/collection.rs": "660f5c79d883adb36670a65d4a440e940efcc8304f037278957edd894d8226ad"
+  },
+  "archives": [
+    {
+      "file": "native.zip",
+      "artifact_id": 13252693086,
+      "bytes": 39499,
+      "sha256": "df424dcaa4dce384f9312ffd1f8c8ef838d36d030d20c065ecc22b00e9011864"
+    },
+    {
+      "file": "bazel.zip",
+      "artifact_id": 13250929705,
+      "bytes": 234321,
+      "sha256": "11c53de7f63540ac363238fef6e04274aad722075d5632a158224ca0dceb76a8"
+    }
+  ]
+}
