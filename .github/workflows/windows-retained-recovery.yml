@@ -1,0 +1,147 @@
+name: Native Windows retained recovery primitives
+
+on:
+  push:
+    branches: [fix/windows-retained-sqlite-recovery-20261103]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-retained-recovery-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    name: Original path library and retained recovery controls
+    runs-on: windows-2025
+    timeout-minutes: 30
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUSTUP_TOOLCHAIN: "1.95.0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Select independent build output at runtime
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          with open(os.environ["GITHUB_ENV"], "a") as environment:
+              target = Path(os.environ["RUNNER_TEMP"]) / "retained-recovery-target"
+              environment.write(f"CARGO_TARGET_DIR={target}\n")
+          PY
+      - name: Run every original library test with fresh evidence
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import time
+          import xml.etree.ElementTree as ET
+
+          root = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "retained-recovery-evidence"
+          output.mkdir()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["GITHUB_SHA"]:
+              raise RuntimeError("source head differs from workflow identity")
+          inputs = [
+              "codex-rs/Cargo.lock",
+              "codex-rs/utils/path-utils/src/private_state_windows.rs",
+              "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+              "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+              "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs",
+              ".github/workflows/windows-retained-recovery.yml",
+          ]
+          source = {
+              "source_head": head,
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "platform": platform.platform(),
+              "rustc": subprocess.check_output(["rustc", "-Vv"], text=True),
+              "scope": "Existing-only private NTFS source primitives; no writer or current-cut authority",
+              "inputs": {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in inputs},
+          }
+          (output / "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          reports = [
+              root / "codex-rs/target/nextest/local/junit.xml",
+              Path(os.environ["CARGO_TARGET_DIR"]) / "nextest/local/junit.xml",
+          ]
+          for report in reports:
+              if report.exists():
+                  raise RuntimeError(f"unexpected pre-existing test report: {report}")
+          command = ["just", "test", "--locked", "-p", "codex-utils-path",
+                     "--lib", "--no-capture", "--retries", "0"]
+          started = time.monotonic()
+          log = output / "native-library.log"
+          with log.open("wb") as stream:
+              result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT)
+          elapsed = time.monotonic() - started
+          raw = log.read_bytes()
+          receipt = {
+              "command": command, "returncode": result.returncode,
+              "wall_seconds": elapsed, "log_sha256": hashlib.sha256(raw).hexdigest(),
+              "log_bytes": len(raw), "junit": [],
+          }
+          for index, report in enumerate(reports):
+              if report.exists():
+                  copied = output / f"junit-{index}.xml"
+                  shutil.copyfile(report, copied)
+                  tree = ET.parse(copied)
+                  receipt["junit"].append({
+                      "file": copied.name, "sha256": hashlib.sha256(copied.read_bytes()).hexdigest(),
+                      "tests": len(tree.findall(".//testcase")),
+                      "failures": len(tree.findall(".//failure")),
+                      "skipped": len(tree.findall(".//skipped")),
+                      "retries": len(tree.findall(".//rerunFailure")),
+                      "executed": [case.get("name", "").rsplit("::", 1)[-1]
+                          for case in tree.findall(".//testcase") if case.find("skipped") is None],
+                  })
+          (output / "result.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, indent=2))
+          print(raw.decode(errors="replace")[-24000:])
+          if result.returncode == 0 and not receipt["junit"]:
+              raise RuntimeError("successful process did not produce a fresh JUnit report")
+          required = {
+              "existing_only_directory_does_not_create_or_repair_a_missing_source",
+              "frozen_private_child_retains_bytes_and_refuses_write_and_delete_handles",
+              "frozen_child_rejects_missing_alias_and_hard_link_without_creation",
+              "fresh_materialization_never_opens_an_occupied_name",
+          }
+          observed = {name for report in receipt["junit"] for name in report["executed"]}
+          if result.returncode == 0 and not required <= observed:
+              raise RuntimeError(f"required native controls missing: {sorted(required - observed)}")
+          raise SystemExit(result.returncode)
+          PY
+      - name: Preserve original results and exact source identity
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-retained-recovery-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/retained-recovery-evidence/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Check unchanged source
+        if: always() && !cancelled()
+        run: git diff --exit-code
