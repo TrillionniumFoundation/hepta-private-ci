@@ -1,0 +1,176 @@
+{
+  "schema": "yaml-successor-pre-reset-observed-summary-v1",
+  "decision": "HOLD_DO_NOT_MIGRATE",
+  "provenance": "Aggregates returned by completed exec tool calls before the execution environment reset; full per-case outputs and complete receipts did not survive.",
+  "not_a_reconstructed_full_log": true,
+  "compiler_observed": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "matrix": {
+    "per_variant": 1574,
+    "official_2_1_differences": 472,
+    "patched_differences": 312,
+    "fixed": 176,
+    "introduced": 16,
+    "official_by_type": {
+      "String": 217,
+      "Option<String>": 215,
+      "bool": 17,
+      "u32": 17,
+      "Vec<String>": 3,
+      "BTreeMap<String,String>": 3
+    },
+    "patched_by_type": {
+      "String": 135,
+      "Option<String>": 133,
+      "bool": 20,
+      "u32": 20,
+      "Vec<String>": 2,
+      "BTreeMap<String,String>": 2
+    },
+    "fork_default_off_output_byte_identical_to_official": true
+  },
+  "original_expanded_consumer_harness": {
+    "official": {
+      "passed": 13,
+      "failed": 1,
+      "skipped": 0,
+      "exit_code": 101
+    },
+    "patched": {
+      "passed": 13,
+      "failed": 1,
+      "skipped": 0,
+      "exit_code": 101
+    }
+  },
+  "additional_command_and_skill_examples": {
+    "per_variant": 28,
+    "official_differences": 22,
+    "patched_differences": 20
+  },
+  "policy_controls": {
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "original_command_records_observed": [
+    {
+      "phase": "official",
+      "step": "compile-fork",
+      "exit_code": 0,
+      "elapsed_seconds": 2.855623651001224
+    },
+    {
+      "phase": "official",
+      "step": "compile-scalar-matrix",
+      "exit_code": 0,
+      "elapsed_seconds": 0.46010012699844083
+    },
+    {
+      "phase": "official",
+      "step": "run-scalar-matrix",
+      "exit_code": 0,
+      "elapsed_seconds": 0.25699257499945816
+    },
+    {
+      "phase": "official",
+      "step": "compile-original-consumers",
+      "exit_code": 0,
+      "elapsed_seconds": 0.8058238009980414
+    },
+    {
+      "phase": "official",
+      "step": "run-original-consumers",
+      "exit_code": 101,
+      "elapsed_seconds": 0.0343730519998644
+    },
+    {
+      "phase": "patched",
+      "step": "compile-fork",
+      "exit_code": 0,
+      "elapsed_seconds": 2.034184740001365
+    },
+    {
+      "phase": "patched",
+      "step": "compile-scalar-matrix",
+      "exit_code": 0,
+      "elapsed_seconds": 0.32467946099859546
+    },
+    {
+      "phase": "patched",
+      "step": "run-scalar-matrix",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1995780229990487
+    },
+    {
+      "phase": "patched",
+      "step": "compile-original-consumers",
+      "exit_code": 0,
+      "elapsed_seconds": 0.571148772000015
+    },
+    {
+      "phase": "patched",
+      "step": "run-original-consumers",
+      "exit_code": 101,
+      "elapsed_seconds": 0.015727423000498675
+    },
+    {
+      "phase": "controls",
+      "step": "compile-default-matrix",
+      "exit_code": 0,
+      "elapsed_seconds": 0.2835204299990437
+    },
+    {
+      "phase": "controls",
+      "step": "run-default-matrix",
+      "exit_code": 0,
+      "elapsed_seconds": 0.2072451199965144
+    },
+    {
+      "phase": "controls",
+      "step": "compile-official-examples",
+      "exit_code": 0,
+      "elapsed_seconds": 0.4776553529991361
+    },
+    {
+      "phase": "controls",
+      "step": "run-official-examples",
+      "exit_code": 0,
+      "elapsed_seconds": 0.007866608997574076
+    },
+    {
+      "phase": "controls",
+      "step": "compile-patched-examples",
+      "exit_code": 0,
+      "elapsed_seconds": 0.4912595030000375
+    },
+    {
+      "phase": "controls",
+      "step": "run-patched-examples",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008031761997699505
+    },
+    {
+      "phase": "controls",
+      "step": "compile-policy-controls",
+      "exit_code": 0,
+      "elapsed_seconds": 0.3006305179987976
+    },
+    {
+      "phase": "controls",
+      "step": "run-policy-controls",
+      "exit_code": 0,
+      "elapsed_seconds": 0.003206540997780394
+    }
+  ],
+  "post_reset_compile_or_probe_rerun": false,
+  "production_modified": false,
+  "migration_accepted": false,
+  "unsafe_libyaml_advisory_closed": false,
+  "missing_after_reset": [
+    "complete old per-case matrix output",
+    "complete old receipt files and input hash maps",
+    "old compiled rlibs and executables",
+    "root original expanded consumer source snapshots in this agent workspace"
+  ]
+}

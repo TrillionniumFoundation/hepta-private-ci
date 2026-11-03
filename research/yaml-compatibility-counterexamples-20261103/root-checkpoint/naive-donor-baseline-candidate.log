@@ -1,0 +1,329 @@
+    Updating crates.io index
+     Locking 41 packages to latest Rust 1.95.0 compatible versions
+      Adding serde v1.0.228 (available: v1.0.229)
+      Adding serde-saphyr v1.3.0 (available: v2.1.0)
+      Adding serde_core v1.0.228 (available: v1.0.229)
+      Adding serde_derive v1.0.228 (available: v1.0.229)
+      Adding serde_json v1.0.149 (available: v1.0.154)
+      Adding thiserror v2.0.18 (available: v2.0.21)
+      Adding thiserror-impl v2.0.18 (available: v2.0.21)
+ Downloading crates ...
+  Downloaded multiversion_no_op v1.0.0
+  Downloaded serde_yaml v0.9.34+deprecated
+  Downloaded serde v1.0.228
+  Downloaded equivalent v1.0.3
+  Downloaded smallvec v1.16.4
+  Downloaded simdutf8 v0.1.5
+  Downloaded zmij v1.0.23
+  Downloaded rustversion v1.0.23
+  Downloaded num-traits v0.2.19
+  Downloaded itoa v1.0.18
+  Downloaded scopeguard v1.2.0
+  Downloaded nohash-hasher v0.2.0
+  Downloaded cfg-if v1.0.5
+  Downloaded thiserror v2.0.18
+  Downloaded quote v1.0.47
+  Downloaded serde_derive v1.0.228
+  Downloaded encoding_rs_io v0.1.8
+  Downloaded arraydeque v0.5.1
+  Downloaded ryu v1.0.23
+  Downloaded unicode-ident v1.0.27
+  Downloaded proc-macro2 v1.0.107
+  Downloaded core_detect v1.0.0
+  Downloaded thiserror-impl v2.0.18
+  Downloaded pretty_assertions v1.4.1
+  Downloaded anstyle v1.0.14
+  Downloaded diff v0.1.13
+  Downloaded autocfg v1.5.1
+  Downloaded unsafe-libyaml v0.2.11
+  Downloaded hashbrown v0.17.1
+  Downloaded unicode-width v0.2.3
+  Downloaded serde_json v1.0.149
+  Downloaded base64 v0.23.1
+  Downloaded memchr v2.8.3
+  Downloaded granit-parser v1.3.0
+  Downloaded annotate-snippets v0.12.17
+  Downloaded serde_core v1.0.228
+  Downloaded serde-saphyr v1.3.0
+  Downloaded encoding_rs v0.8.44
+  Downloaded indexmap v2.14.2
+  Downloaded yansi v1.0.1
+  Downloaded syn v2.0.119
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling rustversion v1.0.23
+   Compiling serde_core v1.0.228
+   Compiling syn v2.0.119
+   Compiling encoding_rs v0.8.44
+   Compiling autocfg v1.5.1
+   Compiling zmij v1.0.23
+   Compiling num-traits v0.2.19
+   Compiling serde v1.0.228
+   Compiling multiversion_no_op v1.0.0
+   Compiling scopeguard v1.2.0
+   Compiling core_detect v1.0.0
+   Compiling simdutf8 v0.1.5
+   Compiling cfg-if v1.0.5
+   Compiling serde_derive v1.0.228
+   Compiling unicode-width v0.2.3
+   Compiling equivalent v1.0.3
+   Compiling arraydeque v0.5.1
+   Compiling smallvec v1.16.4
+   Compiling thiserror v2.0.18
+   Compiling itoa v1.0.18
+   Compiling hashbrown v0.17.1
+   Compiling anstyle v1.0.14
+   Compiling serde_json v1.0.149
+   Compiling annotate-snippets v0.12.17
+   Compiling indexmap v2.14.2
+   Compiling granit-parser v1.3.0
+   Compiling encoding_rs_io v0.1.8
+   Compiling thiserror-impl v2.0.18
+   Compiling nohash-hasher v0.2.0
+   Compiling memchr v2.8.3
+   Compiling ryu v1.0.23
+   Compiling unsafe-libyaml v0.2.11
+   Compiling base64 v0.23.1
+   Compiling serde-saphyr v1.3.0
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling hepta-safe-yaml-compatibility-probe v0.0.0 (/dev/shm/root-safe-yaml-probe-20261103)
+warning: constant `MAX_NAME_LEN` is never used
+ --> src/baseline/parser.rs:4:7
+  |
+4 | const MAX_NAME_LEN: usize = 64;
+  |       ^^^^^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `SkillFrontmatter` is never constructed
+ --> src/baseline/parser.rs:7:8
+  |
+7 | struct SkillFrontmatter {
+  |        ^^^^^^^^^^^^^^^^
+
+warning: struct `SkillFrontmatterMetadata` is never constructed
+  --> src/baseline/parser.rs:17:8
+   |
+17 | struct SkillFrontmatterMetadata {
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `ParsedSkillFrontmatter` is never constructed
+  --> src/baseline/parser.rs:24:12
+   |
+24 | pub struct ParsedSkillFrontmatter {
+   |            ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: enum `SkillParseError` is never used
+  --> src/baseline/parser.rs:32:10
+   |
+32 | pub enum SkillParseError {
+   |          ^^^^^^^^^^^^^^^
+
+warning: function `parse_skill_frontmatter_metadata` is never used
+  --> src/baseline/parser.rs:44:8
+   |
+44 | pub fn parse_skill_frontmatter_metadata(
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `sanitize_single_line` is never used
+  --> src/baseline/parser.rs:94:4
+   |
+94 | fn sanitize_single_line(raw: &str) -> String {
+   |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `repair_frontmatter_scalar_fields` is never used
+  --> src/baseline/parser.rs:98:4
+   |
+98 | fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
+   |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `validate_len` is never used
+   --> src/baseline/parser.rs:183:4
+    |
+183 | fn validate_len(
+    |    ^^^^^^^^^^^^
+
+warning: function `extract_frontmatter` is never used
+   --> src/baseline/parser.rs:200:4
+    |
+200 | fn extract_frontmatter(contents: &str) -> Option<String> {
+    |    ^^^^^^^^^^^^^^^^^^^
+
+warning: constant `MAX_NAME_LEN` is never used
+ --> src/candidate/parser.rs:4:7
+  |
+4 | const MAX_NAME_LEN: usize = 64;
+  |       ^^^^^^^^^^^^
+
+warning: struct `SkillFrontmatter` is never constructed
+ --> src/candidate/parser.rs:7:8
+  |
+7 | struct SkillFrontmatter {
+  |        ^^^^^^^^^^^^^^^^
+
+warning: struct `SkillFrontmatterMetadata` is never constructed
+  --> src/candidate/parser.rs:17:8
+   |
+17 | struct SkillFrontmatterMetadata {
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `ParsedSkillFrontmatter` is never constructed
+  --> src/candidate/parser.rs:24:12
+   |
+24 | pub struct ParsedSkillFrontmatter {
+   |            ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: enum `SkillParseError` is never used
+  --> src/candidate/parser.rs:32:10
+   |
+32 | pub enum SkillParseError {
+   |          ^^^^^^^^^^^^^^^
+
+warning: function `parse_skill_frontmatter_metadata` is never used
+  --> src/candidate/parser.rs:44:8
+   |
+44 | pub fn parse_skill_frontmatter_metadata(
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `sanitize_single_line` is never used
+  --> src/candidate/parser.rs:94:4
+   |
+94 | fn sanitize_single_line(raw: &str) -> String {
+   |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `repair_frontmatter_scalar_fields` is never used
+  --> src/candidate/parser.rs:98:4
+   |
+98 | fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
+   |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `validate_len` is never used
+   --> src/candidate/parser.rs:183:4
+    |
+183 | fn validate_len(
+    |    ^^^^^^^^^^^^
+
+warning: function `extract_frontmatter` is never used
+   --> src/candidate/parser.rs:200:4
+    |
+200 | fn extract_frontmatter(contents: &str) -> Option<String> {
+    |    ^^^^^^^^^^^^^^^^^^^
+
+warning: function `parse_command_description` is never used
+ --> src/baseline/command.rs:2:15
+  |
+2 | pub(crate) fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
+  |               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `yaml_scalar` is never used
+  --> src/baseline/command.rs:14:4
+   |
+14 | fn yaml_scalar(value: &YamlValue) -> Option<String> {
+   |    ^^^^^^^^^^^
+
+warning: function `parse_command_description` is never used
+ --> src/candidate/command.rs:2:15
+  |
+2 | pub(crate) fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
+  |               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `yaml_scalar` is never used
+  --> src/candidate/command.rs:14:4
+   |
+14 | fn yaml_scalar(value: &YamlValue) -> Option<String> {
+   |    ^^^^^^^^^^^
+
+warning: `hepta-safe-yaml-compatibility-probe` (lib) generated 24 warnings
+    Finished `test` profile [unoptimized] target(s) in 28.07s
+     Running unittests src/lib.rs (/dev/shm/root-safe-yaml-probe-target-20261103/debug/deps/hepta_safe_yaml_compatibility_probe-aedd4a1964870248)
+
+running 14 tests
+test baseline_parser::tests::repairs_short_descriptions_containing_colons_and_apostrophes ... ok
+test baseline_parser::tests::parses_repairs_and_sanitizes_frontmatter ... ok
+test baseline_parser::tests::uses_default_name_and_requires_description ... ok
+test baseline_parser::tests::preserves_block_scalar_bodies_while_repairing_other_fields ... ok
+test baseline_parser::tests::repairs_unrecognized_frontmatter_fields_that_need_quotes ... ok
+test baseline_parser::tests::preserves_overlong_descriptions_and_short_descriptions ... ok
+test candidate_parser::tests::preserves_block_scalar_bodies_while_repairing_other_fields ... ok
+test candidate_parser::tests::parses_repairs_and_sanitizes_frontmatter ... ok
+test candidate_parser::tests::uses_default_name_and_requires_description ... ok
+plain: baseline=Some(("demo", "hello", None)); candidate=Some(("demo", "hello", None))
+plain: baseline=Some("hello"); candidate=Some("hello")
+test candidate_parser::tests::repairs_short_descriptions_containing_colons_and_apostrophes ... ok
+boolean: baseline=Some(("demo", "false", None)); candidate=Some(("demo", "false", None))
+test candidate_parser::tests::repairs_unrecognized_frontmatter_fields_that_need_quotes ... ok
+quoted: baseline=Some("hello"); candidate=Some("hello")
+test candidate_parser::tests::preserves_overlong_descriptions_and_short_descriptions ... ok
+boolean: baseline=Some("false"); candidate=Some("false")
+integer: baseline=Some(("demo", "42", None)); candidate=Some(("demo", "42", None))
+integer: baseline=Some("42"); candidate=Some("42")
+null-name: baseline=Some(("fallback", "hello", None)); candidate=Some(("fallback", "hello", None))
+float: baseline=Some("1.25"); candidate=Some("1.25")
+infinity: baseline=Some(".inf"); candidate=None
+custom-tag: baseline=Some(("demo", "hello", None)); candidate=Some(("demo", "hello", None))
+nan: baseline=Some(".nan"); candidate=None
+explicit-string: baseline=Some(("demo", "42", None)); candidate=Some(("demo", "42", None))
+null: baseline=None; candidate=None
+anchor: baseline=Some(("demo", "hello", None)); candidate=Some(("demo", "hello", None))
+sequence: baseline=None; candidate=None
+mapping: baseline=None; candidate=None
+alias: baseline=Some(("demo", "hello", None)); candidate=Some(("demo", "hello", None))
+multiline: baseline=Some("hello\nworld"); candidate=Some("hello\nworld")
+explicit-string: baseline=Some("42"); candidate=Some("42")
+merge-only: baseline=None; candidate=Some(("demo", "inherited", None))
+custom-tag: baseline=None; candidate=Some("hello")
+anchor: baseline=Some("hello"); candidate=Some("hello")
+alias: baseline=Some("hello"); candidate=Some("hello")
+merge-explicit: baseline=Some(("demo", "explicit", None)); candidate=Some(("demo", "explicit", None))
+merge-only: baseline=None; candidate=Some("inherited")
+duplicate: baseline=None; candidate=None
+merge-explicit: baseline=Some("explicit"); candidate=Some("explicit")
+numeric-key: baseline=Some(("demo", "hello", None)); candidate=Some(("demo", "hello", None))
+sequence-key: baseline=None; candidate=None
+duplicate: baseline=None; candidate=None
+sequence-description: baseline=None; candidate=None
+bad-syntax: baseline=Some(("fallback", "[", None)); candidate=Some(("fallback", "[", None))
+numeric-key: baseline=Some("hello"); candidate=Some("hello")
+sequence-key: baseline=Some("hello"); candidate=None
+repair: baseline=Some(("demo", "Hello: world", None)); candidate=Some(("demo", "Hello: world", None))
+nested-metadata: baseline=Some(("demo", "hello", Some("A short note"))); candidate=Some(("demo", "hello", Some("A short note")))
+
+thread 'compatibility_tests::skill_frontmatter_preserves_legacy_yaml_boundaries' (982) panicked at src/compatibility_tests.rs:75:5:
+assertion `left == right` failed
+  left: [("merge-only", None, Some(("demo", "inherited", None)))]
+ right: []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test compatibility_tests::skill_frontmatter_preserves_legacy_yaml_boundaries ... FAILED
+key-whitespace: baseline=Some("first"); candidate=Some("first")
+bad-syntax: baseline=None; candidate=None
+top-sequence: baseline=None; candidate=None
+multiple-documents: baseline=None; candidate=None
+empty: baseline=None; candidate=None
+
+thread 'compatibility_tests::command_description_preserves_legacy_yaml_boundaries' (981) panicked at src/compatibility_tests.rs:39:5:
+assertion `left == right` failed
+  left: [("infinity", Some(".inf"), None), ("nan", Some(".nan"), None), ("custom-tag", None, Some("hello")), ("merge-only", None, Some("inherited")), ("sequence-key", Some("hello"), None)]
+ right: []
+test compatibility_tests::command_description_preserves_legacy_yaml_boundaries ... FAILED
+
+failures:
+
+failures:
+    compatibility_tests::command_description_preserves_legacy_yaml_boundaries
+    compatibility_tests::skill_frontmatter_preserves_legacy_yaml_boundaries
+
+test result: FAILED. 12 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--lib`
+   Doc-tests hepta_safe_yaml_compatibility_probe
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: 1 target failed:
+    `--lib`

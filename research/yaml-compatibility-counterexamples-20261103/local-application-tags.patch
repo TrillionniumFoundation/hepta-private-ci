@@ -1,0 +1,124 @@
+--- a/src/de/live_events.rs
++++ b/src/de/live_events.rs
+@@ -309,6 +309,7 @@
+ 
+     /// Whether robotics-only angle tags are supported in strict mode.
+     angle_conversions: bool,
++    preserve_local_application_tags: bool,
+ 
+     /// Structural context used to constrain YAML 1.1 key-only tags in strict mode.
+     tag_context: SmallVec<[TagContextFrame; 16]>,
+@@ -375,6 +376,7 @@
+         let reject_unsupported_tags = options.reject_unsupported_tags;
+         let preserve_original_tags = options.reject_tagged_field_names;
+         let angle_conversions = options.angle_conversions;
++        let preserve_local_application_tags = options.preserve_local_application_tags;
+         let require_indent = options.require_indent;
+         #[cfg(feature = "properties")]
+         let property_interpolation = PropertyInterpolation::new(
+@@ -444,6 +446,7 @@
+             reject_unsupported_tags,
+             preserve_original_tags,
+             angle_conversions,
++            preserve_local_application_tags,
+             tag_context: SmallVec::new(),
+ 
+             require_indent,
+@@ -474,6 +477,7 @@
+         let reject_unsupported_tags = options.reject_unsupported_tags;
+         let preserve_original_tags = options.reject_tagged_field_names;
+         let angle_conversions = options.angle_conversions;
++        let preserve_local_application_tags = options.preserve_local_application_tags;
+         let require_indent = options.require_indent;
+         #[cfg(feature = "properties")]
+         let property_interpolation = PropertyInterpolation::new(
+@@ -541,6 +545,7 @@
+             reject_unsupported_tags,
+             preserve_original_tags,
+             angle_conversions,
++            preserve_local_application_tags,
+             tag_context: SmallVec::new(),
+ 
+             require_indent,
+@@ -1009,7 +1014,7 @@
+                     #[cfg(feature = "include")]
+                     let mut anchor_id = anchor_id;
+ 
+-                    let tag_s = SfTag::from_optional_cow(&tag);
++                    let tag_s = SfTag::from_optional_cow_with_local_policy(&tag, self.preserve_local_application_tags);
+ 
+                     #[cfg(feature = "include")]
+                     if tag_s == SfTag::Include && self.parser.has_resolver() {
+@@ -1077,7 +1082,7 @@
+                 Event::SequenceStart(_style, anchor_id, tag) => {
+                     #[cfg(feature = "include")]
+                     let mut anchor_id = anchor_id;
+-                    let tag_s = SfTag::from_optional_cow(&tag);
++                    let tag_s = SfTag::from_optional_cow_with_local_policy(&tag, self.preserve_local_application_tags);
+                     self.validate_container_tag(
+                         tag_s,
+                         || tag.as_deref().map_or_else(String::new, Tag::original),
+@@ -1150,7 +1155,7 @@
+                 }
+ 
+                 Event::MappingStart(_style, anchor_id, tag) => {
+-                    let tag_s = SfTag::from_optional_cow(&tag);
++                    let tag_s = SfTag::from_optional_cow_with_local_policy(&tag, self.preserve_local_application_tags);
+                     self.validate_container_tag(
+                         tag_s,
+                         || tag.as_deref().map_or_else(String::new, Tag::original),
+--- a/src/de/options.rs
++++ b/src/de/options.rs
+@@ -364,6 +364,12 @@
+     /// are rejected for boolean targets and are not inferred as booleans.
+     /// Default: false (accept YAML 1.1 boolean forms).
+     pub strict_booleans: bool,
++    /// Preserve resolved local application tags such as `!int` or `!include`
++    /// without interpreting their names as aliases for built-in YAML types.
++    /// Genuine global core tags such as `!!int` retain their existing behavior.
++    /// The non-specific `!` tag is unchanged. Default: false.
++    #[cfg_attr(feature = "serde_derived_types", serde(default))]
++    pub preserve_local_application_tags: bool,
+     /// When a field marked with the `!!binary` tag is deserialized into a `String`,
+     /// `serde-saphyr` normally expects the value to be base64-encoded UTF-8.
+     /// If you want to treat the value as a plain string and ignore the `!!binary` tag,
+@@ -746,6 +752,7 @@
+             leading_zero_numbers_as_strings: false,
+             underscored_numbers_as_strings: false,
+             strict_booleans: false,
++            preserve_local_application_tags: false,
+             angle_conversions: false,
+             ignore_binary_tag_for_string: false,
+             no_schema: false,
+@@ -799,6 +806,7 @@
+                 &self.underscored_numbers_as_strings,
+             )
+             .field("strict_booleans", &self.strict_booleans)
++            .field("preserve_local_application_tags", &self.preserve_local_application_tags)
+             .field(
+                 "ignore_binary_tag_for_string",
+                 &self.ignore_binary_tag_for_string,
+--- a/src/de/tags.rs
++++ b/src/de/tags.rs
+@@ -163,6 +163,21 @@
+ }
+ 
+ impl SfTag {
++    /// Classify resolved local application tags independently of core-like names.
++    pub(crate) fn from_optional_cow_with_local_policy(
++        tag: &Option<Cow<Tag>>,
++        preserve_local_application_tags: bool,
++    ) -> SfTag {
++        if preserve_local_application_tags
++            && tag.as_ref().is_some_and(|tag| {
++                tag.suffix_in_namespace("!").is_some_and(|suffix| !suffix.is_empty())
++            })
++        {
++            return SfTag::Other;
++        }
++        Self::from_optional_cow(tag)
++    }
++
+     /// Return the node kind required by this tag, if it has one.
+     ///
+     /// Unknown and non-specific tags have no intrinsic kind requirement. Their

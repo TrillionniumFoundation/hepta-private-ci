@@ -1,0 +1,27 @@
+{
+  "schema": "hash-verified-upstream-patch-recovery-v1",
+  "source": "official serde-saphyr 2.1.0 package",
+  "archive_sha256": "3f4dc2714fc5632417a6e979602d7044bad8f2880c63fc7217087180acec31b6",
+  "changes": [
+    {
+      "path": "src/de/live_events.rs",
+      "before_sha256": "982d820f6fb25640c034b93384d36b40c0011d736da90b39ff51e93353016f35",
+      "after_sha256": "272f9cb9bf0b745fdbde2f11ba50561459090aa28431207ad6b3d4ac6b462fab"
+    },
+    {
+      "path": "src/de/options.rs",
+      "before_sha256": "08f561f903052111b2114e3f7739d37c036d049fae8348246d0513732e876c16",
+      "after_sha256": "41e5d33bee2bea6ecae198403601e90f0428d248f1a53c5b94f5606ba5e5e6b3"
+    },
+    {
+      "path": "src/de/tags.rs",
+      "before_sha256": "e93aefa221a3ac91454095f62533ebfc73271ee01dcafc7ababfc6c468daca44",
+      "after_sha256": "acb457cdea3baeb2a4f0c2487fbeafee9bd182ac45b1ff3b2f9bb7bb7f29125f"
+    }
+  ],
+  "after_hashes_match_pre_reset_tool_output": true,
+  "patch_bytes": 5633,
+  "patch_sha256": "f72e1409c244d7a7994246a991dec0bc9217495372dd84738d501b93fc2217c5",
+  "compile_or_probe_rerun": false,
+  "production_accepted": false
+}
