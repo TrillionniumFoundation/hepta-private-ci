@@ -1,0 +1,62 @@
+name: Native Windows Memory path identity observation
+on:
+  push:
+    branches: [test/windows-memory-path-identity-20261103]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  observe:
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Observe the actual native temporary root and canonical spelling
+        shell: python
+        run: |
+          import ctypes, hashlib, json, os, pathlib, subprocess, uuid
+          from ctypes import wintypes
+          k = ctypes.WinDLL("kernel32", use_last_error=True)
+          buf = ctypes.create_unicode_buffer(32768)
+          f = k.GetTempPath2W
+          f.argtypes = [wintypes.DWORD, wintypes.LPWSTR]
+          f.restype = wintypes.DWORD
+          n = f(len(buf), buf)
+          if not 0 < n < len(buf): raise ctypes.WinError(ctypes.get_last_error())
+          native_temp = pathlib.Path(buf.value)
+          root = native_temp / ("hepta-path-observation-" + uuid.uuid4().hex)
+          root.mkdir()
+          leaf = root / "fleet" / "agent" / "cognitive"
+          leaf.mkdir(parents=True)
+          requested = str(leaf)
+          canonical = os.path.realpath(leaf, strict=True)
+          observations = []
+          for p in [leaf, *leaf.parents]:
+              stat = p.lstat()
+              observations.append({"path": str(p), "attributes": stat.st_file_attributes,
+                                   "reparse": bool(stat.st_file_attributes & 0x400)})
+          result = {
+              "source_head": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "temp_environment": {key: os.environ.get(key) for key in ["TEMP", "TMP", "RUNNER_TEMP"]},
+              "GetTempPath2W": str(native_temp), "requested": requested, "os_final_path": canonical,
+              "same_literal": requested == canonical,
+              "requested_components": list(pathlib.PureWindowsPath(requested).parts),
+              "canonical_components": list(pathlib.PureWindowsPath(canonical).parts),
+              "ancestors": observations,
+              "scope": "Read-only OS spelling observation plus a new isolated temporary directory; no validator changes"
+          }
+          output = pathlib.Path(os.environ["RUNNER_TEMP"]) / "memory-path-observation.json"
+          output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+          print(output.read_text(encoding="utf-8"))
+          for p in [leaf, leaf.parent, leaf.parent.parent, root]: p.rmdir()
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-path-observation-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-path-observation.json
+          if-no-files-found: error
