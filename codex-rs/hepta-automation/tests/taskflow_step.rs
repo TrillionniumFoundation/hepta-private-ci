@@ -475,3 +475,78 @@ async fn step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced
     assert_eq!(still_unchanged.event_seq, 1);
     store.close().await;
 }
+
+#[tokio::test]
+async fn step_mutation_waits_for_writer_without_blocking_snapshot_reads()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = Fixture::new();
+    let (store, owner, intent, payload) = prepared_store(&fixture).await;
+    let prepared = store
+        .prepare_taskflow_step(
+            "step-run",
+            "work",
+            /*attempt*/ 1,
+            &owner,
+            &intent,
+            &payload,
+            "contention-prepare",
+            /*now_ms*/ 21,
+        )
+        .await?;
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())?;
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(store.path())
+        .await?;
+    let competing_writer = pool.begin_with("BEGIN IMMEDIATE").await?;
+
+    // Read-only verification must keep its snapshot semantics while another
+    // recovery owns the writer. It must not reserve write authority itself.
+    let visible = tokio::time::timeout(
+        std::time::Duration::from_secs(1),
+        store.read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner),
+    )
+    .await??
+    .ok_or_else(|| std::io::Error::other("prepared step missing during concurrent write"))?;
+    assert_eq!(visible, prepared.receipt);
+
+    // A recovery that rejects a provider receipt still holds SQLite's writer
+    // until rollback. A deferred read-then-write transaction fails immediately
+    // when it tries to upgrade past that writer, even with a busy timeout.
+    let release_writer = async {
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        competing_writer.rollback().await
+    };
+    let claim = store.claim_taskflow_step(
+        "step-run",
+        "work",
+        /*attempt*/ 1,
+        &owner,
+        &intent,
+        &payload,
+        "contention-claim",
+        /*now_ms*/ 22,
+    );
+    let (claimed, released) = tokio::join!(claim, release_writer);
+    released?;
+    let claimed = claimed?;
+    assert_eq!(claimed.status, TaskFlowStepCommandStatus::Applied);
+    assert_eq!(claimed.receipt.state, TaskFlowStepState::Claimed);
+    assert_eq!(claimed.receipt.event_seq, 2);
+    let replay = store
+        .claim_taskflow_step(
+            "step-run",
+            "work",
+            /*attempt*/ 1,
+            &owner,
+            &intent,
+            &payload,
+            "contention-claim",
+            /*now_ms*/ 22,
+        )
+        .await?;
+    assert_eq!(replay.status, TaskFlowStepCommandStatus::AlreadyApplied);
+    assert_eq!(replay.receipt, claimed.receipt);
+    pool.close().await;
+    store.close().await;
+    Ok(())
+}
