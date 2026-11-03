@@ -1,0 +1,99 @@
+{
+  "schema": "recovery.code-and-manifest.qa.v1",
+  "bundles": [
+    {
+      "name": "NBO_20261028_source_only.tar.gz",
+      "bytes": 1214925,
+      "bundle_sha256": "b6aea3a8775eb3d7a5445678e4881cf4043008cfe49b94a9db0e54217b44108b",
+      "members": 509,
+      "source_files": 508,
+      "hash_verified": 508,
+      "python_ast_pass": 149,
+      "json_parse_pass": 0,
+      "toml_parse_pass": 0,
+      "issues": []
+    },
+    {
+      "name": "NDU_natural_joint_source_only_20261103.tar.gz",
+      "bytes": 154685,
+      "bundle_sha256": "63c1fe45e077224744b915b77810f1da3d1a179192de4ee5ef4ec22f1e455f44",
+      "members": 43,
+      "source_files": 41,
+      "hash_verified": 41,
+      "python_ast_pass": 17,
+      "json_parse_pass": 21,
+      "toml_parse_pass": 0,
+      "issues": []
+    },
+    {
+      "name": "hcsn-addressed-source-only.tar.gz",
+      "bytes": 576797,
+      "bundle_sha256": "e93742efd506bb8f963663c3a31efab9b3d33a411028932f885a156a1a4c4763",
+      "members": 123,
+      "source_files": 121,
+      "hash_verified": 121,
+      "python_ast_pass": 90,
+      "json_parse_pass": 10,
+      "toml_parse_pass": 0,
+      "issues": []
+    },
+    {
+      "name": "hcsn-r2-source-only.tar.gz",
+      "bytes": 537238,
+      "bundle_sha256": "f2a572f29fe1376000d54e494ebc9c682297916ef6172b8a8137734edb4859b0",
+      "members": 187,
+      "source_files": 185,
+      "hash_verified": 185,
+      "python_ast_pass": 135,
+      "json_parse_pass": 19,
+      "toml_parse_pass": 0,
+      "issues": []
+    },
+    {
+      "name": "hcsn-v9-source-only.tar.gz",
+      "bytes": 72798,
+      "bundle_sha256": "c86ce3068c75bb124d351d9aca6c01374085c5385f53fcd38700221f3fb84f49",
+      "members": 35,
+      "source_files": 33,
+      "hash_verified": 33,
+      "python_ast_pass": 18,
+      "json_parse_pass": 2,
+      "toml_parse_pass": 0,
+      "issues": []
+    },
+    {
+      "name": "razr-r12-source-only.tar.gz",
+      "bytes": 317662,
+      "bundle_sha256": "b187bf6c70bd5de2d643008fee8e2d4086278e65c68fb5af45d304ba0a3897da",
+      "members": 135,
+      "source_files": 133,
+      "hash_verified": 133,
+      "python_ast_pass": 79,
+      "json_parse_pass": 19,
+      "toml_parse_pass": 0,
+      "issues": []
+    },
+    {
+      "name": "rea-6-8-0-tool-fixtures-source-only-20261103.tar.gz",
+      "bytes": 13445,
+      "bundle_sha256": "7068edd8c211011844f52382cb74e72c3ce0c0f826ae5cc6a8ea5de5a3e38597",
+      "members": 41,
+      "source_files": 39,
+      "hash_verified": 39,
+      "python_ast_pass": 0,
+      "json_parse_pass": 10,
+      "toml_parse_pass": 0,
+      "issues": []
+    }
+  ],
+  "summary": {
+    "bundles": 7,
+    "source_members": 1060,
+    "sha256_verified": 1060,
+    "python_parsed": 488,
+    "json_parsed": 81,
+    "toml_parsed": 0,
+    "errors": 0
+  },
+  "scope": "archive completeness, member SHA-256, Python AST, JSON/TOML parsing only; not execution, external dependency resolution, independent experimental replay, formal proof or CI build"
+}
