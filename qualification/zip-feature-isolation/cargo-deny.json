@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/root/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "deny",
+    "--log-level",
+    "warn",
+    "--manifest-path",
+    "/workspace/scratch/1f1d02319616/private-ci-work/repo/codex-rs/Cargo.toml",
+    "--all-features",
+    "--locked",
+    "check",
+    "--hide-inclusion-graph",
+    "--disable-fetch",
+    "--show-stats"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 4.269,
+  "stdout_sha256": "0ef6917ad8e437719e8ca75b9d01c42f4f79c83de6f788d98a6f254adfd79735",
+  "stderr_sha256": "5421d0b967fa0a8a1cc07d3b9a806bb0593e3a8549085a755eb2e13df7ce28f8",
+  "advisory_ids": [
+    "RUSTSEC-2024-0449",
+    "RUSTSEC-2026-0318",
+    "RUSTSEC-2026-0319",
+    "RUSTSEC-2026-0370",
+    "RUSTSEC-2026-0371",
+    "RUSTSEC-2026-0372",
+    "RUSTSEC-2026-0374",
+    "RUSTSEC-2026-0387"
+  ],
+  "summary_lines": [
+    " advisories FAILED: 8 errors, 3 warnings, 22 notes",
+    "           bans ok: 0 errors, 94 warnings, 22 notes",
+    "       licenses ok: 0 errors, 1 warnings, 1338 notes",
+    "        sources ok: 0 errors, 1 warnings, 6 notes"
+  ],
+  "advisory_db_commit": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "policy_unchanged": true,
+  "cargo_lock_sha256": "9bd97ee53e641986502cf32a5a10cf71f53739e18d7ab6dec3e2992cc85d51ed"
+}

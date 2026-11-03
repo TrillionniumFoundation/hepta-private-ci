@@ -1,0 +1,76 @@
+{
+  "parent_commit": "030670f74300e65777abc768c049b5140f9acd29",
+  "fence_original_job": 126070689483,
+  "fence_original_run": 41679961860,
+  "fence_original_failure": "unsupported_resolver_layout before checkout",
+  "fence_old_pin": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+  "fence_official_action_pin": "9d10445098284f8e8bbf67495fc8c2eaa34c28c5",
+  "fence_bundle_manifest": {
+    "artifact_name": "fence_v0.12.7_linux-amd64",
+    "artifact_sha256": "8ac3aaac8e4d29d148121038b2ed26714afc24ff2c7a61f15d507979419e787d",
+    "bundle_path": "action/bin/fence",
+    "release_channel": "stable",
+    "release_tag": "v0.12.7",
+    "release_url": "https://github.com/openai/fence/releases/tag/v0.12.7",
+    "repository": "openai/fence",
+    "schema_version": 4,
+    "signer_digest": "8a0652dd8357adcadb235fbef5016e14a382dbde",
+    "signer_workflow": "openai/fence/.github/workflows/release.yml",
+    "source_commit": "8a0652dd8357adcadb235fbef5016e14a382dbde",
+    "source_ref": "refs/heads/main"
+  },
+  "fence_actual_binary_bytes": 2184600,
+  "fence_actual_binary_sha256": "8ac3aaac8e4d29d148121038b2ed26714afc24ff2c7a61f15d507979419e787d",
+  "action_contract_unchanged": true,
+  "mode": "audit (unchanged)",
+  "source_inputs": {
+    ".github/workflows/blob-size-policy.yml": "a577a59c14c7c67ac03e506e93d1f09834dfec4918e047d858b636b90139cd3b",
+    ".github/workflows/v8-canary.yml": "59292058299b16e34ce5acec5c7935a2c53d5f18535603d802b6083241fe87e4",
+    ".github/workflows/blocking-ci.yml": "90bcb69764af9164a970a9b196d81c1e2d670881d9298976f28018b8a4f9fc11",
+    ".github/scripts/v8_canary_changes.py": "a2fe83ef5d69401f3c9da852f1a2f7112b55fb70b8d12aff1774884a9c340275",
+    "scripts/check_blob_size.py": "a6a66ffc6c1fe7f52092c96e746725de38a7ea8a2bb4d7fd7f4c825b778c14c9",
+    "scripts/hepta_ci_history.py": "0137e2f86c7174b85a4d3709ab8b9025e61999be20a428b21df16ef753e89846",
+    ".github/blob-size-allowlist.txt": "bb867bc531c86f5341a031698e16b4e5a4a0d31f7d8f4cc5ff26e101d84f9d75"
+  },
+  "untouched_decision_and_policy_files": [
+    ".github/scripts/v8_canary_changes.py",
+    "scripts/check_blob_size.py",
+    "scripts/hepta_ci_history.py",
+    ".github/blob-size-allowlist.txt",
+    ".github/workflows/blocking-ci.yml"
+  ],
+  "observed_exec_chunk": "797ad2",
+  "existing_tests": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        ".github/scripts",
+        "-p",
+        "test_v8_canary_changes.py"
+      ],
+      "passed": 7,
+      "reported": "OK"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_ci_history.py"
+      ],
+      "passed": 5,
+      "reported": "OK"
+    }
+  ],
+  "actionlint": "official 1.7.12, two exact changed workflows, exit 0",
+  "original_budget_changes": false,
+  "hosted_acceptance": "pending"
+}

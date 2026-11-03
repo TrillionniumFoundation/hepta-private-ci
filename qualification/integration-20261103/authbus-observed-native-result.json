@@ -1,0 +1,22 @@
+{
+  "head": "a2d425499b026eec558516673a4cc376a2cfbd16",
+  "test": "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+  "selected_tests": 1,
+  "passed": 1,
+  "filtered_other_tests": 122,
+  "retries": 0,
+  "build_seconds": 575,
+  "test_seconds": 0.353,
+  "command": "just test -p codex-hepta-evidence bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed --locked --offline --no-tests=fail --retries 0",
+  "toolchain": "Rust/Cargo 1.95.0; cargo-nextest 0.9.151",
+  "profile_overrides": {
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "1"
+  },
+  "session_exit_code": 0,
+  "evidence_status": "Observed terminal result before runtime reset. Full local log and JUnit were lost; this is an observation record, not a reconstructed raw log.",
+  "full_owner_suite": "Not started: process creation failed after runtime reset",
+  "full_original_bazel_and_platform_qualification": false
+}

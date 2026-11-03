@@ -568,7 +568,11 @@ which = "8"
 whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
-zip = "2.4.2"
+# Preserve the existing formats and libbz2 C backend. In zip 9 the selector
+# named `bzip2-rs` enables bzip2/bzip2-sys instead of the new Rust backend.
+zip = { version = "9.0.0", default-features = false, features = [
+    "aes-crypto", "bzip2-rs", "deflate64", "deflate", "lzma", "time", "zstd", "xz",
+] }
 zstd = "0.13"
 
 wiremock = "0.6"
@@ -661,6 +665,13 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Backport upstream's maintained TOML parser without changing age encryption,
+# i18n-config's configuration schema, or the source allowlist.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
+# Declare ZIP's selected C bzip2 backend on its optional dependency, avoiding
+# same-named feature activation and graph-tool forwarding discrepancies.
+# The vendored Rust implementation is unchanged.
+zip = { path = "third_party/zip-9.0.0" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }

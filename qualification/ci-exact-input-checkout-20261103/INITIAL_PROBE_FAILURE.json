@@ -1,0 +1,283 @@
+{
+  "schema": "exact-input-checkout-fixture-v1",
+  "accepted": false,
+  "error": "AssertionError: ",
+  "source_sha256_before": {
+    ".github/workflows/blocking-ci.yml": "90bcb69764af9164a970a9b196d81c1e2d670881d9298976f28018b8a4f9fc11",
+    "scripts/hepta_ci_history.py": "0137e2f86c7174b85a4d3709ab8b9025e61999be20a428b21df16ef753e89846",
+    "scripts/hepta_ci_scope.py": "2cbc0c312ea4144f121a739a3cd3822c3360741c78a97bd403434333cb80199e",
+    "scripts/hepta_ci_dependencies.py": "0c024f20fa38f7fcef869e9228c83e7ef8d249b72c2466b78517f13a0f21d1f8",
+    "qualification/yaml-safe-compatibility/checkout/replay_exact_inputs.py": "5e78aa1ef4a2a1da9013209b108bb7b225bd7e26502caa82ca21e7e6114dcd55"
+  },
+  "source_sha256_after": {
+    ".github/workflows/blocking-ci.yml": "90bcb69764af9164a970a9b196d81c1e2d670881d9298976f28018b8a4f9fc11",
+    "scripts/hepta_ci_history.py": "0137e2f86c7174b85a4d3709ab8b9025e61999be20a428b21df16ef753e89846",
+    "scripts/hepta_ci_scope.py": "2cbc0c312ea4144f121a739a3cd3822c3360741c78a97bd403434333cb80199e",
+    "scripts/hepta_ci_dependencies.py": "0c024f20fa38f7fcef869e9228c83e7ef8d249b72c2466b78517f13a0f21d1f8",
+    "qualification/yaml-safe-compatibility/checkout/replay_exact_inputs.py": "5e78aa1ef4a2a1da9013209b108bb7b225bd7e26502caa82ca21e7e6114dcd55"
+  },
+  "cases": [],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q",
+        "--initial-branch=main"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "uploadpack.allowFilter",
+        "true"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "-qm",
+        "base"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "b1c0fded89fc4e2e474c9aebac3074deaca77a3a\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "-qb",
+        "unrelated"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "-qm",
+        "unrelated"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "e4d96936a4a667d98d210b3dae13626aae221cb2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "tag",
+        "unrelated-tag"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "-qb",
+        "prose",
+        "b1c0fded89fc4e2e474c9aebac3074deaca77a3a"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "-qm",
+        "prose"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "5bd28113a92a922ab0f1de6871953ad23ba696d5\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/tmp/chain-yaml-consumers-20261103/scripts/hepta_ci_scope.py",
+        "--base",
+        "b1c0fded89fc4e2e474c9aebac3074deaca77a3a",
+        "--head",
+        "5bd28113a92a922ab0f1de6871953ad23ba696d5"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/origin",
+      "exit_code": 0,
+      "stdout": "{\"base\": \"b1c0fded89fc4e2e474c9aebac3074deaca77a3a\", \"paths\": [\"README.md\"], \"scope\": {\"derived\": false, \"effects\": false, \"full_repo\": false, \"inference\": false, \"learning\": false, \"lifecycle\": false, \"native\": false, \"objective\": false}, \"source_head\": \"5bd28113a92a922ab0f1de6871953ad23ba696d5\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--depth=1",
+        "--single-branch",
+        "--no-tags",
+        "--branch",
+        "prose",
+        "file:///tmp/yaml-exact-inputs-mxggjnok/origin",
+        "/tmp/yaml-exact-inputs-mxggjnok/prose"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "cat-file",
+        "-e",
+        "b1c0fded89fc4e2e474c9aebac3074deaca77a3a^{commit}"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/prose",
+      "exit_code": 128,
+      "stdout": "",
+      "stderr": "fatal: Not a valid object name b1c0fded89fc4e2e474c9aebac3074deaca77a3a^{commit}\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/tmp/chain-yaml-consumers-20261103/scripts/hepta_ci_scope.py",
+        "--base",
+        "b1c0fded89fc4e2e474c9aebac3074deaca77a3a",
+        "--head",
+        "5bd28113a92a922ab0f1de6871953ad23ba696d5"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/prose",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/chain-yaml-consumers-20261103/scripts/hepta_ci_scope.py\", line 323, in <module>\n    main()\n  File \"/tmp/chain-yaml-consumers-20261103/scripts/hepta_ci_scope.py\", line 301, in main\n    paths = [] if args.full else changed_paths(args.base, args.head)\n                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/chain-yaml-consumers-20261103/scripts/hepta_ci_scope.py\", line 208, in changed_paths\n    result = subprocess.run(\n             ^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['git', '--no-replace-objects', 'diff', '--no-ext-diff', '--no-textconv', '--name-only', '--no-renames', '-z', 'b1c0fded89fc4e2e474c9aebac3074deaca77a3a', '5bd28113a92a922ab0f1de6871953ad23ba696d5', '--']' returned non-zero exit status 128.\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/tmp/chain-yaml-consumers-20261103/scripts/hepta_ci_history.py",
+        "--commit",
+        "b1c0fded89fc4e2e474c9aebac3074deaca77a3a",
+        "--commit",
+        "5bd28113a92a922ab0f1de6871953ad23ba696d5"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/prose",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/tmp/chain-yaml-consumers-20261103/scripts/hepta_ci_scope.py",
+        "--base",
+        "b1c0fded89fc4e2e474c9aebac3074deaca77a3a",
+        "--head",
+        "5bd28113a92a922ab0f1de6871953ad23ba696d5"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/prose",
+      "exit_code": 0,
+      "stdout": "{\"base\": \"b1c0fded89fc4e2e474c9aebac3074deaca77a3a\", \"paths\": [\"README.md\"], \"scope\": {\"derived\": false, \"effects\": false, \"full_repo\": false, \"inference\": false, \"learning\": false, \"lifecycle\": false, \"native\": false, \"objective\": false}, \"source_head\": \"5bd28113a92a922ab0f1de6871953ad23ba696d5\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "cat-file",
+        "-e",
+        "e4d96936a4a667d98d210b3dae13626aae221cb2^{commit}"
+      ],
+      "cwd": "/tmp/yaml-exact-inputs-mxggjnok/prose",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "scope": "Local Git transport and unchanged scope behavior only; the original hosted five-minute job must also pass."
+}
