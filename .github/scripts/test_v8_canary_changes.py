@@ -1,4 +1,6 @@
+import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -92,6 +94,52 @@ version = "149.2.0"
                 {"feature-only.txt"},
             )
             self.assertEqual(merge_base(base, head, root=root), common)
+
+    def test_shallow_pr_history_recovers_three_dot_merge_base(self) -> None:
+        # Reproduce the original CI failure: each exact SHA object exists,
+        # but a depth-one fetch has no ancestor for three-dot comparison.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            source = workspace / "source"
+            source.mkdir()
+            origin = workspace / "origin.git"
+            shallow = workspace / "shallow"
+
+            self.run_git(workspace, "init", "--bare", "--initial-branch=main", str(origin))
+            self.run_git(source, "init", "--initial-branch=main")
+            self.run_git(source, "config", "user.name", "Test User")
+            self.run_git(source, "config", "user.email", "test@example.com")
+            self.write_and_commit(source, "common", "common.txt")
+            common = self.run_git(source, "rev-parse", "HEAD")
+            self.run_git(source, "branch", "feature")
+            self.write_and_commit(source, "base-only", "base-only.txt")
+            base = self.run_git(source, "rev-parse", "HEAD")
+            self.run_git(source, "switch", "feature")
+            self.write_and_commit(source, "feature-only", "feature-only.txt")
+            head = self.run_git(source, "rev-parse", "HEAD")
+            self.run_git(source, "remote", "add", "origin", origin.as_uri())
+            self.run_git(source, "push", "origin", "main", "feature")
+
+            subprocess.check_call(
+                ["git", "clone", "--quiet", "--depth=1", "--branch=feature", origin.as_uri(), str(shallow)],
+                cwd=workspace,
+            )
+            self.run_git(shallow, "fetch", "--no-tags", "--depth=1", "origin", base, head)
+            self.assertEqual(self.run_git(shallow, "rev-parse", "--is-shallow-repository"), "true")
+            with self.assertRaises(subprocess.CalledProcessError):
+                merge_base(base, head, root=shallow)
+
+            script = Path(__file__).resolve().parents[2] / "scripts" / "hepta_ci_history.py"
+            environment = os.environ.copy()
+            environment.pop("GH_TOKEN", None)
+            subprocess.check_call(
+                [sys.executable, str(script), "--commit", base, "--commit", head, "--full-history"],
+                cwd=shallow,
+                env=environment,
+            )
+            self.assertEqual(self.run_git(shallow, "rev-parse", "--is-shallow-repository"), "false")
+            self.assertEqual(merge_base(base, head, root=shallow), common)
+            self.assertEqual(changed_files(base, head, root=shallow), {"feature-only.txt"})
 
     def write_and_commit(self, root: Path, contents: str, path: str) -> None:
         (root / path).write_text(contents)
