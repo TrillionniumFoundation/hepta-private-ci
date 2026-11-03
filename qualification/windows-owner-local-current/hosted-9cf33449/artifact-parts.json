@@ -1,0 +1,77 @@
+{
+  "schema": "original-hosted-zip-binary-parts-v1",
+  "source_commit": "9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+  "workflow_run": 41705418271,
+  "part_max_bytes": 384000,
+  "artifacts": [
+    {
+      "artifact_id": 13268019806,
+      "name": "owner-local-union-ubuntu-24.04-9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+      "bytes": 672717,
+      "sha256": "810c751f2fd65bdd8fb7a9b49c0c7e69654881435321e369fd4da8fb6282a6bd",
+      "parts": [
+        {
+          "path": "artifacts/13268019806/part-000.bin",
+          "bytes": 383953,
+          "sha256": "62679c80b4b87ac4479d098b7cf74c336a98f8b0d4f2905df5309af036968d34"
+        },
+        {
+          "path": "artifacts/13268019806/part-001.bin",
+          "bytes": 288764,
+          "sha256": "87b82314f64bd6961bf6ae0bdec43fe0061910a59d8b852cab996a04d0cb66a2"
+        }
+      ]
+    },
+    {
+      "artifact_id": 13267346800,
+      "name": "owner-local-union-macos-15-9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+      "bytes": 670308,
+      "sha256": "a4b6ed0a27e77b2d65d88c54c91e87ea7ae086c6ca1e39027de4a1228db6ac5e",
+      "parts": [
+        {
+          "path": "artifacts/13267346800/part-000.bin",
+          "bytes": 383627,
+          "sha256": "c0dbd13e901daccf5f6f7c87ae426617b5584d89aeb4a87c44dbd90c64aaeff2"
+        },
+        {
+          "path": "artifacts/13267346800/part-001.bin",
+          "bytes": 286681,
+          "sha256": "f5e0f03d7f9bf38f2befdc81981c51f7499a7c163276e7e6dcfa909b67d9607b"
+        }
+      ]
+    },
+    {
+      "artifact_id": 13267211183,
+      "name": "owner-local-union-windows-2025-9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+      "bytes": 670913,
+      "sha256": "0b45db01bd35c9eb90b60af89c892ed2c47c884632baca858f7a22118de0027c",
+      "parts": [
+        {
+          "path": "artifacts/13267211183/part-000.bin",
+          "bytes": 383671,
+          "sha256": "5fbf4fa862e83fd298730dabf46b564c9fd9d0ee1aa26252a0ded5bb20b52f25"
+        },
+        {
+          "path": "artifacts/13267211183/part-001.bin",
+          "bytes": 287242,
+          "sha256": "d629cf97b3d0e7c1cd869e82ea00d92bd8abeb94435635746da6d303919b1686"
+        }
+      ]
+    },
+    {
+      "artifact_id": 13267192481,
+      "name": "owner-local-union-bazel-9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+      "bytes": 272919,
+      "sha256": "6839ffb6c3a48baeb8afc589222a152af6b69e70b89771ce964b8f0b15daebd6",
+      "parts": [
+        {
+          "path": "artifacts/13267192481/part-000.bin",
+          "bytes": 272919,
+          "sha256": "6839ffb6c3a48baeb8afc589222a152af6b69e70b89771ce964b8f0b15daebd6"
+        }
+      ]
+    }
+  ],
+  "no_reencoding_of_original_zip": true,
+  "partition_note": "Raw boundaries chosen so each binary part contains a NUL in its first 1024 bytes; original ZIP bytes are unchanged and no policy exception is added."
+}

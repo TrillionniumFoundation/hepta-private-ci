@@ -1,0 +1,88 @@
+{
+  "status": "verified",
+  "source_commit": "9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+  "platform": "Windows-2025Server-10.0.26100-SP0",
+  "artifact_bytes": 670913,
+  "artifact_sha256": "0b45db01bd35c9eb90b60af89c892ed2c47c884632baca858f7a22118de0027c",
+  "zip_crc": "passed",
+  "immutable_git_inputs": 286,
+  "source_before_and_after_match_exact_git_bytes": true,
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "metadata_packages": 1517,
+  "library_tests": {
+    "codex-uds": 14,
+    "codex-hepta-matrixd": 31,
+    "codex-hepta-fleet": 36,
+    "codex-hepta-automation": 25
+  },
+  "native_test_executions_passed": 106,
+  "failed": 0,
+  "skipped": 0,
+  "original_commands_verified": 8,
+  "scoped_clippy_exit": 0,
+  "receipt_sha256": "ea0be319d1963c8529717e5a14355576a6f8e3e1c9aec4bb1d4c231ce0ad232d",
+  "pinned_dbus": null,
+  "outputs": {
+    "codex-hepta-automation.junit.xml": {
+      "bytes": 5218,
+      "sha256": "1ebafcfd22f0b2d57d53fa06092d76dd62fb4b93ce51f1fcb92f3e052df588ad"
+    },
+    "codex-hepta-automation.log": {
+      "bytes": 56284,
+      "sha256": "028a54095c3eec72cb6764a07e1d3c50cde029f4a8ab90680c5dd97346dfd152"
+    },
+    "codex-hepta-fleet.junit.xml": {
+      "bytes": 7138,
+      "sha256": "baeea6a7de00d735e7d04681e2dffe955fb0c952a0686bceaacd7f4b7a50cc03"
+    },
+    "codex-hepta-fleet.log": {
+      "bytes": 26665,
+      "sha256": "3f8b581da5c4b4d09a867a353af8487d191118af9c45c3df1c7e5c777b8eecfb"
+    },
+    "codex-hepta-matrixd.junit.xml": {
+      "bytes": 6232,
+      "sha256": "b556ca69499784c6efc3c4f88a13862fd9dd2db02fc35ecfef23f927324e9644"
+    },
+    "codex-hepta-matrixd.log": {
+      "bytes": 124551,
+      "sha256": "c7ae1eef431790243f4a1032036d50190ae440d30a862c590b9fa77c68072583"
+    },
+    "codex-uds.junit.xml": {
+      "bytes": 2955,
+      "sha256": "a664192afee2d4e65beffd8e13ece90b90b7b6a1bae4938deb93e5657df0da7d"
+    },
+    "codex-uds.log": {
+      "bytes": 13316,
+      "sha256": "e8f003b6ea581ec2f6a0a2df1af09d387b1d956e29a4eb65a94a2532e2abfc71"
+    },
+    "final-tracked-source.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "initial-tracked-source.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "metadata.json.gz": {
+      "bytes": 580849,
+      "sha256": "20c794f78a5709c69a4769960b556f884ef51043e6d64e83238e18ebb62c43c4"
+    },
+    "metadata.stderr": {
+      "bytes": 60145,
+      "sha256": "5135f9d60a6025b57bc6ff11dbff29d2a66bdd032ac2cc4a15995aab9b86f59b"
+    },
+    "receipt.json": {
+      "bytes": 86333,
+      "sha256": "ea0be319d1963c8529717e5a14355576a6f8e3e1c9aec4bb1d4c231ce0ad232d"
+    },
+    "rustc-version.log": {
+      "bytes": 194,
+      "sha256": "2efe229f7908c2c19f459ca734101a5b35cb482476b8bee1357f94a18c766078"
+    },
+    "scoped-clippy-fix.log": {
+      "bytes": 89402,
+      "sha256": "7d2814d568c993be19cac6f311e84b1c507f59a32b38339a7ac150f899184b5a"
+    }
+  },
+  "scope": "Exact scoped native owner-local consumers; full CI, private-state foundation, and other platforms are separate gates."
+}

@@ -1,0 +1,25 @@
+{
+  "status": "verified",
+  "source_commit": "9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+  "artifact": 13267192481,
+  "artifact_sha256": "6839ffb6c3a48baeb8afc589222a152af6b69e70b89771ce964b8f0b15daebd6",
+  "artifact_bytes": 272919,
+  "zip_crc": "passed",
+  "immutable_git_inputs": 286,
+  "source_before_and_after_match_exact_git_bytes": true,
+  "original_committed_lock_first_update_postcheck_all_exit0": true,
+  "generated_lock_equals_exact_committed_bytes": true,
+  "lock_sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+  "lock_bytes": 1701389,
+  "original_bazel_target_executions": 4,
+  "targets": [
+    "//codex-rs/uds:uds-unit-tests",
+    "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests",
+    "//codex-rs/hepta-fleet:hepta-fleet-unit-tests",
+    "//codex-rs/hepta-automation:hepta-automation-unit-tests"
+  ],
+  "observed_execution": "4/4 executed; no target result marked cached",
+  "original_command_count": 6,
+  "receipt_sha256": "ed3f16a5f70a9d110f4783c5593f60da8c654f09eaed95b92dc5795ecd16f658",
+  "scope": "Four original scoped Bazel targets; original logs retained but no individual test XML was uploaded."
+}
