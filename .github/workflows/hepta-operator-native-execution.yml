@@ -1,0 +1,61 @@
+name: hepta operator native execution qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-operator-native-execution.yml
+      - codex-rs/hepta-operator-acceptance/**
+      - defs.bzl
+      - workspace_root_test_launcher.*
+      - qualification/operator-native-execution-20261103/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: operator-native-execution-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    if: github.head_ref == 'fix/private-ci-operator-native-execution-20261103-gpt6'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            target: aarch64-apple-darwin
+            config: ci-macos
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            config: ci-linux
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: operator-native-execution
+      - name: Build and lint remotely, then run the original host tests
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          QUALIFICATION_CONFIG: ${{ matrix.config }}
+        shell: bash
+        run: python3 qualification/operator-native-execution-20261103/run.py --config "$QUALIFICATION_CONFIG" --output "$RUNNER_TEMP/operator-native-execution"
+      - name: Retain exact inputs, action graph, and original test output
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: operator-native-execution-${{ matrix.runner }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/operator-native-execution
+          if-no-files-found: error
+          retention-days: 7

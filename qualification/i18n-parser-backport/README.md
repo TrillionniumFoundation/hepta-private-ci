@@ -64,8 +64,12 @@ secrets tests, including local encryption round trips and ciphertext-cache
 invalidation. The native receipt binds the input hashes before and after
 execution, the resulting test binary, the complete log and the 15-case JUnit
 report. This is the Linux consumer suite; complete required CI remains open.
-The full cargo-deny output is retained losslessly as `cargo-deny-output.json.gz`
-with hashes and a verified decompression check in its adjacent manifest.
+The full cargo-deny output is retained losslessly in `cargo-deny-output-parts/`
+with per-part hashes and the original gzip and JSON hashes in the manifest.
+The original gzip was 849,169 bytes, exceeding the unchanged 512,000-byte blob
+policy. `python3 restore_deny_output.py --output /tmp/cargo-deny-output.json.gz`
+restores its exact original bytes and verifies both compressed and decompressed
+identities. No audit evidence is removed and no size allowance is added.
 
 Hosted run `41660442536`, job `126001900751`, generated the adopted lock from
 exact commit `5e584c763e70a9d9b69bd80c465a7a7988de44ea`. The source commit and
