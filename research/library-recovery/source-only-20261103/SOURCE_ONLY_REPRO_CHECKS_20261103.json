@@ -1,0 +1,45 @@
+{
+  "schema": "source-only-recovery-repro-checks.v1",
+  "date": "2026-11-03",
+  "scope": "Deterministic rebuilding and integrity of seven code-only packages; not full scientific replay",
+  "independent_source_archive_verification": {
+    "bundle_count": 7,
+    "candidate_entries_verified_sha256": 1060,
+    "python_ast_parse_pass": 488,
+    "json_parse_pass": 81,
+    "errors": 0
+  },
+  "deterministic_reruns": [
+    {
+      "builder": "build_nbo_source_only.py",
+      "exit_code": 0,
+      "sha256_unchanged": true,
+      "archive_sha256": "b6aea3a8775eb3d7a5445678e4881cf4043008cfe49b94a9db0e54217b44108b"
+    },
+    {
+      "builder": "build_source_bundles_20261103.py",
+      "exit_code": 0,
+      "sha256_unchanged": true,
+      "tested_archive": "hcsn-r2-source-only.tar.gz",
+      "archive_sha256": "f2a572f29fe1376000d54e494ebc9c682297916ef6172b8a8137734edb4859b0",
+      "note": "Other outputs built in the same run were previously hash-checked on publication"
+    },
+    {
+      "builder": "build_ndu_natural_source_only_20261103.py",
+      "exit_code": 0,
+      "sha256_unchanged": true,
+      "archive_sha256": "63c1fe45e077224744b915b77810f1da3d1a179192de4ee5ef4ec22f1e455f44"
+    },
+    {
+      "builder": "build_rea_source_only_20261103.py",
+      "exit_code": 0,
+      "sha256_unchanged": true,
+      "archive_sha256": "7068edd8c211011844f52382cb74e72c3ce0c0f826ae5cc6a8ea5de5a3e38597"
+    }
+  ],
+  "github_builder_and_report_files_remote_blob_verified": 9,
+  "github_builder_and_report_files_total_checked": 9,
+  "scientific_data_dependent_replay_proven": false,
+  "library_clearance_gate_passed": false,
+  "library_deletion_performed": false
+}
