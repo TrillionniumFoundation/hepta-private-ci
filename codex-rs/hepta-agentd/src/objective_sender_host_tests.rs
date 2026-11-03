@@ -11,6 +11,7 @@ use codex_hepta_memory::CognitiveRecoveryAnchor;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ObjectiveSenderCheckpointError;
 use codex_hepta_memory::ObjectiveSenderError;
+use codex_hepta_memory::ObjectiveSenderInputError;
 use codex_hepta_memory::ObjectiveSenderOrigin;
 use codex_hepta_memory::ObjectiveSenderRequest;
 use codex_hepta_memory::ObjectiveSenderWriterFence;
@@ -138,7 +139,7 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
     // The actual original body has no optional fields. Exercise all of them,
     // preserving Unicode and digest spelling rather than inventing defaults.
     for source in ["{}", "{\"goal\":\"你好 🧠\",\"combining\":\"é\"}"] {
-        for digest in ["ab".repeat(32), "aB".repeat(32)] {
+        for (digest, canonical) in [("ab".repeat(32), true), ("aB".repeat(32), false)] {
             let body = AuthBusObjectiveBody {
                 spawn_generation: config.identity().spawn_generation,
                 run_id: "composition-original-body".to_string(),
@@ -155,8 +156,7 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
                 config.identity(),
                 &body,
                 config.identity().spawn_generation,
-            )?;
-            assert_eq!(original_payload, serde_json::to_vec(&body)?);
+            );
             let mut ingress = AuthBusObjectiveIngress {
                 issuer_id: "composition-original-issuer".to_string(),
                 key_epoch: 3,
@@ -167,7 +167,17 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
                 body,
             };
             let raw = serde_json::to_string(&ingress)?;
-            let retained = ObjectiveSenderRequest::from_original(raw.clone(), origin.clone())?;
+            let retained = ObjectiveSenderRequest::from_original(raw.clone(), origin.clone());
+            if !canonical {
+                // Both original boundaries require canonical lowercase digests.
+                // Reject the supplied spelling instead of normalizing signed bytes.
+                assert!(original_payload.is_err());
+                assert!(matches!(retained, Err(ObjectiveSenderInputError::Identity)));
+                continue;
+            }
+            let original_payload = original_payload?;
+            assert_eq!(original_payload, serde_json::to_vec(&ingress.body)?);
+            let retained = retained?;
             assert_eq!(
                 retained.identity().signed_body_sha256,
                 Sha256Digest::for_bytes(&original_payload)
