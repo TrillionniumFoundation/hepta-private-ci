@@ -86,7 +86,11 @@ def _check(snapshot, model, public, profile):
             or snapshot.model_hash != tensor_digest(model.state_dict())
             or snapshot.state_hash != tensor_digest(snapshot.state.tensors())):
         raise ValueError("Snapshot content, model, input or profile changed")
-    charge = math.fsum(e["amount"] for e in snapshot.events)
+    amounts = [e["amount"] for e in snapshot.events]
+    if (not math.isfinite(snapshot.prefix_cost) or snapshot.prefix_cost < 0
+            or any(not math.isfinite(amount) or amount < 0 for amount in amounts)):
+        raise ValueError("Snapshot cost ledger must be finite and nonnegative")
+    charge = math.fsum(amounts)
     if (not math.isfinite(snapshot.budget) or not math.isfinite(charge)
             or abs(charge - snapshot.prefix_cost) > 1e-10
             or abs(snapshot.budget + charge - profile.initial_budget) > 1e-10):

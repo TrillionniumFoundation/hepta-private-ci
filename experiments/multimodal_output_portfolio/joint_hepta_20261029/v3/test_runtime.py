@@ -99,6 +99,25 @@ class RuntimeIntegration(unittest.TestCase):
             self.assertAlmostEqual(right["meter_cpu_end"]-left["meter_cpu_end"], right["cpu_seconds"], places=10)
             self.assertAlmostEqual(right["meter_wall_end"]-left["meter_wall_end"], right["wall_seconds"], places=10)
 
+    def test_snapshot_rejects_negative_costs_even_when_budget_reconciles(self):
+        snapshot = start_snapshot(self.model, self.public, seed=31, profile=self.profile)
+        negative = {**snapshot.events[0], "amount": -1.0}
+        cases = {
+            "negative_prefix": replace(snapshot, events=(negative,), prefix_cost=-1.0,
+                                       budget=self.profile.initial_budget + 1.0),
+            "negative_offset": replace(snapshot, events=(negative,
+                {**snapshot.events[0], "amount": snapshot.prefix_cost + 1.0})),
+        }
+        for name, damaged in cases.items():
+            with self.subTest(case=name):
+                # Both ledgers conserve their claimed totals. Neither may mint
+                # budget or hide a negative receipt before real STOP delivery.
+                self.assertAlmostEqual(sum(e["amount"] for e in damaged.events), damaged.prefix_cost)
+                self.assertAlmostEqual(damaged.budget + damaged.prefix_cost, self.profile.initial_budget)
+                with self.assertRaisesRegex(ValueError, "Snapshot"):
+                    self.run_episode(name, strategy="stop", initial_snapshot=damaged)
+                self.assertFalse((self.directory/name/"outputs").exists())
+
     def test_failed_independent_observer_is_retained_and_charged(self):
         def fail(_):
             raise RuntimeError("observer unavailable")
