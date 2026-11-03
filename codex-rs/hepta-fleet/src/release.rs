@@ -255,6 +255,13 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+
+            std::fs::DirBuilder::new().mode(0o700).create(&staging)?;
+        }
+        #[cfg(not(unix))]
         std::fs::create_dir(&staging)?;
         let result = (|| {
             let bin_root = staging.join("bin");
@@ -293,8 +300,7 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
+            publish_release_directory(&staging, &final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
@@ -916,6 +922,28 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
         .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))
 }
 
+fn publish_release_directory(staging: &Path, final_root: &Path) -> Result<(), FleetRegistryError> {
+    #[cfg(target_os = "macos")]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        // Darwin requires write permission on the moved directory, even for a
+        // same-parent rename. Keep the 0700 directory private until it is moved,
+        // then seal and flush that exact inode through the retained handle.
+        // Catalog admission rejects a writable root if publication is interrupted.
+        let directory = File::open(staging)?;
+        std::fs::rename(staging, final_root)?;
+        directory.set_permissions(std::fs::Permissions::from_mode(0o555))?;
+        directory.sync_all()?;
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        set_mode(staging, /*mode*/ 0o555)?;
+        std::fs::rename(staging, final_root)?;
+    }
+    Ok(())
+}
+
 fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {
     let mut input = File::open(source)?;
     let mut output = OpenOptions::new()
@@ -1148,6 +1176,51 @@ mod tests {
             fixture.registry.allowed_releases(&fixture.first)?,
             vec![release_id]
         );
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn unsealed_release_root_cannot_be_resolved_or_first_allowed_after_reopen()
+    -> Result<(), FleetRegistryError> {
+        let fixture = Fixture::new()?;
+        let release_id = ReleaseId::parse("interrupted-publication")?;
+        let installed =
+            fixture
+                .registry
+                .install_release(release_id.clone(), &fixture.source, Vec::new())?;
+        let catalog = fixture.registry.layout().releases_root();
+        let release_root = catalog.join(release_id.as_str());
+        let manifest = release_root.join(RELEASE_MANIFEST_FILE);
+        let before = std::fs::read(&manifest)?;
+        // Model interruption after rename but before sealing the private root.
+        set_mode(&release_root, /*mode*/ 0o700)?;
+        let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
+        assert!(matches!(
+            resolve_catalog_release(catalog, &release_id),
+            Err(FleetRegistryError::Corrupt(_))
+        ));
+        assert!(matches!(
+            reopened.allow_release(&fixture.first, &release_id),
+            Err(FleetRegistryError::Corrupt(_))
+        ));
+        assert!(
+            !allowance_path(
+                reopened.layout().agent(&fixture.first).releases_root(),
+                &release_id,
+            )
+            .exists()
+        );
+        set_mode(&release_root, /*mode*/ 0o555)?;
+        sync_directory(&release_root)?;
+        sync_directory(catalog)?;
+        assert_eq!(std::fs::read(&manifest)?, before);
+        reopened.allow_release(&fixture.first, &release_id)?;
+        assert_eq!(
+            reopened.resolve_release(&fixture.first, &release_id)?,
+            installed
+        );
+        make_tree_removable(&release_root);
         Ok(())
     }
 

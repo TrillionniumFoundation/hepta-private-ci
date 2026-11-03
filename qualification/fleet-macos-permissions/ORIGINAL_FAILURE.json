@@ -1,0 +1,16 @@
+{
+  "original_source": "c7629f5366434bc146ef961b873d2babe79e93aa",
+  "current_parent": "8393775ed68714144d9e27449789ce42c254dc47",
+  "compressed_log": {
+    "bytes": 1069499,
+    "sha256": "2124b3e9ac7397313541ba088b5e8e497e5c35cb423625876566e7555ccf2a64"
+  },
+  "original_failure_excerpt": "2026-11-03T15:31:02.0134740Z ---- registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths stdout ----\n2026-11-03T15:31:02.0145040Z Error: Invalid(\"workspace root must be canonical and must not traverse a symlink: /var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpmzRZNZ/sweep/a\")\n2026-11-03T15:31:02.0261090Z \n2026-11-03T15:31:02.0363850Z ---- release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install stdout ----\n2026-11-03T15:31:02.0465900Z Error: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n2026-11-03T15:31:02.0567330Z \n2026-11-03T15:31:02.0685410Z ---- release::tests::catalog_resolves_only_digest_bound_per_agent_allowances stdout ----\n2026-11-03T15:31:02.0795460Z Error: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n2026-11-03T15:31:02.0897760Z \n2026-11-03T15:31:02.1000110Z ---- release::tests::program_mutation_is_detected_and_release_state_survives_reopen stdout ----\n2026-11-03T15:31:02.1102380Z Error: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n2026-11-03T15:31:02.1205490Z \n2026-11-03T15:31:02.1335560Z ---- release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world stdout ----\n2026-11-03T15:31:02.1442130Z Error: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n2026-11-03T15:31:02.1545220Z \n2026-11-03T15:31:02.1646830Z \n2026-11-03T15:31:02.1750160Z failures:\n2026-11-03T15:31:02.1865730Z     registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths\n2026-11-03T15:31:02.1967310Z     release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install\n2026-11-03T15:31:02.2068610Z     release::tests::catalog_resolves_only_digest_bound_per_agent_allowances\n2026-11-03T15:31:02.2171160Z     release::tests::program_mutation_is_detected_and_release_state_survives_reopen\n2026-11-03T15:31:02.2273900Z     release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world\n2026-11-03T15:31:02.2375620Z \n2026-11-03T15:31:02.2477770Z test result: FAILED. 36 passed; 5 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s",
+  "source_files": {
+    "codex-rs/hepta-fleet/src/release.rs": "5cc3c0e86b1e5d9bd1c3e76a6b35a9c3649fb7b01ef544cd32e9fd26dbac2d49",
+    "codex-rs/hepta-fleet/src/release_copy_tests.rs": "65a7b7756c6f9c9abf51f0f49f796632f5fafdf0812990635a72248ddb273f49",
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "46365d1b8f403c6171814040a73cdff8aed5aeae22d65fad2165d89b3b84a7d9"
+  },
+  "all_three_files_byte_equal_to_original_source": true,
+  "diagnosis_pending_actual_macos_operations": true
+}
