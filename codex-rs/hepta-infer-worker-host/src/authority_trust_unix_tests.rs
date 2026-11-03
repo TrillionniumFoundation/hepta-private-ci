@@ -18,12 +18,13 @@ use std::thread::{self};
 use std::time::Duration;
 use std::time::Instant;
 const MAX_REQUEST_BYTES: usize = 16 * 1024;
+type TestResult<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
-pub(crate) fn key(seed: u8) -> (PqNativeSigningKey, PqAuthorityTrustKey) {
+pub(crate) fn key(seed: u8) -> TestResult<(PqNativeSigningKey, PqAuthorityTrustKey)> {
     let spki = PqNativeSigningKey::public_spki_from_seed(&[seed; 32].into());
-    let id = ml_dsa_65_key_id_from_spki(&spki).unwrap();
-    (
-        PqNativeSigningKey::from_owned_seed([seed; 32].into(), id).unwrap(),
+    let id = ml_dsa_65_key_id_from_spki(&spki)?;
+    Ok((
+        PqNativeSigningKey::from_owned_seed([seed; 32].into(), id)?,
         PqAuthorityTrustKey {
             key_id: format!("key-{seed}"),
             public_key_id: id,
@@ -31,46 +32,46 @@ pub(crate) fn key(seed: u8) -> (PqNativeSigningKey, PqAuthorityTrustKey) {
             not_before_authority_epoch: 1,
             not_after_authority_epoch: u64::MAX,
         },
-    )
+    ))
 }
 pub(crate) fn signed(
     request: PqTrustRequestV2,
     outcome: PqTrustOutcomeV2,
     key: &PqNativeSigningKey,
-) -> SignedPqTrustResponseV2 {
+) -> TestResult<SignedPqTrustResponseV2> {
     let body = PqTrustResponseBodyV2 {
         schema_version: 2,
         request,
         valid_for_ms: 2000,
         outcome,
     };
-    let signature = key
-        .sign_exact_message(&body.signing_bytes().unwrap())
-        .unwrap()
-        .to_vec();
-    SignedPqTrustResponseV2 { body, signature }
+    let signature = key.sign_exact_message(&body.signing_bytes()?)?.to_vec();
+    Ok(SignedPqTrustResponseV2 { body, signature })
 }
 pub(crate) struct TestService {
     pub(crate) config: UnixPqTrustEndpointConfig,
     pub(crate) requests: Arc<AtomicUsize>,
     stop: Arc<AtomicBool>,
-    join: Option<JoinHandle<()>>,
+    join: Option<JoinHandle<TestResult<()>>>,
 }
 impl TestService {
     pub(crate) fn start(
         root: &Path,
         name: &str,
         seed: u8,
-        mut handler: impl FnMut(PqTrustRequestV2, &PqNativeSigningKey) -> SignedPqTrustResponseV2
+        mut handler: impl FnMut(
+            PqTrustRequestV2,
+            &PqNativeSigningKey,
+        ) -> TestResult<SignedPqTrustResponseV2>
         + Send
         + 'static,
-    ) -> Self {
-        fs::set_permissions(root, fs::Permissions::from_mode(0o700)).unwrap();
+    ) -> TestResult<Self> {
+        fs::set_permissions(root, fs::Permissions::from_mode(0o700))?;
         let socket_path = root.join(name);
-        let listener = UnixListener::bind(&socket_path).unwrap();
-        fs::set_permissions(&socket_path, fs::Permissions::from_mode(0o600)).unwrap();
-        listener.set_nonblocking(true).unwrap();
-        let (signer, pin) = key(seed);
+        let listener = UnixListener::bind(&socket_path)?;
+        fs::set_permissions(&socket_path, fs::Permissions::from_mode(0o600))?;
+        listener.set_nonblocking(true)?;
+        let (signer, pin) = key(seed)?;
         let config = UnixPqTrustEndpointConfig {
             socket_path,
             peer_uid: rustix::process::geteuid().as_raw(),
@@ -84,17 +85,13 @@ impl TestService {
         let stopping = Arc::clone(&stop);
         let requests = Arc::new(AtomicUsize::new(0));
         let count = Arc::clone(&requests);
-        let join = thread::spawn(move || {
+        let join = thread::spawn(move || -> TestResult<()> {
             let deadline = Instant::now() + Duration::from_secs(30);
             while !stopping.load(Ordering::Relaxed) && Instant::now() < deadline {
                 match listener.accept() {
                     Ok((mut stream, _)) => {
-                        stream
-                            .set_read_timeout(Some(Duration::from_secs(2)))
-                            .unwrap();
-                        stream
-                            .set_write_timeout(Some(Duration::from_secs(2)))
-                            .unwrap();
+                        stream.set_read_timeout(Some(Duration::from_secs(2)))?;
+                        stream.set_write_timeout(Some(Duration::from_secs(2)))?;
                         let mut size = [0; 4];
                         if stream.read_exact(&mut size).is_err() {
                             continue;
@@ -102,49 +99,53 @@ impl TestService {
                         let size = u32::from_be_bytes(size) as usize;
                         assert!(size <= MAX_REQUEST_BYTES);
                         let mut raw = vec![0; size];
-                        stream.read_exact(&mut raw).unwrap();
-                        let request: PqTrustRequestV2 = serde_json::from_slice(&raw).unwrap();
+                        stream.read_exact(&mut raw)?;
+                        let request: PqTrustRequestV2 = serde_json::from_slice(&raw)?;
                         count.fetch_add(1, Ordering::Relaxed);
-                        let response = handler(request, &signer);
-                        let raw = serde_json::to_vec(&response).unwrap();
+                        let response = handler(request, &signer)?;
+                        let raw = serde_json::to_vec(&response)?;
                         let _ = stream.write_all(&(raw.len() as u32).to_be_bytes());
                         let _ = stream.write_all(&raw);
                     }
                     Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
                         thread::sleep(Duration::from_millis(1))
                     }
-                    Err(e) => panic!("test service: {e}"),
+                    Err(e) => return Err(e.into()),
                 }
             }
+            Ok(())
         });
-        Self {
+        Ok(Self {
             config,
             requests,
             stop,
             join: Some(join),
-        }
+        })
     }
 }
 impl Drop for TestService {
     fn drop(&mut self) {
         self.stop.store(true, Ordering::Relaxed);
         if let Some(join) = self.join.take() {
-            join.join().unwrap();
+            match join.join() {
+                Ok(Ok(())) => {}
+                Ok(Err(error)) => panic!("protected trust test service failed: {error}"),
+                Err(payload) => std::panic::resume_unwind(payload),
+            }
         }
     }
 }
 
-pub(crate) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> TestService {
+pub(crate) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> TestResult<TestService> {
     let path = root.join("external-frontier.json");
-    fs::write(&path, serde_json::to_vec(&initial).unwrap()).unwrap();
-    fs::File::open(&path).unwrap().sync_all().unwrap();
+    fs::write(&path, serde_json::to_vec(&initial)?)?;
+    fs::File::open(&path)?.sync_all()?;
     TestService::start(
         root,
         "frontier.sock",
         /*seed*/ 81,
         move |request, key| {
-            let current: FinalUseFrontier =
-                serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+            let current: FinalUseFrontier = serde_json::from_slice(&fs::read(&path)?)?;
             let outcome = match &request.operation {
                 PqTrustOperationV2::FrontierLoad { .. } => {
                     PqTrustOutcomeV2::Frontier { value: current }
@@ -153,13 +154,14 @@ pub(crate) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> TestSe
                     if *expected == current =>
                 {
                     let temporary = path.with_extension("next");
-                    fs::write(&temporary, serde_json::to_vec(next).unwrap()).unwrap();
-                    fs::File::open(&temporary).unwrap().sync_all().unwrap();
-                    fs::rename(&temporary, &path).unwrap();
-                    fs::File::open(path.parent().unwrap())
-                        .unwrap()
-                        .sync_all()
-                        .unwrap();
+                    fs::write(&temporary, serde_json::to_vec(next)?)?;
+                    fs::File::open(&temporary)?.sync_all()?;
+                    fs::rename(&temporary, &path)?;
+                    fs::File::open(
+                        path.parent()
+                            .ok_or("external frontier requires a parent directory")?,
+                    )?
+                    .sync_all()?;
                     PqTrustOutcomeV2::CompareAndSetApplied { value: *next }
                 }
                 PqTrustOperationV2::FrontierCompareAndSet { .. } => PqTrustOutcomeV2::Conflict,

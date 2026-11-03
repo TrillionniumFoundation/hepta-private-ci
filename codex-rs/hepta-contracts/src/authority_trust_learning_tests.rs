@@ -4,7 +4,8 @@ use super::*;
 use std::fs;
 
 #[test]
-fn external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart() {
+fn external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let root = tempfile::tempdir().unwrap();
     let path = root.path().join("learning-floor.json");
     let initial = LearningTrustFrontier {
@@ -47,7 +48,7 @@ fn external_learning_floor_is_typed_exact_and_retains_rotation_after_client_rest
             };
             signed(request, outcome, key)
         },
-    );
+    )?;
     let owner = format!("hepta-learning-trust:{}", "01".repeat(32));
     let client = UnixPqLearningTrustFrontier::new(service.config.clone()).unwrap();
     assert_eq!(client.load(&owner), Ok(initial));
@@ -66,4 +67,5 @@ fn external_learning_floor_is_typed_exact_and_retains_rotation_after_client_rest
     );
     drop(service);
     assert_eq!(reopened.load(&owner), Err(AuthorityTrustError::Unavailable));
+    Ok(())
 }

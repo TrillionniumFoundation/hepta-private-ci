@@ -29,8 +29,8 @@ fn ancestor_aliases_are_rejected_before_external_requests_or_owner_open() -> Res
     )?;
     let clock = TestService::start(&services, "clock.sock", /*seed*/ 80, |request, key| {
         signed(request, PqTrustOutcomeV2::Clock { unix_ms: 1100 }, key)
-    });
-    let frontier = frontier_service(&services, initial);
+    })?;
+    let frontier = frontier_service(&services, initial)?;
     let state = root.join("new-owner");
     let issuer = root.join("not-yet-listening.sock");
     let config = PqFinalUseAuthorizerConfig {
@@ -38,12 +38,12 @@ fn ancestor_aliases_are_rejected_before_external_requests_or_owner_open() -> Res
         issuer_socket: issuer.clone(),
         issuer_uid: rustix::process::geteuid().as_raw(),
         signer_id: "issuer".into(),
-        issuer_keys: vec![key(/*seed*/ 82).1],
+        issuer_keys: vec![key(/*seed*/ 82)?.1],
         authority_state_dir: state.clone(),
         head,
         issuer_timeout_ms: 2000,
         revocation_distributor_id: "feed".into(),
-        revocation_keys: vec![key(/*seed*/ 83).1],
+        revocation_keys: vec![key(/*seed*/ 83)?.1],
         external_clock: clock.config.clone(),
         external_frontier: frontier.config.clone(),
     };

@@ -28,13 +28,16 @@ pub struct PqFinalUseAuthorizerConfig {
     pub external_frontier: UnixPqTrustEndpointConfig,
 }
 
+#[cfg(test)]
+type AfterFeedHook = Arc<dyn Fn(&FinalUseBinding) + Send + Sync>;
+
 pub(super) struct PqRuntime {
     clock: Arc<dyn AuthorityClock>,
     feed: FinalUseRevocationFeedVerifier,
     // Per-instance scheduling only: deterministic tests pause one real claim
     // after authentication without replacing the issuer, clock, or owner.
     #[cfg(test)]
-    after_feed_hook: Option<Arc<dyn Fn(&FinalUseBinding) + Send + Sync>>,
+    after_feed_hook: Option<AfterFeedHook>,
 }
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]

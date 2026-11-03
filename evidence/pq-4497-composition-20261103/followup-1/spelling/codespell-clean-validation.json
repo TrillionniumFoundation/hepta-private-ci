@@ -1,0 +1,33 @@
+{
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "version": "2.4.3",
+  "action_ref": "8f01853be192eb0f849a5c7d721450e7a467c579",
+  "command": [
+    "/workspace/scratch/df0a4a720ed8/hepta-pq/codespell-2.4.3/bin/codespell",
+    "--count",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git"
+  ],
+  "cwd": "/workspace/scratch/df0a4a720ed8/hepta-pq/codespell-clean-checkout",
+  "returncode": 0,
+  "log_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+  "dictionary_sha256": "becad0f381d1a654a79908cc05ccd87d85d032f962b427ae28184ca895d77eaf",
+  "config_sha256": "3698e08e5ee9e6c9c169b5b35a7cfb33927ce369d621b07a2dca2a717efc6717",
+  "immutable_compiler_log_sha256_before_and_after": "d510782c8bee3c41c4cbb6de29163fba78ae5dc3e0cf76c35de93d182bc9109d",
+  "tracked_paths": 10951,
+  "present_tracked_paths": 9695,
+  "missing_tracked_paths": 1256,
+  "selected_path_list": "codespell-clean-selected-paths.txt",
+  "selected_path_list_sha256": "8becaf6f5be313c7cd1071f26665cbcf15ed2d16d8e1a645199b0447c7bcb5fc",
+  "missing_path_list": "codespell-clean-missing-paths.txt",
+  "missing_path_list_sha256": "50a7548e0cc7f165a66c781bdc30487618f2cdf9cbab275b4383f950593af31e",
+  "limitations": [
+    "Local Python 3.12.14; not the CI Python3.13-alpine container",
+    "Clean hardlinked view includes only tracked files present in sparse checkout; missing tracked paths were not scanned",
+    "No scanner options, config exclusions, raw log bytes or other dictionary words were changed",
+    "Published0baf plus coordinated source follow-up overlay; not a remote CI result"
+  ],
+  "prior_observation": "The same CLI in the build checkout returned65 on3 words inside untracked scripts/.venv/ruff SBOM; recorded separately, no untracked tool files exist in clean GitHub checkout"
+}

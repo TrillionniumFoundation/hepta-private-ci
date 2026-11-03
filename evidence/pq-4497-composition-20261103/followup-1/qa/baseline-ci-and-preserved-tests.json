@@ -1,0 +1,29 @@
+{
+  "original_ci": {
+    "job_id": 125788434869,
+    "source_commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+    "log": "/workspace/scratch/df0a4a720ed8/chain-rollback/hepta-qa-followup/baseline-ci-repo-checks-125788434869.log",
+    "sha256": "2c0fa59b6a7ebf6e16438d43236cb9030fbe5c834889280fa91701f9ab0d2220",
+    "failures": 4,
+    "errors": 1,
+    "tests": 21
+  },
+  "tests": [
+    {
+      "file": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+      "original_test_count": 4,
+      "current_test_count": 5,
+      "removed_tests": [],
+      "added_tests": [
+        "test_split_authority_impls_cannot_add_unclassified_public_methods"
+      ]
+    },
+    {
+      "file": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+      "original_test_count": 17,
+      "current_test_count": 17,
+      "removed_tests": [],
+      "added_tests": []
+    }
+  ]
+}

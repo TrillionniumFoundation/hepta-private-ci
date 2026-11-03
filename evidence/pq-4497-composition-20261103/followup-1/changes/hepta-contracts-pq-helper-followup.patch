@@ -1,0 +1,243 @@
+diff --git a/codex-rs/hepta-contracts/src/final_use_pq_capacity_tests.rs b/codex-rs/hepta-contracts/src/final_use_pq_capacity_tests.rs
+index 35cfa21..bfea364 100644
+--- a/codex-rs/hepta-contracts/src/final_use_pq_capacity_tests.rs
++++ b/codex-rs/hepta-contracts/src/final_use_pq_capacity_tests.rs
+@@ -2,8 +2,8 @@ use super::*;
+ use pretty_assertions::assert_eq;
+ 
+ #[test]
+-fn pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen() {
+-    let fixture = pq_fixture();
++fn pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen() -> PqTestResult {
++    let fixture = pq_fixture()?;
+     let mut head = fixture.authority.revocation_head().unwrap();
+     head.revision += 1;
+     head.revoked_grant_ids = (0..256).map(|id| format!("revoked-{id:03}")).collect();
+@@ -62,11 +62,12 @@ fn pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen() {
+     )
+     .unwrap();
+     assert_eq!(reopened.capacity().unwrap(), capacity);
++    Ok(())
+ }
+ 
+ #[test]
+-fn pq_oversized_initial_head_fails_before_state_initialization() {
+-    let fixture = pq_fixture();
++fn pq_oversized_initial_head_fails_before_state_initialization() -> PqTestResult {
++    let fixture = pq_fixture()?;
+     let directory = tempfile::tempdir().unwrap();
+     let mut head = fixture.authority.revocation_head().unwrap();
+     head.revoked_grant_ids = (0..257).map(|id| format!("revoked-{id:03}")).collect();
+@@ -80,4 +81,5 @@ fn pq_oversized_initial_head_fails_before_state_initialization() {
+     );
+     assert!(matches!(result, Err(FinalUseError::InvalidTrust)));
+     assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 0);
++    Ok(())
+ }
+diff --git a/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs b/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs
+index 3ba0bbf..d06c4f2 100644
+--- a/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs
++++ b/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs
+@@ -15,8 +15,9 @@ fn sign_grant(
+ }
+ 
+ #[test]
+-fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces() {
+-    let fixture = pq_fixture();
++fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces()
++-> PqTestResult {
++    let fixture = pq_fixture()?;
+     let state_path = fixture.directory.path().join("authority.json");
+     let claims_path = fixture.directory.path().join("authority.claims");
+     let old_state = std::fs::read(&state_path).unwrap();
+@@ -155,4 +156,5 @@ fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_n
+     let token = recovered.claim(&after_recovery, &binding).unwrap();
+     assert_eq!(recovered.with_verified_use(token, &binding, || 13), Ok(13));
+     assert_eq!(recovered.capacity().unwrap().used_nonces, 3);
++    Ok(())
+ }
+diff --git a/codex-rs/hepta-contracts/src/final_use_pq_tests.rs b/codex-rs/hepta-contracts/src/final_use_pq_tests.rs
+index 764804c..f6c32e8 100644
+--- a/codex-rs/hepta-contracts/src/final_use_pq_tests.rs
++++ b/codex-rs/hepta-contracts/src/final_use_pq_tests.rs
+@@ -21,11 +21,13 @@ mod capacity_tests;
+ #[path = "final_use_pq_recovery_tests.rs"]
+ mod recovery_tests;
+ 
+-fn key(seed: u8, id: &str) -> (PqNativeSigningKey, PqAuthorityTrustKey) {
++type PqTestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
++
++fn key(seed: u8, id: &str) -> PqTestResult<(PqNativeSigningKey, PqAuthorityTrustKey)> {
+     let seed = Zeroizing::new([seed; 32]);
+     let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
+-    let public_key_id = ml_dsa_65_key_id_from_spki(&spki).unwrap();
+-    let key = PqNativeSigningKey::from_owned_seed(seed, public_key_id).unwrap();
++    let public_key_id = ml_dsa_65_key_id_from_spki(&spki)?;
++    let key = PqNativeSigningKey::from_owned_seed(seed, public_key_id)?;
+     let trust = PqAuthorityTrustKey {
+         key_id: id.into(),
+         public_key_id,
+@@ -33,7 +35,7 @@ fn key(seed: u8, id: &str) -> (PqNativeSigningKey, PqAuthorityTrustKey) {
+         not_before_authority_epoch: 9,
+         not_after_authority_epoch: 9,
+     };
+-    (key, trust)
++    Ok((key, trust))
+ }
+ 
+ struct PqFixture {
+@@ -45,10 +47,10 @@ struct PqFixture {
+     signed: SignedFinalUseGrant,
+ }
+ 
+-fn pq_fixture() -> PqFixture {
+-    let directory = tempfile::tempdir().unwrap();
+-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+-    let (key, trust) = key(17, "issuer-key");
++fn pq_fixture() -> PqTestResult<PqFixture> {
++    let directory = tempfile::tempdir()?;
++    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
++    let (key, trust) = key(17, "issuer-key")?;
+     let head = FinalUseRevocations {
+         authority_epoch: 9,
+         revision: 1,
+@@ -58,8 +60,7 @@ fn pq_fixture() -> PqFixture {
+         FinalUseFrontier::for_initial_head_with_profile(
+             &head,
+             FinalUseAuthenticationProfile::MlDsa65V2,
+-        )
+-        .unwrap(),
++        )?,
+     )));
+     let authority = FinalUseAuthority::open_pq_state_dir_with_issuer_keys(
+         directory.path(),
+@@ -68,8 +69,7 @@ fn pq_fixture() -> PqFixture {
+         head,
+         Arc::new(FixedClock(2_000)),
+         frontier.clone(),
+-    )
+-    .unwrap();
++    )?;
+     let grant = FinalUseGrant {
+         schema_version: 2,
+         signer_id: "security-owner".into(),
+@@ -87,25 +87,22 @@ fn pq_fixture() -> PqFixture {
+         expires_at_unix_ms: 3_000,
+     };
+     let signed = SignedFinalUseGrant {
+-        signature: key
+-            .sign_exact_message(&grant.signing_bytes().unwrap())
+-            .unwrap()
+-            .to_vec(),
++        signature: key.sign_exact_message(&grant.signing_bytes()?)?.to_vec(),
+         grant,
+     };
+-    PqFixture {
++    Ok(PqFixture {
+         directory,
+         key,
+         trust,
+         frontier,
+         authority,
+         signed,
+-    }
++    })
+ }
+ 
+ #[test]
+-fn pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay() {
+-    let fixture = pq_fixture();
++fn pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay() -> PqTestResult {
++    let fixture = pq_fixture()?;
+     let token = fixture
+         .authority
+         .claim(&fixture.signed, &fixture.signed.grant.binding)
+@@ -136,11 +133,12 @@ fn pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay() {
+     )
+     .unwrap();
+     assert_eq!(snapshot["schema"], 4);
++    Ok(())
+ }
+ 
+ #[test]
+-fn pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores() {
+-    let fixture = pq_fixture();
++fn pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores() -> PqTestResult {
++    let fixture = pq_fixture()?;
+     let before = fixture.authority.frontier().unwrap();
+     let classic = SigningKey::from_bytes(&[47; 32]);
+     let mut classic_wire = fixture.signed.clone();
+@@ -200,14 +198,15 @@ fn pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores() {
+         std::fs::read(old_directory.path().join("authority.json")).unwrap(),
+         old_bytes
+     );
++    Ok(())
+ }
+ 
+ #[test]
+-fn pq_final_use_independent_approval_revocation_and_ack_use_original_owners() {
+-    let fixture = pq_fixture();
+-    let (approver_key, approver_trust) = key(18, "approver-key");
+-    let (feed_key, feed_trust) = key(19, "feed-key");
+-    let (ack_key, ack_trust) = key(20, "node-key");
++fn pq_final_use_independent_approval_revocation_and_ack_use_original_owners() -> PqTestResult {
++    let fixture = pq_fixture()?;
++    let (approver_key, approver_trust) = key(18, "approver-key")?;
++    let (feed_key, feed_trust) = key(19, "feed-key")?;
++    let (ack_key, ack_trust) = key(20, "node-key")?;
+     let approval = FinalUseApproval::for_grant("operator".into(), &fixture.signed.grant).unwrap();
+     let signed_approval = SignedFinalUseApproval {
+         signature: approver_key
+@@ -296,11 +295,12 @@ fn pq_final_use_independent_approval_revocation_and_ack_use_original_owners() {
+             .verify(&feed, &signed_update, &[forged], /*now_unix_ms*/ 2_000)
+             .is_err()
+     );
++    Ok(())
+ }
+ 
+ #[test]
+-fn pq_final_use_external_frontier_refuses_local_snapshot_rollback() {
+-    let fixture = pq_fixture();
++fn pq_final_use_external_frontier_refuses_local_snapshot_rollback() -> PqTestResult {
++    let fixture = pq_fixture()?;
+     let snapshot = std::fs::read(fixture.directory.path().join("authority.json")).unwrap();
+     let claims = std::fs::read(fixture.directory.path().join("authority.claims")).unwrap();
+     drop(
+@@ -325,11 +325,12 @@ fn pq_final_use_external_frontier_refuses_local_snapshot_rollback() {
+         .unwrap_err(),
+         FinalUseError::AntiRollbackViolation
+     );
++    Ok(())
+ }
+ 
+ #[test]
+-fn pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write() {
+-    let fixture = pq_fixture();
++fn pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write() -> PqTestResult {
++    let fixture = pq_fixture()?;
+     let before = fixture.authority.capacity().unwrap();
+     for length in [64, 3_308, 3_310] {
+         let mut malformed = fixture.signed.clone();
+@@ -356,12 +357,13 @@ fn pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write() {
+         crate::pq_auth::PqNativeVerifier::from_pinned_spki(fixture.key.public_spki(), [0; 32])
+             .is_err()
+     );
++    Ok(())
+ }
+ 
+ #[test]
+-fn pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking() {
+-    let fixture = pq_fixture();
+-    let (key, trust) = key(/*seed*/ 39, "feed-key");
++fn pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking() -> PqTestResult {
++    let fixture = pq_fixture()?;
++    let (key, trust) = key(/*seed*/ 39, "feed-key")?;
+     let feed = FinalUseRevocationFeedVerifier::new_pq_with_keys("distributor".into(), vec![trust])
+         .unwrap();
+     let update = FinalUseRevocationUpdate::new_pq(
+@@ -418,4 +420,5 @@ fn pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking() {
+         ))
+     );
+     assert_eq!(fixture.authority.frontier().unwrap(), revoked);
++    Ok(())
+ }

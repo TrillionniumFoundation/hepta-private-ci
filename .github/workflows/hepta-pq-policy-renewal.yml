@@ -83,6 +83,11 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Install the existing pinned Python formatter launcher
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+          enable-cache: false
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
       - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
 
@@ -105,14 +110,14 @@ jobs:
           --timeout-seconds 600 --
           cargo fetch --locked --manifest-path codex-rs/Cargo.toml
 
-      - name: Run all thirteen original and added dispatcher controls
+      - name: Run all fourteen original and added dispatcher controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
           CARGO_NET_OFFLINE: "true"
         run: >-
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/dispatcher.json"
-          --minimum-tests 13 --timeout-seconds 3600 --
+          --minimum-tests 14 --timeout-seconds 3600 --
           just test --locked -p codex-hepta-agentd --lib
           -E 'test(authbus_dispatch::tests::)' --no-capture --retries 0 --test-threads=1
 
@@ -154,6 +159,7 @@ jobs:
                   "policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
                   "policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
                   "checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+                  "checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
               )},
               "product": {
                   "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",

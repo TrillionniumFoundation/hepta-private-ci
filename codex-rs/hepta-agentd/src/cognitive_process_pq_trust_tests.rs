@@ -28,41 +28,44 @@ use std::thread::JoinHandle;
 use std::time::Duration;
 use std::time::Instant;
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+type TestResult<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+fn id(value: &str) -> TestResult<StableId> {
+    Ok(StableId::new(value)?)
 }
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
-fn key(seed: u8) -> PqNativeSigningKey {
+fn key(seed: u8) -> TestResult<PqNativeSigningKey> {
     let spki = PqNativeSigningKey::public_spki_from_seed(&[seed; 32].into());
-    PqNativeSigningKey::from_owned_seed(
+    Ok(PqNativeSigningKey::from_owned_seed(
         [seed; 32].into(),
-        ml_dsa_65_key_id_from_spki(&spki).unwrap(),
-    )
-    .unwrap()
+        ml_dsa_65_key_id_from_spki(&spki)?,
+    )?)
 }
-fn signature(key: &PqNativeSigningKey, bytes: &[u8]) -> NativeSignature {
-    NativeSignature::MlDsa65V2(key.sign_exact_message(bytes).unwrap().to_vec())
+fn signature(key: &PqNativeSigningKey, bytes: &[u8]) -> TestResult<NativeSignature> {
+    Ok(NativeSignature::MlDsa65V2(
+        key.sign_exact_message(bytes)?.to_vec(),
+    ))
 }
 
 struct Service {
     config: UnixPqTrustEndpointConfig,
     frontier: Arc<Mutex<LearningTrustFrontier>>,
     stop: Arc<AtomicBool>,
-    join: Option<JoinHandle<()>>,
+    join: Option<JoinHandle<TestResult<()>>>,
 }
 impl Service {
-    fn start(root: &Path, initial: LearningTrustFrontier, binding: Digest32) -> Self {
-        std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700)).unwrap();
+    fn start(root: &Path, initial: LearningTrustFrontier, binding: Digest32) -> TestResult<Self> {
+        std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700))?;
         let socket_path = root.join("pq-install.sock");
-        let listener = UnixListener::bind(&socket_path).unwrap();
-        std::fs::set_permissions(&socket_path, std::fs::Permissions::from_mode(0o600)).unwrap();
-        listener.set_nonblocking(true).unwrap();
-        let signer = key(/*seed*/ 93);
+        let listener = UnixListener::bind(&socket_path)?;
+        std::fs::set_permissions(&socket_path, std::fs::Permissions::from_mode(0o600))?;
+        listener.set_nonblocking(true)?;
+        let signer = key(/*seed*/ 93)?;
         let config = UnixPqTrustEndpointConfig {
             socket_path,
-            peer_uid: std::fs::metadata(root).unwrap().uid(),
+            peer_uid: std::fs::metadata(root)?.uid(),
             service_id: "pq-install-trust".to_owned(),
             key_generation: 1,
             public_key_id: signer.public_key_id(),
@@ -73,31 +76,29 @@ impl Service {
         let current = Arc::clone(&frontier);
         let stop = Arc::new(AtomicBool::new(false));
         let stopping = Arc::clone(&stop);
-        let join = std::thread::spawn(move || {
+        let join = std::thread::spawn(move || -> TestResult<()> {
             let deadline = Instant::now() + Duration::from_secs(30);
             while !stopping.load(Ordering::SeqCst) && Instant::now() < deadline {
                 match listener.accept() {
                     Ok((mut stream, _)) => {
-                        stream
-                            .set_read_timeout(Some(Duration::from_secs(2)))
-                            .unwrap();
-                        stream
-                            .set_write_timeout(Some(Duration::from_secs(2)))
-                            .unwrap();
+                        stream.set_read_timeout(Some(Duration::from_secs(2)))?;
+                        stream.set_write_timeout(Some(Duration::from_secs(2)))?;
                         let mut size = [0; 4];
-                        stream.read_exact(&mut size).unwrap();
+                        stream.read_exact(&mut size)?;
                         let size = u32::from_be_bytes(size) as usize;
                         assert!(size <= 16 * 1_024);
                         let mut bytes = vec![0; size];
-                        stream.read_exact(&mut bytes).unwrap();
-                        let request: PqTrustRequestV2 = serde_json::from_slice(&bytes).unwrap();
+                        stream.read_exact(&mut bytes)?;
+                        let request: PqTrustRequestV2 = serde_json::from_slice(&bytes)?;
                         let outcome = match &request.operation {
                             PqTrustOperationV2::ClockNow => PqTrustOutcomeV2::Clock { unix_ms: 50 },
                             PqTrustOperationV2::LearningFrontierLoad { owner_id }
                                 if owner_id == &format!("hepta-learning-trust:{binding}") =>
                             {
                                 PqTrustOutcomeV2::LearningFrontier {
-                                    value: *current.lock().unwrap(),
+                                    value: *current
+                                        .lock()
+                                        .map_err(|_| "PQ trust test frontier lock poisoned")?,
                                 }
                             }
                             PqTrustOperationV2::LearningFrontierLoad { .. }
@@ -113,44 +114,44 @@ impl Service {
                             valid_for_ms: 2_000,
                             outcome,
                         };
-                        let signature = signer
-                            .sign_exact_message(&body.signing_bytes().unwrap())
-                            .unwrap()
-                            .to_vec();
+                        let signature = signer.sign_exact_message(&body.signing_bytes()?)?.to_vec();
                         let bytes =
-                            serde_json::to_vec(&SignedPqTrustResponseV2 { body, signature })
-                                .unwrap();
-                        stream
-                            .write_all(&(bytes.len() as u32).to_be_bytes())
-                            .unwrap();
-                        stream.write_all(&bytes).unwrap();
+                            serde_json::to_vec(&SignedPqTrustResponseV2 { body, signature })?;
+                        stream.write_all(&(bytes.len() as u32).to_be_bytes())?;
+                        stream.write_all(&bytes)?;
                     }
                     Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
                         std::thread::sleep(Duration::from_millis(1))
                     }
-                    Err(error) => panic!("trust service: {error}"),
+                    Err(error) => return Err(error.into()),
                 }
             }
+            Ok(())
         });
-        Self {
+        Ok(Self {
             config,
             frontier,
             stop,
             join: Some(join),
-        }
+        })
     }
 }
 impl Drop for Service {
     fn drop(&mut self) {
         self.stop.store(true, Ordering::SeqCst);
         if let Some(join) = self.join.take() {
-            join.join().unwrap();
+            match join.join() {
+                Ok(Ok(())) => {}
+                Ok(Err(error)) => panic!("PQ installation trust test service failed: {error}"),
+                Err(payload) => std::panic::resume_unwind(payload),
+            }
         }
     }
 }
 
 #[test]
-fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_roles() {
+fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_roles()
+-> TestResult<()> {
     let directory = tempfile::tempdir().unwrap();
     let root_path = directory.path().canonicalize().unwrap();
     let agent_id =
@@ -169,8 +170,8 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
         app_server_socket: layout.app_server_socket().to_path_buf(),
         layout,
     };
-    let role = key(/*seed*/ 91);
-    let root_key = key(/*seed*/ 92);
+    let role = key(/*seed*/ 91)?;
+    let root_key = key(/*seed*/ 92)?;
     let binding = digest("pq-install-binding");
     let trust = LearningEvidenceTrustV1 {
         scope_digest: digest("scope"),
@@ -178,7 +179,7 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
         authority_epoch: 1,
         signers: vec![TrustedLearningSignerV1 {
             principal: AuthenticatedPrincipalV1 {
-                principal_id: id("generator"),
+                principal_id: id("generator")?,
                 credential_chain_digest: digest("generator-credential"),
                 signing_key_digest: Digest32::of_bytes(role.public_spki()),
                 scope_digest: digest("scope"),
@@ -186,14 +187,14 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
                 authenticated_at: 1_000,
                 expires_at: 100_000,
             },
-            controller_id: id("generator-controller"),
+            controller_id: id("generator-controller")?,
             verifying_key: LearningVerificationKey::MlDsa65V2(role.public_spki().to_vec()),
             roles: vec![LearningEvidenceRoleV1::Generator],
             revoked_at: None,
         }],
     };
     let root = LearningTrustRootV1 {
-        root_id: id("installation-root"),
+        root_id: id("installation-root")?,
         scope_digest: trust.scope_digest,
         verifying_key: LearningVerificationKey::MlDsa65V2(root_key.public_spki().to_vec()),
         valid_from: 1_000,
@@ -202,7 +203,7 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
     };
     let mut signed = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
-            distribution_id: id("installation-distribution"),
+            distribution_id: id("installation-distribution")?,
             generation: 1,
             effective_at: 10_000,
             trust: trust.clone(),
@@ -212,7 +213,7 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
         expires_at: 90_000,
         signature: NativeSignature::MlDsa65V2(Vec::new()),
     };
-    signed.signature = signature(&root_key, &signed.signing_bytes().unwrap());
+    signed.signature = signature(&root_key, &signed.signing_bytes().unwrap())?;
     let activated = activate_learning_trust(
         &root,
         signed.clone(),
@@ -226,7 +227,7 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
         &authority_root,
         learning_trust_frontier(&activated),
         binding,
-    );
+    )?;
     let activation = || PqLearningActivationV2 {
         root_id: root.root_id.clone().into(),
         root_scope_digest: root.scope_digest.into(),
@@ -275,8 +276,8 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
     assert!(matches!(rejected, Err(error) if error.to_string().contains("canonical")));
     let payload = b"install-role-evidence";
     let mut evidence = SignedLearningEvidenceV1 {
-        evidence_id: id("generator-evidence"),
-        principal_id: id("generator"),
+        evidence_id: id("generator-evidence")?,
+        principal_id: id("generator")?,
         role: LearningEvidenceRoleV1::Generator,
         trust_digest: loaded.verifier.trust_digest(),
         scope_digest: trust.scope_digest,
@@ -287,7 +288,7 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
         payload_digest: Digest32::of_bytes(payload),
         signature: NativeSignature::MlDsa65V2(Vec::new()),
     };
-    evidence.signature = signature(&role, &evidence.signing_bytes());
+    evidence.signature = signature(&role, &evidence.signing_bytes())?;
     let opaque = loaded
         .verifier
         .verify(
@@ -358,4 +359,5 @@ fn pq_installation_authenticates_root_clock_and_current_floor_before_returning_r
             )
             .is_err()
     );
+    Ok(())
 }

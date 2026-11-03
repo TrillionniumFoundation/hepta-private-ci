@@ -1,0 +1,16 @@
+diff --git a/.github/workflows/hepta-pq-policy-renewal.yml b/.github/workflows/hepta-pq-policy-renewal.yml
+index f7eb7a6..628e87d 100644
+--- a/.github/workflows/hepta-pq-policy-renewal.yml
++++ b/.github/workflows/hepta-pq-policy-renewal.yml
+@@ -83,6 +83,11 @@ jobs:
+       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+         with:
+           tool: just@1.51.0,nextest@0.9.103
++      - name: Install the existing pinned Python formatter launcher
++        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
++        with:
++          version: "0.11.3"
++          enable-cache: false
+       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+       - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+ 

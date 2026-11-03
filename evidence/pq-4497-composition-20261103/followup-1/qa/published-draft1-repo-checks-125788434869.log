@@ -1,0 +1,1268 @@
+﻿2026-11-03T07:37:50.4638951Z Current runner version: '2.338.2'
+2026-11-03T07:37:50.4663857Z ##[group]Runner Image Provisioner
+2026-11-03T07:37:50.4664883Z Hosted Compute Agent
+2026-11-03T07:37:50.4665560Z Version: 20261021.618
+2026-11-03T07:37:50.4666194Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-03T07:37:50.4667099Z Build Date: 2026-10-21T00:45:21Z
+2026-11-03T07:37:50.4667816Z Worker ID: {4ad62768-92f1-49b3-96c7-cc3fca6cab5d}
+2026-11-03T07:37:50.4668589Z Region: westus
+2026-11-03T07:37:50.4669208Z Cloud: Azure
+2026-11-03T07:37:50.4669786Z ##[endgroup]
+2026-11-03T07:37:50.4671363Z ##[group]Operating System
+2026-11-03T07:37:50.4672048Z Ubuntu
+2026-11-03T07:37:50.4672988Z 24.04.5
+2026-11-03T07:37:50.4673599Z LTS
+2026-11-03T07:37:50.4674138Z ##[endgroup]
+2026-11-03T07:37:50.4674781Z ##[group]Runner Image
+2026-11-03T07:37:50.4675414Z Image: ubuntu-24.04
+2026-11-03T07:37:50.4675994Z Version: 20261025.353.1
+2026-11-03T07:37:50.4677372Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-03T07:37:50.4678993Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-03T07:37:50.4679990Z ##[endgroup]
+2026-11-03T07:37:50.4681219Z ##[group]GITHUB_TOKEN Permissions
+2026-11-03T07:37:50.4683345Z Contents: read
+2026-11-03T07:37:50.4684100Z Metadata: read
+2026-11-03T07:37:50.4684714Z ##[endgroup]
+2026-11-03T07:37:50.4686830Z Secret source: Actions
+2026-11-03T07:37:50.4687935Z Cache mode: write
+2026-11-03T07:37:50.4688660Z Prepare workflow directory
+2026-11-03T07:37:50.5090474Z Prepare all required actions
+2026-11-03T07:37:50.5140108Z Getting action download info
+2026-11-03T07:37:50.8736954Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-03T07:37:50.9966992Z Download action repository 'pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288' (SHA:a8198c4bff370c8506180b035930dea56dbd5288)
+2026-11-03T07:37:51.3776747Z Download action repository 'actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f' (SHA:53b83947a5a98c8d113130e565377fae1a50d02f)
+2026-11-03T07:37:51.5259485Z Download action repository 'astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b' (SHA:08807647e7069bb48b6ef5acd8ec9567f424441b)
+2026-11-03T07:37:52.0630396Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/repo-checks.yml@refs/pull/4497/merge (e0a570550073eace00c51dd8085c1dc83d42f832)
+2026-11-03T07:37:52.0637362Z Complete job name: repo-checks / build-test
+2026-11-03T07:37:52.1844433Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-03T07:37:52.1846320Z with:
+2026-11-03T07:37:52.1847334Z   persist-credentials: false
+2026-11-03T07:37:52.1849301Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-03T07:37:52.1860821Z   token: ***
+2026-11-03T07:37:52.1861739Z   ssh-strict: true
+2026-11-03T07:37:52.1862981Z   ssh-user: git
+2026-11-03T07:37:52.1863866Z   clean: true
+2026-11-03T07:37:52.1864777Z   sparse-checkout-cone-mode: true
+2026-11-03T07:37:52.1865879Z   fetch-depth: 1
+2026-11-03T07:37:52.1866767Z   fetch-tags: false
+2026-11-03T07:37:52.1867687Z   show-progress: true
+2026-11-03T07:37:52.1868591Z   lfs: false
+2026-11-03T07:37:52.1869432Z   submodules: false
+2026-11-03T07:37:52.1870354Z   set-safe-directory: true
+2026-11-03T07:37:52.1871856Z env:
+2026-11-03T07:37:52.1873008Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:52.1874154Z ##[endgroup]
+2026-11-03T07:37:52.4859245Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-03T07:37:52.4862707Z ##[group]Getting Git version info
+2026-11-03T07:37:52.4865445Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-03T07:37:52.4867779Z [command]/usr/bin/git version
+2026-11-03T07:37:52.4986493Z git version 2.56.0
+2026-11-03T07:37:52.5012814Z ##[endgroup]
+2026-11-03T07:37:52.5030189Z Temporarily overriding HOME='/home/runner/work/_temp/533eee10-4a99-4b58-9568-855b4c09d5f2' before making global git config changes
+2026-11-03T07:37:52.5036319Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T07:37:52.5040917Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:52.5101636Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-03T07:37:52.5115849Z ##[group]Initializing the repository
+2026-11-03T07:37:52.5121547Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:52.5243146Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-03T07:37:52.5245711Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-03T07:37:52.5249217Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-03T07:37:52.5250957Z hint: call:
+2026-11-03T07:37:52.5252705Z hint:
+2026-11-03T07:37:52.5254904Z hint: 	git config --global init.defaultBranch <name>
+2026-11-03T07:37:52.5257546Z hint:
+2026-11-03T07:37:52.5259723Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-03T07:37:52.5263536Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-03T07:37:52.5266680Z hint:
+2026-11-03T07:37:52.5268541Z hint: 	git branch -m <name>
+2026-11-03T07:37:52.5270645Z hint:
+2026-11-03T07:37:52.5273748Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-03T07:37:52.5278488Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-03T07:37:52.5286582Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-03T07:37:52.5346673Z ##[endgroup]
+2026-11-03T07:37:52.5349874Z ##[group]Disabling automatic garbage collection
+2026-11-03T07:37:52.5355524Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-03T07:37:52.5421775Z ##[endgroup]
+2026-11-03T07:37:52.5425135Z ##[group]Setting up auth
+2026-11-03T07:37:52.5430466Z Removing SSH command configuration
+2026-11-03T07:37:52.5434294Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T07:37:52.5464641Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T07:37:52.5979003Z Removing HTTP extra header
+2026-11-03T07:37:52.5987117Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T07:37:52.6046630Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T07:37:52.6299528Z Removing includeIf entries pointing to credentials config files
+2026-11-03T07:37:52.6307389Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T07:37:52.6357133Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T07:37:52.6606275Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-03T07:37:52.6657478Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:52.6698512Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:52.6740317Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:52.6786007Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:52.6824749Z ##[endgroup]
+2026-11-03T07:37:52.6826421Z ##[group]Fetching the repository
+2026-11-03T07:37:52.6832745Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e0a570550073eace00c51dd8085c1dc83d42f832:refs/remotes/pull/4497/merge
+2026-11-03T07:37:57.2876900Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-03T07:37:57.2878102Z  * [new ref]         e0a570550073eace00c51dd8085c1dc83d42f832 -> pull/4497/merge
+2026-11-03T07:37:57.2885189Z ##[endgroup]
+2026-11-03T07:37:57.2885854Z ##[group]Determining the checkout info
+2026-11-03T07:37:57.2886459Z ##[endgroup]
+2026-11-03T07:37:57.2891572Z [command]/usr/bin/git sparse-checkout disable
+2026-11-03T07:37:57.2956959Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-03T07:37:57.2996880Z ##[group]Checking out the ref
+2026-11-03T07:37:57.3000664Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/4497/merge
+2026-11-03T07:37:58.1329536Z Note: switching to 'refs/remotes/pull/4497/merge'.
+2026-11-03T07:37:58.1330142Z 
+2026-11-03T07:37:58.1330553Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-03T07:37:58.1331482Z changes and commit them, and you can discard any commits you make in this
+2026-11-03T07:37:58.1332760Z state without impacting any branches by switching back to a branch.
+2026-11-03T07:37:58.1333364Z 
+2026-11-03T07:37:58.1343419Z If you want to create a new branch to retain commits you create, you may
+2026-11-03T07:37:58.1344450Z do so (now or later) by using -c with the switch command. Example:
+2026-11-03T07:37:58.1344835Z 
+2026-11-03T07:37:58.1344975Z   git switch -c <new-branch-name>
+2026-11-03T07:37:58.1345196Z 
+2026-11-03T07:37:58.1345335Z Or undo this operation with:
+2026-11-03T07:37:58.1345558Z 
+2026-11-03T07:37:58.1345685Z   git switch -
+2026-11-03T07:37:58.1346105Z 
+2026-11-03T07:37:58.1346726Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-03T07:37:58.1347421Z 
+2026-11-03T07:37:58.1348064Z HEAD is now at e0a5705 Merge 0baf43cf4bf8f953fff079725348de1d8f26434f into 3a81000aae08c658276958d678874aca4db5eedd
+2026-11-03T07:37:58.1372933Z ##[endgroup]
+2026-11-03T07:37:58.1427389Z [command]/usr/bin/git log -1 --format=%H
+2026-11-03T07:37:58.1462949Z e0a570550073eace00c51dd8085c1dc83d42f832
+2026-11-03T07:37:58.1473852Z ##[group]Removing auth
+2026-11-03T07:37:58.1474466Z Removing SSH command configuration
+2026-11-03T07:37:58.1479249Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T07:37:58.1522845Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T07:37:58.1783339Z Removing HTTP extra header
+2026-11-03T07:37:58.1789108Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T07:37:58.1834426Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T07:37:58.2091270Z Removing includeIf entries pointing to credentials config files
+2026-11-03T07:37:58.2096580Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T07:37:58.2134581Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-03T07:37:58.2135687Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-03T07:37:58.2136319Z includeif.gitdir:/github/workspace/.git.path
+2026-11-03T07:37:58.2136739Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-03T07:37:58.2145921Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-03T07:37:58.2178068Z /home/runner/work/_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:58.2193119Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:58.2247134Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-03T07:37:58.2280793Z /home/runner/work/_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:58.2290179Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:58.2332738Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-03T07:37:58.2365084Z /github/runner_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:58.2372981Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:58.2422949Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-03T07:37:58.2455927Z /github/runner_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:58.2464169Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config
+2026-11-03T07:37:58.2506925Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T07:37:58.2763184Z Removing credentials config '/home/runner/work/_temp/git-credentials-fe3cf628-6100-4dd6-a919-42c0cc162311.config'
+2026-11-03T07:37:58.2772990Z ##[endgroup]
+2026-11-03T07:37:58.3129031Z Prepare all required actions
+2026-11-03T07:37:58.3129652Z Getting action download info
+2026-11-03T07:37:58.4352002Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-03T07:37:58.6298521Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-03T07:37:58.9936938Z ##[group]Run ./.github/actions/setup-ci
+2026-11-03T07:37:58.9937443Z env:
+2026-11-03T07:37:58.9937950Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:58.9938444Z ##[endgroup]
+2026-11-03T07:37:59.0002680Z ##[start-action display=Configure Dev Drive (Windows);id=__self.__run]
+2026-11-03T07:37:59.0021830Z ##[end-action id=__self.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-03T07:37:59.0024082Z ##[start-action display=Configure CI build root (Unix);id=__self.__run_2]
+2026-11-03T07:37:59.0073244Z ##[group]Run echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
+2026-11-03T07:37:59.0073759Z [36;1mecho "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"[0m
+2026-11-03T07:37:59.0098440Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.0098791Z env:
+2026-11-03T07:37:59.0099013Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.0099301Z ##[endgroup]
+2026-11-03T07:37:59.0180821Z ##[end-action id=__self.__run_2;outcome=success;conclusion=success;duration_ms=15]
+2026-11-03T07:37:59.0183407Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=__self.__run_3]
+2026-11-03T07:37:59.0229403Z ##[group]Run sudo sysctl -w kernel.unprivileged_userns_clone=1
+2026-11-03T07:37:59.0229859Z [36;1msudo sysctl -w kernel.unprivileged_userns_clone=1[0m
+2026-11-03T07:37:59.0230584Z [36;1mif sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then[0m
+2026-11-03T07:37:59.0231184Z [36;1m  sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0[0m
+2026-11-03T07:37:59.0231552Z [36;1mfi[0m
+2026-11-03T07:37:59.0250140Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.0250471Z env:
+2026-11-03T07:37:59.0250690Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.0251001Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.0251277Z ##[endgroup]
+2026-11-03T07:37:59.0357038Z kernel.unprivileged_userns_clone = 1
+2026-11-03T07:37:59.0871524Z kernel.apparmor_restrict_unprivileged_userns = 0
+2026-11-03T07:37:59.0889539Z ##[end-action id=__self.__run_3;outcome=success;conclusion=success;duration_ms=70]
+2026-11-03T07:37:59.0892508Z ##[start-action display=Configure CI build paths;id=__self.configure_ci_build_paths]
+2026-11-03T07:37:59.0921132Z ##[group]Run set -euo pipefail
+2026-11-03T07:37:59.0921459Z [36;1mset -euo pipefail[0m
+2026-11-03T07:37:59.0921843Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-11-03T07:37:59.0922696Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-11-03T07:37:59.0923195Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-11-03T07:37:59.0923587Z [36;1m# confuse test MANIFEST handling.[0m
+2026-11-03T07:37:59.0923889Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-11-03T07:37:59.0924205Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-11-03T07:37:59.0924604Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-11-03T07:37:59.0925180Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-11-03T07:37:59.0925709Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-11-03T07:37:59.0926033Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-11-03T07:37:59.0926277Z [36;1m[0m
+2026-11-03T07:37:59.0926464Z [36;1mbuild_dirs=([0m
+2026-11-03T07:37:59.0926691Z [36;1m  "$bazel_output_base"[0m
+2026-11-03T07:37:59.0926946Z [36;1m  "$bazel_output_user_root"[0m
+2026-11-03T07:37:59.0927417Z [36;1m  "$bazel_repository_cache"[0m
+2026-11-03T07:37:59.0927691Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-11-03T07:37:59.0927959Z [36;1m  "$cargo_target_dir"[0m
+2026-11-03T07:37:59.0928190Z [36;1m  "$tmp"[0m
+2026-11-03T07:37:59.0928386Z [36;1m)[0m
+2026-11-03T07:37:59.0928598Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-11-03T07:37:59.0928968Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-11-03T07:37:59.0929429Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-11-03T07:37:59.0929772Z [36;1m[0m
+2026-11-03T07:37:59.0929949Z [36;1m{[0m
+2026-11-03T07:37:59.0930180Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-11-03T07:37:59.0930515Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-11-03T07:37:59.0930883Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-11-03T07:37:59.0931271Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-11-03T07:37:59.0931689Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-11-03T07:37:59.0932076Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-11-03T07:37:59.0932712Z [36;1m  echo "TEMP=$tmp"[0m
+2026-11-03T07:37:59.0932953Z [36;1m  echo "TMP=$tmp"[0m
+2026-11-03T07:37:59.0933178Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-11-03T07:37:59.0953521Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.0953856Z env:
+2026-11-03T07:37:59.0954075Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.0954379Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.0954654Z ##[endgroup]
+2026-11-03T07:37:59.1036144Z ##[end-action id=__self.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=14]
+2026-11-03T07:37:59.1040876Z ##[start-action display=Prefer the Git CLI for Cargo git dependencies;id=__self.__run_4]
+2026-11-03T07:37:59.1068567Z ##[group]Run echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+2026-11-03T07:37:59.1069028Z [36;1mecho "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"[0m
+2026-11-03T07:37:59.1088836Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.1089182Z env:
+2026-11-03T07:37:59.1089402Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.1089718Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.1090119Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.1090537Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.1090895Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.1091329Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.1091943Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.1092823Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.1093176Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.1093458Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.1093715Z ##[endgroup]
+2026-11-03T07:37:59.1139930Z ##[end-action id=__self.__run_4;outcome=success;conclusion=success;duration_ms=9]
+2026-11-03T07:37:59.1142011Z ##[start-action display=Install DotSlash;id=__self.__facebook_install-dotslash]
+2026-11-03T07:37:59.1221399Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-03T07:37:59.1221815Z env:
+2026-11-03T07:37:59.1222035Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.1222735Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.1223159Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.1223571Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.1223927Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.1224375Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.1225173Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.1225742Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.1226089Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.1226373Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.1226652Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.1226911Z ##[endgroup]
+2026-11-03T07:37:59.1263997Z ##[start-action display=Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT;id=__self.__facebook_install-dotslash.configure]
+2026-11-03T07:37:59.1293908Z ##[group]Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT
+2026-11-03T07:37:59.1294346Z [36;1mecho platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT[0m
+2026-11-03T07:37:59.1298039Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-03T07:37:59.1319366Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.1319707Z env:
+2026-11-03T07:37:59.1319924Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.1320237Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.1320627Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.1321032Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.1321384Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.1321818Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.1322585Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.1323307Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.1323655Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.1323941Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.1324210Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.1324454Z ##[endgroup]
+2026-11-03T07:37:59.5788724Z ##[end-action id=__self.__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=452]
+2026-11-03T07:37:59.5795517Z ##[start-action display=Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin";id=__self.__facebook_install-dotslash.__run]
+2026-11-03T07:37:59.5832590Z ##[group]Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin"
+2026-11-03T07:37:59.5833369Z [36;1mmkdir -p "/home/runner/work/_temp/install-dotslash/bin"[0m
+2026-11-03T07:37:59.5860072Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.5860572Z env:
+2026-11-03T07:37:59.5860892Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.5861377Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.5862002Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.5862929Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.5863557Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.5864309Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.5865380Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.5866542Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.5867153Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.5867644Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.5868121Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.5868556Z ##[endgroup]
+2026-11-03T07:37:59.5940679Z ##[end-action id=__self.__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=14]
+2026-11-03T07:37:59.5946139Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \;id=__self.__facebook_install-dotslash.__run_2]
+2026-11-03T07:37:59.5971953Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \
+2026-11-03T07:37:59.5973201Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \[0m
+2026-11-03T07:37:59.5976435Z [36;1m--header "authorization: ***" \[0m
+2026-11-03T07:37:59.5976846Z [36;1m--output "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-03T07:37:59.5977303Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-03T07:37:59.5995831Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.5996166Z env:
+2026-11-03T07:37:59.5996387Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.5996714Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.5997098Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.5997508Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.5997866Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.5998300Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.5998903Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.5999447Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.5999782Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.6000055Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.6000325Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.6000569Z ##[endgroup]
+2026-11-03T07:37:59.9158361Z ##[end-action id=__self.__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=321]
+2026-11-03T07:37:59.9164431Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/";id=__self.__facebook_install-dotslash.__run_3]
+2026-11-03T07:37:59.9189996Z ##[group]Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"
+2026-11-03T07:37:59.9190873Z [36;1mtar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"[0m
+2026-11-03T07:37:59.9224911Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.9225248Z env:
+2026-11-03T07:37:59.9225474Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.9225778Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.9226164Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.9226566Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.9226930Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.9227374Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.9227990Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.9228579Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.9228924Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9229199Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9229465Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.9229715Z ##[endgroup]
+2026-11-03T07:37:59.9297809Z dotslash
+2026-11-03T07:37:59.9441546Z ##[end-action id=__self.__facebook_install-dotslash.__run_3;outcome=success;conclusion=success;duration_ms=27]
+2026-11-03T07:37:59.9449545Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -O >"/home/runner/work/_temp/install-dotslash/bin/dotslash.exe" --force-local;id=__self.__facebook_install-dotslash.__run_4]
+2026-11-03T07:37:59.9457151Z ##[end-action id=__self.__facebook_install-dotslash.__run_4;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-03T07:37:59.9462457Z ##[start-action display=Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH;id=__self.__facebook_install-dotslash.__run_5]
+2026-11-03T07:37:59.9504241Z ##[group]Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-03T07:37:59.9504778Z [36;1mecho "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-03T07:37:59.9524357Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.9524700Z env:
+2026-11-03T07:37:59.9524922Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.9525234Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.9525615Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.9526018Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.9526384Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.9526816Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.9527430Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.9527984Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.9528335Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9528623Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9528892Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.9529141Z ##[endgroup]
+2026-11-03T07:37:59.9577130Z ##[end-action id=__self.__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=11]
+2026-11-03T07:37:59.9579239Z ##[start-action display=Run dotslash --version;id=__self.__facebook_install-dotslash.__run_6]
+2026-11-03T07:37:59.9599019Z ##[group]Run dotslash --version
+2026-11-03T07:37:59.9599455Z [36;1mdotslash --version[0m
+2026-11-03T07:37:59.9619922Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:37:59.9620263Z env:
+2026-11-03T07:37:59.9620491Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.9620806Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.9621201Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.9621605Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.9621953Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.9622823Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.9623454Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.9624013Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.9624357Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9624633Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9624911Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.9625159Z ##[endgroup]
+2026-11-03T07:37:59.9674406Z DotSlash 0.5.9
+2026-11-03T07:37:59.9683146Z ##[end-action id=__self.__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=10]
+2026-11-03T07:37:59.9695012Z ##[end-action id=__self.__facebook_install-dotslash;outcome=success;conclusion=success;duration_ms=855]
+2026-11-03T07:37:59.9696976Z ##[start-action display=Install just;id=__self.__taiki-e_install-action]
+2026-11-03T07:37:59.9747246Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-03T07:37:59.9747626Z with:
+2026-11-03T07:37:59.9747811Z   tool: just@1.51.0
+2026-11-03T07:37:59.9748009Z   checksum: true
+2026-11-03T07:37:59.9748213Z   fallback: cargo-binstall
+2026-11-03T07:37:59.9748433Z env:
+2026-11-03T07:37:59.9748646Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.9748964Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.9749356Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.9749755Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.9750255Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.9750685Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.9751291Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.9751855Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.9752549Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9752842Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9753110Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.9753355Z ##[endgroup]
+2026-11-03T07:37:59.9756917Z ##[start-action display=Run set -eu;id=__self.__taiki-e_install-action.__run]
+2026-11-03T07:37:59.9777316Z ##[group]Run set -eu
+2026-11-03T07:37:59.9777587Z [36;1mset -eu[0m
+2026-11-03T07:37:59.9777829Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-03T07:37:59.9778190Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-03T07:37:59.9778653Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-03T07:37:59.9779090Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-03T07:37:59.9779412Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-03T07:37:59.9779724Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-03T07:37:59.9780042Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-03T07:37:59.9780344Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-03T07:37:59.9780607Z [36;1m    else[0m
+2026-11-03T07:37:59.9780821Z [36;1m      apk --no-cache add bash[0m
+2026-11-03T07:37:59.9781074Z [36;1m    fi[0m
+2026-11-03T07:37:59.9781284Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-03T07:37:59.9781530Z [36;1m  else[0m
+2026-11-03T07:37:59.9781790Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-11-03T07:37:59.9782613Z [36;1m    exit 1[0m
+2026-11-03T07:37:59.9782827Z [36;1m  fi[0m
+2026-11-03T07:37:59.9783019Z [36;1mfi[0m
+2026-11-03T07:37:59.9908015Z shell: /usr/bin/sh -e {0}
+2026-11-03T07:37:59.9908280Z env:
+2026-11-03T07:37:59.9908506Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:37:59.9908841Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:37:59.9909232Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:37:59.9909666Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:37:59.9910027Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:37:59.9910467Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:37:59.9911092Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:37:59.9911655Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:37:59.9912010Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9912477Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:37:59.9912759Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:37:59.9913013Z ##[endgroup]
+2026-11-03T07:37:59.9976543Z ##[end-action id=__self.__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=21]
+2026-11-03T07:37:59.9981389Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__self.__taiki-e_install-action.__run_2]
+2026-11-03T07:38:00.0002054Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-03T07:38:00.0002839Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-03T07:38:00.0020985Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:38:00.0021320Z env:
+2026-11-03T07:38:00.0021538Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:38:00.0021848Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:38:00.0022521Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:38:00.0022939Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:38:00.0023464Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:38:00.0023899Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:38:00.0024512Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:38:00.0025070Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:38:00.0025413Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:00.0025691Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:00.0026007Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:38:00.0026270Z   INPUT_TOOL: just@1.51.0
+2026-11-03T07:38:00.0026493Z   INPUT_CHECKSUM: true
+2026-11-03T07:38:00.0026716Z   INPUT_FALLBACK: cargo-binstall
+2026-11-03T07:38:00.0030010Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-03T07:38:00.0030283Z   ACTION_USER_AGENT:  ()
+2026-11-03T07:38:00.0030521Z ##[endgroup]
+2026-11-03T07:38:00.0229780Z info: host platform: x86_64_linux
+2026-11-03T07:38:00.0339832Z ##[warning]just@1.51.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-11-03T07:38:00.0340499Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-03T07:38:00.0365549Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-03T07:38:00.0709257Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-03T07:38:00.2819489Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-03T07:38:00.4093406Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-11-03T07:38:00.4096347Z + cargo-binstall binstall -V
+2026-11-03T07:38:00.4107012Z 1.15.11
+2026-11-03T07:38:00.4238690Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-03T07:38:02.1228725Z  WARN The package just v1.51.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-11-03T07:38:02.1229320Z  INFO This will install the following binaries:
+2026-11-03T07:38:02.1229703Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-11-03T07:38:02.1230005Z  INFO Installing binaries...
+2026-11-03T07:38:02.1245794Z  INFO Done in 1.712294225s
+2026-11-03T07:38:02.1265931Z ##[end-action id=__self.__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=2128]
+2026-11-03T07:38:02.1270467Z ##[end-action id=__self.__taiki-e_install-action;outcome=success;conclusion=success;duration_ms=2157]
+2026-11-03T07:38:02.1273240Z ##[start-action display=Make DotSlash available in PATH (Unix);id=__self.__run_5]
+2026-11-03T07:38:02.1295684Z ##[group]Run if [[ -w /usr/local/bin ]]; then
+2026-11-03T07:38:02.1296025Z [36;1mif [[ -w /usr/local/bin ]]; then[0m
+2026-11-03T07:38:02.1296323Z [36;1m  cp "$(which dotslash)" /usr/local/bin[0m
+2026-11-03T07:38:02.1296605Z [36;1melse[0m
+2026-11-03T07:38:02.1296850Z [36;1m  sudo cp "$(which dotslash)" /usr/local/bin[0m
+2026-11-03T07:38:02.1297134Z [36;1mfi[0m
+2026-11-03T07:38:02.1317077Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:38:02.1317414Z env:
+2026-11-03T07:38:02.1317631Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:38:02.1317932Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:38:02.1318319Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:38:02.1318733Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:38:02.1319077Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:38:02.1319513Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:38:02.1320117Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:38:02.1320664Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:38:02.1321006Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:02.1321276Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:02.1321538Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:38:02.1321957Z ##[endgroup]
+2026-11-03T07:38:02.1411779Z ##[end-action id=__self.__run_5;outcome=success;conclusion=success;duration_ms=13]
+2026-11-03T07:38:02.1414220Z ##[start-action display=Make DotSlash available in PATH (Windows);id=__self.__run_6]
+2026-11-03T07:38:02.1417881Z ##[end-action id=__self.__run_6;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-03T07:38:02.1420325Z ##[start-action display=Enable Git long paths (Windows);id=__self.__run_7]
+2026-11-03T07:38:02.1454934Z ##[end-action id=__self.__run_7;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-03T07:38:02.1524228Z ##[group]Run python3 .github/scripts/verify_cargo_workspace_manifests.py
+2026-11-03T07:38:02.1524757Z [36;1mpython3 .github/scripts/verify_cargo_workspace_manifests.py[0m
+2026-11-03T07:38:02.1544274Z shell: /usr/bin/bash -e {0}
+2026-11-03T07:38:02.1544529Z env:
+2026-11-03T07:38:02.1544744Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:38:02.1545060Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:38:02.1545443Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:38:02.1545853Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:38:02.1546199Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:38:02.1546626Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:38:02.1547231Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:38:02.1547825Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:38:02.1548169Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:02.1548450Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:02.1548715Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:38:02.1548962Z ##[endgroup]
+2026-11-03T07:38:11.4330348Z ##[group]Run python3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'
+2026-11-03T07:38:11.4331150Z [36;1mpython3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'[0m
+2026-11-03T07:38:11.4350942Z shell: /usr/bin/bash -e {0}
+2026-11-03T07:38:11.4351181Z env:
+2026-11-03T07:38:11.4351400Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:38:11.4351710Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:38:11.4352098Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:38:11.4352786Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:38:11.4353134Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:38:11.4353564Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:38:11.4354172Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:38:11.4354765Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:38:11.4355106Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:11.4355381Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:11.4355650Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:38:11.4355895Z ##[endgroup]
+2026-11-03T07:38:11.8949029Z ...........
+2026-11-03T07:38:11.8949615Z ----------------------------------------------------------------------
+2026-11-03T07:38:11.8950308Z Ran 11 tests in 0.365s
+2026-11-03T07:38:11.8950587Z 
+2026-11-03T07:38:11.8950739Z OK
+2026-11-03T07:38:11.9133469Z ##[group]Run python3 scripts/verify_hepta_callers.py self-test
+2026-11-03T07:38:11.9133976Z [36;1mpython3 scripts/verify_hepta_callers.py self-test[0m
+2026-11-03T07:38:11.9134378Z [36;1mpython3 scripts/verify_hepta_callers.py verify[0m
+2026-11-03T07:38:11.9134828Z [36;1mpython3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py'[0m
+2026-11-03T07:38:11.9135263Z [36;1mpython3 scripts/test_hepta_typed_callers.py[0m
+2026-11-03T07:38:11.9135686Z [36;1mpython3 -m unittest discover -s qa/fault-matrix -p 'test_*.py'[0m
+2026-11-03T07:38:11.9136156Z [36;1mpython3 -m unittest discover -s qa/performance -p 'test_*.py'[0m
+2026-11-03T07:38:11.9136643Z [36;1mpython3 -m unittest discover -s qa/vertical-slice -p 'test_*.py'[0m
+2026-11-03T07:38:11.9156632Z shell: /usr/bin/bash -e {0}
+2026-11-03T07:38:11.9156879Z env:
+2026-11-03T07:38:11.9157106Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:38:11.9157429Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:38:11.9157872Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:38:11.9158281Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:38:11.9158633Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:38:11.9159057Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:38:11.9159671Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:38:11.9160243Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:38:11.9160594Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:11.9160872Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:38:11.9161141Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:38:11.9161391Z ##[endgroup]
+2026-11-03T07:38:11.9778357Z {"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}
+2026-11-03T07:39:52.7247907Z {
+2026-11-03T07:39:52.7248498Z   "authorityGranted": false,
+2026-11-03T07:39:52.7249008Z   "boundaries": [
+2026-11-03T07:39:52.7249313Z     {
+2026-11-03T07:39:52.7249642Z       "callPattern": null,
+2026-11-03T07:39:52.7250538Z       "id": "supervisor_authorized_boot",
+2026-11-03T07:39:52.7251133Z       "productCallers": [
+2026-11-03T07:39:52.7251561Z         "codex-rs/hepta-supervisor/src/main.rs"
+2026-11-03T07:39:52.7252001Z       ],
+2026-11-03T07:39:52.7252628Z       "receiverMethods": [],
+2026-11-03T07:39:52.7253707Z       "receiverType": null,
+2026-11-03T07:39:52.7254358Z       "symbol": "run_supervisord_with_grant_verifier"
+2026-11-03T07:39:52.7254797Z     },
+2026-11-03T07:39:52.7255052Z     {
+2026-11-03T07:39:52.7255335Z       "callPattern": null,
+2026-11-03T07:39:52.7255722Z       "id": "memory_production_writer_open",
+2026-11-03T07:39:52.7256134Z       "productCallers": [
+2026-11-03T07:39:52.7256568Z         "codex-rs/hepta-agentd/src/production_writer_host.rs"
+2026-11-03T07:39:52.7257036Z       ],
+2026-11-03T07:39:52.7257317Z       "receiverMethods": [],
+2026-11-03T07:39:52.7257692Z       "receiverType": null,
+2026-11-03T07:39:52.7262457Z       "symbol": "ProductionDurableWriter::open_with_live_verifier"
+2026-11-03T07:39:52.7262999Z     },
+2026-11-03T07:39:52.7263259Z     {
+2026-11-03T07:39:52.7263534Z       "callPattern": null,
+2026-11-03T07:39:52.7263906Z       "id": "cognitive_store_recovery_open",
+2026-11-03T07:39:52.7264319Z       "productCallers": [
+2026-11-03T07:39:52.7264745Z         "codex-rs/hepta-agentd/src/production_writer_host.rs"
+2026-11-03T07:39:52.7265231Z       ],
+2026-11-03T07:39:52.7265518Z       "receiverMethods": [],
+2026-11-03T07:39:52.7265885Z       "receiverType": null,
+2026-11-03T07:39:52.7266339Z       "symbol": "CognitiveStore::open_with_recovery"
+2026-11-03T07:39:52.7266791Z     },
+2026-11-03T07:39:52.7267056Z     {
+2026-11-03T07:39:52.7267437Z       "callPattern": "\\bcognitive_mutation_capability\\s*\\(",
+2026-11-03T07:39:52.7268005Z       "id": "cognitive_production_mutation_capability",
+2026-11-03T07:39:52.7268463Z       "productCallers": [
+2026-11-03T07:39:52.7269311Z         "codex-rs/hepta-agentd/src/production_writer_host.rs"
+2026-11-03T07:39:52.7269792Z       ],
+2026-11-03T07:39:52.7270080Z       "receiverMethods": [],
+2026-11-03T07:39:52.7270431Z       "receiverType": null,
+2026-11-03T07:39:52.7270967Z       "symbol": "ProductionDurableWriter::cognitive_mutation_capability"
+2026-11-03T07:39:52.7271522Z     },
+2026-11-03T07:39:52.7271784Z     {
+2026-11-03T07:39:52.7272060Z       "callPattern": null,
+2026-11-03T07:39:52.7273080Z       "id": "agentd_production_writer_host",
+2026-11-03T07:39:52.7273504Z       "productCallers": [],
+2026-11-03T07:39:52.7273876Z       "receiverMethods": [],
+2026-11-03T07:39:52.7274248Z       "receiverType": null,
+2026-11-03T07:39:52.7274679Z       "symbol": "AgentdProductionWriterHost::open"
+2026-11-03T07:39:52.7275116Z     },
+2026-11-03T07:39:52.7275374Z     {
+2026-11-03T07:39:52.7275723Z       "callPattern": "\\boperations\\s*\\.\\s*attach\\s*\\(",
+2026-11-03T07:39:52.7276248Z       "id": "agentd_production_operation_runtime",
+2026-11-03T07:39:52.7276706Z       "productCallers": [
+2026-11-03T07:39:52.7277091Z         "codex-rs/hepta-agentd/src/runtime.rs"
+2026-11-03T07:39:52.7277504Z       ],
+2026-11-03T07:39:52.7277790Z       "receiverMethods": [],
+2026-11-03T07:39:52.7278145Z       "receiverType": null,
+2026-11-03T07:39:52.7278624Z       "symbol": "AgentdProductionOperationRuntimeConfig::attach"
+2026-11-03T07:39:52.7279148Z     },
+2026-11-03T07:39:52.7279432Z     {
+2026-11-03T07:39:52.7279729Z       "callPattern": null,
+2026-11-03T07:39:52.7280125Z       "id": "learning_artifact_owner_bootstrap",
+2026-11-03T07:39:52.7280572Z       "productCallers": [
+2026-11-03T07:39:52.7281038Z         "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+2026-11-03T07:39:52.7281537Z       ],
+2026-11-03T07:39:52.7281803Z       "receiverMethods": [],
+2026-11-03T07:39:52.7282337Z       "receiverType": null,
+2026-11-03T07:39:52.7282721Z       "symbol": "LearningArtifactOwnerHost::open"
+2026-11-03T07:39:52.7283144Z     },
+2026-11-03T07:39:52.7283417Z     {
+2026-11-03T07:39:52.7283697Z       "callPattern": null,
+2026-11-03T07:39:52.7284103Z       "id": "learning_artifact_owner_restart",
+2026-11-03T07:39:52.7284582Z       "productCallers": [
+2026-11-03T07:39:52.7285064Z         "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+2026-11-03T07:39:52.7285591Z       ],
+2026-11-03T07:39:52.7285894Z       "receiverMethods": [],
+2026-11-03T07:39:52.7286275Z       "receiverType": null,
+2026-11-03T07:39:52.7287116Z       "symbol": "LearningArtifactOwnerHost::open_with_required_current_head"
+2026-11-03T07:39:52.7287695Z     },
+2026-11-03T07:39:52.7287953Z     {
+2026-11-03T07:39:52.7288333Z       "callPattern": "\\bcandidate\\s*\\.\\s*with_current\\s*\\(",
+2026-11-03T07:39:52.7288929Z       "id": "learning_artifact_verified_current_view",
+2026-11-03T07:39:52.7289396Z       "productCallers": [
+2026-11-03T07:39:52.7290039Z         "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+2026-11-03T07:39:52.7290789Z         "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+2026-11-03T07:39:52.7291637Z         "codex-rs/hepta-learning-artifacts/src/selected_initial_smollm.rs"
+2026-11-03T07:39:52.7292518Z       ],
+2026-11-03T07:39:52.7292860Z       "receiverMethods": [],
+2026-11-03T07:39:52.7293252Z       "receiverType": null,
+2026-11-03T07:39:52.7293845Z       "symbol": "RevalidatingCandidate::with_current"
+2026-11-03T07:39:52.7294440Z     },
+2026-11-03T07:39:52.7294722Z     {
+2026-11-03T07:39:52.7295027Z       "callPattern": null,
+2026-11-03T07:39:52.7295445Z       "id": "provider_effect_coordinator",
+2026-11-03T07:39:52.7295900Z       "productCallers": [],
+2026-11-03T07:39:52.7296311Z       "receiverMethods": [],
+2026-11-03T07:39:52.7296721Z       "receiverType": null,
+2026-11-03T07:39:52.7297193Z       "symbol": "ProviderEffectCoordinator::new"
+2026-11-03T07:39:52.7297686Z     },
+2026-11-03T07:39:52.7297988Z     {
+2026-11-03T07:39:52.7298311Z       "callPattern": null,
+2026-11-03T07:39:52.7298730Z       "id": "http_provider_effect_adapter",
+2026-11-03T07:39:52.7299443Z       "productCallers": [
+2026-11-03T07:39:52.7299920Z         "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+2026-11-03T07:39:52.7300417Z       ],
+2026-11-03T07:39:52.7300688Z       "receiverMethods": [],
+2026-11-03T07:39:52.7301031Z       "receiverType": null,
+2026-11-03T07:39:52.7301520Z       "symbol": "HttpProviderEffectAdapter::new"
+2026-11-03T07:39:52.7302008Z     },
+2026-11-03T07:39:52.7302612Z     {
+2026-11-03T07:39:52.7302913Z       "callPattern": null,
+2026-11-03T07:39:52.7303291Z       "id": "final_use_open_state",
+2026-11-03T07:39:52.7303726Z       "productCallers": [
+2026-11-03T07:39:52.7304233Z         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+2026-11-03T07:39:52.7304930Z         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+2026-11-03T07:39:52.7305659Z         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+2026-11-03T07:39:52.7306183Z       ],
+2026-11-03T07:39:52.7306504Z       "receiverMethods": [],
+2026-11-03T07:39:52.7306918Z       "receiverType": null,
+2026-11-03T07:39:52.7307387Z       "symbol": "FinalUseAuthority::open_state_dir"
+2026-11-03T07:39:52.7307858Z     },
+2026-11-03T07:39:52.7308147Z     {
+2026-11-03T07:39:52.7308454Z       "callPattern": null,
+2026-11-03T07:39:52.7308840Z       "id": "final_use_claim",
+2026-11-03T07:39:52.7309224Z       "productCallers": [
+2026-11-03T07:39:52.7309678Z         "codex-rs/hepta-agentd/src/browser_servo.rs",
+2026-11-03T07:39:52.7310279Z         "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+2026-11-03T07:39:52.7310791Z       ],
+2026-11-03T07:39:52.7311104Z       "receiverMethods": [],
+2026-11-03T07:39:52.7311492Z       "receiverType": null,
+2026-11-03T07:39:52.7311898Z       "symbol": "claim_final_use"
+2026-11-03T07:39:52.7312527Z     },
+2026-11-03T07:39:52.7312816Z     {
+2026-11-03T07:39:52.7313122Z       "callPattern": null,
+2026-11-03T07:39:52.7313512Z       "id": "final_use_claim_raw",
+2026-11-03T07:39:52.7313933Z       "productCallers": [
+2026-11-03T07:39:52.7314443Z         "codex-rs/hepta-automation/src/authorized_effect.rs",
+2026-11-03T07:39:52.7315183Z         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+2026-11-03T07:39:52.7315969Z         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+2026-11-03T07:39:52.7316688Z         "codex-rs/hepta-memory/src/production_writer.rs",
+2026-11-03T07:39:52.7317226Z         "codex-rs/hepta-ndu/src/owner.rs",
+2026-11-03T07:39:52.7318056Z         "codex-rs/hepta-operations/src/durable_store.rs",
+2026-11-03T07:39:52.7318653Z         "codex-rs/hepta-prompt-registry/src/admission.rs",
+2026-11-03T07:39:52.7319273Z         "codex-rs/hepta-prompt-registry/src/durable.rs",
+2026-11-03T07:39:52.7319839Z         "codex-rs/hepta-runtime/src/organs.rs"
+2026-11-03T07:39:52.7320282Z       ],
+2026-11-03T07:39:52.7320597Z       "receiverMethods": [],
+2026-11-03T07:39:52.7321022Z       "receiverType": "FinalUseAuthority",
+2026-11-03T07:39:52.7321516Z       "symbol": "FinalUseAuthority::claim"
+2026-11-03T07:39:52.7321954Z     },
+2026-11-03T07:39:52.7322454Z     {
+2026-11-03T07:39:52.7322766Z       "callPattern": null,
+2026-11-03T07:39:52.7323177Z       "id": "final_use_delivery",
+2026-11-03T07:39:52.7323583Z       "productCallers": [
+2026-11-03T07:39:52.7324066Z         "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+2026-11-03T07:39:52.7324599Z       ],
+2026-11-03T07:39:52.7324933Z       "receiverMethods": [],
+2026-11-03T07:39:52.7325362Z       "receiverType": null,
+2026-11-03T07:39:52.7325795Z       "symbol": "deliver_final_use"
+2026-11-03T07:39:52.7326221Z     },
+2026-11-03T07:39:52.7326516Z     {
+2026-11-03T07:39:52.7326837Z       "callPattern": null,
+2026-11-03T07:39:52.7327265Z       "id": "final_use_delivery_witness",
+2026-11-03T07:39:52.7327764Z       "productCallers": [],
+2026-11-03T07:39:52.7328188Z       "receiverMethods": [],
+2026-11-03T07:39:52.7328602Z       "receiverType": null,
+2026-11-03T07:39:52.7329024Z       "symbol": "deliver_final_use_with_witness"
+2026-11-03T07:39:52.7329493Z     },
+2026-11-03T07:39:52.7329999Z     {
+2026-11-03T07:39:52.7330296Z       "callPattern": null,
+2026-11-03T07:39:52.7330715Z       "id": "final_use_delivery_raw",
+2026-11-03T07:39:52.7331176Z       "productCallers": [
+2026-11-03T07:39:52.7331669Z         "codex-rs/hepta-memory/src/production_writer.rs",
+2026-11-03T07:39:52.7332531Z         "codex-rs/hepta-ndu/src/owner.rs",
+2026-11-03T07:39:52.7333109Z         "codex-rs/hepta-operations/src/durable_store.rs",
+2026-11-03T07:39:52.7333729Z         "codex-rs/hepta-prompt-registry/src/admission.rs",
+2026-11-03T07:39:52.7334352Z         "codex-rs/hepta-prompt-registry/src/durable.rs",
+2026-11-03T07:39:52.7334914Z         "codex-rs/hepta-runtime/src/organs.rs"
+2026-11-03T07:39:52.7335381Z       ],
+2026-11-03T07:39:52.7335709Z       "receiverMethods": [
+2026-11-03T07:39:52.7336095Z         "with_verified_use",
+2026-11-03T07:39:52.7336483Z         "enter_verified_use"
+2026-11-03T07:39:52.7336854Z       ],
+2026-11-03T07:39:52.7337212Z       "receiverType": "FinalUseAuthority",
+2026-11-03T07:39:52.7337812Z       "symbol": "FinalUseAuthority::with_verified_use"
+2026-11-03T07:39:52.7338330Z     },
+2026-11-03T07:39:52.7338627Z     {
+2026-11-03T07:39:52.7338936Z       "callPattern": null,
+2026-11-03T07:39:52.7339333Z       "id": "final_use_dispatch",
+2026-11-03T07:39:52.7339726Z       "productCallers": [
+2026-11-03T07:39:52.7340189Z         "codex-rs/hepta-agentd/src/browser_servo.rs"
+2026-11-03T07:39:52.7340679Z       ],
+2026-11-03T07:39:52.7340996Z       "receiverMethods": [],
+2026-11-03T07:39:52.7341422Z       "receiverType": null,
+2026-11-03T07:39:52.7341854Z       "symbol": "dispatch_final_use"
+2026-11-03T07:39:52.7342491Z     },
+2026-11-03T07:39:52.7342760Z     {
+2026-11-03T07:39:52.7343031Z       "callPattern": null,
+2026-11-03T07:39:52.7343448Z       "id": "final_use_dispatch_witness",
+2026-11-03T07:39:52.7343926Z       "productCallers": [],
+2026-11-03T07:39:52.7344342Z       "receiverMethods": [],
+2026-11-03T07:39:52.7344742Z       "receiverType": null,
+2026-11-03T07:39:52.7345188Z       "symbol": "dispatch_final_use_with_witness"
+2026-11-03T07:39:52.7345661Z     },
+2026-11-03T07:39:52.7345955Z     {
+2026-11-03T07:39:52.7346429Z       "callPattern": "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\(",
+2026-11-03T07:39:52.7347077Z       "id": "final_use_dispatch_raw",
+2026-11-03T07:39:52.7347555Z       "productCallers": [
+2026-11-03T07:39:52.7348083Z         "codex-rs/hepta-memory/src/production_verified_dispatch.rs"
+2026-11-03T07:39:52.7348864Z       ],
+2026-11-03T07:39:52.7349164Z       "receiverMethods": [],
+2026-11-03T07:39:52.7349546Z       "receiverType": null,
+2026-11-03T07:39:52.7349999Z       "symbol": "FinalUseAuthority::with_dispatch_boundary"
+2026-11-03T07:39:52.7350492Z     },
+2026-11-03T07:39:52.7350766Z     {
+2026-11-03T07:39:52.7351193Z       "callPattern": "authority\\s*\\.\\s*update_revocations\\s*\\(",
+2026-11-03T07:39:52.7351808Z       "id": "final_use_revocation_update",
+2026-11-03T07:39:52.7352493Z       "productCallers": [
+2026-11-03T07:39:52.7352971Z         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+2026-11-03T07:39:52.7353596Z         "codex-rs/hepta-contracts/src/final_use_control.rs",
+2026-11-03T07:39:52.7354146Z         "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+2026-11-03T07:39:52.7354798Z         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+2026-11-03T07:39:52.7355441Z       ],
+2026-11-03T07:39:52.7355730Z       "receiverMethods": [],
+2026-11-03T07:39:52.7356100Z       "receiverType": null,
+2026-11-03T07:39:52.7356554Z       "symbol": "FinalUseAuthority::update_revocations"
+2026-11-03T07:39:52.7357011Z     },
+2026-11-03T07:39:52.7357252Z     {
+2026-11-03T07:39:52.7357540Z       "callPattern": null,
+2026-11-03T07:39:52.7357907Z       "id": "final_use_approval_trust",
+2026-11-03T07:39:52.7358340Z       "productCallers": [],
+2026-11-03T07:39:52.7358717Z       "receiverMethods": [],
+2026-11-03T07:39:52.7359102Z       "receiverType": null,
+2026-11-03T07:39:52.7359539Z       "symbol": "FinalUseApprovalVerifier::new"
+2026-11-03T07:39:52.7360170Z     },
+2026-11-03T07:39:52.7360445Z     {
+2026-11-03T07:39:52.7360844Z       "callPattern": "approval_verifier\\s*\\.\\s*verify\\s*\\(",
+2026-11-03T07:39:52.7361397Z       "id": "final_use_approval_verify",
+2026-11-03T07:39:52.7361830Z       "productCallers": [
+2026-11-03T07:39:52.7362596Z         "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+2026-11-03T07:39:52.7363112Z       ],
+2026-11-03T07:39:52.7363431Z       "receiverMethods": [],
+2026-11-03T07:39:52.7363847Z       "receiverType": null,
+2026-11-03T07:39:52.7364317Z       "symbol": "FinalUseApprovalVerifier::verify"
+2026-11-03T07:39:52.7364806Z     },
+2026-11-03T07:39:52.7365094Z     {
+2026-11-03T07:39:52.7365403Z       "callPattern": null,
+2026-11-03T07:39:52.7365833Z       "id": "final_use_revocation_feed_trust",
+2026-11-03T07:39:52.7366318Z       "productCallers": [],
+2026-11-03T07:39:52.7366726Z       "receiverMethods": [],
+2026-11-03T07:39:52.7367134Z       "receiverType": null,
+2026-11-03T07:39:52.7367621Z       "symbol": "FinalUseRevocationFeedVerifier::new"
+2026-11-03T07:39:52.7368125Z     },
+2026-11-03T07:39:52.7368413Z     {
+2026-11-03T07:39:52.7368844Z       "callPattern": "revocation_verifier\\s*\\.\\s*apply\\s*\\(",
+2026-11-03T07:39:52.7369493Z       "id": "final_use_revocation_feed_apply",
+2026-11-03T07:39:52.7369983Z       "productCallers": [
+2026-11-03T07:39:52.7370456Z         "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+2026-11-03T07:39:52.7370983Z       ],
+2026-11-03T07:39:52.7371307Z       "receiverMethods": [],
+2026-11-03T07:39:52.7371720Z       "receiverType": null,
+2026-11-03T07:39:52.7372405Z       "symbol": "FinalUseRevocationFeedVerifier::apply"
+2026-11-03T07:39:52.7372929Z     },
+2026-11-03T07:39:52.7373217Z     {
+2026-11-03T07:39:52.7373517Z       "callPattern": null,
+2026-11-03T07:39:52.7373947Z       "id": "final_use_revocation_convergence_trust",
+2026-11-03T07:39:52.7374429Z       "productCallers": [],
+2026-11-03T07:39:52.7374826Z       "receiverMethods": [],
+2026-11-03T07:39:52.7375236Z       "receiverType": null,
+2026-11-03T07:39:52.7375790Z       "symbol": "FinalUseRevocationConvergenceVerifier::new"
+2026-11-03T07:39:52.7376340Z     },
+2026-11-03T07:39:52.7376624Z     {
+2026-11-03T07:39:52.7377049Z       "callPattern": "convergence_verifier\\s*\\.\\s*verify\\s*\\(",
+2026-11-03T07:39:52.7377686Z       "id": "final_use_revocation_convergence_verify",
+2026-11-03T07:39:52.7378183Z       "productCallers": [
+2026-11-03T07:39:52.7378634Z         "codex-rs/hepta-fleet/src/revocation_control.rs"
+2026-11-03T07:39:52.7379303Z       ],
+2026-11-03T07:39:52.7379616Z       "receiverMethods": [],
+2026-11-03T07:39:52.7380004Z       "receiverType": null,
+2026-11-03T07:39:52.7380539Z       "symbol": "FinalUseRevocationConvergenceVerifier::verify"
+2026-11-03T07:39:52.7381079Z     },
+2026-11-03T07:39:52.7381369Z     {
+2026-11-03T07:39:52.7381722Z       "callPattern": "\\.\\s*consume_kv_v2\\s*\\(",
+2026-11-03T07:39:52.7382422Z       "id": "bao_final_use_consumer",
+2026-11-03T07:39:52.7382866Z       "productCallers": [],
+2026-11-03T07:39:52.7383266Z       "receiverMethods": [],
+2026-11-03T07:39:52.7383661Z       "receiverType": null,
+2026-11-03T07:39:52.7384076Z       "symbol": "BaoClient::consume_kv_v2"
+2026-11-03T07:39:52.7384505Z     },
+2026-11-03T07:39:52.7384780Z     {
+2026-11-03T07:39:52.7385072Z       "callPattern": null,
+2026-11-03T07:39:52.7385475Z       "id": "bao_registered_consumer_new",
+2026-11-03T07:39:52.7385940Z       "productCallers": [],
+2026-11-03T07:39:52.7386343Z       "receiverMethods": [],
+2026-11-03T07:39:52.7386738Z       "receiverType": null,
+2026-11-03T07:39:52.7387165Z       "symbol": "RegisteredBaoConsumer::new"
+2026-11-03T07:39:52.7400588Z     },
+2026-11-03T07:39:52.7400942Z     {
+2026-11-03T07:39:52.7401343Z       "callPattern": null,
+2026-11-03T07:39:52.7401784Z       "id": "bao_final_use_host_new",
+2026-11-03T07:39:52.7402448Z       "productCallers": [],
+2026-11-03T07:39:52.7402875Z       "receiverMethods": [],
+2026-11-03T07:39:52.7403294Z       "receiverType": null,
+2026-11-03T07:39:52.7403938Z       "symbol": "BaoFinalUseHost::new"
+2026-11-03T07:39:52.7404386Z     },
+2026-11-03T07:39:52.7404674Z     {
+2026-11-03T07:39:52.7405099Z       "callPattern": "\\.\\s*apply_revocation_update\\s*\\(",
+2026-11-03T07:39:52.7405699Z       "id": "bao_registered_revocation_update",
+2026-11-03T07:39:52.7406170Z       "productCallers": [],
+2026-11-03T07:39:52.7406544Z       "receiverMethods": [],
+2026-11-03T07:39:52.7406921Z       "receiverType": null,
+2026-11-03T07:39:52.7407391Z       "symbol": "BaoFinalUseHost::apply_revocation_update"
+2026-11-03T07:39:52.7407860Z     },
+2026-11-03T07:39:52.7408120Z     {
+2026-11-03T07:39:52.7408711Z       "callPattern": "(?:bao_host|final_use_host|BaoFinalUseHost)\\s*(?:\\.|::)\\s*consume_kv_v2\\s*\\(",
+2026-11-03T07:39:52.7409473Z       "id": "bao_registered_final_use_host",
+2026-11-03T07:39:52.7409911Z       "productCallers": [],
+2026-11-03T07:39:52.7410279Z       "receiverMethods": [],
+2026-11-03T07:39:52.7410648Z       "receiverType": null,
+2026-11-03T07:39:52.7411057Z       "symbol": "BaoFinalUseHost::consume_kv_v2"
+2026-11-03T07:39:52.7411498Z     },
+2026-11-03T07:39:52.7411780Z     {
+2026-11-03T07:39:52.7412081Z       "callPattern": null,
+2026-11-03T07:39:52.7412678Z       "id": "authority_lease_open_state",
+2026-11-03T07:39:52.7413131Z       "productCallers": [],
+2026-11-03T07:39:52.7413519Z       "receiverMethods": [],
+2026-11-03T07:39:52.7413914Z       "receiverType": null,
+2026-11-03T07:39:52.7414376Z       "symbol": "AuthorityLeaseRegistry::open_state_dir"
+2026-11-03T07:39:52.7414856Z     },
+2026-11-03T07:39:52.7415124Z     {
+2026-11-03T07:39:52.7415424Z       "callPattern": null,
+2026-11-03T07:39:52.7415808Z       "id": "authority_lease_put",
+2026-11-03T07:39:52.7416217Z       "productCallers": [],
+2026-11-03T07:39:52.7416596Z       "receiverMethods": [],
+2026-11-03T07:39:52.7416988Z       "receiverType": null,
+2026-11-03T07:39:52.7417464Z       "symbol": "AuthorityLeaseRegistry::put_lease"
+2026-11-03T07:39:52.7417944Z     },
+2026-11-03T07:39:52.7418226Z     {
+2026-11-03T07:39:52.7418537Z       "callPattern": null,
+2026-11-03T07:39:52.7418934Z       "id": "authority_lease_revoke",
+2026-11-03T07:39:52.7419420Z       "productCallers": [],
+2026-11-03T07:39:52.7419823Z       "receiverMethods": [],
+2026-11-03T07:39:52.7420220Z       "receiverType": null,
+2026-11-03T07:39:52.7420654Z       "symbol": "AuthorityLeaseRegistry::revoke"
+2026-11-03T07:39:52.7421121Z     },
+2026-11-03T07:39:52.7421401Z     {
+2026-11-03T07:39:52.7421971Z       "callPattern": null,
+2026-11-03T07:39:52.7422559Z       "id": "authority_lease_prune",
+2026-11-03T07:39:52.7422998Z       "productCallers": [],
+2026-11-03T07:39:52.7423399Z       "receiverMethods": [],
+2026-11-03T07:39:52.7423793Z       "receiverType": null,
+2026-11-03T07:39:52.7424292Z       "symbol": "AuthorityLeaseRegistry::prune_expired_leases"
+2026-11-03T07:39:52.7424825Z     },
+2026-11-03T07:39:52.7425102Z     {
+2026-11-03T07:39:52.7425403Z       "callPattern": null,
+2026-11-03T07:39:52.7425810Z       "id": "authority_lease_epoch_advance",
+2026-11-03T07:39:52.7426280Z       "productCallers": [],
+2026-11-03T07:39:52.7426667Z       "receiverMethods": [],
+2026-11-03T07:39:52.7427059Z       "receiverType": null,
+2026-11-03T07:39:52.7427531Z       "symbol": "AuthorityLeaseRegistry::advance_epoch"
+2026-11-03T07:39:52.7428024Z     },
+2026-11-03T07:39:52.7428307Z     {
+2026-11-03T07:39:52.7428706Z       "callPattern": "\\bverifier\\s*\\.\\s*verify_use\\s*\\(",
+2026-11-03T07:39:52.7429279Z       "id": "authority_lease_verify_use",
+2026-11-03T07:39:52.7429741Z       "productCallers": [
+2026-11-03T07:39:52.7430178Z         "codex-rs/hepta-fleet/src/authority_port.rs"
+2026-11-03T07:39:52.7430654Z       ],
+2026-11-03T07:39:52.7430963Z       "receiverMethods": [],
+2026-11-03T07:39:52.7431354Z       "receiverType": null,
+2026-11-03T07:39:52.7431810Z       "symbol": "AuthorityLeaseVerifier::verify_use"
+2026-11-03T07:39:52.7432461Z     },
+2026-11-03T07:39:52.7432742Z     {
+2026-11-03T07:39:52.7433042Z       "callPattern": null,
+2026-11-03T07:39:52.7433608Z       "id": "authority_lease_delivery",
+2026-11-03T07:39:52.7434058Z       "productCallers": [],
+2026-11-03T07:39:52.7434439Z       "receiverMethods": [],
+2026-11-03T07:39:52.7434820Z       "receiverType": null,
+2026-11-03T07:39:52.7435285Z       "symbol": "AuthorityLeaseVerifier::with_verified_use"
+2026-11-03T07:39:52.7435782Z     },
+2026-11-03T07:39:52.7436057Z     {
+2026-11-03T07:39:52.7436356Z       "callPattern": null,
+2026-11-03T07:39:52.7436792Z       "id": "authority_lease_delivery_witness",
+2026-11-03T07:39:52.7437268Z       "productCallers": [],
+2026-11-03T07:39:52.7437655Z       "receiverMethods": [],
+2026-11-03T07:39:52.7438019Z       "receiverType": null,
+2026-11-03T07:39:52.7438423Z       "symbol": "deliver_authority_lease_with_witness"
+2026-11-03T07:39:52.7438867Z     },
+2026-11-03T07:39:52.7439124Z     {
+2026-11-03T07:39:52.7439398Z       "callPattern": null,
+2026-11-03T07:39:52.7439768Z       "id": "authority_lease_dispatch_raw",
+2026-11-03T07:39:52.7440209Z       "productCallers": [],
+2026-11-03T07:39:52.7440603Z       "receiverMethods": [],
+2026-11-03T07:39:52.7440994Z       "receiverType": null,
+2026-11-03T07:39:52.7441511Z       "symbol": "AuthorityLeaseVerifier::with_dispatch_boundary"
+2026-11-03T07:39:52.7442052Z     },
+2026-11-03T07:39:52.7442485Z     {
+2026-11-03T07:39:52.7442788Z       "callPattern": null,
+2026-11-03T07:39:52.7443202Z       "id": "authority_lease_dispatch_witness",
+2026-11-03T07:39:52.7443673Z       "productCallers": [
+2026-11-03T07:39:52.7444114Z         "codex-rs/hepta-fleet/src/authority_port.rs"
+2026-11-03T07:39:52.7444582Z       ],
+2026-11-03T07:39:52.7444890Z       "receiverMethods": [],
+2026-11-03T07:39:52.7445276Z       "receiverType": null,
+2026-11-03T07:39:52.7445722Z       "symbol": "dispatch_authority_lease_with_witness"
+2026-11-03T07:39:52.7446186Z     },
+2026-11-03T07:39:52.7446463Z     {
+2026-11-03T07:39:52.7446762Z       "callPattern": null,
+2026-11-03T07:39:52.7447167Z       "id": "final_use_async_dispatch_fence",
+2026-11-03T07:39:52.7447637Z       "productCallers": [],
+2026-11-03T07:39:52.7448023Z       "receiverMethods": [],
+2026-11-03T07:39:52.7448416Z       "receiverType": null,
+2026-11-03T07:39:52.7448888Z       "symbol": "FinalUseAuthority::with_verified_use_async"
+2026-11-03T07:39:52.7449405Z     },
+2026-11-03T07:39:52.7449689Z     {
+2026-11-03T07:39:52.7449998Z       "callPattern": null,
+2026-11-03T07:39:52.7450474Z       "id": "automation_taskflow_provider_effect_bridge",
+2026-11-03T07:39:52.7451187Z       "productCallers": [],
+2026-11-03T07:39:52.7451580Z       "receiverMethods": [],
+2026-11-03T07:39:52.7451984Z       "receiverType": null,
+2026-11-03T07:39:52.7452624Z       "symbol": "ProviderEffectTaskFlowDriver::new"
+2026-11-03T07:39:52.7453122Z     },
+2026-11-03T07:39:52.7453405Z     {
+2026-11-03T07:39:52.7453879Z       "callPattern": "\\bauthority\\s*\\.\\s*with_verified_effect\\s*\\(",
+2026-11-03T07:39:52.7454520Z       "id": "final_use_guarded_effect",
+2026-11-03T07:39:52.7454968Z       "productCallers": [
+2026-11-03T07:39:52.7455458Z         "codex-rs/hepta-automation/src/authorized_effect.rs"
+2026-11-03T07:39:52.7455983Z       ],
+2026-11-03T07:39:52.7456298Z       "receiverMethods": [],
+2026-11-03T07:39:52.7456696Z       "receiverType": null,
+2026-11-03T07:39:52.7457168Z       "symbol": "FinalUseAuthority::with_verified_effect"
+2026-11-03T07:39:52.7457662Z     },
+2026-11-03T07:39:52.7457948Z     {
+2026-11-03T07:39:52.7458256Z       "callPattern": null,
+2026-11-03T07:39:52.7458660Z       "id": "final_use_pq_open_state",
+2026-11-03T07:39:52.7459098Z       "productCallers": [
+2026-11-03T07:39:52.7459657Z         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
+2026-11-03T07:39:52.7460262Z       ],
+2026-11-03T07:39:52.7460686Z       "receiverMethods": [],
+2026-11-03T07:39:52.7461081Z       "receiverType": null,
+2026-11-03T07:39:52.7461625Z       "symbol": "FinalUseAuthority::open_pq_state_dir_with_issuer_keys"
+2026-11-03T07:39:52.7462394Z     },
+2026-11-03T07:39:52.7462655Z     {
+2026-11-03T07:39:52.7462930Z       "callPattern": null,
+2026-11-03T07:39:52.7463562Z       "id": "final_use_pq_approval_trust",
+2026-11-03T07:39:52.7464035Z       "productCallers": [],
+2026-11-03T07:39:52.7464429Z       "receiverMethods": [],
+2026-11-03T07:39:52.7464810Z       "receiverType": null,
+2026-11-03T07:39:52.7465286Z       "symbol": "FinalUseApprovalVerifier::new_pq_with_keys"
+2026-11-03T07:39:52.7465797Z     },
+2026-11-03T07:39:52.7466076Z     {
+2026-11-03T07:39:52.7466378Z       "callPattern": null,
+2026-11-03T07:39:52.7466809Z       "id": "final_use_pq_revocation_feed_trust",
+2026-11-03T07:39:52.7467290Z       "productCallers": [
+2026-11-03T07:39:52.7467834Z         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
+2026-11-03T07:39:52.7468434Z       ],
+2026-11-03T07:39:52.7468742Z       "receiverMethods": [],
+2026-11-03T07:39:52.7469133Z       "receiverType": null,
+2026-11-03T07:39:52.7469657Z       "symbol": "FinalUseRevocationFeedVerifier::new_pq_with_keys"
+2026-11-03T07:39:52.7470212Z     },
+2026-11-03T07:39:52.7470492Z     {
+2026-11-03T07:39:52.7470893Z       "callPattern": "\\.\\s*apply_or_confirm_current\\s*\\(",
+2026-11-03T07:39:52.7471489Z       "id": "final_use_pq_revocation_feed_confirm",
+2026-11-03T07:39:52.7471989Z       "productCallers": [
+2026-11-03T07:39:52.7472624Z         "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+2026-11-03T07:39:52.7473319Z         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
+2026-11-03T07:39:52.7473916Z       ],
+2026-11-03T07:39:52.7474235Z       "receiverMethods": [],
+2026-11-03T07:39:52.7474630Z       "receiverType": null,
+2026-11-03T07:39:52.7475199Z       "symbol": "FinalUseRevocationFeedVerifier::apply_or_confirm_current"
+2026-11-03T07:39:52.7475806Z     },
+2026-11-03T07:39:52.7476086Z     {
+2026-11-03T07:39:52.7476621Z       "callPattern": "(?:UnixFinalUseAuthorizer|Self)\\s*::\\s*from_pq_config\\s*\\(",
+2026-11-03T07:39:52.7477334Z       "id": "final_use_pq_port_open",
+2026-11-03T07:39:52.7477768Z       "productCallers": [
+2026-11-03T07:39:52.7478303Z         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+2026-11-03T07:39:52.7478886Z       ],
+2026-11-03T07:39:52.7479193Z       "receiverMethods": [],
+2026-11-03T07:39:52.7479583Z       "receiverType": null,
+2026-11-03T07:39:52.7480052Z       "symbol": "UnixFinalUseAuthorizer::from_pq_config"
+2026-11-03T07:39:52.7480547Z     },
+2026-11-03T07:39:52.7480825Z     {
+2026-11-03T07:39:52.7481109Z       "callPattern": null,
+2026-11-03T07:39:52.7481732Z       "id": "learning_artifact_authenticated_current_factory",
+2026-11-03T07:39:52.7482427Z       "productCallers": [
+2026-11-03T07:39:52.7482718Z         "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+2026-11-03T07:39:52.7483078Z         "codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs"
+2026-11-03T07:39:52.7483379Z       ],
+2026-11-03T07:39:52.7483569Z       "receiverMethods": [],
+2026-11-03T07:39:52.7483806Z       "receiverType": null,
+2026-11-03T07:39:52.7484154Z       "symbol": "RevalidatingCandidate::from_authenticated_current"
+2026-11-03T07:39:52.7484533Z     }
+2026-11-03T07:39:52.7484758Z   ],
+2026-11-03T07:39:52.7484999Z   "privilegedInventory": [
+2026-11-03T07:39:52.7485290Z     "agentd_production_operation_runtime",
+2026-11-03T07:39:52.7485576Z     "agentd_production_writer_host",
+2026-11-03T07:39:52.7485838Z     "authority_lease_delivery",
+2026-11-03T07:39:52.7486092Z     "authority_lease_delivery_witness",
+2026-11-03T07:39:52.7486369Z     "authority_lease_dispatch_raw",
+2026-11-03T07:39:52.7486642Z     "authority_lease_dispatch_witness",
+2026-11-03T07:39:52.7486909Z     "authority_lease_epoch_advance",
+2026-11-03T07:39:52.7487170Z     "authority_lease_open_state",
+2026-11-03T07:39:52.7487423Z     "authority_lease_prune",
+2026-11-03T07:39:52.7487663Z     "authority_lease_put",
+2026-11-03T07:39:52.7487905Z     "authority_lease_revoke",
+2026-11-03T07:39:52.7488146Z     "authority_lease_verify_use",
+2026-11-03T07:39:52.7488430Z     "automation_taskflow_provider_effect_bridge",
+2026-11-03T07:39:52.7488730Z     "bao_final_use_consumer",
+2026-11-03T07:39:52.7489118Z     "bao_final_use_host_new",
+2026-11-03T07:39:52.7489372Z     "bao_registered_consumer_new",
+2026-11-03T07:39:52.7489629Z     "bao_registered_final_use_host",
+2026-11-03T07:39:52.7489896Z     "bao_registered_revocation_update",
+2026-11-03T07:39:52.7490189Z     "cognitive_production_mutation_capability",
+2026-11-03T07:39:52.7490484Z     "cognitive_store_recovery_open",
+2026-11-03T07:39:52.7490750Z     "final_use_approval_trust",
+2026-11-03T07:39:52.7491004Z     "final_use_approval_verify",
+2026-11-03T07:39:52.7491258Z     "final_use_async_dispatch_fence",
+2026-11-03T07:39:52.7491513Z     "final_use_claim",
+2026-11-03T07:39:52.7491729Z     "final_use_claim_raw",
+2026-11-03T07:39:52.7491960Z     "final_use_delivery",
+2026-11-03T07:39:52.7492431Z     "final_use_delivery_raw",
+2026-11-03T07:39:52.7492695Z     "final_use_delivery_witness",
+2026-11-03T07:39:52.7492943Z     "final_use_dispatch",
+2026-11-03T07:39:52.7493168Z     "final_use_dispatch_raw",
+2026-11-03T07:39:52.7493410Z     "final_use_dispatch_witness",
+2026-11-03T07:39:52.7493665Z     "final_use_guarded_effect",
+2026-11-03T07:39:52.7493901Z     "final_use_open_state",
+2026-11-03T07:39:52.7494141Z     "final_use_pq_approval_trust",
+2026-11-03T07:39:52.7494392Z     "final_use_pq_open_state",
+2026-11-03T07:39:52.7494627Z     "final_use_pq_port_open",
+2026-11-03T07:39:52.7494878Z     "final_use_pq_revocation_feed_confirm",
+2026-11-03T07:39:52.7495165Z     "final_use_pq_revocation_feed_trust",
+2026-11-03T07:39:52.7495458Z     "final_use_revocation_convergence_trust",
+2026-11-03T07:39:52.7495761Z     "final_use_revocation_convergence_verify",
+2026-11-03T07:39:52.7496057Z     "final_use_revocation_feed_apply",
+2026-11-03T07:39:52.7496326Z     "final_use_revocation_feed_trust",
+2026-11-03T07:39:52.7496592Z     "final_use_revocation_update",
+2026-11-03T07:39:52.7496846Z     "http_provider_effect_adapter",
+2026-11-03T07:39:52.7497149Z     "learning_artifact_authenticated_current_factory",
+2026-11-03T07:39:52.7497469Z     "learning_artifact_owner_bootstrap",
+2026-11-03T07:39:52.7497752Z     "learning_artifact_owner_restart",
+2026-11-03T07:39:52.7498032Z     "learning_artifact_verified_current_view",
+2026-11-03T07:39:52.7498322Z     "memory_production_writer_open",
+2026-11-03T07:39:52.7498588Z     "provider_effect_coordinator",
+2026-11-03T07:39:52.7498846Z     "supervisor_authorized_boot"
+2026-11-03T07:39:52.7499078Z   ],
+2026-11-03T07:39:52.7499268Z   "protectedFiles": [
+2026-11-03T07:39:52.7499641Z     "codex-rs/hepta-supervisor/src/main.rs",
+2026-11-03T07:39:52.7499977Z     "codex-rs/hepta-agentd/src/production_writer_host.rs",
+2026-11-03T07:39:52.7500313Z     "codex-rs/hepta-agentd/src/runtime.rs",
+2026-11-03T07:39:52.7500614Z     "codex-rs/hepta-agentd/src/app_runtime.rs",
+2026-11-03T07:39:52.7500951Z     "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+2026-11-03T07:39:52.7501307Z     "codex-rs/hepta-agentd/src/runtime.rs",
+2026-11-03T07:39:52.7501645Z     "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+2026-11-03T07:39:52.7502047Z     "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+2026-11-03T07:39:52.7502645Z     "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+2026-11-03T07:39:52.7503010Z     "codex-rs/hepta-learning-artifacts/src/selection.rs",
+2026-11-03T07:39:52.7503366Z     "codex-rs/model-provider/src/provider_effect.rs",
+2026-11-03T07:39:52.7503701Z     "codex-rs/hepta-contracts/src/final_use.rs",
+2026-11-03T07:39:52.7504047Z     "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+2026-11-03T07:39:52.7504416Z     "codex-rs/hepta-contracts/src/final_use_store.rs",
+2026-11-03T07:39:52.7504810Z     "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+2026-11-03T07:39:52.7505214Z     "codex-rs/hepta-contracts/src/final_use_control.rs",
+2026-11-03T07:39:52.7505553Z     "codex-rs/hepta-contracts/src/authority_lease.rs",
+2026-11-03T07:39:52.7505894Z     "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+2026-11-03T07:39:52.7506242Z     "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+2026-11-03T07:39:52.7506741Z     "codex-rs/hepta-contracts/src/authority_authentication.rs",
+2026-11-03T07:39:52.7507115Z     "codex-rs/hepta-contracts/src/pq_auth.rs",
+2026-11-03T07:39:52.7507433Z     "codex-rs/hepta-contracts/src/final_use_pq.rs",
+2026-11-03T07:39:52.7507788Z     "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+2026-11-03T07:39:52.7508191Z     "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+2026-11-03T07:39:52.7508638Z     "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+2026-11-03T07:39:52.7509078Z     "codex-rs/hepta-infer-worker-host/src/smollm_initial_time.rs"
+2026-11-03T07:39:52.7509401Z   ],
+2026-11-03T07:39:52.7509596Z   "rustFilesScanned": 5604,
+2026-11-03T07:39:52.7509863Z   "schema": "hepta.caller-proof-receipt.v2",
+2026-11-03T07:39:52.7510171Z   "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+2026-11-03T07:39:52.7510433Z }
+2026-11-03T07:39:53.9144680Z ..FFF...........FE....
+2026-11-03T07:39:53.9145293Z ======================================================================
+2026-11-03T07:39:53.9147187Z ERROR: test_real_final_use_retained_owner_delegate_noops_fail_source_pins (test_verify_hepta_callers.CallerProofTests.test_real_final_use_retained_owner_delegate_noops_fail_source_pins)
+2026-11-03T07:39:53.9148272Z ----------------------------------------------------------------------
+2026-11-03T07:39:53.9148711Z Traceback (most recent call last):
+2026-11-03T07:39:53.9149649Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_verify_hepta_callers.py", line 304, in test_real_final_use_retained_owner_delegate_noops_fail_source_pins
+2026-11-03T07:39:53.9150712Z     originals = {path: (ROOT / path).read_bytes() for path in paths}
+2026-11-03T07:39:53.9151162Z                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-03T07:39:53.9151600Z   File "/usr/lib/python3.12/pathlib.py", line 1021, in read_bytes
+2026-11-03T07:39:53.9152035Z     with self.open(mode='rb') as f:
+2026-11-03T07:39:53.9152745Z          ^^^^^^^^^^^^^^^^^^^^
+2026-11-03T07:39:53.9153121Z   File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+2026-11-03T07:39:53.9153662Z     return io.open(self, mode, buffering, encoding, errors, newline)
+2026-11-03T07:39:53.9154162Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-03T07:39:53.9155032Z FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs'
+2026-11-03T07:39:53.9156026Z 
+2026-11-03T07:39:53.9156155Z ======================================================================
+2026-11-03T07:39:53.9157200Z FAIL: test_every_public_authority_method_is_explicitly_classified (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_every_public_authority_method_is_explicitly_classified)
+2026-11-03T07:39:53.9158281Z ----------------------------------------------------------------------
+2026-11-03T07:39:53.9158692Z Traceback (most recent call last):
+2026-11-03T07:39:53.9159625Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_kernel_authority_closed_world.py", line 155, in test_every_public_authority_method_is_explicitly_classified
+2026-11-03T07:39:53.9160568Z     self.assertEqual(
+2026-11-03T07:39:53.9160907Z AssertionError: Items in the first set but not the second:
+2026-11-03T07:39:53.9161483Z 'authentication_profile' : FinalUseAuthority: public method classification drifted
+2026-11-03T07:39:53.9161893Z 
+2026-11-03T07:39:53.9162027Z ======================================================================
+2026-11-03T07:39:53.9163398Z FAIL: test_type_anchored_callers_match_independent_closed_set (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_type_anchored_callers_match_independent_closed_set) (boundary='final_use_claim_raw')
+2026-11-03T07:39:53.9164587Z ----------------------------------------------------------------------
+2026-11-03T07:39:53.9164923Z Traceback (most recent call last):
+2026-11-03T07:39:53.9165807Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_kernel_authority_closed_world.py", line 211, in test_type_anchored_callers_match_independent_closed_set
+2026-11-03T07:39:53.9166555Z     self.assertEqual(
+2026-11-03T07:39:53.9166837Z AssertionError: Items in the first set but not the second:
+2026-11-03T07:39:53.9167487Z 'codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs' : final_use_claim_raw: independent kernel.authority caller set drifted
+2026-11-03T07:39:53.9167997Z 
+2026-11-03T07:39:53.9168107Z ======================================================================
+2026-11-03T07:39:53.9169063Z FAIL: test_type_anchored_callers_match_independent_closed_set (test_kernel_authority_closed_world.KernelAuthorityClosedWorldTests.test_type_anchored_callers_match_independent_closed_set) (boundary='final_use_revocation_update')
+2026-11-03T07:39:53.9170049Z ----------------------------------------------------------------------
+2026-11-03T07:39:53.9170371Z Traceback (most recent call last):
+2026-11-03T07:39:53.9171103Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_kernel_authority_closed_world.py", line 211, in test_type_anchored_callers_match_independent_closed_set
+2026-11-03T07:39:53.9171855Z     self.assertEqual(
+2026-11-03T07:39:53.9172264Z AssertionError: Items in the first set but not the second:
+2026-11-03T07:39:53.9172911Z 'codex-rs/hepta-contracts/src/final_use_control_pq.rs' : final_use_revocation_update: independent kernel.authority caller set drifted
+2026-11-03T07:39:53.9173410Z 
+2026-11-03T07:39:53.9173513Z ======================================================================
+2026-11-03T07:39:53.9174279Z FAIL: test_real_final_use_pins_reject_known_verifier_and_message_drift (test_verify_hepta_callers.CallerProofTests.test_real_final_use_pins_reject_known_verifier_and_message_drift)
+2026-11-03T07:39:53.9175107Z ----------------------------------------------------------------------
+2026-11-03T07:39:53.9175442Z Traceback (most recent call last):
+2026-11-03T07:39:53.9176159Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_verify_hepta_callers.py", line 233, in test_real_final_use_pins_reject_known_verifier_and_message_drift
+2026-11-03T07:39:53.9176998Z     self.assertEqual([row["path"] for row in data["protected_file"]], paths)
+2026-11-03T07:39:53.9177636Z AssertionError: Lists differ: ['cod[34 chars]e.rs'] != ['cod[34 chars]e.rs', 'codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs']
+2026-11-03T07:39:53.9178213Z 
+2026-11-03T07:39:53.9178324Z Second list contains 1 additional elements.
+2026-11-03T07:39:53.9178602Z First extra element 1:
+2026-11-03T07:39:53.9178874Z 'codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs'
+2026-11-03T07:39:53.9179108Z 
+2026-11-03T07:39:53.9179229Z - ['codex-rs/hepta-contracts/src/final_use.rs']
+2026-11-03T07:39:53.9179524Z ?                                             ^
+2026-11-03T07:39:53.9179695Z 
+2026-11-03T07:39:53.9179810Z + ['codex-rs/hepta-contracts/src/final_use.rs',
+2026-11-03T07:39:53.9180092Z ?                                             ^
+2026-11-03T07:39:53.9180266Z 
+2026-11-03T07:39:53.9180408Z +  'codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs']
+2026-11-03T07:39:53.9180645Z 
+2026-11-03T07:39:53.9180783Z ----------------------------------------------------------------------
+2026-11-03T07:39:53.9181099Z Ran 21 tests in 1.099s
+2026-11-03T07:39:53.9181236Z 
+2026-11-03T07:39:53.9181334Z FAILED (failures=4, errors=1)
+2026-11-03T07:39:53.9266733Z ##[error]Process completed with exit code 1.
+2026-11-03T07:39:53.9346927Z Prepare all required actions
+2026-11-03T07:39:53.9376973Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-03T07:39:53.9377276Z env:
+2026-11-03T07:39:53.9377491Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:39:53.9377797Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:39:53.9378181Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:39:53.9378586Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:39:53.9378934Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:39:53.9379362Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:39:53.9379971Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:39:53.9380521Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:39:53.9380861Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:39:53.9381188Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:39:53.9381462Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:39:53.9381712Z ##[endgroup]
+2026-11-03T07:39:53.9384996Z ##[start-action display=Check for a clean worktree;id=__self_2.__run]
+2026-11-03T07:39:53.9402587Z ##[group]Run set -euo pipefail
+2026-11-03T07:39:53.9402907Z [36;1mset -euo pipefail[0m
+2026-11-03T07:39:53.9403139Z [36;1m[0m
+2026-11-03T07:39:53.9403610Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-03T07:39:53.9404157Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-03T07:39:53.9404413Z [36;1m  exit 0[0m
+2026-11-03T07:39:53.9404614Z [36;1mfi[0m
+2026-11-03T07:39:53.9404795Z [36;1m[0m
+2026-11-03T07:39:53.9405160Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-03T07:39:53.9405616Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-03T07:39:53.9405871Z [36;1mexit 1[0m
+2026-11-03T07:39:53.9425193Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T07:39:53.9425534Z env:
+2026-11-03T07:39:53.9425753Z   NODE_OPTIONS: --max-old-space-size=4096
+2026-11-03T07:39:53.9426073Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-03T07:39:53.9426472Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:39:53.9427046Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-03T07:39:53.9427434Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-03T07:39:53.9427874Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-03T07:39:53.9428501Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41597536784-build-test
+2026-11-03T07:39:53.9429053Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-03T07:39:53.9429393Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:39:53.9429677Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-03T07:39:53.9430119Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-03T07:39:53.9430370Z ##[endgroup]
+2026-11-03T07:39:54.0686758Z ##[end-action id=__self_2.__run;outcome=success;conclusion=success;duration_ms=130]
+2026-11-03T07:39:54.0790914Z Post job cleanup.
+2026-11-03T07:39:54.1701049Z [command]/usr/bin/git version
+2026-11-03T07:39:54.1750138Z git version 2.56.0
+2026-11-03T07:39:54.1791384Z Temporarily overriding HOME='/home/runner/work/_temp/bec8dc89-3ae7-4ca7-9019-7fad9dcdc23e' before making global git config changes
+2026-11-03T07:39:54.1793001Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T07:39:54.1797001Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T07:39:54.1834204Z Removing SSH command configuration
+2026-11-03T07:39:54.1841393Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T07:39:54.1881706Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T07:39:54.2184855Z Removing HTTP extra header
+2026-11-03T07:39:54.2193210Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T07:39:54.2235703Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T07:39:54.2585247Z Removing includeIf entries pointing to credentials config files
+2026-11-03T07:39:54.2595973Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T07:39:54.2658488Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T07:39:54.3182687Z Cleaning up orphan processes

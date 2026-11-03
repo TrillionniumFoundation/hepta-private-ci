@@ -34,13 +34,13 @@ async fn actual_pq_host_resumes_after_rejected_replies_and_reopens_with_spent_no
         "clock.sock",
         /*seed*/ 80,
         |request, key| signed(request, PqTrustOutcomeV2::Clock { unix_ms: 1100 }, key),
-    );
-    let frontier = frontier_service(root.path(), initial);
+    )?;
+    let frontier = frontier_service(root.path(), initial)?;
     let issuer_socket = root.path().join("issuer.sock");
     let listener = tokio::net::UnixListener::bind(&issuer_socket)?;
     fs::set_permissions(&issuer_socket, fs::Permissions::from_mode(0o600))?;
-    let (issuer, issuer_key) = key(/*seed*/ 82);
-    let (feed, feed_key) = key(/*seed*/ 83);
+    let (issuer, issuer_key) = key(/*seed*/ 82)?;
+    let (feed, feed_key) = key(/*seed*/ 83)?;
     let config = PqFinalUseAuthorizerConfig {
         authentication_profile: FinalUseAuthenticationProfile::MlDsa65V2,
         issuer_socket,

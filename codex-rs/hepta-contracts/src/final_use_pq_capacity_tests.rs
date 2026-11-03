@@ -2,8 +2,8 @@ use super::*;
 use pretty_assertions::assert_eq;
 
 #[test]
-fn pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen() {
-    let fixture = pq_fixture();
+fn pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen() -> PqTestResult {
+    let fixture = pq_fixture()?;
     let mut head = fixture.authority.revocation_head().unwrap();
     head.revision += 1;
     head.revoked_grant_ids = (0..256).map(|id| format!("revoked-{id:03}")).collect();
@@ -62,11 +62,12 @@ fn pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen() {
     )
     .unwrap();
     assert_eq!(reopened.capacity().unwrap(), capacity);
+    Ok(())
 }
 
 #[test]
-fn pq_oversized_initial_head_fails_before_state_initialization() {
-    let fixture = pq_fixture();
+fn pq_oversized_initial_head_fails_before_state_initialization() -> PqTestResult {
+    let fixture = pq_fixture()?;
     let directory = tempfile::tempdir().unwrap();
     let mut head = fixture.authority.revocation_head().unwrap();
     head.revoked_grant_ids = (0..257).map(|id| format!("revoked-{id:03}")).collect();
@@ -80,4 +81,5 @@ fn pq_oversized_initial_head_fails_before_state_initialization() {
     );
     assert!(matches!(result, Err(FinalUseError::InvalidTrust)));
     assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 0);
+    Ok(())
 }

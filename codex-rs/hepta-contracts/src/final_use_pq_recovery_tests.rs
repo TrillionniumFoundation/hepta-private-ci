@@ -15,8 +15,9 @@ fn sign_grant(
 }
 
 #[test]
-fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces() {
-    let fixture = pq_fixture();
+fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces()
+-> PqTestResult {
+    let fixture = pq_fixture()?;
     let state_path = fixture.directory.path().join("authority.json");
     let claims_path = fixture.directory.path().join("authority.claims");
     let old_state = std::fs::read(&state_path).unwrap();
@@ -155,4 +156,5 @@ fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_n
     let token = recovered.claim(&after_recovery, &binding).unwrap();
     assert_eq!(recovered.with_verified_use(token, &binding, || 13), Ok(13));
     assert_eq!(recovered.capacity().unwrap().used_nonces, 3);
+    Ok(())
 }

@@ -44,13 +44,13 @@ pub(crate) async fn independent_test_authorizer_v2(
     )?;
     let clock = TestService::start(root, "clock.sock", /*seed*/ 80, |request, signer| {
         signed(request, PqTrustOutcomeV2::Clock { unix_ms: NOW_MS }, signer)
-    });
-    let frontier = frontier_service(root, initial);
+    })?;
+    let frontier = frontier_service(root, initial)?;
     let socket = root.join("pq-issuer.sock");
     let listener = tokio::net::UnixListener::bind(&socket)?;
     std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o600))?;
-    let (issuer, issuer_key) = key(/*seed*/ 82);
-    let (feed, feed_key) = key(/*seed*/ 83);
+    let (issuer, issuer_key) = key(/*seed*/ 82)?;
+    let (feed, feed_key) = key(/*seed*/ 83)?;
     let config = serde_json::json!({
         "authentication_profile": "ml_dsa65_v2",
         "issuer_socket": socket,

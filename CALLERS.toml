@@ -56,6 +56,7 @@ required_boundary_ids = [
   "final_use_pq_approval_trust",
   "final_use_pq_revocation_feed_trust",
   "final_use_pq_revocation_feed_confirm",
+  "final_use_pq_revocation_convergence_trust",
   "final_use_pq_port_open",
   "learning_artifact_authenticated_current_factory"
 ]
@@ -589,6 +590,14 @@ product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs", "codex-rs
 caller_markers = ["apply_or_confirm_current", "FinalUseAuthenticationProfile::MlDsa65V2"]
 
 [[boundary]]
+id = "final_use_pq_revocation_convergence_trust"
+symbol = "FinalUseRevocationConvergenceVerifier::new_pq"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["impl FinalUseRevocationConvergenceVerifier", "pub fn new_pq(", "control_keys(node.keys)?", "pinned.is_empty()", "FinalUseAuthenticationProfile::MlDsa65V2"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "final_use_pq_port_open"
 symbol = "UnixFinalUseAuthorizer::from_pq_config"
 call_pattern = "(?:UnixFinalUseAuthorizer|Self)\\s*::\\s*from_pq_config\\s*\\("
@@ -629,7 +638,7 @@ forbidden = ["open_ml_dsa65_v2", "pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
-source_sha256 = "33eb0ea4a1643610268768bc7b8333b42673e4832140b3df4be373c20886ab43"
+source_sha256 = "d25359981a0274f25581f13195b17fee281d39fa239683f4e4838d6cfbb2d83d"
 required = ["config.authentication_profile != FinalUseAuthenticationProfile::MlDsa65V2", "canonical_config_path", "UnixPqAuthorityClock::new", "UnixPqFinalUseFrontier::new", "response.challenge != challenge", "grant.grant.nonce != challenge", "apply_or_confirm_current", "authority.claim(&grant, &binding)?", "token.claimed_authority_epoch() != receipt.authority_epoch()", "runtime.clock.now_unix_ms()? >= receipt.valid_until_unix_ms()"]
 forbidden = ["Self::from_config", "open_ml_dsa65_v2", "pub fn permit_all"]
 

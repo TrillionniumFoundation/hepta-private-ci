@@ -332,3 +332,6 @@ pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
 
 pub use learning_authentication::LearningTrustFrontier;
+
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::parent_anchor as windows_private_owner;

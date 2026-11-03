@@ -4,6 +4,7 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;
+use crate::IssuerPurpose;
 use crate::IssuerSpec;
 use crate::PolicyDecision;
 use crate::PolicySpec;

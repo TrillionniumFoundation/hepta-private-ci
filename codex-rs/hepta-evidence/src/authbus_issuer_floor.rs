@@ -19,6 +19,8 @@ use crate::store::now_millis;
 const MAX_ISSUERS: i64 = 4096;
 const MAX_MESSAGE_TTL_MS: u64 = 300_000;
 
+type IssuerFloorFrontierRow = (String, Vec<u8>, Vec<u8>, bool, i64);
+
 impl HeptaEvidenceStore {
     /// Apply a newly read trusted-owner registration before admission/dispatch.
     /// Publish the resulting replay checkpoint before using this registration.
@@ -169,7 +171,7 @@ pub(crate) async fn append_frontier(
     tx: &mut Transaction<'_, Sqlite>,
     bytes: &mut Vec<u8>,
 ) -> Result<(), crate::EvidenceError> {
-    let rows: Vec<(String, Vec<u8>, Vec<u8>, bool, i64)> = sqlx::query_as(
+    let rows: Vec<IssuerFloorFrontierRow> = sqlx::query_as(
         "SELECT issuer_id, key_epoch, public_key, revoked, wall_time_floor_ms FROM authbus_issuer_floor ORDER BY issuer_id",
     ).fetch_all(&mut **tx).await.map_err(classify_sqlx_error)?;
     bytes.extend_from_slice(&(rows.len() as u64).to_be_bytes());

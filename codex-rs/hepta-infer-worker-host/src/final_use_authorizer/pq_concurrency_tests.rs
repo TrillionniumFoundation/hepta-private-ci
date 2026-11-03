@@ -51,13 +51,13 @@ async fn concurrent_real_pq_claim_cannot_inherit_an_older_heads_longer_feed() ->
                 key,
             )
         },
-    );
-    let frontier = frontier_service(root.path(), initial);
+    )?;
+    let frontier = frontier_service(root.path(), initial)?;
     let issuer_socket = root.path().join("issuer.sock");
     let listener = tokio::net::UnixListener::bind(&issuer_socket)?;
     fs::set_permissions(&issuer_socket, fs::Permissions::from_mode(0o600))?;
-    let (issuer, issuer_key) = key(/*seed*/ 82);
-    let (feed, feed_key) = key(/*seed*/ 83);
+    let (issuer, issuer_key) = key(/*seed*/ 82)?;
+    let (feed, feed_key) = key(/*seed*/ 83)?;
     let config = PqFinalUseAuthorizerConfig {
         authentication_profile: FinalUseAuthenticationProfile::MlDsa65V2,
         issuer_socket,

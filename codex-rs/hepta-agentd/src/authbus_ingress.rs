@@ -37,7 +37,9 @@ pub(crate) struct TextIngress {
     pub subject: StableId,
     pub scope: Digest32,
     algorithm: AuthBusAlgorithm,
-    trust_update: tokio::sync::Mutex<()>,
+    // Exclusive admission for asynchronous owner transitions; no mutable
+    // payload is held behind this private, fixed-capacity gate.
+    trust_update: tokio::sync::Semaphore,
     #[cfg(test)]
     checkpoint_read_pause: std::sync::Mutex<Option<CheckpointReadPause>>,
 }
@@ -94,7 +96,7 @@ impl TextIngress {
             subject: subject(&identity.agent_id)?,
             scope: scope(&identity.agent_id, algorithm),
             algorithm,
-            trust_update: tokio::sync::Mutex::new(()),
+            trust_update: tokio::sync::Semaphore::new(/*permits*/ 1),
             #[cfg(test)]
             checkpoint_read_pause: std::sync::Mutex::new(/*t*/ None),
         };
@@ -107,7 +109,11 @@ impl TextIngress {
     }
 
     async fn refresh_trust(&self, identity: &AgentdIdentity) -> Result<TextTrust, AgentdError> {
-        let _guard = self.trust_update.lock().await;
+        let _permit = self
+            .trust_update
+            .acquire()
+            .await
+            .map_err(|_| invalid("owner synchronization is unavailable"))?;
         let trust = TextTrust::load(&self.trust_file, identity)?;
         if trust.algorithm()? != self.algorithm {
             return Err(invalid(
@@ -132,13 +138,17 @@ impl TextIngress {
 
     pub async fn sync_replay_checkpoint(&self) -> Result<(), AgentdError> {
         // Admission and the relay share this owner. The witness snapshot must
-        // be read after acquiring the same guard used by policy refresh, and
+        // be read after acquiring the same permit used by policy refresh, and
         // retained through reconciliation, publication, and local promotion.
-        let _guard = self.trust_update.lock().await;
+        let _permit = self
+            .trust_update
+            .acquire()
+            .await
+            .map_err(|_| invalid("owner synchronization is unavailable"))?;
         self.sync_replay_checkpoint_locked().await
     }
 
-    // Called only while trust_update is held; refresh_trust already owns it.
+    // Called only while the trust_update permit is held; refresh_trust owns it.
     async fn sync_replay_checkpoint_locked(&self) -> Result<(), AgentdError> {
         let external = self.checkpoint.read()?;
         #[cfg(test)]

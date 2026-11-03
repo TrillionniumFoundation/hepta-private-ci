@@ -53,13 +53,17 @@ async fn max_rotation_config_loads_only_as_pq_and_oversize_response_stops_at_pre
         "clock.sock",
         /*seed*/ 80,
         |request, key| signed(request, PqTrustOutcomeV2::Clock { unix_ms: 1100 }, key),
-    );
-    let frontier = frontier_service(root.path(), initial);
+    )?;
+    let frontier = frontier_service(root.path(), initial)?;
     let issuer_socket = root.path().join("issuer.sock");
     let listener = tokio::net::UnixListener::bind(&issuer_socket)?;
     fs::set_permissions(&issuer_socket, fs::Permissions::from_mode(0o600))?;
-    let issuer_keys: Vec<_> = (100..108).map(|seed| key(seed).1).collect();
-    let feed_keys: Vec<_> = (110..118).map(|seed| key(seed).1).collect();
+    let issuer_keys: Vec<_> = (100..108)
+        .map(|seed| key(seed).map(|(_, public_key)| public_key))
+        .collect::<Result<_>>()?;
+    let feed_keys: Vec<_> = (110..118)
+        .map(|seed| key(seed).map(|(_, public_key)| public_key))
+        .collect::<Result<_>>()?;
     let config = json!({
         "authentication_profile": "ml_dsa65_v2",
         "issuer_socket": issuer_socket,
@@ -179,8 +183,8 @@ fn maximum_revocation_and_grant_response_fits_the_existing_transport_bound() -> 
         expires_at_unix_ms: u64::MAX,
     };
     let update = FinalUseRevocationUpdate::new_pq("f".repeat(128), head, u64::MAX - 1000, u64::MAX);
-    let (issuer, _) = key(/*seed*/ 101);
-    let (feed, _) = key(/*seed*/ 111);
+    let (issuer, _) = key(/*seed*/ 101)?;
+    let (feed, _) = key(/*seed*/ 111)?;
     let mut response = PqIssuerResponseV2 {
         schema_version: 2,
         challenge: [u8::MAX; 32],

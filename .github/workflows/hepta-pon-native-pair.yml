@@ -881,7 +881,6 @@ jobs:
       RUSTUP_TOOLCHAIN: "1.96.0"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-cell-host-target
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
@@ -891,6 +890,11 @@ jobs:
           ref: ${{ env.TESTED_SHA }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Create a fresh external Cargo target for the Cell host
+        run: |
+          set -euo pipefail
+          cell_host_target=$(mktemp -d "$RUNNER_TEMP/hepta-cell-host-target.XXXXXX")
+          printf 'CARGO_TARGET_DIR=%s\n' "$cell_host_target" >> "$GITHUB_ENV"
       - name: Bind the actual Cell host source and merge tree
         run: |
           set -euo pipefail

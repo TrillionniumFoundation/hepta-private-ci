@@ -109,6 +109,64 @@ async fn concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_reje
     }
 }
 
+#[tokio::test]
+async fn cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission() {
+    for algorithm in [AuthBusAlgorithm::Ed25519V1, AuthBusAlgorithm::MlDsa65V2] {
+        let fixture = Fixture::with_algorithm(algorithm).await;
+        let host = attached(&fixture.state).expect("attached ingress");
+        let before = host.checkpoint.read().expect("initial checkpoint");
+        let (first_read, resume_first) = host.pause_next_checkpoint_read();
+        let mut first = Box::pin(tokio::task::unconstrained(host.sync_replay_checkpoint()));
+        tokio::select! {
+            result = &mut first => panic!("sync completed before its read pause: {result:?}"),
+            reached = first_read => reached.expect("first checkpoint read"),
+        }
+        let (mut next_read, resume_next) = host.pause_next_checkpoint_read();
+        {
+            let mut waiting = Box::pin(tokio::task::unconstrained(host.sync_replay_checkpoint()));
+            poll_pending(waiting.as_mut()).await;
+            assert!(matches!(
+                next_read.try_recv(),
+                Err(tokio::sync::oneshot::error::TryRecvError::Empty)
+            ));
+            // Cancel a queued operation before it receives the sole permit.
+        }
+        let mut next = Box::pin(tokio::task::unconstrained(host.sync_replay_checkpoint()));
+        poll_pending(next.as_mut()).await;
+        assert!(matches!(
+            next_read.try_recv(),
+            Err(tokio::sync::oneshot::error::TryRecvError::Empty)
+        ));
+        // Cancel the holder after its real protected-file read. Dropping its
+        // future must release admission without advancing either checkpoint.
+        drop(first);
+        assert!(resume_first.send(()).is_err());
+        poll_pending(next.as_mut()).await;
+        next_read.try_recv().expect("next owner acquired admission");
+        resume_next.send(()).expect("resume next owner");
+        next.await.expect("checkpoint synchronization resumes");
+        assert_eq!(host.checkpoint.read().expect("current checkpoint"), before);
+        assert_eq!(
+            host.evidence
+                .authbus_restore_checkpoint()
+                .await
+                .expect("local checkpoint"),
+            Some(before)
+        );
+        assert_eq!(
+            host.evidence
+                .pending_authbus_restore_checkpoint()
+                .await
+                .expect("pending checkpoint"),
+            None
+        );
+        let resumed = submit(&fixture.state, fixture.request(/*sequence*/ 1))
+            .await
+            .expect("fresh signed message after cancellation");
+        assert_eq!(resumed.state, AuthBusTextState::Queued);
+    }
+}
+
 async fn poll_pending<F: Future>(mut future: Pin<&mut F>) {
     std::future::poll_fn(|context| {
         assert!(future.as_mut().poll(context).is_pending());
