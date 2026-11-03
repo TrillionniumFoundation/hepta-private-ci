@@ -154,7 +154,7 @@ fn signature(value: &[u8], label: &str) -> [u8; 64] {
 fn owner_trust(request: &Request) -> ArtifactOwnerTrustV1 {
     let signer = TrustedArtifactSignerV1 {
         signer_id: id("fixture-head-signer"),
-        verifying_key: request.head_verifying_key,
+        verifying_key: request.head_verifying_key.into(),
         minimum_authority_epoch: 1,
         maximum_authority_epoch: 9,
         valid_from: 1,
@@ -198,7 +198,7 @@ fn current_head(request: &Request) -> SignedCurrentArtifactHeadV1 {
             issued_at: 20,
             expires_at: 1_000,
         },
-        signature: signature(&request.current_signature, "current head"),
+        signature: signature(&request.current_signature, "current head").into(),
     }
 }
 
@@ -223,7 +223,7 @@ fn selection_trust(request: &Request) -> ArtifactSelectionTrustV1 {
         minimum_authority_epoch: 4,
         selectors: vec![TrustedArtifactSelectorV1 {
             selector_id: id("fixture-selector"),
-            verifying_key: request.selector_verifying_key,
+            verifying_key: request.selector_verifying_key.into(),
             minimum_authority_epoch: 4,
             maximum_authority_epoch: 9,
             valid_from: 10,
@@ -260,7 +260,7 @@ fn signed_selection(
         authority_epoch: 4,
         issued_at: 25,
         expires_at: 1_000,
-        signature: signature(&request.selection_signature, "selection"),
+        signature: signature(&request.selection_signature, "selection").into(),
     }
 }
 
@@ -311,14 +311,17 @@ fn prepare_authentication(
     request.current_signature = vec![0; 64];
 
     let mut head = current_head(request);
-    head.signature = head_key.sign(&head.signing_bytes()).to_bytes();
+    head.signature = head_key.sign(&head.signing_bytes()).to_bytes().into();
     request.current_signature = head.signature.to_vec();
 
     let current = verify_current(request);
     request.selection_id = format!("selection-{}-{phase}", request.generation);
     request.selection_signature = vec![0; 64];
     let mut selected = signed_selection(request, &current);
-    selected.signature = selector_key.sign(&selected.signing_bytes()).to_bytes();
+    selected.signature = selector_key
+        .sign(&selected.signing_bytes())
+        .to_bytes()
+        .into();
     request.selection_signature = selected.signature.to_vec();
 }
 

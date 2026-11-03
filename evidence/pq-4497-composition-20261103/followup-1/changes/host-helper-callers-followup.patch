@@ -1,0 +1,83 @@
+--- a/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs
+@@ -29,8 +29,8 @@
+     )?;
+     let clock = TestService::start(&services, "clock.sock", /*seed*/ 80, |request, key| {
+         signed(request, PqTrustOutcomeV2::Clock { unix_ms: 1100 }, key)
+-    });
+-    let frontier = frontier_service(&services, initial);
++    })?;
++    let frontier = frontier_service(&services, initial)?;
+     let state = root.join("new-owner");
+     let issuer = root.join("not-yet-listening.sock");
+     let config = PqFinalUseAuthorizerConfig {
+@@ -38,12 +38,12 @@
+         issuer_socket: issuer.clone(),
+         issuer_uid: rustix::process::geteuid().as_raw(),
+         signer_id: "issuer".into(),
+-        issuer_keys: vec![key(/*seed*/ 82).1],
++        issuer_keys: vec![key(/*seed*/ 82)?.1],
+         authority_state_dir: state.clone(),
+         head,
+         issuer_timeout_ms: 2000,
+         revocation_distributor_id: "feed".into(),
+-        revocation_keys: vec![key(/*seed*/ 83).1],
++        revocation_keys: vec![key(/*seed*/ 83)?.1],
+         external_clock: clock.config.clone(),
+         external_frontier: frontier.config.clone(),
+     };
+--- a/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs
+@@ -51,13 +51,13 @@
+                 key,
+             )
+         },
+-    );
+-    let frontier = frontier_service(root.path(), initial);
++    )?;
++    let frontier = frontier_service(root.path(), initial)?;
+     let issuer_socket = root.path().join("issuer.sock");
+     let listener = tokio::net::UnixListener::bind(&issuer_socket)?;
+     fs::set_permissions(&issuer_socket, fs::Permissions::from_mode(0o600))?;
+-    let (issuer, issuer_key) = key(/*seed*/ 82);
+-    let (feed, feed_key) = key(/*seed*/ 83);
++    let (issuer, issuer_key) = key(/*seed*/ 82)?;
++    let (feed, feed_key) = key(/*seed*/ 83)?;
+     let config = PqFinalUseAuthorizerConfig {
+         authentication_profile: FinalUseAuthenticationProfile::MlDsa65V2,
+         issuer_socket,
+--- a/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs
+@@ -53,13 +53,17 @@
+         "clock.sock",
+         /*seed*/ 80,
+         |request, key| signed(request, PqTrustOutcomeV2::Clock { unix_ms: 1100 }, key),
+-    );
+-    let frontier = frontier_service(root.path(), initial);
++    )?;
++    let frontier = frontier_service(root.path(), initial)?;
+     let issuer_socket = root.path().join("issuer.sock");
+     let listener = tokio::net::UnixListener::bind(&issuer_socket)?;
+     fs::set_permissions(&issuer_socket, fs::Permissions::from_mode(0o600))?;
+-    let issuer_keys: Vec<_> = (100..108).map(|seed| key(seed).1).collect();
+-    let feed_keys: Vec<_> = (110..118).map(|seed| key(seed).1).collect();
++    let issuer_keys: Vec<_> = (100..108)
++        .map(|seed| key(seed).map(|(_, public_key)| public_key))
++        .collect::<Result<_>>()?;
++    let feed_keys: Vec<_> = (110..118)
++        .map(|seed| key(seed).map(|(_, public_key)| public_key))
++        .collect::<Result<_>>()?;
+     let config = json!({
+         "authentication_profile": "ml_dsa65_v2",
+         "issuer_socket": issuer_socket,
+@@ -179,8 +183,8 @@
+         expires_at_unix_ms: u64::MAX,
+     };
+     let update = FinalUseRevocationUpdate::new_pq("f".repeat(128), head, u64::MAX - 1000, u64::MAX);
+-    let (issuer, _) = key(/*seed*/ 101);
+-    let (feed, _) = key(/*seed*/ 111);
++    let (issuer, _) = key(/*seed*/ 101)?;
++    let (feed, _) = key(/*seed*/ 111)?;
+     let mut response = PqIssuerResponseV2 {
+         schema_version: 2,
+         challenge: [u8::MAX; 32],

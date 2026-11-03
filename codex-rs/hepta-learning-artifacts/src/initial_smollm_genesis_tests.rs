@@ -4,6 +4,9 @@
 #[path = "selected_public_initial_smollm_tests.rs"]
 mod public_initial_tests;
 
+#[path = "selected_initial_smollm_pq_tests.rs"]
+mod pq_initial_tests;
+
 use super::*;
 use crate::test_support::FixtureError;
 use crate::test_support::FixtureValue;
@@ -74,7 +77,7 @@ impl Fixture {
         let selector_key = SigningKey::from_bytes(&[72; 32]);
         let owner = TrustedArtifactSignerV1 {
             signer_id: id("original-owner"),
-            verifying_key: owner_key.verifying_key().to_bytes(),
+            verifying_key: owner_key.verifying_key().to_bytes().into(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 9,
             valid_from: 1,
@@ -97,7 +100,7 @@ impl Fixture {
                 minimum_authority_epoch: 1,
                 selectors: vec![TrustedArtifactSelectorV1 {
                     selector_id: id("independent-selector"),
-                    verifying_key: selector_key.verifying_key().to_bytes(),
+                    verifying_key: selector_key.verifying_key().to_bytes().into(),
                     minimum_authority_epoch: 1,
                     maximum_authority_epoch: 9,
                     valid_from: 1,
@@ -157,9 +160,13 @@ impl Fixture {
                 issued_at: 20,
                 expires_at: 80,
             },
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        signed.signature = self.owner_key.sign(&signed.signing_bytes()).to_bytes();
+        signed.signature = self
+            .owner_key
+            .sign(&signed.signing_bytes())
+            .to_bytes()
+            .into();
         let view = ArtifactOwnerVerifierV1::new(self.owner_trust.clone())
             .fixture("original owner verifier")
             .verify_current_registry_view(
@@ -202,9 +209,13 @@ impl Fixture {
             authority_epoch: 1,
             issued_at: 20,
             expires_at: 80,
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        signed.signature = self.selector_key.sign(&signed.signing_bytes()).to_bytes();
+        signed.signature = self
+            .selector_key
+            .sign(&signed.signing_bytes())
+            .to_bytes()
+            .into();
         signed
     }
 
@@ -348,7 +359,8 @@ fn original_selector_refuses_changed_tokenizer_profile_head_role_and_expired_evi
         signed.signature = fixture
             .selector_key
             .sign(&signed.signing_bytes())
-            .to_bytes();
+            .to_bytes()
+            .into();
         assert!(
             fixture
                 .selector

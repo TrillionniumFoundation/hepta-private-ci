@@ -1,4 +1,32 @@
-# FinalUse ML-DSA-65 V2 grant profile
+# Historical experimental FinalUse ML-DSA-65 V2 profile (retired)
+
+> **Historical design only. This API and its wire/state profile are retired.**
+> The ordinary #4497 consumer now uses the canonical PQ implementation described
+> in [PQ_FINAL_USE.md](PQ_FINAL_USE.md), explicitly selected by the protected host
+> config `"authentication_profile":"ml_dsa65_v2"`. The constructors and raw-key
+> examples below are not current APIs or recovery instructions.
+
+The archived experimental profile used a distinct signing context, HFU2 carrier,
+raw public keys and schema-3 trust namespace. Canonical PQ uses its independently
+pinned SPKI keys, canonical domain, signed revocation freshness, protected clock
+and external CAS frontier, and a schema-4 store. Neither wire signatures nor
+persistent state are interchangeable. Existing experimental configurations and
+stores are rejected without a classical fallback or claim-journal reset. The
+old `open_ml_dsa65_v2` and `open_state_dir_with_ml_dsa65_v2` constructors have been
+removed; their separate sources and test helper are not active code.
+
+The original native turn/start regression has moved to the canonical issuer,
+signed clock, signed revocation feed and external frontier fixture. Platform,
+deployment and full-system qualification do not follow from that local test.
+See [the composition record](../../evidence/pq-4497-composition-20261103/README.md)
+for the exact source composition, initial consumer clock/deadline binding and
+migration boundary. A production transition still requires an independently
+authorized migration preserving spent nonces and revocation/frontier continuity.
+
+## Archived design text
+
+The remaining sections describe the superseded experimental revision. Claims
+such as ordinary constructors selecting only V1 refer to that historical tree.
 
 This profile adds ML-DSA-65 grant verification to the original FinalUse owner.
 It does not migrate model evaluation, qualification, selection, artifact

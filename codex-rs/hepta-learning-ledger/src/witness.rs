@@ -15,6 +15,7 @@ use std::io::Write;
 use codex_hepta_types::Digest32;
 
 use crate::DurableLedgerError;
+use crate::LearningAuthenticationProfile;
 use crate::LedgerAnchor;
 use crate::durable_lock::LockedFile;
 
@@ -46,6 +47,7 @@ impl LedgerWitnessFrontier {
 
 /// Append-only witness retained independently from the causal ledger.
 pub struct LedgerWitnessStore {
+    authentication_profile: LearningAuthenticationProfile,
     file: LockedFile,
     binding: Digest32,
     frontier: LedgerWitnessFrontier,
@@ -55,12 +57,24 @@ pub struct LedgerWitnessStore {
 
 impl LedgerWitnessStore {
     pub fn create(file: File, binding: Digest32) -> Result<Self, DurableLedgerError> {
+        Self::create_with_authentication_profile(
+            file,
+            binding,
+            LearningAuthenticationProfile::ClassicalV1,
+        )
+    }
+
+    pub fn create_with_authentication_profile(
+        file: File,
+        binding: Digest32,
+        profile: LearningAuthenticationProfile,
+    ) -> Result<Self, DurableLedgerError> {
         validate_binding(binding)?;
         let mut file = LockedFile::acquire(file)?;
         if file.metadata()?.len() != 0 {
             return Err(DurableLedgerError::AlreadyInitialized);
         }
-        let mut header = MAGIC.to_vec();
+        let mut header = witness_magic(profile).to_vec();
         header.extend_from_slice(binding.as_array());
         let checksum = Digest32::of_bytes(&header);
         header.extend_from_slice(checksum.as_array());
@@ -68,6 +82,7 @@ impl LedgerWitnessStore {
             .and_then(|()| file.sync_all())
             .map_err(|_| DurableLedgerError::Indeterminate)?;
         Ok(Self {
+            authentication_profile: profile,
             file,
             binding,
             frontier: LedgerWitnessFrontier::empty(),
@@ -84,9 +99,31 @@ impl LedgerWitnessStore {
         Self::recover_with_sync(file, binding, File::sync_all)
     }
 
+    pub fn recover_with_authentication_profile(
+        file: File,
+        binding: Digest32,
+        profile: LearningAuthenticationProfile,
+    ) -> Result<Self, DurableLedgerError> {
+        Self::recover_profile_with_sync(file, binding, profile, File::sync_all)
+    }
+
     fn recover_with_sync(
         file: File,
         binding: Digest32,
+        sync: impl FnOnce(&File) -> io::Result<()>,
+    ) -> Result<Self, DurableLedgerError> {
+        Self::recover_profile_with_sync(
+            file,
+            binding,
+            LearningAuthenticationProfile::ClassicalV1,
+            sync,
+        )
+    }
+
+    fn recover_profile_with_sync(
+        file: File,
+        binding: Digest32,
+        profile: LearningAuthenticationProfile,
         sync: impl FnOnce(&File) -> io::Result<()>,
     ) -> Result<Self, DurableLedgerError> {
         validate_binding(binding)?;
@@ -98,7 +135,7 @@ impl LedgerWitnessStore {
         file.seek(SeekFrom::Start(0))?;
         let mut header = [0_u8; HEADER];
         file.read_exact(&mut header)?;
-        if &header[..8] != MAGIC
+        if &header[..8] != witness_magic(profile)
             || &header[8..40] != binding.as_array()
             || Digest32::of_bytes(&header[..40]).as_array() != &header[40..]
         {
@@ -110,7 +147,7 @@ impl LedgerWitnessStore {
         while length - cursor >= FRAME as u64 {
             let mut frame = [0_u8; FRAME];
             file.read_exact(&mut frame)?;
-            if Digest32::of_bytes(&frame[..FRAME - 32]).as_array() != &frame[FRAME - 32..] {
+            if witness_checksum(profile, &frame[..FRAME - 32]).as_array() != &frame[FRAME - 32..] {
                 return Err(DurableLedgerError::Corrupt);
             }
             let next = decode_frontier(&frame[..FRAME - 32])?;
@@ -125,12 +162,18 @@ impl LedgerWitnessStore {
         sync(&file).map_err(|_| DurableLedgerError::Indeterminate)?;
         file.seek(SeekFrom::Start(cursor))?;
         Ok(Self {
+            authentication_profile: profile,
             file,
             binding,
             frontier,
             length: cursor,
             poisoned: false,
         })
+    }
+
+    #[must_use]
+    pub const fn authentication_profile(&self) -> LearningAuthenticationProfile {
+        self.authentication_profile
     }
 
     #[must_use]
@@ -163,7 +206,7 @@ impl LedgerWitnessStore {
             return Ok(next);
         }
         validate_advance(expected, next)?;
-        let frame = encode_frontier(next)?;
+        let frame = encode_frontier_with_profile(next, self.authentication_profile)?;
         self.poisoned = true;
         if self.file.seek(SeekFrom::End(0))? != self.length {
             return Err(DurableLedgerError::Corrupt);
@@ -231,7 +274,15 @@ fn validate_advance(
     Ok(())
 }
 
+#[cfg(test)]
 fn encode_frontier(frontier: LedgerWitnessFrontier) -> Result<Vec<u8>, DurableLedgerError> {
+    encode_frontier_with_profile(frontier, LearningAuthenticationProfile::ClassicalV1)
+}
+
+fn encode_frontier_with_profile(
+    frontier: LedgerWitnessFrontier,
+    profile: LearningAuthenticationProfile,
+) -> Result<Vec<u8>, DurableLedgerError> {
     let segment = match frontier.segment {
         Some(segment) => u64::try_from(segment).map_err(|_| DurableLedgerError::InvalidAnchor)?,
         None => NO_SEGMENT,
@@ -242,7 +293,7 @@ fn encode_frontier(frontier: LedgerWitnessFrontier) -> Result<Vec<u8>, DurableLe
     bytes.push(u8::from(frontier.sealed));
     bytes.extend_from_slice(&[0_u8; 7]);
     bytes.extend_from_slice(frontier.anchor.chain_digest.as_array());
-    let checksum = Digest32::of_bytes(&bytes);
+    let checksum = witness_checksum(profile, &bytes);
     bytes.extend_from_slice(checksum.as_array());
     Ok(bytes)
 }
@@ -289,3 +340,21 @@ fn decode_frontier(bytes: &[u8]) -> Result<LedgerWitnessFrontier, DurableLedgerE
 #[cfg(test)]
 #[path = "witness_tests.rs"]
 mod tests;
+
+fn witness_magic(profile: LearningAuthenticationProfile) -> &'static [u8; 8] {
+    match profile {
+        LearningAuthenticationProfile::ClassicalV1 => MAGIC,
+        LearningAuthenticationProfile::MlDsa65V2 => b"HEPTWP02",
+    }
+}
+
+fn witness_checksum(profile: LearningAuthenticationProfile, bytes: &[u8]) -> Digest32 {
+    match profile {
+        LearningAuthenticationProfile::ClassicalV1 => Digest32::of_bytes(bytes),
+        LearningAuthenticationProfile::MlDsa65V2 => {
+            let mut bound = b"hepta.learning-ledger.witness-frame.pq.v2\0".to_vec();
+            bound.extend_from_slice(bytes);
+            Digest32::of_bytes(&bound)
+        }
+    }
+}

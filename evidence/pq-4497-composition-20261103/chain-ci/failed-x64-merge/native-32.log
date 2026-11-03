@@ -1,0 +1,25 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (/home/runner/work/_temp/pq-system-target/debug/deps/trnm_pon_node-95d3ac75c57c102f)
+
+running 1 test
+test store::pq_rollback_witness::tests::committed_expiry_retirement_publishes_epoch_even_when_live_callback_refuses ... FAILED
+
+successes:
+
+successes:
+
+failures:
+
+---- store::pq_rollback_witness::tests::committed_expiry_retirement_publishes_epoch_even_when_live_callback_refuses stdout ----
+
+thread 'store::pq_rollback_witness::tests::committed_expiry_retirement_publishes_epoch_even_when_live_callback_refuses' (20232) panicked at crates/trnm-pon-node/src/store/pq_rollback_witness/tests.rs:718:53:
+called `Result::unwrap()` on an `Err` value: Error { code: None, kind: Unclassified, message: "PQ_WITNESS_DEADLINE", source: None, request_history_budget: false }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    store::pq_rollback_witness::tests::committed_expiry_retirement_publishes_epoch_even_when_live_callback_refuses
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 916 filtered out; finished in 2.45s
+
+error: test failed, to rerun pass `-p trnm-pon-node --lib`

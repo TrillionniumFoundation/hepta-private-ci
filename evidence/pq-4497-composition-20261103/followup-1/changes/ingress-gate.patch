@@ -1,0 +1,150 @@
+--- a/codex-rs/hepta-agentd/src/authbus_ingress.rs
++++ b/codex-rs/hepta-agentd/src/authbus_ingress.rs
+@@ -37,7 +37,9 @@
+     pub subject: StableId,
+     pub scope: Digest32,
+     algorithm: AuthBusAlgorithm,
+-    trust_update: tokio::sync::Mutex<()>,
++    // Exclusive admission for asynchronous owner transitions; no mutable
++    // payload is held behind this private, fixed-capacity gate.
++    trust_update: tokio::sync::Semaphore,
+     #[cfg(test)]
+     checkpoint_read_pause: std::sync::Mutex<Option<CheckpointReadPause>>,
+ }
+@@ -94,7 +96,7 @@
+             subject: subject(&identity.agent_id)?,
+             scope: scope(&identity.agent_id, algorithm),
+             algorithm,
+-            trust_update: tokio::sync::Mutex::new(()),
++            trust_update: tokio::sync::Semaphore::new(/*permits*/ 1),
+             #[cfg(test)]
+             checkpoint_read_pause: std::sync::Mutex::new(/*t*/ None),
+         };
+@@ -107,7 +109,11 @@
+     }
+ 
+     async fn refresh_trust(&self, identity: &AgentdIdentity) -> Result<TextTrust, AgentdError> {
+-        let _guard = self.trust_update.lock().await;
++        let _permit = self
++            .trust_update
++            .acquire()
++            .await
++            .map_err(|_| invalid("owner synchronization is unavailable"))?;
+         let trust = TextTrust::load(&self.trust_file, identity)?;
+         if trust.algorithm()? != self.algorithm {
+             return Err(invalid(
+@@ -132,13 +138,17 @@
+ 
+     pub async fn sync_replay_checkpoint(&self) -> Result<(), AgentdError> {
+         // Admission and the relay share this owner. The witness snapshot must
+-        // be read after acquiring the same guard used by policy refresh, and
++        // be read after acquiring the same permit used by policy refresh, and
+         // retained through reconciliation, publication, and local promotion.
+-        let _guard = self.trust_update.lock().await;
++        let _permit = self
++            .trust_update
++            .acquire()
++            .await
++            .map_err(|_| invalid("owner synchronization is unavailable"))?;
+         self.sync_replay_checkpoint_locked().await
+     }
+ 
+-    // Called only while trust_update is held; refresh_trust already owns it.
++    // Called only while the trust_update permit is held; refresh_trust owns it.
+     async fn sync_replay_checkpoint_locked(&self) -> Result<(), AgentdError> {
+         let external = self.checkpoint.read()?;
+         #[cfg(test)]
+--- a/codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs
++++ b/codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs
+@@ -109,6 +109,64 @@
+     }
+ }
+ 
++#[tokio::test]
++async fn cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission() {
++    for algorithm in [AuthBusAlgorithm::Ed25519V1, AuthBusAlgorithm::MlDsa65V2] {
++        let fixture = Fixture::with_algorithm(algorithm).await;
++        let host = attached(&fixture.state).expect("attached ingress");
++        let before = host.checkpoint.read().expect("initial checkpoint");
++        let (first_read, resume_first) = host.pause_next_checkpoint_read();
++        let mut first = Box::pin(tokio::task::unconstrained(host.sync_replay_checkpoint()));
++        tokio::select! {
++            result = &mut first => panic!("sync completed before its read pause: {result:?}"),
++            reached = first_read => reached.expect("first checkpoint read"),
++        }
++        let (mut next_read, resume_next) = host.pause_next_checkpoint_read();
++        {
++            let mut waiting = Box::pin(tokio::task::unconstrained(host.sync_replay_checkpoint()));
++            poll_pending(waiting.as_mut()).await;
++            assert!(matches!(
++                next_read.try_recv(),
++                Err(tokio::sync::oneshot::error::TryRecvError::Empty)
++            ));
++            // Cancel a queued operation before it receives the sole permit.
++        }
++        let mut next = Box::pin(tokio::task::unconstrained(host.sync_replay_checkpoint()));
++        poll_pending(next.as_mut()).await;
++        assert!(matches!(
++            next_read.try_recv(),
++            Err(tokio::sync::oneshot::error::TryRecvError::Empty)
++        ));
++        // Cancel the holder after its real protected-file read. Dropping its
++        // future must release admission without advancing either checkpoint.
++        drop(first);
++        assert!(resume_first.send(()).is_err());
++        poll_pending(next.as_mut()).await;
++        next_read.try_recv().expect("next owner acquired admission");
++        resume_next.send(()).expect("resume next owner");
++        next.await.expect("checkpoint synchronization resumes");
++        assert_eq!(host.checkpoint.read().expect("current checkpoint"), before);
++        assert_eq!(
++            host.evidence
++                .authbus_restore_checkpoint()
++                .await
++                .expect("local checkpoint"),
++            Some(before)
++        );
++        assert_eq!(
++            host.evidence
++                .pending_authbus_restore_checkpoint()
++                .await
++                .expect("pending checkpoint"),
++            None
++        );
++        let resumed = submit(&fixture.state, fixture.request(/*sequence*/ 1))
++            .await
++            .expect("fresh signed message after cancellation");
++        assert_eq!(resumed.state, AuthBusTextState::Queued);
++    }
++}
++
+ async fn poll_pending<F: Future>(mut future: Pin<&mut F>) {
+     std::future::poll_fn(|context| {
+         assert!(future.as_mut().poll(context).is_pending());
+--- a/.github/workflows/hepta-pq-policy-renewal.yml
++++ b/.github/workflows/hepta-pq-policy-renewal.yml
+@@ -110,14 +110,14 @@
+           --timeout-seconds 600 --
+           cargo fetch --locked --manifest-path codex-rs/Cargo.toml
+ 
+-      - name: Run all thirteen original and added dispatcher controls
++      - name: Run all fourteen original and added dispatcher controls
+         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+         env:
+           CARGO_NET_OFFLINE: "true"
+         run: >-
+           python3 scripts/hepta_ci_exec.py
+           --output "$RUNNER_TEMP/pq-policy-renewal/dispatcher.json"
+-          --minimum-tests 13 --timeout-seconds 3600 --
++          --minimum-tests 14 --timeout-seconds 3600 --
+           just test --locked -p codex-hepta-agentd --lib
+           -E 'test(authbus_dispatch::tests::)' --no-capture --retries 0 --test-threads=1
+ 
+@@ -159,6 +159,7 @@
+                   "policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+                   "policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+                   "checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
++                  "checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+               )},
+               "product": {
+                   "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",

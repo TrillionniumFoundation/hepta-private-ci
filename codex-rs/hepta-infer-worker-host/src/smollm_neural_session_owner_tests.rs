@@ -25,6 +25,14 @@ fn command() -> Command {
 
 #[test]
 fn two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let first = prepare(directory.path());
     let second = prepare(directory.path());
@@ -70,6 +78,14 @@ fn two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth(
 
 #[test]
 fn denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let before = std::fs::read_dir("/proc/self/task").unwrap().count();
     for failure in [1, 2] {
@@ -106,6 +122,14 @@ fn denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_chil
 
 #[test]
 fn cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let owner = prepare(directory.path());
     owner.spawn(&mut command()).unwrap();
@@ -158,6 +182,14 @@ fn cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slo
 
 #[test]
 fn foreground_and_drop_never_wait_for_a_held_cleanup_payload() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(foreground_and_drop_never_wait_for_a_held_cleanup_payload)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let owner = prepare(directory.path());
     let slot = Arc::clone(&owner.slot);
@@ -197,6 +229,14 @@ fn foreground_and_drop_never_wait_for_a_held_cleanup_payload() {
 
 #[test]
 fn cancellation_or_original_startup_expiry_prevents_child_birth() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(cancellation_or_original_startup_expiry_prevents_child_birth)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let cancellation = CancellationToken::new();
     let cancelled = SupervisorOwner::prepare(
@@ -251,6 +291,14 @@ fn cancellation_or_original_startup_expiry_prevents_child_birth() {
 
 #[test]
 fn readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     REQUEST_FAILURE.set(3);
     let deadline = Instant::now() + Duration::from_millis(20);
@@ -302,6 +350,14 @@ fn readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed() {
 
 #[test]
 fn exact_supervisor_exit_without_original_worker_receipt_stays_closed() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(exact_supervisor_exit_without_original_worker_receipt_stays_closed)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let owner = prepare(directory.path());
     owner.spawn(&mut Command::new("/bin/true")).unwrap();
@@ -336,6 +392,14 @@ fn exact_supervisor_exit_without_original_worker_receipt_stays_closed() {
 
 #[test]
 fn contended_root_reservation_starts_two_original_children_without_retrying_birth() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(contended_root_reservation_starts_two_original_children_without_retrying_birth)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let roots = OWNERS.lock().unwrap();
     let barrier = std::sync::Barrier::new(3);
@@ -375,6 +439,14 @@ fn contended_root_reservation_starts_two_original_children_without_retrying_birt
 
 #[test]
 fn root_contention_preserves_original_deadline_and_cancellation_before_reservation() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(root_contention_preserves_original_deadline_and_cancellation_before_reservation)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     for cancel in [false, true] {
         let roots = OWNERS.lock().unwrap();
@@ -408,6 +480,14 @@ fn root_contention_preserves_original_deadline_and_cancellation_before_reservati
 
 #[test]
 fn poisoned_roots_never_wait_or_reserve_an_owner() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(poisoned_roots_never_wait_or_reserve_an_owner)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     assert!(
         std::thread::spawn(|| {
@@ -433,6 +513,14 @@ fn poisoned_roots_never_wait_or_reserve_an_owner() {
 
 #[test]
 fn root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window)
+    )) {
+        return;
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let roots = OWNERS.lock().unwrap();
     let started = Instant::now();

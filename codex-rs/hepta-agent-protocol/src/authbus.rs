@@ -15,6 +15,9 @@ pub struct AuthBusTextBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AuthBusTextIngress {
+    /// Explicit signature profile; the owner registry must select the same one.
+    #[serde(default = "classic_auth_version")]
+    pub auth_version: u32,
     pub issuer_id: String,
     pub key_epoch: u64,
     pub message_id: String,
@@ -22,6 +25,10 @@ pub struct AuthBusTextIngress {
     pub expires_at_ms: u64,
     pub signature_hex: String,
     pub body: AuthBusTextBody,
+}
+
+fn classic_auth_version() -> u32 {
+    1
 }
 
 /// Product-bounded structured objective body admitted by Agentd. The signed

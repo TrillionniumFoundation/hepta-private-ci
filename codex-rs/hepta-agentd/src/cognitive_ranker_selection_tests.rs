@@ -52,7 +52,7 @@ fn selected_fixture(lifetime: EvidenceLifetime) -> (Fixture, VerifiedSelfEvoluti
             .map(|index| ledger::TrustedLearningSignerV1 {
                 principal: principals[index].clone(),
                 controller_id: id(&format!("controller-{}", role_names[index])),
-                verifying_key: keys[index].verifying_key().to_bytes(),
+                verifying_key: keys[index].verifying_key().to_bytes().into(),
                 roles: vec![role_kinds[index]],
                 revoked_at: None,
             })
@@ -71,9 +71,12 @@ fn selected_fixture(lifetime: EvidenceLifetime) -> (Fixture, VerifiedSelfEvoluti
             issued_at,
             expires_at,
             payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        evidence.signature = keys[index].sign(&evidence.signing_bytes()).to_bytes();
+        evidence.signature = keys[index]
+            .sign(&evidence.signing_bytes())
+            .to_bytes()
+            .into();
         evidence
     };
     let mut learning = ledger::LearningLedger::new();

@@ -53,9 +53,10 @@ impl FinalUseAuthority {
         }
         Ok(Self(Arc::new(Inner {
             signer_id,
+            profile: super::FinalUseAuthenticationProfile::ClassicalV1,
             issuer_keys: vec![PinnedIssuerKey {
                 key_id: "single-key".into(),
-                key: super::IssuerVerifier::Ed25519V1(key),
+                key: super::PinnedAuthorityKey::Classical(key),
                 not_before_authority_epoch: 1,
                 not_after_authority_epoch: u64::MAX,
             }],
@@ -96,6 +97,7 @@ impl FinalUseAuthority {
         }
         Ok(Self(Arc::new(Inner {
             signer_id,
+            profile: super::FinalUseAuthenticationProfile::ClassicalV1,
             issuer_keys,
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),

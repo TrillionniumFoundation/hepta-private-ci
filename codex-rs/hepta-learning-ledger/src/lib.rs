@@ -175,3 +175,11 @@ mod shadow_tests;
 mod recovery_work;
 pub use recovery_work::LedgerRecoveryWorkV1;
 pub use recovery_work::measure_ledger_recovery_work;
+
+pub use codex_hepta_contracts::LearningAuthenticationProfile;
+pub use codex_hepta_contracts::LearningSignature;
+pub use codex_hepta_contracts::LearningVerificationKey;
+
+pub use production::LearningTrustFrontier;
+pub use production::learning_trust_frontier;
+pub use production::verify_learning_trust_frontier;

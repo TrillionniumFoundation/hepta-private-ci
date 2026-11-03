@@ -1,0 +1,41 @@
+[
+  {
+    "job_id": 125788434744,
+    "original_log": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-draft1-job-125788434744.log",
+    "evidence": "hosted-ci/hepta-draft1-job-125788434744.log.xz",
+    "original_bytes": 101016,
+    "original_sha256": "92dd0a22ffde15cdbfdd9e6a176cc88f59a2fd75bab802c0f5e50a6a2bc2d54c",
+    "compressed_bytes": 15452,
+    "compressed_sha256": "06bf6e2e52c36f675c0bfc85ec5626903bd4db4743baaf7485a82ffea220ade2",
+    "roundtrip_bytes_equal": true,
+    "observation": "Windows compilation: eleven E0432/E0433 errors because windows_private_owner was not declared at the crate root.",
+    "source_commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+    "result": "failed"
+  },
+  {
+    "job_id": 125788435213,
+    "original_log": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-draft1-job-125788435213.log",
+    "evidence": "hosted-ci/hepta-draft1-job-125788435213.log.xz",
+    "original_bytes": 74596,
+    "original_sha256": "e8b8b54d5e759cff845630de62b8ab4c0e1cbad890d7ac11b02a927ebd693df6",
+    "compressed_bytes": 11276,
+    "compressed_sha256": "d164b4f6b6e9bcaa791aca3337936644b1eeed63875a41ab81e2c5a24a07357a",
+    "roundtrip_bytes_equal": true,
+    "observation": "Mac Intel Bazel: bcr.bazel.build DNS UnknownHost and remote.buildbuddy.io unavailable; exit 32.",
+    "source_commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+    "result": "failed"
+  },
+  {
+    "job_id": 125788435037,
+    "original_log": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-draft1-job-125788435037.log",
+    "evidence": "hosted-ci/hepta-draft1-job-125788435037.log.xz",
+    "original_bytes": 116143,
+    "original_sha256": "17bed7a8ad0b89540ab7cb1b06b44a052ff4d80bce30834ea8afe9903bfe99e6",
+    "compressed_bytes": 16228,
+    "compressed_sha256": "fef77ef69681994fc66ac3a288d9488106ddcb7f848da7c6dc702aef7394be3b",
+    "roundtrip_bytes_equal": true,
+    "observation": "Mac ARM Bazel: OutOfMemoryError, unable to create native thread; exit 33.",
+    "source_commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+    "result": "failed"
+  }
+]

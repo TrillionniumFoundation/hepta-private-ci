@@ -1,5 +1,6 @@
 //! Executed local learning study, not neural, organizational or service qualification.
 use super::*;
+use codex_hepta_contracts::LearningAuthenticationProfile;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
@@ -22,6 +23,9 @@ use serde_json::json;
 mod admission;
 #[path = "cognitive_three_generation_controls.rs"]
 mod controls;
+#[cfg(target_os = "linux")]
+#[path = "cognitive_pq_install_tests.rs"]
+mod native_pq_install;
 #[path = "cognitive_three_generation_process.rs"]
 mod process;
 #[path = "cognitive_three_generation_provider.rs"]
@@ -159,6 +163,9 @@ impl Host {
         let view = Arc::new(publication::StudyView::new(root.join("owner"), roles));
         let published = view.publish(&root, fitted, None, roles);
         let current: Arc<dyn CurrentCognitiveRegistry> = view.clone();
+        let time =
+            RankerAuthorityTime::new(LearningAuthenticationProfile::ClassicalV1, current.as_ref())
+                .unwrap();
         let ranker = Arc::new(
             PinnedCognitiveRanker::load_source(
                 owner(),
@@ -169,6 +176,7 @@ impl Host {
                 fitted.pin.clone(),
                 current,
                 Some(published.source),
+                time,
             )
             .unwrap(),
         );
@@ -320,6 +328,11 @@ async fn three_actual_fits_installations_future_instances_no_update_and_revocati
         hash("different-actual-dataset"),
         &mut roles,
     );
+    let wrong_time = RankerAuthorityTime::new(
+        LearningAuthenticationProfile::ClassicalV1,
+        wrong_view.as_ref(),
+    )
+    .unwrap();
     let wrong_result = PinnedCognitiveRanker::load_source(
         owner(),
         host.launch,
@@ -329,6 +342,7 @@ async fn three_actual_fits_installations_future_instances_no_update_and_revocati
         fitted.pin.clone(),
         wrong_view,
         Some(wrong.source),
+        wrong_time,
     );
     assert!(
         wrong_result.is_err(),
@@ -339,6 +353,9 @@ async fn three_actual_fits_installations_future_instances_no_update_and_revocati
         &json!({"error":wrong_result.err().unwrap()}),
     );
     let current: Arc<dyn CurrentCognitiveRegistry> = view.clone();
+    let time =
+        RankerAuthorityTime::new(LearningAuthenticationProfile::ClassicalV1, current.as_ref())
+            .unwrap();
     let mut ranker = Arc::new(
         PinnedCognitiveRanker::load_source(
             owner(),
@@ -349,6 +366,7 @@ async fn three_actual_fits_installations_future_instances_no_update_and_revocati
             fitted.pin.clone(),
             current.clone(),
             Some(published.source.clone()),
+            time,
         )
         .unwrap(),
     );

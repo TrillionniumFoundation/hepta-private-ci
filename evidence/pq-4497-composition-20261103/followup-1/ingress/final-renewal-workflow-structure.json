@@ -1,0 +1,64 @@
+{
+  "phase": "after preserved setup-uv prerequisite and added exact cancellation control",
+  "base_workflow_sha256": "b58cf41271e1a8e5a385b840bdfb2189703aa4a1e93221e3ce25f6a4e63ccbc8",
+  "final_workflow_sha256": "28ed20a7b499fb9044588d6f6048d1eec8bd02d8e7062626e0f54281fcc6902b",
+  "only_workflow_changes": [
+    "dispatcher step label thirteen to fourteen",
+    "minimum dispatcher tests13 to14",
+    "one additional required exact dispatcher test name"
+  ],
+  "original_dispatcher_controls": [
+    "lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+    "abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+    "revocation_during_queue_request_prevents_success_ack",
+    "ready_generation_and_owner_private_trust_are_required_before_admission",
+    "matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+    "pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+    "pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+    "lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+    "policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+    "policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+    "policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+    "policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+    "checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection"
+  ],
+  "new_dispatcher_controls": [
+    "lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+    "abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+    "revocation_during_queue_request_prevents_success_ack",
+    "ready_generation_and_owner_private_trust_are_required_before_admission",
+    "matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+    "pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+    "pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+    "lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+    "policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+    "policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+    "policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+    "policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+    "checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+    "checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission"
+  ],
+  "original_product_controls_unchanged": [
+    "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+    "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+    "real_agentd_without_explicit_trust_rejects_signed_text"
+  ],
+  "actual_selected_test_definitions": [
+    "lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+    "abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+    "revocation_during_queue_request_prevents_success_ack",
+    "ready_generation_and_owner_private_trust_are_required_before_admission",
+    "matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+    "pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+    "pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+    "lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+    "policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+    "policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+    "policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+    "policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+    "checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+    "checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission"
+  ],
+  "runner_matrix_timeouts_features_profile_retries_and_source_identity_logic_unchanged": true,
+  "pinned_setup_uv_step_preserved": true
+}

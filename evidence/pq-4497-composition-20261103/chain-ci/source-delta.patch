@@ -1,0 +1,161 @@
+diff --git a/trillionnium/crates/trnm-pon-node/src/pq_rollback_witness.rs b/trillionnium/crates/trnm-pon-node/src/pq_rollback_witness.rs
+index 8842b6d..8c6fcef 100644
+--- a/trillionnium/crates/trnm-pon-node/src/pq_rollback_witness.rs
++++ b/trillionnium/crates/trnm-pon-node/src/pq_rollback_witness.rs
+@@ -1,6 +1,8 @@
+ //! Explicit native PNQ2 three-table rollback witness; not whole-node finality.
+ //! The Node binary, writer credential, pinned binding and independent service
+ //! must remain trusted outside a Node-database rollback. Current is not a lease.
++//! Client/owner lifetime checks do not replace independent witness persistence
++//! across process restart, and do not cover reorganization State or Hepta owners.
+ //! This reconstructed source has a new identity; lost-source tests do not apply.
+ 
+ use crate::{ensure, Error, Result};
+@@ -200,6 +202,7 @@ pub struct WitnessClient {
+     writer: PqNativeSigningKey,
+     transport: Box<dyn WitnessTransport>,
+     unavailable: bool,
++    last_verified: Option<Checkpoint>,
+     #[cfg(test)]
+     before_send: Option<Box<dyn FnMut(Instant) + Send>>,
+ }
+@@ -218,6 +221,7 @@ impl WitnessClient {
+             writer,
+             transport,
+             unavailable: false,
++            last_verified: None,
+             #[cfg(test)]
+             before_send: None,
+         })
+@@ -280,11 +284,21 @@ impl WitnessClient {
+                 )
+                 .map_err(crypto)?;
+             let observed = Checkpoint::decode(&reply[68..140])?;
++            // A fresh challenge authenticates this response, but does not by
++            // itself establish that the independent service never rewound.
++            // Other legitimate clients may advance it by several generations.
++            ensure(
++                self.last_verified.is_none_or(|previous| {
++                    observed.sequence > previous.sequence || observed == previous
++                }),
++                "PQ_WITNESS_OBSERVATION_ROLLBACK",
++            )?;
+             // Authenticated matching CAS success must be persisted locally even
+             // if its verification completed after the live-use deadline.
+             if next != Some(observed) {
+                 deadline(until)?;
+             }
++            self.last_verified = Some(observed);
+             Ok(observed)
+         })();
+         // Once exchange begins an error can leave an unread response or an
+@@ -309,6 +323,10 @@ impl WitnessClient {
+         next: Checkpoint,
+         until: Option<Instant>,
+     ) -> Result<()> {
++        // Checkpoint fields are public. Refuse malformed local arguments
++        // before signing or entering transport, without poisoning the client.
++        Checkpoint::new(previous.sequence, previous.root)?;
++        Checkpoint::new(next.sequence, next.root)?;
+         ensure(
+             previous.sequence.checked_add(1) == Some(next.sequence),
+             "PQ_WITNESS_SEQUENCE",
+@@ -331,6 +349,8 @@ pub struct DurableWitness {
+     parent_identity: (u64, u64),
+     binding: WitnessBinding,
+     signer: PqNativeSigningKey,
++    known_head: Option<Checkpoint>,
++    commit_uncertain: bool,
+ }
+ impl DurableWitness {
+     pub fn register_new(
+@@ -384,6 +404,8 @@ impl DurableWitness {
+             parent_identity,
+             binding,
+             signer,
++            known_head: Some(initial),
++            commit_uncertain: false,
+         };
+         owner.check_storage()?;
+         Ok(owner)
+@@ -417,7 +439,7 @@ impl DurableWitness {
+         let parent_identity =
+             file_identity(&fs::metadata(path.parent().ok_or("PQ_WITNESS_PATH")?)?);
+         let db = Self::connection(&path)?;
+-        let owner = Self {
++        let mut owner = Self {
+             db,
+             lock,
+             path,
+@@ -425,8 +447,10 @@ impl DurableWitness {
+             parent_identity,
+             binding,
+             signer,
++            known_head: None,
++            commit_uncertain: false,
+         };
+-        owner.read_head()?;
++        owner.known_head = Some(owner.read_head()?);
+         Ok(owner)
+     }
+     fn connection(path: &Path) -> Result<Connection> {
+@@ -450,7 +474,9 @@ impl DurableWitness {
+             |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
+         )?;
+         ensure(binding == self.binding.canonical(), "PQ_WITNESS_BINDING")?;
+-        Checkpoint::new(seq, root.try_into().map_err(|_| "PQ_WITNESS_STATE")?)
++        let head = Checkpoint::new(seq, root.try_into().map_err(|_| "PQ_WITNESS_STATE")?)?;
++        self.check_known_head(head)?;
++        Ok(head)
+     }
+     pub fn handle(&mut self, request: &[u8], until: Instant) -> Result<Vec<u8>> {
+         deadline(until)?;
+@@ -488,6 +514,10 @@ impl DurableWitness {
+             let (binding,seq,root,old_seq,old_root):(Vec<u8>,u64,Vec<u8>,u64,Vec<u8>)=tx.query_row("SELECT binding,sequence,root,previous_sequence,previous_root FROM witness_v1 WHERE singleton=1",[],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?,r.get(4)?)))?;
+             ensure(binding == self.binding.canonical(), "PQ_WITNESS_BINDING")?;
+             let current = Checkpoint::new(seq, root.try_into().map_err(|_| "PQ_WITNESS_STATE")?)?;
++            ensure(
++                self.known_head == Some(current),
++                "PQ_WITNESS_STORAGE_ROLLBACK",
++            )?;
+             if current == next {
+                 ensure(
+                     old_seq == previous.sequence && old_root == previous.root,
+@@ -498,7 +528,13 @@ impl DurableWitness {
+                 ensure(tx.execute("UPDATE witness_v1 SET sequence=?,root=?,previous_sequence=?,previous_root=? WHERE singleton=1 AND sequence=? AND root=?",params![next.sequence,next.root.as_slice(),previous.sequence,previous.root.as_slice(),previous.sequence,previous.root.as_slice()])?==1,"PQ_WITNESS_CAS")?;
+             }
+             deadline(until)?;
++            // All legitimate writers use this exclusive owner's handle. If a
++            // local COMMIT has an unknown result, refuse later requests until
++            // explicit reopen; a disk read must not silently resolve it.
++            self.commit_uncertain = true;
+             tx.commit()?;
++            self.known_head = Some(next);
++            self.commit_uncertain = false;
+             next
+         } else {
+             self.read_head()?
+@@ -525,7 +561,14 @@ impl DurableWitness {
+     pub fn storage_path(&self) -> &Path {
+         &self.path
+     }
++    fn check_known_head(&self, head: Checkpoint) -> Result<()> {
++        ensure(
++            self.known_head.is_none_or(|expected| expected == head),
++            "PQ_WITNESS_STORAGE_ROLLBACK",
++        )
++    }
+     fn check_storage(&self) -> Result<()> {
++        ensure(!self.commit_uncertain, "PQ_WITNESS_COMMIT_UNCERTAIN")?;
+         let parent = self.path.parent().ok_or("PQ_WITNESS_PATH")?;
+         let meta = fs::symlink_metadata(&self.path)?;
+         let parent_meta = fs::symlink_metadata(parent)?;
+@@ -561,7 +604,7 @@ impl DurableWitness {
+ fn validate_row(db: &Connection, binding_length: usize) -> Result<()> {
+     let count: u64 = db.query_row("SELECT COUNT(*) FROM witness_v1", [], |r| r.get(0))?;
+     ensure(count == 1, "PQ_WITNESS_STATE")?;
+-    let valid:bool=db.query_row("SELECT typeof(singleton)='integer' AND singleton=1 AND typeof(binding)='blob' AND length(binding)=? AND typeof(sequence)='integer' AND sequence>0 AND typeof(root)='blob' AND length(root)=64 AND typeof(previous_sequence)='integer' AND previous_sequence>=0 AND typeof(previous_root)='blob' AND length(previous_root)=64 FROM witness_v1",[binding_length],|r|r.get(0))?;
++    let valid:bool=db.query_row("SELECT typeof(singleton)='integer' AND singleton=1 AND typeof(binding)='blob' AND length(binding)=? AND typeof(sequence)='integer' AND sequence>0 AND typeof(root)='blob' AND length(root)=64 AND typeof(previous_sequence)='integer' AND previous_sequence>=0 AND typeof(previous_root)='blob' AND length(previous_root)=64 AND ((sequence=1 AND previous_sequence=0 AND previous_root=zeroblob(64)) OR (sequence>1 AND previous_sequence=sequence-1 AND previous_root<>zeroblob(64))) FROM witness_v1",[binding_length],|r|r.get(0))?;
+     ensure(valid, "PQ_WITNESS_STATE_WIDTH")
+ }
+ fn file_identity(meta: &fs::Metadata) -> (u64, u64) {

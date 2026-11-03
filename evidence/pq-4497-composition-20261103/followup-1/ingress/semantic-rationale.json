@@ -1,0 +1,103 @@
+{
+  "schema": "hepta-text-ingress-admission-review-v1",
+  "modified_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "base_sha256": "0ad58796f5c9432b1e8777e605456c00ac4e67241c90fb752d83062e6941b3d2",
+      "modified_sha256": "bdf69640829a786bd2403a95a3eb4f112a58d6fe6e6b5281047521e369c42e19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "base_sha256": "482b94f086ef45362be59aacd7c3290b5946b7c8ec59642a3315181f5354ba14",
+      "modified_sha256": "578b0bcd17048e822d555ef79ad5ec33fb276f2681fb7b82c624b80f5d6acd9c"
+    },
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "base_sha256": "b58cf41271e1a8e5a385b840bdfb2189703aa4a1e93221e3ce25f6a4e63ccbc8",
+      "modified_sha256": "28ed20a7b499fb9044588d6f6048d1eec8bd02d8e7062626e0f54281fcc6902b"
+    }
+  ],
+  "problem": "The original payload-free tokio Mutex<()> guards crossed await; clippy.toml explicitly disallows Tokio MutexGuard and RwLock guards across await.",
+  "gate": {
+    "primitive": "tokio::sync::Semaphore",
+    "capacity": 1,
+    "field": "TextIngress::trust_update",
+    "visibility": "private",
+    "protected_mutable_payload": false,
+    "construction_sites": 1,
+    "acquire_sites": 2,
+    "permit": "borrowed SemaphorePermit kept in named _permit local for full original lexical scope",
+    "acquire_error": "mapped to AgentdError via invalid; no fallback or admission",
+    "public_permit_or_semaphore_accessors": false,
+    "add_permits_close_forget_or_owned_guard_added": false
+  },
+  "scopes": {
+    "refresh_trust": [
+      "acquire exclusive admission",
+      "load owner trust file",
+      "require same algorithm/profile",
+      "read and reconcile checkpoint",
+      "pin issuer and PQ owner policy in database",
+      "read and reconcile checkpoint again",
+      "return trust; RAII releases permit"
+    ],
+    "sync_replay_checkpoint": [
+      "acquire same exclusive admission",
+      "read external checkpoint",
+      "reconcile SQLite pending state",
+      "publish exact external witness successor",
+      "promote local checkpoint",
+      "return; RAII releases permit"
+    ]
+  },
+  "tokio_dependency": {
+    "locked_version": "1.53.1",
+    "primary_source": "https://github.com/tokio-rs/tokio/blob/tokio-1.53.1/tokio/src/sync/semaphore.rs",
+    "reviewed_sections": {
+      "fifo": 19,
+      "cancel_safety": 586,
+      "acquire": 614,
+      "permit_drop": 1225
+    },
+    "observations": [
+      "Semaphore admission uses a fair request queue.",
+      "Cancelling an acquisition relinquishes its queue position.",
+      "acquire requests one permit and returns a borrowed SemaphorePermit.",
+      "Dropping that permit returns its acquired capacity."
+    ]
+  },
+  "cancellation_regression": {
+    "name": "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+    "algorithms": [
+      "Ed25519V1",
+      "MlDsa65V2"
+    ],
+    "fixture": "existing real Agentd Fixture, SQLite owner and protected checkpoint file",
+    "interleaving": "existing oneshot checkpoint-read pause and deterministic single future polls; no sleeps or altered timeout",
+    "checks": [
+      "queued operation cannot read predecessor while holder is paused",
+      "dropping queued operation leaves admission usable",
+      "successor remains queued until current holder future is dropped",
+      "dropping holder after actual checkpoint read permits successor to reach its read",
+      "local and external checkpoints remain identical to before, with no pending checkpoint",
+      "fresh real signed request is accepted as Queued after cancellation"
+    ],
+    "execution_status": "implemented; native execution not established by static review or Python source gates"
+  },
+  "ci": {
+    "workflow": ".github/workflows/hepta-pq-policy-renewal.yml",
+    "original_dispatcher_controls_retained": 13,
+    "dispatcher_controls_required_now": 14,
+    "original_product_controls_retained": 3,
+    "original_matrix_timeouts_retries_features_graph_and_exact_case_parser_retained": true,
+    "root_pinned_setup_uv_prerequisite_preserved": true,
+    "actual_actionlint_exit_code": 0,
+    "validation": "final-renewal-actionlint.json",
+    "structure_proof": "final-renewal-workflow-structure.json"
+  },
+  "limits": [
+    "The added cancellation case stops the holder after protected-file read and before SQLite reconciliation; it makes no new claim about unknown database commit outcomes.",
+    "Existing recovery, revocation, policy and rollback controls remain required unchanged.",
+    "Native results must come from the original dependency graph/profile; a blocked local link remains blocked and is not a passing test."
+  ]
+}
