@@ -14,6 +14,7 @@ import hepta_neural_evidence_binary_v2 as binary
 import hepta_neural_candidate_transport_v1 as transport
 import hepta_neural_diverse_v3 as work
 import hepta_neural_study_diverse_v3 as study_driver
+import hepta_smollm_execution_source_v1 as execution_source
 
 require, read, regular, canonical = (
     original.require,
@@ -49,6 +50,27 @@ def published_source(item):
         and item["identity"]["tree"] == study_driver.TRAINING_TREE,
         "exact separately published diverse training commit and tree",
     )
+
+
+def integrated_sources(repositories):
+    """Bind every Chain role to V5; historical multi-source records stay separate."""
+    profile = study_driver.original.EXECUTION_SOURCE_PROFILE
+    if profile != execution_source.PROFILE_V5:
+        return None
+    manifest = execution_source.checked_manifest(profile)
+    for name in REPOSITORIES - {"hepta"}:
+        item = repositories[name]
+        require(
+            item["identity"]["commit"] == manifest["chain_commit"]
+            and item["identity"]["tree"] == manifest["chain_tree"],
+            "all execution roles require the same V5 Chain commit and tree",
+        )
+    return {
+        "profile": profile,
+        "chain_commit": manifest["chain_commit"],
+        "chain_tree": manifest["chain_tree"],
+        "manifest_sha256": execution_source.selected_source(profile)[2],
+    }
 
 
 def excluded_prompts():
@@ -438,12 +460,27 @@ def source(output):
         ("chain-diverse", root.parent / "chain-diverse", "DIVERSE_TRAINING_CHAIN_SHA"),
     ):
         try:
+            if (
+                name != "hepta"
+                and study_driver.original.EXECUTION_SOURCE_PROFILE
+                == execution_source.PROFILE_V5
+            ):
+                execution_source.verify(directory, execution_source.PROFILE_V5)
             item = original.collect_source(directory, os.environ.get(variable))
             if name == "chain-diverse":
                 published_source(item)
             record["repositories"][name] = item
         except (ValueError, OSError, original.ci.subprocess.SubprocessError) as error:
             record["errors"].append({"repository": name, "error": str(error)})
+    if not record["errors"]:
+        try:
+            integrated = integrated_sources(record["repositories"])
+            if integrated is not None:
+                record["execution_source"] = integrated
+        except (ValueError, KeyError, TypeError) as error:
+            record["errors"].append(
+                {"repository": "chain-integrated", "error": str(error)}
+            )
     record["valid"] = (
         not record["errors"] and set(record["repositories"]) == REPOSITORIES
     )
@@ -485,6 +522,12 @@ def assess(root):
             "all five complete current-run source snapshots must be identical",
         )
         published_source(before["repositories"]["chain-diverse"])
+        integrated = integrated_sources(before["repositories"])
+        if integrated is not None:
+            require(
+                before.get("execution_source") == integrated,
+                "the actual V5 source record cannot inherit historical observations",
+            )
         return {name: item["identity"] for name, item in before["repositories"].items()}
 
     check(

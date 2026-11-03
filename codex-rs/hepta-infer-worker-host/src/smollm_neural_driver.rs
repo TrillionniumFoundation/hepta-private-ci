@@ -29,9 +29,11 @@ use environment::configure_python_environment;
 
 #[path = "smollm_cell_material.rs"]
 mod cell_material;
+pub(crate) use cell_material::ControlledCellInputsV2;
 pub use cell_material::SmolLmCellStartOwnerV1;
 pub use cell_material::VerifiedCellMaterialV1;
 pub use cell_material::verify_controlled_cell_material_v1;
+pub(crate) use cell_material::verify_controlled_cell_material_v2;
 
 #[path = "smollm_neural_failure.rs"]
 mod failure;

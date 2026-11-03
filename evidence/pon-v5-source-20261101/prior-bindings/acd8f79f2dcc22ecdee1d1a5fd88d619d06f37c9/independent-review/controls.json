@@ -1,0 +1,38 @@
+[
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_smollm_execution_source*.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "seconds": 4.542771742999321,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "1778ffe649ecf5cfa3f27dec2cd5d9094032aab9139ef6ac8c198f2889461ef0",
+    "stderr_tail": "_rehashed_manifest) ... ok\ntest_unfrozen_source_cannot_import_diverse_training (test_hepta_smollm_execution_source_v5.ExecutionSourceV5Tests.test_unfrozen_source_cannot_import_diverse_training) ... ok\n\n----------------------------------------------------------------------\nRan 51 tests in 4.450s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_neural_*diverse_v3.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "seconds": 0.617296341999463,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "5612675c7d3295c2b96c771bf9b4186a85075db4a7614971e1bbb6c0041eab8b",
+    "stderr_tail": ") ... ok\ntest_unpublished_training_pin_fails_before_any_git_or_owner_call (test_hepta_neural_study_diverse_v3.DiverseStudyTests.test_unpublished_training_pin_fails_before_any_git_or_owner_call) ... ok\n\n----------------------------------------------------------------------\nRan 32 tests in 0.534s\n\nOK\n"
+  }
+]

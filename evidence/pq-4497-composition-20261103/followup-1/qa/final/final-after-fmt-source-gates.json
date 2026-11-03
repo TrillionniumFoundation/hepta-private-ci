@@ -1,0 +1,88 @@
+{
+  "phase": "final source gates after original just fmt and precise canonical test-hook source pin update",
+  "source_head": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "source_is_reviewed_worktree_overlay": true,
+  "started_at_utc": "2026-11-03T08:28:35.580032+00:00",
+  "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "input_sha256_before": {
+    "CALLERS.toml": "ad52e8addfc2bbcf69505800c3f0f3d52ba534f1bc013ee9d506441468dfb216",
+    "scripts/verify_hepta_callers.py": "a5fed1f437433cca2754bac33211a18f798133bad0d95f362656ad2c648e5b77",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "0a69a96af89583bc44492aa37864bc486eae73e8073e896dfd023c97bbe2b12f",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "89f5639650a124eefee1432e1bad956fa172a76781427be09bc0019e2b369eed",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": "2cc023e4e6e328efa5b68d016e995b035adf9541fd5d00126f98caeb7abce5fc",
+    "codex-rs/hepta-contracts/src/final_use.rs": "ee47a741721a216671ed3728034265714ebd8268bc55fe731bfd21bb263f9bec",
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+    "codex-rs/hepta-contracts/src/final_use_store.rs": "8f3150cfa2d392d153387a7af629c0ba83f7eb22ce65c4ba73f42a794a8f8485",
+    "codex-rs/utils/windows-private-state/src/private_owner_lock.rs": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+    "codex-rs/hepta-contracts/src/authority_authentication.rs": "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44",
+    "codex-rs/hepta-contracts/src/pq_auth.rs": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d",
+    "codex-rs/hepta-contracts/src/final_use_pq.rs": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b",
+    "codex-rs/hepta-contracts/src/final_use_control_pq.rs": "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs": "4a563de735e62f826e49f3757e97ad8269ac526524690de7bbdae75d8a5e7099",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs": "d25359981a0274f25581f13195b17fee281d39fa239683f4e4838d6cfbb2d83d",
+    "codex-rs/hepta-infer-worker-host/src/smollm_initial_time.rs": "209f32af026b3c2f897485ae6d5c5c1e2013f14edce10c6219984166f8445311"
+  },
+  "input_sha256_after": {
+    "CALLERS.toml": "ad52e8addfc2bbcf69505800c3f0f3d52ba534f1bc013ee9d506441468dfb216",
+    "scripts/verify_hepta_callers.py": "a5fed1f437433cca2754bac33211a18f798133bad0d95f362656ad2c648e5b77",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "0a69a96af89583bc44492aa37864bc486eae73e8073e896dfd023c97bbe2b12f",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "89f5639650a124eefee1432e1bad956fa172a76781427be09bc0019e2b369eed",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": "2cc023e4e6e328efa5b68d016e995b035adf9541fd5d00126f98caeb7abce5fc",
+    "codex-rs/hepta-contracts/src/final_use.rs": "ee47a741721a216671ed3728034265714ebd8268bc55fe731bfd21bb263f9bec",
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+    "codex-rs/hepta-contracts/src/final_use_store.rs": "8f3150cfa2d392d153387a7af629c0ba83f7eb22ce65c4ba73f42a794a8f8485",
+    "codex-rs/utils/windows-private-state/src/private_owner_lock.rs": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+    "codex-rs/hepta-contracts/src/authority_authentication.rs": "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44",
+    "codex-rs/hepta-contracts/src/pq_auth.rs": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d",
+    "codex-rs/hepta-contracts/src/final_use_pq.rs": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b",
+    "codex-rs/hepta-contracts/src/final_use_control_pq.rs": "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs": "4a563de735e62f826e49f3757e97ad8269ac526524690de7bbdae75d8a5e7099",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs": "d25359981a0274f25581f13195b17fee281d39fa239683f4e4838d6cfbb2d83d",
+    "codex-rs/hepta-infer-worker-host/src/smollm_initial_time.rs": "209f32af026b3c2f897485ae6d5c5c1e2013f14edce10c6219984166f8445311"
+  },
+  "inputs_unchanged": true,
+  "results": {
+    "qa-suite": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 1.4800906700038468,
+      "log_file": "final-after-fmt-qa-suite.log",
+      "log_sha256": "e70259fe190f7be4320f6f9c3bce59ee2c24c159a4c7ed00e93cc88083b0030e"
+    },
+    "caller-self-test": {
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.06923199699667748,
+      "log_file": "final-after-fmt-caller-self-test.log",
+      "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    "caller-verify": {
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 73.49929795200296,
+      "log_file": "final-after-fmt-caller-verify.log",
+      "log_sha256": "e8620d92c760ed9686b2cb894fd762add4fff54097eaae92e10f1415c3703b88"
+    }
+  },
+  "earlier_qa_full_suite_receipt_preserved": true
+}

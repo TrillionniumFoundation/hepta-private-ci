@@ -1,0 +1,60 @@
+{
+  "source_head": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_*.py"
+  ],
+  "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "started_at_utc": "2026-11-03T08:07:23.603697+00:00",
+  "duration_seconds": 1.9425974749974557,
+  "exit_code": 0,
+  "log": "/workspace/scratch/df0a4a720ed8/chain-rollback/hepta-qa-followup/qa-full-suite.log",
+  "log_sha256": "53d55fcf927cff3748f79e887a162cfbee5eba678f16a292392c6f38a344dca4",
+  "input_sha256_before": {
+    "CALLERS.toml": "4d232f99011453793bb00a5c7eb5f4c39c970badcde78df9a398ead0ce53c88d",
+    "scripts/verify_hepta_callers.py": "a5fed1f437433cca2754bac33211a18f798133bad0d95f362656ad2c648e5b77",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "0a69a96af89583bc44492aa37864bc486eae73e8073e896dfd023c97bbe2b12f",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "89f5639650a124eefee1432e1bad956fa172a76781427be09bc0019e2b369eed",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": "2cc023e4e6e328efa5b68d016e995b035adf9541fd5d00126f98caeb7abce5fc",
+    "codex-rs/hepta-contracts/src/final_use.rs": "ee47a741721a216671ed3728034265714ebd8268bc55fe731bfd21bb263f9bec",
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+    "codex-rs/hepta-contracts/src/final_use_store.rs": "8f3150cfa2d392d153387a7af629c0ba83f7eb22ce65c4ba73f42a794a8f8485",
+    "codex-rs/utils/windows-private-state/src/private_owner_lock.rs": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+    "codex-rs/hepta-contracts/src/authority_authentication.rs": "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44",
+    "codex-rs/hepta-contracts/src/pq_auth.rs": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d",
+    "codex-rs/hepta-contracts/src/final_use_pq.rs": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b",
+    "codex-rs/hepta-contracts/src/final_use_control_pq.rs": "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs": "4a563de735e62f826e49f3757e97ad8269ac526524690de7bbdae75d8a5e7099",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs": "33eb0ea4a1643610268768bc7b8333b42673e4832140b3df4be373c20886ab43",
+    "codex-rs/hepta-infer-worker-host/src/smollm_initial_time.rs": "209f32af026b3c2f897485ae6d5c5c1e2013f14edce10c6219984166f8445311"
+  },
+  "input_sha256_after": {
+    "CALLERS.toml": "4d232f99011453793bb00a5c7eb5f4c39c970badcde78df9a398ead0ce53c88d",
+    "scripts/verify_hepta_callers.py": "a5fed1f437433cca2754bac33211a18f798133bad0d95f362656ad2c648e5b77",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "0a69a96af89583bc44492aa37864bc486eae73e8073e896dfd023c97bbe2b12f",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "89f5639650a124eefee1432e1bad956fa172a76781427be09bc0019e2b369eed",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": "2cc023e4e6e328efa5b68d016e995b035adf9541fd5d00126f98caeb7abce5fc",
+    "codex-rs/hepta-contracts/src/final_use.rs": "ee47a741721a216671ed3728034265714ebd8268bc55fe731bfd21bb263f9bec",
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+    "codex-rs/hepta-contracts/src/final_use_store.rs": "8f3150cfa2d392d153387a7af629c0ba83f7eb22ce65c4ba73f42a794a8f8485",
+    "codex-rs/utils/windows-private-state/src/private_owner_lock.rs": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+    "codex-rs/hepta-contracts/src/authority_authentication.rs": "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44",
+    "codex-rs/hepta-contracts/src/pq_auth.rs": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d",
+    "codex-rs/hepta-contracts/src/final_use_pq.rs": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b",
+    "codex-rs/hepta-contracts/src/final_use_control_pq.rs": "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs": "4a563de735e62f826e49f3757e97ad8269ac526524690de7bbdae75d8a5e7099",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs": "33eb0ea4a1643610268768bc7b8333b42673e4832140b3df4be373c20886ab43",
+    "codex-rs/hepta-infer-worker-host/src/smollm_initial_time.rs": "209f32af026b3c2f897485ae6d5c5c1e2013f14edce10c6219984166f8445311"
+  },
+  "inputs_unchanged": true,
+  "test_scope": "complete original qa/b4-no-bypass discovery; all 21 original tests retained plus one split-impl classification regression"
+}

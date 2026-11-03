@@ -1,0 +1,65 @@
+{
+  "schema": "hepta-followup-static-review-v1",
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "scope": "Independent source reading by collaborating agents in this task; not an external audit or runtime test result",
+  "reviews": [
+    {
+      "files": [
+        "codex-rs/hepta-authbus/src/settlement_store_tests.rs",
+        "codex-rs/hepta-authbus/src/settlement_issuer_tests.rs"
+      ],
+      "reviewers": [
+        "root",
+        "chain_rollback"
+      ],
+      "result": "CLEAR",
+      "basis": "IssuerPurpose is an existing public re-export; the explicit import fixes its test scope. From<[u8; 64]> constructs the Ed25519 variant without truncation; the original signature and IssuerMissing assertion remain unchanged."
+    },
+    {
+      "files": [
+        "codex-rs/hepta-evidence/src/authbus_issuer_floor.rs"
+      ],
+      "reviewers": [
+        "root"
+      ],
+      "result": "CLEAR",
+      "basis": "The private five-element tuple alias is exactly the original SQL row type. Query, column order, serialization, transaction and owner/verification behavior are unchanged. No lint suppression."
+    },
+    {
+      "files": [
+        "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+        "codex-rs/hepta-contracts/src/final_use_pq_capacity_tests.rs",
+        "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs"
+      ],
+      "reviewers": [
+        "root",
+        "chain_rollback"
+      ],
+      "result": "CLEAR_STATIC",
+      "basis": "The same key pins, directory permissions, frontier, owner and signing errors propagate into nine Result test functions. All original tests and assertions remain; no default value or skip is introduced."
+    },
+    {
+      "files": [
+        "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+        "codex-rs/hepta-contracts/src/authority_trust_learning_tests.rs"
+      ],
+      "reviewers": [
+        "root",
+        "chain_rollback"
+      ],
+      "result": "CLEAR_STATIC",
+      "basis": "All three original test names and request boundaries remain. Bind errors still fail the Result test; service errors and thread panics still fail through Drop."
+    },
+    {
+      "files": [
+        "codex-rs/hepta-infer-worker-host/tests/cell_host_cli.rs"
+      ],
+      "reviewers": [
+        "root",
+        "chain_rollback"
+      ],
+      "result": "CLEAR_STATIC",
+      "basis": "Nine calls propagate process helper failure into three Result test entries. The original 25 assertions, commands, 10-second deadline, 5-ms poll and OwnedChild kill/wait remain. This preserves the original behavior; it does not establish an operating-system preemption guarantee."
+    }
+  ]
+}

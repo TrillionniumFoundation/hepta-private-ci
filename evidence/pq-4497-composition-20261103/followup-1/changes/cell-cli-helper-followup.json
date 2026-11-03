@@ -1,0 +1,76 @@
+{
+  "base_head": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "original_4497_head": "a6c58700d23efd575d2803637aa7d9203d27e7bf",
+  "unchanged_between_original_and_published": true,
+  "prior_failed_strict_log": "pq-audit/hepta-scoped-clippy-3.log",
+  "prior_failed_strict_log_sha256": "d71cabc91a60914c722455d6f387f1f04c5be2da25f6e13386a5298efa039c4d",
+  "changed_files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/tests/cell_host_cli.rs",
+      "before_sha256": "15d385905ca9050c1331f552eba45f03815fd2f338a21f419fa46d9b1dfeaa8d",
+      "after_sha256": "891168ce2f82a4ba7d907c2c379261fdb8e5ca4ccd0c5ec0528316b5ad958dca",
+      "assertions_preserved": 25,
+      "assertion_comparison": "Exact tokens after removing only the single newly required Result propagation operator in run_command(legacy)?.status.success()",
+      "tests_preserved": [
+        "actual_cell_daemon_rejects_anonymous_image_before_aliases_but_keeps_old_dispatch",
+        "actual_argv_selects_v2_strict_decoder_before_any_fleet_or_model_owner",
+        "actual_argv_rejects_unknown_and_duplicate_formats_without_fallback"
+      ]
+    }
+  ],
+  "patch_sha256": "afd588fa2e2a8f38f207bf749b8880aaf98fdd2dcf740fe137008affe48111cf",
+  "all_helper_calls": [
+    {
+      "helper": "run_command",
+      "line": 38,
+      "handling": "tail returns Result from cli"
+    },
+    {
+      "helper": "run_command",
+      "line": 113,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "run_command",
+      "line": 123,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "run_command",
+      "line": 132,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "run_command",
+      "line": 142,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "cli",
+      "line": 175,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "cli",
+      "line": 179,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "cli",
+      "line": 200,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "cli",
+      "line": 210,
+      "handling": "propagates Result with ?"
+    }
+  ],
+  "checks": [
+    "OwnedChild Drop kill and wait implementation remains byte-identical",
+    "Original ten-second deadline assertion and five-millisecond polling interval remain byte-identical",
+    "All arguments, environment operations, dispatch cases, expected outcomes and Linux-only configuration remain unchanged",
+    "Spawn, poll, output collection and binary lookup failures propagate to test failure without new unwrap, expect, suppression or fallback"
+  ],
+  "validation": "Rustfmt 1.96 completed; original strict Clippy attempt4 pending; native child execution has not been rerun"
+}

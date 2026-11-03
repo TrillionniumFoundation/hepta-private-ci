@@ -215,7 +215,7 @@ mod tests {
                 signers: vec![TrustedLearningSignerV1 {
                     principal,
                     controller_id: id("intuition-generator-controller"),
-                    verifying_key: key.verifying_key().to_bytes(),
+                    verifying_key: key.verifying_key().to_bytes().into(),
                     roles: vec![LearningEvidenceRoleV1::Generator],
                     revoked_at: None,
                 }],

@@ -11,8 +11,17 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+mod authority_authentication;
 pub mod authority_lease;
 pub mod authority_trust;
+pub mod authority_trust_unix;
+mod learning_authentication;
+pub mod pq_auth;
+pub use authority_authentication::FinalUseAuthenticationProfile;
+pub use authority_authentication::PqAuthorityTrustKey;
+pub use learning_authentication::LearningAuthenticationProfile;
+pub use learning_authentication::LearningSignature;
+pub use learning_authentication::LearningVerificationKey;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
@@ -42,7 +51,6 @@ pub use authority_trust::AuthorityTrustError;
 pub use authority_trust::SystemAuthorityClock;
 
 pub use final_use::EnteredUseToken;
-pub use final_use::FINAL_USE_ML_DSA65_V2_CONTEXT;
 pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
 pub use final_use::FinalUseCapacity;
@@ -50,7 +58,6 @@ pub use final_use::FinalUseError;
 pub use final_use::FinalUseFrontier;
 pub use final_use::FinalUseGrant;
 pub use final_use::FinalUseIssuerTrustKey;
-pub use final_use::FinalUseMlDsa65IssuerTrustKeyV2;
 pub use final_use::FinalUseRevocations;
 pub use final_use::SignedFinalUseGrant;
 pub use final_use::VerifiedUseToken;
@@ -59,7 +66,6 @@ pub use final_use::deliver_final_use;
 pub use final_use::deliver_final_use_with_witness;
 pub use final_use::dispatch_final_use;
 pub use final_use::dispatch_final_use_with_witness;
-pub use final_use::encode_ml_dsa65_final_use_signature_v2;
 pub use final_use_control::FinalUseApproval;
 pub use final_use_control::FinalUseApprovalVerifier;
 pub use final_use_control::FinalUseControlError;
@@ -72,6 +78,7 @@ pub use final_use_control::FinalUseRevocationReceipt;
 pub use final_use_control::FinalUseRevocationUpdate;
 pub use final_use_control::FinalUseTrustKey;
 pub use final_use_control::MAX_REVOCATION_FEED_LIFETIME_MS;
+pub use final_use_control::PqFinalUseRevocationNodeTrust;
 pub use final_use_control::SignedFinalUseApproval;
 pub use final_use_control::SignedFinalUseRevocationAck;
 pub use final_use_control::SignedFinalUseRevocationUpdate;
@@ -323,6 +330,8 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+pub use learning_authentication::LearningTrustFrontier;
 
 #[cfg(windows)]
 pub use codex_utils_windows_private_state::parent_anchor as windows_private_owner;

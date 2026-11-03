@@ -1,0 +1,26 @@
+{
+  "schema": "hepta-bazel-source-closure-independent-review-v1",
+  "reviewer": "chain_rollback",
+  "base_commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "base_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+  "patch_sha256": "4b44d38fea13116866c1040d42cf826d58a4c0df64437776452473b302dd01b3",
+  "result": "CLEAR_STATIC",
+  "reviewed_paths": {
+    "codex-rs/hepta-infer-worker-host/BUILD.bazel": "4ab781703229cfd6c9de8e2047b9e96ce88e24b7d03a1d5a745b80c07b15dca5",
+    "codex-rs/hepta-agentd/BUILD.bazel": "1c9e8b8c98ed4a31469bf437bd0b676e67d866398b6e2a4c94d8dc17e68e20eb"
+  },
+  "independent_findings": [
+    "Each proposal adds exactly two declarations. Removing those two lines restores its baseline byte for byte; both baseline and proposed hashes match the separately retained patch review.",
+    "The existing host test imports cognitive_process_wire.rs, whose file-level path module includes cognitive_process_learning_auth.rs; that file's test module includes cognitive_process_learning_auth_tests.rs.",
+    "All seven source files in the five-to-seven source closure were independently hashed. No additional mod or include source edge was found in those seven files.",
+    "defs.bzl passes crate_srcs through lib_srcs to the existing library and test library. No target, dependency, Cargo lock, feature, compatibility, test filter, or budget is changed.",
+    "Agentd exports retain the same single //codex-rs/hepta-infer-worker-host:__pkg__ visibility. No public export or additional consumer is introduced.",
+    "The retained actual Buildifier receipt uses the repository-pinned v8.5.1 Linux binary with -mode=check -lint=off and reports exit zero. The binary and empty log hashes were independently read back."
+  ],
+  "buildifier_binary_sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+  "buildifier_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bazel_action_executed_by_this_review": false,
+  "rust_compiled_by_this_review": false,
+  "source_modified_by_this_review": false,
+  "runtime_or_whole_chain_pq_qualification": false
+}

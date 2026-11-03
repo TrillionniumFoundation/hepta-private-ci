@@ -13,6 +13,7 @@ pub mod controlled_funding;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+pub mod authority_trust_unix;
 pub mod final_use_authorizer;
 pub mod final_use_grant_courier;
 pub mod native_app_server;
@@ -285,6 +286,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
+
+#[cfg(test)]
+mod test_process;
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]

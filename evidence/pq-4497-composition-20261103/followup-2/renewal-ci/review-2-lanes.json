@@ -1,0 +1,1014 @@
+{
+  "schema": "hepta-renewal-retained-original-artifact-review-v1",
+  "run_id": 41609576436,
+  "run_attempt": 1,
+  "source_commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "source_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+  "base_commit": "3a81000aae08c658276958d678874aca4db5eedd",
+  "prospective_merge_commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+  "reviewed_archive_count": 2,
+  "all_four_lanes_present": false,
+  "lanes": [
+    {
+      "artifact_id": 13218633572,
+      "artifact_name": "pq-policy-renewal-ubuntu-24.04-base-merge-41609576436-1",
+      "archive_file": "13218633572.zip",
+      "archive_sha256": "528396cb64db9b323ff50f4eb5f6e8391bad72671cdeefa674b7ea067d810f73",
+      "archive_size": 42766,
+      "github_digest_verified": true,
+      "candidate_before": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "base-merge",
+        "native_execution_required": false,
+        "requires_source_head_success": true,
+        "schema_version": 1,
+        "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "source_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+        "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+        "tested_tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+      },
+      "candidate_after": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "base-merge",
+        "native_execution_required": false,
+        "requires_source_head_success": true,
+        "schema_version": 1,
+        "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "source_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+        "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+        "tested_tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+      },
+      "all_command_identities_equal_and_clean": true,
+      "commands": {
+        "dependencies": {
+          "original_receipt": {
+            "after": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "cargo",
+              "fetch",
+              "--locked",
+              "--manifest-path",
+              "codex-rs/Cargo.toml"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 25.549527420000032,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:18:43.246487+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 43901,
+            "log_file": "dependencies.json.dc0151a590d548419636e7e000608ddc.log",
+            "log_sha256": "6ed6fe961e42ee5b8cb8faa7e584cde6c59c4a5ad1582b7fd4bfc467ffcfbcfb",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:18:17.600027+00:00",
+            "status": "passed",
+            "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "e71ddde3edb726e97fe22b7ff276b0032c944ad3c3c93eab40dc61e2e3df1b3e",
+          "log_hash_and_length_verified": true,
+          "passed": true
+        },
+        "dispatcher": {
+          "original_receipt": {
+            "after": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--lib",
+              "-E",
+              "test(authbus_dispatch::tests::)",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 524.612418657,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:27:27.921480+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 79909,
+            "log_file": "dispatcher.json.e18fea874a9b4d589c742ad3b58c0324.log",
+            "log_sha256": "9c2ac44a79344d1fdf006a176a19db7578a996547dd0ef85caf1e575fbc46913",
+            "minimum_tests": 14,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 14,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:18:43.308212+00:00",
+            "status": "passed",
+            "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "5e8f9592deaa29a3e98f52a8dc7b83670a1b697ead5dce5b006dd1028f1bb1e9",
+          "log_hash_and_length_verified": true,
+          "cases": [
+            [
+              "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+              "ok"
+            ]
+          ],
+          "required_case_set": [
+            "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+            "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+            "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+            "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+            "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+            "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+            "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+            "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+            "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+            "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+            "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+            "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+            "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+            "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+          ],
+          "all_required_cases_ran_once_and_passed": true,
+          "passed": true
+        },
+        "product": {
+          "original_receipt": {
+            "after": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--test",
+              "authbus_text_product",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 16.533592448000036,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:27:44.569343+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 27432,
+            "log_file": "product.json.5b22f87c96b64aef99bfaef2afa0070f.log",
+            "log_sha256": "efea5f28587beb2c57fb26a577ae773c8a8d35f74b78cb50989dc6ab8639be6a",
+            "minimum_tests": 3,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 3,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:27:28.035120+00:00",
+            "status": "passed",
+            "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "c23b128ee2c2db45d0aa349e4f18e14c198fc68079873f7c1ad09a43e8dc13b2",
+          "log_hash_and_length_verified": true,
+          "cases": [
+            [
+              "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+              "ok"
+            ],
+            [
+              "real_agentd_without_explicit_trust_rejects_signed_text",
+              "ok"
+            ],
+            [
+              "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+              "ok"
+            ]
+          ],
+          "required_case_set": [
+            "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+            "real_agentd_without_explicit_trust_rejects_signed_text",
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ],
+          "all_required_cases_ran_once_and_passed": true,
+          "passed": true
+        },
+        "fix": {
+          "original_receipt": {
+            "after": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "just",
+              "fix",
+              "--locked",
+              "-p",
+              "codex-hepta-evidence",
+              "-p",
+              "codex-hepta-agentd"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 230.9594119520001,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:31:35.638152+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 54372,
+            "log_file": "fix.json.f990eb819801422191eef2b23548eb44.log",
+            "log_sha256": "6e3ee45a8c7291fc7919c0ebbd5e3f95155d7bc96eb6360e754181dc69346437",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:27:44.678184+00:00",
+            "status": "passed",
+            "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "c3abf8396e1410bf163d5e34189ea50775ddb89a12790e6239a6760909c0b855",
+          "log_hash_and_length_verified": true,
+          "passed": true
+        },
+        "format": {
+          "original_receipt": {
+            "after": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "just",
+              "fmt",
+              "--base",
+              "3a81000aae08c658276958d678874aca4db5eedd"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 6.286803906999921,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:31:41.988865+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 0,
+            "log_file": "format.json.926520a06b2a4000b39126dde872666d.log",
+            "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:31:35.701346+00:00",
+            "status": "passed",
+            "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "d8e94193e8af269d3a6ce9e16deb5ce1d129f28717a80b575c70b6ca66f5484b",
+          "log_hash_and_length_verified": true,
+          "passed": true
+        }
+      },
+      "original_member_inventory": [
+        {
+          "name": "candidate-after.json",
+          "bytes": 408,
+          "sha256": "1781ca561222aeb4667e8473c87445352ca510642409e3022218189c33f9e44d"
+        },
+        {
+          "name": "candidate.json",
+          "bytes": 408,
+          "sha256": "1781ca561222aeb4667e8473c87445352ca510642409e3022218189c33f9e44d"
+        },
+        {
+          "name": "dependencies.json",
+          "bytes": 1660,
+          "sha256": "e71ddde3edb726e97fe22b7ff276b0032c944ad3c3c93eab40dc61e2e3df1b3e"
+        },
+        {
+          "name": "dependencies.json.dc0151a590d548419636e7e000608ddc.log",
+          "bytes": 43901,
+          "sha256": "6ed6fe961e42ee5b8cb8faa7e584cde6c59c4a5ad1582b7fd4bfc467ffcfbcfb"
+        },
+        {
+          "name": "dispatcher.json",
+          "bytes": 1771,
+          "sha256": "5e8f9592deaa29a3e98f52a8dc7b83670a1b697ead5dce5b006dd1028f1bb1e9"
+        },
+        {
+          "name": "dispatcher.json.e18fea874a9b4d589c742ad3b58c0324.log",
+          "bytes": 79909,
+          "sha256": "9c2ac44a79344d1fdf006a176a19db7578a996547dd0ef85caf1e575fbc46913"
+        },
+        {
+          "name": "fix.json",
+          "bytes": 1671,
+          "sha256": "c3abf8396e1410bf163d5e34189ea50775ddb89a12790e6239a6760909c0b855"
+        },
+        {
+          "name": "fix.json.f990eb819801422191eef2b23548eb44.log",
+          "bytes": 54372,
+          "sha256": "6e3ee45a8c7291fc7919c0ebbd5e3f95155d7bc96eb6360e754181dc69346437"
+        },
+        {
+          "name": "format.json",
+          "bytes": 1642,
+          "sha256": "d8e94193e8af269d3a6ce9e16deb5ce1d129f28717a80b575c70b6ca66f5484b"
+        },
+        {
+          "name": "format.json.926520a06b2a4000b39126dde872666d.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "identity.txt",
+          "bytes": 82,
+          "sha256": "63e27489152014421944b37ab6529bd2430948d0a2225cec908dc7c57474073f"
+        },
+        {
+          "name": "product.json",
+          "bytes": 1751,
+          "sha256": "c23b128ee2c2db45d0aa349e4f18e14c198fc68079873f7c1ad09a43e8dc13b2"
+        },
+        {
+          "name": "product.json.5b22f87c96b64aef99bfaef2afa0070f.log",
+          "bytes": 27432,
+          "sha256": "efea5f28587beb2c57fb26a577ae773c8a8d35f74b78cb50989dc6ab8639be6a"
+        },
+        {
+          "name": "selected-tests.json",
+          "bytes": 4410,
+          "sha256": "290a49f5468b7d81aa4ef1343b4c3ea0a23d229bf1e4723e2cc96508fe195943"
+        }
+      ],
+      "selected_controls_and_original_postchecks_passed": true
+    },
+    {
+      "artifact_id": 13218678570,
+      "artifact_name": "pq-policy-renewal-ubuntu-24.04-source-head-41609576436-1",
+      "archive_file": "13218678570.zip",
+      "archive_sha256": "3257dd6558db261698d6b420cbb80e75e5887ad3464e63c7a9caf630784a02e4",
+      "archive_size": 42627,
+      "github_digest_verified": true,
+      "candidate_before": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "source-head",
+        "native_execution_required": true,
+        "requires_source_head_success": false,
+        "schema_version": 1,
+        "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "source_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+        "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "tested_tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+      },
+      "candidate_after": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "source-head",
+        "native_execution_required": true,
+        "requires_source_head_success": false,
+        "schema_version": 1,
+        "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "source_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+        "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "tested_tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+      },
+      "all_command_identities_equal_and_clean": true,
+      "commands": {
+        "dependencies": {
+          "original_receipt": {
+            "after": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "cargo",
+              "fetch",
+              "--locked",
+              "--manifest-path",
+              "codex-rs/Cargo.toml"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 27.33086805299999,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:19:08.594478+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 43901,
+            "log_file": "dependencies.json.bbb8e5dfc30e4e4f8307b05189458088.log",
+            "log_sha256": "30a8903163b1aa5e991775e4db8ea34e64e19c6768e986ad26073815e8a85405",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:18:41.262187+00:00",
+            "status": "passed",
+            "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "00fa03939694a66e97b2472751360c3f70c7233658b715c296cde1ddb9e01b26",
+          "log_hash_and_length_verified": true,
+          "passed": true
+        },
+        "dispatcher": {
+          "original_receipt": {
+            "after": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--lib",
+              "-E",
+              "test(authbus_dispatch::tests::)",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 538.598815373,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:28:07.257428+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 79909,
+            "log_file": "dispatcher.json.e3b5462144194b3a9e300f70396382ea.log",
+            "log_sha256": "ecaa7e3a08a5c0a2cb941b5cdcf31eb85ecc47205920c96ea5d7b779df641a69",
+            "minimum_tests": 14,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 14,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:19:08.658028+00:00",
+            "status": "passed",
+            "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "6062eda6ced079da2ddba2db434b8889e990645d3dba2c55ddc46da05fbcae38",
+          "log_hash_and_length_verified": true,
+          "cases": [
+            [
+              "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+              "ok"
+            ],
+            [
+              "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+              "ok"
+            ]
+          ],
+          "required_case_set": [
+            "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+            "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+            "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+            "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+            "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+            "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+            "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+            "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+            "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+            "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+            "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+            "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+            "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+            "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+          ],
+          "all_required_cases_ran_once_and_passed": true,
+          "passed": true
+        },
+        "product": {
+          "original_receipt": {
+            "after": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--test",
+              "authbus_text_product",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 17.35966340599998,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:28:24.754039+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 27432,
+            "log_file": "product.json.62ff24e978e446378cbb8af8b2906d73.log",
+            "log_sha256": "9a7bb9e097b0b785799b2ef2295e63cb2afee0686c94f8cbcbfcf7d47cda9902",
+            "minimum_tests": 3,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 3,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:28:07.393791+00:00",
+            "status": "passed",
+            "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "ede83f38c6387d8003eb0b9d1ab2adb3370fe6cb33becbef126055a6ee737ff6",
+          "log_hash_and_length_verified": true,
+          "cases": [
+            [
+              "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+              "ok"
+            ],
+            [
+              "real_agentd_without_explicit_trust_rejects_signed_text",
+              "ok"
+            ],
+            [
+              "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+              "ok"
+            ]
+          ],
+          "required_case_set": [
+            "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+            "real_agentd_without_explicit_trust_rejects_signed_text",
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ],
+          "all_required_cases_ran_once_and_passed": true,
+          "passed": true
+        },
+        "fix": {
+          "original_receipt": {
+            "after": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "just",
+              "fix",
+              "--locked",
+              "-p",
+              "codex-hepta-evidence",
+              "-p",
+              "codex-hepta-agentd"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 244.07863395999993,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:32:28.943067+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 54372,
+            "log_file": "fix.json.030f1c885f0343cf9de252f7b59c2aae.log",
+            "log_sha256": "95651130faee8afe3ad347da644de4c94eaff41d3de93ac057457c6655bb1da0",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:28:24.863759+00:00",
+            "status": "passed",
+            "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "7f7237f1a1a1c3bf57189f5b2a9185ca4f2062dd5f151ae2ed59b822a7930b59",
+          "log_hash_and_length_verified": true,
+          "passed": true
+        },
+        "format": {
+          "original_receipt": {
+            "after": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+              "dirty": false,
+              "parents": [
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+            },
+            "command": [
+              "just",
+              "fmt",
+              "--base",
+              "3a81000aae08c658276958d678874aca4db5eedd"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 6.371383598999955,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T09:32:35.379270+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 0,
+            "log_file": "format.json.c4b73195524d4e49bd2f7ee91b706b82.log",
+            "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41609576436",
+            "schema_version": 1,
+            "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "started_at": "2026-11-03T09:32:29.007294+00:00",
+            "status": "passed",
+            "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "receipt_sha256": "1534836e4bf7e71e0b27f5cb8763e853798cfad86eb1f2ab81f40ddc977e7c37",
+          "log_hash_and_length_verified": true,
+          "passed": true
+        }
+      },
+      "original_member_inventory": [
+        {
+          "name": "candidate-after.json",
+          "bytes": 409,
+          "sha256": "723360aadfe3464051d2192e7cf2b91d6e555b548ad5c6fe3c3fe5b91a4cb86f"
+        },
+        {
+          "name": "candidate.json",
+          "bytes": 409,
+          "sha256": "723360aadfe3464051d2192e7cf2b91d6e555b548ad5c6fe3c3fe5b91a4cb86f"
+        },
+        {
+          "name": "dependencies.json",
+          "bytes": 1489,
+          "sha256": "00fa03939694a66e97b2472751360c3f70c7233658b715c296cde1ddb9e01b26"
+        },
+        {
+          "name": "dependencies.json.bbb8e5dfc30e4e4f8307b05189458088.log",
+          "bytes": 43901,
+          "sha256": "30a8903163b1aa5e991775e4db8ea34e64e19c6768e986ad26073815e8a85405"
+        },
+        {
+          "name": "dispatcher.json",
+          "bytes": 1601,
+          "sha256": "6062eda6ced079da2ddba2db434b8889e990645d3dba2c55ddc46da05fbcae38"
+        },
+        {
+          "name": "dispatcher.json.e3b5462144194b3a9e300f70396382ea.log",
+          "bytes": 79909,
+          "sha256": "ecaa7e3a08a5c0a2cb941b5cdcf31eb85ecc47205920c96ea5d7b779df641a69"
+        },
+        {
+          "name": "fix.json",
+          "bytes": 1502,
+          "sha256": "7f7237f1a1a1c3bf57189f5b2a9185ca4f2062dd5f151ae2ed59b822a7930b59"
+        },
+        {
+          "name": "fix.json.030f1c885f0343cf9de252f7b59c2aae.log",
+          "bytes": 54372,
+          "sha256": "95651130faee8afe3ad347da644de4c94eaff41d3de93ac057457c6655bb1da0"
+        },
+        {
+          "name": "format.json",
+          "bytes": 1472,
+          "sha256": "1534836e4bf7e71e0b27f5cb8763e853798cfad86eb1f2ab81f40ddc977e7c37"
+        },
+        {
+          "name": "format.json.c4b73195524d4e49bd2f7ee91b706b82.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "identity.txt",
+          "bytes": 82,
+          "sha256": "09c09d6e0d13944893428780c4365f89f4771405960d2186b5c3094075811f13"
+        },
+        {
+          "name": "product.json",
+          "bytes": 1580,
+          "sha256": "ede83f38c6387d8003eb0b9d1ab2adb3370fe6cb33becbef126055a6ee737ff6"
+        },
+        {
+          "name": "product.json.62ff24e978e446378cbb8af8b2906d73.log",
+          "bytes": 27432,
+          "sha256": "9a7bb9e097b0b785799b2ef2295e63cb2afee0686c94f8cbcbfcf7d47cda9902"
+        },
+        {
+          "name": "selected-tests.json",
+          "bytes": 4410,
+          "sha256": "290a49f5468b7d81aa4ef1343b4c3ea0a23d229bf1e4723e2cc96508fe195943"
+        }
+      ],
+      "selected_controls_and_original_postchecks_passed": true
+    }
+  ],
+  "commands_or_tests_executed_by_this_review": false,
+  "archive_contents_modified": false,
+  "runtime_scope": "Only the original 14 dispatcher and 3 process controls at this source; the added cancellation case pauses the active owner before DB mutation.",
+  "budget_source": ".github/workflows/hepta-pq-policy-renewal.yml at the reviewed source tree",
+  "budget_source_sha256": "28ed20a7b499fb9044588d6f6048d1eec8bd02d8e7062626e0f54281fcc6902b",
+  "original_budgets_seconds": {
+    "job": 5400,
+    "dependencies": 600,
+    "dispatcher": 3600,
+    "product": 1800,
+    "fix": 1200,
+    "format": 300
+  },
+  "whole_chain_pq_qualification": false,
+  "full_hepta_native_or_deployment_qualification": false,
+  "other_workflow_failures_waived": false
+}

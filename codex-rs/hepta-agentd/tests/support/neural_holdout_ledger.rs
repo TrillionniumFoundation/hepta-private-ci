@@ -92,7 +92,7 @@ impl ControlledRoles {
                 .map(|(index, key)| ledger::TrustedLearningSignerV1 {
                     principal: principals[index].clone(),
                     controller_id: id(&format!("controlled-test-role-{index}")),
-                    verifying_key: key.verifying_key().to_bytes(),
+                    verifying_key: key.verifying_key().to_bytes().into(),
                     roles: vec![kinds[index]],
                     revoked_at: None,
                 })
@@ -124,9 +124,12 @@ impl ControlledRoles {
             issued_at: micros(),
             expires_at: self.until,
             payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        signed.signature = self.keys[index].sign(&signed.signing_bytes()).to_bytes();
+        signed.signature = self.keys[index]
+            .sign(&signed.signing_bytes())
+            .to_bytes()
+            .into();
         signed
     }
 
@@ -161,7 +164,7 @@ impl ControlledRoles {
         let root_trust = ledger::LearningTrustRootV1 {
             root_id: id("controlled-neural-test-root"),
             scope_digest: self.trust.scope_digest,
-            verifying_key: root_key.verifying_key().to_bytes(),
+            verifying_key: root_key.verifying_key().to_bytes().into(),
             valid_from: self.from,
             expires_at: self.until,
             revoked_at: None,
@@ -177,7 +180,7 @@ impl ControlledRoles {
             root_id: root_trust.root_id.clone(),
             issued_at: now,
             expires_at: self.until,
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
         distribution.signature = root_key
             .sign(
@@ -185,7 +188,8 @@ impl ControlledRoles {
                     .signing_bytes()
                     .unwrap_or_else(|error| panic!("{error:?}")),
             )
-            .to_bytes();
+            .to_bytes()
+            .into();
         let activated = ledger::activate_learning_trust(&root_trust, distribution, None, micros())
             .unwrap_or_else(|error| panic!("{error:?}"));
         let binding = hash("controlled-neural-estimator-ledger");

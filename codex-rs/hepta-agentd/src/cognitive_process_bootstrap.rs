@@ -27,12 +27,19 @@ use crate::cognitive_process_materials::*;
 use crate::cognitive_process_product::*;
 use crate::cognitive_process_wire::*;
 
+#[path = "cognitive_process_pq_trust.rs"]
+mod pq_trust;
+
 const SCHEMA: &str = "hepta.agentd.cognitive-bootstrap.v2";
 const MAX_DESCRIPTOR_BYTES: u64 = 4 * 1024 * 1024;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct CognitiveProcessDescriptorV1<Pin = TabularPayloadPinV1Raw> {
+    #[serde(default = "classical_authentication_profile")]
+    authentication_profile: codex_hepta_learning_ledger::LearningAuthenticationProfile,
+    #[serde(default)]
+    pq_learning_activation: Option<pq_trust::PqLearningActivationV2>,
     schema: String,
     profile: String,
     agent_id: String,
@@ -114,8 +121,33 @@ pub(super) fn load_cognitive_process_model_v1<Raw: serde::de::DeserializeOwned, 
         ));
     }
     let descriptor: CognitiveProcessDescriptorV1<Raw> = serde_json::from_slice(&bytes)?;
-    if descriptor.schema != schema || descriptor.profile != profile {
-        return Err(invalid("unsupported cognitive bootstrap schema/profile"));
+    let expected_profile = match descriptor.authentication_profile {
+        codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1 => {
+            (schema, profile)
+        }
+        codex_hepta_learning_ledger::LearningAuthenticationProfile::MlDsa65V2 => {
+            match (schema, profile) {
+                ("hepta.agentd.cognitive-bootstrap.v2", "published_product_qualification_v1") => (
+                    "hepta.agentd.cognitive-bootstrap.pq.v4",
+                    "published_product_qualification_pq_v2",
+                ),
+                (
+                    "hepta.agentd.cognitive-bootstrap.v3",
+                    "published_neural_product_qualification_v1",
+                ) => (
+                    "hepta.agentd.cognitive-bootstrap.pq.v4",
+                    "published_neural_product_qualification_pq_v2",
+                ),
+                _ => return Err(invalid("unsupported PQ cognitive family")),
+            }
+        }
+    };
+    if (descriptor.schema.as_str(), descriptor.profile.as_str()) != expected_profile
+        || descriptor.current.authentication_profile != descriptor.authentication_profile
+    {
+        return Err(invalid(
+            "unsupported cognitive bootstrap schema/profile or authentication profile",
+        ));
     }
     if descriptor.agent_id != identity.agent_id.as_str()
         || descriptor.spawn_generation != identity.spawn_generation
@@ -149,6 +181,13 @@ pub(super) fn load_cognitive_process_model_v1<Raw: serde::de::DeserializeOwned, 
             "cognitive bootstrap requires independent nonempty journal anchors",
         ));
     }
+    let pq_trust::LoadedTrust { verifier, clock } = pq_trust::load(
+        descriptor.trust.into(),
+        descriptor.authentication_profile,
+        descriptor.pq_learning_activation,
+        descriptor.ledger.binding.0,
+        identity,
+    )?;
     let snapshot =
         open_bounded_regular(&descriptor.snapshot_path, 8 * 1024 * 1024, FileAccess::Read)?;
     let payload =
@@ -164,7 +203,7 @@ pub(super) fn load_cognitive_process_model_v1<Raw: serde::de::DeserializeOwned, 
         FileAccess::Recover,
     )?;
     reject_aliases(&[&snapshot, &payload, &ledger_file, &holdout_file])?;
-    let ledger = DurableLedger::recover(
+    let ledger = DurableLedger::recover_with_authentication_profile(
         ledger_file,
         descriptor.ledger.binding.into(),
         descriptor.ledger.max_records,
@@ -172,6 +211,7 @@ pub(super) fn load_cognitive_process_model_v1<Raw: serde::de::DeserializeOwned, 
             sequence: descriptor.ledger.anchor_sequence,
             chain_digest: descriptor.ledger.anchor_chain_digest.into(),
         }),
+        descriptor.authentication_profile,
     )
     .map_err(|error| invalid(&format!("cognitive ledger recovery: {error}")))?;
     let ledger_snapshot = ledger
@@ -182,19 +222,11 @@ pub(super) fn load_cognitive_process_model_v1<Raw: serde::de::DeserializeOwned, 
         .into_iter()
         .map(Into::into)
         .collect();
-    let verifier = LearningEvidenceVerifierV1::new(descriptor.trust.into())
-        .map_err(|error| invalid(&format!("cognitive trust: {error}")))?;
     let evaluation_evidence = descriptor.evaluation_evidence.into();
     let longitudinal_time = descriptor.longitudinal_time.into();
     let policy: codex_hepta_intelligence_eval::SelfEvolutionSelectionPolicyV1 =
         descriptor.policy.into();
-    let evaluation_now = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| invalid(&error.to_string()))?
-            .as_micros(),
-    )
-    .map_err(|error| invalid(&error.to_string()))?;
+    let evaluation_now = pq_trust::now_micros(&clock)?;
     let (evaluation_bundle, product_qualification) = replay_product_qualification_v1(
         descriptor.product,
         descriptor.holdout,
@@ -207,14 +239,12 @@ pub(super) fn load_cognitive_process_model_v1<Raw: serde::de::DeserializeOwned, 
         &verifier,
         evaluation_now,
     )?;
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|error| invalid(&error.to_string()))?
-        .as_secs();
+    let now = pq_trust::now_micros(&clock)? / 1_000_000;
     let current = crate::cognitive_process_current::load_current_cognitive_owner_v1(
         descriptor.current,
         &identity.home_root,
         now,
+        clock,
     )?;
     Ok(EvaluatedCognitiveBootstrapV1 {
         snapshot,
@@ -338,3 +368,8 @@ pub(super) fn invalid(message: &str) -> AgentdError {
 #[cfg(test)]
 #[path = "cognitive_process_bootstrap_tests.rs"]
 mod tests;
+
+fn classical_authentication_profile() -> codex_hepta_learning_ledger::LearningAuthenticationProfile
+{
+    codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+}

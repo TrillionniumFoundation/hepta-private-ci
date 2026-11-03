@@ -47,7 +47,10 @@ workspace_root_test(
 
 rust_test(
     name = "hepta-automation-taskflow-step-qualification-test-bin",
-    srcs = ["tests/taskflow_step.rs"],
+    srcs = [
+        "tests/support/taskflow_write_contention_tests.rs",
+        "tests/taskflow_step.rs",
+    ],
     crate_features = ["taskflow-structural-qualification"],
     crate_name = "taskflow_step_qualification",
     crate_root = "tests/taskflow_step.rs",

@@ -1,0 +1,50 @@
+{
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "tool_version": "1.7.12\ninstalled by downloading from release page\nbuilt with go1.26.1 compiler for linux/amd64",
+  "archive_sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+  "archive_matches_official_api_and_checksums": true,
+  "binary_equals_release_archive_member": true,
+  "binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4",
+  "checks": [
+    {
+      "name": "baseline",
+      "command": [
+        "/workspace/scratch/df0a4a720ed8/hepta-pq/actionlint-1.7.12/actionlint",
+        "-no-color",
+        "/workspace/scratch/df0a4a720ed8/hepta-pq/hepta-pon-native-pair-0baf.yml"
+      ],
+      "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source",
+      "returncode": 1,
+      "workflow_sha256": "0f36a9110731e100b160ba53dcc64a0f5cfa6869f3749e99cc178cbad01f4773",
+      "log": "/workspace/scratch/df0a4a720ed8/chain-rollback/hepta-ci-followup-review/baseline.log",
+      "log_sha256": "6d09aa91b011a32ed9f21acdf0a0483d2bf78ef26b1cede770b3f3cf1558c195",
+      "log_text": "../hepta-pq/hepta-pon-native-pair-0baf.yml:884:29: context \"runner\" is not allowed here. available contexts are \"github\", \"inputs\", \"matrix\", \"needs\", \"secrets\", \"strategy\", \"vars\". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]\n    |\n884 |       CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-cell-host-target\n    |                             ^~~~~~~~~~~\n"
+    },
+    {
+      "name": "followup",
+      "command": [
+        "/workspace/scratch/df0a4a720ed8/hepta-pq/actionlint-1.7.12/actionlint",
+        "-no-color",
+        "/workspace/scratch/df0a4a720ed8/pq-audit/three-way/merged/.github/workflows/hepta-pon-native-pair.yml"
+      ],
+      "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source",
+      "returncode": 0,
+      "workflow_sha256": "0e3bf46701083ddd11d61b1673dc35fa0c9b83544b878ed01322c141428c618b",
+      "log": "/workspace/scratch/df0a4a720ed8/chain-rollback/hepta-ci-followup-review/followup.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_text": ""
+    }
+  ],
+  "structure": {
+    "old_steps_all_unchanged": true,
+    "other_jobs_unchanged": true,
+    "other_workflow_keys_unchanged": true,
+    "only_old_env_deletion": "CARGO_TARGET_DIR",
+    "setup_step_index": 1,
+    "first_cargo_step_index": 6,
+    "setup_script": "set -euo pipefail\ncell_host_target=$(mktemp -d \"$RUNNER_TEMP/hepta-cell-host-target.XXXXXX\")\nprintf 'CARGO_TARGET_DIR=%s\\n' \"$cell_host_target\" >> \"$GITHUB_ENV\"\n",
+    "strategy_unchanged": true,
+    "job_timeout_minutes": 60
+  },
+  "scope": "actual actionlint syntax/expression validation and exact structural comparison; no remote CI success claimed"
+}

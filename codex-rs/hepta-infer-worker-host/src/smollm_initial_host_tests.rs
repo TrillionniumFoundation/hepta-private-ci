@@ -80,7 +80,7 @@ impl Fixture {
         let scope_digest = withdrawals.scope_digest().unwrap();
         let signer = TrustedArtifactSignerV1 {
             signer_id: id("original-owner"),
-            verifying_key: owner_key.verifying_key().to_bytes(),
+            verifying_key: owner_key.verifying_key().to_bytes().into(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 9,
             valid_from: now - 1,
@@ -107,9 +107,9 @@ impl Fixture {
             lease_generation: 1,
             issued_at: now,
             expires_at: now + 3600,
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        lease.signature = owner_key.sign(&lease.signing_bytes()).to_bytes();
+        lease.signature = owner_key.sign(&lease.signing_bytes()).to_bytes().into();
         let mut service =
             LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
                 root: root.join("artifacts"),
@@ -220,9 +220,9 @@ impl Fixture {
                 issued_at: now,
                 expires_at: now + 3600,
             },
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        head.signature = key.sign(&head.signing_bytes()).to_bytes();
+        head.signature = key.sign(&head.signing_bytes()).to_bytes().into();
         Ok(head)
     }
 
@@ -315,9 +315,13 @@ impl Fixture {
             authority_epoch: 1,
             issued_at,
             expires_at: issued_at + 180,
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        signed.signature = self.selector_key.sign(&signed.signing_bytes()).to_bytes();
+        signed.signature = self
+            .selector_key
+            .sign(&signed.signing_bytes())
+            .to_bytes()
+            .into();
         let verifier = ArtifactSelectionVerifierV1::new(
             ArtifactSelectionTrustV1 {
                 registry_id: self.trust.registry_id.clone(),
@@ -325,7 +329,7 @@ impl Fixture {
                 minimum_authority_epoch: 1,
                 selectors: vec![TrustedArtifactSelectorV1 {
                     selector_id: id("independent-selector"),
-                    verifying_key: self.selector_key.verifying_key().to_bytes(),
+                    verifying_key: self.selector_key.verifying_key().to_bytes().into(),
                     minimum_authority_epoch: 1,
                     maximum_authority_epoch: 9,
                     valid_from: self.now,
@@ -670,7 +674,7 @@ async fn real_selected_initial_postload_rejection_keeps_same_owner_cleanup() -> 
                 current,
                 inputs,
                 runtime,
-                CancellationToken::new(),
+                SmolLmStartupExecutionV1::new(CancellationToken::new()),
                 || Ok(clocks.next().unwrap_or(late)),
             )
         })

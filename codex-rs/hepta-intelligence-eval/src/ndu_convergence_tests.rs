@@ -60,14 +60,14 @@ fn fixture() -> (LearningEvidenceVerifierV1, SigningKey, SigningKey) {
             TrustedLearningSignerV1 {
                 principal: principal("producer", &producer_key),
                 controller_id: id("producer-controller"),
-                verifying_key: producer_key.verifying_key().to_bytes(),
+                verifying_key: producer_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
                 revoked_at: None,
             },
             TrustedLearningSignerV1 {
                 principal: principal("evaluator", &evaluator_key),
                 controller_id: id("evaluator-controller"),
-                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                verifying_key: evaluator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
                 revoked_at: None,
             },
@@ -95,9 +95,9 @@ fn sign(
         issued_at: 10,
         expires_at: 90,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
     signed
 }
 

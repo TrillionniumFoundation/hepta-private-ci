@@ -51,7 +51,14 @@ required_boundary_ids = [
   "authority_lease_dispatch_witness",
   "final_use_async_dispatch_fence",
   "automation_taskflow_provider_effect_bridge",
-  "final_use_guarded_effect"
+  "final_use_guarded_effect",
+  "final_use_pq_open_state",
+  "final_use_pq_approval_trust",
+  "final_use_pq_revocation_feed_trust",
+  "final_use_pq_revocation_feed_confirm",
+  "final_use_pq_revocation_convergence_trust",
+  "final_use_pq_port_open",
+  "learning_artifact_authenticated_current_factory"
 ]
 
 [[boundary]]
@@ -126,7 +133,7 @@ symbol = "RevalidatingCandidate::with_current"
 call_pattern = '\bcandidate\s*\.\s*with_current\s*\('
 definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
 definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
-product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs", "codex-rs/hepta-learning-artifacts/src/selected_initial_smollm.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs", "codex-rs/hepta-learning-artifacts/src/selected_initial_smollm.rs"]
 caller_markers = ["VerifiedCurrentRegistryViewV1", "with_current"]
 
 [[boundary]]
@@ -167,7 +174,7 @@ symbol = "FinalUseAuthority::claim"
 receiver_type = "FinalUseAuthority"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim(", "grant_signing_input", "candidate.key.verify(", "used_nonces"]
-product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
 caller_markers = ["authority", "binding"]
 
 [[boundary]]
@@ -227,7 +234,7 @@ symbol = "FinalUseAuthority::update_revocations"
 call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-contracts/src/final_use_control_pq.rs"]
 caller_markers = ["update_revocations"]
 
 [[boundary]]
@@ -243,7 +250,7 @@ id = "final_use_approval_verify"
 symbol = "FinalUseApprovalVerifier::verify"
 call_pattern = "approval_verifier\\s*\\.\\s*verify\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
-definition_markers = ["pub struct FinalUseApprovalVerifier", "pub fn verify(", "verify_strict"]
+definition_markers = ["pub struct FinalUseApprovalVerifier", "pub fn verify(", "verify_key_ring"]
 product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
 caller_markers = ["approval_verifier", ".verify(grant, approval)", "BaoFinalUseHostError::Control"]
 
@@ -464,15 +471,12 @@ forbidden = ["impl Default for HttpProviderEffectAdapter"]
 path = "codex-rs/hepta-contracts/src/final_use.rs"
 # Pin the reviewed owner/delegate bytes; this does not grant runtime authority
 # or establish cryptographic qualification. Source changes update these pins.
-source_sha256 = "a79db5397fa7da372fd24b400639e7fff583a32b19c3f8319eb1c39658fbb28a"
+source_sha256 = "ee47a741721a216671ed3728034265714ebd8268bc55fe731bfd21bb263f9bec"
 required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "grant_signing_input", "candidate.key.verify(", "validate_live"]
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
 
-[[protected_file]]
-path = "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs"
-source_sha256 = "796d9c15f04f37d0b820b4f2b847e38a8e4ce29b3a230b32cb61aa887e4d6066"
-required = ["pub(super) enum IssuerVerifier", "verify_strict", "MlDsaSignature::<MlDsa65>", "verify_with_context", "FINAL_USE_ML_DSA65_V2_CONTEXT"]
-forbidden = ["impl Default for IssuerVerifier", "pub fn permit_all"]
+# Retired raw-key experimental delegate replaced by the canonical pinned
+# verifier below. This source proof grants no runtime or deployment authority.
 
 # Keep the direct retained-owner delegation bound after it leaves final_use.rs.
 # Native directory/ACL behavior still requires the existing platform qualification.
@@ -484,8 +488,8 @@ forbidden = ["impl Default for Inner"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_store.rs"
-source_sha256 = "e5462d76502c103c14ccb21b83d8118fd885cc6aae492893b51d9acc61f439ad"
-required = ["pub(super) fn revalidate_owner(", ".revalidate_shared()", "MlDsa65IssuerKeyRingV2", "open_ml_dsa65_key_ring_exact", "append_claim"]
+source_sha256 = "8f3150cfa2d392d153387a7af629c0ba83f7eb22ce65c4ba73f42a794a8f8485"
+required = ["pub(super) fn revalidate_owner(", ".revalidate_shared()", "PqIssuerKeyRing", "open_pq_key_ring_exact", "STATE_SCHEMA_PQ_V4", "append_claim"]
 forbidden = ["impl Default for Store", "pub fn permit_all"]
 
 [[protected_file]]
@@ -496,7 +500,7 @@ forbidden = ["impl Clone for OwnerLock", "impl Default for OwnerLock", "pub fn p
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_control.rs"
-required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "pub struct FinalUseRevocationConvergenceVerifier", "pub struct FinalUseTrustKey", "pub fn new_with_keys(", "RevocationFeedStale", "verify_strict", "update_revocations", "missing_nodes"]
+required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "pub struct FinalUseRevocationConvergenceVerifier", "pub struct FinalUseTrustKey", "pub fn new_with_keys(", "RevocationFeedStale", "verify_key_ring", "candidate.key.verify(", "update_revocations", "missing_nodes"]
 forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for FinalUseRevocationFeedVerifier", "permit_all"]
 
 [[protected_file]]
@@ -549,3 +553,107 @@ definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
 product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
 caller_markers = ["with_verified_effect"]
+
+# Canonical PQ delegates retain the same original owner and exact caller sets.
+
+[[boundary]]
+id = "final_use_pq_open_state"
+symbol = "FinalUseAuthority::open_pq_state_dir_with_issuer_keys"
+definition_path = "codex-rs/hepta-contracts/src/final_use_pq.rs"
+definition_markers = ["pub fn open_pq_state_dir_with_issuer_keys", "pin_pq_keys", "clock.now_unix_ms()", "frontier_store.load", "AntiRollbackViolation"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
+caller_markers = ["FinalUseAuthority::open_pq_state_dir_with_issuer_keys", "FinalUseAuthenticationProfile::MlDsa65V2", "clock.now_unix_ms()?", "frontier.load"]
+
+[[boundary]]
+id = "final_use_pq_approval_trust"
+symbol = "FinalUseApprovalVerifier::new_pq_with_keys"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new_pq_with_keys", "control_keys(keys)?", "FinalUseAuthenticationProfile::MlDsa65V2"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_pq_revocation_feed_trust"
+symbol = "FinalUseRevocationFeedVerifier::new_pq_with_keys"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new_pq_with_keys", "control_keys(keys)?", "FinalUseAuthenticationProfile::MlDsa65V2"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
+caller_markers = ["FinalUseRevocationFeedVerifier::new_pq_with_keys", "config.revocation_keys"]
+
+[[boundary]]
+id = "final_use_pq_revocation_feed_confirm"
+symbol = "FinalUseRevocationFeedVerifier::apply_or_confirm_current"
+call_pattern = "\\.\\s*apply_or_confirm_current\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["pub fn apply_or_confirm_current", "self.profile != authority.authentication_profile()", "self.verify_signed(signed, now_unix_ms)?", "update_revocations"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
+caller_markers = ["apply_or_confirm_current", "FinalUseAuthenticationProfile::MlDsa65V2"]
+
+[[boundary]]
+id = "final_use_pq_revocation_convergence_trust"
+symbol = "FinalUseRevocationConvergenceVerifier::new_pq"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["impl FinalUseRevocationConvergenceVerifier", "pub fn new_pq(", "control_keys(node.keys)?", "pinned.is_empty()", "FinalUseAuthenticationProfile::MlDsa65V2"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_pq_port_open"
+symbol = "UnixFinalUseAuthorizer::from_pq_config"
+call_pattern = "(?:UnixFinalUseAuthorizer|Self)\\s*::\\s*from_pq_config\\s*\\("
+definition_path = "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
+definition_markers = ["pub fn from_pq_config", "config.authentication_profile != FinalUseAuthenticationProfile::MlDsa65V2", "UnixPqAuthorityClock::new", "UnixPqFinalUseFrontier::new", "canonical_config_path"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+caller_markers = ["selector.get(\"authentication_profile\")", "profile == \"ml_dsa65_v2\"", "Self::from_pq_config", "Some(_) => Err"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_authentication.rs"
+source_sha256 = "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44"
+required = ["pub(crate) enum PinnedAuthorityKey", "Self::Classical(key)", "verify_strict", "Self::MlDsa65(key)", "verify_exact_message", "PqNativeVerifier::from_pinned_spki"]
+forbidden = ["impl Default for PinnedAuthorityKey", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/pq_auth.rs"
+source_sha256 = "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d"
+required = ["pub fn from_pinned_spki", "key_id != expected_key_id", "SPKI_PREFIX", "Signature::<MlDsa65>::try_from", "PQ_MAX_MESSAGE_BYTES", ".verify(message, &signature)"]
+forbidden = ["impl Default for PqNativeVerifier", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_pq.rs"
+source_sha256 = "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b"
+required = ["pub fn open_pq_state_dir_with_issuer_keys", "FinalUseAuthenticationProfile::MlDsa65V2", "pin_pq_keys", "open_pq_key_ring_exact", "frontier_store.load", "AntiRollbackViolation"]
+forbidden = ["pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+source_sha256 = "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc"
+required = ["pub fn apply_or_confirm_current", "self.profile != authority.authentication_profile()", "self.verify_signed(signed, now_unix_ms)?", "current != signed.update.head", "update_revocations"]
+forbidden = ["pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+source_sha256 = "4a563de735e62f826e49f3757e97ad8269ac526524690de7bbdae75d8a5e7099"
+required = ["selector.get(\"authentication_profile\")", "profile == \"ml_dsa65_v2\"", "Self::from_pq_config", "Some(_) => Err", "self.pq.is_some()", "return self.claim_exact_pq(binding).await"]
+forbidden = ["open_ml_dsa65_v2", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
+source_sha256 = "d25359981a0274f25581f13195b17fee281d39fa239683f4e4838d6cfbb2d83d"
+required = ["config.authentication_profile != FinalUseAuthenticationProfile::MlDsa65V2", "canonical_config_path", "UnixPqAuthorityClock::new", "UnixPqFinalUseFrontier::new", "response.challenge != challenge", "grant.grant.nonce != challenge", "apply_or_confirm_current", "authority.claim(&grant, &binding)?", "token.claimed_authority_epoch() != receipt.authority_epoch()", "runtime.clock.now_unix_ms()? >= receipt.valid_until_unix_ms()"]
+forbidden = ["Self::from_config", "open_ml_dsa65_v2", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/smollm_initial_time.rs"
+source_sha256 = "209f32af026b3c2f897485ae6d5c5c1e2013f14edce10c6219984166f8445311"
+required = ["InitialAuthorityTime", "super::validate_final_use_profile(authorizer, selected)?", "authorizer\n                .protected_clock()", "Self::MlDsa65V2(clock)", "clock\n                .now_unix_ms()", "milliseconds / 1_000"]
+forbidden = ["or_else", "unwrap_or", "pub fn permit_all"]
+
+# The neural loader now consumes an authenticated CURRENT through this factory;
+# its later candidate reads remain in the original with_current boundary.
+[[boundary]]
+id = "learning_artifact_authenticated_current_factory"
+symbol = "RevalidatingCandidate::from_authenticated_current"
+definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
+definition_markers = ["pub fn from_authenticated_current", "current.authentication_profile()", "current.trust_digest()", "result.with_current(current, now, |_| ())?"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs"]
+caller_markers = ["RevalidatingCandidate::from_authenticated_current", "RankerAuthorityTime", "time.now_unix_micros()?"]
