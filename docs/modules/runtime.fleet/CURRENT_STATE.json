@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.runtime.fleet.candidate-state.v1",
+  "module": "runtime.fleet",
+  "updated": "2026-09-28",
+  "candidate": {
+    "pull_request": 1103,
+    "branch": "codex/runtime-fleet-durable-owner-v1-20260927",
+    "source_binding": "The immutable Git commit containing this file; resolve from checkout, not from a historical literal or a moving main ref.",
+    "qualification_source_field": "receipt.json:source_commit",
+    "reviewed_parent": "9ab9f49f4c4d03740834423f042060f83a32da4d",
+    "reviewed_main": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "superseded_pull_request": 1060
+  },
+  "implementation": {
+    "canonical_lease_exports": "source_present",
+    "sqlite_incarnation_allocator": "source_present_not_rust_qualified",
+    "independent_execution_context_validation": "owner_api_present_product_consumer_missing",
+    "durable_execution_occupancy": "source_present_not_product_qualified",
+    "native_exit_observation": "source_present_requires_protected_containment_and_consumer_review",
+    "strict_snapshot_cli": "source_present_selected_file_python_regressions_passed",
+    "coherent_nullable_metrics": "source_present_not_rust_qualified",
+    "pressure_error_disposition": "source_present_product_policy_not_composed"
+  },
+  "verification": {
+    "local_python_diagnostic_tests": 12,
+    "local_python_qualification_fault_tests": 6,
+    "local_python_scope": "Selected script and SQL bytes only; not an exact full-workspace Cargo qualification.",
+    "rust_compilation_verified": false,
+    "rust_tests_verified": false,
+    "strict_clippy_verified": false,
+    "exact_source_accepted": false,
+    "synthetic_merge_accepted": false,
+    "product_execution_accepted": false,
+    "independent_acceptance": false,
+    "production_release_approved": false
+  },
+  "evidence_policy": {
+    "workflow": ".github/workflows/runtime-fleet-candidate.yml",
+    "runner": "scripts/runtime_fleet_qualify.py",
+    "source_write_permission": false,
+    "workflow_source_repair": false,
+    "queued_or_skipped_counts_as_pass": false,
+    "receipt_location": "GitHub Actions artifacts, outside the source tree",
+    "final_source_reference_location": "PR conversation and workflow head_sha; never a self-referential hardcoded source commit"
+  },
+  "open_gates": [
+    "Synchronize the existing Cargo.lock fleet dependency entry with SQLx and Tokio and qualify the resulting immutable source. --locked stays mandatory.",
+    "Compile and format all changed Rust with repository Rust 1.95.0; run fleet and supervisor tests plus strict clippy on exact source and fixed merge trees.",
+    "Compose the existing Supervisor spawn, adopt, resume and stop paths with owner-derived immutable execution context and final generic authority revalidation.",
+    "Establish unprivileged workload, containment ownership, physical resource enforcement and pre-exec launch fencing before using native exit observations to reclaim capacity.",
+    "Reconcile prepared-but-unbound launches after interruption without duplicate execution or permanent leaked reservations.",
+    "Prove selected-host boot, real process execution, interruption, stop confirmation, restart and readmission through the existing product entrypoint.",
+    "Enforce product quiescence for schema-v1 migration; absence of grant rows alone is not native stop proof.",
+    "Close clock-sampling versus transaction-acquisition races and qualify concurrent refresh/start/recovery behavior.",
+    "Measure long-running backlog, snapshot and recovery capacity; preserve tombstones and evidence when designing compaction."
+  ],
+  "documents": [
+    "docs/modules/runtime.fleet/TECHNICAL.md",
+    "docs/modules/runtime.fleet/DURABLE_EXECUTION.md",
+    "docs/modules/runtime.fleet/OPERATIONS.md"
+  ]
+}
