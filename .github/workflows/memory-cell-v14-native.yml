@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - research/memory-cell-v14-20261031
+      - fix/memory-v14-query-local-fence-20261103
     # Research/evidence-only publication does not rerun this native suite.
     # Carry results forward only after comparing all native/build inputs with
     # the exact tested source commit recorded in the uploaded receipt.
@@ -223,6 +224,9 @@ jobs:
                   "memory_v14_trained_cells_fallback_reject_retrain_restart_and_withdraw",
                   "memory_v14_preserves_full_fitted_dependencies_and_return_fences",
                   "memory_v14_two_process_control_and_cold_migration",
+                  "memory_v14_query_fence_ignores_unrelated_source_commits",
+                  "memory_v14_fallback_fences_reject_required_corrections_and_withdrawals",
+                  "memory_v14_artifact_withdrawal_fences_old_read_and_cold_selection",
                   "inventory_v14_exact_fallback_roundtrips_without_relaxing_v1",
                   "inventory_v14_preserves_empty_failure_and_typed_value_constraints",
               })
@@ -344,4 +348,3 @@ jobs:
             git rebase FETCH_HEAD
           done
           exit 1
-
