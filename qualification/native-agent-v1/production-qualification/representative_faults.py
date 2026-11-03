@@ -17,8 +17,12 @@ from representative_compare import (ANSWER, BUDGET, HERE, INSTRUCTIONS, LANES,
                                     canonical, configure, digest, prepare, save)
 from representative_runtime_evidence import bound_job, read_json, stream_file
 from representative_audit import feedback_value, response_objects
+from benchmark_accounting import verify_codex_build
+from native_build_evidence import POLICY_VERSION, verify_native_build
+from owner_boundary import COST_SCOPES, cost_claim_fields, require_cost_scope
 from protocol_driver import CodexDriver, JsonProcess, LaneAbort, remaining
 from script_gateway import ScriptGateway
+from ui_collector import OWNER_SCOPE, UI_CONTRACT, UiCollector, receive_native_turn
 
 
 def process_identity(pid):
@@ -35,6 +39,23 @@ def operation_evidence(root, command, *, require_pending):
     manifest = read_json(session / "manifest.json")
     if manifest["session"] != command["session"] or manifest["input"] != command["input"]:
         raise ValueError("owner manifest changed the original command")
+    policy = manifest.get("policy", {})
+    parent = None
+    if command["op"] == "tool":
+        parent = {"thread_id": command.get("parent_thread_id"), "turn_id": command.get("parent_turn_id")}
+        if any(not isinstance(value, str) or not value or len(value.encode()) > 256 for value in parent.values()):
+            raise ValueError("original Codex parent thread and turn are required")
+    elif command.get("parent_thread_id") is not None or command.get("parent_turn_id") is not None:
+        raise ValueError("native turn cannot borrow a Codex parent")
+    config = read_json(root / "runner.json")
+    # Config's actual serde representation includes this absent Option as null.
+    # No other field or policy value is inferred or migrated.
+    bound_config = {"model_item_bytes": None, **config}
+    if (config.get("qualification_owner_scope") != OWNER_SCOPE or policy.get("config") != bound_config
+            or policy.get("mode") != command["op"]
+            or policy.get("context_policy", {}).get("version") != POLICY_VERSION
+            or policy.get("turn_owner") != {"scope": OWNER_SCOPE, "parent_codex": parent, "ui": UI_CONTRACT}):
+        raise ValueError("original owner lacks the frozen current policy, parent or UI binding")
     admissions, snapshots = sorted(session.glob("tool-*.json")), sorted(session.glob("snapshot-*.json"))
     if len(admissions) != 1 or not snapshots:
         raise ValueError("fault trial requires one original tool and a durable checkpoint")
@@ -66,11 +87,12 @@ def operation_evidence(root, command, *, require_pending):
     return {"remote": str(remote), "job": record, "binding": binding, "child": child,
         "child_sha256": digest(remote / "child.json"), "manifest_sha256": digest(session / "manifest.json"),
         "admission_sha256": digest(admissions[0]), "admission": admission, "state": state,
+        "context_policy": policy["context_policy"],
         "model_admissions": {path.name: digest(path) for path in session.glob("model-*.json")}}
 
 
 def same_operation(before, after):
-    for key in ("remote", "job", "binding", "child", "child_sha256", "manifest_sha256", "admission_sha256", "admission"):
+    for key in ("remote", "job", "binding", "child", "child_sha256", "manifest_sha256", "admission_sha256", "admission", "context_policy"):
         if before[key] != after[key]:
             raise ValueError("restoration changed original identity: " + key)
     for name, checksum in before["model_admissions"].items():
@@ -90,8 +112,12 @@ class ControlledRunner:
         self.child = self.spawn()
         try:
             self.ready = self.child.receive(time.monotonic() + 120)
-            if self.ready.get("ready") is not True:
-                raise ValueError("initial representative runner is not ready")
+            if (self.ready.get("ready") is not True
+                    or self.ready.get("qualification_owner_scope") != OWNER_SCOPE
+                    or self.ready.get("ui") != UI_CONTRACT
+                    or self.ready.get("context_policy", {}).get("version") != POLICY_VERSION):
+                raise ValueError("initial runner lacks the current owner, policy or streamed UI contract")
+            self.report["runner_ready"] = self.ready
         except Exception:
             self.close()
             raise
@@ -118,6 +144,8 @@ class ControlledRunner:
             while not self.stop.is_set() and time.monotonic() < deadline:
                 try:
                     before = operation_evidence(self.args.output, self.command, require_pending=True)
+                    if before["context_policy"] != self.ready["context_policy"]:
+                        raise ValueError("original manifest changed the complete ready context policy")
                 except (FileNotFoundError, ValueError, KeyError) as error:
                     self.report["last_injection_wait"] = str(error)
                     self.stop.wait(0.01)
@@ -146,6 +174,10 @@ class ControlledRunner:
             self.report["injection_error"] = repr(error)
 
     def receive(self, deadline):
+        if self.restarts:
+            # Exactly one replacement was authorized by the original injected
+            # EOF. Its stream is consumed normally; a later EOF authorizes none.
+            return self.child.receive(deadline)
         try:
             result = self.child.receive(deadline)
         except Exception as error:
@@ -168,6 +200,10 @@ class ControlledRunner:
             self.child.send(self.command)
             self.report["restored_command_sha256"] = hashlib.sha256(canonical(self.command)).hexdigest()
             return self.child.receive(deadline)
+        if "event" in result:
+            # The shared collector validates the actual session/item binding.
+            # Provisional text is not a completed turn or a restart boundary.
+            return result
         if self.watcher:
             self.watcher.join(timeout=min(12, remaining(deadline)))
         if self.args.case != "cancel" or not self.report.get("injected"):
@@ -177,7 +213,7 @@ class ControlledRunner:
         self.report["cancel_pending_result"] = result
         return result
 
-    def reconcile_cancel(self, deadline):
+    def reconcile_cancel(self, deadline, ui):
         attempts = []
         while time.monotonic() < deadline:
             current = operation_evidence(self.args.output, self.command, require_pending=False)
@@ -188,7 +224,7 @@ class ControlledRunner:
             # Same immutable command re-enters the existing owner. No new
             # process_start is constructed or authorized by this observer.
             self.child.send(self.command)
-            result = self.child.receive(deadline)
+            result = receive_native_turn(self.child, self.command["session"], deadline, ui)
             attempts.append(result)
             if result.get("session") != self.command["session"]:
                 raise ValueError("cancel reconciliation returned another operation")
@@ -208,9 +244,19 @@ class ControlledRunner:
             child.close()
 
 
-def confirm_codex_interrupt(client, scope, deadline):
+def confirm_codex_interrupt(client, scope, deadline, ui):
     while time.monotonic() < deadline:
         value = client.receive(deadline)
+        if value.get("method") in ("item/agentMessage/delta", "item/completed"):
+            params = value.get("params", {})
+            if ("id" in value or params.get("threadId") != scope["thread_id"]
+                    or params.get("turnId") != scope["turn_id"]):
+                raise ValueError("cancel UI observation changed the original Codex turn")
+            if value["method"] == "item/agentMessage/delta":
+                ui.delta(params.get("itemId"), params.get("delta"))
+            elif params.get("item", {}).get("type") == "agentMessage":
+                item = params["item"]
+                ui.completed(item.get("id"), item.get("text"))
         if value.get("method") == "turn/completed":
             params = value["params"]
             if params.get("threadId") != scope["thread_id"] or params.get("turn", {}).get("id") != scope["turn_id"]:
@@ -222,6 +268,11 @@ def confirm_codex_interrupt(client, scope, deadline):
 
 
 def run(args):
+    # This is a new qualification entry point. Old evidence does not become a
+    # current run by swapping executable paths or inventing a model identity.
+    boundary = require_cost_scope(args.cost_scope, [args.lane])
+    codex_build = verify_codex_build(args.codex_build_evidence, args.codex, args.facade)
+    native_build = verify_native_build(args.native_build_evidence, args.native)
     os.umask(0o077)
     if args.output.exists() or args.timeout <= 0:
         raise ValueError("a fresh private output directory and positive timeout are required")
@@ -235,48 +286,62 @@ def run(args):
         **{key: BUDGET[key] for key in ("context_bytes", "output_tokens", "model_calls")})
     gateway.begin_script(args.case, steps)
     configure(args.output, workspace, gateway, BUDGET)
-    sources = [Path(__file__).resolve(), HERE / "representative_runtime_evidence.py", HERE / "representative_compare.py",
-               HERE / "script_gateway.py", HERE / "workspace_tool.py", HERE / "corpus.json",
-               HERE.parent / "protocol_driver.py", args.native, args.codex, args.facade]
+    sources = [Path(__file__).resolve()] + [HERE / name for name in (
+        "representative_runtime_evidence.py", "representative_compare.py", "representative_audit.py",
+        "benchmark_accounting.py", "native_build_evidence.py", "observed_live.py", "owner_boundary.py", "ui_collector.py",
+        "script_gateway.py", "workspace_tool.py", "corpus.json")]
+    sources += [HERE.parent / name for name in ("protocol_driver.py", "model_gateway.py", "process_metrics.py", "process_metrics_v2.py")]
+    sources += [args.native, args.codex, args.facade, args.codex_build_evidence, args.native_build_evidence]
     fingerprints = {str(path): digest(path) for path in sources}
     save(args.output / "FROZEN.json", {"case": case, "sha256": fingerprints, "budgets": BUDGET,
-         "mode": "replay", "scope": "qualification owner only; production recovery held"})
-    report = {"schema": "hepta.representative-fault.v1", "case": args.case, "lane": args.lane,
+         "mode": "replay", "scope": "qualification owner only; production recovery held",
+         "codex_build": codex_build, "native_build": native_build, "owner_boundary": boundary,
+         "cost_scope": args.cost_scope, "product_total_cost": None,
+         "execution_layer_causal_attribution": False, "registered_corpus_qualification": False})
+    report = {"schema": "hepta.representative-fault.v2", "case": args.case, "lane": args.lane,
         "passed": False, "mode": "replay", "usage_is_synthetic": True, "production_verdict": "held",
+        **cost_claim_fields(args.lane), "codex_build": codex_build, "native_build": native_build,
+        "registered_corpus_qualification": False,
         "fault_target": "original runtime request cancellation" if args.case == "cancel" else "owned waiting qualification runner",
         "limits": ["SessionOwner fixture; production ThreadStore/FinalUse recovery is not exercised",
                    "One explicit after-STARTED point; no arbitrary-crash or model-provider recovery claim",
                    "No performance sample; fixed response replay does not evaluate model reasoning"]}
-    backend = client = None
+    backend = client = ui = None
     try:
+        ui = UiCollector(args.output / "ui-events.jsonl")
         backend = ControlledRunner(args, workspace, report)
         prompt = "Call hepta_fixture exactly once. After observing success, return exactly " + ANSWER + "."
         session = args.output.name + ":" + args.case + ":" + args.lane
         deadline = time.monotonic() + args.timeout
         if args.lane == "native":
             backend.send({"op": "run", "session": session, "input": prompt})
-            result = backend.receive(deadline)
+            result = receive_native_turn(backend, session, deadline, ui)
         else:
             env = dict(os.environ, CODEX_HOME=str(args.output / "codex-home"))
             argv = [str(args.codex), "app-server"] if args.lane == "app-server" else [str(args.facade),
                 "--codex-home", env["CODEX_HOME"], "--codex-exe", str(args.codex), "--cwd", str(workspace)]
             client = JsonProcess(argv, str(workspace), env, args.output / "executor.jsonl")
-            driver = CodexDriver(client, backend, workspace, backend.ready["tools"], max_tool_calls=1, instructions=INSTRUCTIONS)
+            driver = CodexDriver(client, backend, workspace, backend.ready["tools"],
+                max_tool_calls=1, instructions=INSTRUCTIONS, turn_owner_scope=OWNER_SCOPE, ui_collector=ui)
             try:
                 result = driver.run(session, prompt, timeout=remaining(deadline))
             except LaneAbort as error:
                 if args.case != "cancel" or error.result.get("status") != "pending_tool" or not report.get("injected"):
                     raise
                 result = error.result
-                report["codex_interrupt"] = confirm_codex_interrupt(client, result, deadline)
+                report["codex_interrupt"] = confirm_codex_interrupt(client, result, deadline, ui)
             report["codex_resident_pid"] = client.process.pid
             if client.process.poll() is not None:
                 raise ValueError("Codex executor did not remain resident through the fault")
         report["initial_result"] = result
         if args.case == "cancel":
-            result = backend.reconcile_cancel(deadline)
+            result = backend.reconcile_cancel(deadline, ui)
+            report["ui_completion_requirement"] = "not_applicable_to_interrupted_turn"
         elif result.get("status") != "completed" or result.get("answer", "").strip() != ANSWER or backend.restarts != 1:
             raise ValueError("restored original turn did not complete exactly once")
+        else:
+            ui.require_completed(result["answer"])
+            report["ui_completion_requirement"] = "actual_delta_and_same_item_completion_passed"
         report["result"], report["restarts"] = result, backend.restarts
         after = operation_evidence(args.output, backend.command, require_pending=False)
         same_operation(report["before"], after)
@@ -327,18 +392,24 @@ def run(args):
                 raise ValueError("restored model did not receive the original terminal result")
         if any(digest(Path(path)) != checksum for path, checksum in fingerprints.items()):
             raise ValueError("frozen source or executable changed during the fault trial")
+        verify_native_build(args.native_build_evidence, args.native)
         report["model_requests"] = list(gateway.records)
         report["passed"] = True
     except Exception as error:
         report["error"] = repr(error)
     finally:
+        if ui is not None:
+            report["ui_observation"] = ui.snapshot()
+        # Retain failed attempts and provider captures too; failure never
+        # authorizes retry under another identity or a restored passing score.
         shutdown_errors = []
-        for name, owner in (("codex", client), ("runner", backend), ("gateway", gateway)):
+        for name, owner in (("codex", client), ("runner", backend), ("gateway", gateway), ("ui", ui)):
             if owner:
                 try:
                     owner.close()
                 except Exception as error:
                     shutdown_errors.append({"owner": name, "error": repr(error)})
+        report["model_requests"] = list(gateway.records)
         if shutdown_errors:
             report["shutdown_errors"] = shutdown_errors
             report["passed"] = False
@@ -350,9 +421,10 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("output", "native", "codex", "facade"):
+    for name in ("output", "native", "codex", "facade", "codex-build-evidence", "native-build-evidence"):
         parser.add_argument("--" + name, type=lambda value: Path(value).resolve(), required=True)
     parser.add_argument("--lane", choices=LANES, required=True)
     parser.add_argument("--case", choices=("cancel", "recover_process"), required=True)
     parser.add_argument("--timeout", type=int, default=120)
+    parser.add_argument("--cost-scope", choices=COST_SCOPES, default="execution-observation")
     raise SystemExit(run(parser.parse_args()))

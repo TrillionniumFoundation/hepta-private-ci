@@ -35,6 +35,8 @@ def feedback_value(item, *, allow_excerpt=False):
 
 
 def audit_actual(root, case_id, mode, expected_model=None):
+    if mode not in ("replay", "live", "observed-live"):
+        raise ValueError("unknown representative audit mode")
     evidence = root / "model"
     request_paths = sorted(evidence.glob("*.request.json"))
     response_paths = sorted(evidence.glob("*.response.sse"))
@@ -45,7 +47,10 @@ def audit_actual(root, case_id, mode, expected_model=None):
     calls, feedback, first_seen = [], {}, {}
     models, usage, item_sizes = set(), [], []
     for index, (request, response) in enumerate(zip(requests, responses)):
-        models.add(response.get("model"))
+        reported_model = response.get("model")
+        if reported_model is not None and not isinstance(reported_model, str):
+            raise ValueError("provider model field has an invalid type")
+        models.add(reported_model)
         usage.append(response.get("usage"))
         for item in request.get("input", []):
             if item.get("type") == "function_call_output":
@@ -128,7 +133,9 @@ def audit_actual(root, case_id, mode, expected_model=None):
                     for key in ("input_tokens", "output_tokens", "total_tokens"))
                     or item["total_tokens"] != item["input_tokens"] + item["output_tokens"]):
                 raise ValueError("actual provider token usage is absent or inconsistent")
-    return {"calls": calls, "provider_models": sorted(models), "actual_usage": usage,
+    return {"calls": calls, "provider_models": sorted(models, key=lambda value: (value is None, value or "")), "actual_usage": usage,
+            "model_identity_attested": False if mode == "observed-live" else None,
+            "strict_live_identity_audit_passed": mode == "live",
             **({"retained_output": long_evidence, "model_items": item_sizes} if case_id == "long_output" else {}),
             "usage_is_synthetic": mode == "replay", "request_bytes": [path.stat().st_size for path in request_paths],
             "model_request_sha256": [hashlib.sha256(path.read_bytes()).hexdigest() for path in request_paths],

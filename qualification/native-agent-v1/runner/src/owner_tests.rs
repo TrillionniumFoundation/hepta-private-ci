@@ -337,6 +337,19 @@ async fn external_tool_cancellation_before_submission_survives_reopen_and_fresh_
     let fixture = Fixture::new()?;
     let (owner, mut state) = fixture.open()?;
     let proposal = call("sum");
+    // Model the distinct boundary after the original durable admission but
+    // before physical submission. A token cancelled before admission now
+    // records a durable turn stop and must create no operation at all.
+    let admitted = owner.admit_tool(&state.binding, &proposal).await?;
+    state.pending_tool = Some(PendingTool {
+        call: proposal.clone(),
+        intent: admitted.intent,
+        arguments: admitted.arguments,
+        submission_attempted: false,
+        cancel_requested: false,
+    });
+    state.tool_calls = 1;
+    owner.checkpoint(&state).await?;
     let tools = RecoveryTools::default();
     let cancelled = CancellationToken::new();
     cancelled.cancel();
@@ -451,4 +464,3 @@ async fn external_tool_recovery_honors_each_persisted_cancellation_marker() -> R
 
 #[path = "helper_cancel_tests.rs"]
 mod helper_cancel_tests;
-

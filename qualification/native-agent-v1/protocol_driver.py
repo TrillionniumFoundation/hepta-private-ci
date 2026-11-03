@@ -108,10 +108,14 @@ class JsonProcess:
 
 
 class CodexDriver:
-    def __init__(self, process, backend, cwd, tool, *, max_tool_calls=3, instructions=INSTRUCTIONS):
+    def __init__(self, process, backend, cwd, tool, *, max_tool_calls=3, instructions=INSTRUCTIONS,
+                 turn_owner_scope=None, ui_collector=None):
         self.process, self.backend, self.cwd, self.tool = process, backend, cwd, tool
         self.tools = tool if isinstance(tool, list) else [tool]
         self.max_tool_calls, self.instructions = max_tool_calls, instructions
+        self.turn_owner_scope, self.ui_collector = turn_owner_scope, ui_collector
+        if turn_owner_scope not in (None, "hepta.qualification.turn-owner.v2"):
+            raise ValueError("unknown tool owner scope")
         self.next_id = 1
         self.deferred = []
         self.completed_scopes = set()
@@ -203,9 +207,12 @@ class CodexDriver:
                         raise LaneAbort("unexpected, duplicate or over-budget dynamic tool")
                     seen_calls.add(call_id)
                     calls += 1
-                    backend_session = session + ":" + call_id
-                    self.backend.send({"op": "tool", "session": backend_session, "input": prompt,
-                                       "call_id": call_id, "arguments": params["arguments"], "name": params["tool"]})
+                    backend_session = session if self.turn_owner_scope else session + ":" + call_id
+                    command = {"op": "tool", "session": backend_session, "input": prompt,
+                               "call_id": call_id, "arguments": params["arguments"], "name": params["tool"]}
+                    if self.turn_owner_scope:
+                        command.update(parent_thread_id=thread_id, parent_turn_id=turn_id)
+                    self.backend.send(command)
                     result = self.backend.receive(deadline)
                     if result.get("session") != backend_session:
                         raise LaneAbort("tool backend reply belongs to a different operation session")
@@ -220,6 +227,14 @@ class CodexDriver:
                         raise LaneAbort("terminal tool reply lacks an integer exit code")
                     success = parsed["exit_code"] == 0
                     self.process.send({"id": value["id"], "result": {"contentItems": [{"type": "inputText", "text": output}], "success": success}})
+                elif method == "item/agentMessage/delta":
+                    if "id" in value:
+                        raise LaneAbort("UI delta must be an original notification, not an RPC request")
+                    if not self._scope(params, thread_id, turn_id, allow_late=True):
+                        ignored_late += 1
+                        continue
+                    if self.ui_collector is not None:
+                        self.ui_collector.delta(params.get("itemId"), params.get("delta"))
                 elif "id" in value and method:
                     self.process.send({"id": value["id"], "error": {"code": -32000, "message": "tool outside fixed benchmark set"}})
                     raise LaneAbort(str({"unexpected_server_request": method}))
@@ -234,6 +249,8 @@ class CodexDriver:
                         answer = item.get("text", "")
                         if not isinstance(answer, str):
                             raise LaneAbort("agent message text is not a string")
+                        if self.ui_collector is not None:
+                            self.ui_collector.completed(item.get("id"), answer)
                 elif method == "thread/tokenUsage/updated":
                     if not self._scope(params, thread_id, turn_id, allow_late=True):
                         ignored_late += 1

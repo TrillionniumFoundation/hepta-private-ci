@@ -27,6 +27,7 @@ class ModelGateway:
         self.lock = threading.Lock()
         self.case = None
         self.records = []
+        self.attempts = 0
         self.responses = {}
         owner = self
 
@@ -37,6 +38,11 @@ class ModelGateway:
                 return
 
             def send_json(self, status, value):
+                record = getattr(self, "attempt_record", None)
+                if record is not None:
+                    record["http_status"] = status
+                    if status >= 400:
+                        record["error"] = str(value.get("error", "gateway rejection"))
                 data = wire(value)
                 self.send_response(status)
                 self.send_header("Content-Type", "application/json")
@@ -53,14 +59,56 @@ class ModelGateway:
                 return self.send_json(404, {"error": "original response unavailable"})
 
             def do_POST(self):
+                # Persist admission of every HTTP attempt before validation or
+                # provider dispatch. Missing terminal records remain unknown;
+                # failed and over-budget requests never disappear from totals.
+                with owner.lock:
+                    owner.attempts += 1
+                    record = {"attempt": owner.attempts,
+                        "case": owner.case["name"] if owner.case is not None else None,
+                        "mode": owner.mode, "started_ns": time.time_ns(),
+                        "dispatch_state": "not_dispatched"}
+                    with (owner.evidence / "model_attempts.jsonl").open("a") as stream:
+                        stream.write(json.dumps(record, sort_keys=True) + "\n")
+                        stream.flush()
+                self.attempt_record = record
+                try:
+                    self.handle_post()
+                except Exception as error:
+                    record["error"] = str(error)
+                    self.close_connection = True
+                finally:
+                    record["finished_ns"] = time.time_ns()
+                    with owner.lock:
+                        owner.records.append(dict(record))
+                        with (owner.evidence / "model_requests.jsonl").open("a") as stream:
+                            stream.write(json.dumps(record, sort_keys=True) + "\n")
+                    self.attempt_record = None
+
+            def handle_post(self):
+                record = self.attempt_record
+                self.connection.settimeout(120)
+                requested_close = self.close_connection
+                # Reject unread or malformed bodies by closing the connection;
+                # their residual bytes must not become another HTTP request.
+                self.close_connection = True
                 length = int(self.headers.get("Content-Length", "0"))
+                record["request_bytes"] = length
                 if not self.path.rstrip("/").endswith("/responses") or not 0 < length <= owner.context_bytes:
                     return self.send_json(400, {"error": "shared request path/context byte budget"})
                 original = self.rfile.read(length)
+                original_path = owner.evidence / f'attempt-{record["attempt"]:04}.request.raw'
+                original_path.write_bytes(original)
+                record["original_request_file"] = original_path.name
+                record["request_sha256"] = hashlib.sha256(original).hexdigest()
+                if len(original) != length:
+                    return self.send_json(400, {"error": "incomplete request body"})
                 try:
                     body = json.loads(original)
                 except ValueError:
                     return self.send_json(400, {"error": "invalid JSON"})
+                if not isinstance(body, dict):
+                    return self.send_json(400, {"error": "request must be a JSON object"})
                 with owner.lock:
                     if owner.case is None:
                         return self.send_json(409, {"error": "no admitted benchmark case"})
@@ -68,34 +116,49 @@ class ModelGateway:
                     case = dict(owner.case)
                 if case["calls"] > owner.model_calls:
                     return self.send_json(429, {"error": "shared model-call budget"})
-                body["max_output_tokens"] = min(int(body.get("max_output_tokens", owner.output_tokens)), owner.output_tokens)
+                requested_output = body.get("max_output_tokens", owner.output_tokens)
+                if type(requested_output) is not int or requested_output <= 0:
+                    return self.send_json(400, {"error": "positive output-token budget required"})
+                body["max_output_tokens"] = min(requested_output, owner.output_tokens)
                 if body.get("model") != "qwen38-flash-next-uc":
                     return self.send_json(400, {"error": "benchmark model changed"})
+                self.close_connection = requested_close
                 effective = wire(body)
-                record = {"case": case["name"], "call": case["calls"], "mode": owner.mode,
+                record.update({"case": case["name"], "call": case["calls"], "mode": owner.mode,
                           "request_bytes": length, "effective_bytes": len(effective),
                           "request_sha256": hashlib.sha256(original).hexdigest(),
                           "effective_sha256": hashlib.sha256(effective).hexdigest(),
-                          "output_token_cap": body["max_output_tokens"], "started_ns": time.time_ns()}
+                          "output_token_cap": body["max_output_tokens"]})
                 prefix = owner.evidence / f'{case["name"]}-model-{case["calls"]:02}'
                 prefix.with_suffix(".request.json").write_bytes(original)
+                prefix.with_suffix(".effective.json").write_bytes(effective)
+                record["request_file"] = prefix.with_suffix(".request.json").name
+                record["effective_file"] = prefix.with_suffix(".effective.json").name
+                record["response_file"] = prefix.with_suffix(".response.sse").name
                 captured = bytearray()
+                connection = None
                 try:
                     if owner.mode == "replay":
+                        record["dispatch_state"] = "replay"
                         data, response = owner.replay(case, body)
                         owner.responses[response["id"]] = response
+                        # A generated terminal still counts if the local
+                        # consumer disconnects before receiving it.
+                        captured.extend(data)
                         self.send_response(200)
                         self.send_header("Content-Type", "text/event-stream")
                         self.send_header("Content-Length", str(len(data)))
                         self.end_headers()
                         self.wfile.write(data)
                         self.wfile.flush()
-                        captured.extend(data)
                         record["http_status"] = 200
                     else:
                         cls = http.client.HTTPSConnection if owner.upstream.scheme == "https" else http.client.HTTPConnection
                         connection = cls(owner.upstream.hostname, owner.upstream.port, timeout=120)
                         path = owner.upstream.path.rstrip("/") + "/responses"
+                        # Once request() starts, a connection error cannot
+                        # prove that the remote provider incurred no work.
+                        record["dispatch_state"] = "dispatch_attempted"
                         connection.request("POST", path, body=effective,
                                            headers={"Content-Type": "application/json", "Accept": "text/event-stream"})
                         response = connection.getresponse()
@@ -119,13 +182,10 @@ class ModelGateway:
                     record["error"] = str(error)
                     self.close_connection = True
                 finally:
-                    record["finished_ns"] = time.time_ns()
+                    if connection is not None:
+                        connection.close()
                     record["response_bytes"] = len(captured)
                     prefix.with_suffix(".response.sse").write_bytes(captured)
-                    with owner.lock:
-                        owner.records.append(record)
-                    with (owner.evidence / "model_requests.jsonl").open("a") as stream:
-                        stream.write(json.dumps(record, sort_keys=True) + "\n")
 
         self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
@@ -210,3 +270,4 @@ class ModelGateway:
     def close(self):
         self.server.shutdown()
         self.server.server_close()
+
