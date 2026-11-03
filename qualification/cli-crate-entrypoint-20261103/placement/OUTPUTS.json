@@ -1,0 +1,22 @@
+{
+  "bad_hepta-bin": {
+    "stdout": "",
+    "stderr": "error: an inner attribute is not permitted in this context\n --> /tmp/cli-entrypoint-placement-lr_2i9at/bad_main.rs:1:1\n  |\n1 | #![recursion_limit = \"256\"]\n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2 |\n3 | mod sibling;\n  | ------------ the inner attribute doesn't annotate this module\n  |\n  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files\n\nerror: aborting due to 1 previous error\n\n"
+  },
+  "main-bin": {
+    "stdout": "",
+    "stderr": ""
+  },
+  "main-test": {
+    "stdout": "",
+    "stderr": ""
+  },
+  "hepta-bin": {
+    "stdout": "",
+    "stderr": ""
+  },
+  "hepta-test": {
+    "stdout": "",
+    "stderr": ""
+  }
+}

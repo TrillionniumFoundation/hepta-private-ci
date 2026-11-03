@@ -1,0 +1,137 @@
+{
+  "schema": "cli-crate-entrypoint-placement-probe-v1",
+  "scope": "Rust include-placement and sibling-module resolution only; no CLI dependency graph or business tests executed.",
+  "rustc": {
+    "path": "/workspace/scratch/1f1d02319616/matrix-toolchain-1.96.0-20261103/bin/rustc",
+    "version": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+    "sha256": "ba4b837efb6612dfa8d941c5a72b8a50d1d03a0f36216743b173949aa8d9eb75"
+  },
+  "script_sha256": "9be4add8f1a8118d983d947881ea1b928810182d29d0a88ad46d6c2537107aba",
+  "generated_sources": {
+    "sibling.rs": {
+      "text": "pub fn check() {}\n",
+      "sha256": "bbb3f8c8e6333de0ac82fce19b1694ded7a9f3c45e2c23792bd19dd01db90ca4"
+    },
+    "bad_main.rs": {
+      "text": "#![recursion_limit = \"256\"]\n\nmod sibling;\nfn main() { sibling::check(); }\n#[cfg(test)] mod tests {\n    #[test] fn shared_module_is_visible() { super::sibling::check(); }\n}\n",
+      "sha256": "f10505750c6c38f9ca791f401298320e92c038224eb8e0abf4d5b619f36fee50"
+    },
+    "bad_hepta.rs": {
+      "text": "#![recursion_limit = \"256\"]\n\ninclude!(\"bad_main.rs\");\n",
+      "sha256": "8bbdf36c5d630b7444fea1b89b74ed7870d01dada4d4e10268ca4f3e8e1b91d0"
+    },
+    "main_shared.rs": {
+      "text": "mod sibling;\nfn main() { sibling::check(); }\n#[cfg(test)] mod tests {\n    #[test] fn shared_module_is_visible() { super::sibling::check(); }\n}\n",
+      "sha256": "470299dddd23d19f0d847470ed05688248fc87c3653055c1dfebb1b1b5b37ddf"
+    },
+    "main.rs": {
+      "text": "#![recursion_limit = \"256\"]\n\ninclude!(\"main_shared.rs\");\n",
+      "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971"
+    },
+    "hepta.rs": {
+      "text": "#![recursion_limit = \"256\"]\n\ninclude!(\"main_shared.rs\");\n",
+      "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971"
+    }
+  },
+  "cases": [
+    {
+      "label": "bad_hepta-bin",
+      "argv": [
+        "/workspace/scratch/1f1d02319616/matrix-toolchain-1.96.0-20261103/bin/rustc",
+        "--edition=2024",
+        "--emit=metadata",
+        "--crate-name",
+        "bad_hepta",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/bad_hepta.rs",
+        "-o",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/bad_hepta-bin.rmeta"
+      ],
+      "cwd": "/tmp/cli-entrypoint-placement-lr_2i9at",
+      "exit_code": 1,
+      "expected_failure": true,
+      "matched_expectation": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "db1cde724d6253ebe053b58b4d685c9ec02f4b5bdc0e089011bcc8b64d08fac6"
+    },
+    {
+      "label": "main-bin",
+      "argv": [
+        "/workspace/scratch/1f1d02319616/matrix-toolchain-1.96.0-20261103/bin/rustc",
+        "--edition=2024",
+        "--emit=metadata",
+        "--crate-name",
+        "main",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/main.rs",
+        "-o",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/main-bin.rmeta"
+      ],
+      "cwd": "/tmp/cli-entrypoint-placement-lr_2i9at",
+      "exit_code": 0,
+      "expected_failure": false,
+      "matched_expectation": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "main-test",
+      "argv": [
+        "/workspace/scratch/1f1d02319616/matrix-toolchain-1.96.0-20261103/bin/rustc",
+        "--edition=2024",
+        "--emit=metadata",
+        "--crate-name",
+        "main",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/main.rs",
+        "-o",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/main-test.rmeta",
+        "--test"
+      ],
+      "cwd": "/tmp/cli-entrypoint-placement-lr_2i9at",
+      "exit_code": 0,
+      "expected_failure": false,
+      "matched_expectation": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "hepta-bin",
+      "argv": [
+        "/workspace/scratch/1f1d02319616/matrix-toolchain-1.96.0-20261103/bin/rustc",
+        "--edition=2024",
+        "--emit=metadata",
+        "--crate-name",
+        "hepta",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/hepta.rs",
+        "-o",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/hepta-bin.rmeta"
+      ],
+      "cwd": "/tmp/cli-entrypoint-placement-lr_2i9at",
+      "exit_code": 0,
+      "expected_failure": false,
+      "matched_expectation": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "hepta-test",
+      "argv": [
+        "/workspace/scratch/1f1d02319616/matrix-toolchain-1.96.0-20261103/bin/rustc",
+        "--edition=2024",
+        "--emit=metadata",
+        "--crate-name",
+        "hepta",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/hepta.rs",
+        "-o",
+        "/tmp/cli-entrypoint-placement-lr_2i9at/hepta-test.rmeta",
+        "--test"
+      ],
+      "cwd": "/tmp/cli-entrypoint-placement-lr_2i9at",
+      "exit_code": 0,
+      "expected_failure": false,
+      "matched_expectation": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "all_expectations_met": true,
+  "full_cli_qualified": false
+}
