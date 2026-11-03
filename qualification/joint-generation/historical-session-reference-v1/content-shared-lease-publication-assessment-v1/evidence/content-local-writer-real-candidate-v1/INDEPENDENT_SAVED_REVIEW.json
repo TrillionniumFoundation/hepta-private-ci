@@ -1,0 +1,75 @@
+{
+  "status": "PASS_INDEPENDENT_SAVED_REAL_BACKEND_LOCAL_WRITER_LIFECYCLE_REVIEW",
+  "freeze_sha256": "26eb0200d72f4f19686d8d63f2658d8a22bb8e3f8652ac76f9a1bd6c8627d360",
+  "review_mode": "Saved-only source/hash/JSON/byte reconstruction/arithmetic; no imports of candidate, qualifier or model rerun.",
+  "result_sha256": "be535f064ecb8d7e900f578f2ee3caf6abbda9d800872ee79ce78ce36033610a",
+  "receipt_sha256": "4e74089b285fdf5e42d4e471c93297a03150f9546c02e2f815ec48dd7e625534",
+  "all_frozen_hashes_reverified": 25,
+  "saved_files_verified_including_receipt": 23,
+  "journal_snapshots_checked": 14,
+  "retained_bytes": 5604272,
+  "lease": {
+    "device": 27,
+    "inode": 660718,
+    "saved_vs_current_identity_equal": true,
+    "sequence": "initial lease/identity -> second-instance refusal before provider -> generation -> 2 fragments -> explicit close -> closed restore refusal -> new lease/identity same inode -> acknowledged restore -> remaining 4 fragments -> final close/closed publish refusal",
+    "scope": "Same process and same actual backend; no new process crash or simultaneous actual model execution. Check counts and source assertions evidence transient refusal and close, not independent OS syscall trace."
+  },
+  "state_and_output": {
+    "after_model_bytes": 4172492,
+    "after_model_sha256": "e4c4058fcd672baae793fb9cd7d49d0180f66b38a801b504e621b344a466982d",
+    "wire_bytes": 35397,
+    "wire_sha256": "01b2bec1521d9a25b8cbbbd03ae81eb8d411fa612020ee0bb786b263fa1d05c4",
+    "full_model_and_wire_byteequal_fixtures": true,
+    "all_snapshot_outer_and_session_checksums_verified": true,
+    "all_snapshot_raw_request_bindings_verified": true,
+    "intent_ack_prefixes_reconstructed_from_wire": true,
+    "fragment_sizes": [
+      35,
+      8192,
+      8192,
+      8192,
+      8192,
+      2518
+    ],
+    "first_writer_bytes": 8227,
+    "continuation_bytes": 27094,
+    "total_prefix_bytes": 35321,
+    "controller_spent": 1,
+    "generator_spent": 1,
+    "complete_next_index": 6,
+    "all_three_record_refs_validated": true,
+    "final_persistent_inventory_exact": true,
+    "three_replay_refusals": "complete/mid/generated; persistent inventory/output unchanged. Throwaway mid/generated objects may mutate volatile phase; not general transactional rollback."
+  },
+  "work": {
+    "checks": 16,
+    "refusals": 6,
+    "allocation_only_restores": 1,
+    "random_initializations": 0,
+    "actual_inference_calls": 1,
+    "transport_calls": 1,
+    "optimizer_steps": 0,
+    "checkpoint_provider_calls": 5,
+    "identity_guards": 4,
+    "separate_afterstate_provider_call": 1,
+    "counting_subclass_scope": "Delegates actual unchanged checkpoint provider, not training registry admission."
+  },
+  "cost": {
+    "complete_child_CPU_seconds": 0.899146,
+    "nonoverlapping_top_stage_CPU_seconds_already_included": 0.703445516,
+    "outer_prefix_CPU_seconds_additional": 0.048992742,
+    "known_lower_bound_CPU_seconds": 0.948138742,
+    "unknown_outer_tail": "not zero",
+    "max_RSS_kib": 49428,
+    "fullwait_exit_code": 0,
+    "terminal_budget_pass": true,
+    "scope": "Provider guards counted, not separately timed. Do not add stages to child CPU. Unlabelled restore/replay/inventory/hash/IO/teardown included in complete child; prior costs and source/review additional."
+  },
+  "limitations": [
+    "New wrapper actual inference lifecycle only, not new training chain or concurrent training safety. ExplicitSession training/checkpoint APIs still have no writer lease.",
+    "Cooperating local trusted Linux root, not hostile core/backend bypass protection, distributed locking/global dedup, owner authority or fork-FD/powerloss qualification.",
+    "Original scientific/data/platform holds unchanged; prior review attachment provenance correction left untouched."
+  ],
+  "review_outside_freeze": true
+}

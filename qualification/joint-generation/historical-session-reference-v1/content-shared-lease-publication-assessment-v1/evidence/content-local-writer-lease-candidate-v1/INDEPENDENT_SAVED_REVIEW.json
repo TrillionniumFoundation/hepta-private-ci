@@ -1,0 +1,85 @@
+{
+  "status": "PASS_INDEPENDENT_SAVED_LOCAL_WRITER_LEASE_REVIEW",
+  "freeze_sha256": "b345cd71f3be3a8ce1468d419e580bafb36a423e5ec7facde4cf10f588e84a80",
+  "review_mode": "Saved-only JSON/hash/size/arithmetic/source comparison; no model, qualifier, worker rerun or candidate import.",
+  "outer_receipt_sha256": "6d7255318ce4e0fb9da1efa97ca59d686e1b1ec2dc1650f4cef62e1f5fe278eb",
+  "verified_files_including_outer_receipt": 18,
+  "retained_bytes": 66763,
+  "chronology": {
+    "holder_PID": 6,
+    "contender_PID": 8,
+    "recover_PID": 9,
+    "exit_codes_by_role": [
+      -9,
+      0,
+      0
+    ],
+    "verified_order": "holder launch < READY verified <= contender launch < contender reap <= holder own-PID SIGKILL/reap <= recover launch < recover reap",
+    "actual_holder_contender_overlap": true,
+    "all_started_workers_reaped": true
+  },
+  "lease": {
+    "stable_lock_device": 27,
+    "stable_lock_inode": 660664,
+    "saved_and_current_identity_equal": true,
+    "holder_refusals": 3,
+    "contender_refusals": 1,
+    "recovery_refusals": 6,
+    "recovery_checks_passed": 6,
+    "independent_contender_checkpoint_and_serve_calls": 0,
+    "explicit_close_and_context_reacquire": "passed",
+    "fork_PID_behavior": "source-only, not runtime tested"
+  },
+  "unknown_state": {
+    "saved_phase": "reserved",
+    "restored_phase": "indeterminate",
+    "controller_spent": 1,
+    "generator_spent": 1,
+    "prefix_bytes": 0,
+    "wire": null,
+    "namespace_files": [
+      "claim.json",
+      "reserved.json"
+    ],
+    "reserved_checksums_request_claim_and_snapshot_bindings_verified": true,
+    "restore_snapshot_matches_saved_except_phase": true,
+    "no_generated_or_piece_artifacts": true,
+    "no_retry_or_refund": true
+  },
+  "work_scope": {
+    "entered_mock_generator_calls_including_killed": 1,
+    "returned_mock_wire_calls": 0,
+    "actual_inferences": 0,
+    "model_initializations": 0,
+    "optimizer_steps": 0,
+    "scope": "Actual OS processes/threads/lease contention; metadata mock only. Provider entry counters and transient thread rejection are bounded source plus saved counter/assertion evidence, not actual model execution."
+  },
+  "cost": {
+    "whole_method_subtree_CPU_seconds": 1.124109,
+    "worker_CPU_seconds_already_included": 1.065673,
+    "complete_supervisor_CPU_seconds_already_included": 0.058436,
+    "outer_prefix_CPU_seconds_additional": 0.042179231,
+    "known_lower_bound_CPU_seconds": 1.166288231,
+    "unknown_outer_tail": "not zero",
+    "largest_reaped_process_RSS_kib": 44888,
+    "terminal_budget_pass": true,
+    "scope": "All killed work and workers charged once through full wait4 subtree; do not add children again. Concurrent RSS not sum. Inner evolving stdout superseded by final outer hash inventory. Review/source/history additional."
+  },
+  "provenance_correction": {
+    "status": "PRIOR_REVIEW_ATTACHMENT_PROVENANCE_CORRECTION",
+    "affected_file": "PRIOR_SOURCE_REVIEW_6d66a448.json",
+    "affected_file_sha256": "25aa5ea3214e061bf919df423b472ad5cc1876387e45ffda66e4248b38391961",
+    "actual_bound_freeze": "b345cd71f3be3a8ce1468d419e580bafb36a423e5ec7facde4cf10f588e84a80",
+    "intended_prior_freeze": "6d66a4487682497f555af78e5ca2ab5d30941fc7475e140e68b9a9417dde217b",
+    "finding": "Concurrent copy overwrote intended prior-review attachment with final review. This file is NOT the preserved original prior review despite its filename. No independent pre-overwrite digest was captured, so original byteexact preservation is not asserted.",
+    "preserved_evidence": "PRIOR_FREEZE_6d66.json retains old frozen source hashes; final review contains the original gate-before-fd-check finding and its resolution. The initial source review write is recorded in conversation, but no new file is represented as recovered original bytes.",
+    "final_review_validity": "Final source review independently checked final freeze and remains valid. This correction concerns attachment provenance, not runtime bytes or saved execution receipts."
+  },
+  "limitations": [
+    "Cooperating stable trusted local Linux root only, not hostile-code isolation/global dedup/distributed locking/owner permissions.",
+    "Crash release depends on every open-description reference closed; inherited-FD/fork lifetime, machine/powerloss and directory fsync not qualified.",
+    "Wrapper not yet exercised with real backend or whole training chain; previous real-core evidence distinct.",
+    "Original scientific/data/remote/platform holds unchanged."
+  ],
+  "review_outside_freeze": true
+}

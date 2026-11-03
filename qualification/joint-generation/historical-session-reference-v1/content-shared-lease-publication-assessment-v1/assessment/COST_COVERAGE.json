@@ -1,0 +1,14 @@
+{
+  "whole_method_subtree_CPU_seconds": 1.978559,
+  "inner_children_CPU_seconds": 1.876163,
+  "supervisor_complete_CPU_by_difference_seconds": 0.10239599999999993,
+  "outer_launcher_CPU_observed_prefix_seconds": 0.048096274,
+  "known_CPU_lower_bound_seconds": 2.026655274,
+  "outer_launcher_unobserved_final_tail": "unknown_not_zero; serialization/write/terminal print and teardown after this sample",
+  "final_retained_bytes": 13184675,
+  "largest_reaped_process_RSS_kib": 60008,
+  "wall_seconds": 2.0148532570019597,
+  "scope": "Selected prior synthetic Fashion session, shared lease handoff and one controlled real inference; 0 new Adam, 0 random initialization, 2 allocation restores.",
+  "double_count_warning": "Subtree already includes workers and complete supervisor; stages and guard timing nested. Prior runs and review costs additional. Not legacy 12B certification.",
+  "inventory_boundary": "Inner supervisor.stdout inventory is pre-print prefix; final outer inventory binds complete stdout."
+}

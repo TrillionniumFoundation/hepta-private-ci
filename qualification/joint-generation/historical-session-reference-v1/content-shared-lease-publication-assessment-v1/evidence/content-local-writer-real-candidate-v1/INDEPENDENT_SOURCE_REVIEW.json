@@ -1,0 +1,55 @@
+{
+  "status": "PASS_SCOPED_STATIC_REAL_BACKEND_LOCAL_WRITER_LIFECYCLE_REVIEW",
+  "freeze_sha256": "26eb0200d72f4f19686d8d63f2658d8a22bb8e3f8652ac76f9a1bd6c8627d360",
+  "review_mode": "Source/hash/AST only; no candidate import, qualifier, model or inference execution; RUN_ONCE absent.",
+  "frozen_files_verified": 25,
+  "python_AST_parsed": 20,
+  "input_files": 3,
+  "input_bytes": 4255195,
+  "runtime_reuse": {
+    "files_byteexact": 18,
+    "wrapper_and_core": "Exact final b345 local-writer-lease candidate",
+    "other_16_runtime_files": "Exact latest-full-output candidate",
+    "external_requirements": "Linux/POSIX flock/resource and NumPy; no new dependency installation or remote work."
+  },
+  "lifecycle": [
+    "First root lease constructor identity guard; second same-process independent open refuses before checkpoint provider count changes.",
+    "One actual start does pre/post full identity checks and publishes first two fragments; work captured before explicit close; closed restore refuses.",
+    "New adapter acquires same stable inode only after close, then restores acknowledged index2 and publishes remaining four, complete restore. Same-process handover, not process interruption.",
+    "Complete/mid/generated old-record publish refusals preserve persistent inventory and published counter; throwaway volatile states may advance to chunk_prepared, not claimed transactional rollback.",
+    "Capture continuation work, explicit final close and closed publish refusal. Lock not deleted or force-reacquired."
+  ],
+  "qualification_counts": {
+    "checks": 16,
+    "refusals": 6,
+    "allocation_only_restores": 1,
+    "actual_inference": 1,
+    "transport": 1,
+    "optimizer_steps": 0,
+    "random_initializations": 0,
+    "full_checkpoint_provider_calls": 5,
+    "identity_guard_calls": 4,
+    "afterstate_provider_calls": 1,
+    "first_prefix_bytes": 8227,
+    "continued_prefix_bytes": 27094,
+    "full_prefix_bytes": 35321
+  },
+  "provider_scope": "CountingBackend only increments checkpoint_calls and delegates unchanged FashionBackend.checkpoint_payload. Allocation-only classmethod constructs subclass correctly; no strict training registry call/acceptance claim. Four count checks are not measured guard timings. Full checkpoint serialization/hash costs remain inside whole child and labeled stage intervals; fifth afterstate independently bytecompared against fixture.",
+  "resources": {
+    "actual_child_CPU_seconds": 4,
+    "OS_CPU_seconds": 5,
+    "alarm_seconds": 30,
+    "AS_bytes": 536870912,
+    "RSS_bytes": 268435456,
+    "file_and_total_output_bytes": 8388608,
+    "accounting": "Single wait4 includes model restore/inference/provider checks, JSON/list/hash/IO, refusals and teardown. Stage windows nonoverlap but do not cover all work; residual remains charged. Outer prefix additional with unknown tail; prior runs/source/review additional."
+  },
+  "scope_exclusions": [
+    "ExplicitSession training prepare/commit/checkpoint API has no lease. Prior chain serialization by supervisor is not concurrent training protection.",
+    "No new complete training chain or true concurrent actual model calls; old process/mock contention qualification separate.",
+    "Trusted local cooperating root only; no hostile core/backend access prevention, distributed dedup, owner authority, fork-FD or powerloss qualification.",
+    "Original scientific/data/platform holds unchanged; prior review attachment correction left untouched."
+  ],
+  "execution_authorization": "Source pass only; once-only execution requires parent admission.",
+  "review_outside_freeze": true
+}

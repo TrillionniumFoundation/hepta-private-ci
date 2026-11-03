@@ -1,0 +1,64 @@
+{
+  "status": "PASS_SCOPED_STATIC_TRAINING_SESSION_SHARED_LOCAL_ROOT_LEASE_REVIEW",
+  "freeze_sha256": "1d7821a91d10d8a95d8c4fcfcb262aed96fca4da1eacfb921d8a20ffa5135986",
+  "review_mode": "Static source/hash/AST only; no candidate imports, qualifier, model or optimizer execution. RUN_ONCE absent.",
+  "frozen_files_verified": 25,
+  "python_AST_files": 24,
+  "reuse": {
+    "runtime_files_byteexact_real_writer_candidate": 18,
+    "literal_objective_byteexact": "request-pixel-process-recovery-candidate-v1/literal_objective.py",
+    "outer_launcher_byteexact": "content-local-writer-lease-candidate-v1/run_once.py",
+    "new_root_lease_methods_AST_equal_delivery_wrapper": [
+      "_check",
+      "_operation",
+      "__enter__",
+      "__exit__"
+    ],
+    "constructor_and_close_review": "Same lock flags/name/inode and descriptor cleanup. New before_release callback executes inside gate before fd removal; pending refusal leaves fd/lease/session intact."
+  },
+  "lifecycle_review": [
+    "create/load acquire lease before factory or checkpoint read/restore; constructor errors close descriptor after operation context releases gate.",
+    "SessionWriter wraps prepare/commit/abort/advance/read/save operations; root lease retained throughout writer lifetime and between prepare and commit/abort. No per-method unlock.",
+    "Close invokes pending check inside lease gate and cannot relinquish a pending candidate. Context exit intentionally does not autoabort; caller must settle pending or process must exit.",
+    "Simple lowercase root-local JSON basename rejects parent/absolute paths; load rejects symlink, save retains underlying atomic nooverwrite/filefsync. Stable trusted root and no hostile replacement required.",
+    "Raw ExplicitSession/Pending/backend access is not a security sandbox. Same-root cooperative delivery wrapper shares identical flock inode, while other roots/old snapshots are not globally ordered."
+  ],
+  "qualification_counts": {
+    "actual_tiny_optimizer_steps_including_discarded": 2,
+    "objective_calls": 2,
+    "random_initializations": 1,
+    "allocation_only_restores": 3,
+    "actual_inference_calls": 0,
+    "known_failed_factory_calls": 1,
+    "holder_checks": 5,
+    "holder_refusals": 9,
+    "contender_checks": 1,
+    "contender_refusals": 3,
+    "recovery_checks": 6,
+    "recovery_refusals": 5
+  },
+  "count_basis": "Two prepare calls each allocate restored candidate and one Adam update; first commits/saves, second remains pending and is killed. Recovery allocates from committed checkpoint without objective/update. Model factory runs once plus one intentionally failing factory without model. Actual allocation count partly source-derived, not a newly instrumented global counter.",
+  "chronology": "Own holder READY binds PID/freeze, first checkpoint bytes/hash/payload cursor1/update1, separate pending update2 evidence. Independent contender overlaps holder then fully reaped; own still-unreaped holder kill/reap; independent recovery. Handled exceptions reap active own PIDs. Supervisor hardkill cleanup not guaranteed.",
+  "recovery_and_accounting": "Recovery only caller-selected first committed snapshot; replay committed token and wrong cursor refused before new objective. Pending candidate discarded but full holder CPU and separate candidate evidence retained; no free/refunded work. No latest-head pointer or global token ledger, and discarded token not persisted into recovered checkpoint. External callback effects never claimed exactly-once.",
+  "resources": {
+    "each_worker_actual_CPU_seconds": 4,
+    "each_worker_OS_CPU_seconds": 5,
+    "each_worker_alarm_seconds": 30,
+    "supervisor_OS_CPU_seconds": 5,
+    "method_actual_subtree_CPU_seconds": 17,
+    "sum_OS_CPU_seconds": 20,
+    "output_bytes": 33554432,
+    "individual_file_bytes": 8388608,
+    "AS_bytes": 536870912,
+    "largest_RSS_bytes": 268435456,
+    "scope": "Complete outer wait4 includes workers once plus full supervisor, including killed work; outer prefix/unknown final tail and source/review/history additional. Concurrent RSS not sum."
+  },
+  "limitations": [
+    "Only tiny known synthetic objective, not scientific dataset/research benefit/full model training qualification.",
+    "Exceptions/BaseException arbitrary callback effects, all abort paths, all crash timings, fork descriptor lifetime, machine/powerloss/directory fsync not newly tested.",
+    "Cooperating trusted local root only, no malicious-code isolation/distributed locks/owner authority.",
+    "Old V3/source reviews and prior attachment provenance correction unchanged; platform/data/science holds preserved."
+  ],
+  "execution_authorization": "Source pass only; parent once-only admission needed before run.",
+  "review_outside_freeze": true
+}

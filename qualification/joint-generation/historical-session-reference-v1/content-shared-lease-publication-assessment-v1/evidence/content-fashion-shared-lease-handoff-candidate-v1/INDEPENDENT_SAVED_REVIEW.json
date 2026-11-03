@@ -1,0 +1,104 @@
+{
+  "status": "PASS_INDEPENDENT_SAVED_SELECTED_FASHION_SHARED_LEASE_HANDOFF_REVIEW",
+  "freeze_sha256": "461044bb87086d5fe61bf9e70f342495a42622c79d1a0f85e0c4737f146fb659",
+  "review_mode": "Saved artifact/source/hash/canonical byte comparison only; no candidate import, model or qualifier rerun.",
+  "all_frozen_hashes_reverified": 29,
+  "saved_files_verified_including_outer_receipt": 31,
+  "journal_snapshots_checked": 8,
+  "retained_bytes": 13184675,
+  "result_sha256": "1e396a862cef761489a5f0114f40cdd522760a042ea541d9d59cac34a8013ca7",
+  "outer_receipt_sha256": "b135e8edec786e718b4296c44cb6cf7f63d363397c806d30e0301a6d917e24cf",
+  "chronology": {
+    "holder_PID": 6,
+    "contender_PID": 7,
+    "inference_PID": 8,
+    "all_exit_codes": 0,
+    "actual_holder_contender_overlap": true,
+    "order": "holder launch < READY verify <= contender launch < contender reap <= bound permit <= holder close/reap <= handoff verify <= inference launch < inference reap",
+    "all_children_reaped": true,
+    "permit_exact_PID_freeze_reaped_binding_verified": true,
+    "note": "close ordering before holder exit supported by saved closed-operation refusal and frozen source; no independent syscall trace."
+  },
+  "lease": {
+    "device": 27,
+    "inode": 660838,
+    "saved_current_identity_equal": true,
+    "holder_checks_refusals": [
+      3,
+      1
+    ],
+    "contender_checks_refusals": [
+      1,
+      1
+    ],
+    "inference_checks_refusals": [
+      8,
+      3
+    ],
+    "all_checks_true": true,
+    "contender_provider_and_allocations": 0
+  },
+  "selected_handoff": {
+    "selected_checkpoint_sha256": "710683470e228f1de553fc43d39efab5d38b5b302aa3760a278dd30adcdef291",
+    "selected_checkpoint_bytes": 4175418,
+    "saved_selected_byteequal_fixture": true,
+    "historical_cursor_and_model_clock": 2,
+    "historical_tokens": {
+      "step0": "committed",
+      "step1-after-recovery": "committed"
+    },
+    "full_selected_model_equals_new_handoff_equals_after": true,
+    "model_bytes": 4172492,
+    "model_sha256": "e4c4058fcd672baae793fb9cd7d49d0180f66b38a801b504e621b344a466982d",
+    "scope": "Explicit previously audited selected completed session, freshly written same-run handoff. Not new training or latest-root proof. Historical model clocks/attempts remain prior work."
+  },
+  "inference_and_cancellation": {
+    "wire_bytes": 35397,
+    "wire_sha256": "01b2bec1521d9a25b8cbbbd03ae81eb8d411fa612020ee0bb786b263fa1d05c4",
+    "wire_byteequal_regression_fixture": true,
+    "all_snapshot_outer_and_session_checksums_verified": true,
+    "all_snapshot_request_and_claim_bindings_verified": true,
+    "all_four_record_refs_verified": true,
+    "frontier_equals_intent_snapshot": true,
+    "first_text_bytes": 35,
+    "first_image_prefix_bytes": 8192,
+    "prefix_bytes": 8227,
+    "controller_spent": 1,
+    "generator_spent": 1,
+    "final_phase": "cancelled",
+    "next_index": 2,
+    "no_third_fragment_intent": true,
+    "cancelled_frontier_intent_restores_refused": true,
+    "recovered_writer_work_all_zero": true,
+    "scope": "Controlled partial cancellation, not full image success; old-view publication refusals before state/output changes evidenced by source plus saved assertions."
+  },
+  "work": {
+    "new_optimizer_steps": 0,
+    "new_objective_calls": 0,
+    "random_initializations": 0,
+    "allocation_only_restores": 2,
+    "actual_inference_calls": 1,
+    "transport_calls": 1,
+    "identity_guard_calls_source_derived": 4,
+    "additional_afterstate_serialization": 1,
+    "note": "No double-charge of historical model clock2 as new optimizer work; prior training costs still additional, not free."
+  },
+  "cost": {
+    "whole_method_subtree_CPU_seconds": 1.978559,
+    "worker_CPU_seconds_already_included": 1.876163,
+    "complete_supervisor_CPU_seconds_already_included": 0.102396,
+    "outer_prefix_CPU_seconds_additional": 0.048096274,
+    "known_lower_bound_CPU_seconds": 2.026655274,
+    "unknown_outer_tail": "not zero",
+    "largest_reaped_process_RSS_kib": 60008,
+    "terminal_budget_pass": true,
+    "scope": "All three workers/restore/list/hash/guard/IO/refusals plus full supervisor tail included once in outer wait4. Outer prefix additional; prior/source/review costs additional. Inner evolving stdout superseded by final outer inventory; concurrent RSS not sum."
+  },
+  "limitations": [
+    "No fresh training, new kill test, full-output success or all-boundary integration; complementary previous qualifications remain separate.",
+    "Cooperating stable trusted local root only, no latest-head/global token ledger, hostile direct core/backend bypass protection, distributed exactly-once or owner authority.",
+    "Fork-descriptor lifetime, powerloss/directory-fsync durability and external callback exactly-once not claimed.",
+    "Original platform/data/science holds and previous provenance correction unchanged."
+  ],
+  "review_outside_freeze": true
+}
