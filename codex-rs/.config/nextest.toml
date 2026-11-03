@@ -11,6 +11,10 @@ path = "junit.xml"
 [profile.local]
 inherits = "default"
 
+[profile.local.junit]
+# nextest 0.9.103 requires an explicit JUnit path for custom profiles.
+path = "junit.xml"
+
 # Explicit real-model campaign only: three sequential five-arm rounds plus
 # original ordinary Agentd reads. Each original worker/phase deadline remains
 # unchanged. Never retry a failed campaign with partially written evidence.

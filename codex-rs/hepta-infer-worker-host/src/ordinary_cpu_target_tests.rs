@@ -52,6 +52,7 @@ impl Fixture {
             std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))
                 .expect("private authority");
         }
+        #[cfg(not(windows))]
         let authority = FinalUseAuthority::open_state_dir(
             &authority_dir,
             "ordinary-control-issuer".to_owned(),
@@ -63,6 +64,20 @@ impl Fixture {
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
             },
+        )
+        .expect("real FinalUse owner");
+        #[cfg(windows)]
+        let authority = crate::windows_test_authority::open_fresh(
+            "ordinary-control-issuer".to_owned(),
+            SigningKey::from_bytes(&[113; 32])
+                .verifying_key()
+                .to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 1,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+            std::sync::Arc::new(codex_hepta_contracts::SystemAuthorityClock),
         )
         .expect("real FinalUse owner");
         let pool = crate::ordinary_cpu_owner::tests::pool(&temp).await;

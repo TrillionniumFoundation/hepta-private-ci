@@ -516,3 +516,6 @@ mod cognitive_test_support;
 #[cfg(test)]
 #[path = "lane_c_snapshot_tests.rs"]
 mod lane_c_snapshot_tests;
+
+#[cfg(all(test, windows))]
+mod windows_test_authority;

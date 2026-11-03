@@ -891,6 +891,7 @@ mod tests {
     fn harness() -> Harness {
         let state = tempfile::tempdir().expect("authority tempdir");
         let signing = SigningKey::from_bytes(&[7u8; 32]);
+        #[cfg(not(windows))]
         let authority = FinalUseAuthority::open_state_dir(
             &state.path().join("authority"),
             "browser-test-issuer".to_string(),
@@ -900,6 +901,18 @@ mod tests {
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
             },
+        )
+        .expect("authority");
+        #[cfg(windows)]
+        let authority = crate::windows_test_authority::open_fresh(
+            "browser-test-issuer".to_string(),
+            signing.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+            Arc::new(codex_hepta_contracts::SystemAuthorityClock),
         )
         .expect("authority");
         let request_digest = [0x11; 32];

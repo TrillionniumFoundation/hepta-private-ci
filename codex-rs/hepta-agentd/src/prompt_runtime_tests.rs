@@ -506,6 +506,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     let registry_root = temporary.path().join("prompt-registry");
     let runtime_root = temporary.path().join("prompt-runtime");
+    #[cfg(not(windows))]
     let authority_root = temporary.path().join("prompt-authority");
     let pipeline = AgentdPromptPipelineOwner::open_state_dirs(&registry_root, &runtime_root, 64)
         .unwrap_or_else(|error| panic!("pipeline owner: {error}"));
@@ -522,6 +523,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         lifecycle: Lifecycle::Draft,
     };
     let signing_key = SigningKey::from_bytes(&[61; 32]);
+    #[cfg(not(windows))]
     let authority = FinalUseAuthority::open_state_dir(
         &authority_root,
         "review-authority:agentd-prompt".to_owned(),
@@ -531,6 +533,18 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             revision: 1,
             revoked_grant_ids: BTreeSet::new(),
         },
+    )
+    .unwrap_or_else(|error| panic!("authority: {error}"));
+    #[cfg(windows)]
+    let authority = crate::windows_test_authority::open_fresh(
+        "review-authority:agentd-prompt".to_owned(),
+        signing_key.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+        std::sync::Arc::new(codex_hepta_contracts::SystemAuthorityClock),
     )
     .unwrap_or_else(|error| panic!("authority: {error}"));
     let wall_now = SystemTime::now()

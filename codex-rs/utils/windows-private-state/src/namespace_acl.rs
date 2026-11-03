@@ -65,10 +65,16 @@ fn validate(bytes: &[u8], user: &CurrentUser) -> Result<(), ValidationError> {
     if bytes.len() > 65_536
         || bytes.get(..2) != Some(&[1, 0])
         || word(bytes, /*offset*/ 2)? & SELF_RELATIVE_DACL_PRESENT != SELF_RELATIVE_DACL_PRESENT
-        || dword(bytes, /*offset*/ 8)? != 0
         || dword(bytes, /*offset*/ 12)? != 0
     {
         return Err(ValidationError::MalformedDescriptor);
+    }
+    // Inherited NTFS directories can carry a primary group as well as an
+    // owner. A present group is bounded SID metadata, never an additional
+    // trusted principal: only the owner and effective DACL authorize access.
+    let group = dword(bytes, /*offset*/ 8)?;
+    if group != 0 {
+        sid(component(bytes, group)?)?;
     }
     if !trusted(sid(component(bytes, dword(bytes, /*offset*/ 4)?)?)?, user) {
         #[cfg(test)]

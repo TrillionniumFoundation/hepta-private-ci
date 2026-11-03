@@ -1,0 +1,151 @@
+name: Native Windows namespace admission
+
+on:
+  push:
+    branches: [fix/windows-inherited-namespace-parser-20261103]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-namespace-admission-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    name: Original namespace library and inherited descriptor regression
+    runs-on: windows-2025
+    timeout-minutes: 20
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUSTUP_TOOLCHAIN: "1.95.0"
+      PYTHONIOENCODING: "utf-8"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Resolve the build directory on the allocated runner
+        shell: pwsh
+        run: |
+          $target = Join-Path $env:RUNNER_TEMP 'namespace-native-target'
+          "CARGO_TARGET_DIR=$target" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Atomically create the original private NTFS fixture root
+        shell: pwsh
+        run: ./.github/scripts/setup-windows-private-temp.ps1
+      - name: Run every original library test with fresh evidence
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import time
+          import xml.etree.ElementTree as ET
+
+          root = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "namespace-admission-evidence"
+          output.mkdir()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["GITHUB_SHA"]:
+              raise RuntimeError("source head differs from workflow identity")
+          inputs = [
+              "codex-rs/Cargo.lock",
+              "codex-rs/.config/nextest.toml",
+              "codex-rs/utils/windows-private-state/src/namespace_acl_tests.rs",
+              "codex-rs/utils/windows-private-state/src/security.rs",
+              "codex-rs/utils/windows-private-state/src/namespace_acl.rs",
+              "codex-rs/utils/windows-private-state/src/security_tests.rs",
+              "codex-rs/utils/windows-private-state/src/namespace_native_tests.rs",
+          ]
+          source = {
+              "source_head": head,
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "platform": platform.platform(),
+              "rustc": subprocess.check_output(["rustc", "-Vv"], text=True),
+              "nextest": subprocess.check_output(["cargo", "nextest", "--version"], text=True),
+              "just": subprocess.check_output(["just", "--version"], text=True),
+              "git_input_objects": subprocess.check_output(["git", "ls-tree", "HEAD", "--", *inputs], text=True),
+              "private_temp_root": os.environ["HEPTA_CI_PRIVATE_TEMP_ROOT"],
+              "inputs": {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in inputs},
+          }
+          (output / "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          reports = [
+              root / "codex-rs/target/nextest/local/junit.xml",
+              Path(os.environ["CARGO_TARGET_DIR"]) / "nextest/local/junit.xml",
+          ]
+          for report in reports:
+              if report.exists():
+                  raise RuntimeError(f"unexpected pre-existing test report: {report}")
+          command = ["just", "test", "--locked", "-p", "codex-utils-windows-private-state",
+                     "--lib", "--no-capture", "--retries", "0"]
+          started = time.monotonic()
+          log = output / "native-library.log"
+          with log.open("wb") as stream:
+              result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT)
+          elapsed = time.monotonic() - started
+          raw = log.read_bytes()
+          receipt = {
+              "command": command, "returncode": result.returncode,
+              "wall_seconds": elapsed, "log_sha256": hashlib.sha256(raw).hexdigest(),
+              "log_bytes": len(raw), "junit": [],
+          }
+          for index, report in enumerate(reports):
+              if report.exists():
+                  copied = output / f"junit-{index}.xml"
+                  shutil.copyfile(report, copied)
+                  tree = ET.parse(copied)
+                  receipt["junit"].append({
+                      "file": copied.name, "sha256": hashlib.sha256(copied.read_bytes()).hexdigest(),
+                      "tests": len(tree.findall(".//testcase")),
+                      "failures": len(tree.findall(".//failure")),
+                      "errors": len(tree.findall(".//error")),
+                      "skipped": len(tree.findall(".//skipped")),
+                      "retries": len(tree.findall(".//rerunFailure")) + len(tree.findall(".//flakyFailure")),
+                      "test_names": [case.get("name") for case in tree.findall(".//testcase")],
+                  })
+          (output / "result.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, indent=2))
+          print(raw.decode(errors="replace")[-24000:])
+          if result.returncode == 0:
+              if not receipt["junit"]:
+                  raise RuntimeError("successful process did not produce a fresh JUnit report")
+              required = {
+                  "security::tests::namespace_native_tests::native_inherited_directory_descriptor_preserves_namespace_admission",
+                  "namespace_acl::tests::namespace_primary_group_is_metadata_and_cannot_grant_mutation",
+                  "namespace_acl::tests::malformed_namespace_primary_groups_are_refused",
+              }
+              for report in receipt["junit"]:
+                  if report["tests"] != 44 or any(report[key] for key in ("failures", "errors", "skipped", "retries")):
+                      raise RuntimeError("original 44-test library scope did not pass without skips or retries")
+                  if not required.issubset(report["test_names"]):
+                      raise RuntimeError("required native and malformed-group controls are missing")
+          raise SystemExit(result.returncode)
+          PY
+      - name: Preserve original result and exact descriptor observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-namespace-admission-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/namespace-admission-evidence/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Check unchanged source
+        if: always() && !cancelled()
+        run: git diff --exit-code

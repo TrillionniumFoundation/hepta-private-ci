@@ -282,3 +282,6 @@ pub use neural_holdout::NeuralHoldoutMaterialV1;
 pub use neural_holdout::NeuralHoldoutObservationV1;
 pub use neural_holdout::NeuralHoldoutRuntimeV1;
 pub use neural_holdout::NeuralHoldoutTaskV1;
+
+#[cfg(all(test, windows))]
+mod windows_test_authority;

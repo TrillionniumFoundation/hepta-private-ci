@@ -423,3 +423,6 @@ fn native_unqueryable_thread_token_never_falls_back_to_process_user() -> Result 
     assert!(CurrentUser::capture_effective()?.sid == before.sid);
     Ok(())
 }
+
+#[path = "namespace_native_tests.rs"]
+mod namespace_native_tests;
