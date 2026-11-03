@@ -34,9 +34,16 @@ use crate::CognitiveContextItem;
 
 #[path = "neural_cognitive_execution.rs"]
 mod execution;
+#[path = "initial_neural_cognitive.rs"]
+mod initial;
 #[path = "neural_cognitive_ranker.rs"]
 mod neural;
 pub use execution::NeuralCognitiveExecutionV1;
+pub use initial::InitialNeuralCognitiveBootstrapV2;
+pub use initial::InitialNeuralCognitiveInferencePortV2;
+pub use initial::InitialNeuralCognitiveObservationV2;
+pub use initial::InitialNeuralCognitivePinV2;
+pub use initial::InitialNeuralCognitiveRequestV2;
 pub use neural::NeuralCognitiveInferencePortV1;
 pub use neural::NeuralCognitiveObservationV1;
 pub use neural::NeuralCognitivePinV1;
@@ -45,10 +52,35 @@ pub use neural::NeuralCognitiveRequestV1;
 enum CognitiveRankModel {
     Tabular(LoadedTabularOperatorV1),
     Neural(neural::NeuralCognitiveModelV1),
+    InitialNeural(initial::InitialNeuralCognitiveModelV2),
+}
+
+enum RankerMaterial {
+    Candidate(RevalidatingCandidate),
+    Initial(codex_hepta_learning_artifacts::SelectedPublicInitialSmolLmMaterialV2),
+}
+
+impl RankerMaterial {
+    fn with_current<T>(
+        &mut self,
+        current: VerifiedCurrentRegistryViewV1,
+        now: u64,
+        consume: impl FnOnce(&[u8]) -> T,
+    ) -> Result<T, String> {
+        match self {
+            Self::Candidate(candidate) => candidate
+                .with_current(current, now, consume)
+                .map_err(|error| error.to_string()),
+            Self::Initial(material) => material
+                .with_current(current, now, consume)
+                .map_err(|error| error.to_string()),
+        }
+    }
 }
 
 enum RankerEvaluationAdmission {
     HostPinned,
+    SelectedInitial,
     Selected(Box<VerifiedSelfEvolutionSelectionV1>),
     Rollback(Box<VerifiedSelfEvolutionRollbackV1>),
 }
@@ -56,7 +88,7 @@ enum RankerEvaluationAdmission {
 impl RankerEvaluationAdmission {
     fn validate_at(&self, now: u64) -> Result<(), String> {
         match self {
-            Self::HostPinned => Ok(()),
+            Self::HostPinned | Self::SelectedInitial => Ok(()),
             Self::Selected(selection) => selection
                 .validate_at(now)
                 .map_err(|error| error.to_string()),
@@ -196,7 +228,7 @@ pub struct PinnedCognitiveRanker {
     current_owner_trust_digest: Digest32,
     admission: RankerEvaluationAdmission,
     source_window: Option<(u64, u64)>,
-    cache: Mutex<Option<RevalidatingCandidate>>,
+    cache: Mutex<Option<RankerMaterial>>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -318,7 +350,7 @@ impl PinnedCognitiveRanker {
             current_owner_trust_digest,
             admission: RankerEvaluationAdmission::HostPinned,
             source_window,
-            cache: Mutex::new(Some(candidate)),
+            cache: Mutex::new(Some(RankerMaterial::Candidate(candidate))),
         })
     }
 
@@ -582,8 +614,16 @@ impl PinnedCognitiveRanker {
         }
         let sensor = cognitive_sensor_id(query)?;
         let (observation, ranked) = self.with_current(|| {
-            if let CognitiveRankModel::Neural(model) = &self.model {
-                let scores = model.score(owner, generation, query, items, execution)?;
+            let neural_scores = match &self.model {
+                CognitiveRankModel::Neural(model) => {
+                    Some(model.score(owner, generation, query, items, execution)?)
+                }
+                CognitiveRankModel::InitialNeural(model) => {
+                    Some(model.score(owner, generation, query, items, execution)?)
+                }
+                CognitiveRankModel::Tabular(_) => None,
+            };
+            if let Some(scores) = neural_scores {
                 let applied = scores.is_some();
                 let ranked = scores.map(|scores| {
                     let mut order = scores.into_iter().enumerate().collect::<Vec<_>>();

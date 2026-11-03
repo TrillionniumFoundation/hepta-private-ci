@@ -37,6 +37,8 @@ pub use initial::InitialSelectedReadObservationV1;
 pub use initial::InitialSmolLmPreparationErrorV1;
 pub use initial::PreparedSelectedInitialSmolLmV1;
 pub use initial::SmolLmInitialHostInputsV1;
+pub use initial::prepare_public_initial_smollm_agentd_v2;
+pub use initial::prepare_public_initial_smollm_v2;
 pub use initial::prepare_selected_initial_smollm_v1;
 
 /// Complete host-owned inputs. The descriptor digest must be independently
@@ -54,7 +56,8 @@ pub struct SmolLmCognitiveHostInputsV1 {
 }
 
 /// Ready to pass to the original `codex_hepta_agentd::run`. Preparation has
-/// loaded qualified parameters; it does not claim an ordinary task used them.
+/// loaded independently selected initial or qualified child parameters; it
+/// does not claim an ordinary task used them.
 /// Keep `session` until Agentd has stopped, then require its explicit shutdown.
 pub struct PreparedSmolLmAgentdV1 {
     pub config: AgentdConfig,

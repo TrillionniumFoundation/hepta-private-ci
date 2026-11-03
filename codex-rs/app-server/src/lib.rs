@@ -22,8 +22,6 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::RwLock;
 use std::sync::atomic::AtomicBool;
-use std::sync::atomic::AtomicUsize;
-use std::sync::atomic::Ordering;
 
 use crate::analytics_utils::analytics_events_client_from_config;
 use crate::config_manager::ConfigManager;
@@ -35,6 +33,7 @@ use crate::outgoing_message::ConnectionId;
 use crate::outgoing_message::OutgoingEnvelope;
 use crate::outgoing_message::OutgoingMessageSender;
 use crate::outgoing_message::QueuedOutgoingMessage;
+use crate::runtime_lifecycle::OwnedTransportTasks;
 use crate::transport::CHANNEL_CAPACITY;
 use crate::transport::ConnectionOrigin;
 use crate::transport::ConnectionState;
@@ -74,8 +73,8 @@ use codex_state::log_db;
 use std::collections::BTreeMap;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
-use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
+use tokio_util::task::AbortOnDropHandle;
 use tracing::error;
 use tracing::info;
 use tracing::warn;
@@ -130,6 +129,7 @@ mod otel_reloader;
 mod outgoing_message;
 mod request_processors;
 mod request_serialization;
+mod runtime_lifecycle;
 mod server_request_error;
 mod skills_watcher;
 mod thread_state;
@@ -147,6 +147,7 @@ pub use crate::hepta_local_lifecycle::HEPTA_LOCAL_LIFECYCLE_OWNER_PRODUCTION_CAL
 pub use crate::hepta_local_lifecycle::HEPTA_LOCAL_LIFECYCLE_OWNER_RUNTIME_REGISTERED;
 pub use crate::hepta_local_lifecycle::HeptaLocalDevelopmentLifecycleOwner;
 pub use crate::hepta_local_lifecycle::HeptaLocalDevelopmentLifecycleOwnerError;
+pub use crate::runtime_lifecycle::AppServerDrainHandle;
 pub use crate::transport::AppServerTransport;
 pub use crate::transport::RemoteControlStartupMode;
 pub use crate::transport::app_server_control_socket_path;
@@ -209,61 +210,6 @@ enum ShutdownAction {
 enum ShutdownSignal {
     Forceable,
     GracefulOnly,
-}
-
-/// Embedding-owned graceful drain control.
-///
-/// The handle closes new RPC admission, exposes the exact running assistant-turn
-/// count already maintained by App Server, and becomes drained only after the
-/// graceful shutdown state machine has observed zero running turns.
-#[derive(Clone)]
-pub struct AppServerDrainHandle {
-    request: CancellationToken,
-    running_turns: Arc<AtomicUsize>,
-    drained: Arc<AtomicBool>,
-}
-
-impl AppServerDrainHandle {
-    pub fn new() -> Self {
-        Self {
-            request: CancellationToken::new(),
-            running_turns: Arc::new(AtomicUsize::new(0)),
-            drained: Arc::new(AtomicBool::new(false)),
-        }
-    }
-
-    pub fn request_drain(&self) {
-        // This handle is one-shot for one App Server lifetime. Repeated owner
-        // polls must not erase a completed drain that no worker can re-acknowledge.
-        self.request.cancel();
-    }
-
-    pub fn running_turns(&self) -> usize {
-        self.running_turns.load(Ordering::Acquire)
-    }
-
-    pub fn drained(&self) -> bool {
-        self.drained.load(Ordering::Acquire)
-    }
-
-    async fn wait_requested(&self) {
-        self.request.cancelled().await;
-    }
-
-    fn observe_running_turns(&self, running_turns: usize) {
-        self.running_turns.store(running_turns, Ordering::Release);
-    }
-
-    fn mark_drained(&self) {
-        self.running_turns.store(0, Ordering::Release);
-        self.drained.store(true, Ordering::Release);
-    }
-}
-
-impl Default for AppServerDrainHandle {
-    fn default() -> Self {
-        Self::new()
-    }
 }
 
 async fn wait_for_embedded_drain(handle: Option<AppServerDrainHandle>) {
@@ -964,7 +910,8 @@ pub async fn run_main_with_transport_options(
     }
     let installation_id = resolve_installation_id(&config.codex_home).await?;
     let transport_shutdown_token = CancellationToken::new();
-    let mut transport_accept_handles = Vec::<JoinHandle<()>>::new();
+    let _transport_shutdown_guard = transport_shutdown_token.clone().drop_guard();
+    let mut transport_accept_handles = OwnedTransportTasks::default();
 
     let single_client_mode = matches!(&transport, AppServerTransport::Stdio);
     let graceful_signal_restart_enabled =
@@ -977,7 +924,7 @@ pub async fn run_main_with_transport_options(
             app_server_client_name_rx = Some(stdio_client_name_rx);
             start_stdio_connection(
                 transport_event_tx.clone(),
-                &mut transport_accept_handles,
+                &mut transport_accept_handles.0,
                 stdio_client_name_tx,
             )
             .await?;
@@ -989,7 +936,7 @@ pub async fn run_main_with_transport_options(
                 transport_shutdown_token.clone(),
             )
             .await?;
-            transport_accept_handles.push(accept_handle);
+            transport_accept_handles.0.push(accept_handle);
         }
         AppServerTransport::WebSocket { bind_address } => {
             let accept_handle = start_websocket_acceptor(
@@ -999,7 +946,7 @@ pub async fn run_main_with_transport_options(
                 policy_from_settings(&auth)?,
             )
             .await?;
-            transport_accept_handles.push(accept_handle);
+            transport_accept_handles.0.push(accept_handle);
         }
         AppServerTransport::Off => {}
     }
@@ -1016,7 +963,7 @@ pub async fn run_main_with_transport_options(
     if remote_control_explicitly_requested && state_db.is_none() {
         error!("remote control disabled because sqlite state db is unavailable");
     }
-    let no_local_transport = transport_accept_handles.is_empty();
+    let no_local_transport = transport_accept_handles.0.is_empty();
     if no_local_transport
         && remote_control_startup_mode != RemoteControlStartupMode::ResolvePersisted
         && !remote_control_enabled
@@ -1047,6 +994,7 @@ pub async fn run_main_with_transport_options(
         remote_control_startup_mode,
     )
     .await?;
+    let remote_control_accept_handle = AbortOnDropHandle::new(remote_control_accept_handle);
     if no_local_transport
         && remote_control_startup_mode == RemoteControlStartupMode::ResolvePersisted
     {
@@ -1073,18 +1021,20 @@ pub async fn run_main_with_transport_options(
             ));
         }
     }
-    transport_accept_handles.push(remote_control_accept_handle);
+    transport_accept_handles
+        .0
+        .push(remote_control_accept_handle.detach());
 
-    let otel_reloader_handle = otel_reloader::spawn(
+    let otel_reloader_handle = AbortOnDropHandle::new(otel_reloader::spawn(
         otel,
         otel_logger_reload_handle,
         config_manager.clone(),
         Arc::clone(&auth_manager),
         default_analytics_enabled,
         transport_shutdown_token.clone(),
-    );
+    ));
 
-    let outbound_handle = tokio::spawn(async move {
+    let outbound_handle = AbortOnDropHandle::new(tokio::spawn(async move {
         let mut outbound_connections = HashMap::<ConnectionId, OutboundConnectionState>::new();
         loop {
             tokio::select! {
@@ -1137,9 +1087,10 @@ pub async fn run_main_with_transport_options(
             }
         }
         info!("outbound router task exited (channel closed)");
-    });
+    }));
 
-    let processor_handle = tokio::spawn({
+    let app_server_completion = runtime_options.graceful_drain.clone();
+    let processor_handle = AbortOnDropHandle::new(tokio::spawn({
         let auth_manager = Arc::clone(&auth_manager);
         let analytics_events_client =
             analytics_events_client_from_config(Arc::clone(&auth_manager), &config);
@@ -1477,18 +1428,30 @@ pub async fn run_main_with_transport_options(
                 shutdown_forced = shutdown_state.forced(),
                 "processor task exited"
             );
+            !shutdown_state.forced()
         }
-    });
+    }));
 
     drop(transport_event_tx);
 
-    let _ = processor_handle.await;
-    let _ = outbound_handle.await;
+    let clean_processor = processor_handle.await.is_ok_and(std::convert::identity);
+    let clean_outbound = outbound_handle.await.is_ok();
 
     transport_shutdown_token.cancel();
-    let _ = otel_reloader_handle.await;
-    for handle in transport_accept_handles {
-        let _ = handle.await;
+    let clean_telemetry = otel_reloader_handle.await.is_ok();
+    let mut clean_transports = true;
+    while let Some(handle) = transport_accept_handles.0.pop() {
+        // Pop one at a time: dropping a Drain iterator would detach remaining
+        // raw handles before OwnedTransportTasks could abort them.
+        clean_transports &= AbortOnDropHandle::new(handle).await.is_ok();
+    }
+    if clean_processor
+        && clean_outbound
+        && clean_telemetry
+        && clean_transports
+        && let Some(handle) = app_server_completion
+    {
+        handle.mark_completed();
     }
 
     Ok(())

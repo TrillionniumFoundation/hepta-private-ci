@@ -248,6 +248,7 @@ pub async fn run(
     // The single task host owns cancellation and joining on every exit path.
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
+    let app_completion = state.app_server_drain_handle();
     let startup: Result<(), AgentdError> = async {
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
@@ -261,14 +262,21 @@ pub async fn run(
         let app_drain = state.app_server_drain_handle();
         let app_lifetime = cancellation.clone();
         tasks.spawn_required("codex-app-server", async move {
-            run_app_server(
+            let app = run_app_server(
                 app_identity,
                 arg0_paths,
                 cognitive_runtime,
                 app_state,
                 production_writer_host,
-            )
-            .await
+            );
+            tokio::pin!(app);
+            tokio::select! {
+                outcome = &mut app => outcome,
+                () = app_lifetime.cancelled() => {
+                    app_drain.request_drain();
+                    app.await
+                }
+            }
             .map_err(AgentdError::from)?;
             if app_drain.drained() && app_drain.running_turns() == 0 {
                 // A completed drain is not an unexpected required-service exit.
@@ -305,15 +313,26 @@ pub async fn run(
     .await;
     if let Err(error) = startup {
         tasks.shutdown().await;
+        if !app_completion.completed() {
+            return Err(AgentdError::Protocol(format!(
+                "embedded App Server cleanup did not complete after startup failure; clean handoff unavailable; original startup error: {error}"
+            )));
+        }
         return Err(error);
     }
-    tasks
+    let result = tasks
         .run_until(async move {
             shutdown_signal().await?;
             // Keep control and owner reconciliation alive throughout drain.
             drain_runtime(state).await
         })
-        .await
+        .await;
+    if !app_completion.completed() {
+        return Err(AgentdError::Protocol(format!(
+            "embedded App Server shutdown did not join all owned tasks; clean handoff unavailable; original runtime result: {result:?}"
+        )));
+    }
+    result
 }
 
 fn require_cognitive_retrieval_context_for_mode(

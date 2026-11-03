@@ -159,7 +159,9 @@ fn fixture(port: Arc<Port>) -> (tempfile::TempDir, Arc<PinnedCognitiveRanker>) {
         // public neural constructor has no HostPinned compatibility path.
         admission: RankerEvaluationAdmission::HostPinned,
         source_window: None,
-        cache: Mutex::new(Some(RevalidatingCandidate::new(loaded))),
+        cache: Mutex::new(Some(RankerMaterial::Candidate(RevalidatingCandidate::new(
+            loaded,
+        )))),
     };
     (directory, Arc::new(ranker))
 }

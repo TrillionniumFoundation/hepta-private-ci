@@ -11,6 +11,15 @@ path = "junit.xml"
 [profile.local]
 inherits = "default"
 
+# Explicit real-model campaign only: three sequential five-arm rounds plus
+# original ordinary Agentd reads. Each original worker/phase deadline remains
+# unchanged. Never retry a failed campaign with partially written evidence.
+[profile.hepta-public-initial-v2]
+inherits = "local"
+slow-timeout = { period = "60s", terminate-after = 180 }
+retries = 0
+test-threads = 1
+
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
 

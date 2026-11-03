@@ -23,6 +23,10 @@ use crate::model_worker::ModelDriver;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::WorkerRequest;
 
+#[path = "smollm_neural_environment.rs"]
+mod environment;
+use environment::configure_python_environment;
+
 #[path = "smollm_cell_material.rs"]
 mod cell_material;
 pub use cell_material::SmolLmCellStartOwnerV1;
@@ -184,8 +188,10 @@ impl SmolLmDriver {
             self.startup_deadline,
             &self.cancellation,
         )?;
+        let mut command = Command::new(&config.python);
+        configure_python_environment(&mut command);
         session.spawn(
-            Command::new(&config.python)
+            command
                 .arg(&config.script)
                 .arg("serve")
                 .arg("--materials")

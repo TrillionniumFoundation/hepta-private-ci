@@ -14,6 +14,12 @@ use crate::PinnedCandidateLoadError;
 use crate::RevalidatingCandidate;
 use crate::VerifiedCurrentRegistryViewV1;
 
+#[path = "selected_public_initial_smollm.rs"]
+mod public_profile;
+pub use public_profile::SMOLLM_PUBLIC_INITIAL_CONTRACT_V2;
+pub use public_profile::SMOLLM_PUBLIC_INITIAL_PROFILE_V2;
+pub use public_profile::SelectedPublicInitialSmolLmMaterialV2;
+
 #[derive(Clone, Copy, Debug)]
 pub(super) struct InitialSelectionWindowV1 {
     pub(super) verified_at: u64,

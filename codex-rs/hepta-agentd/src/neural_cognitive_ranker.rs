@@ -227,7 +227,7 @@ impl PinnedCognitiveRanker {
             current_owner_trust_digest,
             admission: RankerEvaluationAdmission::Selected(Box::new(selection.clone())),
             source_window: Some((source.manifest.created_at, source.manifest.expires_at)),
-            cache: Mutex::new(Some(candidate)),
+            cache: Mutex::new(Some(RankerMaterial::Candidate(candidate))),
         })
     }
 }
