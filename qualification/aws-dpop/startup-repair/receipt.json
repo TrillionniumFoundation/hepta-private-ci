@@ -1,0 +1,18 @@
+{
+  "schema": "aws-workflow-startup-repair-v1",
+  "failed_workflow_run": 41679808969,
+  "failed_head": "aa9881cd065146b564b2931c1f7be62a4579ff68",
+  "cause": "runner context is unavailable in jobs.<job_id>.env; moved unchanged target path to the execution step env",
+  "actionlint_version": "1.7.12",
+  "actionlint_official_asset_sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+  "actionlint_binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4",
+  "actionlint_after_exit": 0,
+  "initial_blob_policy_issue": "original evidence ZIP exceeded 512000-byte limit; replaced by verified sublimit text parts without changing allowlist/budget or evidence bytes",
+  "reconstructed_evidence_sha256": "25d15ac2090294ad60da48e1a526126617fe0e1f77c515043ddcc62fbc891d2c",
+  "native_tested_inputs_changed_only": [
+    ".github/workflows/hepta-aws-p256-qualification.yml"
+  ],
+  "native_source_lock_and_harness_unchanged": true,
+  "scope_repair_parent": "030670f74300e65777abc768c049b5140f9acd29",
+  "status": "HOLD_NO_GO; hosted native/Bazel execution pending"
+}

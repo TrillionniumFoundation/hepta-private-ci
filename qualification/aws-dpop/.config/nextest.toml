@@ -1,0 +1,12 @@
+# Same applicable default/local budgets as codex-rs/.config/nextest.toml.
+# Workspace-package-specific overrides cannot select packages in this isolated
+# oracle crate. Its tests do not match any of those overrides.
+[profile.default]
+slow-timeout = { period = "30s", terminate-after = 2 }
+retries = 1
+
+[profile.default.junit]
+path = "junit.xml"
+
+[profile.local]
+inherits = "default"

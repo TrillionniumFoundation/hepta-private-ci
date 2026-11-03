@@ -1,0 +1,28 @@
+[package]
+name = "codex-aws-dpop-qualification"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+aws-credential-types = "=1.2.11"
+aws-sdk-signin = { version = "=1.2.0", default-features = false }
+aws-smithy-json = "=0.61.9"
+aws-smithy-runtime-api = { version = "=1.12.0", features = ["client"] }
+aws-smithy-types = "=1.4.7"
+base64-simd = "=0.8.0"
+p256 = "=0.14.0"
+rand = { version = "=0.10.1", default-features = false, features = ["std", "std_rng", "sys_rng"] }
+uuid = { version = "=1.20.0", features = ["v4"] }
+zeroize = "=1.8.2"
+
+[dev-dependencies]
+# Isolated compatibility oracle only; this crate is outside the product workspace.
+# The production Cargo graph must contain only the maintained P-256 family.
+p256-legacy = { package = "p256", version = "=0.13.2" }
+serde_json = "=1.0.149"
+
+[lib]
+doctest = false
