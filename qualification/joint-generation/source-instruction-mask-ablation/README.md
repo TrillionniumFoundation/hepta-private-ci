@@ -67,3 +67,27 @@ PYTHONPATH=../source-scene-decomposition:.. python -B -m unittest -v test_visibl
 ```
 
 Only portable source, tests, fixed plan and complete aggregates are public—not weights, private inputs, per-request predictions or runtime paths. No production/default change or unrestricted scientific runner.
+
+
+## Lossless historical-summary storage (2026-11-03)
+
+The historical `SUMMARY.json` is now stored as `SUMMARY.json.gz`. This is a
+storage-only change: the decoded bytes, all scientific results (including
+negative gates and overall false), prior costs, and limitations are unchanged.
+No experiment, training, calibration, or model operation was rerun for this repair.
+The original README above is retained byte-for-byte. The portable helper/tests,
+PLAN, and VALIDATION retain their original bytes and do not require the summary.
+
+From `qualification/joint-generation`, verify these four historical summaries:
+
+```sh
+python -I -B restore_historical_summaries.py
+python -I -B restore_historical_summaries.py --output /path/to/new-summary-directory
+```
+
+The second command requires a new output directory and reconstructs the exact
+original JSON in its four package subdirectories, checking compressed and raw
+size/SHA256 against `compressed-historical-summaries-manifest.json`. Point ad-hoc
+JSON readers to those restored files. Unknown external readers are not ruled out.
+The existing `restore_evidence.py` and its manifest serve a different four-package
+set and are not replaced. This change does not establish full-branch CI compliance.

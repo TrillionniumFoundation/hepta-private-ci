@@ -136,3 +136,27 @@ Historical experiment/qualification costs, source preparation/review and unknown
 supervisor tails remain additional, not zero. Per-model preparation, adaptation,
 calibration and serving costs are retained in SUMMARY. No general-purpose model,
 fresh blind group or natural-image performance claim follows from this finite task.
+
+
+## Lossless historical-summary storage (2026-11-03)
+
+The historical `SUMMARY.json` is now stored as `SUMMARY.json.gz`. This is a
+storage-only change: the decoded bytes, all scientific results (including
+negative gates and overall false), prior costs, and limitations are unchanged.
+No experiment, training, calibration, or model operation was rerun for this repair.
+The original README above is retained byte-for-byte. The portable helper/tests,
+PLAN, and VALIDATION retain their original bytes and do not require the summary.
+
+From `qualification/joint-generation`, verify these four historical summaries:
+
+```sh
+python -I -B restore_historical_summaries.py
+python -I -B restore_historical_summaries.py --output /path/to/new-summary-directory
+```
+
+The second command requires a new output directory and reconstructs the exact
+original JSON in its four package subdirectories, checking compressed and raw
+size/SHA256 against `compressed-historical-summaries-manifest.json`. Point ad-hoc
+JSON readers to those restored files. Unknown external readers are not ruled out.
+The existing `restore_evidence.py` and its manifest serve a different four-package
+set and are not replaced. This change does not establish full-branch CI compliance.
