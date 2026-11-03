@@ -199,3 +199,68 @@ fn trustedinstaller_owned_namespace_keeps_foreign_mutation_and_shape_refusals() 
         ));
     }
 }
+
+#[test]
+fn namespace_primary_group_is_metadata_and_cannot_grant_mutation() {
+    let user = CurrentUser::capture_effective().expect("actual user for parser controls");
+    for mask in [1, 0x2, 0x40, 0x40000, 0x80000, 0x1000_0000] {
+        let mut bytes = descriptor(&user, mask, /*flags*/ 0);
+        let group = u32::try_from(bytes.len()).expect("bounded descriptor");
+        bytes[8..12].copy_from_slice(&group.to_le_bytes());
+        bytes.extend_from_slice(WORLD);
+        if mask == 1 {
+            validate(&bytes, &user).expect("well-formed group metadata grants no access");
+        } else {
+            assert!(matches!(
+                validate(&bytes, &user),
+                Err(ValidationError::NonCanonicalDacl)
+            ));
+        }
+    }
+    let mut wrong_owner = descriptor_for_owner_and_trustee(
+        WORLD,
+        user.sid_bytes(),
+        /*mask*/ 1,
+        /*flags*/ 0,
+    );
+    let group = u32::try_from(wrong_owner.len()).expect("bounded descriptor");
+    wrong_owner[8..12].copy_from_slice(&group.to_le_bytes());
+    wrong_owner.extend_from_slice(user.sid_bytes());
+    assert!(matches!(
+        validate(&wrong_owner, &user),
+        Err(ValidationError::WrongOwner)
+    ));
+}
+
+#[test]
+fn malformed_namespace_primary_groups_are_refused() {
+    let user = CurrentUser::capture_effective().expect("actual user for parser controls");
+    let mut valid = descriptor(&user, /*mask*/ 1, /*flags*/ 0);
+    let group = u32::try_from(valid.len()).expect("bounded descriptor");
+    valid[8..12].copy_from_slice(&group.to_le_bytes());
+    valid.extend_from_slice(WORLD);
+    validate(&valid, &user).expect("well-formed optional primary group");
+
+    for offset in [1, 4, 16, group + 1, group + 8, u32::MAX] {
+        let mut bytes = valid.clone();
+        bytes[8..12].copy_from_slice(&offset.to_le_bytes());
+        assert!(matches!(
+            validate(&bytes, &user),
+            Err(ValidationError::MalformedDescriptor)
+        ));
+    }
+    for (index, value) in [(0, 2), (1, 16)] {
+        let mut bytes = valid.clone();
+        bytes[group as usize + index] = value;
+        assert!(matches!(
+            validate(&bytes, &user),
+            Err(ValidationError::MalformedDescriptor)
+        ));
+    }
+    for length in 0..valid.len() {
+        assert!(
+            validate(&valid[..length], &user).is_err(),
+            "truncated primary-group descriptor at {length}"
+        );
+    }
+}

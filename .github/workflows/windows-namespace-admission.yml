@@ -21,6 +21,7 @@ jobs:
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
       RUSTUP_TOOLCHAIN: "1.95.0"
+      PYTHONIOENCODING: "utf-8"
     defaults:
       run:
         shell: bash
@@ -64,6 +65,8 @@ jobs:
               raise RuntimeError("source head differs from workflow identity")
           inputs = [
               "codex-rs/Cargo.lock",
+              "codex-rs/.config/nextest.toml",
+              "codex-rs/utils/windows-private-state/src/namespace_acl_tests.rs",
               "codex-rs/utils/windows-private-state/src/security.rs",
               "codex-rs/utils/windows-private-state/src/namespace_acl.rs",
               "codex-rs/utils/windows-private-state/src/security_tests.rs",
@@ -76,6 +79,9 @@ jobs:
               "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
               "platform": platform.platform(),
               "rustc": subprocess.check_output(["rustc", "-Vv"], text=True),
+              "nextest": subprocess.check_output(["cargo", "nextest", "--version"], text=True),
+              "just": subprocess.check_output(["just", "--version"], text=True),
+              "git_input_objects": subprocess.check_output(["git", "ls-tree", "HEAD", "--", *inputs], text=True),
               "private_temp_root": os.environ["HEPTA_CI_PRIVATE_TEMP_ROOT"],
               "inputs": {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in inputs},
           }
@@ -109,14 +115,27 @@ jobs:
                       "file": copied.name, "sha256": hashlib.sha256(copied.read_bytes()).hexdigest(),
                       "tests": len(tree.findall(".//testcase")),
                       "failures": len(tree.findall(".//failure")),
+                      "errors": len(tree.findall(".//error")),
                       "skipped": len(tree.findall(".//skipped")),
-                      "retries": len(tree.findall(".//rerunFailure")),
+                      "retries": len(tree.findall(".//rerunFailure")) + len(tree.findall(".//flakyFailure")),
+                      "test_names": [case.get("name") for case in tree.findall(".//testcase")],
                   })
           (output / "result.json").write_text(json.dumps(receipt, indent=2) + "\n")
           print(json.dumps(receipt, indent=2))
           print(raw.decode(errors="replace")[-24000:])
-          if result.returncode == 0 and not receipt["junit"]:
-              raise RuntimeError("successful process did not produce a fresh JUnit report")
+          if result.returncode == 0:
+              if not receipt["junit"]:
+                  raise RuntimeError("successful process did not produce a fresh JUnit report")
+              required = {
+                  "security::tests::namespace_native_tests::native_inherited_directory_descriptor_preserves_namespace_admission",
+                  "namespace_acl::tests::namespace_primary_group_is_metadata_and_cannot_grant_mutation",
+                  "namespace_acl::tests::malformed_namespace_primary_groups_are_refused",
+              }
+              for report in receipt["junit"]:
+                  if report["tests"] != 44 or any(report[key] for key in ("failures", "errors", "skipped", "retries")):
+                      raise RuntimeError("original 44-test library scope did not pass without skips or retries")
+                  if not required.issubset(report["test_names"]):
+                      raise RuntimeError("required native and malformed-group controls are missing")
           raise SystemExit(result.returncode)
           PY
       - name: Preserve original result and exact descriptor observations
