@@ -1,0 +1,267 @@
+name: MemoryCell actual frozen Reader posthoc evidence distractor factorial
+on:
+  push:
+    branches: [codex/memorycell-reader-case1-posthoc-factorial-20261014]
+    paths:
+      - "scripts/memory_cell/reader_case1_posthoc_factorial.py"
+      - "scripts/memory_cell/test_reader_case1_posthoc_factorial.py"
+      - ".github/workflows/hepta-memory-reader-case1-posthoc-factorial.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reader_case1_posthoc_factorial.py"
+      - "scripts/memory_cell/test_reader_case1_posthoc_factorial.py"
+      - ".github/workflows/hepta-memory-reader-case1-posthoc-factorial.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-case1-posthoc-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+  HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+  HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+  HF_HUB_DISABLE_XET: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.HEPTA_MEMORY_TESTED_COMMIT }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Test source-only preregistered mask identities and adversarial receipts
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/reader_case1_posthoc_factorial.py scripts/memory_cell/test_reader_case1_posthoc_factorial.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_reader_case1_posthoc_factorial.py -v
+      - name: Mandatory scoped Ruff format
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/reader_case1_posthoc_factorial.py \
+            scripts/memory_cell/test_reader_case1_posthoc_factorial.py
+      - name: Preserve exact format diff; never waive gate
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/case1-format
+          git rev-parse HEAD > /tmp/case1-format/checkout-commit.txt
+          if command -v uv >/dev/null; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/reader_case1_posthoc_factorial.py \
+              scripts/memory_cell/test_reader_case1_posthoc_factorial.py \
+              > /tmp/case1-format/ruff.patch || true
+            cat /tmp/case1-format/ruff.patch
+          fi
+          (cd /tmp/case1-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-case1-posthoc-source-error
+          path: /tmp/case1-format
+          if-no-files-found: warn
+
+  generate:
+    needs: source-gate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        tier: [smol-1.7b, qwen-3b]
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.HEPTA_MEMORY_TESTED_COMMIT }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Require actual BF16 hardware and download only externally frozen public sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/case1-bf16-host.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip > /tmp/case1-original-source.zip
+          echo '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a  /tmp/case1-original-source.zip' | sha256sum --check --strict
+          mkdir -p /tmp/case1-public
+          unzip -q /tmp/case1-original-source.zip 'plan/*' -d /tmp/case1-public
+          test -s /tmp/case1-public/plan/plan.json
+          test -s /tmp/case1-public/plan/source-view.json
+          test ! -e /tmp/case1-public/observations
+          unzip -p /tmp/case1-original-source.zip environment.txt > /tmp/case1-environment.txt
+          test -s /tmp/case1-environment.txt
+          python3 scripts/memory_cell/reader_case1_posthoc_factorial.py validate \
+            /tmp/case1-public/plan /tmp/case1-pre-model-frozen-plan.json
+          test -s /tmp/case1-pre-model-frozen-plan.json
+      - name: Stage exact original frozen model weights and tokenizer
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/case1-py
+          /tmp/case1-py/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/case1-py/bin/pip install -r /tmp/case1-environment.txt
+          /tmp/case1-py/bin/pip freeze > /tmp/case1-installed.txt
+          diff -u /tmp/case1-environment.txt /tmp/case1-installed.txt
+          /tmp/case1-py/bin/python scripts/memory_cell/reader_reference.py stage '${{ matrix.tier }}' /tmp/case1-model
+      - name: Actually generate EIGHT new post-observation factorial answers, labels absent
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/case1-shards
+          /tmp/case1-py/bin/python scripts/memory_cell/reader_case1_posthoc_factorial.py generate \
+            /tmp/case1-public/plan /tmp/case1-model \
+            '/tmp/case1-shards/${{ matrix.tier }}' \
+            --tier '${{ matrix.tier }}' \
+            --stage-sha "$(sha256sum /tmp/case1-model/stage.json | cut -d ' ' -f1)"
+      - name: Seal original journal even on an early failure or BF16 host rejection
+        if: always()
+        run: |
+          set -euo pipefail
+          folder='/tmp/case1-shards/${{ matrix.tier }}'
+          mkdir -p "$folder"
+          git rev-parse HEAD > "$folder/checkout-commit.txt"
+          if test -f /tmp/case1-bf16-host.json; then
+            cp /tmp/case1-bf16-host.json "$folder/host-gate.json"
+          fi
+          (cd "$folder" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-case1-factorial-original-${{ matrix.tier }}
+          path: /tmp/case1-shards/${{ matrix.tier }}
+          if-no-files-found: error
+
+  audit-original-shards:
+    if: always() && github.event_name == 'push' && needs.source-gate.result == 'success'
+    needs: [source-gate, generate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.HEPTA_MEMORY_TESTED_COMMIT }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Reopen only original public source and GitHub API artifact SHA digests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/case1-audit /tmp/case1-public
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip > /tmp/case1-source.zip
+          echo '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a  /tmp/case1-source.zip' | sha256sum --check --strict
+          unzip -q /tmp/case1-source.zip 'plan/*' -d /tmp/case1-public
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > /tmp/case1-audit/actual-github-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?per_page=100" > /tmp/case1-audit/actual-github-artifacts.json
+      - name: Independently attest available original model call receipts only
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+
+          root = Path('/tmp/case1-audit')
+          run = json.loads((root / 'actual-github-run.json').read_text())
+          listing = json.loads((root / 'actual-github-artifacts.json').read_text())
+          assert run['head_sha'] == os.environ['HEPTA_MEMORY_TESTED_COMMIT']
+          assert run['id'] == int(os.environ['GITHUB_RUN_ID'])
+          assert run['event'] == 'push'
+          assert run['run_attempt'] == 1
+          assert len(listing['artifacts']) == listing['total_count']
+          assert len(listing['artifacts']) <= 5
+          intended = {f'memory-case1-factorial-original-{tier}': tier
+                      for tier in ('smol-1.7b', 'qwen-3b')}
+          observed = {}
+          for artifact in listing['artifacts']:
+              name = artifact['name']
+              if name not in intended:
+                  raise ValueError('unregistered original model artifact')
+              if name in observed:
+                  raise ValueError('duplicate original model artifact')
+              assert artifact['workflow_run']['id'] == run['id']
+              assert artifact['workflow_run']['head_sha'] == run['head_sha']
+              assert artifact['expired'] is False
+              digest = artifact['digest']
+              if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
+                  raise ValueError('unsealed original artifact digest')
+              observed[name] = artifact
+          receipts = {}
+          for name, tier in sorted(intended.items()):
+              if name not in observed:
+                  receipts[tier] = dict(artifact_missing=True, attempted=0,
+                                        succeeded=0, complete=False)
+                  continue
+              artifact = observed[name]
+              file = root / f'{tier}.zip'
+              with file.open('wb') as handle:
+                  subprocess.run(
+                      ['gh', 'api', f'repos/{os.environ["GITHUB_REPOSITORY"]}/actions/artifacts/{artifact["id"]}/zip'],
+                      stdout=handle, check=True,
+                  )
+              if hashlib.sha256(file.read_bytes()).hexdigest() != artifact['digest'][7:]:
+                  raise ValueError('original ZIP outer SHA256 does not match GitHub')
+              output = root / f'{tier}-original-audit.json'
+              subprocess.run([
+                  'python3', 'scripts/memory_cell/reader_case1_posthoc_factorial.py',
+                  'audit', '/tmp/case1-public/plan', str(file), str(output),
+                  '--outer-sha', artifact['digest'][7:], '--tier', tier,
+                  '--generating-commit', run['head_sha'],
+              ], check=True)
+              receipt = json.loads(output.read_text())
+              assert receipt['tier'] == tier
+              assert receipt['model_generating_commit'] == run['head_sha']
+              receipts[tier] = dict(
+                  artifact_id=artifact['id'], attempted=receipt['attempted'],
+                  succeeded=receipt['succeeded'], complete=receipt['complete'],
+                  host_eligible=receipt['host_eligible'],
+                  github_original_zip_sha256=artifact['digest'][7:],
+              )
+          summary = dict(
+              schema='hepta.memory-cell.post-observation-factorial-original-census.v1',
+              registered_factorial_arms=8, original_model_calls_planned=16,
+              original_generating_commit=run['head_sha'],
+              sources_from_single_original_authored_development_case=True,
+              total_attempts=sum(r['attempted'] for r in receipts.values()),
+              actual_model_generations=sum(r['succeeded'] for r in receipts.values()),
+              full_model_tier_shards=sum(r['complete'] for r in receipts.values()),
+              posthoc_nonindependent_diagnostic=True,
+              human_sufficient_evidence_reviewed=False,
+              parametric_memory_learning_tested=False,
+              new_source_families=0, production_accepted=False,
+              original_80_call_trial_unchanged=True,
+              tiers=receipts,
+          )
+          (root / 'independent-census.json').write_text(json.dumps(summary, indent=2, sort_keys=True)+'\n')
+          PY
+          git rev-parse HEAD > /tmp/case1-audit/auditor-commit.txt
+          (cd /tmp/case1-audit && find . -maxdepth 1 -type f ! -name '*.zip' ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-post-observation-reader-factorial-original-audit
+          path: |
+            /tmp/case1-audit/*.json
+            /tmp/case1-audit/SHA256SUMS
+            /tmp/case1-audit/auditor-commit.txt
+          if-no-files-found: error

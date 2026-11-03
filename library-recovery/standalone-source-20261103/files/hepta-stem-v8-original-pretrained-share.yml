@@ -1,0 +1,166 @@
+name: hepta-stem-v8-original-pretrained-share
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_v8_pretrained_share.py"
+      - "qualification/stem-cell-v1/numeric_reference_v8.py"
+      - "qualification/stem-cell-v1/test_stem_v8_pretrained_share.py"
+      - "qualification/stem-cell-v1/STEM_V8_PRETRAINED_SHARE_20261015.md"
+      - "qualification/stem-cell-v1/STEM_V8_ORIGINAL_MINILM_PHYSICAL_20261015.json"
+      - ".github/workflows/hepta-stem-v8-original-pretrained-share.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+    paths:
+      - "qualification/stem-cell-v1/stem_v8_pretrained_share.py"
+      - "qualification/stem-cell-v1/numeric_reference_v8.py"
+      - "qualification/stem-cell-v1/test_stem_v8_pretrained_share.py"
+      - "qualification/stem-cell-v1/STEM_V8_PRETRAINED_SHARE_20261015.md"
+      - "qualification/stem-cell-v1/STEM_V8_ORIGINAL_MINILM_PHYSICAL_20261015.json"
+      - ".github/workflows/hepta-stem-v8-original-pretrained-share.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Compile original new V8 source
+        run: |
+          git rev-parse HEAD
+          python -m py_compile qualification/stem-cell-v1/stem_v8_pretrained_share.py qualification/stem-cell-v1/numeric_reference_v8.py qualification/stem-cell-v1/test_stem_v8_pretrained_share.py
+      - name: Fail-closed source-only adversarial controls (optional original class SKIPS)
+        env:
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          python -m unittest -v qualification/stem-cell-v1/test_stem_v8_pretrained_share.py
+          python -O -m unittest -v qualification/stem-cell-v1/test_stem_v8_pretrained_share.py
+      - name: Report negative model authority and commit binding
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          doc = json.loads(Path('qualification/stem-cell-v1/STEM_V8_ORIGINAL_MINILM_PHYSICAL_20261015.json').read_text())
+          assert doc['all_four_runs_completed'] is True
+          assert doc['production_authorized'] is False
+          assert doc['stem_winner_verified'] is False
+          assert doc['independent_semantic_success'] is None
+          assert [r['size'] for r in doc['rows']] == [64, 256, 1024, 4096]
+          PY
+
+  original-pinned-model-physical:
+    needs: source-contracts
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      actions: read
+      contents: read
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      PYTHONPATH: qualification/stem-cell-v1
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned CPU numeric dependencies, not replacement model weights
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          git rev-parse HEAD > "$RUNNER_TEMP/v8-source-head.txt"
+          python -m pip freeze > "$RUNNER_TEMP/v8-python-environment.txt"
+      - name: Download SHA-pinned ORIGINAL archive from same private repository
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip \
+            > "$RUNNER_TEMP/v8-archived-original.zip"
+          echo 'Original artifact downloaded; only allowlisted files are ever unpacked'
+      - name: Independently verify container SHA and safely stage original five inputs
+        run: |
+          python - <<'PY'
+          import hashlib, os, tarfile, zipfile, shutil
+          from pathlib import Path
+          archive=Path(os.environ['RUNNER_TEMP'])/'v8-archived-original.zip'
+          expected='07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af'
+          h=hashlib.sha256()
+          with archive.open('rb') as f:
+              for b in iter(lambda:f.read(1048576),b''):h.update(b)
+          if h.hexdigest()!=expected:raise RuntimeError('original archive SHA changed')
+          allow={
+            'memory-inputs/encoder/model.safetensors',
+            'memory-inputs/encoder/tokenizer.json',
+            'memory-inputs/encoder/vocab.txt',
+            'memory-inputs/encoder/config.json',
+            'memory-inputs/locomo.json',
+          }
+          root=Path(os.environ['RUNNER_TEMP'])/'v8-original'
+          root.mkdir(mode=0o700)
+          found=set()
+          with zipfile.ZipFile(archive) as z:
+              if z.namelist()!=['memory-inputs.tar.gz']:raise RuntimeError('archive ZIP membership changed')
+              with z.open('memory-inputs.tar.gz') as outer:
+                  with tarfile.open(fileobj=outer,mode='r|gz') as t:
+                      for member in t:
+                          if member.name not in allow:continue
+                          if not member.isfile() or member.issym() or member.islnk():
+                              raise RuntimeError('unsafe original archive entry')
+                          if member.name in found:raise RuntimeError('duplicate original archive entry')
+                          found.add(member.name)
+                          target=root/('/'.join(member.name.split('/')[1:]))
+                          target.parent.mkdir(parents=True,exist_ok=True)
+                          with t.extractfile(member) as src,target.open('xb') as dest:
+                              shutil.copyfileobj(src,dest)
+          if found!=allow:raise RuntimeError('missing original archived material')
+          import sys
+          sys.path.insert(0,'qualification/stem-cell-v1')
+          from stem_v8_pretrained_share import verify_material
+          verify_material(root)
+          print('exact five original source/model material digests verified')
+          PY
+      - name: True original CPU pretrained MiniLM / 4096 physically resident Heads
+        run: |
+          set -euo pipefail
+          export HEPTA_V8_REAL_ROOT="$RUNNER_TEMP/v8-original"
+          python -m unittest -v qualification/stem-cell-v1/test_stem_v8_pretrained_share.py
+          for n in 64 256 1024 4096; do
+            python qualification/stem-cell-v1/stem_v8_pretrained_share.py \
+              --root "$HEPTA_V8_REAL_ROOT" --size "$n" --iterations 2 \
+              --output "$RUNNER_TEMP/v8-pretrained-$n.json"
+          done
+          python - <<'PY'
+          import json,os,hashlib
+          from pathlib import Path
+          from stem_v8_pretrained_share import validate_receipt
+          source=Path('qualification/stem-cell-v1/stem_v8_pretrained_share.py')
+          pinned=hashlib.sha256(source.read_bytes()).hexdigest()
+          for n in (64,256,1024,4096):
+              receipt=json.loads((Path(os.environ['RUNNER_TEMP'])/f'v8-pretrained-{n}.json').read_text())
+              assert validate_receipt(receipt,source_sha=pinned)
+              assert receipt['real_pretrained_encoder_model_weights'] is True
+              assert receipt['new_model_winner_verified'] is False
+              assert receipt['production_authorized'] is False
+          PY
+      - name: Do not upload original models, text, publisher answers or labels
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v8-physical-original-sanitized-receipts
+          path: |
+            ${{ runner.temp }}/v8-pretrained-*.json
+            ${{ runner.temp }}/v8-source-head.txt
+            ${{ runner.temp }}/v8-python-environment.txt
+          if-no-files-found: warn

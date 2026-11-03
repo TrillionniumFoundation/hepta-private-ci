@@ -1,0 +1,108 @@
+name: MemoryCell immutable two-Reader capacity replay
+on:
+  push:
+    branches:
+      - codex/memorycell-reader-capacity-original-replay-20261014
+    paths:
+      - "scripts/memory_cell/reader_capacity_original_replay.py"
+      - "scripts/memory_cell/test_reader_capacity_original_replay.py"
+      - ".github/workflows/hepta-memory-reader-capacity-original-replay.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reader_capacity_original_replay.py"
+      - "scripts/memory_cell/test_reader_capacity_original_replay.py"
+      - ".github/workflows/hepta-memory-reader-capacity-original-replay.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-historical-reader-capacity-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-model-answer-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Original replay syntax, adversarial contracts and no new inference
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/reader_capacity_original_replay.py scripts/memory_cell/test_reader_capacity_original_replay.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_reader_capacity_original_replay.py -v
+      - name: Mandatory scoped Ruff format without CI waiver
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/reader_capacity_original_replay.py \
+            scripts/memory_cell/test_reader_capacity_original_replay.py
+      - name: Preserve exact formatter failure source diagnostic
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-capacity-format
+          git rev-parse HEAD > /tmp/reader-capacity-format/tested-commit.txt
+          if command -v uv >/dev/null; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/reader_capacity_original_replay.py \
+              scripts/memory_cell/test_reader_capacity_original_replay.py \
+              > /tmp/reader-capacity-format/ruff.patch || true
+            cat /tmp/reader-capacity-format/ruff.patch
+          fi
+          (cd /tmp/reader-capacity-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-reader-capacity-source-failure
+          path: /tmp/reader-capacity-format
+          if-no-files-found: warn
+      - name: Independently retrieve three pre-existing immutable Actions ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11674930198/zip > /tmp/original-reader-input.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11675096164/zip > /tmp/original-qwen-48.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11674746152/zip > /tmp/original-smol-48.zip
+          echo 'd773742bc8c1fbf210293db55c0ab16505440a217d3f66ddc17f7d723fbedb99  /tmp/original-reader-input.zip' | sha256sum --check --strict
+          echo 'ad6901d916b9fb263f86ee21b24d3c97236391936eda884fde50e52af16741a9  /tmp/original-qwen-48.zip' | sha256sum --check --strict
+          echo '149bf665ab2916e675f69d5e62cbe02dd07cf532afa98daa17804a86508a215a  /tmp/original-smol-48.zip' | sha256sum --check --strict
+      - name: Rerun original narrow program verifiers and paired source-plan scoring
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-capacity-original-replay
+          python3 scripts/memory_cell/reader_capacity_original_replay.py \
+            /tmp/original-reader-input.zip /tmp/original-qwen-48.zip \
+            /tmp/original-smol-48.zip \
+            /tmp/reader-capacity-original-replay/report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('/tmp/reader-capacity-original-replay/report.json').read_text())
+          assert report['actual_historical_model_generations'] == 96
+          assert report['new_model_generations'] == 0
+          assert report['models']['qwen-3b']['independent_bounded_program_replays'] == 12
+          assert report['models']['smol-1.7b']['independent_bounded_program_replays'] == 12
+          assert report['paired']['organized'] == {'qwen_wins': 7, 'smol_wins': 0, 'ties': 1, 'n': 8}
+          assert report['per_arm']['qwen-3b']['organized']['successful'] == 8
+          assert report['per_arm']['smol-1.7b']['organized']['successful'] == 1
+          assert report['parametric_memory_gain_established'] is False
+          assert report['reader_capacity_is_memory_learning_gain'] is False
+          assert report['production_accepted'] is False
+          PY
+          git rev-parse HEAD > /tmp/reader-capacity-original-replay/auditor-commit.txt
+          (cd /tmp/reader-capacity-original-replay && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-96-original-reader-capacity-replayed
+          path: /tmp/reader-capacity-original-replay
+          if-no-files-found: error

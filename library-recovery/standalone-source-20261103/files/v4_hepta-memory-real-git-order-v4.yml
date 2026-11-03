@@ -1,0 +1,257 @@
+name: MemoryCell real Git Reader rank-order counterfactual (research)
+on:
+  push:
+    branches: [codex/memory-source-order-v4-20261015]
+    paths:
+      - scripts/memory_cell/real_git_order_v4.py
+      - scripts/memory_cell/test_real_git_order_v4.py
+      - .github/workflows/hepta-memory-real-git-order-v4.yml
+  pull_request:
+    paths:
+      - scripts/memory_cell/real_git_order_v4.py
+      - scripts/memory_cell/test_real_git_order_v4.py
+      - .github/workflows/hepta-memory-real-git-order-v4.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-source-order-v4-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Exact head and formatting diagnostics
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '2b33c6321f52711761ec626ead27c9482c7c1cb0' }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          just fmt --base "$BASE_SHA"
+          git diff --binary > /tmp/memory-order-v4-format.patch
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-order-v4-format
+          path: /tmp/memory-order-v4-format.patch
+          if-no-files-found: warn
+  source-plan:
+    needs: format
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    outputs:
+      plan_sha: ${{ steps.freeze.outputs.plan_sha }}
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      MEMORY_REAL_SOURCE_ZIP: /tmp/memory-order-v4/original.zip
+      MEMORY_REOPEN_ZIP: /tmp/memory-order-v4/reopen.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Download exact immutable Git source and separate binary reopen
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-order-v4
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11778273351/zip' \
+            -o "$MEMORY_REAL_SOURCE_ZIP"
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779107585/zip' \
+            -o "$MEMORY_REOPEN_ZIP"
+          echo "a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4  $MEMORY_REAL_SOURCE_ZIP" | sha256sum --check
+          echo "59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36  $MEMORY_REOPEN_ZIP" | sha256sum --check
+      - name: Complete source-backed negative regression suite (zero model calls)
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/real_git_order_v4.py scripts/memory_cell/test_real_git_order_v4.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_real_git_order_v4.py -v
+      - name: Freeze original-source-only rank-order plan before any inference
+        id: freeze
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-order-v4/plan
+          python3 scripts/memory_cell/real_git_order_v4.py prepare \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/memory-order-v4/plan/plan.json
+          echo 'a7e0b324e93e32059ab8d85166caa0f102fa787e54a81a37f802c7667ccafa77  /tmp/memory-order-v4/plan/plan.json' | sha256sum --check
+          echo 'plan_sha=a7e0b324e93e32059ab8d85166caa0f102fa787e54a81a37f802c7667ccafa77' >> "$GITHUB_OUTPUT"
+          git rev-parse HEAD > /tmp/memory-order-v4/plan/tested-head.txt
+          (cd /tmp/memory-order-v4/plan && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-order-v4-frozen-plan
+          path: /tmp/memory-order-v4/plan
+          if-no-files-found: error
+  reader:
+    needs: source-plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: [smol-135m, smol-1.7b]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PLAN_SHA: ${{ needs.source-plan.outputs.plan_sha }}
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Validate exact frozen HEAD and original rank-order plan
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          test "$PLAN_SHA" = a7e0b324e93e32059ab8d85166caa0f102fa787e54a81a37f802c7667ccafa77
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-order-v4-frozen-plan
+          path: /tmp/memory-order-v4-plan
+      - name: Stage publisher-hashed Reader weights on CPU
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/memory-order-v4-python
+          /tmp/memory-order-v4-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-order-v4-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/memory-order-v4-python/bin/python scripts/memory_cell/reader_reference.py stage '${{ matrix.tier }}' /tmp/memory-order-v4-stage
+      - name: Generate actual unchanged-weight paired Reader answers
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          /tmp/memory-order-v4-python/bin/python scripts/memory_cell/real_git_order_v4.py run \
+            --plan /tmp/memory-order-v4-plan/plan.json --plan-sha256 "$PLAN_SHA" \
+            --model /tmp/memory-order-v4-stage \
+            --stage-sha256 "$(sha256sum /tmp/memory-order-v4-stage/stage.json | cut -d ' ' -f1)" \
+            --tier '${{ matrix.tier }}' --output /tmp/memory-order-v4-answers
+          /tmp/memory-order-v4-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('/tmp/memory-order-v4-answers/generation-report.json').read_text())
+          if r['planned'] != 18 or r['successful'] != 18:
+              raise SystemExit('original rank-order model census incomplete; retain failures')
+          PY
+      - name: Retain complete raw answers even after failure, never weights
+        if: always()
+        run: |
+          mkdir -p /tmp/memory-order-v4-answers
+          git rev-parse HEAD > /tmp/memory-order-v4-answers/tested-commit.txt
+          if test -d /tmp/memory-order-v4-stage; then
+            cp /tmp/memory-order-v4-stage/stage.json /tmp/memory-order-v4-stage/inventory.json /tmp/memory-order-v4-stage/publisher.json /tmp/memory-order-v4-answers/
+          fi
+          (cd /tmp/memory-order-v4-answers && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-order-v4-actual-${{ matrix.tier }}
+          path: /tmp/memory-order-v4-answers
+          if-no-files-found: error
+  independent-score:
+    needs: [source-plan, reader]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      PLAN_SHA: ${{ needs.source-plan.outputs.plan_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-order-v4-frozen-plan
+          path: /tmp/v4-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-order-v4-actual-smol-135m
+          path: /tmp/v4-small
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-order-v4-actual-smol-1.7b
+          path: /tmp/v4-large
+      - name: Independent reread of exact original Git object archives
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v4-original
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11778273351/zip' \
+            -o /tmp/v4-original/source.zip
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779107585/zip' \
+            -o /tmp/v4-original/reopen.zip
+          echo 'a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4  /tmp/v4-original/source.zip' | sha256sum --check
+          echo '59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36  /tmp/v4-original/reopen.zip' | sha256sum --check
+      - name: Verify generation journals, model source and frozen plan before scoring
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          for part in /tmp/v4-plan /tmp/v4-small /tmp/v4-large; do
+            (cd "$part" && sha256sum --check SHA256SUMS)
+          done
+          test "$(cat /tmp/v4-small/tested-commit.txt)" = "$HEAD_SHA"
+          test "$(cat /tmp/v4-large/tested-commit.txt)" = "$HEAD_SHA"
+          test "$PLAN_SHA" = a7e0b324e93e32059ab8d85166caa0f102fa787e54a81a37f802c7667ccafa77
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          for path in ('/tmp/v4-small', '/tmp/v4-large'):
+              p = Path(path)
+              r = json.loads((p / 'generation-report.json').read_bytes())
+              raw = (p / 'original-generation.jsonl').read_bytes()
+              if not (r['planned'] == r['successful'] == 18
+                      and hashlib.sha256(raw).hexdigest() == r['original_journal_sha256']):
+                  raise ValueError('source-bound real model generation incomplete')
+          PY
+      - name: Independently score actual original answers against both rank-only controls
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v4-scored
+          python3 scripts/memory_cell/real_git_order_v4.py score \
+            --plan /tmp/v4-plan/plan.json --plan-sha256 "$PLAN_SHA" \
+            --source-zip /tmp/v4-original/source.zip --reopen-zip /tmp/v4-original/reopen.zip \
+            --smol-135m /tmp/v4-small/original-generation.jsonl \
+            --smol-135m-sha256 "$(sha256sum /tmp/v4-small/original-generation.jsonl | cut -d ' ' -f1)" \
+            --smol-1.7b /tmp/v4-large/original-generation.jsonl \
+            --smol-1.7b-sha256 "$(sha256sum /tmp/v4-large/original-generation.jsonl | cut -d ' ' -f1)" \
+            --output /tmp/v4-scored/research-result.json
+          git rev-parse HEAD > /tmp/v4-scored/scored-head.txt
+          (cd /tmp/v4-scored && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-order-v4-original-scored
+          path: /tmp/v4-scored
+          if-no-files-found: warn

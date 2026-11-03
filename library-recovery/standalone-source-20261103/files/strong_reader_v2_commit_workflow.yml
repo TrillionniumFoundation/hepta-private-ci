@@ -1,0 +1,203 @@
+name: Hepta MemoryCell pinned strong Reader source-bound trial (DENY_ALL)
+on:
+  pull_request:
+    branches: [research/memory-reader-causal-panel-20261016]
+    paths:
+      - 'scripts/memory_cell/memory_reader_strong_reference.py'
+      - 'scripts/memory_cell/test_memory_reader_strong_reference.py'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_READER_STRONG_REFERENCE_20261016.md'
+      - '.github/workflows/hepta-memory-reader-strong-reference.yml'
+  # One physical trial on initial workflow addition only; later source fixes run
+  # inexpensive pull_request tests, not another 120-model-call experiment.
+  push:
+    branches: [research/memory-strong-reader-v2-20261016]
+    paths:
+      - '.github/workflows/hepta-memory-reader-strong-reference.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-memory-strong-reference-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Source-only preflight and strict negative protocol tests (not model evidence)
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_reader_strong_reference.py \
+            scripts/memory_cell/test_memory_reader_strong_reference.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_memory_reader_strong_reference.py' -v
+          git diff --exit-code
+  original-plan:
+    if: ${{ github.event_name == 'push' }}
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin original source preparation dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/strong-plan-env
+          /tmp/strong-plan-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/strong-plan-env/bin/pip install -r scripts/memory_cell/requirements.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/strong-original-archive
+      - name: Prepare the same twenty questions and all six SOURCE-ONLY evidence arms
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-original /tmp/strong-public
+          tar -C /tmp/strong-original -xzf /tmp/strong-original-archive/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/strong-original/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          /tmp/strong-plan-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/strong-original/memory-inputs/locomo.json /tmp/strong-prepared
+          cp /tmp/strong-prepared/{public,manifest}.json /tmp/strong-public/
+          test ! -e /tmp/strong-public/private.json
+          python3 scripts/memory_cell/memory_graph_source_trial.py run /tmp/strong-public /tmp/strong-graph
+          python3 scripts/memory_cell/memory_reader_causal_panel.py prepare \
+            /tmp/strong-original/memory-inputs/locomo.json /tmp/strong-prepared \
+            /tmp/strong-graph /tmp/strong-answer-free-plan 2
+          python3 scripts/memory_cell/memory_reader_strong_reference.py preflight /tmp/strong-answer-free-plan
+          test "$(find /tmp/strong-answer-free-plan -maxdepth 1 -type f | wc -l)" -eq 2
+          test ! -e /tmp/strong-answer-free-plan/private.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-strong-reader-original-six-arm-answer-free-plan
+          path: /tmp/strong-answer-free-plan
+          if-no-files-found: error
+          retention-days: 1
+  pinned-strong-physical-and-postseal:
+    if: ${{ github.event_name == 'push' }}
+    needs: original-plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      PYTHONPATH: scripts/memory_cell:v19/research/hepta_v17_reader:v19/research/hepta_v19_reader
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_PROGRESS_BARS: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: aa807d61edd0f5e88178ab9812e59eabe2613f20
+          path: v19
+          persist-credentials: false
+      - name: Reject drift in independently researched Qwen model-material owner
+        run: |
+          set -euo pipefail
+          test "$(git -C v19 rev-parse HEAD)" = aa807d61edd0f5e88178ab9812e59eabe2613f20
+          test "$(git hash-object v19/research/hepta_v19_reader/v19_qwen_material.py)" = e7269a61ab8d03269de5b9a042d6552fadfae285
+          git rev-parse HEAD
+      - name: Install pinned reference CPU runtime, with no hidden publisher answers
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/strong-reader-env
+          /tmp/strong-reader-env/bin/pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu'
+          /tmp/strong-reader-env/bin/pip install 'safetensors==0.7.0' 'regex==2026.5.9' \
+            'transformers==4.53.3' 'huggingface_hub==0.33.5' 'tokenizers==0.21.2' \
+            'hf_xet==1.1.5' 'packaging==25.0'
+          /tmp/strong-reader-env/bin/pip check
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-strong-reader-original-six-arm-answer-free-plan
+          path: /tmp/strong-answer-free-plan
+      - name: Admit official immutable Qwen3-0.6B publisher model, no fallback
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -m 700 -p /tmp/strong-qwen-private
+          test ! -e /tmp/strong-qwen-private/private.json
+          test ! -e /tmp/strong-qwen-private/locomo.json
+          /tmp/strong-reader-env/bin/python v19/research/hepta_v19_reader/v19_qwen_material.py \
+            --cache /tmp/strong-qwen-private/publisher-cache \
+            --model-dir /tmp/strong-qwen-private/model \
+            --manifest /tmp/strong-qwen-private/model-source.json
+      - name: Run up to 120 actual original Qwen Reader attempts and seal outputs before any gold
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e /tmp/strong-qwen-private/locomo.json
+          test ! -e /tmp/strong-qwen-private/private.json
+          test ! -e /tmp/strong-answer-free-plan/private.json
+          mkdir -p /tmp/strong-sanitized-receipts
+          /usr/bin/time -v -o /tmp/strong-sanitized-receipts/resources.txt \
+            /tmp/strong-reader-env/bin/python scripts/memory_cell/memory_reader_strong_reference.py \
+              worker /tmp/strong-answer-free-plan /tmp/strong-qwen-private/model \
+              /tmp/strong-qwen-private/model-source.json /tmp/strong-qwen-private/unscored \
+            > /tmp/strong-sanitized-receipts/worker-summary.json
+          test -s /tmp/strong-qwen-private/unscored/journal.json
+          test -s /tmp/strong-qwen-private/unscored/seal.json
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/strong-postseal-archive
+      - name: Only AFTER the worker seal, rebuild original source, audit evidence and score
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-postseal-source /tmp/strong-postseal-public
+          tar -C /tmp/strong-postseal-source -xzf /tmp/strong-postseal-archive/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/strong-postseal-source/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          /tmp/strong-reader-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/strong-postseal-source/memory-inputs/locomo.json /tmp/strong-postseal-prepared
+          cp /tmp/strong-postseal-prepared/{public,manifest}.json /tmp/strong-postseal-public/
+          /tmp/strong-reader-env/bin/python scripts/memory_cell/memory_graph_source_trial.py \
+            run /tmp/strong-postseal-public /tmp/strong-postseal-graph
+          /tmp/strong-reader-env/bin/python scripts/memory_cell/memory_reader_strong_reference.py \
+            review /tmp/strong-postseal-source/memory-inputs/locomo.json \
+            /tmp/strong-postseal-prepared /tmp/strong-postseal-graph \
+            /tmp/strong-answer-free-plan /tmp/strong-qwen-private/unscored \
+            /tmp/strong-qwen-private/model /tmp/strong-qwen-private/model-source.json \
+            /tmp/strong-sanitized-receipts/strong-reader-postseal.json \
+            > /tmp/strong-sanitized-receipts/review-summary.json
+          /tmp/strong-reader-env/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('/tmp/strong-sanitized-receipts/strong-reader-postseal.json').read_text())
+          assert r['decision'] == 'HOLD_NO_GO' and r['production_accepted'] is False
+          assert r['independent_human_sufficiency_certified'] is False
+          assert r['citation_entailment_verified'] is False
+          assert r['native_tokenization_and_generation_budget_matched_to_135m'] is False
+          assert r['questions'] == 20 and len(r['per_arm']) == 6
+          PY
+          git rev-parse HEAD > /tmp/strong-sanitized-receipts/exact-head.txt
+          (cd /tmp/strong-sanitized-receipts && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: strong-qwen-reference-sanitized-no-authority-${{ github.run_id }}
+          path: /tmp/strong-sanitized-receipts
+          if-no-files-found: error
+          retention-days: 5
