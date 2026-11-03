@@ -10,7 +10,7 @@ The execution environment reset after the bounded experiments completed. The ori
 2. **Hash-verified patch recovery:** the official serde-saphyr 2.1.0 tarball was downloaded again and checked against the original SHA256. All three modified upstream file hashes match the values printed by the actual pre-reset patch run. `PATCH_RECOVERY.json` records that verification; `local-application-tags.patch` is 5,633 bytes. The recovery script is new and did not compile or run a parser.
 3. **Observed aggregates and reconstructed sources:** `OBSERVED_SUMMARY.json` faithfully records aggregate results already returned by completed tool calls. The complete later per-case logs and command receipt files were lost. Reconstructed probe sources are labelled **RECONSTRUCTED_NOT_RERUN**. They must not be presented as byte-verified original binaries or a new successful test run.
 
-The original compiler was Rust 1.95.0, using official serde-saphyr 2.1.0 and granit-parser 2.1.0 with deserialization/comments features, and cached dependency rlibs. No Cargo or full workspace build was run. This recovery environment has no compiler installed, so recovery is not a rerun.
+The original compiler was Rust 1.95.0, using official serde-saphyr 2.1.0 and granit-parser 2.1.0 with deserialization/comments features, and cached dependency rlibs. No Cargo or full workspace build was run. At the initial recovery commit no compiler was installed, so that recovery was not a rerun. The subsequent `fresh-replay/` directory records an actual new execution after the official compiler was restored; its full bound outputs again confirm the failures.
 
 ## Actual observed outcome before reset
 

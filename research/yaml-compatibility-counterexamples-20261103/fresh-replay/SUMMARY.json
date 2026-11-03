@@ -1,0 +1,52 @@
+{
+  "official-matrix": {
+    "observations": 1574,
+    "differences": 472,
+    "output_sha256": "42d608b2392a9836089b84350068274d81cfabc5a396cb4f41372e0633bb642a"
+  },
+  "official-examples": {
+    "observations": 28,
+    "differences": 22,
+    "output_sha256": "97f53c0eaaa1ee33d7c176272bcd7aa94f20428311420a952a94e1816fa0afe1"
+  },
+  "official-consumers": {
+    "exit_code": 101,
+    "output_sha256": "ca5734c541ea30bedf2369371626d975ea689e997d36f9776c02f08f40d2e90a"
+  },
+  "fork-default-off-matrix": {
+    "observations": 1574,
+    "differences": 472,
+    "output_sha256": "42d608b2392a9836089b84350068274d81cfabc5a396cb4f41372e0633bb642a"
+  },
+  "fork-default-off-examples": {
+    "observations": 28,
+    "differences": 22,
+    "output_sha256": "97f53c0eaaa1ee33d7c176272bcd7aa94f20428311420a952a94e1816fa0afe1"
+  },
+  "fork-default-off-consumers": {
+    "exit_code": 101,
+    "output_sha256": "df975165e633ba7e4b4854d3a7610213e32e4c9cb866ea7d7bbbf4dcb4fb86cf"
+  },
+  "fork-policy-on-matrix": {
+    "observations": 1574,
+    "differences": 312,
+    "output_sha256": "bf05234e1f691fed89a1dc3ce6adc9699d6ff7d28d816c52a627f3958de5dada"
+  },
+  "fork-policy-on-examples": {
+    "observations": 28,
+    "differences": 20,
+    "output_sha256": "fb584629d187ab90c9bf50ef2c03a0af8931ed0da07e66b6dd157e0bfa99829a"
+  },
+  "fork-policy-on-consumers": {
+    "exit_code": 101,
+    "output_sha256": "e60b79e60d75c96f29e45fafa5e71f3c1a595329c2f4cca301d0f5e7087f72aa"
+  },
+  "fork-policy-on-policy-controls": {
+    "exit_code": 0,
+    "output_sha256": "46da85d7a390a6dc2497fd5a751df921beac3c5e6ec48ac0ccb6f437608cf25e"
+  },
+  "fork_default_off_byte_identical": true,
+  "migration_accepted": false,
+  "full_four_consumer_builds_executed": false,
+  "current_observations_are_new_replay_not_restored_old_logs": true
+}
