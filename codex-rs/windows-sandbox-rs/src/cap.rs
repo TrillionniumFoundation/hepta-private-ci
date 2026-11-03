@@ -9,6 +9,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::fs;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -69,11 +70,53 @@ fn lock_cap_sids(codex_home: &Path) -> Result<fs::File> {
 }
 
 fn persist_caps(path: &Path, caps: &CapSids) -> Result<()> {
-    if let Some(dir) = path.parent() {
-        fs::create_dir_all(dir).with_context(|| format!("create cap sid dir {}", dir.display()))?;
+    persist_caps_before_replace(path, caps, |_| Ok(()))
+}
+
+fn persist_caps_before_replace(
+    path: &Path,
+    caps: &CapSids,
+    before_replace: impl FnOnce(&Path) -> Result<()>,
+) -> Result<()> {
+    let directory = path.parent().context("cap sid file has no parent")?;
+    fs::create_dir_all(directory)
+        .with_context(|| format!("create cap sid dir {}", directory.display()))?;
+    let mut staged = tempfile::Builder::new()
+        .prefix(".cap-sid-")
+        .tempfile_in(directory)
+        .with_context(|| format!("stage cap sid map in {}", directory.display()))?;
+    serde_json::to_writer(staged.as_file_mut(), caps)?;
+    staged.as_file_mut().flush()?;
+    staged.as_file().sync_all()?;
+    // The callback is private and production supplies a no-op. Native controls
+    // interrupt a real child here, after staging is synced and before publish.
+    before_replace(staged.path())?;
+    staged
+        .persist(path)
+        .map_err(|error| error.error)
+        .with_context(|| format!("replace cap sid file {}", path.display()))?;
+    Ok(())
+}
+
+fn validate_caps(caps: &CapSids) -> Result<()> {
+    let writes = std::iter::once(caps.workspace.as_str())
+        .chain(std::iter::once(caps.readonly.as_str()))
+        .chain(caps.workspace_by_cwd.values().map(String::as_str))
+        .chain(caps.writable_root_by_path.values().map(String::as_str))
+        .collect::<std::collections::HashSet<_>>();
+    let mut reads = std::collections::HashSet::new();
+    for sid in writes.iter().copied() {
+        crate::token::LocalSid::from_string(sid)
+            .context("invalid persisted write capability SID")?;
     }
-    let json = serde_json::to_string(caps)?;
-    fs::write(path, json).with_context(|| format!("write cap sid file {}", path.display()))?;
+    for sid in caps.readable_root_by_path.values() {
+        crate::token::LocalSid::from_string(sid)
+            .context("invalid persisted read capability SID")?;
+        anyhow::ensure!(
+            !writes.contains(sid.as_str()) && reads.insert(sid.as_str()),
+            "persisted read capability aliases another capability namespace"
+        );
+    }
     Ok(())
 }
 
@@ -84,17 +127,21 @@ pub fn load_or_create_cap_sids(codex_home: &Path) -> Result<CapSids> {
 
 fn load_or_create_cap_sids_locked(codex_home: &Path) -> Result<CapSids> {
     let path = cap_sid_file(codex_home);
-    if path.exists() {
-        let txt = fs::read_to_string(&path)
-            .with_context(|| format!("read cap sid file {}", path.display()))?;
-        let t = txt.trim();
-        if t.starts_with('{') && t.ends_with('}') {
-            if let Ok(obj) = serde_json::from_str::<CapSids>(t) {
-                return Ok(obj);
+    match fs::read_to_string(&path) {
+        Ok(text) => {
+            let trimmed = text.trim();
+            if trimmed.starts_with('{') {
+                let caps = serde_json::from_str::<CapSids>(trimmed)
+                    .with_context(|| format!("invalid cap sid map {}", path.display()))?;
+                validate_caps(&caps)?;
+                return Ok(caps);
             }
-        } else if !t.is_empty() {
+            // A legacy single-SID file is migrated only after native SID
+            // validation. Empty, partial or malformed maps never mint new IDs.
+            crate::token::LocalSid::from_string(trimmed)
+                .with_context(|| format!("invalid legacy cap sid file {}", path.display()))?;
             let caps = CapSids {
-                workspace: t.to_string(),
+                workspace: trimmed.to_owned(),
                 readonly: make_random_cap_sid_string(),
                 workspace_by_cwd: HashMap::new(),
                 writable_root_by_path: HashMap::new(),
@@ -102,6 +149,10 @@ fn load_or_create_cap_sids_locked(codex_home: &Path) -> Result<CapSids> {
             };
             persist_caps(&path, &caps)?;
             return Ok(caps);
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(error) => {
+            return Err(error).with_context(|| format!("read cap sid file {}", path.display()));
         }
     }
     let caps = CapSids {
@@ -331,5 +382,123 @@ mod tests {
             assert_eq!(shared_read, &results[0].3);
             assert_ne!(read, write);
         }
+    }
+
+    #[test]
+    fn corrupt_capability_maps_are_refused_without_rewriting_evidence() -> anyhow::Result<()> {
+        for corrupt in [
+            b"".as_slice(),
+            b"{".as_slice(),
+            br#"{"workspace":"unfinished"#.as_slice(),
+            br#"{"workspace":0}"#.as_slice(),
+            b"not a SID".as_slice(),
+        ] {
+            let temp = tempfile::tempdir()?;
+            let path = super::cap_sid_file(temp.path());
+            load_or_create_cap_sids(temp.path())?;
+            std::fs::write(&path, corrupt)?;
+            assert!(load_or_create_cap_sids(temp.path()).is_err());
+            assert_eq!(std::fs::read(&path)?, corrupt);
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn persisted_read_capability_alias_is_refused_without_rewriting() -> anyhow::Result<()> {
+        let temp = tempfile::tempdir()?;
+        let path = super::cap_sid_file(temp.path());
+        let mut caps = load_or_create_cap_sids(temp.path())?;
+        caps.readable_root_by_path
+            .insert("read-root".to_owned(), caps.workspace.clone());
+        let corrupt = serde_json::to_vec(&caps)?;
+        std::fs::write(&path, &corrupt)?;
+        assert!(load_or_create_cap_sids(temp.path()).is_err());
+        assert_eq!(std::fs::read(&path)?, corrupt);
+        Ok(())
+    }
+
+    #[test]
+    fn interrupted_capability_publication_keeps_prior_map_and_releases_lock() -> anyhow::Result<()>
+    {
+        const CHILD_ROOT: &str = "HEPTA_CAP_MAP_INTERRUPTION_CHILD_ROOT";
+        if let Some(root) = std::env::var_os(CHILD_ROOT) {
+            let root = PathBuf::from(root);
+            let _lock = super::lock_cap_sids(&root)?;
+            let mut caps = super::load_or_create_cap_sids_locked(&root)?;
+            caps.readable_root_by_path.insert(
+                "uncommitted-read-root".to_owned(),
+                super::make_random_cap_sid_string(),
+            );
+            return super::persist_caps_before_replace(
+                &super::cap_sid_file(&root),
+                &caps,
+                |staged| {
+                    std::fs::write(
+                        root.join("stage-synced"),
+                        staged.to_string_lossy().as_bytes(),
+                    )?;
+                    loop {
+                        std::thread::park();
+                    }
+                },
+            );
+        }
+        struct Child(std::process::Child);
+        impl Drop for Child {
+            fn drop(&mut self) {
+                let _ = self.0.kill();
+                let _ = self.0.wait();
+            }
+        }
+        let temp = tempfile::tempdir()?;
+        let original = load_or_create_cap_sids(temp.path())?;
+        let path = super::cap_sid_file(temp.path());
+        let prior_bytes = std::fs::read(&path)?;
+        let module = module_path!()
+            .split_once("::")
+            .map_or(module_path!(), |(_, module)| module);
+        let name = format!(
+            "{module}::interrupted_capability_publication_keeps_prior_map_and_releases_lock"
+        );
+        let mut child = Child(
+            std::process::Command::new(std::env::current_exe()?)
+                .args(["--exact", &name, "--nocapture"])
+                .env(CHILD_ROOT, temp.path())
+                .stdin(std::process::Stdio::null())
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
+                .spawn()?,
+        );
+        let marker = temp.path().join("stage-synced");
+        let started = std::time::Instant::now();
+        while !marker.exists() {
+            anyhow::ensure!(
+                child.0.try_wait()?.is_none(),
+                "publication child exited before synced staging"
+            );
+            anyhow::ensure!(
+                started.elapsed() < std::time::Duration::from_secs(30),
+                "publication child did not reach synced staging"
+            );
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+        let staged = PathBuf::from(std::fs::read_to_string(&marker)?);
+        assert!(staged.is_file());
+        child.0.kill()?;
+        assert!(!child.0.wait()?.success());
+        assert_eq!(std::fs::read(&path)?, prior_bytes);
+        let reopened = load_or_create_cap_sids(temp.path())?;
+        assert_eq!(reopened.workspace, original.workspace);
+        assert!(reopened.readable_root_by_path.is_empty());
+        // A new write acquires the original stable OS lock after the real child
+        // is terminated, and replaces the map despite the abandoned stage.
+        readable_root_cap_sid_for_path(temp.path(), temp.path())?;
+        assert_eq!(
+            load_or_create_cap_sids(temp.path())?
+                .readable_root_by_path
+                .len(),
+            1
+        );
+        Ok(())
     }
 }
