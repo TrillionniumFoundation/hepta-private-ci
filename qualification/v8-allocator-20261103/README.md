@@ -90,8 +90,25 @@ now passes its executing Git Bash as a native absolute path. It does not
 install or use WSL. The original wrapper and native MSVC configuration
 remain unchanged.
 
-Actual Windows and Linux hosted test results are pending. Local success and
-static review do not establish that the original Windows crash is closed.
+The corrected Windows run 41705384578, job 126159900594, passed on source
+`bede07d3050d897a505020215a46a3ec8d66020d`. Its independently verified artifact
+contains the passing fresh-process regression and all 7 PoC, 68 runtime and
+40 host tests with zero failures, ignored or filtered cases. Both original
+sandbox assertions and all three complete Clippy binaries passed. All 129
+initial Git input hashes and 17 output hashes were independently verified.
+
+On that same source, the Linux committed-lock check and fresh-process
+parallel test passed, but the qualifier then failed while copying the
+remote `test.xml`. The original CI configuration downloads minimal remote
+outputs. `linux-bede-negative.zip` and the complete original job log retain
+that failure; `linux-bede-negative.json` records its scope. The qualifier
+now requests the existing wrapper's top-level-output download option on
+Linux as well as Windows. It also requires a fresh evidence directory and
+records final input hashes on failure. No consumer source changed in this
+qualification correction. Full Linux consumer and Clippy acceptance is
+still pending and requires an actual successor run.
+
+The observed Windows consumer failure is closed on the verified source.
 The source remains Draft / HOLD_NO_GO / DENY_ALL. Full required CI,
 unrelated Windows failures, performance and scientific obligations, and
 source-history and Library-clearance gates remain independent.

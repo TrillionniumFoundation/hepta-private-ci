@@ -48,7 +48,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     output = args.output.resolve()
-    output.mkdir(parents=True, exist_ok=True)
+    output.mkdir(parents=True, exist_ok=False)
     before = snapshot()
     (output / "source-inputs.json").write_text(json.dumps(before, indent=2) + "\n")
     receipt = {"commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(),
@@ -65,7 +65,9 @@ def main():
     receipt["bash_executable"] = str(bash)
     platform_flags = ["--platforms=//:windows_x86_64_msvc"] if windows else []
     host_flags = ["--host_platform=//:local_windows_msvc"] if windows else []
-    wrapper_flags = ["--windows-msvc-host-platform", "--remote-download-toplevel"] if windows else []
+    # The CI default downloads minimal remote outputs. Materialize complete
+    # top-level test outputs, including test.xml, before retaining evidence.
+    wrapper_flags = (["--windows-msvc-host-platform"] if windows else []) + ["--remote-download-toplevel"]
     original_wrapper = [str(bash), "./.github/scripts/run-bazel-ci.sh", "--print-failed-test-logs",
                         "--print-failed-action-summary", *wrapper_flags, "--"]
     # The original workflow checks the universal lock on Linux, and uses its
@@ -130,6 +132,8 @@ def main():
             raise RuntimeError("qualification changed a committed input")
         receipt["status"] = "passed"
     finally:
+        receipt["source_after"] = snapshot()
+        receipt["source_inputs_unchanged"] = receipt["source_after"] == before
         receipt["outputs"] = {path.name: {"bytes": path.stat().st_size,
                                            "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
                               for path in sorted(output.iterdir()) if path.is_file() and path.name != "receipt.json"}
