@@ -1,0 +1,10 @@
+{
+  "scope": "Fixed successful path conservative bound; dynamic full inventory and terminal8MiB still required. Handled failure files preserved, not asserted same count.",
+  "success_files":39,
+  "file_classes":{"json_up_to64KiB":25,"rejection_JSON_up_to256KiB_including_two_bad_copies":3,"full_model_NPZ_up_to2MiB":2,"returned_wire_up_to256KiB":2,"stdout_stderr_up_to64KiB":6,"empty_writer_lock":1},
+  "conditional_success_bytes_upper":7536640,
+  "source_input_bytes":1772664,
+  "checks":24,"refusals":5,"allocation_restores":2,"actual_inferences":2,"new_Adam":0,
+  "byte_limit_semantics":"output_bytes34807 covers sum serialized text/image payload chunks, not JSON transport34884; decoded input9408 separately admitted",
+  "resource_boundary":"Success class caps explicitly checked at terminal; fileRLIMIT2MiB and source record caps not a global live disk quota. Hard ancestor death, kernel or storage failure can prevent receipts. No strict totalCPU proof."
+}

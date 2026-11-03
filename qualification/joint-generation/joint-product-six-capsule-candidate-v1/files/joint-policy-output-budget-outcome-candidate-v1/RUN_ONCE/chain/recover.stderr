@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/4f754a4eb697/joint-policy-output-budget-outcome-candidate-v1/worker.py", line 78, in <module>
+    check('no_backend_modules',not any(n in sys.modules for n in ('numpy','policy_backend','live_core','live_delivery')))
+  File "/workspace/scratch/4f754a4eb697/joint-policy-output-budget-outcome-candidate-v1/worker.py", line 11, in check
+    if not v:raise AssertionError(n)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: no_backend_modules

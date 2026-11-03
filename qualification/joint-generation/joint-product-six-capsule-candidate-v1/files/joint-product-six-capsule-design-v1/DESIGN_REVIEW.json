@@ -1,0 +1,70 @@
+{
+  "status": "DESIGN_ACCEPTED_WITH_IMPLEMENTATION_GATES_NOT_SOURCE_RUN_OR_PUBLICATION_ADMISSION",
+  "reviewed_manifest_sha256": "d0dd53cfd0a747a0cd659eb063f3cc68761b7fe69bae2052595ad0d09c71df73",
+  "prior_review": {
+    "path": "PRIOR_DESIGN_REVIEW_64957cbe.json",
+    "bytes": 9312,
+    "sha256": "a6b6a174ab478a11d72f9dae12f33883f8c062ffa9b94da01617e5d59dd24d20",
+    "reviewed_manifest_sha256": "64957cbe4a3f885950a2ce7990e9277ee75cac6bc06644aa2f0dc638777a2b1a",
+    "preservation": "Exact prior review retained and bound by current design MANIFEST."
+  },
+  "review_scope": "Read-only final documentary delta review of current MANIFEST, PLAN.md, INVENTORY.json, REFERENCES.json and exact prior review. Earlier read-only local source/input/ZIP observations remain attributable only to that prior review. No implementation, candidate import, model execution, qualification, test execution, installation, permission change, network access or remote mutation occurred in this delta review. The only write is this requested reviewer artifact outside MANIFEST.",
+  "binding_checks": {
+    "current_manifest_expected_hash": true,
+    "all_four_manifest_members_exact": true,
+    "prior_review_exact": true,
+    "references_hash_unchanged": true
+  },
+  "delta_findings": [
+    {
+      "id": "D1",
+      "disposition": "resolved_at_design_level",
+      "basis": "Explicit fixed-entry and environment boundary says runtime-data closure is not a self-contained execution environment; requires the existing shared benchmark lock and existing Python/NumPy/Linux facilities, forbids the materializer from substituting a private lock, excludes installation/security and owner-authority changes."
+    },
+    {
+      "id": "D2",
+      "disposition": "resolved_at_design_level",
+      "basis": "Supported runtime closure is the fixed six run_once-to-supervisor/worker paths. The lazy legacy RGB8 serve surface is explicitly excluded, without adding legacy/restricted source or claiming arbitrary copied-module API support."
+    },
+    {
+      "id": "D3",
+      "disposition": "resolved_at_design_level",
+      "basis": "PLAN and INVENTORY now distinguish the final 4960-byte terminal record as a 4938-byte central directory plus 22-byte EOCD, preserving whole-archive byte reconstruction."
+    },
+    {
+      "id": "D4",
+      "disposition": "explicit_mandatory_implementation_freeze_gate",
+      "basis": "PLAN now requires exact manifest maximum bytes, record count, unique object bytes, six-workspace expanded bytes, per-file limits, negative fixture counts and cumulative retained-output limits before implementation source freeze, and explicitly denies that RLIMIT_FSIZE is an aggregate disk bound."
+    }
+  ],
+  "design_conclusion": "The corrected design is coherent for six separate frozen engineering capsules. The selected fixed-entry runtime-data closure, exact byte storage/reconstruction, preservation of individual version/source/request/artifact identities, independent fresh output roots, and honest copied-versus-referenced raw-evidence boundary are accepted as design intent. No combined-feature or aggregate PASS is inferred.",
+  "mandatory_next_gates": [
+    "Use strict bounded schema parsing, including duplicate JSON key refusal, integer type/range checks, exact expected path set, duplicate destination rejection, exact record count/index/order/offset/length and total contiguous coverage from zero to original size. Reject extra, missing and duplicate records, malformed digests, unsupported shapes and unexpected archive bytes.",
+    "Verify each object byte count and SHA256 and complete reconstructed original file byte count/SHA256 before claiming usable materialization. If inputs are reread after validation, retain validated bytes or revalidate final output so changed inputs cannot produce a success receipt.",
+    "Refuse output/source symlinks and unsafe ancestors under the declared trusted parent model, preexisting destination and partial prior destination; do not traverse or execute archive member names. Reject any source/input identity drift and any blob above 511999 bytes.",
+    "Completion receipt must be created last only after every expected materialized byte has been checked. Disk/OS errors may leave an incomplete fresh directory but never a usable or PASS-labelled workspace. Existing incomplete directories remain refusal cases, not automatic repair/retry targets.",
+    "Freeze all qualification resource and total-output scopes before the single proposed stdlib-only run. Retain preparation costs, full wait4 costs and unknown outer tail; no budget expansion or automatic rerun on failure.",
+    "Stop on undeclared required files, restricted sources, unsupported environment, broken original identity, missing storage object, integrity/size/count violation, resource failure or incomplete output. Preserve existing scientific-data 403, App Server access, strict256 and production-authority holds.",
+    "Before any separately authorized publication, review the final implementation and saved packaging qualification, apply the actual repository incremental size policy, then independently verify remote Git bytes and reconstructed whole NPZ. The 67 historical oversize blobs against main remain separately disclosed."
+  ],
+  "additional_gate_clarifications": [
+    "The exact source/metadata/receipt and omitted-reference allowlists must be frozen and independently audited before qualification; design acceptance does not establish their completeness.",
+    "The stdlib-only materializer must never import candidate/scientific modules or execute the recovered runner. A successful materialization grants no experiment admission.",
+    "The proposed child CPU3s/wall15s/AS256MiB/FSIZE8MiB packaging qualification remains a proposal under independent implementation review and explicit prior bounds; this review authorizes no run or automatic retry.",
+    "The package inventory and complete receipts must remain acyclic and honest. Original raw RUN audit evidence is not newly verified by this design review or by a later storage-only hash check.",
+    "All existing scientific 403, App Server denials, strict256, production authority limits and unrelated historical oversize-blob blockers remain unchanged."
+  ],
+  "not_established": [
+    "materializer implementation correctness",
+    "complete frozen provenance selection",
+    "qualified package reconstruction",
+    "fresh scientific result",
+    "whole copied-module API closure",
+    "self-contained Python/NumPy/Linux runtime",
+    "hostile concurrent filesystem safety",
+    "power-loss transaction durability",
+    "production owner authentication",
+    "remote publication verification"
+  ],
+  "verdict": "ACCEPTED FOR DESIGN ONLY. No remaining documentary blocker among D1-D3. D4 and the prior implementation-review checks remain mandatory gates. Not source/run/publication admission."
+}

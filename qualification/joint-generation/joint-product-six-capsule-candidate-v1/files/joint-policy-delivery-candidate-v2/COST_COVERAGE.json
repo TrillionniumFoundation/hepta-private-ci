@@ -1,0 +1,32 @@
+{
+  "status": "PASS_SCOPED_INDEPENDENT_SAVED_REVIEW",
+  "whole_child_CPU_seconds": 0.36415099999999995,
+  "outer_prefix_CPU_seconds": 0.04249768,
+  "known_CPU_lower_bound_seconds": 0.40664867999999993,
+  "outer_tail": "unknown_not_zero",
+  "retained_run_bytes": 3942627,
+  "largest_RSS_kib": 34368,
+  "work": {
+    "allocation_restores": 2,
+    "fresh_models": 0,
+    "optimizer_steps": 0,
+    "reference_actor_predictions": 2,
+    "reference_calls": 2,
+    "reference_candidate_rows": 6,
+    "reference_encoded_rows": 6,
+    "serving_actor_predictions": 2,
+    "serving_calls": 2,
+    "serving_encoded_rows": 2,
+    "serving_final_updates": {
+      "I": 2,
+      "J": 0,
+      "T": 0
+    },
+    "serving_prefix_J": 2
+  },
+  "V1_retained_failure_known_CPU_lower_bound_seconds": 0.168670147,
+  "V1_plus_V2_selected_known_CPU_lower_bound_seconds": 0.575318827,
+  "selected_total_unknown_tails": 2,
+  "cost_boundary": "Reference computations, imports, allocation, all hashes/IO/failed checks and child teardown inside whole child once. Outer prefix extra, tail unknown. Prior training, scientific/engineering studies and all source/review work remain additional; not lifetime or strict aggregate budget proof.",
+  "independent_saved_review_sha256": "cc423a3350698cb2d514fd8107f09f71efc2700ee8fbce2fde4283615efcefff"
+}

@@ -1,0 +1,67 @@
+{
+  "additional_finding": {
+    "location": "run_once wait4 assignment -> reaped=True",
+    "reason": "SIGALRM handler can run after wait4 has reaped but before reaped flag is set. Exception cleanup may signal a PID no longer owned/unreaped. Successful child CPU receipt can also be lost in that window.",
+    "resolution": "poll_own blocks SIGALRM only during nonblocking wait4 and full PID/status/usage/returncode/reaped bookkeeping. Finally restores mask; pending timeout then sees reaped=true and skips kill. Sleep outside mask. Cleanup uses default hard15s alarm so cannot re-enter normal timeout handler; unavoidable cleanup hardkill may lose receipt and is explicitly excluded from certified completion.",
+    "resolution_required": "Serialize nonblocking wait4 plus reaped bookkeeping against SIGALRM, e.g. WNOHANG polling with SIGALRM blocked only around short wait/bookkeeping, then restore mask and process deadline. Apply equivalent safe bookkeeping to cleanup; never wait blocking with deadline masked indefinitely.",
+    "resolved": true
+  },
+  "capacity_scope": "Pinned content AFTER~1.56MiB and Actor~12KiB below2MiB file cap. Output parts cap50000B plus bounded route and two finite journals; terminal100files/16MiB includes receipt. No exemption if actual generated representation/cap differs. Conditional success budget not certified in advance.",
+  "finding_resolution": {
+    "additional_frozen_files": [
+      "PRIOR_FREEZE_b46a8ed5.json",
+      "PRIOR_SOURCE_REVIEW_b46a8ed5.json"
+    ],
+    "changed_only": [
+      "run_once.py",
+      "PLAN.md"
+    ],
+    "limits": "CPU5/AS256MiB/FSIZE2MiB unchanged outer and child; no hard-limit elevation. Hard CPU kill/failed spawn/cleanup-disk failure receipt limitations explicit. Cleanup path static only, not newly fault-tested.",
+    "source_reviewed": "Child default alarm45 vs outer handled75; caught exception after successful Popen kills only owned unreaped child then wait4 under15s cleanup alarm. Receipt retains runner_error, exact wait4 usage where available. Failed spawn records cumulative-child usage delta with complete_wait=false and no invented PID. Normal PASS requires reaped,error None,exit0 plus caps."
+  },
+  "hash_validation": {
+    "RUN_ONCE_exists": false,
+    "all_match": true,
+    "frozen_files": 24,
+    "inputs": 7,
+    "references": 4,
+    "source_mappings": 11
+  },
+  "method": "Static AST/source/hash only. No candidate import, model, data parsing or protocol run.",
+  "nonblocking_source_findings": [
+    "Paired content/full-actor same completed export and full array+optimizer identity are correctly pinned. Conversion float32 then float64 singleton common to selective and public reference; serving uses only prefix J plus one chosen final action, not j_candidates.",
+    "Three modified legacy modules are converter profile, route-bound Attempt schema, and core serve_bound/attach; lease wrapper and model math byteexact. Local import closure present.",
+    "Reservation saved before serving work; route and wire same generated snapshot, unknown reserved restore blocks replay; cancel-intent protects old frontier. validate_route checks request/artifact/wire/argmax but does not recompute feature or pixel digest from raw request: trusted caller file hash and execution provenance remain essential, not arbitrary re-signed-file authenticity.",
+    "Expected 23 checks and five refusals count correctly. Two selective plus two public reference calls, four Actor predictions, eight encoded rows, two allocation restores, zero fresh/Adam. Conditional wire parity still empirical, no quality or CPU-speed claim.",
+    "Finite terminal caps16MiB/100files and perfile2MiB; content AFTER input size1560407B below perfile. Not live aggregate disk/CPU quota. Existing model/unknown failure suites not rerun by this qualification."
+  ],
+  "prior_finding": {
+    "id": "outer_alarm_can_preempt_fullwait",
+    "location": "run_once.py outer signal.alarm(75), child limits alarm(75), unguarded os.wait4",
+    "reason": "Outer alarm begins before launching child; both alarms have same 75s duration. A stalled child can outlive the earlier outer SIGALRM. Default outer termination interrupts wait4 without a finally that kills/reaps its own child and persists a receipt. Child may remain briefly active and no complete terminal failure receipt is guaranteed. This conflicts with claimed retained triggered-limit failure and complete method accounting.",
+    "required_resolution": "Handle outer timeout with own-unreaped-child cleanup and wait4/receipt persistence, and give parent cleanup headroom relative to child wall alarm. Keep uncertain/failed spawn and unavoidable hard-kill receipt limitations explicit. Do not claim global hard-budget proof."
+  },
+  "qualification_counts": {
+    "Actor_predictions_total": 4,
+    "Adam": 0,
+    "checks": 23,
+    "encoded_row_outputs_total": 8,
+    "fresh_models": 0,
+    "input_rows": [
+      0,
+      5
+    ],
+    "public_j_candidates_reference_calls": 2,
+    "refusals": 5,
+    "restored_allocations": 2,
+    "selective_calls": 2
+  },
+  "scope": "Source-scoped readiness for separately parent-approved single run; no execution or model import by reviewer. Not all existing guard faults requalified; scientific/data/production/strict256 holds unchanged.",
+  "source_freeze_sha256": "298c48eb8836ee647e8d9b056cfd1fc666fa3ceb9fcd720b7a7e3e2c7d4da8d1",
+  "source_reviews_preserved": {
+    "207_initial_fix_review": "a7e376a14002868d9e274c0b8b531b64fff4a769f9209e707f970fd3da8c103a",
+    "207_signal_finding": "7fea5bae3bb7c8a14a9cbba7ec5a7a503e11c6df51919f474f5bf8beecc3c985",
+    "b46_blocked": "7f196d244b9f72051dcc5f00f4c756815f7cb64b10be6f0b3a5acc52db23e058"
+  },
+  "status": "PASS_SOURCE_SCOPED_JOINT_POLICY_DELIVERY"
+}

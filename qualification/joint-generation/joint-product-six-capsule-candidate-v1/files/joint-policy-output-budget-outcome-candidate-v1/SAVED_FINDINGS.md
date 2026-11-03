@@ -1,0 +1,11 @@
+# FAILED single qualification; do not rerun
+
+Frozen293ea0c7 ran once under fixed limits. Producer PID7 exited0 with16 checks/3 actual dynamic refusals,2 model restores and2 real serving calls. A committed known rejection and B prewrite failure unknown were saved, actual returned diagnostics and full unchanged model arrays retained. Supervisor independently reconstructed both before launching recovery PID8. Recovery exited1 on its FIRST no_backend_modules assertion, before readonly reconstruction, negative cases or input-terminal check. No overall RESULT or full24/5 success claim.
+
+Confirmed source cause: worker imports POLICY from route_contract at module top; route_contract imports contracts, whose top-level import numpy causes recovery to violate the intended stdlib-only import boundary. output_budget_verifier/pure themselves use stdlib. This is a readiness defect missed by author and SOURCE review, not evidence of additional model allocation or inference. Retain original SOURCE and every original frozen byte; its readiness finding is invalidated by actual failure. No retry or lower assertion.
+
+All owned children reaped, full outer receipt exit1/terminal_budget_pass=false.33 files1854460B include failure trace; no original inputs overwritten. Whole subtree.394785 = workers.329525 + derived supervisor.065260; outer prefix.032407612 gives known lower.427192612 seconds plus unknown outer tail. Receipt supervisor field is null because complete=false; the separately derived residual is based on both fixed workers present, not silently changing receipt semantics. Historical costs and review/source work remain additional. NumPy import CPU is charged, not zeroed merely because no model object was allocated.
+
+A next candidate, only after independent failure audit and new SOURCE review, may move POLICY import inside producer branch/use byteexact pure POLICY constant for recovery. Must preserve no_backend_modules and zero allocation/inference recovery criteria, original failure and cost. No run authorized by these notes. No owner/data/strict256 expansion.
+
+Independent FAILED saved review complete: b309e263af06e42839a651131eaab971e87bbd3bda0ed4321177742917df52f0. No success inferred from partial producer evidence.

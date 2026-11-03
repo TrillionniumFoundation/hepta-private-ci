@@ -1,0 +1,81 @@
+{
+  "evidence_sha256": {
+    "CAPACITY.json": "6f32c2c05269ee4fca1bbfaa719b895bd88c0fb6610e2ead548437d5ad12a294",
+    "FREEZE.json": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791",
+    "PLAN.md": "70d01b4c73bd5e6dc3ce05e0acde690775da70b5fb94059be165a4c41fd68c09",
+    "PRIOR_FAILURE.json": "de77c95b4978ac490d93004b235a3407ed9121143648fc62375cc4ee1d78fdb8",
+    "SOURCE_CLOSURE.json": "ca02a6dd3e4e7feaeb95365dc95ef014b613b03274bf94e10d9f291806c4df83",
+    "common.py": "a781555db23a568b08a4f8d57e0edd655156fa74651eb9b1de2d44729f118fea",
+    "output_budget_pure.py": "32c0a71e3d5966cec817ccc08a3defb693c58d87055a6ef1c0ebc06f2b432581",
+    "output_budget_verifier.py": "1f1b090c840d44f5ba4136a4fcad88ca55a303f28fbce74e1a8edae69999e117",
+    "worker.py": "e49069227589bc39dd98b35dc365e45efb167d81384c832f49f825acd5844e41"
+  },
+  "failure_provenance": {
+    "V1_FAILED_SAVED_sha256": "b309e263af06e42839a651131eaab971e87bbd3bda0ed4321177742917df52f0",
+    "V1_SOURCE_sha256": "6f34be4a617b289be9c7ab8c404908e2059526f391acec8fe2e27fafad8c3556",
+    "V1_freeze": "293ea0c7086f787236648382c9686f3d027c3a5bcc8ecebd5a11eb55c1b97128",
+    "V1_status": "FAILED, unchanged and not retroactively passed",
+    "internal_metadata": "Reported unsubmitted9444 metadata revision was not execution; review binds only final399073ab. No RUN exists at review.",
+    "notes_revision": "V1 SAVED_FINDINGS/COST were updated after failed audit to reference final FAILED review, as disclosed. PRIOR_FAILURE binds their current amended bytes. They are not falsely asserted byteexact to their earlier hashes inside V1 savedreview. Original run/receipt/source artifacts unchanged.",
+    "prior_cost": "V1 lower .427192612 CPU +unknown tail remains separately retained; future V2 costs additive, not refund/replacement.",
+    "reviewer_error_retained": "V1 source readiness missed the transitive import; current explicit closure analysis corrects that finding for V2 only. Original freeze/SOURCE/FAILED_SAVED/RUN pins verified."
+  },
+  "limitations": [
+    "Static source readiness only; no claim no_backend_modules or postfailure unexecuted recovery tests have now run. Parent separate singleexecution admission required.",
+    "Knownrejection and Bunknown modelresult distinction unchanged; no diagnostic adoption, replay, cancellation or owner authority.",
+    "Same fixed row/reference, no scientific/naturaldata/generaltext/audio claim; no AppServer403/publication/strict256 scope.",
+    "Ancestorharddeath/kernel/storage/cleanup can still impair receipts; prefixextra/tailunknown and all old/review costs additional."
+  ],
+  "method": "Read-only full new import closure AST and unchanged code/assertion review, byteexact delta and all frozen/input/reference/priorfailure hashes. No candidate/helper/module imports, model, RNG, optimizer or protocol execution.",
+  "run_present": false,
+  "source_freeze_sha256": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791",
+  "status": "PASS_SOURCE_SCOPED_V2_RECOVERY_TRANSITIVE_IMPORT_FIX",
+  "verified": {
+    "AST_files": 25,
+    "closure_analysis": "Traversed all statements in recovery-executed module path, recovery branch and function bodies, recursively resolved every local import. No dynamic __import__/exec/eval in this closure. NumPy, policy_backend, live_core/live_delivery occur only in role==producer branch. Removed route_contract->contracts->numpy edge genuinely absent, rather than weakened assertion. Pure POLICY exactly actor-J-v1 matches unchanged producer contract.",
+    "executable_delta": "Only worker top-level from route_contract import POLICY replaced by from output_budget_pure import POLICY. Reversing this line reproduces V1 worker byteexact. All24 other Python files byteexact V1. No check, math, resource or outcome change.",
+    "frozen_files": 31,
+    "input_pins": 13,
+    "prior_failure_pins": 9,
+    "producer_and_supervisor": "Unchanged producer16checks3real dynamicrefs,2serves/2Actor/2encodes/2restores/0Adam; supervisor3checks normalproducerreap before structural audit, then recoveryreap. Total24checks5refs intended. Failure does not erase actual work. Full model AFTER comparisons and all commit/unknown boundaries unchanged.",
+    "recovery_import_closure": {
+      "common": [
+        "os",
+        "json",
+        "hashlib",
+        "pathlib"
+      ],
+      "output_budget_pure": [
+        "hashlib",
+        "json",
+        "math",
+        "os",
+        "pathlib",
+        "re",
+        "stat",
+        "struct",
+        "sys"
+      ],
+      "output_budget_verifier": [
+        "json",
+        "output_budget_pure"
+      ],
+      "worker": [
+        "common",
+        "output_budget_verifier",
+        "output_budget_pure",
+        "sys",
+        "os",
+        "json",
+        "io",
+        "resource",
+        "time",
+        "copy",
+        "pathlib"
+      ]
+    },
+    "remaining_recovery_assertions": "Original no_backend_modules stays unchanged. load_case validates external MANIFESTS_PIN and actualroot, derives ownrequest/reservedref. Both complete summaries compare producer records; no fresh timestamps in summaries cause equality drift. Knownbad allowed34808 reaches explicit outputbudgetbinding, reservednamespace f*64 reaches explicit reservedreferencebinding. ValueError handler records exact expected errors. before/after inventory covers root only so detached badfiles outside root do not spuriously fail. inputhash check and final5checks2refs intact.",
+    "resources_and_capacity": "Same4process/hard2CPU/AS256MiB/FSIZE2MiB; terminal5CPU/8MiB100files/64KiBreceipt. Same39normalfiles classbound7536640B,13inputbytes1772664. No limit increase or V1retry; V2 ownfuture RUN namespace. Bounds posthoc/notstrictglobal.",
+    "typed_and_atomic_semantics": "Only fully route/wire validated typed OutputBudgetExceeded converted to durableknown outcome after backendidentity guard and realclock samples. Internalresource errors/invalidroute/drift/noncommittedwrite remainunknown. Single256KiB rejectionfile nooverwrite linkcommit; B exactOSError beforetemp. Actual duplicate calls and oldreserved publish specificterminal rejection remain separate from pureinspector negatives."
+  }
+}

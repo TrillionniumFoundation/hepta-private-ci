@@ -1,0 +1,53 @@
+{
+  "CPU_prefix_seconds": 0.345452945,
+  "CPU_tail": "unknown_not_zero",
+  "compression": "none; raw ZIP record slicing and exact byte copying only",
+  "defined_read_scope": {
+    "bytes_loaded": 2990186,
+    "digest_bytes_accounted": 7540779,
+    "excluded": "design preflight reads, repeated assertion hashes, AST work, metadata operations and later accounting are not included in these I/O byte counters",
+    "original_files_newly_loaded": 242
+  },
+  "original_scientific_costs": "preserved, never reset/refunded",
+  "scope": "prepare_package.py measured prefix only; earlier manual source review, authoring, shell/tool startup and later freeze work are additional unmeasured cost, not zero",
+  "self_rusage_before": [
+    0.028922,
+    0.009064,
+    11520,
+    0,
+    0,
+    0,
+    3885,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    0
+  ],
+  "self_rusage_prefix_after": [
+    0.336654,
+    0.046772,
+    18780,
+    0,
+    0,
+    0,
+    16741,
+    0,
+    0,
+    0,
+    8616,
+    0,
+    0,
+    0,
+    4,
+    2
+  ],
+  "status": "PACKAGED_NOT_QUALIFIED",
+  "storage_writes_bytes": 2990186,
+  "storage_writes_files": 320,
+  "wall_prefix_seconds": 0.34548664098838344
+}

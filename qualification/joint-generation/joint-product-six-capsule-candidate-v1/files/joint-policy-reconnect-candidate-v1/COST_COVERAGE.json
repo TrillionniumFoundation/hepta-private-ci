@@ -1,0 +1,23 @@
+{
+  "status": "PASS_SCOPED_INDEPENDENT_SAVED_REVIEW",
+  "whole_reaped_subtree_CPU_seconds": 0.594254,
+  "sum_worker_CPU_seconds": 0.449588,
+  "complete_supervisor_CPU_seconds": 0.14466599999999996,
+  "outer_prefix_CPU_seconds": 0.037395905,
+  "known_CPU_lower_bound_seconds": 0.631649905,
+  "outer_tail": "unknown_not_zero",
+  "retained_run_bytes": 3114161,
+  "largest_RSS_kib": 33364,
+  "work": {
+    "new_model_restores": 4,
+    "new_selective_serving_calls": 1,
+    "new_Actor_predictions": 1,
+    "new_encoded_rows": 1,
+    "new_optimizer_steps": 0
+  },
+  "historical_V1_V2_lower_bound_seconds": 0.575318827,
+  "selected_V1_V2_reconnect_lower_bound_seconds": 1.206968732,
+  "selected_unknown_tails": 3,
+  "scope": "Whole reaped subtree includes producer killed work, recovery, supervisor, all hash/IO/import/model cold restore and teardown once. Worker and supervisor are decomposition, not additions. Outer prefix extra; tail unknown. All earlier training/engineering/source/review costs additional. Not lifetime or strict global CPU budget proof. Historical saved reference not newly computed.",
+  "independent_saved_review_sha256": "c272ec3a16f27f52d56faa5fef32cff150f3455d822caddc697b5f15c6b421f8"
+}

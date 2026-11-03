@@ -1,0 +1,59 @@
+{
+  "automatic_next_run_authorized": false,
+  "complete_wait": true,
+  "exit_code": 1,
+  "failure_boundary": "handled exceptions after successful Popen attempt own-child kill/reap; outer hard kill/cleanup or disk failure may prevent receipts; failed spawn may have internally reaped work without individual PID receipt",
+  "final_retained_bytes": 64190,
+  "inventory": {
+    "PAIRED_ARTIFACT.json": {
+      "bytes": 12818,
+      "sha256": "7dd70d9bf95a14b901467307f6ed923ac15b344e5bab748730e4ebe0124b9ddd"
+    },
+    "delivery/.hepta-writer.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "success-REQUEST.json": {
+      "bytes": 48427,
+      "sha256": "bde0137c6502382d7fde798ab3a61fce78b729bfbd26c78c897b8848c2bd160a"
+    },
+    "supervisor.stderr": {
+      "bytes": 1157,
+      "sha256": "e6d6f08ec31661698977e450b2457f4362d6d3228b14f597f3a40d3f5eb67777"
+    },
+    "supervisor.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "known_CPU_lower_bound_seconds": 0.168670147,
+  "largest_reaped_process_RSS_kib": 30272,
+  "outer_limits": {
+    "AS": [
+      268435456,
+      268435456
+    ],
+    "CPU": [
+      5,
+      5
+    ],
+    "FSIZE": [
+      2097152,
+      2097152
+    ]
+  },
+  "outer_prefix_CPU_seconds": 0.027544147,
+  "outer_tail": "unknown_not_zero",
+  "pid": 5,
+  "retry": false,
+  "runner_error": null,
+  "source_freeze_sha256": "298c48eb8836ee647e8d9b056cfd1fc666fa3ceb9fcd720b7a7e3e2c7d4da8d1",
+  "terminal_budget_pass": false,
+  "wall_limits_seconds": {
+    "child": 45,
+    "handled_failure_cleanup": 15,
+    "outer_initial": 75
+  },
+  "wall_seconds": 0.14426248701056466,
+  "whole_reaped_subtree_CPU_seconds": 0.141126
+}

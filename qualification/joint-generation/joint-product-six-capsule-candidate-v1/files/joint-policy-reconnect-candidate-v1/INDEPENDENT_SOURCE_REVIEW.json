@@ -1,0 +1,46 @@
+{
+  "documentation_finding": {
+    "issue": "Only poll reap bookkeeping is signal-masked. launch Popen return to live[p.pid] registration is not masked and asynchronous timeout can interrupt this window. Thus no claim of atomic spawn registration or universal cleanup/accounting.",
+    "location": "PLAN Fixed resource graph: OwnlivePID maps and WNOHANG reap use shortSIGALRM-masked registration",
+    "required_resolution": "Narrow wording to masked reap bookkeeping and explicitly scope spawn-return/registration interruption as uncertain child-handle/descendant receipt failure, or implement separately reviewed safe registration. Current qualification does not inject this window.",
+    "resolved": "Parent required implementation rather than exclusion: final owned_process replaces both Popen layers. See fork review. Previous limited acceptance and parent-blocking finding retained unchanged.",
+    "runtime_assessment": "No new inevitable normal-path failure found; documentation must not overclaim all-failure guarantee."
+  },
+  "fork_source_review": {
+    "accounting": "Outer recovers p/usage from sharedowned afterhandledexception and requires complete role receipts for terminalPASS. Killed producer and all setup work charged through wait4. Missingusage/role or harddeath not certifiedfulltree.",
+    "child": "Inherited mask held until defaultSIGALRM+alarm30/60 configured. Child ensures SIGALRM unmasked, duplicates alreadyopened stdout/stderr,execve exact current executable isolated/B scripts. BaseException setup path uses os._exit127, no parentfinally; PID remains tracked for wait4.",
+    "delta": "Only old PLAN/run_once/supervise change; new owned_process.py. Common/worker/verify_midpoint/14runtime/inputmath remain byteexact30675.28freeze and13input hashes match, all AST parse, noRUN.",
+    "reaping": "poll WNOHANG masksSIGALRM, sets reaped before usage/returncode/logging and unmask. kill_owned requires assigned unreapedPID; cleanup scans shared ownership independent of launchreturnlocal. Normalproducer verified+HANDOFF then pollnotreaped,kill/reap-9 before recovery.",
+    "registration": "Child(role) appended to shared ownedlist before masking/fork. SIGALRM blocked through fork and parent child.pid assignment; caller finally has object even if pending handler prevents spawn return. No parent errorpipe/exec handshake or Python preexec callback waits while masked. On fork exception prior mask restored; pidNone skippedcleanup.",
+    "remaining_boundaries": [
+      "Uncatchable ancestor death can orphan descendants/unobservedcost; no processgroup/subreaper added.",
+      "Memory/kernel/cleanup/disk failure can prevent receipt or prompt kill; SIGALRM scope only, not all asynchronous signals.",
+      "Launch-time pendingalarm/execfailure paths reviewed statically, not newly exercised by this qualification.",
+      "Run outer with -I -B as fixed isolated execution convention; new helper import otherwise may create pycache outside RUN, not model activity."
+    ],
+    "threading": "Eachfork asserts exactly1 /proc/self/task. BLASthread env1 installed outer before supervisor imports; parent singlethread assumption enforced locally. No claim arbitrary embedded multithreadhostfork safe."
+  },
+  "limits": [
+    "Caller now2/deadline100 literal; no trustedclock/auth/clientack.",
+    "Only acknowledged midpoint death, no new unknownmodel/fragmentlostack/cancelcrash.",
+    "Shared current model mathematical reference historicalV2, no fresh independentbaseline.",
+    "No source result admits a run; father separately authorizes once."
+  ],
+  "method": "Static source/AST/hash only; no imports or candidate/model/protocol execution.",
+  "prior_review_sha256": "a4810df6f8978e4215096267111133cd01681cfec6d784136507ce1cd9d5962a",
+  "scope": "Source readiness for separately parent-approved one normal midpoint/reconnect run, not run result or universalcleanup/strictglobal budget proof. Literalclock/owner/data/scientific/production holds retained.",
+  "source_freeze_sha256": "e387122724ca941406a36415e6204ea3c712d43c122ac6ab8d8aba896ed7086e",
+  "status": "PASS_SOURCE_SCOPED_RECONNECT_OWNED_FORK_REGISTRATION",
+  "verified": {
+    "RUN_exists": false,
+    "capacity": "Normal41files=5outer+20chain+16delivery; READY published but tmpunlink not reached at kill may retain one extra hardlink path. \u226460 planned/100terminal. Pinned content1560407B<2MiB filecap;16MiB terminal not livequota.",
+    "counts": "5producer+12recover=17checks;2valid exact-message namespace refusals afterleaseacquired, inventorybefore/afteroutside deliveryroot; total4restore1serve1Actor1encode0reference/Adam/fresh. Recovery0inference,4pieces26581B appended to8227B for34808B.",
+    "dependencies": "common helpers defined; verify_midpoint imports Attempt/parsers, no model construction; worker has all NP/io/signal/resource imports; full14module runtime unchanged.",
+    "freeze_files": 28,
+    "identity": "Expected composite from pinned V2 artifact only source_freeze replaced; rawrequest onlyartifact/run_id replaced. Paired provenance/arrays remain identical. Route onlyartifact/requestidentity changed; numerics/wire/input same. Exact slot restricts untrusted READY filename. Physicalroot preknown bysupervisor; lockdev/inode retained.",
+    "inputs": 13,
+    "path": "Producer cold2restore -> real selective1Actor/encode -> generated/acked2 -> independent no-model raw/expectedartifact/namespace/fixedpiece01/route/wire/session reconstruction -> atomicHANDOFF -> ownkill/reap -> new interpreter cold2restore -> two namespace refusals -> saved remaining4pieces.",
+    "resources": "CPUhard/soft2 all4processes AS256MiB FSIZE2MiB installed outer and inherited; affinity/environment beforefork. Worker30/sup60 timers installed in fork child before exec, outer90 handled; cleanup15 hard. All normal reaped worker/supervisor cost counted once plus extra outerprefix/unknown tail.",
+    "runtime_exact_copies": 14
+  }
+}

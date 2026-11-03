@@ -1,0 +1,1334 @@
+{
+  "all_frozen_entries": 173,
+  "capsules": {
+    "joint-policy-active-channel-fault-candidate-v1": {
+      "AST_imports": {
+        "attempt.py": [
+          "content_input",
+          "contracts",
+          "fashion_research",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "route_contract",
+          "tempfile"
+        ],
+        "common.py": [
+          "hashlib",
+          "json",
+          "os",
+          "pathlib"
+        ],
+        "content_input.py": [
+          "contracts",
+          "dataclasses",
+          "hashlib",
+          "json",
+          "multimodal_contract",
+          "numpy",
+          "time"
+        ],
+        "contracts.py": [
+          "dataclasses",
+          "hashlib",
+          "json",
+          "numpy",
+          "re"
+        ],
+        "control_channel.py": [
+          "json",
+          "os",
+          "select",
+          "struct",
+          "time"
+        ],
+        "cost.py": [
+          "pathlib",
+          "resource",
+          "time"
+        ],
+        "fashion_research/__init__.py": [],
+        "fashion_research/autodiff.py": [
+          "numpy"
+        ],
+        "fashion_research/model.py": [
+          "dataclasses",
+          "fashion_research.autodiff",
+          "hashlib",
+          "json",
+          "numpy",
+          "pathlib",
+          "zipfile"
+        ],
+        "fashion_research/transport.py": [
+          "contracts",
+          "json",
+          "multimodal_contract",
+          "numpy"
+        ],
+        "guarded_core.py": [
+          "attempt",
+          "content_input",
+          "contracts",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "guarded_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "guarded_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "live_control.py": [
+          "contracts",
+          "json",
+          "persistence",
+          "re",
+          "select",
+          "time"
+        ],
+        "live_core.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "contracts",
+          "control_channel",
+          "json",
+          "live_control",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "live_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "live_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "multimodal_contract.py": [
+          "contracts",
+          "dataclasses",
+          "enum",
+          "json",
+          "numpy",
+          "re",
+          "serve"
+        ],
+        "owned_process.py": [
+          "os",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "persistence.py": [
+          "content_input",
+          "contracts",
+          "hashlib",
+          "json",
+          "os",
+          "pathlib",
+          "tempfile",
+          "time"
+        ],
+        "policy_backend.py": [
+          "contracts",
+          "fashion_research",
+          "fashion_research.model",
+          "numpy",
+          "route_contract"
+        ],
+        "route_contract.py": [
+          "contracts",
+          "hashlib",
+          "json",
+          "math"
+        ],
+        "run_once.py": [
+          "hashlib",
+          "json",
+          "os",
+          "owned_process",
+          "pathlib",
+          "resource",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "supervise.py": [
+          "common",
+          "fcntl",
+          "json",
+          "live_control",
+          "os",
+          "owned_process",
+          "pathlib",
+          "signal",
+          "sys",
+          "time",
+          "verify_control",
+          "verify_fault"
+        ],
+        "verify_control.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "json",
+          "persistence",
+          "route_contract"
+        ],
+        "verify_fault.py": [
+          "common",
+          "json",
+          "verify_control"
+        ],
+        "worker.py": [
+          "common",
+          "contracts",
+          "control_channel",
+          "cost",
+          "io",
+          "json",
+          "live_control",
+          "live_delivery",
+          "numpy",
+          "os",
+          "pathlib",
+          "policy_backend",
+          "resource",
+          "route_contract",
+          "sys",
+          "time",
+          "verify_fault"
+        ]
+      },
+      "entry": "run_once.py",
+      "external_prerequisites": [
+        "caller-supplied existing shared benchmark lock",
+        "compatible Python and NumPy",
+        "Linux flock/resource/fork/wait4/sched_setaffinity/proc facilities"
+      ],
+      "frozen_files": 29,
+      "input_paths": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "materialized_original_freeze": "joint-policy-active-channel-fault-candidate-v1/FREEZE.json",
+      "original_freeze_sha256": "82abe08b0447b3ba45afff37857c18f793eebf02158b6ff2ccb46097d5ec8ec2",
+      "prior_independent_static_review": "joint-product-six-capsule-design-v1/PRIOR_DESIGN_REVIEW_64957cbe.json",
+      "supported_scope": "fixed run_once to supervisor/worker Fashion paths only; lazy multimodal_contract legacy serve API is excluded"
+    },
+    "joint-policy-deferred-deadline-candidate-v1": {
+      "AST_imports": {
+        "attempt.py": [
+          "content_input",
+          "contracts",
+          "fashion_research",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "route_contract",
+          "tempfile"
+        ],
+        "common.py": [
+          "hashlib",
+          "json",
+          "os",
+          "pathlib"
+        ],
+        "content_input.py": [
+          "contracts",
+          "dataclasses",
+          "hashlib",
+          "json",
+          "multimodal_contract",
+          "numpy",
+          "time"
+        ],
+        "contracts.py": [
+          "dataclasses",
+          "hashlib",
+          "json",
+          "numpy",
+          "re"
+        ],
+        "control_channel.py": [
+          "json",
+          "os",
+          "select",
+          "struct",
+          "time"
+        ],
+        "cost.py": [
+          "pathlib",
+          "resource",
+          "time"
+        ],
+        "fashion_research/__init__.py": [],
+        "fashion_research/autodiff.py": [
+          "numpy"
+        ],
+        "fashion_research/model.py": [
+          "dataclasses",
+          "fashion_research.autodiff",
+          "hashlib",
+          "json",
+          "numpy",
+          "pathlib",
+          "zipfile"
+        ],
+        "fashion_research/transport.py": [
+          "contracts",
+          "json",
+          "multimodal_contract",
+          "numpy"
+        ],
+        "guarded_core.py": [
+          "attempt",
+          "content_input",
+          "contracts",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "guarded_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "guarded_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "live_control.py": [
+          "contracts",
+          "json",
+          "persistence",
+          "re",
+          "select",
+          "time"
+        ],
+        "live_core.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "contracts",
+          "control_channel",
+          "json",
+          "live_control",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "live_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "live_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "multimodal_contract.py": [
+          "contracts",
+          "dataclasses",
+          "enum",
+          "json",
+          "numpy",
+          "re",
+          "serve"
+        ],
+        "owned_process.py": [
+          "os",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "persistence.py": [
+          "content_input",
+          "contracts",
+          "hashlib",
+          "json",
+          "os",
+          "pathlib",
+          "tempfile",
+          "time"
+        ],
+        "policy_backend.py": [
+          "contracts",
+          "fashion_research",
+          "fashion_research.model",
+          "numpy",
+          "route_contract"
+        ],
+        "route_contract.py": [
+          "contracts",
+          "hashlib",
+          "json",
+          "math"
+        ],
+        "run_once.py": [
+          "hashlib",
+          "json",
+          "os",
+          "owned_process",
+          "pathlib",
+          "resource",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "supervise.py": [
+          "common",
+          "control_channel",
+          "copy",
+          "fcntl",
+          "json",
+          "live_control",
+          "os",
+          "owned_process",
+          "pathlib",
+          "signal",
+          "sys",
+          "time",
+          "verify_expired"
+        ],
+        "verify_expired.py": [
+          "hashlib",
+          "json",
+          "math",
+          "os",
+          "pathlib",
+          "re",
+          "stat",
+          "struct",
+          "sys"
+        ],
+        "worker.py": [
+          "common",
+          "contracts",
+          "control_channel",
+          "cost",
+          "io",
+          "json",
+          "live_control",
+          "live_delivery",
+          "numpy",
+          "os",
+          "pathlib",
+          "policy_backend",
+          "resource",
+          "route_contract",
+          "sys",
+          "time"
+        ]
+      },
+      "entry": "run_once.py",
+      "external_prerequisites": [
+        "caller-supplied existing shared benchmark lock",
+        "compatible Python and NumPy",
+        "Linux flock/resource/fork/wait4/sched_setaffinity/proc facilities"
+      ],
+      "frozen_files": 28,
+      "input_paths": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "materialized_original_freeze": "joint-policy-deferred-deadline-candidate-v1/FREEZE.json",
+      "original_freeze_sha256": "27009841810567ffba63bacc300e3551aaa03c8f5590801cff9ec7ec62e5833f",
+      "prior_independent_static_review": "joint-product-six-capsule-design-v1/PRIOR_DESIGN_REVIEW_64957cbe.json",
+      "supported_scope": "fixed run_once to supervisor/worker Fashion paths only; lazy multimodal_contract legacy serve API is excluded"
+    },
+    "joint-policy-delivery-candidate-v2": {
+      "AST_imports": {
+        "attempt.py": [
+          "content_input",
+          "contracts",
+          "fashion_research",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "route_contract",
+          "tempfile"
+        ],
+        "content_input.py": [
+          "contracts",
+          "dataclasses",
+          "hashlib",
+          "json",
+          "multimodal_contract",
+          "numpy",
+          "time"
+        ],
+        "contracts.py": [
+          "dataclasses",
+          "hashlib",
+          "json",
+          "numpy",
+          "re"
+        ],
+        "cost.py": [
+          "pathlib",
+          "resource",
+          "time"
+        ],
+        "fashion_research/__init__.py": [],
+        "fashion_research/autodiff.py": [
+          "numpy"
+        ],
+        "fashion_research/model.py": [
+          "dataclasses",
+          "fashion_research.autodiff",
+          "hashlib",
+          "json",
+          "numpy",
+          "pathlib",
+          "zipfile"
+        ],
+        "fashion_research/transport.py": [
+          "contracts",
+          "json",
+          "multimodal_contract",
+          "numpy"
+        ],
+        "guarded_core.py": [
+          "attempt",
+          "content_input",
+          "contracts",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "guarded_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "guarded_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "multimodal_contract.py": [
+          "contracts",
+          "dataclasses",
+          "enum",
+          "json",
+          "numpy",
+          "re",
+          "serve"
+        ],
+        "persistence.py": [
+          "content_input",
+          "contracts",
+          "hashlib",
+          "json",
+          "os",
+          "pathlib",
+          "tempfile",
+          "time"
+        ],
+        "policy_backend.py": [
+          "contracts",
+          "fashion_research",
+          "fashion_research.model",
+          "numpy",
+          "route_contract"
+        ],
+        "qualify.py": [
+          "attempt",
+          "content_input",
+          "contracts",
+          "copy",
+          "cost",
+          "fcntl",
+          "guarded_delivery",
+          "hashlib",
+          "io",
+          "json",
+          "multimodal_contract",
+          "numpy",
+          "os",
+          "pathlib",
+          "policy_backend",
+          "route_contract",
+          "sys"
+        ],
+        "route_contract.py": [
+          "contracts",
+          "hashlib",
+          "json",
+          "math"
+        ],
+        "run_once.py": [
+          "hashlib",
+          "json",
+          "os",
+          "pathlib",
+          "resource",
+          "signal",
+          "subprocess",
+          "sys",
+          "time"
+        ]
+      },
+      "entry": "run_once.py",
+      "external_prerequisites": [
+        "caller-supplied existing shared benchmark lock",
+        "compatible Python and NumPy",
+        "Linux flock/resource/fork/wait4/sched_setaffinity/proc facilities"
+      ],
+      "frozen_files": 26,
+      "input_paths": [
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "materialized_original_freeze": "joint-policy-delivery-candidate-v2/FREEZE.json",
+      "original_freeze_sha256": "7389bbb0ac2188ef48a1ee17f9b1b9241c6a35e8fb1388711945080ac5a895ee",
+      "prior_independent_static_review": "joint-product-six-capsule-design-v1/PRIOR_DESIGN_REVIEW_64957cbe.json",
+      "supported_scope": "fixed run_once to supervisor/worker Fashion paths only; lazy multimodal_contract legacy serve API is excluded"
+    },
+    "joint-policy-live-control-candidate-v1": {
+      "AST_imports": {
+        "attempt.py": [
+          "content_input",
+          "contracts",
+          "fashion_research",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "route_contract",
+          "tempfile"
+        ],
+        "common.py": [
+          "hashlib",
+          "json",
+          "os",
+          "pathlib"
+        ],
+        "content_input.py": [
+          "contracts",
+          "dataclasses",
+          "hashlib",
+          "json",
+          "multimodal_contract",
+          "numpy",
+          "time"
+        ],
+        "contracts.py": [
+          "dataclasses",
+          "hashlib",
+          "json",
+          "numpy",
+          "re"
+        ],
+        "control_channel.py": [
+          "json",
+          "os",
+          "select",
+          "struct",
+          "time"
+        ],
+        "cost.py": [
+          "pathlib",
+          "resource",
+          "time"
+        ],
+        "fashion_research/__init__.py": [],
+        "fashion_research/autodiff.py": [
+          "numpy"
+        ],
+        "fashion_research/model.py": [
+          "dataclasses",
+          "fashion_research.autodiff",
+          "hashlib",
+          "json",
+          "numpy",
+          "pathlib",
+          "zipfile"
+        ],
+        "fashion_research/transport.py": [
+          "contracts",
+          "json",
+          "multimodal_contract",
+          "numpy"
+        ],
+        "guarded_core.py": [
+          "attempt",
+          "content_input",
+          "contracts",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "guarded_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "guarded_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "live_control.py": [
+          "contracts",
+          "json",
+          "persistence",
+          "re",
+          "select",
+          "time"
+        ],
+        "live_core.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "contracts",
+          "control_channel",
+          "json",
+          "live_control",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "live_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "live_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "multimodal_contract.py": [
+          "contracts",
+          "dataclasses",
+          "enum",
+          "json",
+          "numpy",
+          "re",
+          "serve"
+        ],
+        "owned_process.py": [
+          "os",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "persistence.py": [
+          "content_input",
+          "contracts",
+          "hashlib",
+          "json",
+          "os",
+          "pathlib",
+          "tempfile",
+          "time"
+        ],
+        "policy_backend.py": [
+          "contracts",
+          "fashion_research",
+          "fashion_research.model",
+          "numpy",
+          "route_contract"
+        ],
+        "qualify_controls.py": [
+          "contracts",
+          "control_channel",
+          "copy",
+          "live_control",
+          "os",
+          "persistence",
+          "struct",
+          "time"
+        ],
+        "route_contract.py": [
+          "contracts",
+          "hashlib",
+          "json",
+          "math"
+        ],
+        "run_once.py": [
+          "hashlib",
+          "json",
+          "os",
+          "owned_process",
+          "pathlib",
+          "resource",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "supervise.py": [
+          "common",
+          "control_channel",
+          "copy",
+          "fcntl",
+          "json",
+          "live_control",
+          "os",
+          "owned_process",
+          "pathlib",
+          "qualify_controls",
+          "resource",
+          "signal",
+          "sys",
+          "time",
+          "verify_control"
+        ],
+        "verify_control.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "json",
+          "persistence",
+          "route_contract"
+        ],
+        "worker.py": [
+          "common",
+          "contracts",
+          "control_channel",
+          "copy",
+          "cost",
+          "io",
+          "json",
+          "live_control",
+          "live_delivery",
+          "numpy",
+          "os",
+          "pathlib",
+          "policy_backend",
+          "resource",
+          "route_contract",
+          "signal",
+          "sys",
+          "time",
+          "verify_control"
+        ]
+      },
+      "entry": "run_once.py",
+      "external_prerequisites": [
+        "caller-supplied existing shared benchmark lock",
+        "compatible Python and NumPy",
+        "Linux flock/resource/fork/wait4/sched_setaffinity/proc facilities"
+      ],
+      "frozen_files": 31,
+      "input_paths": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "materialized_original_freeze": "joint-policy-live-control-candidate-v1/FREEZE.json",
+      "original_freeze_sha256": "ace422cc766e54fa4fb21884815d6a173fcb53e84f507b2dcdc68cc910082129",
+      "prior_independent_static_review": "joint-product-six-capsule-design-v1/PRIOR_DESIGN_REVIEW_64957cbe.json",
+      "supported_scope": "fixed run_once to supervisor/worker Fashion paths only; lazy multimodal_contract legacy serve API is excluded"
+    },
+    "joint-policy-output-budget-outcome-candidate-v2": {
+      "AST_imports": {
+        "attempt.py": [
+          "content_input",
+          "contracts",
+          "fashion_research",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "route_contract",
+          "tempfile"
+        ],
+        "common.py": [
+          "hashlib",
+          "json",
+          "os",
+          "pathlib"
+        ],
+        "content_input.py": [
+          "contracts",
+          "dataclasses",
+          "hashlib",
+          "json",
+          "multimodal_contract",
+          "numpy",
+          "time"
+        ],
+        "contracts.py": [
+          "dataclasses",
+          "hashlib",
+          "json",
+          "numpy",
+          "re"
+        ],
+        "control_channel.py": [
+          "json",
+          "os",
+          "select",
+          "struct",
+          "time"
+        ],
+        "cost.py": [
+          "pathlib",
+          "resource",
+          "time"
+        ],
+        "fashion_research/__init__.py": [],
+        "fashion_research/autodiff.py": [
+          "numpy"
+        ],
+        "fashion_research/model.py": [
+          "dataclasses",
+          "fashion_research.autodiff",
+          "hashlib",
+          "json",
+          "numpy",
+          "pathlib",
+          "zipfile"
+        ],
+        "fashion_research/transport.py": [
+          "contracts",
+          "json",
+          "multimodal_contract",
+          "numpy"
+        ],
+        "guarded_core.py": [
+          "attempt",
+          "content_input",
+          "contracts",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "guarded_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "guarded_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "live_control.py": [
+          "contracts",
+          "json",
+          "persistence",
+          "re",
+          "select",
+          "time"
+        ],
+        "live_core.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "contracts",
+          "control_channel",
+          "json",
+          "live_control",
+          "os",
+          "pathlib",
+          "persistence",
+          "tempfile",
+          "time"
+        ],
+        "live_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "live_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "multimodal_contract.py": [
+          "contracts",
+          "dataclasses",
+          "enum",
+          "json",
+          "numpy",
+          "re",
+          "serve"
+        ],
+        "output_budget_pure.py": [
+          "hashlib",
+          "json",
+          "math",
+          "os",
+          "pathlib",
+          "re",
+          "stat",
+          "struct",
+          "sys"
+        ],
+        "output_budget_verifier.py": [
+          "json",
+          "output_budget_pure"
+        ],
+        "owned_process.py": [
+          "os",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "persistence.py": [
+          "content_input",
+          "contracts",
+          "hashlib",
+          "json",
+          "os",
+          "pathlib",
+          "tempfile",
+          "time"
+        ],
+        "policy_backend.py": [
+          "contracts",
+          "fashion_research",
+          "fashion_research.model",
+          "numpy",
+          "route_contract"
+        ],
+        "route_contract.py": [
+          "contracts",
+          "hashlib",
+          "json",
+          "math"
+        ],
+        "run_once.py": [
+          "hashlib",
+          "json",
+          "os",
+          "owned_process",
+          "pathlib",
+          "resource",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "supervise.py": [
+          "common",
+          "fcntl",
+          "json",
+          "os",
+          "output_budget_verifier",
+          "owned_process",
+          "pathlib",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "worker.py": [
+          "common",
+          "copy",
+          "cost",
+          "io",
+          "json",
+          "live_control",
+          "live_core",
+          "live_delivery",
+          "numpy",
+          "os",
+          "output_budget_pure",
+          "output_budget_verifier",
+          "pathlib",
+          "policy_backend",
+          "resource",
+          "sys",
+          "time"
+        ]
+      },
+      "entry": "run_once.py",
+      "external_prerequisites": [
+        "caller-supplied existing shared benchmark lock",
+        "compatible Python and NumPy",
+        "Linux flock/resource/fork/wait4/sched_setaffinity/proc facilities"
+      ],
+      "frozen_files": 31,
+      "input_paths": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "materialized_original_freeze": "joint-policy-output-budget-outcome-candidate-v2/FREEZE.json",
+      "original_freeze_sha256": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791",
+      "prior_independent_static_review": "joint-product-six-capsule-design-v1/PRIOR_DESIGN_REVIEW_64957cbe.json",
+      "supported_scope": "fixed run_once to supervisor/worker Fashion paths only; lazy multimodal_contract legacy serve API is excluded"
+    },
+    "joint-policy-reconnect-candidate-v1": {
+      "AST_imports": {
+        "attempt.py": [
+          "content_input",
+          "contracts",
+          "fashion_research",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "route_contract",
+          "tempfile"
+        ],
+        "common.py": [
+          "hashlib",
+          "json",
+          "os",
+          "pathlib"
+        ],
+        "content_input.py": [
+          "contracts",
+          "dataclasses",
+          "hashlib",
+          "json",
+          "multimodal_contract",
+          "numpy",
+          "time"
+        ],
+        "contracts.py": [
+          "dataclasses",
+          "hashlib",
+          "json",
+          "numpy",
+          "re"
+        ],
+        "cost.py": [
+          "pathlib",
+          "resource",
+          "time"
+        ],
+        "fashion_research/__init__.py": [],
+        "fashion_research/autodiff.py": [
+          "numpy"
+        ],
+        "fashion_research/model.py": [
+          "dataclasses",
+          "fashion_research.autodiff",
+          "hashlib",
+          "json",
+          "numpy",
+          "pathlib",
+          "zipfile"
+        ],
+        "fashion_research/transport.py": [
+          "contracts",
+          "json",
+          "multimodal_contract",
+          "numpy"
+        ],
+        "guarded_core.py": [
+          "attempt",
+          "content_input",
+          "contracts",
+          "json",
+          "os",
+          "pathlib",
+          "persistence",
+          "time"
+        ],
+        "guarded_delivery.py": [
+          "contextlib",
+          "contracts",
+          "fcntl",
+          "guarded_core",
+          "os",
+          "pathlib",
+          "stat",
+          "threading"
+        ],
+        "multimodal_contract.py": [
+          "contracts",
+          "dataclasses",
+          "enum",
+          "json",
+          "numpy",
+          "re",
+          "serve"
+        ],
+        "owned_process.py": [
+          "os",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "persistence.py": [
+          "content_input",
+          "contracts",
+          "hashlib",
+          "json",
+          "os",
+          "pathlib",
+          "tempfile",
+          "time"
+        ],
+        "policy_backend.py": [
+          "contracts",
+          "fashion_research",
+          "fashion_research.model",
+          "numpy",
+          "route_contract"
+        ],
+        "route_contract.py": [
+          "contracts",
+          "hashlib",
+          "json",
+          "math"
+        ],
+        "run_once.py": [
+          "hashlib",
+          "json",
+          "os",
+          "owned_process",
+          "pathlib",
+          "resource",
+          "signal",
+          "sys",
+          "time"
+        ],
+        "supervise.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "fcntl",
+          "json",
+          "os",
+          "owned_process",
+          "pathlib",
+          "resource",
+          "route_contract",
+          "signal",
+          "sys",
+          "time",
+          "verify_midpoint"
+        ],
+        "verify_midpoint.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "json",
+          "persistence",
+          "route_contract"
+        ],
+        "worker.py": [
+          "attempt",
+          "common",
+          "content_input",
+          "contracts",
+          "copy",
+          "cost",
+          "guarded_delivery",
+          "io",
+          "json",
+          "numpy",
+          "os",
+          "pathlib",
+          "policy_backend",
+          "resource",
+          "route_contract",
+          "signal",
+          "sys",
+          "verify_midpoint"
+        ]
+      },
+      "entry": "run_once.py",
+      "external_prerequisites": [
+        "caller-supplied existing shared benchmark lock",
+        "compatible Python and NumPy",
+        "Linux flock/resource/fork/wait4/sched_setaffinity/proc facilities"
+      ],
+      "frozen_files": 28,
+      "input_paths": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "materialized_original_freeze": "joint-policy-reconnect-candidate-v1/FREEZE.json",
+      "original_freeze_sha256": "e387122724ca941406a36415e6204ea3c712d43c122ac6ab8d8aba896ed7086e",
+      "prior_independent_static_review": "joint-product-six-capsule-design-v1/PRIOR_DESIGN_REVIEW_64957cbe.json",
+      "supported_scope": "fixed run_once to supervisor/worker Fashion paths only; lazy multimodal_contract legacy serve API is excluded"
+    }
+  },
+  "legacy_surface_excluded": "multimodal_contract.to_legacy_request/dispatch lazy serve import; no arbitrary API closure claim",
+  "no_new_model_admission": true,
+  "scope": "Static source/import census, no candidate imports/execution; detailed fixed-entry closure inspected in copied design review and original source reviews. Every target frozen member plus its original FREEZE and every INPUTS path is included. RUN outputs are created by future original runners, not package prerequisites."
+}

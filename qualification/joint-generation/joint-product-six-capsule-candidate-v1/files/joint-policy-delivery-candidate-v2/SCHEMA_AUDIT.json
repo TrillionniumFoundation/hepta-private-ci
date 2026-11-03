@@ -1,0 +1,110 @@
+{
+  "scope": "stdlib AST-only, no imports/model/data or candidate execution",
+  "actual_fields": {
+    "root": [
+      "artifact_sha256",
+      "budget",
+      "deadline_ns",
+      "decoding",
+      "objective_id",
+      "outputs",
+      "run_id",
+      "schema",
+      "streams",
+      "sync_tolerance_ns"
+    ],
+    "budget": [
+      "compute_units",
+      "input_bytes",
+      "output_bytes"
+    ],
+    "decoding": [
+      "mode",
+      "seed"
+    ],
+    "stream": [
+      "modality",
+      "payload",
+      "stream_id",
+      "timing"
+    ],
+    "timing": [
+      "clock_id",
+      "end_ns",
+      "start_ns",
+      "sync_group"
+    ],
+    "payload": [
+      "color_space",
+      "dtype",
+      "pixels"
+    ]
+  },
+  "expected_fields": {
+    "root": [
+      "artifact_sha256",
+      "budget",
+      "deadline_ns",
+      "decoding",
+      "objective_id",
+      "outputs",
+      "run_id",
+      "schema",
+      "streams",
+      "sync_tolerance_ns"
+    ],
+    "budget": [
+      "compute_units",
+      "input_bytes",
+      "output_bytes"
+    ],
+    "decoding": [
+      "mode",
+      "seed"
+    ],
+    "stream": [
+      "modality",
+      "payload",
+      "stream_id",
+      "timing"
+    ],
+    "timing": [
+      "clock_id",
+      "end_ns",
+      "start_ns",
+      "sync_group"
+    ],
+    "payload": [
+      "color_space",
+      "dtype",
+      "pixels"
+    ]
+  },
+  "sync_tolerance_ns": 0,
+  "zero_tolerance_valid_single_stream": true,
+  "literal_bounds": {
+    "deadline_ns": 100,
+    "now_ns": 2,
+    "compute_units": 2,
+    "input_bytes": 10000,
+    "decoded_RGB_bytes": 9408,
+    "output_bytes": 50000,
+    "timing_start_ns": 1,
+    "timing_end_ns": 2,
+    "mode": "greedy",
+    "seed": 0,
+    "outputs": [
+      "text",
+      "image"
+    ],
+    "payload_dtype": "float32",
+    "color_space": "RGB"
+  },
+  "unchanged_remaining_checks": "selected output exactwire versus fresh sameinput reference; success piece count computed dynamically; cancellation2 has text then8192image;23checks5ref remain source-review obligations",
+  "reverse_one_field_exact_V1": true,
+  "parser_source": {
+    "path": "joint-policy-delivery-candidate-v2/multimodal_contract.py",
+    "bytes": 14141,
+    "sha256": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108"
+  }
+}

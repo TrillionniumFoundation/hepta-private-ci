@@ -1,0 +1,50 @@
+{
+  "audit_script_sha256": "ececb0823991b3b8ca3add48e4b0d6000a41f6d72fad447786565aadd6b6b898",
+  "cost": {
+    "known_lower_bound_CPU_seconds": 0.168670147,
+    "max_process_RSS_kib": 30272,
+    "no_refund": true,
+    "outer_final_tail": "unknown_not_zero",
+    "outer_prefix_CPU_seconds": 0.027544147,
+    "prior_costs": "Historical references/training/source/review additional nonzero; no cumulative re-audit.",
+    "wall_seconds": 0.14426248701056466,
+    "whole_child_CPU_seconds": 0.141126
+  },
+  "evidence_sha256": {
+    "COST_COVERAGE.json": "f607185bfad03acb3a359f0f3a3954f745cbafa970a025c5fdaddf39b679f866",
+    "INDEPENDENT_SOURCE_REVIEW.json": "ca081c174a9b06c275c3efb1df27c299a5c0d7b0ae3f5ea53574ae0a03f59e35",
+    "RUN_ONCE/OUTER_WAIT4_RECEIPT.json": "da095350a1277243bc3d0ea4f14c511adce2d53cd73dcca646e6c61404451582",
+    "RUN_ONCE/PAIRED_ARTIFACT.json": "7dd70d9bf95a14b901467307f6ed923ac15b344e5bab748730e4ebe0124b9ddd",
+    "RUN_ONCE/success-REQUEST.json": "bde0137c6502382d7fde798ab3a61fce78b729bfbd26c78c897b8848c2bd160a",
+    "RUN_ONCE/supervisor.stderr": "e6d6f08ec31661698977e450b2457f4362d6d3228b14f597f3a40d3f5eb67777",
+    "SAVED_FINDINGS.md": "f45031806409ed35d5e976d41fa5a19895abca4f96a6d4f53946a36a0b7570fb"
+  },
+  "failure": {
+    "RESULT_exists": false,
+    "complete_wait": true,
+    "exit_code": 1,
+    "location": "qualify.py first convert line47 -> MediaEnvelope.parse required root fields line244",
+    "missing_field": "sync_tolerance_ns",
+    "pid": 5,
+    "resource_limit_failure": false,
+    "runner_error": null,
+    "terminal_budget_pass": false,
+    "top_level_other_missing_or_extra_fields": []
+  },
+  "method": "Saved-only independent source/control-flow, JSON/ZIP-NPY/header/raw hash audit. No candidate imports, protocol/model/RNG/optimizer execution or retry.",
+  "next_scope": "Any repair requires isolated new candidate/freeze/source review and separate single-run admission. No original RUN/freeze/source review edited. Neither selective success nor cancellation qualified; original scientific/data/production/strict256 holds unchanged.",
+  "source_freeze_sha256": "298c48eb8836ee647e8d9b056cfd1fc666fa3ceb9fcd720b7a7e3e2c7d4da8d1",
+  "source_review_correction": "Original SOURCE scoped PASS missed required sync_tolerance_ns in qualifier request constructor. This statically inevitable schema failure invalidates its readiness conclusion. Preserve original review unchanged as audit evidence; this failed result is not a functional PASS.",
+  "status": "FAILED_CONFIRMED_FIRST_MEDIA_ENVELOPE_SCHEMA",
+  "verified": {
+    "all_hashes_and_lengths_match": true,
+    "delivery": "Only empty writer lock exists, no request namespace, reservation, route, output or piece records.",
+    "frozen_files": 24,
+    "inventory_hashes_exact": true,
+    "original_input_files": 7,
+    "paired_artifact": "Full restored content/actor array dtype,shape,raw SHA match pinned NPZ; parameter/optimizer digests match completed export; artifact raw hash equals first request artifact; source freeze matches.",
+    "run_bytes_including_receipt": 64190,
+    "run_files": 6,
+    "work_scope": "Traceback and frozen path before saved PAIRED_ARTIFACT support exactly2 allocation restores and0fresh/Adam/reference/serve/Actor.predict/outputencode. No runtime RESULT counters; do not present these as a saved counter summary."
+  }
+}

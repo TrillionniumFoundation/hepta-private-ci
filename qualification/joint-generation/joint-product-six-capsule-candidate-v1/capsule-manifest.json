@@ -1,0 +1,2961 @@
+{
+  "capsules": {
+    "joint-policy-active-channel-fault-candidate-v1": {
+      "expanded_bytes": 1925834,
+      "expanded_files": 43,
+      "input_files": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "source_files": [
+        "joint-policy-active-channel-fault-candidate-v1/CAPACITY.json",
+        "joint-policy-active-channel-fault-candidate-v1/FREEZE.json",
+        "joint-policy-active-channel-fault-candidate-v1/INPUTS.json",
+        "joint-policy-active-channel-fault-candidate-v1/PLAN.md",
+        "joint-policy-active-channel-fault-candidate-v1/REFERENCES.json",
+        "joint-policy-active-channel-fault-candidate-v1/attempt.py",
+        "joint-policy-active-channel-fault-candidate-v1/common.py",
+        "joint-policy-active-channel-fault-candidate-v1/content_input.py",
+        "joint-policy-active-channel-fault-candidate-v1/contracts.py",
+        "joint-policy-active-channel-fault-candidate-v1/control_channel.py",
+        "joint-policy-active-channel-fault-candidate-v1/cost.py",
+        "joint-policy-active-channel-fault-candidate-v1/fashion_research/__init__.py",
+        "joint-policy-active-channel-fault-candidate-v1/fashion_research/autodiff.py",
+        "joint-policy-active-channel-fault-candidate-v1/fashion_research/model.py",
+        "joint-policy-active-channel-fault-candidate-v1/fashion_research/transport.py",
+        "joint-policy-active-channel-fault-candidate-v1/guarded_core.py",
+        "joint-policy-active-channel-fault-candidate-v1/guarded_delivery.py",
+        "joint-policy-active-channel-fault-candidate-v1/live_control.py",
+        "joint-policy-active-channel-fault-candidate-v1/live_core.py",
+        "joint-policy-active-channel-fault-candidate-v1/live_delivery.py",
+        "joint-policy-active-channel-fault-candidate-v1/multimodal_contract.py",
+        "joint-policy-active-channel-fault-candidate-v1/owned_process.py",
+        "joint-policy-active-channel-fault-candidate-v1/persistence.py",
+        "joint-policy-active-channel-fault-candidate-v1/policy_backend.py",
+        "joint-policy-active-channel-fault-candidate-v1/route_contract.py",
+        "joint-policy-active-channel-fault-candidate-v1/run_once.py",
+        "joint-policy-active-channel-fault-candidate-v1/supervise.py",
+        "joint-policy-active-channel-fault-candidate-v1/verify_control.py",
+        "joint-policy-active-channel-fault-candidate-v1/verify_fault.py",
+        "joint-policy-active-channel-fault-candidate-v1/worker.py"
+      ]
+    },
+    "joint-policy-deferred-deadline-candidate-v1": {
+      "expanded_bytes": 1938454,
+      "expanded_files": 42,
+      "input_files": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "source_files": [
+        "joint-policy-deferred-deadline-candidate-v1/CAPACITY.json",
+        "joint-policy-deferred-deadline-candidate-v1/FREEZE.json",
+        "joint-policy-deferred-deadline-candidate-v1/INPUTS.json",
+        "joint-policy-deferred-deadline-candidate-v1/PLAN.md",
+        "joint-policy-deferred-deadline-candidate-v1/REFERENCES.json",
+        "joint-policy-deferred-deadline-candidate-v1/attempt.py",
+        "joint-policy-deferred-deadline-candidate-v1/common.py",
+        "joint-policy-deferred-deadline-candidate-v1/content_input.py",
+        "joint-policy-deferred-deadline-candidate-v1/contracts.py",
+        "joint-policy-deferred-deadline-candidate-v1/control_channel.py",
+        "joint-policy-deferred-deadline-candidate-v1/cost.py",
+        "joint-policy-deferred-deadline-candidate-v1/fashion_research/__init__.py",
+        "joint-policy-deferred-deadline-candidate-v1/fashion_research/autodiff.py",
+        "joint-policy-deferred-deadline-candidate-v1/fashion_research/model.py",
+        "joint-policy-deferred-deadline-candidate-v1/fashion_research/transport.py",
+        "joint-policy-deferred-deadline-candidate-v1/guarded_core.py",
+        "joint-policy-deferred-deadline-candidate-v1/guarded_delivery.py",
+        "joint-policy-deferred-deadline-candidate-v1/live_control.py",
+        "joint-policy-deferred-deadline-candidate-v1/live_core.py",
+        "joint-policy-deferred-deadline-candidate-v1/live_delivery.py",
+        "joint-policy-deferred-deadline-candidate-v1/multimodal_contract.py",
+        "joint-policy-deferred-deadline-candidate-v1/owned_process.py",
+        "joint-policy-deferred-deadline-candidate-v1/persistence.py",
+        "joint-policy-deferred-deadline-candidate-v1/policy_backend.py",
+        "joint-policy-deferred-deadline-candidate-v1/route_contract.py",
+        "joint-policy-deferred-deadline-candidate-v1/run_once.py",
+        "joint-policy-deferred-deadline-candidate-v1/supervise.py",
+        "joint-policy-deferred-deadline-candidate-v1/verify_expired.py",
+        "joint-policy-deferred-deadline-candidate-v1/worker.py"
+      ]
+    },
+    "joint-policy-delivery-candidate-v2": {
+      "expanded_bytes": 1805215,
+      "expanded_files": 34,
+      "input_files": [
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "source_files": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INPUTS.json",
+        "joint-policy-delivery-candidate-v2/PLAN.md",
+        "joint-policy-delivery-candidate-v2/PRIOR_FAILURE.json",
+        "joint-policy-delivery-candidate-v2/PRIOR_FREEZE_2079245f.json",
+        "joint-policy-delivery-candidate-v2/PRIOR_FREEZE_b46a8ed5.json",
+        "joint-policy-delivery-candidate-v2/PRIOR_SOURCE_FINDING_2079245f.json",
+        "joint-policy-delivery-candidate-v2/PRIOR_SOURCE_REVIEW_2079245f.json",
+        "joint-policy-delivery-candidate-v2/PRIOR_SOURCE_REVIEW_b46a8ed5.json",
+        "joint-policy-delivery-candidate-v2/REFERENCES.json",
+        "joint-policy-delivery-candidate-v2/SCHEMA_AUDIT.json",
+        "joint-policy-delivery-candidate-v2/attempt.py",
+        "joint-policy-delivery-candidate-v2/content_input.py",
+        "joint-policy-delivery-candidate-v2/contracts.py",
+        "joint-policy-delivery-candidate-v2/cost.py",
+        "joint-policy-delivery-candidate-v2/fashion_research/__init__.py",
+        "joint-policy-delivery-candidate-v2/fashion_research/autodiff.py",
+        "joint-policy-delivery-candidate-v2/fashion_research/model.py",
+        "joint-policy-delivery-candidate-v2/fashion_research/transport.py",
+        "joint-policy-delivery-candidate-v2/guarded_core.py",
+        "joint-policy-delivery-candidate-v2/guarded_delivery.py",
+        "joint-policy-delivery-candidate-v2/multimodal_contract.py",
+        "joint-policy-delivery-candidate-v2/persistence.py",
+        "joint-policy-delivery-candidate-v2/policy_backend.py",
+        "joint-policy-delivery-candidate-v2/qualify.py",
+        "joint-policy-delivery-candidate-v2/route_contract.py",
+        "joint-policy-delivery-candidate-v2/run_once.py"
+      ]
+    },
+    "joint-policy-live-control-candidate-v1": {
+      "expanded_bytes": 1935584,
+      "expanded_files": 45,
+      "input_files": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "source_files": [
+        "joint-policy-live-control-candidate-v1/CAPACITY.json",
+        "joint-policy-live-control-candidate-v1/FREEZE.json",
+        "joint-policy-live-control-candidate-v1/INPUTS.json",
+        "joint-policy-live-control-candidate-v1/PLAN.md",
+        "joint-policy-live-control-candidate-v1/PRIOR_FREEZE_96d9853f.json",
+        "joint-policy-live-control-candidate-v1/PRIOR_SOURCE_REVIEW_96d9853f.json",
+        "joint-policy-live-control-candidate-v1/REFERENCES.json",
+        "joint-policy-live-control-candidate-v1/attempt.py",
+        "joint-policy-live-control-candidate-v1/common.py",
+        "joint-policy-live-control-candidate-v1/content_input.py",
+        "joint-policy-live-control-candidate-v1/contracts.py",
+        "joint-policy-live-control-candidate-v1/control_channel.py",
+        "joint-policy-live-control-candidate-v1/cost.py",
+        "joint-policy-live-control-candidate-v1/fashion_research/__init__.py",
+        "joint-policy-live-control-candidate-v1/fashion_research/autodiff.py",
+        "joint-policy-live-control-candidate-v1/fashion_research/model.py",
+        "joint-policy-live-control-candidate-v1/fashion_research/transport.py",
+        "joint-policy-live-control-candidate-v1/guarded_core.py",
+        "joint-policy-live-control-candidate-v1/guarded_delivery.py",
+        "joint-policy-live-control-candidate-v1/live_control.py",
+        "joint-policy-live-control-candidate-v1/live_core.py",
+        "joint-policy-live-control-candidate-v1/live_delivery.py",
+        "joint-policy-live-control-candidate-v1/multimodal_contract.py",
+        "joint-policy-live-control-candidate-v1/owned_process.py",
+        "joint-policy-live-control-candidate-v1/persistence.py",
+        "joint-policy-live-control-candidate-v1/policy_backend.py",
+        "joint-policy-live-control-candidate-v1/qualify_controls.py",
+        "joint-policy-live-control-candidate-v1/route_contract.py",
+        "joint-policy-live-control-candidate-v1/run_once.py",
+        "joint-policy-live-control-candidate-v1/supervise.py",
+        "joint-policy-live-control-candidate-v1/verify_control.py",
+        "joint-policy-live-control-candidate-v1/worker.py"
+      ]
+    },
+    "joint-policy-output-budget-outcome-candidate-v2": {
+      "expanded_bytes": 1954764,
+      "expanded_files": 45,
+      "input_files": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "source_files": [
+        "joint-policy-output-budget-outcome-candidate-v2/CAPACITY.json",
+        "joint-policy-output-budget-outcome-candidate-v2/FREEZE.json",
+        "joint-policy-output-budget-outcome-candidate-v2/INPUTS.json",
+        "joint-policy-output-budget-outcome-candidate-v2/PLAN.md",
+        "joint-policy-output-budget-outcome-candidate-v2/PRIOR_FAILURE.json",
+        "joint-policy-output-budget-outcome-candidate-v2/REFERENCES.json",
+        "joint-policy-output-budget-outcome-candidate-v2/SOURCE_CLOSURE.json",
+        "joint-policy-output-budget-outcome-candidate-v2/attempt.py",
+        "joint-policy-output-budget-outcome-candidate-v2/common.py",
+        "joint-policy-output-budget-outcome-candidate-v2/content_input.py",
+        "joint-policy-output-budget-outcome-candidate-v2/contracts.py",
+        "joint-policy-output-budget-outcome-candidate-v2/control_channel.py",
+        "joint-policy-output-budget-outcome-candidate-v2/cost.py",
+        "joint-policy-output-budget-outcome-candidate-v2/fashion_research/__init__.py",
+        "joint-policy-output-budget-outcome-candidate-v2/fashion_research/autodiff.py",
+        "joint-policy-output-budget-outcome-candidate-v2/fashion_research/model.py",
+        "joint-policy-output-budget-outcome-candidate-v2/fashion_research/transport.py",
+        "joint-policy-output-budget-outcome-candidate-v2/guarded_core.py",
+        "joint-policy-output-budget-outcome-candidate-v2/guarded_delivery.py",
+        "joint-policy-output-budget-outcome-candidate-v2/live_control.py",
+        "joint-policy-output-budget-outcome-candidate-v2/live_core.py",
+        "joint-policy-output-budget-outcome-candidate-v2/live_delivery.py",
+        "joint-policy-output-budget-outcome-candidate-v2/multimodal_contract.py",
+        "joint-policy-output-budget-outcome-candidate-v2/output_budget_pure.py",
+        "joint-policy-output-budget-outcome-candidate-v2/output_budget_verifier.py",
+        "joint-policy-output-budget-outcome-candidate-v2/owned_process.py",
+        "joint-policy-output-budget-outcome-candidate-v2/persistence.py",
+        "joint-policy-output-budget-outcome-candidate-v2/policy_backend.py",
+        "joint-policy-output-budget-outcome-candidate-v2/route_contract.py",
+        "joint-policy-output-budget-outcome-candidate-v2/run_once.py",
+        "joint-policy-output-budget-outcome-candidate-v2/supervise.py",
+        "joint-policy-output-budget-outcome-candidate-v2/worker.py"
+      ]
+    },
+    "joint-policy-reconnect-candidate-v1": {
+      "expanded_bytes": 1912999,
+      "expanded_files": 42,
+      "input_files": [
+        "joint-policy-delivery-candidate-v2/FREEZE.json",
+        "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+        "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+        "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+        "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+        "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      ],
+      "source_files": [
+        "joint-policy-reconnect-candidate-v1/FREEZE.json",
+        "joint-policy-reconnect-candidate-v1/INPUTS.json",
+        "joint-policy-reconnect-candidate-v1/PLAN.md",
+        "joint-policy-reconnect-candidate-v1/PRIOR_FREEZE_30675ce2.json",
+        "joint-policy-reconnect-candidate-v1/PRIOR_FREEZE_bc959762.json",
+        "joint-policy-reconnect-candidate-v1/PRIOR_SOURCE_REVIEW_30675ce2.json",
+        "joint-policy-reconnect-candidate-v1/PRIOR_SOURCE_REVIEW_bc959762.json",
+        "joint-policy-reconnect-candidate-v1/REFERENCES.json",
+        "joint-policy-reconnect-candidate-v1/SPAWN_REGISTRATION_FINDING_30675ce2.json",
+        "joint-policy-reconnect-candidate-v1/attempt.py",
+        "joint-policy-reconnect-candidate-v1/common.py",
+        "joint-policy-reconnect-candidate-v1/content_input.py",
+        "joint-policy-reconnect-candidate-v1/contracts.py",
+        "joint-policy-reconnect-candidate-v1/cost.py",
+        "joint-policy-reconnect-candidate-v1/fashion_research/__init__.py",
+        "joint-policy-reconnect-candidate-v1/fashion_research/autodiff.py",
+        "joint-policy-reconnect-candidate-v1/fashion_research/model.py",
+        "joint-policy-reconnect-candidate-v1/fashion_research/transport.py",
+        "joint-policy-reconnect-candidate-v1/guarded_core.py",
+        "joint-policy-reconnect-candidate-v1/guarded_delivery.py",
+        "joint-policy-reconnect-candidate-v1/multimodal_contract.py",
+        "joint-policy-reconnect-candidate-v1/owned_process.py",
+        "joint-policy-reconnect-candidate-v1/persistence.py",
+        "joint-policy-reconnect-candidate-v1/policy_backend.py",
+        "joint-policy-reconnect-candidate-v1/route_contract.py",
+        "joint-policy-reconnect-candidate-v1/run_once.py",
+        "joint-policy-reconnect-candidate-v1/supervise.py",
+        "joint-policy-reconnect-candidate-v1/verify_midpoint.py",
+        "joint-policy-reconnect-candidate-v1/worker.py"
+      ]
+    }
+  },
+  "files": [
+    {
+      "bytes": 578,
+      "path": "joint-policy-active-channel-fault-candidate-v1/CAPACITY.json",
+      "sha256": "759d53884a873762438baf3526c33310f6fc50d9f5977fde5b604458e0c16cfb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/CAPACITY.json"
+      }
+    },
+    {
+      "bytes": 1064,
+      "path": "joint-policy-active-channel-fault-candidate-v1/COST_COVERAGE.json",
+      "sha256": "3ed35d85557553e8be7ba65c2648b4442480d2bb7b76436afd91cab3946e5f1f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/COST_COVERAGE.json"
+      }
+    },
+    {
+      "bytes": 2604,
+      "path": "joint-policy-active-channel-fault-candidate-v1/FREEZE.json",
+      "sha256": "82abe08b0447b3ba45afff37857c18f793eebf02158b6ff2ccb46097d5ec8ec2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 7258,
+      "path": "joint-policy-active-channel-fault-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "f34e327df18484df9762de7d32e574cf16920a74a1b01407b72c7a4413c09cf4",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 7192,
+      "path": "joint-policy-active-channel-fault-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json",
+      "sha256": "f64bb5e128a5b83a886236d356eb420de759ea2f6ee3f310935bdab92217f38c",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 2917,
+      "path": "joint-policy-active-channel-fault-candidate-v1/INPUTS.json",
+      "sha256": "8685984c27e1bfab7ec2ac92a2861dab9347e605c75feef03f0ca07382b86e2c",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/INPUTS.json"
+      }
+    },
+    {
+      "bytes": 3133,
+      "path": "joint-policy-active-channel-fault-candidate-v1/PLAN.md",
+      "sha256": "8e9128809a6ef3627042559a8de5073ca6a5c30e646bc1cc211574b457607e1b",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/PLAN.md"
+      }
+    },
+    {
+      "bytes": 889,
+      "path": "joint-policy-active-channel-fault-candidate-v1/REFERENCES.json",
+      "sha256": "3a32c0989a9f55c7b9a851256bbead268cf5d360edae73e0713bc81dfbc7c34d",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/REFERENCES.json"
+      }
+    },
+    {
+      "bytes": 7418,
+      "path": "joint-policy-active-channel-fault-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json",
+      "sha256": "b14914a7ad9c1a6e18a145e65089de1306b3fbd2f8e49dfe9cad1112db09a600",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json"
+      }
+    },
+    {
+      "bytes": 2487,
+      "path": "joint-policy-active-channel-fault-candidate-v1/SAVED_FINDINGS.md",
+      "sha256": "bd2f9418be6bb47485ad1f67c4b48edd2f2ae84f7fa1636fae4153329a61ae33",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/SAVED_FINDINGS.md"
+      }
+    },
+    {
+      "bytes": 8709,
+      "path": "joint-policy-active-channel-fault-candidate-v1/attempt.py",
+      "sha256": "0de46294e68394b8ce2859355d2ab4bf2234d8f7873b546f41d35caafeada9eb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/attempt.py"
+      }
+    },
+    {
+      "bytes": 1501,
+      "path": "joint-policy-active-channel-fault-candidate-v1/common.py",
+      "sha256": "8619c2c538a15b7e7d552ddcfbd220cf5f79802962461b61202a05a9130358cf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/common.py"
+      }
+    },
+    {
+      "bytes": 3026,
+      "path": "joint-policy-active-channel-fault-candidate-v1/content_input.py",
+      "sha256": "71f1696e720b4adfa9cb14cfd247f5e4a64f0e837a2a4f85574c83c99da597a6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/content_input.py"
+      }
+    },
+    {
+      "bytes": 6997,
+      "path": "joint-policy-active-channel-fault-candidate-v1/contracts.py",
+      "sha256": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/contracts.py"
+      }
+    },
+    {
+      "bytes": 5684,
+      "path": "joint-policy-active-channel-fault-candidate-v1/control_channel.py",
+      "sha256": "7f0ef27a766f133fdfb844f9820f265b13fbe1dc4327056ec16a358c2641de05",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/control_channel.py"
+      }
+    },
+    {
+      "bytes": 3122,
+      "path": "joint-policy-active-channel-fault-candidate-v1/cost.py",
+      "sha256": "76008bde5e457d8709e49fb4e45d8f54d93a98e454c6ab67565dd0cc0416dde5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/cost.py"
+      }
+    },
+    {
+      "bytes": 84,
+      "path": "joint-policy-active-channel-fault-candidate-v1/fashion_research/__init__.py",
+      "sha256": "c183be0098158464a097ece9cc5a916664ff239c0bfc408b151c9a1b04802cdf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/fashion_research/__init__.py"
+      }
+    },
+    {
+      "bytes": 6844,
+      "path": "joint-policy-active-channel-fault-candidate-v1/fashion_research/autodiff.py",
+      "sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/fashion_research/autodiff.py"
+      }
+    },
+    {
+      "bytes": 19110,
+      "path": "joint-policy-active-channel-fault-candidate-v1/fashion_research/model.py",
+      "sha256": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/fashion_research/model.py"
+      }
+    },
+    {
+      "bytes": 6313,
+      "path": "joint-policy-active-channel-fault-candidate-v1/fashion_research/transport.py",
+      "sha256": "5f7f89a117197b00d1fbe656cd101c35418121847fdfa816d769430dadc11e73",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/fashion_research/transport.py"
+      }
+    },
+    {
+      "bytes": 7757,
+      "path": "joint-policy-active-channel-fault-candidate-v1/guarded_core.py",
+      "sha256": "6ef51ff2ce941322ab50cf897c3ab5a442705225e8702220e829375921d7c0fb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/guarded_core.py"
+      }
+    },
+    {
+      "bytes": 3065,
+      "path": "joint-policy-active-channel-fault-candidate-v1/guarded_delivery.py",
+      "sha256": "61a2d76dd0e6143304297d75b18f55e6c6e732e39bf8aebb29472c35993460bc",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/guarded_delivery.py"
+      }
+    },
+    {
+      "bytes": 2662,
+      "path": "joint-policy-active-channel-fault-candidate-v1/live_control.py",
+      "sha256": "52bcc74dc2faacd601de82da412fe4377d22c6586f4a51cf9a2e670d094a8e6f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/live_control.py"
+      }
+    },
+    {
+      "bytes": 12808,
+      "path": "joint-policy-active-channel-fault-candidate-v1/live_core.py",
+      "sha256": "0a800d9464bff765cd1973e7bdea485107c45efc179412cbb1f8b34825ce8d75",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/live_core.py"
+      }
+    },
+    {
+      "bytes": 3458,
+      "path": "joint-policy-active-channel-fault-candidate-v1/live_delivery.py",
+      "sha256": "1240ae67426e1d4a06486295311b4726c895d87b6d9eaba9f2eadc3f79b31d93",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/live_delivery.py"
+      }
+    },
+    {
+      "bytes": 14141,
+      "path": "joint-policy-active-channel-fault-candidate-v1/multimodal_contract.py",
+      "sha256": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/multimodal_contract.py"
+      }
+    },
+    {
+      "bytes": 3086,
+      "path": "joint-policy-active-channel-fault-candidate-v1/owned_process.py",
+      "sha256": "9de66531802dfc6cc48fb711abc916787624d9225d6747e64f9faec23c2deb3c",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/owned_process.py"
+      }
+    },
+    {
+      "bytes": 3952,
+      "path": "joint-policy-active-channel-fault-candidate-v1/persistence.py",
+      "sha256": "be796ff7ff4614cb40936cd4d5fb371866eed30faf10463f3e9bc48073bc3adf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/persistence.py"
+      }
+    },
+    {
+      "bytes": 4054,
+      "path": "joint-policy-active-channel-fault-candidate-v1/policy_backend.py",
+      "sha256": "1d5b88283b3b1ffdbda48096f0e38d192ac07687fe07902ebf9bc1b9d1be2e8a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/policy_backend.py"
+      }
+    },
+    {
+      "bytes": 1657,
+      "path": "joint-policy-active-channel-fault-candidate-v1/route_contract.py",
+      "sha256": "3b69df1382e9fa1e3b46612c1433997961534969aa7b59d552768d60ee8bd6a5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/route_contract.py"
+      }
+    },
+    {
+      "bytes": 4647,
+      "path": "joint-policy-active-channel-fault-candidate-v1/run_once.py",
+      "sha256": "5e9069f87ef42d4410bea2fdbd4b561baf30a621d5b0790f8bf2b7a43c55c682",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/run_once.py"
+      }
+    },
+    {
+      "bytes": 5860,
+      "path": "joint-policy-active-channel-fault-candidate-v1/supervise.py",
+      "sha256": "334f81f38d51844656bb4b91096511f22ab3f16557ce4184c687b2065a4d465d",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/supervise.py"
+      }
+    },
+    {
+      "bytes": 6495,
+      "path": "joint-policy-active-channel-fault-candidate-v1/verify_control.py",
+      "sha256": "ae0f6b8bbb46fef0e12865ea1de9b6aa2297b1fe32bd806aa6bc7339774face0",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/verify_control.py"
+      }
+    },
+    {
+      "bytes": 1736,
+      "path": "joint-policy-active-channel-fault-candidate-v1/verify_fault.py",
+      "sha256": "8aa3f85024592d4dc59d6d1b8b1d3f96b15e8bdecd5d8848acdb4175ac3735e8",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/verify_fault.py"
+      }
+    },
+    {
+      "bytes": 6281,
+      "path": "joint-policy-active-channel-fault-candidate-v1/worker.py",
+      "sha256": "d4b5077df0b104f51106b796f2cd4795cf4503553e013f0e80ac494d0d4255af",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-active-channel-fault-candidate-v1/worker.py"
+      }
+    },
+    {
+      "bytes": 762,
+      "path": "joint-policy-deferred-deadline-candidate-v1/CAPACITY.json",
+      "sha256": "e48fa1b2122a29dfe7c61b7920ea02a29f2aaef1f8c65545a61dac9f7cbf0e48",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/CAPACITY.json"
+      }
+    },
+    {
+      "bytes": 1067,
+      "path": "joint-policy-deferred-deadline-candidate-v1/COST_COVERAGE.json",
+      "sha256": "1f41e15bc8ea2e1b7553e6d8c627b70354decf150c289ce37d8eeb7b4998c469",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/COST_COVERAGE.json"
+      }
+    },
+    {
+      "bytes": 2515,
+      "path": "joint-policy-deferred-deadline-candidate-v1/FREEZE.json",
+      "sha256": "27009841810567ffba63bacc300e3551aaa03c8f5590801cff9ec7ec62e5833f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 7292,
+      "path": "joint-policy-deferred-deadline-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "d5a2f0ceb35e358920fa4fe04edac40c4252757437ee26ef7d49fcd362399062",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 8115,
+      "path": "joint-policy-deferred-deadline-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json",
+      "sha256": "17ee04da3d4791222842eebef10222a98df39e5f6c30701e81362ab20bc099d1",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 2916,
+      "path": "joint-policy-deferred-deadline-candidate-v1/INPUTS.json",
+      "sha256": "0ef893df62e1a073d45b9067cf06cebaf2e439308e4fcfe604ab535d27db5778",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/INPUTS.json"
+      }
+    },
+    {
+      "bytes": 3925,
+      "path": "joint-policy-deferred-deadline-candidate-v1/PLAN.md",
+      "sha256": "8f43f00cb650b96350b70a99b74467d9b8e40798de3ec13b4b71ddb57513fcaf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/PLAN.md"
+      }
+    },
+    {
+      "bytes": 1060,
+      "path": "joint-policy-deferred-deadline-candidate-v1/REFERENCES.json",
+      "sha256": "f22b5983fdf3dcf176a95ca27a1800e011940d39acf46fcb5aeb1ffb25a37f4f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/REFERENCES.json"
+      }
+    },
+    {
+      "bytes": 8447,
+      "path": "joint-policy-deferred-deadline-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json",
+      "sha256": "fc893ee5e1748bf6642c98ec5ef4f47e0c55939da0913b17acd19298d281cb56",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json"
+      }
+    },
+    {
+      "bytes": 2318,
+      "path": "joint-policy-deferred-deadline-candidate-v1/SAVED_FINDINGS.md",
+      "sha256": "442194fd622e06fb7a912a78aed924f98c734dfa91bf4221c4c55f6ff4344495",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/SAVED_FINDINGS.md"
+      }
+    },
+    {
+      "bytes": 8709,
+      "path": "joint-policy-deferred-deadline-candidate-v1/attempt.py",
+      "sha256": "0de46294e68394b8ce2859355d2ab4bf2234d8f7873b546f41d35caafeada9eb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/attempt.py"
+      }
+    },
+    {
+      "bytes": 1501,
+      "path": "joint-policy-deferred-deadline-candidate-v1/common.py",
+      "sha256": "8619c2c538a15b7e7d552ddcfbd220cf5f79802962461b61202a05a9130358cf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/common.py"
+      }
+    },
+    {
+      "bytes": 3026,
+      "path": "joint-policy-deferred-deadline-candidate-v1/content_input.py",
+      "sha256": "71f1696e720b4adfa9cb14cfd247f5e4a64f0e837a2a4f85574c83c99da597a6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/content_input.py"
+      }
+    },
+    {
+      "bytes": 6997,
+      "path": "joint-policy-deferred-deadline-candidate-v1/contracts.py",
+      "sha256": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/contracts.py"
+      }
+    },
+    {
+      "bytes": 5684,
+      "path": "joint-policy-deferred-deadline-candidate-v1/control_channel.py",
+      "sha256": "7f0ef27a766f133fdfb844f9820f265b13fbe1dc4327056ec16a358c2641de05",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/control_channel.py"
+      }
+    },
+    {
+      "bytes": 3122,
+      "path": "joint-policy-deferred-deadline-candidate-v1/cost.py",
+      "sha256": "76008bde5e457d8709e49fb4e45d8f54d93a98e454c6ab67565dd0cc0416dde5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/cost.py"
+      }
+    },
+    {
+      "bytes": 84,
+      "path": "joint-policy-deferred-deadline-candidate-v1/fashion_research/__init__.py",
+      "sha256": "c183be0098158464a097ece9cc5a916664ff239c0bfc408b151c9a1b04802cdf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/fashion_research/__init__.py"
+      }
+    },
+    {
+      "bytes": 6844,
+      "path": "joint-policy-deferred-deadline-candidate-v1/fashion_research/autodiff.py",
+      "sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/fashion_research/autodiff.py"
+      }
+    },
+    {
+      "bytes": 19110,
+      "path": "joint-policy-deferred-deadline-candidate-v1/fashion_research/model.py",
+      "sha256": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/fashion_research/model.py"
+      }
+    },
+    {
+      "bytes": 6313,
+      "path": "joint-policy-deferred-deadline-candidate-v1/fashion_research/transport.py",
+      "sha256": "5f7f89a117197b00d1fbe656cd101c35418121847fdfa816d769430dadc11e73",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/fashion_research/transport.py"
+      }
+    },
+    {
+      "bytes": 7757,
+      "path": "joint-policy-deferred-deadline-candidate-v1/guarded_core.py",
+      "sha256": "6ef51ff2ce941322ab50cf897c3ab5a442705225e8702220e829375921d7c0fb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/guarded_core.py"
+      }
+    },
+    {
+      "bytes": 3065,
+      "path": "joint-policy-deferred-deadline-candidate-v1/guarded_delivery.py",
+      "sha256": "61a2d76dd0e6143304297d75b18f55e6c6e732e39bf8aebb29472c35993460bc",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/guarded_delivery.py"
+      }
+    },
+    {
+      "bytes": 2662,
+      "path": "joint-policy-deferred-deadline-candidate-v1/live_control.py",
+      "sha256": "52bcc74dc2faacd601de82da412fe4377d22c6586f4a51cf9a2e670d094a8e6f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/live_control.py"
+      }
+    },
+    {
+      "bytes": 12808,
+      "path": "joint-policy-deferred-deadline-candidate-v1/live_core.py",
+      "sha256": "0a800d9464bff765cd1973e7bdea485107c45efc179412cbb1f8b34825ce8d75",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/live_core.py"
+      }
+    },
+    {
+      "bytes": 3458,
+      "path": "joint-policy-deferred-deadline-candidate-v1/live_delivery.py",
+      "sha256": "1240ae67426e1d4a06486295311b4726c895d87b6d9eaba9f2eadc3f79b31d93",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/live_delivery.py"
+      }
+    },
+    {
+      "bytes": 14141,
+      "path": "joint-policy-deferred-deadline-candidate-v1/multimodal_contract.py",
+      "sha256": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/multimodal_contract.py"
+      }
+    },
+    {
+      "bytes": 3086,
+      "path": "joint-policy-deferred-deadline-candidate-v1/owned_process.py",
+      "sha256": "9de66531802dfc6cc48fb711abc916787624d9225d6747e64f9faec23c2deb3c",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/owned_process.py"
+      }
+    },
+    {
+      "bytes": 3952,
+      "path": "joint-policy-deferred-deadline-candidate-v1/persistence.py",
+      "sha256": "be796ff7ff4614cb40936cd4d5fb371866eed30faf10463f3e9bc48073bc3adf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/persistence.py"
+      }
+    },
+    {
+      "bytes": 4054,
+      "path": "joint-policy-deferred-deadline-candidate-v1/policy_backend.py",
+      "sha256": "1d5b88283b3b1ffdbda48096f0e38d192ac07687fe07902ebf9bc1b9d1be2e8a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/policy_backend.py"
+      }
+    },
+    {
+      "bytes": 1657,
+      "path": "joint-policy-deferred-deadline-candidate-v1/route_contract.py",
+      "sha256": "3b69df1382e9fa1e3b46612c1433997961534969aa7b59d552768d60ee8bd6a5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/route_contract.py"
+      }
+    },
+    {
+      "bytes": 4647,
+      "path": "joint-policy-deferred-deadline-candidate-v1/run_once.py",
+      "sha256": "5e9069f87ef42d4410bea2fdbd4b561baf30a621d5b0790f8bf2b7a43c55c682",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/run_once.py"
+      }
+    },
+    {
+      "bytes": 8463,
+      "path": "joint-policy-deferred-deadline-candidate-v1/supervise.py",
+      "sha256": "6a5c6f33333c1c5ab30c7c2bc1f00c3ce8495b2f9af32defd8019e020ce3680b",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/supervise.py"
+      }
+    },
+    {
+      "bytes": 18068,
+      "path": "joint-policy-deferred-deadline-candidate-v1/verify_expired.py",
+      "sha256": "32c0a71e3d5966cec817ccc08a3defb693c58d87055a6ef1c0ebc06f2b432581",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/verify_expired.py"
+      }
+    },
+    {
+      "bytes": 5404,
+      "path": "joint-policy-deferred-deadline-candidate-v1/worker.py",
+      "sha256": "a7804dd13d1795cb998943ecffb19179a35295df0c23fbb92af32fa870245aa0",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-deferred-deadline-candidate-v1/worker.py"
+      }
+    },
+    {
+      "bytes": 943,
+      "path": "joint-policy-delivery-candidate-v1/COST_COVERAGE.json",
+      "sha256": "f607185bfad03acb3a359f0f3a3954f745cbafa970a025c5fdaddf39b679f866",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v1/COST_COVERAGE.json"
+      }
+    },
+    {
+      "bytes": 2244,
+      "path": "joint-policy-delivery-candidate-v1/FREEZE.json",
+      "sha256": "298c48eb8836ee647e8d9b056cfd1fc666fa3ceb9fcd720b7a7e3e2c7d4da8d1",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v1/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 3355,
+      "path": "joint-policy-delivery-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "c48eb5ad3fc35c4590d7e223f9dfb16b87d9ac217518e8b3efd0a8a7a24446af",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v1/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 5757,
+      "path": "joint-policy-delivery-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json",
+      "sha256": "ca081c174a9b06c275c3efb1df27c299a5c0d7b0ae3f5ea53574ae0a03f59e35",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 1788,
+      "path": "joint-policy-delivery-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json",
+      "sha256": "da095350a1277243bc3d0ea4f14c511adce2d53cd73dcca646e6c61404451582",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json"
+      }
+    },
+    {
+      "bytes": 48427,
+      "path": "joint-policy-delivery-candidate-v1/RUN_ONCE/success-REQUEST.json",
+      "sha256": "bde0137c6502382d7fde798ab3a61fce78b729bfbd26c78c897b8848c2bd160a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v1/RUN_ONCE/success-REQUEST.json"
+      }
+    },
+    {
+      "bytes": 1157,
+      "path": "joint-policy-delivery-candidate-v1/RUN_ONCE/supervisor.stderr",
+      "sha256": "e6d6f08ec31661698977e450b2457f4362d6d3228b14f597f3a40d3f5eb67777",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v1/RUN_ONCE/supervisor.stderr"
+      }
+    },
+    {
+      "bytes": 1315,
+      "path": "joint-policy-delivery-candidate-v2/COST_COVERAGE.json",
+      "sha256": "985d6b81e9fdd8c37a4d0448f2eea1c31f1372351c53d4a24a9851be0679a2f6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/COST_COVERAGE.json"
+      }
+    },
+    {
+      "bytes": 2427,
+      "path": "joint-policy-delivery-candidate-v2/FREEZE.json",
+      "sha256": "7389bbb0ac2188ef48a1ee17f9b1b9241c6a35e8fb1388711945080ac5a895ee",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 6119,
+      "path": "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "cc423a3350698cb2d514fd8107f09f71efc2700ee8fbce2fde4283615efcefff",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 3530,
+      "path": "joint-policy-delivery-candidate-v2/INDEPENDENT_SOURCE_REVIEW.json",
+      "sha256": "94437100331f904f9bb5cd448423bf158ea7888ff3c6073013f90d0e3c4e4e52",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/INDEPENDENT_SOURCE_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 1685,
+      "path": "joint-policy-delivery-candidate-v2/INPUTS.json",
+      "sha256": "e4ab1aef77e4fa53ed2ce531b2e3fa53077e042f27eb0231c1c3d287a9cfd49b",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/INPUTS.json"
+      }
+    },
+    {
+      "bytes": 8002,
+      "path": "joint-policy-delivery-candidate-v2/PLAN.md",
+      "sha256": "70f60cf79b611831aef230f39d76be40be1308e4644b7e617ffd2053a3adfe8a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/PLAN.md"
+      }
+    },
+    {
+      "bytes": 1499,
+      "path": "joint-policy-delivery-candidate-v2/PRIOR_FAILURE.json",
+      "sha256": "1521e0f9411e5094670f8246c42974ae1c7ac7bbec742e80620bbdb4d96d0d07",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/PRIOR_FAILURE.json"
+      }
+    },
+    {
+      "bytes": 1929,
+      "path": "joint-policy-delivery-candidate-v2/PRIOR_FREEZE_2079245f.json",
+      "sha256": "2079245f9e83c8204b13c7e8b583f491c2a9179222859931fd2d1ebd3d336b41",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/PRIOR_FREEZE_2079245f.json"
+      }
+    },
+    {
+      "bytes": 1722,
+      "path": "joint-policy-delivery-candidate-v2/PRIOR_FREEZE_b46a8ed5.json",
+      "sha256": "b46a8ed509dc97b6ef90d9d5a5b7e6db76cac1523406b0b3b316ed169820c58d",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/PRIOR_FREEZE_b46a8ed5.json"
+      }
+    },
+    {
+      "bytes": 5007,
+      "path": "joint-policy-delivery-candidate-v2/PRIOR_SOURCE_FINDING_2079245f.json",
+      "sha256": "7fea5bae3bb7c8a14a9cbba7ec5a7a503e11c6df51919f474f5bf8beecc3c985",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/PRIOR_SOURCE_FINDING_2079245f.json"
+      }
+    },
+    {
+      "bytes": 4387,
+      "path": "joint-policy-delivery-candidate-v2/PRIOR_SOURCE_REVIEW_2079245f.json",
+      "sha256": "a7e376a14002868d9e274c0b8b531b64fff4a769f9209e707f970fd3da8c103a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/PRIOR_SOURCE_REVIEW_2079245f.json"
+      }
+    },
+    {
+      "bytes": 2836,
+      "path": "joint-policy-delivery-candidate-v2/PRIOR_SOURCE_REVIEW_b46a8ed5.json",
+      "sha256": "7f196d244b9f72051dcc5f00f4c756815f7cb64b10be6f0b3a5acc52db23e058",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/PRIOR_SOURCE_REVIEW_b46a8ed5.json"
+      }
+    },
+    {
+      "bytes": 4595,
+      "path": "joint-policy-delivery-candidate-v2/REFERENCES.json",
+      "sha256": "17286f9e4ddba0d41f4d4c4b28f12c7e4de04b42e953736f490baec47529d367",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/REFERENCES.json"
+      }
+    },
+    {
+      "bytes": 9903,
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/OUTER_WAIT4_RECEIPT.json",
+      "sha256": "812aeb0a9da1ee23276c4962af6396c40677c1b640974bc5ee31e87f94458183",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/RUN_ONCE/OUTER_WAIT4_RECEIPT.json"
+      }
+    },
+    {
+      "bytes": 12818,
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+      "sha256": "2acd070cdc031d37ff516ee8d9be2abdb69bce1cb192884983caae265c003224",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json"
+      }
+    },
+    {
+      "bytes": 48449,
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+      "sha256": "f6516bd94d8a0819d3b008599a8606baae5e3eae3fc771937e4a61ddbe5c6c63",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json"
+      }
+    },
+    {
+      "bytes": 1247,
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+      "sha256": "dd88f6af048cf5a09abea85569b87a877a427529e025656097d6e20cb3f6c25e",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json"
+      }
+    },
+    {
+      "bytes": 34884,
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+      "sha256": "1fb4562c61b2745c7993c8831a079d500e6b48c4aeb50d1e44e59f08e56c1514",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json"
+      }
+    },
+    {
+      "bytes": 3307,
+      "path": "joint-policy-delivery-candidate-v2/SAVED_FINDINGS.md",
+      "sha256": "5e2155acd9f8568886cc55fb6cd770dbd05f49e21deb49b51ac34f28c58d8043",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/SAVED_FINDINGS.md"
+      }
+    },
+    {
+      "bytes": 2265,
+      "path": "joint-policy-delivery-candidate-v2/SCHEMA_AUDIT.json",
+      "sha256": "8c60ee868dee4e4385483fa3ab959fd1e01150deafc5ea82139d85d4f821d246",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/SCHEMA_AUDIT.json"
+      }
+    },
+    {
+      "bytes": 8709,
+      "path": "joint-policy-delivery-candidate-v2/attempt.py",
+      "sha256": "0de46294e68394b8ce2859355d2ab4bf2234d8f7873b546f41d35caafeada9eb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/attempt.py"
+      }
+    },
+    {
+      "bytes": 3026,
+      "path": "joint-policy-delivery-candidate-v2/content_input.py",
+      "sha256": "71f1696e720b4adfa9cb14cfd247f5e4a64f0e837a2a4f85574c83c99da597a6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/content_input.py"
+      }
+    },
+    {
+      "bytes": 6997,
+      "path": "joint-policy-delivery-candidate-v2/contracts.py",
+      "sha256": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/contracts.py"
+      }
+    },
+    {
+      "bytes": 3122,
+      "path": "joint-policy-delivery-candidate-v2/cost.py",
+      "sha256": "76008bde5e457d8709e49fb4e45d8f54d93a98e454c6ab67565dd0cc0416dde5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/cost.py"
+      }
+    },
+    {
+      "bytes": 84,
+      "path": "joint-policy-delivery-candidate-v2/fashion_research/__init__.py",
+      "sha256": "c183be0098158464a097ece9cc5a916664ff239c0bfc408b151c9a1b04802cdf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/fashion_research/__init__.py"
+      }
+    },
+    {
+      "bytes": 6844,
+      "path": "joint-policy-delivery-candidate-v2/fashion_research/autodiff.py",
+      "sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/fashion_research/autodiff.py"
+      }
+    },
+    {
+      "bytes": 19110,
+      "path": "joint-policy-delivery-candidate-v2/fashion_research/model.py",
+      "sha256": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/fashion_research/model.py"
+      }
+    },
+    {
+      "bytes": 6313,
+      "path": "joint-policy-delivery-candidate-v2/fashion_research/transport.py",
+      "sha256": "5f7f89a117197b00d1fbe656cd101c35418121847fdfa816d769430dadc11e73",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/fashion_research/transport.py"
+      }
+    },
+    {
+      "bytes": 7757,
+      "path": "joint-policy-delivery-candidate-v2/guarded_core.py",
+      "sha256": "6ef51ff2ce941322ab50cf897c3ab5a442705225e8702220e829375921d7c0fb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/guarded_core.py"
+      }
+    },
+    {
+      "bytes": 3065,
+      "path": "joint-policy-delivery-candidate-v2/guarded_delivery.py",
+      "sha256": "61a2d76dd0e6143304297d75b18f55e6c6e732e39bf8aebb29472c35993460bc",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/guarded_delivery.py"
+      }
+    },
+    {
+      "bytes": 14141,
+      "path": "joint-policy-delivery-candidate-v2/multimodal_contract.py",
+      "sha256": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/multimodal_contract.py"
+      }
+    },
+    {
+      "bytes": 3952,
+      "path": "joint-policy-delivery-candidate-v2/persistence.py",
+      "sha256": "be796ff7ff4614cb40936cd4d5fb371866eed30faf10463f3e9bc48073bc3adf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/persistence.py"
+      }
+    },
+    {
+      "bytes": 4054,
+      "path": "joint-policy-delivery-candidate-v2/policy_backend.py",
+      "sha256": "1d5b88283b3b1ffdbda48096f0e38d192ac07687fe07902ebf9bc1b9d1be2e8a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/policy_backend.py"
+      }
+    },
+    {
+      "bytes": 8529,
+      "path": "joint-policy-delivery-candidate-v2/qualify.py",
+      "sha256": "0e92201dbba19ce712c2bcb88c080892c0ef9ff491a79903507c8f9d6febca18",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/qualify.py"
+      }
+    },
+    {
+      "bytes": 1657,
+      "path": "joint-policy-delivery-candidate-v2/route_contract.py",
+      "sha256": "3b69df1382e9fa1e3b46612c1433997961534969aa7b59d552768d60ee8bd6a5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/route_contract.py"
+      }
+    },
+    {
+      "bytes": 4781,
+      "path": "joint-policy-delivery-candidate-v2/run_once.py",
+      "sha256": "961a9ed349595645a94d5a1ad1a8ffd55383b5fb4210897a219b5c61bdf21337",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-delivery-candidate-v2/run_once.py"
+      }
+    },
+    {
+      "bytes": 821,
+      "path": "joint-policy-live-control-candidate-v1/CAPACITY.json",
+      "sha256": "a13ce1a7982331ceaef178e7b168efbc123e97b0b5a0496876a4a6417b9a19a2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/CAPACITY.json"
+      }
+    },
+    {
+      "bytes": 1171,
+      "path": "joint-policy-live-control-candidate-v1/COST_COVERAGE.json",
+      "sha256": "0e5990871ef7036ded63eed8e498ee4001e2f33d5d7ed86080542c3867a85854",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/COST_COVERAGE.json"
+      }
+    },
+    {
+      "bytes": 2815,
+      "path": "joint-policy-live-control-candidate-v1/FREEZE.json",
+      "sha256": "ace422cc766e54fa4fb21884815d6a173fcb53e84f507b2dcdc68cc910082129",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 7531,
+      "path": "joint-policy-live-control-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "2e65f5eab987b1095200748845339c2946d8fd0f7c5c07cdaf2b1fd3c5c1274f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 5543,
+      "path": "joint-policy-live-control-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json",
+      "sha256": "494203803512864e9b8b6e06afedeefc85a8d23df6d0d52f88c3612be2bb79a4",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 2916,
+      "path": "joint-policy-live-control-candidate-v1/INPUTS.json",
+      "sha256": "7af677ad714defd982ad945894ed46bc778e6d166e809f2bb67196749d8f753e",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/INPUTS.json"
+      }
+    },
+    {
+      "bytes": 5082,
+      "path": "joint-policy-live-control-candidate-v1/PLAN.md",
+      "sha256": "627fa5a63656903fa68d4ce2ffe15d7e0500b7f9ed4fcaabedf1825c43a7d2b4",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/PLAN.md"
+      }
+    },
+    {
+      "bytes": 2608,
+      "path": "joint-policy-live-control-candidate-v1/PRIOR_FREEZE_96d9853f.json",
+      "sha256": "96d9853fd27cb368621de3757079519c5cc64ca976d0a921ae2b2729f13078b7",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/PRIOR_FREEZE_96d9853f.json"
+      }
+    },
+    {
+      "bytes": 3342,
+      "path": "joint-policy-live-control-candidate-v1/PRIOR_SOURCE_REVIEW_96d9853f.json",
+      "sha256": "a550c537d48ef04f4f071a34a136f86a6a1191b2ef985f2290b8f9ea2040b3f7",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/PRIOR_SOURCE_REVIEW_96d9853f.json"
+      }
+    },
+    {
+      "bytes": 1025,
+      "path": "joint-policy-live-control-candidate-v1/REFERENCES.json",
+      "sha256": "b3e89a2a657a615a9da6691db87926a09515d016ecdaad87486bc80247676c67",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/REFERENCES.json"
+      }
+    },
+    {
+      "bytes": 9096,
+      "path": "joint-policy-live-control-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json",
+      "sha256": "ea5abaf12a8babf419a6120b4699b88b5e64a2912ea9ba055309dbc9bb473b4b",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json"
+      }
+    },
+    {
+      "bytes": 2714,
+      "path": "joint-policy-live-control-candidate-v1/SAVED_FINDINGS.md",
+      "sha256": "6ff33b9886fbfb18614c95380e97d85c6de3408e719a1c7b7ce29bdbd87ff9c0",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/SAVED_FINDINGS.md"
+      }
+    },
+    {
+      "bytes": 8709,
+      "path": "joint-policy-live-control-candidate-v1/attempt.py",
+      "sha256": "0de46294e68394b8ce2859355d2ab4bf2234d8f7873b546f41d35caafeada9eb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/attempt.py"
+      }
+    },
+    {
+      "bytes": 1501,
+      "path": "joint-policy-live-control-candidate-v1/common.py",
+      "sha256": "8619c2c538a15b7e7d552ddcfbd220cf5f79802962461b61202a05a9130358cf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/common.py"
+      }
+    },
+    {
+      "bytes": 3026,
+      "path": "joint-policy-live-control-candidate-v1/content_input.py",
+      "sha256": "71f1696e720b4adfa9cb14cfd247f5e4a64f0e837a2a4f85574c83c99da597a6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/content_input.py"
+      }
+    },
+    {
+      "bytes": 6997,
+      "path": "joint-policy-live-control-candidate-v1/contracts.py",
+      "sha256": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/contracts.py"
+      }
+    },
+    {
+      "bytes": 5684,
+      "path": "joint-policy-live-control-candidate-v1/control_channel.py",
+      "sha256": "7f0ef27a766f133fdfb844f9820f265b13fbe1dc4327056ec16a358c2641de05",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/control_channel.py"
+      }
+    },
+    {
+      "bytes": 3122,
+      "path": "joint-policy-live-control-candidate-v1/cost.py",
+      "sha256": "76008bde5e457d8709e49fb4e45d8f54d93a98e454c6ab67565dd0cc0416dde5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/cost.py"
+      }
+    },
+    {
+      "bytes": 84,
+      "path": "joint-policy-live-control-candidate-v1/fashion_research/__init__.py",
+      "sha256": "c183be0098158464a097ece9cc5a916664ff239c0bfc408b151c9a1b04802cdf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/fashion_research/__init__.py"
+      }
+    },
+    {
+      "bytes": 6844,
+      "path": "joint-policy-live-control-candidate-v1/fashion_research/autodiff.py",
+      "sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/fashion_research/autodiff.py"
+      }
+    },
+    {
+      "bytes": 19110,
+      "path": "joint-policy-live-control-candidate-v1/fashion_research/model.py",
+      "sha256": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/fashion_research/model.py"
+      }
+    },
+    {
+      "bytes": 6313,
+      "path": "joint-policy-live-control-candidate-v1/fashion_research/transport.py",
+      "sha256": "5f7f89a117197b00d1fbe656cd101c35418121847fdfa816d769430dadc11e73",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/fashion_research/transport.py"
+      }
+    },
+    {
+      "bytes": 7757,
+      "path": "joint-policy-live-control-candidate-v1/guarded_core.py",
+      "sha256": "6ef51ff2ce941322ab50cf897c3ab5a442705225e8702220e829375921d7c0fb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/guarded_core.py"
+      }
+    },
+    {
+      "bytes": 3065,
+      "path": "joint-policy-live-control-candidate-v1/guarded_delivery.py",
+      "sha256": "61a2d76dd0e6143304297d75b18f55e6c6e732e39bf8aebb29472c35993460bc",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/guarded_delivery.py"
+      }
+    },
+    {
+      "bytes": 2662,
+      "path": "joint-policy-live-control-candidate-v1/live_control.py",
+      "sha256": "52bcc74dc2faacd601de82da412fe4377d22c6586f4a51cf9a2e670d094a8e6f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/live_control.py"
+      }
+    },
+    {
+      "bytes": 12808,
+      "path": "joint-policy-live-control-candidate-v1/live_core.py",
+      "sha256": "0a800d9464bff765cd1973e7bdea485107c45efc179412cbb1f8b34825ce8d75",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/live_core.py"
+      }
+    },
+    {
+      "bytes": 3458,
+      "path": "joint-policy-live-control-candidate-v1/live_delivery.py",
+      "sha256": "1240ae67426e1d4a06486295311b4726c895d87b6d9eaba9f2eadc3f79b31d93",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/live_delivery.py"
+      }
+    },
+    {
+      "bytes": 14141,
+      "path": "joint-policy-live-control-candidate-v1/multimodal_contract.py",
+      "sha256": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/multimodal_contract.py"
+      }
+    },
+    {
+      "bytes": 3086,
+      "path": "joint-policy-live-control-candidate-v1/owned_process.py",
+      "sha256": "9de66531802dfc6cc48fb711abc916787624d9225d6747e64f9faec23c2deb3c",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/owned_process.py"
+      }
+    },
+    {
+      "bytes": 3952,
+      "path": "joint-policy-live-control-candidate-v1/persistence.py",
+      "sha256": "be796ff7ff4614cb40936cd4d5fb371866eed30faf10463f3e9bc48073bc3adf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/persistence.py"
+      }
+    },
+    {
+      "bytes": 4054,
+      "path": "joint-policy-live-control-candidate-v1/policy_backend.py",
+      "sha256": "1d5b88283b3b1ffdbda48096f0e38d192ac07687fe07902ebf9bc1b9d1be2e8a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/policy_backend.py"
+      }
+    },
+    {
+      "bytes": 2219,
+      "path": "joint-policy-live-control-candidate-v1/qualify_controls.py",
+      "sha256": "d6085a16f89ae3f7afe9cf63e217fe88ba71ea220e617446c0f6a1bb692356a9",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/qualify_controls.py"
+      }
+    },
+    {
+      "bytes": 1657,
+      "path": "joint-policy-live-control-candidate-v1/route_contract.py",
+      "sha256": "3b69df1382e9fa1e3b46612c1433997961534969aa7b59d552768d60ee8bd6a5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/route_contract.py"
+      }
+    },
+    {
+      "bytes": 4647,
+      "path": "joint-policy-live-control-candidate-v1/run_once.py",
+      "sha256": "5e9069f87ef42d4410bea2fdbd4b561baf30a621d5b0790f8bf2b7a43c55c682",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/run_once.py"
+      }
+    },
+    {
+      "bytes": 6518,
+      "path": "joint-policy-live-control-candidate-v1/supervise.py",
+      "sha256": "9d1dda0c9e9c1c38e6486e78fb2bbd5584bcf677dee5c085523f09db8eaaac17",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/supervise.py"
+      }
+    },
+    {
+      "bytes": 6495,
+      "path": "joint-policy-live-control-candidate-v1/verify_control.py",
+      "sha256": "ae0f6b8bbb46fef0e12865ea1de9b6aa2297b1fe32bd806aa6bc7339774face0",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/verify_control.py"
+      }
+    },
+    {
+      "bytes": 6402,
+      "path": "joint-policy-live-control-candidate-v1/worker.py",
+      "sha256": "56ee995a7f0f3aaa923bb53a401637548bd0297cb65f82775496c34c5fe66e8c",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-live-control-candidate-v1/worker.py"
+      }
+    },
+    {
+      "bytes": 1059,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/COST_COVERAGE.json",
+      "sha256": "2de3c4233779499850dffc98c8bd46d9c48ace160f9115a24d6c112b844ff0fa",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/COST_COVERAGE.json"
+      }
+    },
+    {
+      "bytes": 2711,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/FREEZE.json",
+      "sha256": "293ea0c7086f787236648382c9686f3d027c3a5bcc8ecebd5a11eb55c1b97128",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 6494,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "b309e263af06e42839a651131eaab971e87bbd3bda0ed4321177742917df52f0",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 8270,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json",
+      "sha256": "6f34be4a617b289be9c7ab8c404908e2059526f391acec8fe2e27fafad8c3556",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 6682,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json",
+      "sha256": "7b023276b9629080051e89e28d5ea63296abefd062c925d9cb6f481e265823ee",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json"
+      }
+    },
+    {
+      "bytes": 663,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/RUN_ONCE/ROLE_RECEIPTS.json",
+      "sha256": "bf71380b2c80445df3ff98edb32e0020a2f541fee303ea23475ea8d33267a410",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/RUN_ONCE/ROLE_RECEIPTS.json"
+      }
+    },
+    {
+      "bytes": 5351,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/RUN_ONCE/chain/PRODUCER_RESULT.json",
+      "sha256": "30b38e8e7b227b859a095f0afee1ecb82159c92632d471c7f6656a522a21a386",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/RUN_ONCE/chain/PRODUCER_RESULT.json"
+      }
+    },
+    {
+      "bytes": 505,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/RUN_ONCE/chain/recover.stderr",
+      "sha256": "172f02244223c90eb7292011400db2519ccca7f1cbf60a9eb89014410d27d88f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/RUN_ONCE/chain/recover.stderr"
+      }
+    },
+    {
+      "bytes": 2244,
+      "path": "joint-policy-output-budget-outcome-candidate-v1/SAVED_FINDINGS.md",
+      "sha256": "a1b32c269d4a701dfd15ef24833126540cd6d42d6f5d5301577fdd7abdc47399",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v1/SAVED_FINDINGS.md"
+      }
+    },
+    {
+      "bytes": 963,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/CAPACITY.json",
+      "sha256": "6f32c2c05269ee4fca1bbfaa719b895bd88c0fb6610e2ead548437d5ad12a294",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/CAPACITY.json"
+      }
+    },
+    {
+      "bytes": 1204,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/COST_COVERAGE.json",
+      "sha256": "ed3195f389b8ecb457819a09214cda886fd18d5d6e8d2f8db0a912f24f10bc41",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/COST_COVERAGE.json"
+      }
+    },
+    {
+      "bytes": 2803,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/FREEZE.json",
+      "sha256": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 7530,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "3ed14eee219a68e6e749d6b0337d72e9e17f6c8167e4e58668d8535bb1534bf9",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 6193,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/INDEPENDENT_SOURCE_REVIEW.json",
+      "sha256": "6f4543f21febb163baee0ce1dba122fd3592775892806df2f2d60a170305fbc6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/INDEPENDENT_SOURCE_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 2897,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/INPUTS.json",
+      "sha256": "764f14c4e09ceff0814f22ec2601ef819ded966920c0e3efe08dd430ef8f1fb5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/INPUTS.json"
+      }
+    },
+    {
+      "bytes": 5310,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/PLAN.md",
+      "sha256": "70d01b4c73bd5e6dc3ce05e0acde690775da70b5fb94059be165a4c41fd68c09",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/PLAN.md"
+      }
+    },
+    {
+      "bytes": 1679,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/PRIOR_FAILURE.json",
+      "sha256": "de77c95b4978ac490d93004b235a3407ed9121143648fc62375cc4ee1d78fdb8",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/PRIOR_FAILURE.json"
+      }
+    },
+    {
+      "bytes": 1073,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/REFERENCES.json",
+      "sha256": "d5e1b19142ff938ac1722cf5a81bbf1b41aa4f95a43174e30cd70e06f86642f1",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/REFERENCES.json"
+      }
+    },
+    {
+      "bytes": 7582,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/RUN_ONCE/OUTER_WAIT4_RECEIPT.json",
+      "sha256": "42aeb5e9051abe0ad4f3e1c43bfd2bfcd53d87d29afe6db5aada60911fce487f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/RUN_ONCE/OUTER_WAIT4_RECEIPT.json"
+      }
+    },
+    {
+      "bytes": 2570,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/SAVED_FINDINGS.md",
+      "sha256": "7f3a0c3fb6cd2887de273f5f27539d05a1075394084f01a6f6f33154992bac08",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/SAVED_FINDINGS.md"
+      }
+    },
+    {
+      "bytes": 3436,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/SOURCE_CLOSURE.json",
+      "sha256": "ca02a6dd3e4e7feaeb95365dc95ef014b613b03274bf94e10d9f291806c4df83",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/SOURCE_CLOSURE.json"
+      }
+    },
+    {
+      "bytes": 8915,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/attempt.py",
+      "sha256": "e9020abeaf15823695cd42b05c8095512abf07163e59d4f0628f68c7a26e8bdf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/attempt.py"
+      }
+    },
+    {
+      "bytes": 1942,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/common.py",
+      "sha256": "a781555db23a568b08a4f8d57e0edd655156fa74651eb9b1de2d44729f118fea",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/common.py"
+      }
+    },
+    {
+      "bytes": 3026,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/content_input.py",
+      "sha256": "71f1696e720b4adfa9cb14cfd247f5e4a64f0e837a2a4f85574c83c99da597a6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/content_input.py"
+      }
+    },
+    {
+      "bytes": 6997,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/contracts.py",
+      "sha256": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/contracts.py"
+      }
+    },
+    {
+      "bytes": 5684,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/control_channel.py",
+      "sha256": "7f0ef27a766f133fdfb844f9820f265b13fbe1dc4327056ec16a358c2641de05",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/control_channel.py"
+      }
+    },
+    {
+      "bytes": 3122,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/cost.py",
+      "sha256": "76008bde5e457d8709e49fb4e45d8f54d93a98e454c6ab67565dd0cc0416dde5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/cost.py"
+      }
+    },
+    {
+      "bytes": 84,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/fashion_research/__init__.py",
+      "sha256": "c183be0098158464a097ece9cc5a916664ff239c0bfc408b151c9a1b04802cdf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/fashion_research/__init__.py"
+      }
+    },
+    {
+      "bytes": 6844,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/fashion_research/autodiff.py",
+      "sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/fashion_research/autodiff.py"
+      }
+    },
+    {
+      "bytes": 19110,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/fashion_research/model.py",
+      "sha256": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/fashion_research/model.py"
+      }
+    },
+    {
+      "bytes": 6313,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/fashion_research/transport.py",
+      "sha256": "5f7f89a117197b00d1fbe656cd101c35418121847fdfa816d769430dadc11e73",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/fashion_research/transport.py"
+      }
+    },
+    {
+      "bytes": 7757,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/guarded_core.py",
+      "sha256": "6ef51ff2ce941322ab50cf897c3ab5a442705225e8702220e829375921d7c0fb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/guarded_core.py"
+      }
+    },
+    {
+      "bytes": 3065,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/guarded_delivery.py",
+      "sha256": "61a2d76dd0e6143304297d75b18f55e6c6e732e39bf8aebb29472c35993460bc",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/guarded_delivery.py"
+      }
+    },
+    {
+      "bytes": 2662,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/live_control.py",
+      "sha256": "52bcc74dc2faacd601de82da412fe4377d22c6586f4a51cf9a2e670d094a8e6f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/live_control.py"
+      }
+    },
+    {
+      "bytes": 14580,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/live_core.py",
+      "sha256": "e052e9373c129934c0deace91d1177b685687b4919184a7c5d8fd5f76b6c7475",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/live_core.py"
+      }
+    },
+    {
+      "bytes": 3458,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/live_delivery.py",
+      "sha256": "1240ae67426e1d4a06486295311b4726c895d87b6d9eaba9f2eadc3f79b31d93",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/live_delivery.py"
+      }
+    },
+    {
+      "bytes": 14141,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/multimodal_contract.py",
+      "sha256": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/multimodal_contract.py"
+      }
+    },
+    {
+      "bytes": 18068,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/output_budget_pure.py",
+      "sha256": "32c0a71e3d5966cec817ccc08a3defb693c58d87055a6ef1c0ebc06f2b432581",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/output_budget_pure.py"
+      }
+    },
+    {
+      "bytes": 9472,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/output_budget_verifier.py",
+      "sha256": "1f1b090c840d44f5ba4136a4fcad88ca55a303f28fbce74e1a8edae69999e117",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/output_budget_verifier.py"
+      }
+    },
+    {
+      "bytes": 3086,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/owned_process.py",
+      "sha256": "9de66531802dfc6cc48fb711abc916787624d9225d6747e64f9faec23c2deb3c",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/owned_process.py"
+      }
+    },
+    {
+      "bytes": 3952,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/persistence.py",
+      "sha256": "be796ff7ff4614cb40936cd4d5fb371866eed30faf10463f3e9bc48073bc3adf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/persistence.py"
+      }
+    },
+    {
+      "bytes": 4054,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/policy_backend.py",
+      "sha256": "1d5b88283b3b1ffdbda48096f0e38d192ac07687fe07902ebf9bc1b9d1be2e8a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/policy_backend.py"
+      }
+    },
+    {
+      "bytes": 1657,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/route_contract.py",
+      "sha256": "3b69df1382e9fa1e3b46612c1433997961534969aa7b59d552768d60ee8bd6a5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/route_contract.py"
+      }
+    },
+    {
+      "bytes": 4646,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/run_once.py",
+      "sha256": "e897e6acab488247147fc105535aaf5d748502f58ecd3233be075dc4efd03ac6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/run_once.py"
+      }
+    },
+    {
+      "bytes": 4413,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/supervise.py",
+      "sha256": "10a420084deda12ca95a02a85aa68f5fe9dab46fa33cf7a3d0d50dcb99b24722",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/supervise.py"
+      }
+    },
+    {
+      "bytes": 6891,
+      "path": "joint-policy-output-budget-outcome-candidate-v2/worker.py",
+      "sha256": "e49069227589bc39dd98b35dc365e45efb167d81384c832f49f825acd5844e41",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-output-budget-outcome-candidate-v2/worker.py"
+      }
+    },
+    {
+      "bytes": 1208,
+      "path": "joint-policy-reconnect-candidate-v1/COST_COVERAGE.json",
+      "sha256": "126f4569c77447ecc6ed4186642a9a386e0022b712ccbffe345efcc095ca073b",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/COST_COVERAGE.json"
+      }
+    },
+    {
+      "bytes": 2600,
+      "path": "joint-policy-reconnect-candidate-v1/FREEZE.json",
+      "sha256": "e387122724ca941406a36415e6204ea3c712d43c122ac6ab8d8aba896ed7086e",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 5728,
+      "path": "joint-policy-reconnect-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "c272ec3a16f27f52d56faa5fef32cff150f3455d822caddc697b5f15c6b421f8",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 5942,
+      "path": "joint-policy-reconnect-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json",
+      "sha256": "772da9d671b65d617be896174a1b0f94bc59fe980041d87b6aa45b927adc20b1",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/INDEPENDENT_SOURCE_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 2908,
+      "path": "joint-policy-reconnect-candidate-v1/INPUTS.json",
+      "sha256": "691a2adbe93837c5bcb5cea1c7c813d93316de63d33e594725c34c76eb7a7a49",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/INPUTS.json"
+      }
+    },
+    {
+      "bytes": 6332,
+      "path": "joint-policy-reconnect-candidate-v1/PLAN.md",
+      "sha256": "252980cb1827a2f0103b6433a1536055bd632bac45f6747819e3fc22754896c7",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/PLAN.md"
+      }
+    },
+    {
+      "bytes": 2189,
+      "path": "joint-policy-reconnect-candidate-v1/PRIOR_FREEZE_30675ce2.json",
+      "sha256": "30675ce264e636dcb794e52a664202a3d7ffc9bfe2bbbbbe52b601e2a52f1b6c",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/PRIOR_FREEZE_30675ce2.json"
+      }
+    },
+    {
+      "bytes": 1982,
+      "path": "joint-policy-reconnect-candidate-v1/PRIOR_FREEZE_bc959762.json",
+      "sha256": "bc95976262d8949ac544abecc3ddb5f68150d4d4644cc09c573fde2eadaf8ed0",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/PRIOR_FREEZE_bc959762.json"
+      }
+    },
+    {
+      "bytes": 3538,
+      "path": "joint-policy-reconnect-candidate-v1/PRIOR_SOURCE_REVIEW_30675ce2.json",
+      "sha256": "1192d02a74bc44defe0ffbb149a7be9a8bc268942792c6fc03d9d2a2e0205850",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/PRIOR_SOURCE_REVIEW_30675ce2.json"
+      }
+    },
+    {
+      "bytes": 3176,
+      "path": "joint-policy-reconnect-candidate-v1/PRIOR_SOURCE_REVIEW_bc959762.json",
+      "sha256": "a4810df6f8978e4215096267111133cd01681cfec6d784136507ce1cd9d5962a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/PRIOR_SOURCE_REVIEW_bc959762.json"
+      }
+    },
+    {
+      "bytes": 4375,
+      "path": "joint-policy-reconnect-candidate-v1/REFERENCES.json",
+      "sha256": "8b9711095604a3d9882cb65cef3aceb2c7edc4c52ea1570fa82add7ea4c02419",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/REFERENCES.json"
+      }
+    },
+    {
+      "bytes": 8543,
+      "path": "joint-policy-reconnect-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json",
+      "sha256": "3f85f347e0edcc4bdc8a7defa3dd863145e59db5ca382b83cac116acbc3258dd",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/RUN_ONCE/OUTER_WAIT4_RECEIPT.json"
+      }
+    },
+    {
+      "bytes": 2488,
+      "path": "joint-policy-reconnect-candidate-v1/SAVED_FINDINGS.md",
+      "sha256": "c6d3630c704234fcfd316b204d60199c6524fcd37e80064c9fb8e746d27b602e",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/SAVED_FINDINGS.md"
+      }
+    },
+    {
+      "bytes": 831,
+      "path": "joint-policy-reconnect-candidate-v1/SPAWN_REGISTRATION_FINDING_30675ce2.json",
+      "sha256": "7f578f671ad5c70605077a04c0a76f6f98588c64564d65df0169c924c307b47a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/SPAWN_REGISTRATION_FINDING_30675ce2.json"
+      }
+    },
+    {
+      "bytes": 8709,
+      "path": "joint-policy-reconnect-candidate-v1/attempt.py",
+      "sha256": "0de46294e68394b8ce2859355d2ab4bf2234d8f7873b546f41d35caafeada9eb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/attempt.py"
+      }
+    },
+    {
+      "bytes": 1416,
+      "path": "joint-policy-reconnect-candidate-v1/common.py",
+      "sha256": "4b6cf61f5372ba766b97b291e20fcf2ad1e0acd2679149262c7032f097a63fac",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/common.py"
+      }
+    },
+    {
+      "bytes": 3026,
+      "path": "joint-policy-reconnect-candidate-v1/content_input.py",
+      "sha256": "71f1696e720b4adfa9cb14cfd247f5e4a64f0e837a2a4f85574c83c99da597a6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/content_input.py"
+      }
+    },
+    {
+      "bytes": 6997,
+      "path": "joint-policy-reconnect-candidate-v1/contracts.py",
+      "sha256": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/contracts.py"
+      }
+    },
+    {
+      "bytes": 3122,
+      "path": "joint-policy-reconnect-candidate-v1/cost.py",
+      "sha256": "76008bde5e457d8709e49fb4e45d8f54d93a98e454c6ab67565dd0cc0416dde5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/cost.py"
+      }
+    },
+    {
+      "bytes": 84,
+      "path": "joint-policy-reconnect-candidate-v1/fashion_research/__init__.py",
+      "sha256": "c183be0098158464a097ece9cc5a916664ff239c0bfc408b151c9a1b04802cdf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/fashion_research/__init__.py"
+      }
+    },
+    {
+      "bytes": 6844,
+      "path": "joint-policy-reconnect-candidate-v1/fashion_research/autodiff.py",
+      "sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/fashion_research/autodiff.py"
+      }
+    },
+    {
+      "bytes": 19110,
+      "path": "joint-policy-reconnect-candidate-v1/fashion_research/model.py",
+      "sha256": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/fashion_research/model.py"
+      }
+    },
+    {
+      "bytes": 6313,
+      "path": "joint-policy-reconnect-candidate-v1/fashion_research/transport.py",
+      "sha256": "5f7f89a117197b00d1fbe656cd101c35418121847fdfa816d769430dadc11e73",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/fashion_research/transport.py"
+      }
+    },
+    {
+      "bytes": 7757,
+      "path": "joint-policy-reconnect-candidate-v1/guarded_core.py",
+      "sha256": "6ef51ff2ce941322ab50cf897c3ab5a442705225e8702220e829375921d7c0fb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/guarded_core.py"
+      }
+    },
+    {
+      "bytes": 3065,
+      "path": "joint-policy-reconnect-candidate-v1/guarded_delivery.py",
+      "sha256": "61a2d76dd0e6143304297d75b18f55e6c6e732e39bf8aebb29472c35993460bc",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/guarded_delivery.py"
+      }
+    },
+    {
+      "bytes": 14141,
+      "path": "joint-policy-reconnect-candidate-v1/multimodal_contract.py",
+      "sha256": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/multimodal_contract.py"
+      }
+    },
+    {
+      "bytes": 2975,
+      "path": "joint-policy-reconnect-candidate-v1/owned_process.py",
+      "sha256": "eb4d14c42c0e5f43d55c6de58ba25736c0056724563916403126018f28a3ba88",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/owned_process.py"
+      }
+    },
+    {
+      "bytes": 3952,
+      "path": "joint-policy-reconnect-candidate-v1/persistence.py",
+      "sha256": "be796ff7ff4614cb40936cd4d5fb371866eed30faf10463f3e9bc48073bc3adf",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/persistence.py"
+      }
+    },
+    {
+      "bytes": 4054,
+      "path": "joint-policy-reconnect-candidate-v1/policy_backend.py",
+      "sha256": "1d5b88283b3b1ffdbda48096f0e38d192ac07687fe07902ebf9bc1b9d1be2e8a",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/policy_backend.py"
+      }
+    },
+    {
+      "bytes": 1657,
+      "path": "joint-policy-reconnect-candidate-v1/route_contract.py",
+      "sha256": "3b69df1382e9fa1e3b46612c1433997961534969aa7b59d552768d60ee8bd6a5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/route_contract.py"
+      }
+    },
+    {
+      "bytes": 4647,
+      "path": "joint-policy-reconnect-candidate-v1/run_once.py",
+      "sha256": "5e9069f87ef42d4410bea2fdbd4b561baf30a621d5b0790f8bf2b7a43c55c682",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/run_once.py"
+      }
+    },
+    {
+      "bytes": 5064,
+      "path": "joint-policy-reconnect-candidate-v1/supervise.py",
+      "sha256": "13f7f9fcb4cedd8e1f00de885930d593eacab468bf8383a97a5cf6fa09e1779d",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/supervise.py"
+      }
+    },
+    {
+      "bytes": 3027,
+      "path": "joint-policy-reconnect-candidate-v1/verify_midpoint.py",
+      "sha256": "cff66ca3abec3903bfeb65fc157e8159221aabcc68bf3097ecd910fec5e881c2",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/verify_midpoint.py"
+      }
+    },
+    {
+      "bytes": 6444,
+      "path": "joint-policy-reconnect-candidate-v1/worker.py",
+      "sha256": "be6eb9adf9cab3139f056a159c78b4aa363543f52e39ebedc6ba55a0b7a97094",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-policy-reconnect-candidate-v1/worker.py"
+      }
+    },
+    {
+      "bytes": 6892,
+      "path": "joint-product-six-capsule-design-v1/DESIGN_REVIEW.json",
+      "sha256": "d3410c0b1b9a7fb2920fc316ca77c34ff07eae3b21a71422bfca6c43002088f7",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-product-six-capsule-design-v1/DESIGN_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 8497,
+      "path": "joint-product-six-capsule-design-v1/INVENTORY.json",
+      "sha256": "3a664e5d2f263b11ab3e9d02575d3e76ea30b54c9b85a3bb5cb339acead5778f",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-product-six-capsule-design-v1/INVENTORY.json"
+      }
+    },
+    {
+      "bytes": 368,
+      "path": "joint-product-six-capsule-design-v1/MANIFEST.json",
+      "sha256": "d0dd53cfd0a747a0cd659eb063f3cc68761b7fe69bae2052595ad0d09c71df73",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-product-six-capsule-design-v1/MANIFEST.json"
+      }
+    },
+    {
+      "bytes": 8393,
+      "path": "joint-product-six-capsule-design-v1/PLAN.md",
+      "sha256": "8755d16fa9f6fd64980bac95bba3349ba3bf1271e7dd6723b28a1afc058252d6",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-product-six-capsule-design-v1/PLAN.md"
+      }
+    },
+    {
+      "bytes": 9312,
+      "path": "joint-product-six-capsule-design-v1/PRIOR_DESIGN_REVIEW_64957cbe.json",
+      "sha256": "a6b6a174ab478a11d72f9dae12f33883f8c062ffa9b94da01617e5d59dd24d20",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-product-six-capsule-design-v1/PRIOR_DESIGN_REVIEW_64957cbe.json"
+      }
+    },
+    {
+      "bytes": 271,
+      "path": "joint-product-six-capsule-design-v1/REFERENCES.json",
+      "sha256": "1006be5411d163aa0802e833b3caf438f428d05212f0360525b9ae2e539bc596",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/joint-product-six-capsule-design-v1/REFERENCES.json"
+      }
+    },
+    {
+      "bytes": 1272,
+      "path": "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+      "sha256": "649479caf0e78092c7fe70fb42d9153a68b1f788a3482e1a3b3dc4b2f19b2505",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/multi-stage-guarded-chain-candidate-v1/FREEZE.json"
+      }
+    },
+    {
+      "bytes": 9601,
+      "path": "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "sha256": "2f515a81bc3e7a350421ceb91d163ff3973424f07850c01eef58eb29ad079a54",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json"
+      }
+    },
+    {
+      "bytes": 320,
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+      "sha256": "7927836d412b538db94f207461bd978a3f18fdeda1d757911160f64318c0bacb",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json"
+      }
+    },
+    {
+      "bytes": 6473,
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+      "sha256": "e2c6ab063df6f5a8a9d013e62b2cbfe147010078690e1d1c8070944830219e9d",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json"
+      }
+    },
+    {
+      "bytes": 12303,
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+      "sha256": "37a504cbd5da31fdc5476d3a30ee9314248554ce0d04797e823d273ebec53035",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz"
+      }
+    },
+    {
+      "bytes": 1560407,
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+      "sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150",
+      "storage": {
+        "kind": "raw-zip-records",
+        "records": [
+          {
+            "bytes": 401593,
+            "index": 0,
+            "offset": 0,
+            "sha256": "304b4f795891530961da7bfb2e387edb6b03e6e02f0b919c9f577fb7dd7d9c9f"
+          },
+          {
+            "bytes": 697,
+            "index": 1,
+            "offset": 401593,
+            "sha256": "af2bcbd9f177ff6d53ae156edb199c0b40ee3190fcf017c3c32b958853824c21"
+          },
+          {
+            "bytes": 16577,
+            "index": 2,
+            "offset": 402290,
+            "sha256": "b2c383d2695207aec0e40ec970a5d20154567788f2f2165b4cad48722e3f92fd"
+          },
+          {
+            "bytes": 449,
+            "index": 3,
+            "offset": 418867,
+            "sha256": "ee501f32e31bae49179b188b46bd21300cee379251b84b9171a3b5cf641a3aa4"
+          },
+          {
+            "bytes": 10689,
+            "index": 4,
+            "offset": 419316,
+            "sha256": "b3b575b7403ed475af25be31c3b99a152bef690d727f114fe0cf47ca68a8bbb6"
+          },
+          {
+            "bytes": 321,
+            "index": 5,
+            "offset": 430005,
+            "sha256": "d8bf170ef4f50c128746585fc73e66746db2e9f73cbadf12e05b28a870c8e33f"
+          },
+          {
+            "bytes": 2753,
+            "index": 6,
+            "offset": 430326,
+            "sha256": "9fcda88c0c6cc037fa036ead6c6e28052a82b585916b498cb182d659b5caee7e"
+          },
+          {
+            "bytes": 273,
+            "index": 7,
+            "offset": 433079,
+            "sha256": "f79c08a84c9a4e2e771b12763592ccb399521e9c43e5cf2e3fd005857abac81f"
+          },
+          {
+            "bytes": 2242,
+            "index": 8,
+            "offset": 433352,
+            "sha256": "196d8bebfca6be47097ce7a242bfce039777659f11a95e504189b3691e5ddbb4"
+          },
+          {
+            "bytes": 322,
+            "index": 9,
+            "offset": 435594,
+            "sha256": "0c10d08c51cd8c60523ff3f8d825826b91078c378fe452ab6582693de928a261"
+          },
+          {
+            "bytes": 5562,
+            "index": 10,
+            "offset": 435916,
+            "sha256": "ea7ff62121f4567fd8863986a1969ed08d0cf657a911be631aa07ce27f035693"
+          },
+          {
+            "bytes": 314,
+            "index": 11,
+            "offset": 441478,
+            "sha256": "2d5babc371d4ed4886d7b17911a67013f15af9d00531796e370222c9a6205513"
+          },
+          {
+            "bytes": 6330,
+            "index": 12,
+            "offset": 441792,
+            "sha256": "b185ef2dc1dcf311f4c911904e0780e24b4feafe9c46ed8062c16706e50d1bfa"
+          },
+          {
+            "bytes": 314,
+            "index": 13,
+            "offset": 448122,
+            "sha256": "52af5775cc2d42a61023bbb007188c19d5a0dc5cb5ab66b28d8a4a9da1b4c434"
+          },
+          {
+            "bytes": 24768,
+            "index": 14,
+            "offset": 448436,
+            "sha256": "774d9730fb08e6593a9b3c54a81d6896a35dd40b68a629ac9a14af9295fa2cd6"
+          },
+          {
+            "bytes": 448,
+            "index": 15,
+            "offset": 473204,
+            "sha256": "6e3825d57d77c9c2797aa77faaa8cb146d60e077a951739e05977852f63e5008"
+          },
+          {
+            "bytes": 37056,
+            "index": 16,
+            "offset": 473652,
+            "sha256": "7ed942ac822395143499267053ef59738e1a2fb917bda69361681abe3c231b94"
+          },
+          {
+            "bytes": 448,
+            "index": 17,
+            "offset": 510708,
+            "sha256": "f6893b40c901396db66d0fcac9ba410c4842384ec3d66a99bc50b5b257716933"
+          },
+          {
+            "bytes": 16832,
+            "index": 18,
+            "offset": 511156,
+            "sha256": "de456797d8c06d648d3d849d9c238a57996e9fbdfa1e64efc06264ad460597ea"
+          },
+          {
+            "bytes": 320,
+            "index": 19,
+            "offset": 527988,
+            "sha256": "46b792e5bffaf514d57bc73348f170f999055cc74cc44d10f6e8ae4a9cc2001d"
+          },
+          {
+            "bytes": 198,
+            "index": 20,
+            "offset": 528308,
+            "sha256": "c0a85b35e337a8394d5eb7def79b76bfcaaafbe48a81331be8169de0cecb0608"
+          },
+          {
+            "bytes": 195,
+            "index": 21,
+            "offset": 528506,
+            "sha256": "f3d2c411b46f5302e72fb3af2cdf81bcdaa391bafe10f3fd250cb2fc403b842b"
+          },
+          {
+            "bytes": 287,
+            "index": 22,
+            "offset": 528701,
+            "sha256": "963a8676c8fc08b7508e8612b2e2f82e525336c1aa4096792b06b1af882a692a"
+          },
+          {
+            "bytes": 197,
+            "index": 23,
+            "offset": 528988,
+            "sha256": "301f720099efdd9fb802bd7736bb49ca9f25109c7502ae96dcc85697d8e01dac"
+          },
+          {
+            "bytes": 401600,
+            "index": 24,
+            "offset": 529185,
+            "sha256": "ef58b2691c88fceb5077d20617fe6004a2be9c72c3f90f34a8a14ffccf057c14"
+          },
+          {
+            "bytes": 401600,
+            "index": 25,
+            "offset": 930785,
+            "sha256": "b5eb9eb2476e5314e5935b84e1c06b3231700a65394450e3ab0ada341add4f65"
+          },
+          {
+            "bytes": 200,
+            "index": 26,
+            "offset": 1332385,
+            "sha256": "f52fea55413d74f8496fe18dc816f6e4d03d50bd6c76a33b9621fd9a614aa5c6"
+          },
+          {
+            "bytes": 704,
+            "index": 27,
+            "offset": 1332585,
+            "sha256": "34eef3ac63a63181a77461ec3e25d4d1332337a910f371059387442f802fc663"
+          },
+          {
+            "bytes": 704,
+            "index": 28,
+            "offset": 1333289,
+            "sha256": "73f6c78d53c2e985a0fce19b16dd32251f2c7ea64452d4fff60ab85f459ede42"
+          },
+          {
+            "bytes": 200,
+            "index": 29,
+            "offset": 1333993,
+            "sha256": "6a63f49aece9e6833db4c870436971afb6f146ceb8989acf00ae85ccdb545138"
+          },
+          {
+            "bytes": 16584,
+            "index": 30,
+            "offset": 1334193,
+            "sha256": "2e92fb9260aa037777427159f0f2303c51c689628a4fe0b210365c63a43fa2b3"
+          },
+          {
+            "bytes": 16584,
+            "index": 31,
+            "offset": 1350777,
+            "sha256": "d1d75e1ec5d253db34b1c7764abf94e785884605a28f98bccda047fa6be918aa"
+          },
+          {
+            "bytes": 208,
+            "index": 32,
+            "offset": 1367361,
+            "sha256": "cd8e38747ed17098aea328de59e7fdb876bd82b31a5cc36a2a2faeb0f0a2fe7d"
+          },
+          {
+            "bytes": 456,
+            "index": 33,
+            "offset": 1367569,
+            "sha256": "d2a9cfcc541836d79ff8f378cdddcd3fde495cd9e70354f79f37f8e45c2d34ec"
+          },
+          {
+            "bytes": 456,
+            "index": 34,
+            "offset": 1368025,
+            "sha256": "ff9ea847130fbf7932735df086c453e6d59e964831d4a6a81b2918d775384f1f"
+          },
+          {
+            "bytes": 208,
+            "index": 35,
+            "offset": 1368481,
+            "sha256": "0fca7dc7d5d272d890fa74d44eb8dbf1687fa052348c80db244a8a3000a9106c"
+          },
+          {
+            "bytes": 10696,
+            "index": 36,
+            "offset": 1368689,
+            "sha256": "cd327c08e9a765fbe17bc84cd12d928f1950a96c1037bc4fb0e7c043df47fbe6"
+          },
+          {
+            "bytes": 10696,
+            "index": 37,
+            "offset": 1379385,
+            "sha256": "53b9818c729a386d872b6d32114457f6614da9d36c88d246fda82d44930d8a5b"
+          },
+          {
+            "bytes": 208,
+            "index": 38,
+            "offset": 1390081,
+            "sha256": "04be2b959e4f51f473d0a578bf15fc9276921117f09f3ef68f77bde93a6c0b08"
+          },
+          {
+            "bytes": 328,
+            "index": 39,
+            "offset": 1390289,
+            "sha256": "b24ef707b5d6398d93071e7de4c5da0da5fe53dbbf6461b69cf10ea06756a62c"
+          },
+          {
+            "bytes": 328,
+            "index": 40,
+            "offset": 1390617,
+            "sha256": "dacfb16c750ea6b72e52caf5b1c161f421243a8e252ce50bf2729c061a578f0a"
+          },
+          {
+            "bytes": 208,
+            "index": 41,
+            "offset": 1390945,
+            "sha256": "6ab388027aa4fe71c9135fd8f2e32da06237165cc879e765c1003338a37a90da"
+          },
+          {
+            "bytes": 2760,
+            "index": 42,
+            "offset": 1391153,
+            "sha256": "9944bea7bd0bf752fef0da1a17be754e97e161197daa6954f607281a64064a7d"
+          },
+          {
+            "bytes": 2760,
+            "index": 43,
+            "offset": 1393913,
+            "sha256": "f94faf2724f2c9ab88621680d9d6ea854962f823737439d08aa36f7b4001d43c"
+          },
+          {
+            "bytes": 208,
+            "index": 44,
+            "offset": 1396673,
+            "sha256": "1e9abe0bc9417a04641f123db85873b4a8529c6b50625dcbbaff12ca41ca3a56"
+          },
+          {
+            "bytes": 280,
+            "index": 45,
+            "offset": 1396881,
+            "sha256": "0bd379583d1617803bef188bbc0f4412502d0bdf9e2fd54003115b87fbe09dbc"
+          },
+          {
+            "bytes": 280,
+            "index": 46,
+            "offset": 1397161,
+            "sha256": "0ff66510365937c52d0d523b2e6f72c59c0e6b0b1771ddc7504731be378c6613"
+          },
+          {
+            "bytes": 208,
+            "index": 47,
+            "offset": 1397441,
+            "sha256": "0745daef9b27d1aea3b8e35873bd70c2880de6703e677889741fdd24291bcbe4"
+          },
+          {
+            "bytes": 2249,
+            "index": 48,
+            "offset": 1397649,
+            "sha256": "d4d26f7e6c94eaabcb12fc55392473bf0fb9a614ce9f5fd9de2a5f6412afa8f2"
+          },
+          {
+            "bytes": 2249,
+            "index": 49,
+            "offset": 1399898,
+            "sha256": "e316cd859223f9b8966ac83ff85bc21caccd070ba5cd8b221df03dd2915aa402"
+          },
+          {
+            "bytes": 209,
+            "index": 50,
+            "offset": 1402147,
+            "sha256": "bc6e2183c9e52811b4ce7c6035d16c86f49b11e7a4dc2573a261d6a5f84922a5"
+          },
+          {
+            "bytes": 329,
+            "index": 51,
+            "offset": 1402356,
+            "sha256": "0398fed826ddfa2768f94e3b83c729c694a02b82000882e29c75e64d8de5ab67"
+          },
+          {
+            "bytes": 329,
+            "index": 52,
+            "offset": 1402685,
+            "sha256": "b6786655b1538fa5afd284062a157f1d8193b4bd35e318cb449f93ff34df3d9a"
+          },
+          {
+            "bytes": 209,
+            "index": 53,
+            "offset": 1403014,
+            "sha256": "f9709ef65c6e9d8f510f5fb0318904cb714dfe9570077f9e2c032cf1488704b1"
+          },
+          {
+            "bytes": 5569,
+            "index": 54,
+            "offset": 1403223,
+            "sha256": "5b9d2e55509e757a7b6205a53cbb2491349eb4c87606ebec137c5dde1ce4ecea"
+          },
+          {
+            "bytes": 5569,
+            "index": 55,
+            "offset": 1408792,
+            "sha256": "f779e0a484d6298d75185d5025f8fa198f083b18dbd59c6c6a429bc39d349fea"
+          },
+          {
+            "bytes": 201,
+            "index": 56,
+            "offset": 1414361,
+            "sha256": "3da2675e8987a2a06c78500117e2b1328ce51275a3357c6c3e832ff07c801a9c"
+          },
+          {
+            "bytes": 321,
+            "index": 57,
+            "offset": 1414562,
+            "sha256": "533e3697ba55476b94d4709f383b27d7a7542da68c159192747a98433887811c"
+          },
+          {
+            "bytes": 321,
+            "index": 58,
+            "offset": 1414883,
+            "sha256": "4d1c03e3826fbe00a44463311ddd0e834f71b50dcc8a9ba69d99c448f0d80fc1"
+          },
+          {
+            "bytes": 201,
+            "index": 59,
+            "offset": 1415204,
+            "sha256": "f85557436c1ec3cb0d269f66d30260786519767dd46a5d5c96cf26c0ce01b764"
+          },
+          {
+            "bytes": 6337,
+            "index": 60,
+            "offset": 1415405,
+            "sha256": "d1343c719370f6c7db05285a2c39cc8c61aa0117b3257e9c2f4653308d486058"
+          },
+          {
+            "bytes": 6337,
+            "index": 61,
+            "offset": 1421742,
+            "sha256": "3674e10763a57f9535af4d04622db7299dd26a6354eb5735ccff63a44f37ff18"
+          },
+          {
+            "bytes": 201,
+            "index": 62,
+            "offset": 1428079,
+            "sha256": "0f4c80dcf23f2914600417a9b3faa944e16ad1a78084b6e351a48384ee75540e"
+          },
+          {
+            "bytes": 321,
+            "index": 63,
+            "offset": 1428280,
+            "sha256": "ebba4caadb7a25ac08e072a219f26bb47bdf753ca38178ef6fab96d01c50fe48"
+          },
+          {
+            "bytes": 321,
+            "index": 64,
+            "offset": 1428601,
+            "sha256": "941f2afd26ebdc64078685343a66264cc91603894a1ece24ef6cdc5e260edb9b"
+          },
+          {
+            "bytes": 201,
+            "index": 65,
+            "offset": 1428922,
+            "sha256": "8d9e104da782f884af90577288152fc33ddd6302509822a9b2204f36b13603cb"
+          },
+          {
+            "bytes": 24775,
+            "index": 66,
+            "offset": 1429123,
+            "sha256": "0b86d352c60a0ffdd6113603db94701ccbcc7d9b5deffaf2ace0b7dcc866117e"
+          },
+          {
+            "bytes": 24775,
+            "index": 67,
+            "offset": 1453898,
+            "sha256": "c4fb5bb6a855746518d7d5ad21e8a2eb711528547ac6fd755f966e050466b40d"
+          },
+          {
+            "bytes": 207,
+            "index": 68,
+            "offset": 1478673,
+            "sha256": "e894c0e3ec31e3879f069a7b217159185ee2adfced2b9322ad9579ca2a2f7f64"
+          },
+          {
+            "bytes": 455,
+            "index": 69,
+            "offset": 1478880,
+            "sha256": "60be8622490bc9a54f5e49ec0efca6b638a7ab0304d1f8c9f171b0478e81d8a0"
+          },
+          {
+            "bytes": 455,
+            "index": 70,
+            "offset": 1479335,
+            "sha256": "e0d03fd537811c5efd36e2293490e5c95e4c34092976b5fe2bcf6c9c94b09a47"
+          },
+          {
+            "bytes": 207,
+            "index": 71,
+            "offset": 1479790,
+            "sha256": "5da52ca1ae987031ea012613f8c0e8057b13aed7cc93b69337f2982f6f439a64"
+          },
+          {
+            "bytes": 37063,
+            "index": 72,
+            "offset": 1479997,
+            "sha256": "2566666f7db57b39c71b1b252a6689a9c4e3fa840d0fefb1a080e2f4ca4dc9db"
+          },
+          {
+            "bytes": 37063,
+            "index": 73,
+            "offset": 1517060,
+            "sha256": "486cc59a3c5a8006d4d23eed8bd3f732b39f229b5e48d6258396d9a1420d08ae"
+          },
+          {
+            "bytes": 207,
+            "index": 74,
+            "offset": 1554123,
+            "sha256": "33e9e22ceca688be2fac83975beb22cdc7911f12d54bc895b79015f9c975446f"
+          },
+          {
+            "bytes": 455,
+            "index": 75,
+            "offset": 1554330,
+            "sha256": "1c5f033a61767d640b51b28dacec68388de8b02229467519a2cb9911fc4434b9"
+          },
+          {
+            "bytes": 455,
+            "index": 76,
+            "offset": 1554785,
+            "sha256": "434e08a282e0b9ad40fb1ab99528d176cafff934a12e7033f4032417f0c86ab2"
+          },
+          {
+            "bytes": 207,
+            "index": 77,
+            "offset": 1555240,
+            "sha256": "ff76f864868d5bd701b5042ae4c25446398eae27141d06c767227b16f7d4fcb5"
+          },
+          {
+            "bytes": 4960,
+            "index": 78,
+            "offset": 1555447,
+            "sha256": "fd321ed39c9e22e223607ad454142c2260d0276c1ec04e5fb89605f776f8ded6"
+          }
+        ]
+      }
+    },
+    {
+      "bytes": 76344,
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz",
+      "sha256": "970deb6a478d772738bda40f09776035aa28fa318b4b95d77521915bda5e52b5",
+      "storage": {
+        "kind": "whole-file",
+        "path": "files/multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz"
+      }
+    }
+  ],
+  "schema": "joint-product-six-capsules-v1",
+  "storage_bytes": 2990186,
+  "storage_files": 320
+}

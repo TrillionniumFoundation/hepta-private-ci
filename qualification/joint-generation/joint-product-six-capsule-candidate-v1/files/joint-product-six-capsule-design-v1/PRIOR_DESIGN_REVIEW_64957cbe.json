@@ -1,0 +1,94 @@
+{
+  "status": "DESIGN_REVIEW_NEEDS_DOCUMENTARY_REVISION_BEFORE_IMPLEMENTATION_FREEZE",
+  "reviewed_manifest_sha256": "64957cbe4a3f885950a2ce7990e9277ee75cac6bc06644aa2f0dc638777a2b1a",
+  "scope": "Independent read-only design review of caller-selected local six-capsule design, frozen local candidate source/metadata and INPUTS-bound synthetic assets. No scientific source import, model operation, qualification run, permission change, network write or remote verification performed. This review file is intentionally outside the design MANIFEST.",
+  "method": "Read and hash the exact design bindings, all six FREEZE-listed files and saved-review identities; inspect runner/supervisor/common/worker import and path consumers; read-only stdlib AST and ZIP metadata/byte-range inspection, without importing any candidate module. Not a new audit of all raw RUN evidence.",
+  "observed": {
+    "design_manifest_and_three_bindings_match": true,
+    "design_reference_hashes_match": true,
+    "all_six_freeze_and_saved_review_hashes_match": true,
+    "all_173_freeze_listed_file_hashes_match": true,
+    "runtime_inputs": {
+      "unique_paths": 13,
+      "bytes": 1772664,
+      "all_size_sha256_match": true,
+      "all_six_INPUTS_configs_match_inventory": true
+    },
+    "content_npz": {
+      "bytes": 1560407,
+      "sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150",
+      "members": 78,
+      "compression_types": [
+        0
+      ],
+      "general_purpose_flags": [
+        0
+      ],
+      "raw_record_count": 79,
+      "maximum_record_bytes": 401600,
+      "maximum_member_bytes": 401536,
+      "first_offset": 0,
+      "central_directory_offset": 1555447,
+      "central_directory_bytes": 4938,
+      "EOCD_offset": 1560385,
+      "EOCD_bytes": 22,
+      "terminal_record_bytes": 4960,
+      "ordered_contiguous_coverage_and_concatenated_sha256_match": true,
+      "archive_comment_bytes": 0,
+      "gzip_comparison": "Existing INVENTORY assertion retained, not independently recompressed during this read-only review."
+    }
+  },
+  "findings": [
+    {
+      "id": "D1",
+      "severity": "required_documentary_boundary",
+      "finding": "The 13 INPUTS are frozen data artifacts, not a self-contained execution environment. Every run_once entry resolves a caller-supplied existing benchmark lock; the supervisor acquires flock. Materializer must not create a new per-workspace lock and present it as the shared benchmark exclusion authority. Existing Python/NumPy and Linux resource, affinity, fork, wait4, flock and /proc facilities remain external prerequisites; installation and new execution are out of scope.",
+      "evidence": [
+        "joint-policy-delivery-candidate-v2/run_once.py:8-12",
+        "joint-policy-delivery-candidate-v2/qualify.py:5-6",
+        "joint-policy-reconnect-candidate-v1/run_once.py:9-13",
+        "joint-policy-reconnect-candidate-v1/owned_process.py:12",
+        "joint-policy-output-budget-outcome-candidate-v2/supervise.py:7"
+      ]
+    },
+    {
+      "id": "D2",
+      "severity": "required_documentary_boundary",
+      "finding": "Limit claimed runtime closure to the frozen Fashion entrypoint/control-flow paths. All six multimodal_contract.py copies retain lazy legacy RGB8 to_legacy_request/dispatch code importing absent serve. The inspected Fashion converter and entrypoints do not call these functions. Do not silently add legacy or restricted owner code, and do not advertise all APIs in every copied module as runnable. Freeze the supported entrypoint and explicit out-of-scope legacy surface.",
+      "evidence": [
+        "joint-policy-delivery-candidate-v2/multimodal_contract.py:308-336",
+        "joint-policy-delivery-candidate-v2/content_input.py:5-6,32-59",
+        "joint-policy-delivery-candidate-v2/qualify.py:7-14"
+      ]
+    },
+    {
+      "id": "D3",
+      "severity": "required_precision",
+      "finding": "Call the final 4960-byte ZIP part the terminal central-directory-plus-EOCD record. Its central directory is 4938 bytes and EOCD is 22 bytes. Keeping only the central directory would fail original-size and whole-hash checks. Parts must be raw original byte ranges including all local headers, extra fields and terminal archive structures; no reserialization or member extraction."
+    },
+    {
+      "id": "D4",
+      "severity": "implementation_freeze_gate",
+      "finding": "Before implementation review/admission, freeze exact copied metadata/receipt/provenance allowlists, fixed six capsule-to-path mappings, absent-raw-reference catalog, manifest byte limit, object/record/path count limits, total retained/output byte limits and total negative-case count. RLIMIT_FSIZE 8MiB is per-file, not an aggregate six-workspace bound. Do not grant new model budgets or infer run permission from later materialization success."
+    }
+  ],
+  "accepted_design_points": [
+    "Separate fresh workspaces are necessary: delivery-v2 RUN_ONCE is a new-run output, while five later candidates require selected delivery-v2 RUN_ONCE files as historical data. No automatic aggregate run or substitution by latest source.",
+    "Versioned source identities, paired content/actor/export references and saved scoped review distinctions can remain byteexact. New materialization identity is separate from original source, artifact, request and prior runtime identities. Existing prior failure provenance must be retained without implying replay.",
+    "Structural record storage is suitable for the actual consumer: raw concatenation restores the exact NPZ used by the existing np.load code. It avoids file-size policy changes and does not depend on NumPy or scientific modules during materialization.",
+    "Identity graph can remain acyclic: original source FREEZE and INPUTS plus original whole-file hash are leaves; storage manifest binds objects and original identity; implementation freeze binds manifest and consumer; completed materialization receipt binds manifest and written inventory. Do not make a manifest bind its own hash or silently update original scientific identities.",
+    "Caller-selected immutable manifest is an integrity trust anchor, not owner authentication, production signing, hostile concurrent-filesystem protection or a power-loss atomicity guarantee.",
+    "The plan correctly distinguishes copied small reviews/receipts from hash-only references to omitted raw RUN evidence. Hash-reference catalog and remote byte reconstruction do not independently reverify omitted scientific evidence.",
+    "No archive pathname extraction is necessary. Fixed destination paths plus digest-only storage identifiers, complete byte validation before mkdir, exclusive fresh destination and completion receipt last fit the stated non-adversarial filesystem scope."
+  ],
+  "required_implementation_review_checks": [
+    "Use strict bounded schema parsing, including duplicate JSON key refusal, integer type/range checks, exact expected path set, duplicate destination rejection, exact record count/index/order/offset/length and total contiguous coverage from zero to original size. Reject extra, missing and duplicate records, malformed digests, unsupported shapes and unexpected archive bytes.",
+    "Verify each object byte count and SHA256 and complete reconstructed original file byte count/SHA256 before claiming usable materialization. If inputs are reread after validation, retain validated bytes or revalidate final output so changed inputs cannot produce a success receipt.",
+    "Refuse output/source symlinks and unsafe ancestors under the declared trusted parent model, preexisting destination and partial prior destination; do not traverse or execute archive member names. Reject any source/input identity drift and any blob above 511999 bytes.",
+    "Completion receipt must be created last only after every expected materialized byte has been checked. Disk/OS errors may leave an incomplete fresh directory but never a usable or PASS-labelled workspace. Existing incomplete directories remain refusal cases, not automatic repair/retry targets.",
+    "Freeze all qualification resource and total-output scopes before the single proposed stdlib-only run. Retain preparation costs, full wait4 costs and unknown outer tail; no budget expansion or automatic rerun on failure.",
+    "Stop on undeclared required files, restricted sources, unsupported environment, broken original identity, missing storage object, integrity/size/count violation, resource failure or incomplete output. Preserve existing scientific-data 403, App Server access, strict256 and production-authority holds.",
+    "Before any separately authorized publication, review the final implementation and saved packaging qualification, apply the actual repository incremental size policy, then independently verify remote Git bytes and reconstructed whole NPZ. The 67 historical oversize blobs against main remain separately disclosed."
+  ],
+  "verdict": "The proposed consumer and structural storage design are coherent and useful as six separate frozen engineering capsules. Resolve D1-D3 in a new design freeze and retain D4 as a mandatory explicit implementation-freeze gate. This is not implementation approval, execution admission, aggregate PASS, publication approval, raw-evidence closure or fresh model qualification."
+}
