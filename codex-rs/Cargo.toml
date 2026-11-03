@@ -665,6 +665,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Keep Secret Service encryption while isolating its synchronous provider from
+# the unmaintained asynchronous zbus dependency family.
+keyring = { path = "third_party/keyring-3.6.3" }
 # Backport upstream's maintained TOML parser without changing age encryption,
 # i18n-config's configuration schema, or the source allowlist.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
