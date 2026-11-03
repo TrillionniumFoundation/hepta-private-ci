@@ -11,6 +11,7 @@ use codex_hepta_cognitive_types::MemoryOperationV1;
 use codex_hepta_cognitive_types::MemoryPredictionKindV1;
 use codex_hepta_cognitive_types::MemoryReadStatusV1;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_learning_artifacts::DatasetWithdrawalNoticeV1;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::MemoryCellWriteModeV1;
 use codex_hepta_memory::MemoryInventoryOwnerSnapshotV1;
@@ -34,6 +35,7 @@ use crate::MemoryInventoryAddressResolverV1;
 use crate::MemoryInventoryResolvedAddressV1;
 use crate::MemoryIsolatedServiceV14;
 use crate::memory_cell_release::test_support::fixture_manifest_template;
+use crate::memory_cell_release::test_support::id;
 use crate::memory_cell_release::test_support::prepare_payload_request;
 
 struct SemanticResolver;
@@ -378,11 +380,12 @@ async fn memory_v14_preserves_full_fitted_dependencies_and_return_fences() {
         )
         .await
         .expect("concurrent source commit");
-    assert!(
+    assert_eq!(
         service
-            .finish_read(&store, &access, &scope, &query, prepared, value)
+            .finish_read(&store, &access, &scope, &query, prepared, value.clone())
             .await
-            .is_err()
+            .expect("unconsumed event commit must not invalidate the semantic read"),
+        value
     );
     let current = snapshot(&store, &access).await;
     let prepared = service
@@ -406,6 +409,41 @@ async fn memory_v14_preserves_full_fitted_dependencies_and_return_fences() {
             .prediction_kind,
         MemoryPredictionKindV1::ModelPrediction
     );
+    let prepared = service
+        .prepare_read(
+            &query,
+            MemoryOperationV1::Semantic,
+            snapshot(&store, &access).await,
+        )
+        .expect("complete fitted partition before concurrent correction");
+    let value = prepared
+        .execute(&query, MemoryOperationV1::Semantic)
+        .expect("native execution");
+    store
+        .write_memory_inventory(
+            &access,
+            &scope,
+            &record(
+                "item:b",
+                MemoryInventoryKindV1::Semantic,
+                json!({"reserve":3,"pack":1,"limit":8}),
+            ),
+            MemoryCellWriteModeV1::Correct {
+                expected_revision: 2,
+            },
+        )
+        .await
+        .expect("unqueried fitted dependency changes during inference");
+    assert_eq!(
+        service
+            .finish_read(&store, &access, &scope, &query, prepared, value)
+            .await
+            .expect_err("full fitted dependencies remain fenced"),
+        (
+            MemoryReadStatusV1::Stale,
+            "V14 used model full projection changed"
+        )
+    );
     let mut wrong = query;
     wrong.scope = key("different-scope");
     assert!(
@@ -413,5 +451,328 @@ async fn memory_v14_preserves_full_fitted_dependencies_and_return_fences() {
             .read(&store, &access, &scope, &wrong, MemoryOperationV1::Semantic)
             .await
             .is_err()
+    );
+}
+
+#[tokio::test]
+async fn memory_v14_query_fence_ignores_unrelated_source_commits() {
+    let (root, store, access) = owner_fixture().await;
+    let owner = snapshot(&store, &access).await;
+    let scope = CognitiveScope::AgentPrivate;
+    let mut semantic = CellFixture::new(
+        root.path().join("semantic"),
+        &owner,
+        "cell:semantic",
+        MemoryInventoryKindV1::Semantic,
+        "item:a",
+    );
+    let mut procedure = CellFixture::new(
+        root.path().join("procedure"),
+        &owner,
+        "cell:procedure",
+        MemoryInventoryKindV1::Procedure,
+        "flow:a",
+    );
+    publish_trained(&mut semantic, &owner);
+    publish_trained(&mut procedure, &owner);
+    let service = MemoryIsolatedServiceV14::new(
+        &owner,
+        generation(1),
+        vec![
+            (semantic.selector.clone(), Arc::clone(&semantic.host)),
+            (procedure.selector.clone(), Arc::clone(&procedure.host)),
+        ],
+    )
+    .expect("independent trained cells");
+    let query = request(&owner);
+    let mut pending = Vec::new();
+    for operation in [
+        MemoryOperationV1::Current,
+        MemoryOperationV1::History,
+        MemoryOperationV1::Change,
+        MemoryOperationV1::Semantic,
+        MemoryOperationV1::Procedure,
+        MemoryOperationV1::Apply,
+    ] {
+        let prepared = service
+            .prepare_read(&query, operation, owner.clone())
+            .expect("prepared before unrelated writer");
+        let value = prepared.execute(&query, operation).expect("execute");
+        pending.push((prepared, value));
+    }
+    // A real writer task commits after all reads acquired their sources and
+    // before their return fences. No timer or scheduler race decides the test.
+    let writer = tokio::spawn({
+        let store = store.clone();
+        let access = access.clone();
+        let scope = scope.clone();
+        async move {
+            store
+                .write_memory_inventory(
+                    &access,
+                    &scope,
+                    &record(
+                        "item:b",
+                        MemoryInventoryKindV1::Semantic,
+                        json!({"reserve":1,"pack":1,"limit":2}),
+                    ),
+                    MemoryCellWriteModeV1::Correct {
+                        expected_revision: 1,
+                    },
+                )
+                .await
+        }
+    });
+    writer
+        .await
+        .expect("writer joined")
+        .expect("writer committed");
+    assert_ne!(
+        snapshot(&store, &access).await.owner_cut_digest(),
+        owner.owner_cut_digest(),
+        "the complete owner cut really changed"
+    );
+    for (prepared, value) in pending {
+        assert_eq!(
+            service
+                .finish_read(&store, &access, &scope, &query, prepared, value.clone())
+                .await
+                .expect("unrelated write preserves every read operation"),
+            value
+        );
+    }
+}
+
+#[tokio::test]
+async fn memory_v14_fallback_fences_reject_required_corrections_and_withdrawals() {
+    use MemoryInventoryKindV1::Event;
+    use MemoryInventoryKindV1::Hold;
+    use MemoryInventoryKindV1::Procedure;
+    use MemoryInventoryKindV1::Semantic;
+    for (operation, address, kind, corrected) in [
+        (MemoryOperationV1::Current, "item:a", Event, json!(8)),
+        (MemoryOperationV1::History, "item:a", Event, json!(8)),
+        (MemoryOperationV1::Change, "item:a", Event, json!(8)),
+        (
+            MemoryOperationV1::Semantic,
+            "item:a",
+            Semantic,
+            json!({"reserve":14,"pack":2,"limit":15}),
+        ),
+        (
+            MemoryOperationV1::Procedure,
+            "flow:a",
+            Procedure,
+            json!({"opcodes":[0,0,0,6]}),
+        ),
+        // Even unchanged hold=false content at a new revision is a new source.
+        (MemoryOperationV1::Apply, "item:a", Hold, json!(false)),
+    ] {
+        let (_root, store, access) = owner_fixture().await;
+        let owner = snapshot(&store, &access).await;
+        let scope = CognitiveScope::AgentPrivate;
+        let service = MemoryIsolatedServiceV14::new(&owner, generation(1), Vec::new())
+            .expect("legal source fallback without selected models");
+        let query = request(&owner);
+        let prepared = service
+            .prepare_read(&query, operation, owner)
+            .expect("prepared fallback");
+        let value = prepared
+            .execute(&query, operation)
+            .expect("source execution");
+        assert_eq!(
+            value.prediction_kind,
+            MemoryPredictionKindV1::SourceEvidence
+        );
+        store
+            .write_memory_inventory(
+                &access,
+                &scope,
+                &record("item:b", Semantic, json!({"reserve":1,"pack":1,"limit":2})),
+                MemoryCellWriteModeV1::Correct {
+                    expected_revision: 1,
+                },
+            )
+            .await
+            .expect("unrelated source correction");
+        assert_eq!(
+            service
+                .finish_read(&store, &access, &scope, &query, prepared, value.clone())
+                .await
+                .expect("fallback is also query-local"),
+            value
+        );
+        let prepared = service
+            .prepare_read(&query, operation, snapshot(&store, &access).await)
+            .expect("before required correction");
+        let value = prepared
+            .execute(&query, operation)
+            .expect("source execution");
+        store
+            .write_memory_inventory(
+                &access,
+                &scope,
+                &record(address, kind, corrected),
+                MemoryCellWriteModeV1::Correct {
+                    expected_revision: 1,
+                },
+            )
+            .await
+            .expect("required source correction");
+        assert_eq!(
+            service
+                .finish_read(&store, &access, &scope, &query, prepared, value)
+                .await
+                .expect_err("old output cannot follow a changed required source"),
+            (
+                MemoryReadStatusV1::Stale,
+                "V14 required sources changed before use"
+            )
+        );
+        let prepared = service
+            .prepare_read(&query, operation, snapshot(&store, &access).await)
+            .expect("new read uses corrected source");
+        let value = prepared
+            .execute(&query, operation)
+            .expect("corrected execution");
+        store
+            .forget_memory_inventory(
+                &access,
+                &scope,
+                &record(address, kind, json!(null)).address(),
+                /*expected_revision*/ 2,
+                "withdraw required source during read",
+                now(),
+            )
+            .await
+            .expect("required source tombstone");
+        assert_eq!(
+            service
+                .finish_read(&store, &access, &scope, &query, prepared, value)
+                .await
+                .expect_err("withdrawn source cannot authorize an old output"),
+            (MemoryReadStatusV1::Stale, "V14 support withdrawn")
+        );
+        assert!(
+            service
+                .read(&store, &access, &scope, &query, operation)
+                .await
+                .is_err(),
+            "fallback cannot resurrect a deleted source"
+        );
+    }
+}
+
+#[tokio::test]
+async fn memory_v14_artifact_withdrawal_fences_old_read_and_cold_selection() {
+    let (root, store, access) = owner_fixture().await;
+    let owner = snapshot(&store, &access).await;
+    let scope = CognitiveScope::AgentPrivate;
+    let mut semantic = CellFixture::new(
+        root.path().join("semantic"),
+        &owner,
+        "cell:semantic",
+        MemoryInventoryKindV1::Semantic,
+        "item:a",
+    );
+    publish_trained(&mut semantic, &owner);
+    let service = MemoryIsolatedServiceV14::new(
+        &owner,
+        generation(1),
+        vec![(semantic.selector.clone(), Arc::clone(&semantic.host))],
+    )
+    .expect("selected model");
+    let query = request(&owner);
+    let prepared = service
+        .prepare_read(&query, MemoryOperationV1::Semantic, owner.clone())
+        .expect("before artifact withdrawal");
+    let value = prepared
+        .execute(&query, MemoryOperationV1::Semantic)
+        .expect("trained inference");
+    assert_eq!(
+        value.prediction_kind,
+        MemoryPredictionKindV1::ModelPrediction
+    );
+    let mut withdrawals = semantic
+        .service
+        .lock()
+        .expect("artifact owner")
+        .withdrawal_registry()
+        .clone();
+    withdrawals
+        .append(DatasetWithdrawalNoticeV1 {
+            notice_id: id("withdraw-v14-semantic"),
+            dataset_digest: semantic
+                .publication
+                .admission
+                .validated_manifest
+                .manifest
+                .lineage_digests[0],
+            source_tombstone_digest: Digest32::of_bytes(b"v14-artifact-owner-withdrawal"),
+            authority_id: id("memory-dataset-owner"),
+            credential_chain_digest: Digest32::of_bytes(b"dataset-credential"),
+            signing_key_digest: Digest32::of_bytes(b"dataset-signer"),
+            authority_epoch: 1,
+            issued_at: now() as u64,
+        })
+        .expect("authoritative withdrawal frontier");
+    semantic
+        .service
+        .lock()
+        .expect("artifact owner")
+        .install_withdrawal_frontier(withdrawals.clone())
+        .expect("advance live artifact frontier");
+    assert_eq!(
+        service
+            .finish_read(&store, &access, &scope, &query, prepared, value)
+            .await
+            .expect_err("old learned output is revoked"),
+        (
+            MemoryReadStatusV1::Stale,
+            "V14 used publication changed before use"
+        )
+    );
+    assert!(semantic.readmit_same_version().is_err());
+    // Artifact withdrawal revokes learned bytes, not an independently current
+    // owner source. A fresh read may still select that explicit source fallback.
+    let fallback = service
+        .read(&store, &access, &scope, &query, MemoryOperationV1::Semantic)
+        .await
+        .expect("current owner source is still legal");
+    assert_eq!(
+        (fallback.prediction_kind, fallback.cell_digests.clone()),
+        (MemoryPredictionKindV1::SourceEvidence, Vec::new())
+    );
+    drop(service);
+    semantic.config.withdrawal_registry = withdrawals;
+    let semantic = semantic.reopen_unselected();
+    assert!(
+        semantic.try_install().is_err(),
+        "old admission stays revoked after restart"
+    );
+    assert!(semantic.host.load_current().is_err());
+    let restored = MemoryIsolatedServiceV14::new(
+        &snapshot(&store, &access).await,
+        generation(1),
+        vec![(semantic.selector.clone(), Arc::clone(&semantic.host))],
+    )
+    .expect("cold service cannot manufacture model eligibility");
+    let cold = restored
+        .read(&store, &access, &scope, &query, MemoryOperationV1::Semantic)
+        .await
+        .expect("cold legal source fallback");
+    assert_eq!(
+        (
+            cold.value,
+            cold.source_ids,
+            cold.prediction_kind,
+            cold.cell_digests
+        ),
+        (
+            fallback.value,
+            fallback.source_ids,
+            MemoryPredictionKindV1::SourceEvidence,
+            Vec::new()
+        )
     );
 }

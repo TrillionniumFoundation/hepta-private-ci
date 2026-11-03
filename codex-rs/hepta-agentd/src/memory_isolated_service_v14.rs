@@ -1,6 +1,7 @@
 //! Query-local independent selection with explicit current-owner fallback.
 //! Every used model keeps its complete training partition; unrelated stale
-//! cells cannot disable a read. Source and publication fences are sequential.
+//! cells and source commits cannot disable a read. Source and publication
+//! fences are sequential; snapshot acquisition still reads the complete owner.
 
 use std::collections::BTreeSet;
 use std::sync::Arc;
@@ -284,9 +285,12 @@ impl MemoryIsolatedServiceV14 {
         let operation = readout
             .operation
             .ok_or((MemoryReadStatusV1::Unavailable, "V14 operation missing"))?;
+        // Reacquire live owner authority, then compare the exact typed sources
+        // consumed by this operation. The acquisition cut remains in the read
+        // identity for provenance, but unrelated commits need not invalidate it.
+        // Used models additionally bind their complete fitted partition below.
         if current.owner_agent_id() != &self.owner
             || current.scope() != &self.scope
-            || current.owner_cut_digest() != prepared.snapshot.owner_cut_digest()
             || current
                 .required_sources(request, operation)
                 .map_err(|_| (MemoryReadStatusV1::Stale, "V14 support withdrawn"))?
@@ -294,7 +298,7 @@ impl MemoryIsolatedServiceV14 {
         {
             return Err((
                 MemoryReadStatusV1::Stale,
-                "V14 complete source cut changed before use",
+                "V14 required sources changed before use",
             ));
         }
         for cell in &prepared.cells {
