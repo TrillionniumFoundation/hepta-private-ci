@@ -1,0 +1,83 @@
+{
+  "binding": {
+    "accepted_archive_barriers": 1,
+    "build_input": {
+      "bytes": 232928,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/BUILD_INPUT.json",
+      "sha256": "010d34f54d1aca49ef77ca00980f1b08efca98f07a92b5615ae58ec9e78415a7"
+    },
+    "completed_jobs": [
+      "A-17"
+    ],
+    "cost_scope_note": {
+      "bytes": 1338,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/COST_SCOPE_NOTE.json",
+      "sha256": "35087d3f86a4f603817e0c368b9d433db142c3bd08e456d88136d75c67f5fed0"
+    },
+    "execution_episode": "execution05_backpressure_20261030",
+    "external_references": {
+      "bytes": 34400,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/EXTERNAL_REFERENCES.json",
+      "sha256": "f27a884e17e350a2537c680f48b0929764eec6a4c88cd31225700ace82e5cec0"
+    },
+    "failed_a29_cost_forensics": {
+      "bytes": 10117,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/failed05_forensics/FAILED_A29_COST_FORENSICS.json",
+      "sha256": "25eab40176693625b3c6fcf6f29be7ee566805d32301b84191fe154a930af324"
+    },
+    "full_cas_payload_included": true,
+    "hardlinks_not_deduplicated_by_original_helper": true,
+    "logical_paths": {
+      "bytes": 615159,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/LOGICAL_PATHS.json",
+      "sha256": "9f7417f83e4acf078c8716935e20294412799c7c377e61c27e4f2d7baf549f31"
+    },
+    "original_archive_helper": {
+      "bytes": 14865,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery04/durable_archive.py",
+      "sha256": "dfeee33870f3ca429284542cb8ca9ff8c9471a8fc8ff0339c3de251cabf260da"
+    },
+    "original_external_step": {
+      "bytes": 4382,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery04/external_step.py",
+      "sha256": "fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21"
+    },
+    "original_failure_audit": {
+      "bytes": 17981,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/execution05_failure_resource_audit/AUDIT.json",
+      "sha256": "c9e899c3b81e8768281887e54bd6b4dd8d235fe3a2f3774f3a4bdddb4a2b6658"
+    },
+    "original_outer_cost_receipt_not_replaced_by_this_bundle": true,
+    "planned_archive_barriers": 17,
+    "planned_jobs": 14,
+    "published_evidence_commit": "0a3422b0a236ac2678ac8398082d3ee630a0354a",
+    "remote_operations_here": 0,
+    "schema": "hepta.execution05.terminal-failure-bundle-binding.1",
+    "scientific_completion_claim": false,
+    "scientific_workers_started_here": 0,
+    "selected_files": 1042,
+    "selected_logical_bytes": 503305684,
+    "selection": {
+      "bytes": 836178,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/SELECTION.json",
+      "sha256": "b623dd75fd456d41819d0c290e67f2c4709f874531950ad2578bad9a7d4dfe1b"
+    },
+    "selection_at_utc": "2026-10-30T14:08:15.349643+00:00",
+    "source_commit": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+    "source_roots": [
+      "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw",
+      "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops",
+      "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw_cas",
+      "/workspace/scratch/178ced6a501f/execution05_preregistration_inputs",
+      "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152"
+    ],
+    "terminal_phase": "FAILED"
+  },
+  "cpu_seconds": 15.201282481,
+  "logical_bytes_processed": 503305684,
+  "measurement_scope": "archive construction, compressed hashes, independent stream verification and manifest writes; excludes this receipt write",
+  "nested_in_supervisor_self_cpu_do_not_add_again": true,
+  "physical_archive_bytes": 447716023,
+  "schema": "hepta.fullstudy.durable-archive-cost.1",
+  "wall_seconds": 15.69298272100059
+}
