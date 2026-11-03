@@ -2,7 +2,6 @@
 """Check ZIP backend isolation using Cargo's actual locked dependency graph."""
 
 import argparse
-import ast
 import hashlib
 import json
 import os
@@ -63,14 +62,6 @@ def main() -> int:
     if not any(package["name"] == "bzip2-sys" for package in selected):
         errors.append("Required C bzip2 backend is missing")
 
-    bazel = repository / "codex-rs/third_party/zip-9.0.0/BUILD.bazel"
-    bazel_features = None
-    for node in ast.walk(ast.parse(bazel.read_text())):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-            if node.func.id == "rust_library":
-                for keyword in node.keywords:
-                    if keyword.arg == "crate_features":
-                        bazel_features = set(ast.literal_eval(keyword.value))
     if len(zip_packages) == 1:
         features = set(zip_packages[0]["features"])
         retained = {
@@ -87,8 +78,6 @@ def main() -> int:
             errors.append(f"Existing ZIP capabilities are missing: {sorted(missing)}")
         if "bzip2" in features:
             errors.append("ZIP's separate default bzip2 backend was activated")
-        if features != bazel_features:
-            errors.append("Bazel ZIP features differ from actual Cargo resolution")
     if len(bzip_packages) == 1 and set(bzip_packages[0]["features"]) != {"bzip2-sys"}:
         errors.append("bzip2 has features beyond the selected C backend")
 
@@ -144,13 +133,10 @@ def main() -> int:
         "manifest_sha256": hashlib.sha256(args.manifest.read_bytes()).hexdigest(),
         "metadata_sha256": hashlib.sha256(process.stdout.encode()).hexdigest(),
         "active_packages": selected,
-        "bazel_features": sorted(bazel_features)
-        if bazel_features is not None
-        else None,
         "deny_license_graph": deny_receipt,
         "errors": errors,
         "passed": not errors,
-        "scope": "Locked Cargo feature resolution and Bazel feature selection; no native or full CI claim",
+        "scope": "Locked Cargo feature resolution and optional cargo-deny package coverage; no Bazel or full CI claim",
     }
     encoded = json.dumps(receipt, indent=2) + "\n"
     if args.output:

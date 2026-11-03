@@ -11,7 +11,7 @@
     "--offline"
   ],
   "manifest_sha256": "52624664b9b0a9a48a9dada0de35810791fde48a973d8f5c8f7c4ecd0711119b",
-  "metadata_sha256": "73860302eb7bbde55a96832074430f716d765864bc4148d4c7a8c6bb1eaed7fe",
+  "metadata_sha256": "7c927310ecc3febc61ab06058fdba37a08491f0833dd1740f43f212b6fc05719",
   "active_packages": [
     {
       "name": "bzip2",
@@ -76,22 +76,6 @@
       "source": null
     }
   ],
-  "bazel_features": [
-    "_bzip2_any",
-    "_deflate-any",
-    "aes-crypto",
-    "bzip2-rs",
-    "deflate",
-    "deflate-flate2",
-    "deflate-flate2-zlib-rs",
-    "deflate-zopfli",
-    "deflate64",
-    "getrandom",
-    "lzma",
-    "time",
-    "xz",
-    "zstd"
-  ],
   "deny_license_graph": {
     "command": [
       "/root/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -128,5 +112,5 @@
   },
   "errors": [],
   "passed": true,
-  "scope": "Locked Cargo feature resolution and Bazel feature selection; no native or full CI claim"
+  "scope": "Locked Cargo feature resolution and optional cargo-deny package coverage; no Bazel or full CI claim"
 }

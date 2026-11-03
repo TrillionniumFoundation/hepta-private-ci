@@ -28,11 +28,12 @@ ZIP capabilities, including Bzip2 and AES. No license or advisory policy is
 changed, and neither compression implementation source nor archive behavior
 is rewritten.
 
-The Bazel library mirrors the actual resolved ZIP feature set and includes its
-README for compile-time documentation. The registry package deliberately omits
-upstream test data; it remains a dependency library rather than introducing
-unrunnable upstream unit targets. Existing core-plugins extraction regressions
-continue to cover actual product behavior.
+The existing `.bazelignore` excludes `codex-rs/third_party` from workspace
+targets. `@crates` materializes these Cargo path patches as external libraries
+with their resolved features, so this directory has no workspace BUILD target.
+Actual generated-target and compile-data qualification belongs to Bazel CI.
+The registry package deliberately omits upstream test data; existing
+core-plugins extraction regressions cover actual product behavior.
 
 Reproduce the dependency check from the repository root with the pinned Cargo:
 
@@ -41,8 +42,7 @@ python scripts/check-zip-feature-isolation.py --offline --check-deny
 ```
 
 The check invokes real locked Cargo metadata, verifies the C backend remains
-active, and rejects an active `libbz2-rs-sys` dependency. It also checks that
-the Bazel library feature selection agrees with Cargo's resolved ZIP features.
-`--check-deny` also executes cargo-deny and rejects a missing or extra ZIP/bzip2
+active, and rejects an active `libbz2-rs-sys` dependency. `--check-deny` also
+executes cargo-deny and rejects a missing or extra ZIP/bzip2
 package in its license listing. It does not claim full native, Bazel, or
 workspace CI qualification.
