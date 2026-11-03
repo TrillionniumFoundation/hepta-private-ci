@@ -52,10 +52,14 @@ and two warnings: RUSTSEC-2026-0387 and the ChaCha withdrawal warning are gone.
 The six other errors remain blocking. Bans, licenses and sources retain zero
 errors. Original formatting and scoped Clippy also passed.
 
-`local-evidence.zip` retains raw logs, JUnit, source hashes, actual metadata,
+The reconstructable `local-evidence.zip` retains raw logs, JUnit, source hashes, actual metadata,
 resolver counterexamples, and the independent source review. Its internal
 SHA256 manifest and `local-evidence-receipt.json` bind the evidence. Earlier
 failed resolver/configuration attempts remain in the archive as failures.
+Its verified text parts stay below the existing 512,000-byte blob limit.
+Rebuild and verify it without executing any contained code:
+
+    python3 qualification/aws-dpop/restore_local_evidence.py --output /tmp/aws-local-evidence.zip
 
 ## Hosted acceptance
 

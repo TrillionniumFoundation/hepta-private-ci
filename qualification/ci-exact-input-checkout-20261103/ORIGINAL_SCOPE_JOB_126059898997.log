@@ -1,0 +1,136 @@
+﻿2026-11-03T16:42:27.0557000Z Current runner version: '2.338.2'
+2026-11-03T16:42:27.0575225Z ##[group]Runner Image Provisioner
+2026-11-03T16:42:27.0576000Z Hosted Compute Agent
+2026-11-03T16:42:27.0576553Z Version: 20261021.618
+2026-11-03T16:42:27.0577117Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-03T16:42:27.0577746Z Build Date: 2026-10-21T00:45:21Z
+2026-11-03T16:42:27.0578304Z Worker ID: {60c32ee4-c8ab-4234-9e80-c6f3a108fd5d}
+2026-11-03T16:42:27.0578891Z Region: centralus
+2026-11-03T16:42:27.0579367Z Cloud: Azure
+2026-11-03T16:42:27.0579811Z ##[endgroup]
+2026-11-03T16:42:27.0581584Z ##[group]Operating System
+2026-11-03T16:42:27.0582105Z Ubuntu
+2026-11-03T16:42:27.0582520Z 24.04.5
+2026-11-03T16:42:27.0583038Z LTS
+2026-11-03T16:42:27.0583455Z ##[endgroup]
+2026-11-03T16:42:27.0583915Z ##[group]Runner Image
+2026-11-03T16:42:27.0584405Z Image: ubuntu-24.04
+2026-11-03T16:42:27.0584855Z Version: 20261025.353.1
+2026-11-03T16:42:27.0585953Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-03T16:42:27.0587222Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-03T16:42:27.0588009Z ##[endgroup]
+2026-11-03T16:42:27.0588959Z ##[group]GITHUB_TOKEN Permissions
+2026-11-03T16:42:27.0590859Z Contents: read
+2026-11-03T16:42:27.0591333Z Metadata: read
+2026-11-03T16:42:27.0591848Z ##[endgroup]
+2026-11-03T16:42:27.0593524Z Secret source: Actions
+2026-11-03T16:42:27.0594343Z Cache mode: write
+2026-11-03T16:42:27.0594895Z Prepare workflow directory
+2026-11-03T16:42:27.0900138Z Prepare all required actions
+2026-11-03T16:42:27.0940160Z Getting action download info
+2026-11-03T16:42:27.3176257Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-03T16:42:27.5040209Z Complete job name: Select blocking CI scope
+2026-11-03T16:42:27.5847499Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-03T16:42:27.5848349Z with:
+2026-11-03T16:42:27.5848948Z   ref: b201d976572f24136a46128169fc627857e45f2b
+2026-11-03T16:42:27.5849501Z   fetch-depth: 0
+2026-11-03T16:42:27.5849967Z   persist-credentials: false
+2026-11-03T16:42:27.5850851Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-03T16:42:27.5854456Z   token: ***
+2026-11-03T16:42:27.5854940Z   ssh-strict: true
+2026-11-03T16:42:27.5855375Z   ssh-user: git
+2026-11-03T16:42:27.5855800Z   clean: true
+2026-11-03T16:42:27.5856257Z   sparse-checkout-cone-mode: true
+2026-11-03T16:42:27.5856802Z   fetch-tags: false
+2026-11-03T16:42:27.5857271Z   show-progress: true
+2026-11-03T16:42:27.5857712Z   lfs: false
+2026-11-03T16:42:27.5858130Z   submodules: false
+2026-11-03T16:42:27.5858590Z   set-safe-directory: true
+2026-11-03T16:42:27.5859403Z ##[endgroup]
+2026-11-03T16:42:27.8272303Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-03T16:42:27.8275222Z ##[group]Getting Git version info
+2026-11-03T16:42:27.8276045Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-03T16:42:27.8277199Z [command]/usr/bin/git version
+2026-11-03T16:42:27.8346220Z git version 2.56.0
+2026-11-03T16:42:27.8362863Z ##[endgroup]
+2026-11-03T16:42:27.8374513Z Temporarily overriding HOME='/home/runner/work/_temp/8316ab38-ad86-4f7c-be16-774e4d7ea7ab' before making global git config changes
+2026-11-03T16:42:27.8376286Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T16:42:27.8378196Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T16:42:27.8430670Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-03T16:42:27.8433218Z ##[group]Initializing the repository
+2026-11-03T16:42:27.8434576Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T16:42:27.8531448Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-03T16:42:27.8532635Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-03T16:42:27.8534057Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-03T16:42:27.8534743Z hint: call:
+2026-11-03T16:42:27.8535197Z hint:
+2026-11-03T16:42:27.8535764Z hint: 	git config --global init.defaultBranch <name>
+2026-11-03T16:42:27.8536422Z hint:
+2026-11-03T16:42:27.8537028Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-03T16:42:27.8537881Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-03T16:42:27.8538663Z hint:
+2026-11-03T16:42:27.8539298Z hint: 	git branch -m <name>
+2026-11-03T16:42:27.8539909Z hint:
+2026-11-03T16:42:27.8541166Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-03T16:42:27.8542277Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-03T16:42:27.8551886Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-03T16:42:27.8589924Z ##[endgroup]
+2026-11-03T16:42:27.8591420Z ##[group]Disabling automatic garbage collection
+2026-11-03T16:42:27.8593283Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-03T16:42:27.8620292Z ##[endgroup]
+2026-11-03T16:42:27.8621633Z ##[group]Setting up auth
+2026-11-03T16:42:27.8622531Z Removing SSH command configuration
+2026-11-03T16:42:27.8628902Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T16:42:27.8657931Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T16:42:27.8966111Z Removing HTTP extra header
+2026-11-03T16:42:27.8973302Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T16:42:27.9009095Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T16:42:27.9162770Z Removing includeIf entries pointing to credentials config files
+2026-11-03T16:42:27.9168486Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T16:42:27.9194735Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T16:42:27.9355769Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-03T16:42:27.9386250Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:42:27.9419058Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:42:27.9444338Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:42:27.9468757Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:42:27.9492017Z ##[endgroup]
+2026-11-03T16:42:27.9492807Z ##[group]Fetching the repository
+2026-11-03T16:42:27.9498915Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-11-03T16:47:34.2324396Z ##[error]The operation was canceled.
+2026-11-03T16:47:34.2490771Z Post job cleanup.
+2026-11-03T16:47:34.3262295Z [command]/usr/bin/git version
+2026-11-03T16:47:34.3307522Z git version 2.56.0
+2026-11-03T16:47:34.3344651Z Temporarily overriding HOME='/home/runner/work/_temp/1827450b-a1f8-4420-bf58-67ff74db517b' before making global git config changes
+2026-11-03T16:47:34.3345651Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T16:47:34.3349966Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T16:47:34.3384950Z Removing SSH command configuration
+2026-11-03T16:47:34.3386979Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T16:47:34.3416687Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T16:47:34.3607665Z Removing HTTP extra header
+2026-11-03T16:47:34.3613076Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T16:47:34.3640878Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T16:47:34.3824145Z Removing includeIf entries pointing to credentials config files
+2026-11-03T16:47:34.3834141Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T16:47:34.3857157Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-03T16:47:34.3858118Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-03T16:47:34.3858929Z includeif.gitdir:/github/workspace/.git.path
+2026-11-03T16:47:34.3859580Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-03T16:47:34.3868695Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-03T16:47:34.3889134Z /home/runner/work/_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:47:34.3899069Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:47:34.3973450Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-03T16:47:34.3989570Z /home/runner/work/_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:47:34.3998257Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:47:34.4042487Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-03T16:47:34.4052595Z /github/runner_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:47:34.4076429Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:47:34.4113504Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-03T16:47:34.4147379Z /github/runner_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:47:34.4154909Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config
+2026-11-03T16:47:34.4185585Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T16:47:34.4355581Z Removing credentials config '/home/runner/work/_temp/git-credentials-d752d1e1-8452-4ccd-8a04-0f9d75f7be69.config'
+2026-11-03T16:47:34.4488681Z Evaluate and set job outputs
+2026-11-03T16:47:34.4498859Z Cleaning up orphan processes
+2026-11-03T16:47:34.4771495Z Terminate orphan process: pid (2098) (git)
+2026-11-03T16:47:34.4869387Z Terminate orphan process: pid (2099) (git)
+2026-11-03T16:47:34.4950284Z Terminate orphan process: pid (2100) (git-remote-https)
