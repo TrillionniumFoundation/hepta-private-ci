@@ -1,0 +1,19 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--lib",
+    "-E",
+    "test(smollm_cognitive_host::tests::) | test(smollm_neural_read::tests::original_startup_window_and_cancellation_survive_transfer_to_the_loader) | test(smollm_neural_read::tests::expired_startup_is_not_restarted_and_cannot_admit_claim_or_spawn) | test(original_ledger_funding_reaches_signed_target_and_restart_retains_every_unit) | test(issuer_or_policy_revocation_after_funding_refuses_dispatch_without_refund) | test(wrong_sealed_authority_or_original_registration_cannot_touch_funding)",
+    "--no-capture"
+  ],
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "exit_code": 101,
+  "elapsed_seconds": 600.984,
+  "log": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-host-targeted-test-5.log",
+  "log_sha256": "c00a42de273422dd948f6d10fae29cdecd29d3568f90897ca6af012fc739379c"
+}

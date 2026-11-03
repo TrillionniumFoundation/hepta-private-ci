@@ -23,6 +23,7 @@ codex_rust_crate(
         "src/paired_process_fixture.rs",
         "//codex-rs/hepta-infer-worker-host:ordinary_cpu_owner.sql",
     ],
+    test_data_extra = glob(["fixtures/robrix-control-v2/**"]),
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

@@ -1,0 +1,85 @@
+{
+  "chain_commit": "0e9eac5d2a8cdb0a6f0cc7920f84e290e0d5d0d0",
+  "chain_tree": "7b973f6891c74e2ac1dfb36e0368fae2ba41f3cb",
+  "failure_replay_original_bytes_preserved": true,
+  "failure_replay_scope": "A later actual replay reproduced the same scope-resolution failure; it is not relabeled as the missing first-attempt raw log.",
+  "final_project_command_receipt": "format/successor-just-fmt.json",
+  "final_project_command_receipt_sha256": "2728da7bfbc88d31b0d00f6289bcb79fe9bfb38237760057d1830fe0be021a5e",
+  "first_attempt_raw_log_saved": false,
+  "initial_project_command_log_reported_recipe_exit": 2,
+  "initial_project_command_result": "FAIL: no Git HEAD in selected-file Hepta restoration",
+  "lockfile_ruff_versions": [
+    "0.15.13"
+  ],
+  "partial_checkout_limitation_preserved": true,
+  "preserved_logs": [
+    {
+      "gzip_sha256": "807d52a19adf452d3c841bb702030bdd63f8be0cb8cf59923625677501549910",
+      "raw_bytes": 7607,
+      "raw_sha256": "c0b3d9c41324a639ec8a77fd602bacbb9b6c2b68b57fa3704878482e0e932423",
+      "saved_path": "format/just-fmt-replay.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/just-fmt-replay.log"
+    },
+    {
+      "gzip_sha256": "4d04f25594ace71c9d0488fbcd5fb896a9bab623d1d1f4c009e3ef5ac0b7670b",
+      "raw_bytes": 43,
+      "raw_sha256": "0e3227a0576bf4b1300048e70321b65f0c0078106a8c61ad1f3e4e7a641e0bd2",
+      "saved_path": "format/ruff-format.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/ruff-format.log"
+    },
+    {
+      "gzip_sha256": "3f24fc30d0fd9cc4a1bc2c0f332e7d577d79411b95fb320004ff6ca388953603",
+      "raw_bytes": 26,
+      "raw_sha256": "f114d83b30c5c657ee43a847a45bafccaea255d82673feb87c26d252c61e29c1",
+      "saved_path": "format/ruff-format-check.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/ruff-format-check.log"
+    }
+  ],
+  "prior_project_command_receipt": "format/just-fmt-final-receipt.json",
+  "prior_project_command_source_commit": "acd8f79f2dcc22ecdee1d1a5fd88d619d06f37c9",
+  "prior_scoped_ruff_check_chain_commit": "acd8f79f2dcc22ecdee1d1a5fd88d619d06f37c9",
+  "prior_scoped_ruff_check_command": [
+    "/workspace/scratch/092b68f38152/native-recovery-tools/bin/ruff",
+    "format",
+    "--check",
+    "scripts/hepta_smollm_execution_source_v1.py",
+    "scripts/hepta_neural_study_diverse_v3.py",
+    "scripts/hepta_neural_evidence_diverse_v3.py",
+    "scripts/test_hepta_smollm_execution_source_v1.py",
+    "scripts/test_hepta_smollm_execution_source_v5.py"
+  ],
+  "prior_scoped_ruff_check_exit_code": 0,
+  "prior_scoped_ruff_check_passed": true,
+  "prior_scoped_ruff_check_raw_sha256": "f114d83b30c5c657ee43a847a45bafccaea255d82673feb87c26d252c61e29c1",
+  "project_command": [
+    "/tmp/hepta-r12-tools/bin/just",
+    "fmt"
+  ],
+  "project_command_result": "PASS on final successor source binding, with no tested source changes",
+  "project_just_fmt_passed": true,
+  "restoration_and_cache_recovery_logs": [
+    {
+      "gzip_sha256": "37470c8148ec06be001bde42199a6611c6bcb4590978d624c6ba33fc454b593d",
+      "raw_bytes": 289,
+      "raw_sha256": "b817d7518d24d50e7df992b730d6b1dba626ee684cd8c304afd9f1492c68eb4c",
+      "saved_path": "format/just-fmt-with-restored-head.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/just-fmt-with-restored-head.log"
+    },
+    {
+      "gzip_sha256": "170ec0e7e8801c22dd4b50a95861828a99dcd6d507359bc485d9e8263491b985",
+      "raw_bytes": 556,
+      "raw_sha256": "ce11317da8806ccff54f63de8b74e3c48fd6b8409c5d722327920517a08faf05",
+      "saved_path": "format/just-fmt-with-restored-head-and-blobs.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/just-fmt-with-restored-head-and-blobs.log"
+    },
+    {
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "saved_path": "format/just-fmt-offline-writable-cache.log.gz",
+      "source": "/workspace/scratch/295b0f1bca6b/model-pq-audit/just-fmt-offline-writable-cache.log"
+    }
+  ],
+  "ruff_version": "ruff 0.15.13",
+  "source_bytes_unchanged_after_final_format": true
+}

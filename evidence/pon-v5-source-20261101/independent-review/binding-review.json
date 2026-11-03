@@ -1,0 +1,336 @@
+{
+  "kind": "independent-final-source-binding-review",
+  "reviewed_at_utc": "2026-11-01T08:15:15.111135+00:00",
+  "reviewer": "wan_acceptance",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prior_review_sha256": "a3b6a88ba216df3a0d630d61861ad5aeae901016e89824d684920ec0f034bed9",
+  "hepta_review_base_commit": "f0f1f16898c2f9737461a28752b421fe52e65ee7",
+  "hepta_review_base_tree": "81d52b6ea085a2b4e913cbea027d8198febc3046",
+  "final_chain_commit": "acd8f79f2dcc22ecdee1d1a5fd88d619d06f37c9",
+  "final_chain_tree": "4e83d2d4ba6b15ddd962ef08652dbeb24858c533",
+  "v5_manifest_sha256": "cc914a114f6216be856eb983c3326ea37e030cbea3c8e2535d2266c76d001dcf",
+  "must_fix_findings": [],
+  "checks": {
+    "three_binding_locations_consistent": true,
+    "final_chain_commit_raw_object_hash_verified": true,
+    "final_chain_commit_tree_verified": true,
+    "closure_entries_verified_against_final_git_blobs": 42,
+    "closure_files_equal_current_checkout": true,
+    "all_other_previously_reviewed_bytes_unchanged": true,
+    "previous_functional_review_retained": true
+  },
+  "files": [
+    {
+      "path": "scripts/hepta_smollm_execution_source_v1.py",
+      "previous_sha256": "186f39a19b0aaa8955c65d785e1f000b13afa7d01f1a09586fce886a76971cf8",
+      "sha256": "8be0917316284c5e0ab066a7300424f0877eac8f69bfc338ace67ddea81bbd1a",
+      "git_blob": "04ab9a193ecf6092334d98c4b11df35438b37dce",
+      "bytes": 9453,
+      "change_scope": "final-source-binding-only"
+    },
+    {
+      "path": "scripts/hepta_neural_study_diverse_v3.py",
+      "previous_sha256": "5aa5e2894968db52b96093cb60a129398fd287b0c1a887857049239561304b1e",
+      "sha256": "5aa5e2894968db52b96093cb60a129398fd287b0c1a887857049239561304b1e",
+      "git_blob": "e524f6825bd0940d94defdec803abef4d482dbbb",
+      "bytes": 16987,
+      "change_scope": "unchanged"
+    },
+    {
+      "path": "scripts/hepta_neural_evidence_diverse_v3.py",
+      "previous_sha256": "202f4184340400605d6d1de01926e1543c7c7905b8acce5c5db88ca90bd4fe5f",
+      "sha256": "202f4184340400605d6d1de01926e1543c7c7905b8acce5c5db88ca90bd4fe5f",
+      "git_blob": "a2a0b07010644f79a30dfa4cf15a0697ea288b24",
+      "bytes": 23676,
+      "change_scope": "unchanged"
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v1.py",
+      "previous_sha256": "2ee455be7bfc39e9707f9434050ae5b282566d5206fe9ab749770d114d9e6fd6",
+      "sha256": "2ee455be7bfc39e9707f9434050ae5b282566d5206fe9ab749770d114d9e6fd6",
+      "git_blob": "211e6422a925fda7819e7821108075ecd9fc47de",
+      "bytes": 21354,
+      "change_scope": "unchanged"
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v5.py",
+      "previous_sha256": "fcd700ef89edf4960ba55df11c2e9be0953ae3af5fb49876070f3c385324b153",
+      "sha256": "fcd700ef89edf4960ba55df11c2e9be0953ae3af5fb49876070f3c385324b153",
+      "git_blob": "9a64c4aa6dad7aa76f2a5792f2a7bd3d5a87a475",
+      "bytes": 8344,
+      "change_scope": "unchanged"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v5.json",
+      "previous_sha256": "8efce2c6d4089fe835bdda4019163fccdb38daa4374f3174ebdcbd4f732eb4cc",
+      "sha256": "cc914a114f6216be856eb983c3326ea37e030cbea3c8e2535d2266c76d001dcf",
+      "git_blob": "a25a516ed55105d05545b24b97d647bb33f131b7",
+      "bytes": 7086,
+      "change_scope": "final-source-binding-only"
+    },
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "previous_sha256": "fd01ba85737d467fcd0d6215c4a388df12c8f603c0ad5a375945c6f33364a243",
+      "sha256": "e7c60874f822303693147d2a62bcb2ae356a3e3aaa0bab1c9ca55f6be1f80618",
+      "git_blob": "851cde9210094cf6f3bd11c53244a78cf609a91c",
+      "bytes": 87542,
+      "change_scope": "final-source-binding-only"
+    }
+  ],
+  "closure": [
+    {
+      "path": "config/pon/binary-diverse60-training-v3.json",
+      "git_blob": "4bad08228c9e85570a67a30f5a546b9cf418bd01",
+      "sha256": "d457f4b01cc6aaa445403e81b1fa9511e24f23e4254a6ef9ff9ec29abab693cf",
+      "bytes": 47712
+    },
+    {
+      "path": "config/pon/devnet-v1.json",
+      "git_blob": "a60f403b2f0e7343aed61170ca2aef875a787790",
+      "sha256": "4491b96ead11a020e8d71f27713368b65e663eef5cfc6fd0800a166b0c2a20d4",
+      "bytes": 1964
+    },
+    {
+      "path": "config/pon/evaluation-round-v1.json",
+      "git_blob": "23b0861700b07067cdc54e02081e6d4487450f6b",
+      "sha256": "f65de29ae87bbcdb1cfb3a54bba22323e68d7decfd2976395468c1ba559f5d33",
+      "bytes": 890
+    },
+    {
+      "path": "config/pon/ledger-v1.json",
+      "git_blob": "f7d8dba05cd0267b716834d76774a7ce94a1276b",
+      "sha256": "6755e36aab0ab9f4743da331a8dcd3374d657ff80f027ecf28db922e6d5ea39a",
+      "bytes": 7793
+    },
+    {
+      "path": "config/pon/model-family-smollm2-135m-v1.json",
+      "git_blob": "125fabd9e147a7e9057ca7960e87f519124a8b68",
+      "sha256": "0837bbfb31f3f2b9a8731545c9f742aee1ebd32daed392a936a3ec9719537e52",
+      "bytes": 5293
+    },
+    {
+      "path": "config/pon/model-family-v1.json",
+      "git_blob": "9a931f21ca86563cf7e5c6415acd20a0ced7da68",
+      "sha256": "30b250db074e7fbb5776c1474371258a6110cc1742e0e9970232a799ab790ca1",
+      "bytes": 1383
+    },
+    {
+      "path": "config/pon/work-profile-v1.json",
+      "git_blob": "54e43139d3691b62f76f9e8976e1d2a974e8524b",
+      "sha256": "03f7537b2fc3fa0c2f7036dd73d7088ba1ce50eafe6f2c907087d30385320880",
+      "bytes": 1596
+    },
+    {
+      "path": "formal/pon-nakamoto-v1/cell_dependency_closure.py",
+      "git_blob": "044c75367f701ece67fdd070c797ada3b38aba96",
+      "sha256": "81441a134b94308367229c914193c47ede472897830aae101b1ce5237ef0298e",
+      "bytes": 10024
+    },
+    {
+      "path": "formal/pon-nakamoto-v1/contract_wire.py",
+      "git_blob": "37f62b2f0913e372bc1c75fed2cd3a3e1267870b",
+      "sha256": "cbe45d72ad20ed5683d50dceaa97b93bc74cdafced7d0896386edf9cbe9f98f6",
+      "bytes": 8924
+    },
+    {
+      "path": "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+      "git_blob": "02691b70446440bb7804aed84413a0e7662ae378",
+      "sha256": "e46311a08584ad7becfc56cd0b699d9bc6921adcfe39319e50aa14faa984ced5",
+      "bytes": 27789
+    },
+    {
+      "path": "scripts/ci/model-runtime-cpu-requirements.txt",
+      "git_blob": "6796d0737af36e1521d89f6937df288fe67167a1",
+      "sha256": "178b2fe89a7bf58f2d127b195d82e4fa9b5c19d93cb3526d8789edf3df901017",
+      "bytes": 4678
+    },
+    {
+      "path": "scripts/llm_answer_eos_research_v3.py",
+      "git_blob": "4a736e084b6938d1fbd1a7c21bf24072c940ede3",
+      "sha256": "e46d01776cfbdb77f8b5bd51422dc45dfa3360483b9050ae1fb3ae9482d680d0",
+      "bytes": 8531
+    },
+    {
+      "path": "scripts/llm_answer_eos_task_research_v4.py",
+      "git_blob": "1c304731176937b225efc65d16d392817617806a",
+      "sha256": "029a95bcf86864bed51765f22745a463c13c37115d58039e6befbc2489f953a9",
+      "bytes": 3554
+    },
+    {
+      "path": "scripts/llm_binary_answer_observed_v2.py",
+      "git_blob": "ccc1a96d423fc5a6ce41873d7370abf483641708",
+      "sha256": "6e588493c7c956b5fb55f6b5875dab3fb951b964783c1dc8366caa9178e827fc",
+      "bytes": 22400
+    },
+    {
+      "path": "scripts/llm_binary_diverse60_observed_v3.py",
+      "git_blob": "c6fcd4f3e03e6424f9f08fb356771bc495785b78",
+      "sha256": "3527247303c4929e568523354c1536b2b7f64f9510873bfef7998b9999663b65",
+      "bytes": 31523
+    },
+    {
+      "path": "scripts/llm_cell_host_handoff.py",
+      "git_blob": "bf21fb8436f0afaf94ee9eb0002d68681a1fef03",
+      "sha256": "2534091e68dc5d2325c6db2f96e1d0ec473d8fa3c7149ec84897500c29ae157e",
+      "bytes": 21506
+    },
+    {
+      "path": "scripts/llm_cell_installed_executable.py",
+      "git_blob": "b6625349f84de58f2168924bd57f6422f727f61a",
+      "sha256": "e65dbd0c7998b25ceaf362581c42714d483ba8b29a6a9e15b5da968ae4f66231",
+      "bytes": 4895
+    },
+    {
+      "path": "scripts/llm_cell_release.py",
+      "git_blob": "e6dccb093029ff621f99438ceb6f5de2a257c128",
+      "sha256": "14a64d421c1052e1e07440e1e13ee29a9e05a9c0857e4c33097d0ca0fee822cb",
+      "bytes": 11877
+    },
+    {
+      "path": "scripts/llm_inherited_runtime.py",
+      "git_blob": "8a7f8a7ecbc96fd19e0c1846f523276f61c3aae0",
+      "sha256": "1c356c4e8e9a114ac7b6348cac4bed9a6fc72d53ce71ce00139c3deed8733596",
+      "bytes": 16249
+    },
+    {
+      "path": "scripts/llm_initial_trainable_setup_v2.py",
+      "git_blob": "77431eae62ca70f51366b7f30db60a682b007551",
+      "sha256": "247c5055da04dab4a30dd59f58dcdb3ec616e149bb900575aaf6615e8c677ef5",
+      "bytes": 12610
+    },
+    {
+      "path": "scripts/llm_neural_read_worker.py",
+      "git_blob": "870ef3df83d09bb1466cf8ea8da042f692b28921",
+      "sha256": "791fbe67ae7d2b2e0551e5f9f6fd77797ed9f8c210e7ca47f9acb6ac02895769",
+      "bytes": 10834
+    },
+    {
+      "path": "scripts/llm_parent_material.py",
+      "git_blob": "0ab8c72724c87df7963c03180a821205ee9ee2af",
+      "sha256": "5396d72c4730aea2d271b55a8404f6eaba64dc57f91343537710c28f7686b43c",
+      "bytes": 7068
+    },
+    {
+      "path": "scripts/llm_runtime_evidence_frames.py",
+      "git_blob": "c073014e2ff2dd9ac2d9dd1c87b56e65ef886991",
+      "sha256": "8f291b3e413275d32f175c0a2a7d98210d279b83f5f3a65e24bcca9c57cb9449",
+      "bytes": 11704
+    },
+    {
+      "path": "scripts/llm_runtime_evidence_pipe.py",
+      "git_blob": "32a4c0cadceaa40bda10da3ba44ac8a3a3d7671e",
+      "sha256": "f91c14223f7128dc307e82c580ff0d09b57ef7521badb5796f37ec4827a3bed5",
+      "bytes": 9540
+    },
+    {
+      "path": "scripts/llm_runtime_exit_observation.py",
+      "git_blob": "6773513937f5d9b9f60f53acc8aee086b64292da",
+      "sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+      "bytes": 10742
+    },
+    {
+      "path": "scripts/llm_runtime_exit_subset_observation.py",
+      "git_blob": "de783721d327904e3166f857505e912ed7bda9f0",
+      "sha256": "c24af5385011acdf898a9b899f73f64c660c30dae0fadcda6e6957f80f501aff",
+      "bytes": 6327
+    },
+    {
+      "path": "scripts/llm_runtime_exit_worker_observation.py",
+      "git_blob": "5469255e620ec9ef062b8ff3e37c19a464d231cc",
+      "sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+      "bytes": 17521
+    },
+    {
+      "path": "scripts/llm_runtime_host_aggregate.py",
+      "git_blob": "325990e7d669b5fe2fc08846f6d752695f8f0d3b",
+      "sha256": "ad2bee0012128b7afebcf45cbb1788918782a7f1f5f1ff8212b301a54f5e9ada",
+      "bytes": 24617
+    },
+    {
+      "path": "scripts/llm_runtime_host_controller.py",
+      "git_blob": "a5c0dbee50694aa119d4a736843ffe8bd3880636",
+      "sha256": "c98f89da49f8e0316e9e0bad600a6dfc4b263c157a86c184e9b8ac2d2e0b2ffa",
+      "bytes": 15774
+    },
+    {
+      "path": "scripts/llm_runtime_host_scope.py",
+      "git_blob": "77d58fa72235148855977c2aab78548540d1d1ec",
+      "sha256": "0f7c55a53e9e5f7956849afc09ba9bf1cf1abeb28506ecadcf62a5b7c618e60d",
+      "bytes": 41240
+    },
+    {
+      "path": "scripts/llm_runtime_host_scope_io.py",
+      "git_blob": "9058801c589177bcf3a6e28841fe74075e724449",
+      "sha256": "b7d34c569f674ac67158ce25c96fa9a4a3145abd35cbff5496b4b3721eeb356f",
+      "bytes": 6545
+    },
+    {
+      "path": "scripts/llm_runtime_kernel_aggregate.py",
+      "git_blob": "31df5f4ed42019649c9d7b68ae27a7dfd16211e1",
+      "sha256": "6fb401bd45a76702c94ae0e3c1efa85e19bbf3ff97b4ff784b6ddeb64c4a6c30",
+      "bytes": 20654
+    },
+    {
+      "path": "scripts/llm_runtime_kernel_owned.py",
+      "git_blob": "bf6a14c7c8dc6db954a3b185aa3e46f350e7401b",
+      "sha256": "5c046187dc1c28c25fbf475e1961bc7e09dcf0ab196b454a830fd95ed2bf8387",
+      "bytes": 22269
+    },
+    {
+      "path": "scripts/llm_runtime_kernel_spawn.c",
+      "git_blob": "c7cc2bb1e1514a01dcf2960fa6e5601d0f745ccf",
+      "sha256": "aeddc89073342e3a83b78d53711b8347ea9b6e8eadb17189af3e686900cd2595",
+      "bytes": 15790
+    },
+    {
+      "path": "scripts/llm_runtime_observed_execution_v1.py",
+      "git_blob": "36108670cae70a9460a204b7a7eb7ea62770d2e3",
+      "sha256": "c8df782befe0cfda7197d9c8c999188e616a73c103c9b24603d706bbd07f0856",
+      "bytes": 4512
+    },
+    {
+      "path": "scripts/llm_runtime_parent_step.py",
+      "git_blob": "d1a45046b77c57a38969947d58b7767e63087467",
+      "sha256": "e124cc618a30c71b8eb4112afafa777ff7e6145679e0e638324bebd5560725bf",
+      "bytes": 25492
+    },
+    {
+      "path": "scripts/llm_runtime_parent_step_task_v2.py",
+      "git_blob": "c32382b23b691543d312ae307add178d474bc2ff",
+      "sha256": "cd0d1a2c65fd3d95c78ea9db2522e7a30dbf2b30d8c1e241faa93a932bd41f76",
+      "bytes": 6954
+    },
+    {
+      "path": "scripts/llm_runtime_parent_step_v2.py",
+      "git_blob": "e9c85feed960cf38ba7619f493cc445f8570301e",
+      "sha256": "78bfeb03de547088fa74de0d85c6138f759653534a34715d1bd8f98410edcef9",
+      "bytes": 32446
+    },
+    {
+      "path": "scripts/llm_runtime_pilot.py",
+      "git_blob": "943709db6dfe5e86cac36d046dc71921f0291026",
+      "sha256": "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755",
+      "bytes": 112715
+    },
+    {
+      "path": "scripts/llm_runtime_retirement_slot.c",
+      "git_blob": "d40efe665fb4e196cba34fbde72e1e85fc4552f5",
+      "sha256": "062c4e176769532d643b247422ea02db635f6eb8bb737d4ac9a67bb4241335b7",
+      "bytes": 19985
+    },
+    {
+      "path": "scripts/llm_runtime_rss_diagnostics.py",
+      "git_blob": "06c7add733a7ac8ecd208a1f88b0ed41f6abd931",
+      "sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+      "bytes": 6867
+    },
+    {
+      "path": "scripts/run_llm_cell_native_handoff.py",
+      "git_blob": "8647ff3d02eaf7e92a9138e736482b611ed82fa6",
+      "sha256": "785a058e24fbb9afbbc46ae10f92aa5748199f5bbc06d6812c05cfd10ce54a39",
+      "bytes": 24016
+    }
+  ],
+  "tests_executed_by_this_binding_review": false,
+  "scope": "Only final source identity replacement, final Git-object closure verification, and unchanged-byte comparison. Prior 83-control independent review retained; no new native, model, WAN, PQ/growth compatibility, or production qualification claim."
+}

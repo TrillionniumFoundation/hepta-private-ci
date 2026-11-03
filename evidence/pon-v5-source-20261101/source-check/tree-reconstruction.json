@@ -1,0 +1,47 @@
+{
+  "all_selected_42_bytes_unchanged": true,
+  "chain_commit": "0e9eac5d2a8cdb0a6f0cc7920f84e290e0d5d0d0",
+  "chain_tree": "7b973f6891c74e2ac1dfb36e0368fae2ba41f3cb",
+  "checks": [
+    {
+      "computed_tree": "22df9ea34daaf960fdfe6c154f043a47c82c338c",
+      "expected_tree": "22df9ea34daaf960fdfe6c154f043a47c82c338c",
+      "leaf_entries": 6666,
+      "stage": "original-cea95-baseline"
+    },
+    {
+      "computed_tree": "4e83d2d4ba6b15ddd962ef08652dbeb24858c533",
+      "delta_entries": 60,
+      "expected_tree": "4e83d2d4ba6b15ddd962ef08652dbeb24858c533",
+      "leaf_entries": 6719,
+      "stage": "chain-source-publish.json"
+    },
+    {
+      "computed_tree": "7b973f6891c74e2ac1dfb36e0368fae2ba41f3cb",
+      "delta_entries": 52,
+      "expected_tree": "7b973f6891c74e2ac1dfb36e0368fae2ba41f3cb",
+      "leaf_entries": 6766,
+      "stage": "chain-followup-publish.json"
+    }
+  ],
+  "commit_object_independently_read_via_github_api": true,
+  "inputs": [
+    {
+      "bytes": 2316754,
+      "name": "chain-tree.json",
+      "sha256": "04e6fdd5172bb3bd2d007779591667f751ae22ab089bee8935d42e9f500dbe41"
+    },
+    {
+      "bytes": 13998,
+      "name": "chain-source-publish.json",
+      "sha256": "0ced4e2cb021b20f7903a344f4ffb0992bfa5b37be823b4a573c75a6e42f9dc8"
+    },
+    {
+      "bytes": 16968,
+      "name": "chain-followup-publish.json",
+      "sha256": "e4436867bd3f390333de2e56524c8a71ccdab169825a8072f02017cb2a659bd2"
+    }
+  ],
+  "kind": "independent-git-tree-reconstruction",
+  "whole_checkout_complete": false
+}

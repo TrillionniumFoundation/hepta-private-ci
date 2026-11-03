@@ -1,0 +1,96 @@
+{
+  "run_id": 41609576379,
+  "run_attempt": 1,
+  "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "lanes": [
+    {
+      "lane": "x64-source-head",
+      "job_id": 125827781563,
+      "artifact_id": 13219018211,
+      "archive_sha256": "ae5b31c79f043fc6a4ab6607103bb7a86af135392c4ac6f60f1090a450d08433",
+      "archive_bytes": 57847,
+      "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+      "tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+      "passed": 134,
+      "failed": 0,
+      "exit_code": 0,
+      "timed_out": false,
+      "exact_http_controls_executed": 6,
+      "exact_http_controls_passed": 6,
+      "concurrent_receipt_test_outcomes": [
+        "test provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe ... ok",
+        "        PASS [   0.262s] codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe"
+      ],
+      "source_before_after_unchanged": true,
+      "receipt_and_logs": "effect-125827781563"
+    },
+    {
+      "lane": "x64-base-merge",
+      "job_id": 125827781220,
+      "artifact_id": 13218966617,
+      "archive_sha256": "48fc1e43de739408153e53022d94743fe3cebf5c7b512cfc044da10224d5cdec",
+      "archive_bytes": 26349,
+      "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+      "tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+      "passed": 133,
+      "failed": 1,
+      "exit_code": 100,
+      "timed_out": false,
+      "exact_http_controls_executed": 0,
+      "exact_http_controls_passed": 0,
+      "concurrent_receipt_test_outcomes": [
+        "test provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe ... FAILED",
+        "  TRY 1 FAIL [   0.150s] codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe",
+        "test provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe ... FAILED",
+        "  TRY 2 FAIL [   0.141s] codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe",
+        "  TRY 2 FAIL [   0.141s] codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe"
+      ],
+      "source_before_after_unchanged": true,
+      "receipt_and_logs": "effect-125827781220"
+    },
+    {
+      "lane": "arm-source-head",
+      "job_id": 125827781464,
+      "artifact_id": 13218309918,
+      "archive_sha256": "6bcaadbb866176fe039dbc7a6ca6662eed0fb0cf28bec6b93961223302b38a8e",
+      "archive_bytes": 57691,
+      "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+      "tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+      "passed": 134,
+      "failed": 0,
+      "exit_code": 0,
+      "timed_out": false,
+      "exact_http_controls_executed": 6,
+      "exact_http_controls_passed": 6,
+      "concurrent_receipt_test_outcomes": [
+        "test provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe ... ok",
+        "        PASS [   0.244s] codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe"
+      ],
+      "source_before_after_unchanged": true,
+      "receipt_and_logs": "effect-125827781464"
+    },
+    {
+      "lane": "arm-base-merge",
+      "job_id": 125827781277,
+      "artifact_id": 13219945498,
+      "archive_sha256": "c1d227ab6e3f026ea5b194b7db5a9753018961a684f04bc0467dad5ec0a94d47",
+      "archive_bytes": 57957,
+      "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+      "tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+      "passed": 134,
+      "failed": 0,
+      "exit_code": 0,
+      "timed_out": false,
+      "exact_http_controls_executed": 6,
+      "exact_http_controls_passed": 6,
+      "concurrent_receipt_test_outcomes": [
+        "test provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe ... ok",
+        "        PASS [   0.255s] codex-hepta-automation::authorized_effect provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe"
+      ],
+      "source_before_after_unchanged": true,
+      "receipt_and_logs": "effect-125827781277"
+    }
+  ],
+  "all_four_lanes_passed": false,
+  "limitation": "The failing x64 merge assertion did not print the actual recovery error; differing lane outcomes do not establish an environment or PQ cause. No CI rerun or test setting change was performed."
+}

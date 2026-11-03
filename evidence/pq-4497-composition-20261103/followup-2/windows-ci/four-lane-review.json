@@ -1,0 +1,1078 @@
+{
+  "schema": "hepta-windows-diagnostics-four-lane-review-v1",
+  "run_id": 41609576350,
+  "head": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+  "original_archive_digests_verified": true,
+  "all_receipt_log_digests_verified": true,
+  "all_result_hash_links_verified": true,
+  "all_source_before_after_equal": true,
+  "missing_module_compile_failure_no_longer_observed": true,
+  "final_use_passes_each_lane": 8,
+  "all_four_lanes_failed": true,
+  "failure_classification": "Real native assertion failures in retained deletion-boundary and command-runner observation controls; not classified as environment-only and no root cause repair claimed.",
+  "lanes": [
+    {
+      "artifact_id": 13219635523,
+      "archive_sha256": "e32144a996ffacb9373a0a46944eb0cf9f05f7481efc506253801e87cd7b5fe0",
+      "source": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "0baf43cf4bf8f953fff079725348de1d8f26434f"
+        ],
+        "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "symlink_placeholders": 0,
+        "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "tracked_bytes_sha256": "a72e84228e9a80279c6091cea50322ac5161ff30ff6250f0edf9418433f8b286",
+        "tracked_files": 11094,
+        "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+      },
+      "source_before_after_equal": true,
+      "original_result_status": "failed",
+      "v2_status": "failed",
+      "v3_status": "failed",
+      "command_receipts_verified": 22,
+      "command_receipts": [
+        {
+          "name": "acl-unit-controls",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 8,
+          "failed": 0,
+          "minimum_tests": 8,
+          "log_sha256": "4086b52e4a057686f4c00b47329ef8e1a6fa64e64264b976a7949c5e1bb789f0"
+        },
+        {
+          "name": "bounded-filesystem-preparation",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "f33321c07779780243dcf5dd72fb15ff074c3b0eb85977b561352e07b2c9cfaa"
+        },
+        {
+          "name": "broad-identity-delete",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "0c29f9b57405309a15d937d6e77609a82f9ca73b69f60178c178928d522c32c3"
+        },
+        {
+          "name": "command-runner-terminal",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 1,
+          "failed": 2,
+          "minimum_tests": 3,
+          "log_sha256": "18334079506b0e32c25bf6e4986a63bab0503cdebc5cf41e47316dd3fef6bd91"
+        },
+        {
+          "name": "controlled-job",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "fcde309f3d1bb324252fe0de3d32e9bd99a582e311cc2158ebe8b48ab5246a33"
+        },
+        {
+          "name": "explicit-stdio",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "61104feb8cd4006007f0a2ec2b0d2fa7a69200eb841e3568d820497d716592b3"
+        },
+        {
+          "name": "full-restriction-candidate",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "b5fbd78e17f41e89bc0d205b10b1833a79fe4784ace5b96eca9cf53f515f17ff"
+        },
+        {
+          "name": "held-read-acl",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 3,
+          "failed": 0,
+          "minimum_tests": 3,
+          "log_sha256": "6378925541704829c32ba11f295c84872ecd371da4b3a52124bb3801c21b15db"
+        },
+        {
+          "name": "legacy-delete-boundary",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "9af2e27955e821e7476b9054253bbb9d0508955f8d6bc8ad5fa13a04840f30ee"
+        },
+        {
+          "name": "original-final-use-windows",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 8,
+          "failed": 0,
+          "minimum_tests": 8,
+          "log_sha256": "b118f37130c63e93860dc03350324e8617778795494d7f8a88d940f00e9cae3f"
+        },
+        {
+          "name": "original-registry-windows",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 3,
+          "failed": 0,
+          "minimum_tests": 3,
+          "log_sha256": "20a8da36d0ce7893b2e4e9a41a0161360365d112dc73c76c1bb1b0a8f1e599ea"
+        },
+        {
+          "name": "partial-delete-deny",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "48f9ebd064f8da8785a4af38f3c8bfd7038410e1ef0db7257ff32ff0a999370d"
+        },
+        {
+          "name": "private-held-sharing",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "2ac7d7c74228d017d48402b6847a04ec94af5d5eb3bb758fcc73ea13f2ca3cf1"
+        },
+        {
+          "name": "private-local-ntfs",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "5f4ad1aacfb27da00825ae172001a0fe745ffe2dc161b0cf1d78253c50bcfdb4"
+        },
+        {
+          "name": "private-native-flush",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "1c022b03b72de07e9b6fb1335f6582f92fa8db0bbbae6fa61171fd2ce7debe8a"
+        },
+        {
+          "name": "private-no-reparse",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "0c210e85a10a49e16161ddb6162e454a68ce8ff42f8255c39ddfc3b789596ccb"
+        },
+        {
+          "name": "private-owner-descriptor",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 41,
+          "failed": 0,
+          "minimum_tests": 41,
+          "log_sha256": "dba20b0051687dd11f6b83bd8bfe8b6aae6fccf7d1a60d2e1641de527c7413ef"
+        },
+        {
+          "name": "private-owner-lock",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "0a33523fd3b7971d570289316c2121c38c884a56090973d69a89ecdf8bcfaf3a"
+        },
+        {
+          "name": "private-principal-continuity",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "d6b20c0ad9406c031fdb5cc73a8063b16dd4df50b6a24cbc3a5f5545f1792d2c"
+        },
+        {
+          "name": "private-relative-rename",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "65efa4703951505fd20464720bb5b71b9577aafc6e94a899d0d11cc8cf5ebe41"
+        },
+        {
+          "name": "query-existing-readback",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 6,
+          "failed": 0,
+          "minimum_tests": 6,
+          "log_sha256": "9858a15bea8d2afebb50c59350c8a8fc7b29427502e271e361117e2ec0d9ab91"
+        },
+        {
+          "name": "session-desktop",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "a6778e98a78600762ee68ec668bfd2ffa19a2c97e06ee8fe719270d453236dd0"
+        }
+      ],
+      "failed_groups": [
+        {
+          "name": "broad-identity-delete",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "0c29f9b57405309a15d937d6e77609a82f9ca73b69f60178c178928d522c32c3"
+        },
+        {
+          "name": "command-runner-terminal",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 1,
+          "failed": 2,
+          "minimum_tests": 3,
+          "log_sha256": "18334079506b0e32c25bf6e4986a63bab0503cdebc5cf41e47316dd3fef6bd91"
+        },
+        {
+          "name": "legacy-delete-boundary",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "9af2e27955e821e7476b9054253bbb9d0508955f8d6bc8ad5fa13a04840f30ee"
+        }
+      ],
+      "original_final_use_8_tests_passed": true,
+      "production_sandbox_admitted": false,
+      "whole_unit_qualified": false,
+      "power_loss_qualified": false,
+      "failure_observations": {
+        "broad-identity-delete": "Original native deletion-boundary assertion fails in token_tests.rs:486.",
+        "legacy-delete-boundary": "Original process-launch test receives the existing filesystem-isolation-unavailable refusal; no qualified direct token or account broker.",
+        "command-runner-terminal": "Two original observation tests fail; the child exit and image-query observations differ from their expected results, including query error 31. The third existing test passes."
+      }
+    },
+    {
+      "artifact_id": 13219147646,
+      "archive_sha256": "e83c08c18bd981038a78b4d72be61124a3c9de6403c2965265431a5a651eb744",
+      "source": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "3a81000aae08c658276958d678874aca4db5eedd",
+          "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+        ],
+        "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "symlink_placeholders": 0,
+        "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+        "tracked_bytes_sha256": "a72e84228e9a80279c6091cea50322ac5161ff30ff6250f0edf9418433f8b286",
+        "tracked_files": 11094,
+        "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+      },
+      "source_before_after_equal": true,
+      "original_result_status": "failed",
+      "v2_status": "failed",
+      "v3_status": "failed",
+      "command_receipts_verified": 22,
+      "command_receipts": [
+        {
+          "name": "bounded-filesystem-preparation",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "126e794dc49bbf19e492d2228852cf8c2043320410bf8de5b7fb17abd4d915f9"
+        },
+        {
+          "name": "acl-unit-controls",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 8,
+          "failed": 0,
+          "minimum_tests": 8,
+          "log_sha256": "f964cc0e3f677be7f695b8f897611547ae349e925e4c1449bab36c12dd56ab2c"
+        },
+        {
+          "name": "broad-identity-delete",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "152ef46ea3b9fb5502ed6a7bbdb0d2e36cfd6e7c49e03da8d946f8f6c61a0f7a"
+        },
+        {
+          "name": "command-runner-terminal",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 1,
+          "failed": 2,
+          "minimum_tests": 3,
+          "log_sha256": "a0c55b2fba094f0541b5ba8416568974fa2963bcc4e43e1d9ff24f0d4afd21ca"
+        },
+        {
+          "name": "controlled-job",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "88e2fc31a1632937b2a4f96b12418b5143a9c8902f321d3001ffaaee02be0fb2"
+        },
+        {
+          "name": "explicit-stdio",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "98b247fa62b6ca725c8dcfdd342376d73f65d67cea8d0373cd99a28ad502861b"
+        },
+        {
+          "name": "full-restriction-candidate",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "a89faf2b792c1b5e7de2df93772e8963482eccc45e52cd0b534f5338cef831d6"
+        },
+        {
+          "name": "held-read-acl",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 3,
+          "failed": 0,
+          "minimum_tests": 3,
+          "log_sha256": "8fdb154afeffee7fe48c539911ee1dce7325651748d1b0a83d823580fc63bb63"
+        },
+        {
+          "name": "legacy-delete-boundary",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "3450b67460395ea0cbc3773967a3b6688726386961199212f15bcea4ebeff9f4"
+        },
+        {
+          "name": "original-final-use-windows",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 8,
+          "failed": 0,
+          "minimum_tests": 8,
+          "log_sha256": "34698d4154da9638019cd41d2dac69f152fabc847ba9e048536b534228a00059"
+        },
+        {
+          "name": "original-registry-windows",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 3,
+          "failed": 0,
+          "minimum_tests": 3,
+          "log_sha256": "68e760f2f9ffb9f1355ff66c3187098fef17beb2eca366d43acd1b44ab900ad8"
+        },
+        {
+          "name": "partial-delete-deny",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "8c68026edd30d80abd44f3eeed1841c47ae35fe3f6f7d8c05b90ee39ed66e8e5"
+        },
+        {
+          "name": "private-held-sharing",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "c0955f5366ef2a0dffe3e1d7b9cbeea1e6172bbc12ae5860cb3be31082111b99"
+        },
+        {
+          "name": "private-local-ntfs",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "bc650d30385e3b783b3e397c021b457dda6bd13c6705c717090bf8adf20d386b"
+        },
+        {
+          "name": "private-native-flush",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "30b1e4df5f3f740f8b918af0f17b963dcce5563d3c0d162c2041aa2a411bd403"
+        },
+        {
+          "name": "private-no-reparse",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "cd7f59cab915c347cf95e090b67e76ba2e9270a076eb2658a48e449c2c6e9824"
+        },
+        {
+          "name": "private-owner-descriptor",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 41,
+          "failed": 0,
+          "minimum_tests": 41,
+          "log_sha256": "5f149219fcf2e21e78cef911a5b2f950250a70eae8fc9cc521fe5448ec7d26e9"
+        },
+        {
+          "name": "private-owner-lock",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "e9a584e2ea0cf77b7a1c760905520d53365cb08e77dee8b5f6de173e46b48ab9"
+        },
+        {
+          "name": "private-principal-continuity",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "34f5291ee9f295c285350c66b3c2bb46a419f996f56bcf24527128073fc29fff"
+        },
+        {
+          "name": "private-relative-rename",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "a61915e8377d8d64e9fd73d9fa955e97f5a50957ea457d46ae3b4c54813ef873"
+        },
+        {
+          "name": "query-existing-readback",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 6,
+          "failed": 0,
+          "minimum_tests": 6,
+          "log_sha256": "7f17f894e2b8447f2142f4eb29937eaf0126b5307f85dc71f020a524052ee499"
+        },
+        {
+          "name": "session-desktop",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "81b9118940da9eae92f8624fb7d12c4cd42ba0cb4743b7b6bfb347c8ee657819"
+        }
+      ],
+      "failed_groups": [
+        {
+          "name": "broad-identity-delete",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "152ef46ea3b9fb5502ed6a7bbdb0d2e36cfd6e7c49e03da8d946f8f6c61a0f7a"
+        },
+        {
+          "name": "command-runner-terminal",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 1,
+          "failed": 2,
+          "minimum_tests": 3,
+          "log_sha256": "a0c55b2fba094f0541b5ba8416568974fa2963bcc4e43e1d9ff24f0d4afd21ca"
+        },
+        {
+          "name": "legacy-delete-boundary",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "3450b67460395ea0cbc3773967a3b6688726386961199212f15bcea4ebeff9f4"
+        }
+      ],
+      "original_final_use_8_tests_passed": true,
+      "production_sandbox_admitted": false,
+      "whole_unit_qualified": false,
+      "power_loss_qualified": false,
+      "failure_observations": {
+        "broad-identity-delete": "Original native deletion-boundary assertion fails in token_tests.rs:486.",
+        "legacy-delete-boundary": "Original process-launch test receives the existing filesystem-isolation-unavailable refusal; no qualified direct token or account broker.",
+        "command-runner-terminal": "Two original observation tests fail; the child exit and image-query observations differ from their expected results, including query error 31. The third existing test passes."
+      }
+    },
+    {
+      "artifact_id": 13218923593,
+      "archive_sha256": "17fe9c4e382a2dafb7cfa595dd0a37461b683fcbb523f22f5ce80a4908cf5a26",
+      "source": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "3a81000aae08c658276958d678874aca4db5eedd",
+          "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+        ],
+        "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "symlink_placeholders": 0,
+        "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+        "tracked_bytes_sha256": "a72e84228e9a80279c6091cea50322ac5161ff30ff6250f0edf9418433f8b286",
+        "tracked_files": 11094,
+        "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+      },
+      "source_before_after_equal": true,
+      "original_result_status": "failed",
+      "v2_status": "failed",
+      "v3_status": "failed",
+      "command_receipts_verified": 22,
+      "command_receipts": [
+        {
+          "name": "acl-unit-controls",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 8,
+          "failed": 0,
+          "minimum_tests": 8,
+          "log_sha256": "0a44bad43cfdaaa0798ca71ea9028c18f6acf612128a819ba3ce2d0a2aeb5379"
+        },
+        {
+          "name": "bounded-filesystem-preparation",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "7ca128f847339bd712c641d9a60acafe3546bbe58008390128337ca8aff123d0"
+        },
+        {
+          "name": "broad-identity-delete",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "c31f0f20cd2be502d1fc589e01ccb41dcc797b4c5a2e5d8d6c7997bbaecdf741"
+        },
+        {
+          "name": "command-runner-terminal",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 1,
+          "failed": 2,
+          "minimum_tests": 3,
+          "log_sha256": "7ee89bc47d2ef8a0806af781610b872aa56234776fa49dee9ff28d337638711b"
+        },
+        {
+          "name": "controlled-job",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "f66f5aba416b4c3aebbaa2f3490f03ee4f879c29c56e154adb0ee28391360ab2"
+        },
+        {
+          "name": "explicit-stdio",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "b6fe3932770b60ee71c9c6168d0becf065ef74b928a43bae415efa47b3f117a8"
+        },
+        {
+          "name": "full-restriction-candidate",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "eacbb144080bbe7789abde96d37377e8cdfd0a5a359a7d99a2a5d5495672702a"
+        },
+        {
+          "name": "held-read-acl",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 3,
+          "failed": 0,
+          "minimum_tests": 3,
+          "log_sha256": "d4980efd24d9b5252f84fb4fea65deebc9a80a00d7b81c9cb2df35387acefb2e"
+        },
+        {
+          "name": "legacy-delete-boundary",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "3b1b13712386f349add44b75852d9cf810470aafa45cff94daa2ac183c0753d1"
+        },
+        {
+          "name": "original-final-use-windows",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 8,
+          "failed": 0,
+          "minimum_tests": 8,
+          "log_sha256": "a788a10deb32a7429d10cd83ec5088ba1537b11d12901c9b0b9e7f467ea9eba4"
+        },
+        {
+          "name": "original-registry-windows",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 3,
+          "failed": 0,
+          "minimum_tests": 3,
+          "log_sha256": "9a0ff3186069cfe4cff8be4159b4675172258ab988077246f400888a28570379"
+        },
+        {
+          "name": "partial-delete-deny",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "61e57ccba6467de11432d05e982dfb4a73d45f96ec31d9e6197d681a9f49f9f5"
+        },
+        {
+          "name": "private-held-sharing",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "91d45dc3eb080501d9b2e135adaf891b69d4047d3545d648708d3c24cd129f09"
+        },
+        {
+          "name": "private-local-ntfs",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "23810b17b02bb446ed168e55c1ec5b2e52d1e7b2755e5df0a9d1f5fbf3f6606d"
+        },
+        {
+          "name": "private-native-flush",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "bc9d059e2955d51c1a57b877b1d3fa81a231787993f7d155ac248b136c5f9f20"
+        },
+        {
+          "name": "private-no-reparse",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "c81d8be0bbad672e3bac1d3198adf736fa5f0c4ba29cb4365849b76b1f30b837"
+        },
+        {
+          "name": "private-owner-descriptor",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 41,
+          "failed": 0,
+          "minimum_tests": 41,
+          "log_sha256": "0cedef5925e0714c39eabf1199716a3ec7acd31614afc29658d13dd6dfabfd7d"
+        },
+        {
+          "name": "private-owner-lock",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "86fd5bba25f7b1f9f8a2826d9006d9213dfa43360c3a1c5b64582ecb01e35c8e"
+        },
+        {
+          "name": "private-principal-continuity",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "37da3015408dac95e37a4adfa372054104dafcfe38bf6d177ec68a7faf11303e"
+        },
+        {
+          "name": "private-relative-rename",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "7bcf86e8b88cebdef384c80ee4bf3b2e2552516d8060634d0b1cb07dd18fc0a0"
+        },
+        {
+          "name": "query-existing-readback",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 6,
+          "failed": 0,
+          "minimum_tests": 6,
+          "log_sha256": "b46c9d569f0beffb3356ad4e9d0870b71ee8c4427c8fb5fa51ad8b6a7d4aad8d"
+        },
+        {
+          "name": "session-desktop",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "e799011767f00dd900bacfd94d456c43c8236ea132e5fb620d239cf2abb05697"
+        }
+      ],
+      "failed_groups": [
+        {
+          "name": "broad-identity-delete",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "c31f0f20cd2be502d1fc589e01ccb41dcc797b4c5a2e5d8d6c7997bbaecdf741"
+        },
+        {
+          "name": "command-runner-terminal",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 1,
+          "failed": 2,
+          "minimum_tests": 3,
+          "log_sha256": "7ee89bc47d2ef8a0806af781610b872aa56234776fa49dee9ff28d337638711b"
+        },
+        {
+          "name": "legacy-delete-boundary",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "3b1b13712386f349add44b75852d9cf810470aafa45cff94daa2ac183c0753d1"
+        }
+      ],
+      "original_final_use_8_tests_passed": true,
+      "production_sandbox_admitted": false,
+      "whole_unit_qualified": false,
+      "power_loss_qualified": false,
+      "failure_observations": {
+        "broad-identity-delete": "Original native deletion-boundary assertion fails in token_tests.rs:486.",
+        "legacy-delete-boundary": "Original process-launch test receives the existing filesystem-isolation-unavailable refusal; no qualified direct token or account broker.",
+        "command-runner-terminal": "Two original observation tests fail; the child exit and image-query observations differ from their expected results, including query error 31. The third existing test passes."
+      }
+    },
+    {
+      "artifact_id": 13218373388,
+      "archive_sha256": "fe0971768ac9a17f4e230cc532a61f59756c9d749e073e48611b16cac35282c7",
+      "source": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "0baf43cf4bf8f953fff079725348de1d8f26434f"
+        ],
+        "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "symlink_placeholders": 0,
+        "tested_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+        "tracked_bytes_sha256": "a72e84228e9a80279c6091cea50322ac5161ff30ff6250f0edf9418433f8b286",
+        "tracked_files": 11094,
+        "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+      },
+      "source_before_after_equal": true,
+      "original_result_status": "failed",
+      "v2_status": "failed",
+      "v3_status": "failed",
+      "command_receipts_verified": 22,
+      "command_receipts": [
+        {
+          "name": "acl-unit-controls",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 8,
+          "failed": 0,
+          "minimum_tests": 8,
+          "log_sha256": "f47757033ab655acbd15c51089d29c27099755afaad8777cbea3803e92e39ffa"
+        },
+        {
+          "name": "bounded-filesystem-preparation",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "cbeead5df87a90b697fb02e523d0738269aef5cf2a00c371637dd47dde3e3fb3"
+        },
+        {
+          "name": "broad-identity-delete",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "adff75dea3d744b72d445a861e6e7a072123ab581013a18c4afde7f3eacd6b68"
+        },
+        {
+          "name": "command-runner-terminal",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 1,
+          "failed": 2,
+          "minimum_tests": 3,
+          "log_sha256": "90a74764cfa28dd5a4bd6610a3c26a039a9b0d3bb4c9e4cc60b9a0677b109838"
+        },
+        {
+          "name": "controlled-job",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "0081fff1ceb0b629423d37086c98e33e43731db96e323db10400846f6c9d363c"
+        },
+        {
+          "name": "explicit-stdio",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 2,
+          "failed": 0,
+          "minimum_tests": 2,
+          "log_sha256": "33cddb63a093c82be1ce493367a365f3d36e6db69a5a2d41a4530f2d3894a17f"
+        },
+        {
+          "name": "full-restriction-candidate",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "32eae8de6815da2a16b6751c668ae476e216aed3e8b9b6839677695c8817ea03"
+        },
+        {
+          "name": "held-read-acl",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 3,
+          "failed": 0,
+          "minimum_tests": 3,
+          "log_sha256": "da3d2e3d2ce9b1edfe625de53f2dbef946ce50e8e6506f7610c5d4aa4fe37d04"
+        },
+        {
+          "name": "legacy-delete-boundary",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "65c3025cd13e2948b666c81b46c8fb6d4e64836306e53af3287d17c08f0ba4be"
+        },
+        {
+          "name": "original-final-use-windows",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 8,
+          "failed": 0,
+          "minimum_tests": 8,
+          "log_sha256": "d26ec982bc90e85751d09918363344ade883b3239c0ed45590fcc64349a5f193"
+        },
+        {
+          "name": "original-registry-windows",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 3,
+          "failed": 0,
+          "minimum_tests": 3,
+          "log_sha256": "d10072c9e08bb3b71046a55fb2fb6417fa166e23005df5cb0dde709ebf69d495"
+        },
+        {
+          "name": "partial-delete-deny",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "5f8ae0bf5a96b45449ddc7170ca10bfb613d185237030c6e78ac3ac95e4902ef"
+        },
+        {
+          "name": "private-held-sharing",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "58d18cabe24f8ce673c857132324480c36af6420a82a9a21c7cb7ab33f2ad450"
+        },
+        {
+          "name": "private-local-ntfs",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "a1fef2abaf4a31b80480b3159487e272e7d65d08496d28d092955520a7d2ec8d"
+        },
+        {
+          "name": "private-native-flush",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "a79bf55f72be014a0d9af4566bc63e70ed4d66dac5d301bfc5b87638234e3a25"
+        },
+        {
+          "name": "private-no-reparse",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "dd518917c5fcf6bb1a64a3ac22e236e576bfaafff26a81ff36b3aa8c78d0450a"
+        },
+        {
+          "name": "private-owner-descriptor",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 41,
+          "failed": 0,
+          "minimum_tests": 41,
+          "log_sha256": "006de6267932ab59dbac3ab9d703fc0fd788e01b173b285b7dd1132cdca5ecca"
+        },
+        {
+          "name": "private-owner-lock",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "41028e094b55190dd6c501c0f752684d82eb4eab3e4dc0510d81afa944f39232"
+        },
+        {
+          "name": "private-principal-continuity",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 4,
+          "failed": 0,
+          "minimum_tests": 4,
+          "log_sha256": "57f88104e7f11b4065249924798a59767cd7c5544ead5b949258f7b64a85ff3a"
+        },
+        {
+          "name": "private-relative-rename",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "d851d9c45e03bdfb6562d2d26479f25de493486fbd82529ab02ba7402647d360"
+        },
+        {
+          "name": "query-existing-readback",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 6,
+          "failed": 0,
+          "minimum_tests": 6,
+          "log_sha256": "d4d290c541c0e1d20a22b40ad3ae05bd555a3ffc683b186138c370883f8efca1"
+        },
+        {
+          "name": "session-desktop",
+          "status": "passed",
+          "returncode": 0,
+          "passed": 1,
+          "failed": 0,
+          "minimum_tests": 1,
+          "log_sha256": "9f8a7ce2f15873b747847a5b12903a301502942abb8d36c19846c3faf39ec348"
+        }
+      ],
+      "failed_groups": [
+        {
+          "name": "broad-identity-delete",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "adff75dea3d744b72d445a861e6e7a072123ab581013a18c4afde7f3eacd6b68"
+        },
+        {
+          "name": "command-runner-terminal",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 1,
+          "failed": 2,
+          "minimum_tests": 3,
+          "log_sha256": "90a74764cfa28dd5a4bd6610a3c26a039a9b0d3bb4c9e4cc60b9a0677b109838"
+        },
+        {
+          "name": "legacy-delete-boundary",
+          "status": "failed",
+          "returncode": 1,
+          "passed": 0,
+          "failed": 1,
+          "minimum_tests": 1,
+          "log_sha256": "65c3025cd13e2948b666c81b46c8fb6d4e64836306e53af3287d17c08f0ba4be"
+        }
+      ],
+      "original_final_use_8_tests_passed": true,
+      "production_sandbox_admitted": false,
+      "whole_unit_qualified": false,
+      "power_loss_qualified": false,
+      "failure_observations": {
+        "broad-identity-delete": "Original native deletion-boundary assertion fails in token_tests.rs:486.",
+        "legacy-delete-boundary": "Original process-launch test receives the existing filesystem-isolation-unavailable refusal; no qualified direct token or account broker.",
+        "command-runner-terminal": "Two original observation tests fail; the child exit and image-query observations differ from their expected results, including query error 31. The third existing test passes."
+      }
+    }
+  ]
+}

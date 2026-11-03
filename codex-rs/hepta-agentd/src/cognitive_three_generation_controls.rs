@@ -64,7 +64,7 @@ pub(super) fn canonical_controls(
         short.evidence_id = id(&format!("short-product-binding-{issued}"));
         short.issued_at = issued;
         short.expires_at = issued + 60_000_000;
-        short.signature = roles.processes[1].sign(&short.signing_bytes());
+        short.signature = roles.processes[1].sign(&short.signing_bytes()).into();
         let prepared = eval::prepare_self_evolution_product_selection_v1(
             qualification,
             &short,

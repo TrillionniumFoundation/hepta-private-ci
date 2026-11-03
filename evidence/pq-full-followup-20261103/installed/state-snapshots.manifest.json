@@ -1,0 +1,73 @@
+{
+  "artifact": {
+    "id": 13233273505,
+    "name": "hepta-cell-installed-x64-source-head-a7c523f366de3aaf9bce923be885ad275d0ecc22-1",
+    "size_in_bytes": 41009316,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13233273505",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13233273505/zip",
+    "expired": false,
+    "created_at": "2026-11-03T13:15:19Z",
+    "expires_at": "2026-11-17T13:15:17Z",
+    "updated_at": "2026-11-03T13:15:19Z",
+    "digest": "sha256:cd46b5985d874fc9a292a41270a8b33e257bbd418537fbc76cf6c93a92a3082e",
+    "workflow_run": {
+      "id": 41634290628,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "fix/hepta-pn-cell-closure-20261031",
+      "head_sha": "a7c523f366de3aaf9bce923be885ad275d0ecc22"
+    }
+  },
+  "payload_file": "state-snapshots.tar.xz",
+  "payload_bytes": 11828,
+  "payload_sha256": "d4d6d417c0e58f6b8e71459e9a919650ead348b11bbbc297e9c1e778e9ce012d",
+  "members": [
+    {
+      "path": "current-from-zero/confirmation/baseline/independent-client/native.sqlite",
+      "bytes": 499712,
+      "sha256": "ae00dc9c8e4a10957f92915866830e2723ad1338e15d892891ce43a6f951f769"
+    },
+    {
+      "path": "current-from-zero/confirmation/baseline/receiver/native.sqlite",
+      "bytes": 499712,
+      "sha256": "bc314e01dd564e9484dabad41ba06c3bf2cd6a7893bcbbd2e5f8f3bddbb2cc14"
+    },
+    {
+      "path": "current-from-zero/confirmation/pressure/independent-client/native.sqlite",
+      "bytes": 196608,
+      "sha256": "48d7f579d04e0c857d74e489afd1597ab1704cde428f55c026ad25243dd208e6"
+    },
+    {
+      "path": "current-from-zero/confirmation/pressure/receiver/native.sqlite",
+      "bytes": 499712,
+      "sha256": "bc314e01dd564e9484dabad41ba06c3bf2cd6a7893bcbbd2e5f8f3bddbb2cc14"
+    },
+    {
+      "path": "current-from-zero/confirmation/producer/native.sqlite",
+      "bytes": 499712,
+      "sha256": "0d5e8e88b221b194617e773a59987dbca33fde482bfe5b8edd23a976a6c2b770"
+    },
+    {
+      "path": "current-from-zero/native/producer/native.sqlite",
+      "bytes": 245760,
+      "sha256": "383135fdc78d1b7e2def0a0fbbe44242e6e6a08df331dcb28196db0276a6ba4e"
+    },
+    {
+      "path": "current-from-zero/native/receiver/native.sqlite",
+      "bytes": 245760,
+      "sha256": "be654d48ee061a2a04ad3b41af9267d62ebcda9515a6b465bbe68f7c5fa4c9e0"
+    },
+    {
+      "path": "current-from-zero/native/sustained/producer/native.sqlite",
+      "bytes": 245760,
+      "sha256": "6014d4da91f1606f11071237372516420ace59dbc2f185471cc9b32b0c59f250"
+    },
+    {
+      "path": "current-from-zero/native/sustained/receiver/native.sqlite",
+      "bytes": 245760,
+      "sha256": "5b246c26d3e66de7576ba5dd7839c52df52fee00d04cd52619f7839242975b49"
+    }
+  ],
+  "scope": "state-snapshots",
+  "original_zip_fully_archived": false
+}

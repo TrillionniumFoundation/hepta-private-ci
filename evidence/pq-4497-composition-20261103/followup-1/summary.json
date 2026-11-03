@@ -1,0 +1,288 @@
+{
+  "schema": "hepta-pq-composition-followup-validation-v1",
+  "base_commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "base_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+  "status": "reviewed_compile_and_ci_corrections_with_native_execution_incomplete",
+  "prior_snapshot_preserved": "../local-validation/",
+  "changes": [
+    "Retain the complete typed AuthBusVerifyingKey for controlled-funding issuer identity and typed equality; no key truncation or classical fallback.",
+    "Adapt existing classic host test fixtures explicitly to the typed key/signature APIs and explicit absent challenge.",
+    "Move new external Cargo target initialization from invalid job runner context into an early RUNNER_TEMP step; retain original lanes, steps, source pins, test floors and 60-minute budget.",
+    "Update the independent authority inventory and retired experimental API test fixtures; classify explicit split-file implementations and retain the original 21 tests plus one omission control.",
+    "Add the explicit PQ convergence constructor to CALLERS with an empty production caller set; preserve all 51 prior entries and refresh only the exact pq.rs file digest for its private test-hook alias.",
+    "Add only the valid Rust dependency name inout to the existing spelling dictionary; preserve raw compiler log bytes.",
+    "Restore the exact original Windows-only private-owner module alias at the contracts crate root.",
+    "Replace host trust-service fixture unwrap calls with propagated errors; thread errors still fail tests. Name the identical private test-hook and SQL frontier-row types without lint suppression.",
+    "Use a private one-permit semaphore for the same asynchronous owner-transition admission scope; retain rejection and checkpoint ordering. Add a cancellation-before-mutation control for classic and PQ profiles, increasing the original dispatcher floor from 13 to 14.",
+    "Add the same pinned setup-uv step already used by PoN CI to the policy-renewal workflow; keep original test, deadline and retry controls."
+  ],
+  "changed_input_sha256": {
+    ".codespellignore": "becad0f381d1a654a79908cc05ccd87d85d032f962b427ae28184ca895d77eaf",
+    ".github/workflows/hepta-pon-native-pair.yml": "0e3bf46701083ddd11d61b1673dc35fa0c9b83544b878ed01322c141428c618b",
+    ".github/workflows/hepta-pq-policy-renewal.yml": "28ed20a7b499fb9044588d6f6048d1eec8bd02d8e7062626e0f54281fcc6902b",
+    "CALLERS.toml": "ad52e8addfc2bbcf69505800c3f0f3d52ba534f1bc013ee9d506441468dfb216",
+    "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs": "578b0bcd17048e822d555ef79ad5ec33fb276f2681fb7b82c624b80f5d6acd9c",
+    "codex-rs/hepta-agentd/src/authbus_ingress.rs": "bdf69640829a786bd2403a95a3eb4f112a58d6fe6e6b5281047521e369c42e19",
+    "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs": "2ddf3dfcfd1ad35001bce18f766049dee82f2f350b337b3fc5cbebc6146ad6a5",
+    "codex-rs/hepta-authbus/src/settlement_issuer_tests.rs": "0eec9862b7e5a479170f0c9be4a03d78e351a2f2c776a8407a3cb5ea3ea44e31",
+    "codex-rs/hepta-authbus/src/settlement_store_tests.rs": "99f305c1e91f374a5e622a86715430238a7046ab902ea1e6bd179f65c2cb8a0e",
+    "codex-rs/hepta-contracts/src/authority_trust_learning_tests.rs": "b5ccabde1c6a15f6adc06401e21966876a24717e908ba72e3fa72f1874131801",
+    "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs": "c30f1a93d51b07e5d5c057d556c6a685b770a54496d1f4f1ea6c7db050b4bc4d",
+    "codex-rs/hepta-contracts/src/final_use_pq_capacity_tests.rs": "c97a84aee5998dab1943e84b3c826d92212eb112a90a0d4bebd8ae2e582ca084",
+    "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs": "5311addafdf70718608b45ffa4d92f40f40192db8529a2f898daec371b65b22a",
+    "codex-rs/hepta-contracts/src/final_use_pq_tests.rs": "f5986ca7de9e0778d6d21dab3f458f97be67fce7fab9fdca013cbdcdd15e3b62",
+    "codex-rs/hepta-contracts/src/lib.rs": "4733e73741dd867ca5ca6ea5f54aa7832a62a45910bb21d941952e0254b4fbdd",
+    "codex-rs/hepta-evidence/src/authbus_issuer_floor.rs": "ceb6f7b1afdfbcf70ebc6498fdc34df60de5a4339630123bb081ff266066aaa6",
+    "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs": "f07428f4d4eeb93f64ff038cfd604d02d2910ccf1d1e8177f338f288e4c41074",
+    "codex-rs/hepta-infer-worker-host/src/controlled_funding.rs": "8ad4adb08ceaaa48781c2ab91cc43ca050dbed80925869deb5da87e0ea4580ce",
+    "codex-rs/hepta-infer-worker-host/src/controlled_ledger_source_route_tests.rs": "1f933a20231fcb833cd104e2c85a8bf8516e3150d7bc117d22c5e4b2e8857223",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs": "d25359981a0274f25581f13195b17fee281d39fa239683f4e4838d6cfbb2d83d",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs": "ac3aad8c91b5f70d3152124e7e9aa29b2f6dcfd48e2891d30a16858c8efbe5fc",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs": "361b25112f5275eedef12d98a58e96b470da876ba5f8020d7382317c1e0ea3e3",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs": "b129982232238192c5f6dee3176524799382a00686a6e4c702f792d617588dd3",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs": "42a1112b92750a31042e242e92a3f3eed7e22161226ed80a6f90d515259d5298",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs": "7ddb7374246b5267144497f8d8c8967cf156e5dbe22ff152c13b0e1f8bfdad90",
+    "codex-rs/hepta-infer-worker-host/src/smollm_study_roles_tests.rs": "d9bcdf07e7e0a5e20396ed9e51da67f109c7f43e0b6f5e32b8d4b041f313b193",
+    "codex-rs/hepta-infer-worker-host/tests/cell_host_cli.rs": "891168ce2f82a4ba7d907c2c379261fdb8e5ca4ccd0c5ec0528316b5ad958dca",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "0a69a96af89583bc44492aa37864bc486eae73e8073e896dfd023c97bbe2b12f",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "89f5639650a124eefee1432e1bad956fa172a76781427be09bc0019e2b369eed",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": "2cc023e4e6e328efa5b68d016e995b035adf9541fd5d00126f98caeb7abce5fc"
+  },
+  "native": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "cargo_profiles": "Repository defaults retained; no profile or feature override added.",
+    "build_jobs": 1,
+    "cargo_incremental": false,
+    "earlier_contracts": {
+      "passed": 192,
+      "failed": 3,
+      "failure": "Unix socket bind denied with EPERM; no result relabeling."
+    },
+    "earlier_artifacts": {
+      "passed": 130,
+      "ignored": 1,
+      "ignored_role": "Child harness invoked by its passing parent test; not an additional independent passing test."
+    },
+    "host_attempt_3": {
+      "receipt": "native/hepta-host-targeted-test-3.json",
+      "exit_code": 101,
+      "observation": "The sparse checkout lacked the original docs/modules/MODULES.json compile-time input. Exact baseline Git blob c1a2739f183742cd0ded297f4aa3fa7366d5e6ed was restored; no candidate source change."
+    },
+    "host_attempt_4": {
+      "receipt": "native/hepta-host-targeted-test-4.json",
+      "exit_code": 101,
+      "observation": "Ten real Rust type errors in the three host files corrected here. The complete failure log is retained."
+    },
+    "host_attempt_5": {
+      "receipt": "native/hepta-host-targeted-test-5.json",
+      "exit_code": 101,
+      "intended_selected_tests": 9,
+      "executed_tests": 0,
+      "observation": "After the typed fixes, compilation reached final host test linkage. rust-lld terminated with signal 7 (SIGBUS); no test executable completed. Shared disk space was also exhausted, but the log does not establish the cause of SIGBUS."
+    },
+    "strict_clippy": {
+      "receipt": "native/hepta-scoped-clippy-6-final.json",
+      "exit_code": 0,
+      "status": "passed",
+      "command": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--locked",
+        "--tests",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-authbus",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-arg0",
+        "-p",
+        "codex-hepta-evidence",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "scope": "Clippy without --fix, --tests, seven affected packages, unchanged dependency graph, -D warnings. Type checking is distinct from native test execution.",
+      "target": "Local x86_64 Linux host; no cross-platform native qualification inferred.",
+      "dependency_warnings": "Existing deprecation warnings from the unselected vendored sqlx-sqlite dependency remain in the raw log. No vendor code or global lint configuration was changed."
+    },
+    "earlier_required_fix_attempt": {
+      "receipt": "native/hepta-scoped-fix.json",
+      "exit_code": 101,
+      "observation": "Original just fix exposed three AuthBus test compile errors and additional lint findings; this failure is retained separately from subsequent strict validation."
+    },
+    "first_strict_attempt": {
+      "receipt": "native/hepta-scoped-clippy.json",
+      "exit_code": 101,
+      "observation": "The first actual Clippy command without --fix found 21 test compile errors at consumers of the newly fallible trust-service helper. Those consumers were corrected without changing seeds, counts or assertions; the original failed log is retained."
+    },
+    "second_strict_attempt": {
+      "receipt": "native/hepta-scoped-clippy-2.json",
+      "exit_code": 101,
+      "observation": "The second actual strict attempt resolved the host callers and exposed 36 unwrap diagnostics in contracts fixture helpers. The helpers and all existing consumers were made fallible while preserving the 12 original tests and their assertions. This failure remains a separate historical record."
+    },
+    "third_strict_attempt": {
+      "receipt": "native/hepta-scoped-clippy-3.json",
+      "exit_code": 101,
+      "observation": "The third actual strict attempt resolved contracts fixture diagnostics and exposed six unwrap diagnostics in the original, previously unchanged Cell CLI process helper. Its error propagation is corrected while retaining all three original tests, 10-second deadline, 5-ms poll and child kill/wait cleanup."
+    },
+    "fourth_strict_attempt": {
+      "receipt": "native/hepta-scoped-clippy-4.json",
+      "exit_code": 101,
+      "observation": "The fourth actual strict attempt resolved the Cell CLI helper and exposed 21 unwrap diagnostics in the Agentd canonical PQ trust-service fixture. Its failed log is preserved separately from later results."
+    },
+    "diagnostic_keep_going_attempt": {
+      "receipt": "native/hepta-scoped-clippy-5-keep-going.json",
+      "exit_code": 0,
+      "scope": "Same seven packages and strict settings; --keep-going gathers independent diagnostics without relaxing exit status. The original argv without this flag was then checked separately."
+    },
+    "formatting": {
+      "receipt": "native/hepta-followup-final-fmt-5.json",
+      "exit_code": 0
+    }
+  },
+  "workflow": {
+    "tool": "Official actionlint 1.7.12 release with verified upstream digest",
+    "baseline_exit_code": 1,
+    "corrected_exit_code": 0,
+    "independently_repeated": true,
+    "evidence": "workflow/",
+    "remote_execution_claimed": false
+  },
+  "source_controls": {
+    "final_receipt": "qa/final2/final2-source-gates.json",
+    "earlier_final1_receipt": "qa/final/final-after-fmt-source-gates.json",
+    "explicit_inputs_unchanged": 42,
+    "complete_scanner_rust_input": {
+      "source_roots": [
+        "codex-rs"
+      ],
+      "files": 5604,
+      "bytes": 84480108,
+      "sha256": "cb5ee019a6f6f93c20382de258fa8dab3be6f270eb63f070c18384a35c73b648",
+      "digest_format": "sorted path + NUL + decimal byte length + NUL + file SHA256 + LF, UTF-8; all files from the unchanged scanner source-root enumeration, including ignored and cfg-test paths"
+    },
+    "complete_original_b4_suite": {
+      "passed": 22,
+      "original_tests_preserved": 21,
+      "new_split_impl_omission_test": 1
+    },
+    "callers": {
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "boundaries": 52,
+      "original_boundary_entries_preserved": 51,
+      "rust_files_scanned": 5604,
+      "authority_granted": false
+    },
+    "evidence": "qa/"
+  },
+  "spelling": {
+    "version": "2.4.3",
+    "original_cli_and_config": true,
+    "first_build_checkout_exit_code": 65,
+    "first_failure": "Generated, untracked formatter-tool SBOM words; original bytes preserved in a declared gzip record.",
+    "present_tracked_view_exit_code": 0,
+    "present_tracked_paths": 9695,
+    "total_base_tracked_paths": 10951,
+    "missing_sparse_paths_not_scanned": 1256,
+    "not_the_ci_container": true,
+    "new_followup_evidence_check": {
+      "receipt": "spelling/codespell-candidate-final.json",
+      "exit_code": 0,
+      "present_tracked_paths": 9695,
+      "followup_evidence_paths": 137,
+      "total_selected_paths": 9832,
+      "missing_sparse_paths_not_scanned": 1256,
+      "local_python": "3.12.14",
+      "all_selected_source_and_snapshot_bytes_unchanged": true,
+      "immutable_compiler_log_unchanged": true,
+      "stored_input_manifest": "spelling/codespell-candidate-final-input-manifest.jsonl.xz",
+      "lossless_archive_receipt": "spelling/codespell-candidate-final-archive.json",
+      "scanned_summary_sha256": "69feb4d4ed809318b75e555647bd5cab8ff3bb1948b29e4ffb7bdb08767c481c",
+      "scope_note": "The receipt and its five output/archive files were generated after scanning. This summary records the observed result afterward; those generated outputs and this final summary update are not counted as scanned inputs."
+    },
+    "evidence": "spelling/"
+  },
+  "unchanged_chain_binding": {
+    "commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+    "tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+    "manifest_sha256": "57ebcfa34d3e578679c3040fab3e4065683bd032592a183574767d5d3eaa9404",
+    "selected_files": 42,
+    "paired_ci_evidence": "../chain-ci/",
+    "four_lane_qualification": false
+  },
+  "completed_chain_full_suite": {
+    "evidence": "chain-full-ci/",
+    "distinct_from_earlier_43_control_stage": true,
+    "x64_head": {
+      "passed": 895,
+      "failed": 0,
+      "ignored": 22
+    },
+    "x64_merge": {
+      "passed": 894,
+      "failed": 1,
+      "ignored": 22,
+      "failure": "cancellation_after_signing_before_send_preserves_same_client: PQ_WITNESS_DEADLINE"
+    },
+    "arm_head": {
+      "passed": 893,
+      "failed": 2,
+      "ignored": 22,
+      "failure": "two detached admission PUBLIC_MUTATION_CPU_BUDGET failures"
+    },
+    "arm_merge": {
+      "passed": 893,
+      "failed": 2,
+      "ignored": 22,
+      "failure": "two detached admission PUBLIC_MUTATION_CPU_BUDGET failures"
+    },
+    "strict_clippy": "All four original commands passed.",
+    "status": "HOLD",
+    "complete_original_logs_retained": true
+  },
+  "hepta_hosted_baseline_observations": {
+    "source_commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+    "windows_job": {
+      "id": 125788434744,
+      "status": "failed",
+      "reason": "Eleven E0432/E0433 unresolved Windows private-owner module errors."
+    },
+    "mac_intel_job": {
+      "id": 125788435213,
+      "status": "failed",
+      "reason": "Bazel registry DNS and remote-cache availability, exit 32."
+    },
+    "mac_arm_job": {
+      "id": 125788435037,
+      "status": "failed",
+      "reason": "OutOfMemoryError: unable to create native thread, exit 33."
+    },
+    "retained_logs": "hosted-ci/",
+    "renewal_four_lanes": {
+      "evidence": "pq-policy-renewal-baseline/",
+      "dispatcher_observed_tests": 0,
+      "dispatcher_required_tests": 13,
+      "product_observed_tests": 0,
+      "product_required_tests": 3,
+      "reason": "Controlled-funding compile error; formatter also lacked uv.",
+      "status": "HOLD"
+    },
+    "followup_remote_ci_result_claimed": false
+  },
+  "qualifications": {
+    "whole_chain_pq": false,
+    "native_host_test_execution": false,
+    "independent_end_to_end": false,
+    "installed_business_loop": false,
+    "deployment": false,
+    "prior_v5_acceptance_inherited": false
+  }
+}

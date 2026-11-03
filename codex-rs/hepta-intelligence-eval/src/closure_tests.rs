@@ -731,7 +731,7 @@ fn signed_evaluation_binds_metrics_roles_and_host_identities() {
         signers.push(TrustedLearningSignerV1 {
             principal: principal.clone(),
             controller_id: principal.principal_id.clone(),
-            verifying_key: key.verifying_key().to_bytes(),
+            verifying_key: key.verifying_key().to_bytes().into(),
             roles: vec![role],
             revoked_at: None,
         });
@@ -770,9 +770,9 @@ fn signed_evaluation_binds_metrics_roles_and_host_identities() {
             issued_at: 20,
             expires_at: 90,
             payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+        signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
         attestations.push(signed);
     }
     let evidence = SignedEvaluationEvidenceV1 {

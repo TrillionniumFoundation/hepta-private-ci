@@ -13,15 +13,22 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Generation;
 use std::time::Duration;
 
-struct InitialCurrentOwner(Arc<ArtifactOwnerCurrentReaderV1>);
+struct InitialCurrentOwner {
+    current: Arc<ArtifactOwnerCurrentReaderV1>,
+    time: InitialAuthorityTime,
+}
 
 impl CurrentCognitiveRegistry for InitialCurrentOwner {
     fn current(
         &self,
     ) -> Result<codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1, String> {
-        self.0
-            .current_registry_view(initial_now_seconds()?)
+        self.current
+            .current_registry_view(self.time.now_seconds()?)
             .map_err(|error| error.to_string())
+    }
+
+    fn authority_clock(&self) -> Option<Arc<dyn codex_hepta_contracts::AuthorityClock>> {
+        self.time.protected_clock()
     }
 }
 
@@ -87,16 +94,11 @@ pub async fn prepare_public_initial_smollm_agentd_v2(
     current: ArtifactOwnerCurrentReaderV1,
     inputs: SmolLmInitialHostInputsV1,
 ) -> Result<PreparedSmolLmAgentdV1, InitialSmolLmPreparationErrorV1> {
-    let family_digest = inputs
-        .worker
-        .source_identities()?
-        .get("model-family-smollm2-135m-v1.json")
-        .ok_or("initial family pin".to_owned())?
-        .parse::<Digest32>()
-        .map_err(|error| error.to_string())?;
-    let execution_profile_digest = inputs.worker.execution_profile_digest()?;
     let mut owner = prepare_public_initial_smollm_v2(config, material, current, inputs).await?;
+    let family_digest = owner.physical.family_digest;
+    let execution_profile_digest = owner.physical.execution_profile_digest;
     let result = (|| -> Result<(), String> {
+        owner.startup_execution.check()?;
         let pin = owner.with_current_initial_load(|observed| {
             Ok(InitialNeuralCognitivePinV2 {
                 payload_digest: observed.measured().parameter_file_digest(),
@@ -129,16 +131,21 @@ pub async fn prepare_public_initial_smollm_agentd_v2(
         let InitialMaterial::Public(material) = selected else {
             return Err("ordinary public V2 route refuses historical V1 selection".to_owned());
         };
+        owner.startup_execution.check()?;
         owner
             .config
             .attach_selected_initial_neural_cognitive_bootstrap(InitialNeuralCognitiveBootstrapV2 {
                 material,
-                current: Arc::new(InitialCurrentOwner(Arc::clone(&owner.current))),
+                current: Arc::new(InitialCurrentOwner {
+                    current: Arc::clone(&owner.current),
+                    time: owner.authority_time.clone(),
+                }),
                 family_digest,
                 execution_profile_digest,
                 inference,
             })
-            .map_err(|error| error.to_string())
+            .map_err(|error| error.to_string())?;
+        owner.startup_execution.check()
     })();
     if let Err(reason) = result {
         return Err(InitialSmolLmPreparationErrorV1 {

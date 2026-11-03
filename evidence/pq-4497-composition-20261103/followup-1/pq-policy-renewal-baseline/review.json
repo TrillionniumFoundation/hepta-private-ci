@@ -1,0 +1,1490 @@
+{
+  "schema_version": 1,
+  "qualification": "HOLD",
+  "scope": "Original 0baf43cf PQ policy renewal CI, attempt 1. No rerun credit.",
+  "lanes": [
+    {
+      "artifact": {
+        "id": 13214211014,
+        "name": "pq-policy-renewal-ubuntu-24.04-arm-base-merge-41597536557-1",
+        "size_in_bytes": 40788,
+        "digest": "sha256:58d5dbf2495dc38c708d875098d1486c6022830e79aeff228c1c9b5728dc7208",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13214211014",
+        "workflow_run": {
+          "id": 41597536557,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "fix/hepta-pn-cell-closure-20261031",
+          "head_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f"
+        },
+        "created_at": "2026-11-03T07:52:51Z",
+        "expires_at": "2026-11-17T07:52:50Z"
+      },
+      "zip_bytes_and_digest_verified": true,
+      "candidate": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "base-merge",
+        "native_execution_required": false,
+        "requires_source_head_success": true,
+        "schema_version": 1,
+        "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+        "source_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+        "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+        "tested_tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+      },
+      "candidate_after_equal": true,
+      "commands": [
+        {
+          "command_name": "dependencies",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "cargo",
+              "fetch",
+              "--locked",
+              "--manifest-path",
+              "codex-rs/Cargo.toml"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 18.36068886299998,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T07:39:55.818751+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 43901,
+            "log_file": "dependencies.json.7ae3c2e9af5b472282dd671c6f8cba95.log",
+            "log_sha256": "461133db11a47db40ce71ef866811545fedf305ec454ac2f42e42e0cee0b0414",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:39:37.457071+00:00",
+            "status": "passed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": []
+        },
+        {
+          "command_name": "dispatcher",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--lib",
+              "-E",
+              "test(authbus_dispatch::tests::)",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 519.9408024,
+            "error": "required tests were not observed passing",
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:48:35.818752+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 59717,
+            "log_file": "dispatcher.json.7f3009626db043b28d51c3acd2dac2b7.log",
+            "log_sha256": "942de22379b79bc8d95d4f1cba24febd90e9c654ac2828df44211dd54a1e0920",
+            "minimum_tests": 13,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:39:55.877324+00:00",
+            "status": "failed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "product",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--test",
+              "authbus_text_product",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 30.307515051999985,
+            "error": "required tests were not observed passing",
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:49:06.226584+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 13601,
+            "log_file": "product.json.47bff220381846cba0ee36930db7440f.log",
+            "log_sha256": "af39c1e4641f9604294146e02131dfccf57cca2d8b8211100300aa703a59e005",
+            "minimum_tests": 3,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:48:35.918485+00:00",
+            "status": "failed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "fix",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "fix",
+              "--locked",
+              "-p",
+              "codex-hepta-evidence",
+              "-p",
+              "codex-hepta-agentd"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 216.65300502999992,
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:52:42.984759+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 56327,
+            "log_file": "fix.json.5b11d6ec3aa34993b006c45cfb106364.log",
+            "log_sha256": "7f1b2cee1e3ff811f748375eba322ef054ab55ff8dfc2906bc42097dfd994560",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:49:06.331080+00:00",
+            "status": "failed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "format",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "fmt",
+              "--base",
+              "3a81000aae08c658276958d678874aca4db5eedd"
+            ],
+            "command_exit_code": 1,
+            "elapsed_seconds": 5.653293098999939,
+            "exit_code": 1,
+            "finished_at": "2026-11-03T07:52:48.699583+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 578,
+            "log_file": "format.json.bb38f5684741469a86daf99c9c638896.log",
+            "log_sha256": "edd947c3a2c7f953e4bd11cf2ad86a948a6b7153f5422cc26577ca8d16cc53ea",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 1,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:52:43.045534+00:00",
+            "status": "failed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "[Errno 2] No such file or directory: 'uv'"
+          ]
+        }
+      ],
+      "selected_tests": {
+        "dispatcher": {
+          "passed": false,
+          "expected": [
+            "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+            "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+            "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+            "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+            "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+            "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+            "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+            "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+            "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+            "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+            "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+            "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+            "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+          ],
+          "observed": []
+        },
+        "product": {
+          "passed": false,
+          "expected": [
+            "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+            "real_agentd_without_explicit_trust_rejects_signed_text",
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ],
+          "observed": []
+        }
+      }
+    },
+    {
+      "artifact": {
+        "id": 13213642173,
+        "name": "pq-policy-renewal-ubuntu-24.04-arm-source-head-41597536557-1",
+        "size_in_bytes": 40574,
+        "digest": "sha256:e0d744e150b019c872c76ac7661098c3e079aa38a8cc97271c0c8e0935a18d57",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13213642173",
+        "workflow_run": {
+          "id": 41597536557,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "fix/hepta-pn-cell-closure-20261031",
+          "head_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f"
+        },
+        "created_at": "2026-11-03T07:52:48Z",
+        "expires_at": "2026-11-17T07:52:47Z"
+      },
+      "zip_bytes_and_digest_verified": true,
+      "candidate": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "source-head",
+        "native_execution_required": true,
+        "requires_source_head_success": false,
+        "schema_version": 1,
+        "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+        "source_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+        "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+        "tested_tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+      },
+      "candidate_after_equal": true,
+      "commands": [
+        {
+          "command_name": "dependencies",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "cargo",
+              "fetch",
+              "--locked",
+              "--manifest-path",
+              "codex-rs/Cargo.toml"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 17.873643337999994,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T07:40:00.246207+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 43901,
+            "log_file": "dependencies.json.825f80f806bd4342b1e463773203b270.log",
+            "log_sha256": "321f1374a38d68a37e172f0de7a87b48f45e4009fbbda8fc6af3496bddeec26f",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:39:42.371725+00:00",
+            "status": "passed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": []
+        },
+        {
+          "command_name": "dispatcher",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--lib",
+              "-E",
+              "test(authbus_dispatch::tests::)",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 512.050202935,
+            "error": "required tests were not observed passing",
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:48:32.446889+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 59717,
+            "log_file": "dispatcher.json.8f040cd0b57b486eabd9046af358d89f.log",
+            "log_sha256": "52212ca6ed3c5b653b246734ca6b70fc4659bde7c6bec01de2d722e062124c6a",
+            "minimum_tests": 13,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:40:00.313544+00:00",
+            "status": "failed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "product",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--test",
+              "authbus_text_product",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 29.791600206999988,
+            "error": "required tests were not observed passing",
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:49:02.380423+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 13601,
+            "log_file": "product.json.c1eed5d9a688468da3fba03a26237f04.log",
+            "log_sha256": "af39c1e4641f9604294146e02131dfccf57cca2d8b8211100300aa703a59e005",
+            "minimum_tests": 3,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:48:32.588062+00:00",
+            "status": "failed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "fix",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "fix",
+              "--locked",
+              "-p",
+              "codex-hepta-evidence",
+              "-p",
+              "codex-hepta-agentd"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 218.886052661,
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:52:41.369028+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 56327,
+            "log_file": "fix.json.02457ec5f584405b9ae38728b7ec778f.log",
+            "log_sha256": "27c573715ca00a8226e640b4b0d76dbbf1af59e61846d128f2795b792d9b27f2",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:49:02.482374+00:00",
+            "status": "failed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "format",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "fmt",
+              "--base",
+              "3a81000aae08c658276958d678874aca4db5eedd"
+            ],
+            "command_exit_code": 1,
+            "elapsed_seconds": 5.203220781000027,
+            "exit_code": 1,
+            "finished_at": "2026-11-03T07:52:46.642188+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 578,
+            "log_file": "format.json.8482758d7fa14d7780313d801fb81b9a.log",
+            "log_sha256": "edd947c3a2c7f953e4bd11cf2ad86a948a6b7153f5422cc26577ca8d16cc53ea",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 1,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:52:41.438154+00:00",
+            "status": "failed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "[Errno 2] No such file or directory: 'uv'"
+          ]
+        }
+      ],
+      "selected_tests": {
+        "dispatcher": {
+          "passed": false,
+          "expected": [
+            "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+            "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+            "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+            "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+            "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+            "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+            "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+            "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+            "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+            "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+            "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+            "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+            "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+          ],
+          "observed": []
+        },
+        "product": {
+          "passed": false,
+          "expected": [
+            "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+            "real_agentd_without_explicit_trust_rejects_signed_text",
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ],
+          "observed": []
+        }
+      }
+    },
+    {
+      "artifact": {
+        "id": 13213227181,
+        "name": "pq-policy-renewal-ubuntu-24.04-source-head-41597536557-1",
+        "size_in_bytes": 40635,
+        "digest": "sha256:70a398facd331f298262e3dbeaebd8b320d045d146395d551dc0dd441a32cda3",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13213227181",
+        "workflow_run": {
+          "id": 41597536557,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "fix/hepta-pn-cell-closure-20261031",
+          "head_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f"
+        },
+        "created_at": "2026-11-03T07:53:53Z",
+        "expires_at": "2026-11-17T07:53:52Z"
+      },
+      "zip_bytes_and_digest_verified": true,
+      "candidate": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "source-head",
+        "native_execution_required": true,
+        "requires_source_head_success": false,
+        "schema_version": 1,
+        "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+        "source_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+        "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+        "tested_tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+      },
+      "candidate_after_equal": true,
+      "commands": [
+        {
+          "command_name": "dependencies",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "cargo",
+              "fetch",
+              "--locked",
+              "--manifest-path",
+              "codex-rs/Cargo.toml"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 28.49495016200001,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T07:41:31.200518+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 43901,
+            "log_file": "dependencies.json.240fe95eb27a498482b1190ae60f9613.log",
+            "log_sha256": "89e2541664c34c747664e9f931fa466fac11885c453e66396ebc624faafec138",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:41:02.704147+00:00",
+            "status": "passed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": []
+        },
+        {
+          "command_name": "dispatcher",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--lib",
+              "-E",
+              "test(authbus_dispatch::tests::)",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 509.392088832,
+            "error": "required tests were not observed passing",
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:50:00.657315+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 59676,
+            "log_file": "dispatcher.json.7d08a39306ad47549f1b1270bb553e77.log",
+            "log_sha256": "4486df60c207103cfb4c7c048b03f73ce8c12be722cb01a1b3253d3530a5c944",
+            "minimum_tests": 13,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:41:31.264676+00:00",
+            "status": "failed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "product",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--test",
+              "authbus_text_product",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 4.738860764000037,
+            "error": "required tests were not observed passing",
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:50:05.516239+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 13609,
+            "log_file": "product.json.49f3323dac6c427094b124ec03434522.log",
+            "log_sha256": "c2ca1dfe825ca00ad169faa44c4d3d4d642882a97d0bbf186119b5fe529a5b53",
+            "minimum_tests": 3,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:50:00.776815+00:00",
+            "status": "failed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "fix",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "fix",
+              "--locked",
+              "-p",
+              "codex-hepta-evidence",
+              "-p",
+              "codex-hepta-agentd"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 218.658456506,
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:53:44.280377+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 56367,
+            "log_file": "fix.json.09cddb4bf5744f6d8227722f149b3e1f.log",
+            "log_sha256": "098eb0c04645bf968703d0f766b3a89f4b7ae39b74e32a141c349ec4687e42a0",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:50:05.621373+00:00",
+            "status": "failed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "format",
+          "receipt": {
+            "after": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+              "dirty": false,
+              "parents": [
+                "a6c58700d23efd575d2803637aa7d9203d27e7bf"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "fmt",
+              "--base",
+              "3a81000aae08c658276958d678874aca4db5eedd"
+            ],
+            "command_exit_code": 1,
+            "elapsed_seconds": 6.394883892999928,
+            "exit_code": 1,
+            "finished_at": "2026-11-03T07:53:50.741170+00:00",
+            "job": "policy-renewal",
+            "lane": "source-head",
+            "log_bytes": 578,
+            "log_file": "format.json.d8d0936b750b457192f7ed4c72617aab.log",
+            "log_sha256": "edd947c3a2c7f953e4bd11cf2ad86a948a6b7153f5422cc26577ca8d16cc53ea",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 1,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:53:44.345771+00:00",
+            "status": "failed",
+            "tested_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "[Errno 2] No such file or directory: 'uv'"
+          ]
+        }
+      ],
+      "selected_tests": {
+        "dispatcher": {
+          "passed": false,
+          "expected": [
+            "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+            "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+            "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+            "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+            "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+            "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+            "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+            "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+            "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+            "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+            "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+            "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+            "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+          ],
+          "observed": []
+        },
+        "product": {
+          "passed": false,
+          "expected": [
+            "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+            "real_agentd_without_explicit_trust_rejects_signed_text",
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ],
+          "observed": []
+        }
+      }
+    },
+    {
+      "artifact": {
+        "id": 13212998565,
+        "name": "pq-policy-renewal-ubuntu-24.04-base-merge-41597536557-1",
+        "size_in_bytes": 40782,
+        "digest": "sha256:2814fdf87c3735176f8ee93090982f3ed8f6bcf04e3762e505010feb9f3664fc",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13212998565",
+        "workflow_run": {
+          "id": 41597536557,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "fix/hepta-pn-cell-closure-20261031",
+          "head_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f"
+        },
+        "created_at": "2026-11-03T07:48:08Z",
+        "expires_at": "2026-11-17T07:48:07Z"
+      },
+      "zip_bytes_and_digest_verified": true,
+      "candidate": {
+        "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+        "lane": "base-merge",
+        "native_execution_required": false,
+        "requires_source_head_success": true,
+        "schema_version": 1,
+        "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+        "source_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+        "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+        "tested_tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+      },
+      "candidate_after_equal": true,
+      "commands": [
+        {
+          "command_name": "dependencies",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "cargo",
+              "fetch",
+              "--locked",
+              "--manifest-path",
+              "codex-rs/Cargo.toml"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 33.988192742999956,
+            "exit_code": 0,
+            "finished_at": "2026-11-03T07:39:34.977951+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 43901,
+            "log_file": "dependencies.json.0061fc424d36470791c12365f2a7957e.log",
+            "log_sha256": "b2b2790b02f13310f25003ebc357bbc4d5ded3e6aa49dc9bc49ff847d43c6c4e",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:39:00.988680+00:00",
+            "status": "passed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": []
+        },
+        {
+          "command_name": "dispatcher",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--lib",
+              "-E",
+              "test(authbus_dispatch::tests::)",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 345.942997264,
+            "error": "required tests were not observed passing",
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:45:20.965705+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 59676,
+            "log_file": "dispatcher.json.8e1265520e3744bfa1c1141fd718ee56.log",
+            "log_sha256": "c48a1f7ad34083930b149540cd5dad07062b7272588bc41fa52e486a0d3128d4",
+            "minimum_tests": 13,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:39:35.021930+00:00",
+            "status": "failed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "product",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--test",
+              "authbus_text_product",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 3.194592252999996,
+            "error": "required tests were not observed passing",
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:45:24.236306+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 13609,
+            "log_file": "product.json.a98dc47c9d234e3099fcfa91c5426507.log",
+            "log_sha256": "c2ca1dfe825ca00ad169faa44c4d3d4d642882a97d0bbf186119b5fe529a5b53",
+            "minimum_tests": 3,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:45:21.041254+00:00",
+            "status": "failed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "fix",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "fix",
+              "--locked",
+              "-p",
+              "codex-hepta-evidence",
+              "-p",
+              "codex-hepta-agentd"
+            ],
+            "command_exit_code": 101,
+            "elapsed_seconds": 157.646876614,
+            "exit_code": 101,
+            "finished_at": "2026-11-03T07:48:01.964267+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 56367,
+            "log_file": "fix.json.5f79768bdf204a8ba3c52b5e9655adce.log",
+            "log_sha256": "df552471e5f3f17f995fef3ded5c4c0bc48a019a24e5afe53fc207dbc45013de",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 101,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:45:24.316831+00:00",
+            "status": "failed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "error[E0308]: mismatched types"
+          ]
+        },
+        {
+          "command_name": "format",
+          "receipt": {
+            "after": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+            "before": {
+              "commit": "e0a570550073eace00c51dd8085c1dc83d42f832",
+              "dirty": false,
+              "parents": [
+                "3a81000aae08c658276958d678874aca4db5eedd",
+                "0baf43cf4bf8f953fff079725348de1d8f26434f"
+              ],
+              "tree": "441866a5362678b31b77d30543bfe7b59d626ba8"
+            },
+            "command": [
+              "just",
+              "fmt",
+              "--base",
+              "3a81000aae08c658276958d678874aca4db5eedd"
+            ],
+            "command_exit_code": 1,
+            "elapsed_seconds": 4.129035502999955,
+            "exit_code": 1,
+            "finished_at": "2026-11-03T07:48:06.135745+00:00",
+            "job": "policy-renewal",
+            "lane": "base-merge",
+            "log_bytes": 578,
+            "log_file": "format.json.c6ff67843df143e1a958a9bf4bd05bc3.log",
+            "log_sha256": "edd947c3a2c7f953e4bd11cf2ad86a948a6b7153f5422cc26577ca8d16cc53ea",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "441866a5362678b31b77d30543bfe7b59d626ba8",
+            "returncode": 1,
+            "run_attempt": "1",
+            "run_id": "41597536557",
+            "schema_version": 1,
+            "source_sha": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+            "started_at": "2026-11-03T07:48:02.006263+00:00",
+            "status": "failed",
+            "tested_sha": "e0a570550073eace00c51dd8085c1dc83d42f832",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          },
+          "raw_log_hash_verified": true,
+          "source_unchanged": true,
+          "error_lines": [
+            "[Errno 2] No such file or directory: 'uv'"
+          ]
+        }
+      ],
+      "selected_tests": {
+        "dispatcher": {
+          "passed": false,
+          "expected": [
+            "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+            "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+            "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+            "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+            "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+            "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+            "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+            "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+            "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+            "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+            "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+            "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+            "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+          ],
+          "observed": []
+        },
+        "product": {
+          "passed": false,
+          "expected": [
+            "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+            "real_agentd_without_explicit_trust_rejects_signed_text",
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ],
+          "observed": []
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "All four lanes failed. No selected dispatcher or product case executed. The observed-pass count is zero.",
+    "The logged Rust errors are the controlled_funding typed-key composition mismatch; the follow-up repair requires fresh execution.",
+    "The formatter failed because uv was unavailable. Installing the already pinned repository formatter launcher does not establish a test pass."
+  ]
+}

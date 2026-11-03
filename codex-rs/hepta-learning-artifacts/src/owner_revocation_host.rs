@@ -87,6 +87,7 @@ impl LearningArtifactOwnerHost {
     {
         let writer = self.require_current_writer(request.now)?;
         let signed = &request.signed_current_head;
+        self.verify_presented_head(signed)?;
         let prior = self.recover_publication(&request.operation_id)?;
         let mut staged = predecessor.clone();
         let manifest = predecessor
@@ -106,8 +107,12 @@ impl LearningArtifactOwnerHost {
         if signed.witness.head_digest != staged.snapshot().head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadContext);
         }
-        let signed_head_digest =
-            Digest32::of_bytes(&[signed.signing_bytes(), signed.signature.to_vec()].concat());
+        let signed_head_digest = match signed.signature.profile() {
+            LearningAuthenticationProfile::ClassicalV1 => {
+                Digest32::of_bytes(&[signed.signing_bytes(), signed.signature.to_vec()].concat())
+            }
+            LearningAuthenticationProfile::MlDsa65V2 => Digest32::of_bytes(&signed.signing_bytes()),
+        };
         let binding = ArtifactRevocationBindingV2 {
             change: request.change.clone(),
             signed_head_digest,
@@ -190,7 +195,7 @@ impl LearningArtifactOwnerHost {
         let current = self
             .discover_current_head(request.now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
-        if current.signed != *signed {
+        if !authentication::same_authenticated_head(&current.signed, signed) {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         checkpoint.phase = ArtifactPublicationPhaseV1::Acknowledged;

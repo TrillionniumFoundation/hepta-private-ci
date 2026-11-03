@@ -4,6 +4,9 @@
 //! This crate deliberately exposes no API capable of granting those powers.
 
 #![forbid(unsafe_code)]
+pub use codex_hepta_contracts::LearningAuthenticationProfile;
+pub use codex_hepta_contracts::LearningSignature;
+pub use codex_hepta_contracts::LearningVerificationKey;
 
 mod admin;
 mod admission_v3;

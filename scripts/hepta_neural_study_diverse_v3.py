@@ -26,9 +26,16 @@ SCHEMA = work.STUDY_SCHEMA
 TRAINING_COMMIT = "c5728d02a7b64909302252f4986e33b56b91faa2"
 TRAINING_TREE = "b4508063fae0a4bfdd081e62531dc008e83c8961"
 EXCLUSION_SHA = "946d33b8f3cd95949f8eaf3623948639cf68c58214ad8b8f191ae0c2088606e4"
+if original.EXECUTION_SOURCE_PROFILE == original.execution_source.PROFILE_V5:
+    selected = original.execution_source.checked_manifest(
+        original.EXECUTION_SOURCE_PROFILE
+    )
+    TRAINING_COMMIT, TRAINING_TREE = selected["chain_commit"], selected["chain_tree"]
 
 
 def checkout_training_tree(path):
+    if original.EXECUTION_SOURCE_PROFILE == original.execution_source.PROFILE_V5:
+        original.execution_source.verify(path, original.EXECUTION_SOURCE_PROFILE)
     require(
         path.is_absolute()
         and all(
@@ -190,6 +197,10 @@ def train(value, input_pin):
         Path(value["runtime_chain"]),
     )
     training_commit = checkout_training_tree(training_chain)
+    if original.EXECUTION_SOURCE_PROFILE == original.execution_source.PROFILE_V5:
+        original.execution_source.verify(
+            runtime_chain, original.EXECUTION_SOURCE_PROFILE
+        )
     original.checkout(runtime_chain, original.RUNTIME)
     original.runtime_snapshot()
     sys.path.insert(0, str(training_chain / "scripts"))

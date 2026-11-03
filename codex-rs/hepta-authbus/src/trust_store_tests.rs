@@ -24,7 +24,7 @@ fn spec(issuer_id: &str, epoch: u64, key: &SigningKey) -> IssuerSpec {
     IssuerSpec {
         issuer_id: id(issuer_id),
         key_epoch: Generation::new(epoch).expect("generation"),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
     }
 }
 
@@ -110,6 +110,7 @@ async fn trusted_time_requires_an_active_registered_signer() {
         .await
         .expect("enroll time issuer");
     let claims = TrustedTimeAttestationClaims {
+        challenge: None,
         issuer_id: id("issuer:time"),
         key_epoch: Generation::new(1).expect("generation"),
         wall_time_ms: 2_000,
@@ -117,7 +118,7 @@ async fn trusted_time_requires_an_active_registered_signer() {
         source_digest: Digest32::of_bytes(b"external-time-source"),
     };
     let signed = SignedTrustedTimeAttestation {
-        signature: key.sign(&claims.signing_bytes()).to_bytes(),
+        signature: key.sign(&claims.signing_bytes()).to_bytes().into(),
         claims: claims.clone(),
     };
     let observed = store
@@ -132,7 +133,7 @@ async fn trusted_time_requires_an_active_registered_signer() {
 
     let mut tampered = SignedTrustedTimeAttestation {
         claims,
-        signature: signed.signature,
+        signature: signed.signature.clone(),
     };
     tampered.claims.wall_time_ms = 2_001;
     assert!(matches!(
