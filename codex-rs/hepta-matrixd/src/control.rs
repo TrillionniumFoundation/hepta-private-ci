@@ -1,5 +1,7 @@
 use std::future::Future;
+#[cfg(unix)]
 use std::io::ErrorKind;
+#[cfg(unix)]
 use std::path::Path;
 use std::path::PathBuf;
 use std::pin::Pin;
@@ -28,7 +30,11 @@ use codex_hepta_matrix_protocol::MatrixdSnapshot;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::PendingApprovalKind;
-use codex_uds::UnixListener;
+use codex_uds::OwnerLocalIncoming;
+use codex_uds::OwnerLocalListener;
+#[cfg(test)]
+use codex_uds::OwnerLocalStream;
+#[cfg(unix)]
 use codex_uds::UnixStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
@@ -331,7 +337,8 @@ impl MatrixdControlState {
 }
 
 pub(crate) struct MatrixdControlServer {
-    listener: UnixListener,
+    listener: OwnerLocalListener,
+    #[cfg(unix)]
     socket_path: PathBuf,
     state: Arc<MatrixdControlState>,
     cancellation: CancellationToken,
@@ -344,11 +351,14 @@ impl MatrixdControlServer {
         state: Arc<MatrixdControlState>,
         cancellation: CancellationToken,
     ) -> Result<Self, MatrixdControlError> {
+        #[cfg(unix)]
         prepare_socket(&socket_path).await?;
-        let listener = UnixListener::bind(&socket_path).await?;
+        let listener = OwnerLocalListener::bind(&socket_path).await?;
+        #[cfg(unix)]
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
+            #[cfg(unix)]
             socket_path,
             state,
             cancellation,
@@ -375,6 +385,7 @@ impl MatrixdControlServer {
     }
 }
 
+#[cfg(unix)]
 impl Drop for MatrixdControlServer {
     fn drop(&mut self) {
         if let Err(error) = std::fs::remove_file(&self.socket_path)
@@ -389,10 +400,10 @@ impl Drop for MatrixdControlServer {
 }
 
 async fn serve_connection(
-    stream: UnixStream,
+    stream: OwnerLocalIncoming,
     state: Arc<MatrixdControlState>,
 ) -> Result<(), MatrixdControlError> {
-    stream.ensure_current_user_peer()?;
+    let stream = stream.authenticate().await?;
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_MATRIXD_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -416,6 +427,7 @@ async fn serve_connection(
     Ok(())
 }
 
+#[cfg(unix)]
 async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
     let parent = socket_path.parent().ok_or_else(|| {
         MatrixdControlError::Invalid("matrixd control socket has no parent directory".to_string())
@@ -455,11 +467,6 @@ async fn set_owner_only(path: &Path) -> Result<(), MatrixdControlError> {
     use std::os::unix::fs::PermissionsExt;
 
     tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).await?;
-    Ok(())
-}
-
-#[cfg(not(unix))]
-async fn set_owner_only(_path: &Path) -> Result<(), MatrixdControlError> {
     Ok(())
 }
 
@@ -857,9 +864,12 @@ mod tests {
         // The product fleet root deliberately leaves Darwin `sun_path`
         // headroom. The SSD test harness uses a much deeper TMPDIR, so put
         // this socket-binding fixture under the canonical short temp root.
+        #[cfg(not(windows))]
         let temp = tempfile::Builder::new()
             .prefix("hmx-control-")
             .tempdir_in("/tmp")?;
+        #[cfg(windows)]
+        let temp = tempfile::Builder::new().prefix("m").tempdir()?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
         let socket = layout(&temp, &agent_id()?)?
@@ -870,7 +880,7 @@ mod tests {
             MatrixdControlServer::bind(socket.clone(), Arc::clone(&state), cancel.clone()).await?;
         let task = tokio::spawn(server.run());
 
-        let mut stream = UnixStream::connect(&socket).await?;
+        let mut stream = OwnerLocalStream::connect(&socket).await?;
         let request = MatrixdRequest {
             schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
             request_id: 41,

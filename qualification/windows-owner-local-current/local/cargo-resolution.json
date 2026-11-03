@@ -1,0 +1,53 @@
+{
+  "argv": [
+    "/workspace/scratch/1f1d02319616/matrix-toolchain-1.96.0-20261103/bin/cargo",
+    "metadata",
+    "--offline",
+    "--all-features",
+    "--format-version",
+    "1"
+  ],
+  "exit_code": 0,
+  "seconds": 2.3440342390003934,
+  "changed_package_records": [
+    {
+      "key": [
+        "codex-uds",
+        "0.0.0",
+        null
+      ],
+      "before": {
+        "name": "codex-uds",
+        "version": "0.0.0",
+        "dependencies": [
+          "async-io",
+          "libc",
+          "pretty_assertions",
+          "tempfile",
+          "tokio",
+          "tokio-util",
+          "uds_windows"
+        ]
+      },
+      "after": {
+        "name": "codex-uds",
+        "version": "0.0.0",
+        "dependencies": [
+          "async-io",
+          "libc",
+          "pretty_assertions",
+          "sha2 0.10.9",
+          "tempfile",
+          "tokio",
+          "tokio-util",
+          "uds_windows",
+          "windows-sys 0.61.2"
+        ]
+      }
+    }
+  ],
+  "before_package_count": 1517,
+  "after_package_count": 1517,
+  "cargo_lock_sha256": "c0ff3c86fc2938bf7239919aeaf5f424abae97b4d6405cdd992968492d3b8823",
+  "metadata_sha256": "87ca7eaafbec9564ef4fbafdf74f37674b42a9300ba483e4893d557772b7f665"
+}

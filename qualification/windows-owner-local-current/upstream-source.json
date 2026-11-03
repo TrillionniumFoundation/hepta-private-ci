@@ -1,0 +1,90 @@
+{
+  "upstream_pr": 4712,
+  "upstream_commit": "c6f98ff2b5d6ae9056cdfe100a4494b8dbee9899",
+  "base_union": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "method": "Apply only the upstream per-file PR diff to this current union; never replace unrelated current Matrix source.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-matrixd/src/control.rs",
+      "git_blob": "19153d4197279a62eef776ceeb4371c637638d7c",
+      "bytes": 33724,
+      "sha256": "79d5963fbb8273519a07827eed1843a1844381bc97f9393177cbf0a85a7eb081",
+      "candidate_sha256": "79d5963fbb8273519a07827eed1843a1844381bc97f9393177cbf0a85a7eb081",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+      "git_blob": "70d7493c1bed2e64cbfadb84fdefc4d91ddc190c",
+      "bytes": 236285,
+      "sha256": "58b4ba178bd68613eb14bdf65a63a6d21cfaf64faccf553534d4674926f923ee",
+      "candidate_sha256": "58b4ba178bd68613eb14bdf65a63a6d21cfaf64faccf553534d4674926f923ee",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/uds/Cargo.toml",
+      "git_blob": "f09bb594ff764f48e9a8bda321e90b9cea16d195",
+      "bytes": 989,
+      "sha256": "2766273bff5349b7946e8ccd4eb5cd1bf7e1fe7cc7574edb3a1d726cae9942bd",
+      "candidate_sha256": "2766273bff5349b7946e8ccd4eb5cd1bf7e1fe7cc7574edb3a1d726cae9942bd",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "git_blob": "1fe59d7df88a6a155e37e36329535231d3c61a86",
+      "bytes": 14863,
+      "sha256": "abb1dfe9b8e7180b680bacb045a7409e24f666a3ef6cca8701a20e78a5f2348e",
+      "candidate_sha256": "abb1dfe9b8e7180b680bacb045a7409e24f666a3ef6cca8701a20e78a5f2348e",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local.rs",
+      "git_blob": "500b2d8a3ba2f6e533b0bcd6a080d0f679b2396f",
+      "bytes": 4074,
+      "sha256": "7da35c66f40b07666df2166117e1494c2ef1f8e48def8d93772d578e2c8251ea",
+      "candidate_sha256": "7da35c66f40b07666df2166117e1494c2ef1f8e48def8d93772d578e2c8251ea",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_security.rs",
+      "git_blob": "91042edf01dfdef6b3c74d928fc67a8ffa769407",
+      "bytes": 10350,
+      "sha256": "a4b9ea2c0a319c3251877ed539a535d59d6de655b093075630b5b09077dc7566",
+      "candidate_sha256": "a4b9ea2c0a319c3251877ed539a535d59d6de655b093075630b5b09077dc7566",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_tests.rs",
+      "git_blob": "c787014e5665cb59805c7345d5a297a49acecb34",
+      "bytes": 1704,
+      "sha256": "95fe84e4cf84788ec1705d9f049177a6232bd3ca945c35991c51f207b21697f0",
+      "candidate_sha256": "95fe84e4cf84788ec1705d9f049177a6232bd3ca945c35991c51f207b21697f0",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_windows.rs",
+      "git_blob": "329ba220740dff209d4696e1246f4add4719564c",
+      "bytes": 6249,
+      "sha256": "afbf9a116456ab6f7894a2768ce41e590de4d1afa4c1f5466fc484b34c2622d3",
+      "candidate_sha256": "afbf9a116456ab6f7894a2768ce41e590de4d1afa4c1f5466fc484b34c2622d3",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_windows_tests.rs",
+      "git_blob": "f8bcbe00939329b9f12de079dfbd0dc7cb0e1908",
+      "bytes": 7526,
+      "sha256": "2e6242f6b46fa5c3ca04db489176f0698880b138ad5534006947d08e67379f11",
+      "candidate_sha256": "2e6242f6b46fa5c3ca04db489176f0698880b138ad5534006947d08e67379f11",
+      "candidate_matches_full_upstream_file": true
+    },
+    {
+      "path": "codex-rs/uds/src/lib_tests.rs",
+      "git_blob": "1dfc7050e7c24a00754bc5089e61b7466ec7982c",
+      "bytes": 6348,
+      "sha256": "13df56141bf8321db8e79e6fb31cd3f9f8534c1fecc70e5fc2abc23b25999ee6",
+      "candidate_sha256": "13df56141bf8321db8e79e6fb31cd3f9f8534c1fecc70e5fc2abc23b25999ee6",
+      "candidate_matches_full_upstream_file": true,
+      "origin": "Unchanged prerequisite already present in upstream c6f98ff2 base; only its one added stopped-listener regression is ported."
+    }
+  ],
+  "af_unix_prerequisite": "Windows symlink_metadata and original close/unlink/rebind case from the same exact upstream tree"
+}

@@ -1,0 +1,45 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking libc v0.2.186
+    Checking cfg-if v1.0.4
+    Checking bitflags v2.13.2
+    Checking linux-raw-sys v0.12.1
+    Checking rustix v1.1.4
+    Checking getrandom v0.4.3
+    Checking socket2 v0.6.3
+    Checking mio v1.2.0
+    Checking pin-project-lite v0.2.17
+    Checking yansi v1.0.1
+    Checking fastrand v2.3.0
+    Checking once_cell v1.21.4
+    Checking bytes v1.12.1
+    Checking diff v0.1.13
+    Checking pretty_assertions v1.4.1
+    Checking tokio v1.54.1
+    Checking tempfile v3.27.0
+    Checking codex-uds v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-windows-work-20261103/codex-rs/uds)
+warning: `tokio::sync::MutexGuard` does not refer to a reachable type
+ --> /workspace/scratch/1f1d02319616/private-ci-windows-work-20261103/codex-rs/clippy.toml:4:5
+  |
+4 |     "tokio::sync::MutexGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockReadGuard` does not refer to a reachable type
+ --> /workspace/scratch/1f1d02319616/private-ci-windows-work-20261103/codex-rs/clippy.toml:5:5
+  |
+5 |     "tokio::sync::RwLockReadGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockWriteGuard` does not refer to a reachable type
+ --> /workspace/scratch/1f1d02319616/private-ci-windows-work-20261103/codex-rs/clippy.toml:6:5
+  |
+6 |     "tokio::sync::RwLockWriteGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `codex-uds` (lib test) generated 3 warnings
+    Finished `dev` profile [unoptimized] target(s) in 6.70s
