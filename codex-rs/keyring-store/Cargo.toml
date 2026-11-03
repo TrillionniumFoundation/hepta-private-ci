@@ -8,9 +8,17 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-keyring = { workspace = true }
 keyring-core = { workspace = true }
 tracing = { workspace = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+apple-native-keyring-store = { workspace = true }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-native-keyring-store = { workspace = true }
+
+[target.'cfg(all(unix, not(any(target_os = "macos", target_os = "ios", target_os = "android"))))'.dependencies]
+dbus-secret-service-keyring-store = { workspace = true }
 
 [lib]
 test = false

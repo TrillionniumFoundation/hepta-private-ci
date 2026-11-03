@@ -1,5 +1,8 @@
-use keyring::Error as KeyringError;
+mod platform;
+
 use keyring_core::Entry;
+use keyring_core::Error as KeyringError;
+use platform::ensure_default_store;
 use std::error::Error;
 use std::fmt;
 use std::fmt::Debug;
@@ -48,16 +51,6 @@ pub trait KeyringStore: Debug + Send + Sync {
 #[derive(Debug, Clone, Copy)]
 pub struct DefaultKeyringStore;
 
-fn ensure_default_store() -> Result<(), KeyringError> {
-    if keyring_core::get_default_store().is_some() {
-        return Ok(());
-    }
-    keyring::Entry::store_status()
-        .as_ref()
-        .map(|_| ())
-        .map_err(|error| KeyringError::Invalid("default_store".to_string(), error.to_string()))
-}
-
 impl KeyringStore for DefaultKeyringStore {
     fn load(&self, service: &str, account: &str) -> Result<Option<String>, CredentialStoreError> {
         trace!("keyring.load start, service={service}, account={account}");
@@ -68,7 +61,7 @@ impl KeyringStore for DefaultKeyringStore {
                 trace!("keyring.load success, service={service}, account={account}");
                 Ok(Some(password))
             }
-            Err(keyring::Error::NoEntry) => {
+            Err(keyring_core::Error::NoEntry) => {
                 trace!("keyring.load no entry, service={service}, account={account}");
                 Ok(None)
             }
@@ -107,7 +100,7 @@ impl KeyringStore for DefaultKeyringStore {
                 trace!("keyring.delete success, service={service}, account={account}");
                 Ok(true)
             }
-            Err(keyring::Error::NoEntry) => {
+            Err(keyring_core::Error::NoEntry) => {
                 trace!("keyring.delete no entry, service={service}, account={account}");
                 Ok(false)
             }
@@ -122,7 +115,7 @@ impl KeyringStore for DefaultKeyringStore {
 pub mod tests {
     use super::CredentialStoreError;
     use super::KeyringStore;
-    use keyring::Error as KeyringError;
+    use keyring_core::Error as KeyringError;
     use std::collections::HashMap;
     use std::sync::Arc;
     use std::sync::Mutex;

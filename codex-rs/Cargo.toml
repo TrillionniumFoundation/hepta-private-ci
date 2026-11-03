@@ -367,7 +367,7 @@ assert_matches = "1.5.0"
 async-channel = "2.3.1"
 async-io = "2.6.0"
 async-stream = "0.3.6"
-aws-config = "1"
+aws-config = "=1.12.0"
 aws-credential-types = "1"
 aws-sigv4 = "1"
 aws-types = "1"
@@ -427,7 +427,9 @@ inventory = "0.3.19"
 itertools = "0.14.0"
 jsonptr = { version = "0.7.1", default-features = false }
 jsonwebtoken = "9.3.1"
-keyring = { version = "4.2", default-features = false, features = ["v1"] }
+apple-native-keyring-store = { version = "1", features = ["keychain"] }
+dbus-secret-service-keyring-store = { version = "1.0.1", features = ["crypto-rust", "vendored"] }
+windows-native-keyring-store = "1"
 keyring-core = "1.0.0"
 landlock = "0.4.4"
 lazy_static = "1"
@@ -570,7 +572,7 @@ whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
 zip = "9.0.0"
-zstd = "0.13"
+zstd = "0.13.4"
 
 wiremock = "0.6"
 zeroize = "1.8.2"
@@ -663,6 +665,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Preserve AWS login while using the maintained constant-time P-256 dependency chain.
+aws-config = { path = "third_party/aws-config-1.12.0" }
 # Backport maintained TOML parsing for age's i18n-config dependency.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
