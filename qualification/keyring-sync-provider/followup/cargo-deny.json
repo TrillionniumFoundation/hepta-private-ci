@@ -1,0 +1,37 @@
+{
+  "command": [
+    "cargo",
+    "deny",
+    "--all-features",
+    "--locked",
+    "check",
+    "--disable-fetch",
+    "--show-stats"
+  ],
+  "exit": 1,
+  "elapsed_seconds": 19.71649348300025,
+  "database_commit": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "policy_unchanged": true,
+  "Cargo_lock_sha256": "7694accc52486a68bf8e3da3a4e337927166cd1d39c89f1cbb1750a240e03b66",
+  "log_sha256": "88911179c61cc299d27c0a068bc74e4f8903a75f8275c0fb36cfc18e77524454",
+  "stats": [
+    " advisories FAILED: 4 errors, 3 warnings, 22 notes",
+    "           bans ok: 0 errors, 95 warnings, 21 notes",
+    "       licenses ok: 0 errors, 1 warnings, 1316 notes",
+    "        sources ok: 0 errors, 1 warnings, 6 notes"
+  ],
+  "advisory_error_ids": [
+    "RUSTSEC-2024-0449",
+    "RUSTSEC-2026-0318",
+    "RUSTSEC-2026-0319",
+    "RUSTSEC-2026-0387"
+  ],
+  "resolved_advisories": [
+    "RUSTSEC-2026-0370",
+    "RUSTSEC-2026-0371",
+    "RUSTSEC-2026-0372"
+  ],
+  "comparison": "same DB/policy; seven to four advisory errors; remaining failures retained",
+  "source_commit": "29e41072ce0d097acfd59b5ecc1fdb525e45d75e"
+}
