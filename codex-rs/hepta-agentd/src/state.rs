@@ -36,6 +36,7 @@ pub(crate) struct AgentdState {
     pub(crate) intelligence_invocation:
         std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
+    cognitive_context_issuer: crate::cognitive_context_issuer::ContextPlanIssuer,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     pub(crate) cognitive_retrieval_learning:
@@ -134,6 +135,7 @@ impl AgentdState {
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            cognitive_context_issuer: crate::cognitive_context_issuer::ContextPlanIssuer::default(),
             production_operations: std::sync::OnceLock::new(),
             cognitive_retrieval_context: std::sync::OnceLock::new(),
             cognitive_retrieval_learning: std::sync::OnceLock::new(),

@@ -174,7 +174,9 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The registered V1 compatibility views in `src/protocol.rs` provide canonical JSON adapters. Stronger owner-native durable records are separate formats; their Rust names do not establish canonical JSON conformance. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+
+Retrieval publication uses additive owner-native tags 10/11 through the existing witnessed `LedgerWriter`: an intent binds the complete assignment and exact planned control response, while a linked confirmation records only a host-observed full socket write. Intent without confirmation is `Unknown`, never non-exposure or zero reward. Legacy tag-9 assertions retain their original meaning and never upgrade automatically. Use the typed publication projection and independent source-currentness/model-attachment evidence for downstream claims. The [V2 development contract](../../../codex-rs/hepta-learning-ledger/RETRIEVAL_PUBLICATION.md) specifies identities, bounded encoding, cancellation, recovery and reader compatibility.
 
 ## 6. Data authority, persistence and migrations
 

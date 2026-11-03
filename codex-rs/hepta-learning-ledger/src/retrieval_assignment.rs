@@ -156,7 +156,7 @@ pub fn retrieval_assignment_event_with_delivery_policy(
     }))
 }
 
-fn indices_for(
+pub(crate) fn indices_for(
     candidates: &[RetrievalCandidateIdentityV1],
     index: &BTreeMap<Digest32, u32>,
 ) -> Result<Vec<u32>, RetrievalAssignmentBridgeError> {
@@ -177,7 +177,7 @@ fn indices_for(
     Ok(values)
 }
 
-fn candidate_identity_digest(candidate: &RetrievalCandidateIdentityV1) -> Digest32 {
+pub(crate) fn candidate_identity_digest(candidate: &RetrievalCandidateIdentityV1) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(CANDIDATE_IDENTITY_DOMAIN);
     let raw = candidate.record_id.as_str().as_bytes();
@@ -200,6 +200,7 @@ pub enum RetrievalAssignmentBridgeError {
     EmptyPublishedContextDigest,
     EmptyDownstreamPolicyDigest,
     ZeroDeliveryPropensity,
+    InvalidPublicationBinding(String),
 }
 
 impl fmt::Display for RetrievalAssignmentBridgeError {

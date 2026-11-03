@@ -8,6 +8,7 @@ use codex_uds::UnixListener;
 use codex_uds::UnixStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWrite;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::sync::Semaphore;
@@ -22,6 +23,9 @@ use crate::AgentdRequest;
 use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::MAX_CONTROL_FRAME_BYTES;
+use crate::cognitive_context::CognitiveContextError;
+use crate::cognitive_context_delivery::encode_control_frame;
+use crate::cognitive_context_delivery::write_control_frame;
 use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
@@ -74,7 +78,11 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                match timeout(IO_TIMEOUT, serve_connection(stream, state)).await {
+                    Ok(Ok(())) => {}
+                    Ok(Err(error)) => eprintln!("agentd control connection failed: {error}"),
+                    Err(_) => eprintln!("agentd control connection timed out"),
+                }
             });
         }
     }
@@ -104,39 +112,133 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
         ));
     }
     let request: AgentdRequest = serde_json::from_slice(&frame)?;
-    let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
-        error_response(
-            &state,
-            request.request_id,
-            request.spawn_generation,
-            "unsupported_schema",
-            "unsupported agentd control schema",
-        )
-    } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
-            .await
-        {
-            Ok(response) => response,
-            Err(error) => error_response(
+    let (response, mut context) = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
+        (
+            error_response(
                 &state,
                 request.request_id,
                 request.spawn_generation,
-                "request_rejected",
-                &error.to_string(),
+                "unsupported_schema",
+                "unsupported agentd control schema",
+            ),
+            None,
+        )
+    } else {
+        match state
+            .prepare_response(request.request_id, request.spawn_generation, request.method)
+            .await
+        {
+            Ok(prepared) => (prepared.response, prepared.context),
+            Err(error) => (
+                error_response(
+                    &state,
+                    request.request_id,
+                    request.spawn_generation,
+                    "request_rejected",
+                    &error.to_string(),
+                ),
+                None,
             ),
         }
     };
-    let mut bytes = serde_json::to_vec(&response)?;
-    bytes.push(b'\n');
-    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
-        return Err(AgentdError::Protocol(
-            "agentd control response exceeded frame bound".to_string(),
-        ));
-    }
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    let mut lease = ControlPublicationLease {
+        state: &state,
+        response: &response,
+        keep: false,
+    };
+    let bytes = encode_control_frame(&response).map_err(AgentdError::Protocol)?;
+    let confirmation = if let Some(publication) = &mut context {
+        let confirmation = match publication
+            .begin_intent(
+                &response.agent_id,
+                response.spawn_generation,
+                response.request_id,
+                &bytes,
+            )
+            .await
+        {
+            Ok(confirmation) => confirmation,
+            Err(error) => {
+                let code = if matches!(error, CognitiveContextError::RetrievalLearningUnavailable) {
+                    "cognitive_retrieval_learning_unavailable"
+                } else {
+                    "cognitive_read_unavailable"
+                };
+                return write_prepublication_rejection(
+                    &mut writer,
+                    &response,
+                    code,
+                    &format!("context intent unavailable: {error:?}"),
+                )
+                .await;
+            }
+        };
+        // The durable intent may now exist, but there has still been no socket
+        // write. Any late owner/CURRENT/issuer/lifecycle failure leaves Unknown.
+        if let Err(error) = state
+            .revalidate_control_publication(&response, publication)
+            .await
+        {
+            return write_prepublication_rejection(
+                &mut writer,
+                &response,
+                "cognitive_read_unavailable",
+                &error.to_string(),
+            )
+            .await;
+        }
+        confirmation
+    } else {
+        None
+    };
+    // After any successful complete write, failures are close/log only. Sending
+    // an error frame here would contradict the bytes already accepted by IPC.
+    write_control_frame(&mut writer, &bytes, confirmation)
+        .await
+        .map_err(AgentdError::Protocol)?;
+    lease.keep = true;
     Ok(())
+}
+
+/// Before any response byte, preserve the existing typed failure contract. An
+/// earlier durable intent remains Unknown and the original lease is retracted.
+async fn write_prepublication_rejection<W: AsyncWrite + Unpin>(
+    writer: &mut W,
+    prepared: &AgentdResponse,
+    code: &str,
+    message: &str,
+) -> Result<(), AgentdError> {
+    let response = AgentdResponse {
+        schema_version: prepared.schema_version,
+        request_id: prepared.request_id,
+        agent_id: prepared.agent_id.clone(),
+        spawn_generation: prepared.spawn_generation,
+        current_generation: prepared.current_generation,
+        payload: AgentdPayload::Error {
+            code: code.to_string(),
+            message: bounded_message(message),
+        },
+    };
+    let bytes = encode_control_frame(&response).map_err(AgentdError::Protocol)?;
+    write_control_frame(writer, &bytes, None)
+        .await
+        .map_err(AgentdError::Protocol)
+}
+
+struct ControlPublicationLease<'a> {
+    state: &'a AgentdState,
+    response: &'a AgentdResponse,
+    keep: bool,
+}
+
+impl Drop for ControlPublicationLease<'_> {
+    fn drop(&mut self) {
+        if !self.keep {
+            // Includes cancellation of the outer timeout while a blocking
+            // append continues. Such an append cannot confirm a socket write.
+            self.state.retract_control_publication(self.response);
+        }
+    }
 }
 
 fn error_response(

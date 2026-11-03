@@ -126,6 +126,210 @@ fn invalid_statistics_grid_and_authority_cannot_be_encoded() {
 }
 
 #[test]
+fn inclusive_sensor_and_action_limits_preserve_pinned_artifacts() {
+    let source = fitted(2, 7);
+    for (sensor_count, action_count) in [(MAX_SENSORS, 1), (1, MAX_ACTIONS)] {
+        let mut artifact = source.clone();
+        artifact.cells.clear();
+        for sensor in 0..sensor_count {
+            for action in 0..action_count {
+                artifact.cells.push(TabularOperatorCellV1 {
+                    sensor_id: id(&format!("sensor-{sensor:04}")),
+                    action_id: id(&format!("action-{action:03}")),
+                    sample_count: 1,
+                    mean_target: FixedQ32::from_raw(7),
+                    minimum_target: FixedQ32::from_raw(7),
+                    maximum_target: FixedQ32::from_raw(7),
+                    evidence_digest: hash(&format!("evidence-{sensor}-{action}")),
+                });
+            }
+        }
+        let bytes = encode_tabular_payload_v1(&artifact).expect("inclusive grid limit");
+        let loaded = LoadedTabularOperatorV1::from_pinned_payload(&bytes, &pin(&artifact, &bytes))
+            .expect("inclusive pinned grid limit");
+        assert_eq!(loaded.artifact, artifact);
+
+        let mut extra = artifact.cells.last().expect("nonempty grid").clone();
+        if sensor_count == MAX_SENSORS {
+            extra.sensor_id = id(&format!("sensor-{sensor_count:04}"));
+        } else {
+            extra.action_id = id(&format!("action-{action_count:03}"));
+        }
+        extra.evidence_digest = hash("extra-cell");
+        artifact.cells.push(extra);
+        assert_eq!(validate_artifact(&artifact), Err(TabularPayloadError::Grid));
+        assert_eq!(
+            encode_tabular_payload_v1(&artifact),
+            Err(TabularPayloadError::Grid)
+        );
+        assert_eq!(
+            crate::predict_tabular_operator(
+                &artifact,
+                &artifact.cells[0].sensor_id,
+                &artifact.cells[0].action_id,
+            ),
+            Err(crate::LearnedOperatorError::InvalidArtifact)
+        );
+        assert_eq!(
+            crate::predict_tabular_operator_indexed_v2(
+                &artifact,
+                &artifact.cells[0].sensor_id,
+                &artifact.cells[0].action_id,
+            ),
+            Err(crate::StrictLearnedOperatorError::NonCanonicalArtifact)
+        );
+    }
+}
+
+#[test]
+fn cumulative_sample_limits_reject_otherwise_attainable_cell_statistics() {
+    let mut artifact = fitted(2, 7);
+    let cell = &mut artifact.cells[0];
+    cell.sample_count = 500_000;
+    cell.minimum_target = cell.mean_target;
+    cell.maximum_target = cell.mean_target;
+    let mut second = cell.clone();
+    second.action_id = id("write");
+    second.evidence_digest = hash("second-cell");
+    artifact.cells.push(second);
+    let bytes = encode_tabular_payload_v1(&artifact).expect("exactly one million samples");
+    let loaded = LoadedTabularOperatorV1::from_pinned_payload(&bytes, &pin(&artifact, &bytes))
+        .expect("pinned sample upper bound");
+    assert_eq!(loaded.artifact, artifact);
+
+    for overflow in [500_001, u32::MAX] {
+        artifact.cells[1].sample_count = overflow;
+        assert_eq!(validate_artifact(&artifact), Err(TabularPayloadError::Grid));
+        assert_eq!(
+            encode_tabular_payload_v1(&artifact),
+            Err(TabularPayloadError::Grid)
+        );
+    }
+}
+
+#[test]
+fn impossible_sample_statistics_reject_at_encoding_and_pinned_loading() {
+    let artifact = fitted(2, 7);
+    let original = encode_tabular_payload_v1(&artifact).expect("encode");
+    for (count, minimum, mean, maximum) in [
+        (1_u32, 5_i64, 7_i64, 9_i64),
+        (2, 5, 6, 9),
+        (2, 5, 8, 9),
+        (3, 0, 0, 3),
+        (3, -3, 0, 0),
+        // The exact half-integer mean must use nearest-even rounding.
+        (2, -2, -1, 1),
+    ] {
+        let mut invalid = artifact.clone();
+        let cell = &mut invalid.cells[0];
+        cell.sample_count = count;
+        cell.minimum_target = FixedQ32::from_raw(minimum);
+        cell.mean_target = FixedQ32::from_raw(mean);
+        cell.maximum_target = FixedQ32::from_raw(maximum);
+        assert_eq!(
+            encode_tabular_payload_v1(&invalid),
+            Err(TabularPayloadError::Grid)
+        );
+
+        // Independently pinned bytes still require structural validation.
+        // The cell's final 60 bytes contain count, mean, extrema and digest.
+        let mut bytes = original.clone();
+        let offset = bytes.len() - 60;
+        bytes[offset..offset + 4].copy_from_slice(&count.to_be_bytes());
+        for (index, value) in [mean, minimum, maximum].into_iter().enumerate() {
+            let offset = offset + 4 + index * 8;
+            bytes[offset..offset + 8].copy_from_slice(&value.to_be_bytes());
+        }
+        assert_eq!(
+            LoadedTabularOperatorV1::from_pinned_payload(&bytes, &pin(&invalid, &bytes)),
+            Err(TabularPayloadError::Grid)
+        );
+    }
+}
+
+#[test]
+fn duplicate_cell_evidence_rejects_all_artifact_admission_paths() {
+    let original = fitted(2, 7);
+    let mut artifact = fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
+        artifact_id: original.artifact_id,
+        producer_id: original.producer_id,
+        generation: original.generation,
+        objective_digest: original.objective_digest,
+        dataset_digest: original.dataset_digest,
+        sensor_core_digest: original.sensor_core_digest,
+        training_profile_digest: original.training_profile_digest,
+        minimum_samples_per_cell: 1,
+        sensor_ids: vec![id("state")],
+        action_ids: vec![id("read"), id("write")],
+        samples: ["read", "write"]
+            .into_iter()
+            .map(|action| TabularOperatorSampleV1 {
+                sample_id: id(&format!("observation-{action}")),
+                sensor_id: id("state"),
+                action_id: id(action),
+                target: FixedQ32::from_raw(7),
+                evidence_digest: hash(&format!("independent-{action}")),
+            })
+            .collect(),
+    })
+    .expect("independent source observations");
+    let mut bytes = encode_tabular_payload_v1(&artifact).expect("canonical cells");
+    assert_ne!(
+        artifact.cells[0].evidence_digest,
+        artifact.cells[1].evidence_digest
+    );
+
+    artifact.cells[1].evidence_digest = artifact.cells[0].evidence_digest;
+    assert_eq!(
+        encode_tabular_payload_v1(&artifact),
+        Err(TabularPayloadError::Grid)
+    );
+    assert_eq!(
+        crate::predict_tabular_operator(&artifact, &id("state"), &id("read")),
+        Err(crate::LearnedOperatorError::InvalidArtifact)
+    );
+    assert_eq!(
+        crate::predict_tabular_operator_indexed_v2(&artifact, &id("state"), &id("read")),
+        Err(crate::StrictLearnedOperatorError::NonCanonicalArtifact)
+    );
+    let offset = bytes.len() - 32;
+    bytes[offset..].copy_from_slice(artifact.cells[0].evidence_digest.as_array());
+    assert_eq!(
+        LoadedTabularOperatorV1::from_pinned_payload(&bytes, &pin(&artifact, &bytes)),
+        Err(TabularPayloadError::Grid)
+    );
+}
+
+#[test]
+fn attainable_statistics_preserve_nearest_even_means_at_integer_extremes() {
+    let artifact = fitted(2, 7);
+    for (count, minimum, mean, maximum) in [
+        (1_u32, i64::MIN, i64::MIN, i64::MIN),
+        (1, i64::MAX, i64::MAX, i64::MAX),
+        (2, -2, 0, 1),
+        (2, -3, -2, 0),
+        (2, 0, 2, 3),
+        (2, i64::MIN, 0, i64::MAX),
+        (3, 0, 1, 3),
+        (3, -3, -1, 0),
+    ] {
+        let mut valid = artifact.clone();
+        let cell = &mut valid.cells[0];
+        cell.sample_count = count;
+        cell.minimum_target = FixedQ32::from_raw(minimum);
+        cell.mean_target = FixedQ32::from_raw(mean);
+        cell.maximum_target = FixedQ32::from_raw(maximum);
+        let bytes = encode_tabular_payload_v1(&valid).expect("attainable statistics");
+        let loaded = LoadedTabularOperatorV1::from_pinned_payload(&bytes, &pin(&valid, &bytes))
+            .expect("attainable pinned payload");
+        assert_eq!(
+            loaded.predict(&id("state"), &id("read")).unwrap().value,
+            FixedQ32::from_raw(mean)
+        );
+    }
+}
+
+#[test]
 fn loaded_process_predicts_only_the_host_pinned_candidate() {
     if let Some(path) = std::env::var_os("HEPTA_TEST_TABULAR_PAYLOAD") {
         let bytes = fs::read(path).expect("candidate payload");

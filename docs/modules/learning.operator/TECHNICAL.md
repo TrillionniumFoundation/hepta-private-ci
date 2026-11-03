@@ -42,7 +42,16 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.operator`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification are source qualification requirements; their configuration is not an execution receipt. Executed scoped results and remaining checks for the reviewed candidate are recorded in the [audit record](../../../codex-rs/hepta-bellman-operator/AUDIT.md). This status does not activate `learning.operator`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+
+The native tabular path checks sensor/action/sample bounds before signed dataset
+membership work and rejects cumulative limits while loading. An empty ranking
+batch abstains after current-registry validation. Shared metadata verification
+now checks all 14 declared Bellman artifact fields for type, required status and
+byte-bound drift. Retrieval publication evidence belongs to Agentd and Ledger,
+with exact-frame intent and host-write confirmation documented in the
+[native publication contract](../../../codex-rs/hepta-learning-ledger/RETRIEVAL_PUBLICATION.md);
+it does not prove model consumption or confer authority on this module.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -133,7 +142,6 @@ Bellman solver, causal policy-improvement proof or deployment selection.
 Produced contracts:
 
 - `BellmanOperatorArtifactV1`
-- `RegularityProfileV1`
 
 Consumed contracts:
 
@@ -156,6 +164,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `BellmanOperatorArtifactV1`
 - `CreditAssignmentReceiptV1`
 - `DatasetSnapshotV1`
 - `LearningDecisionV1`
@@ -164,9 +173,38 @@ Critical protocol schemas:
 - `OutcomeReceiptV1`
 - `RegularityProfileV1`
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+These are registered architecture contracts and requirements for their canonical
+wire boundaries. Producers must validate output before publication and bind all
+semantic fields into the declared digest scope; consumers must validate version,
+bounds, producer identity, scope and digest before use. Compatibility is additive
+only where registered, unknown critical fields must reject, and contract meaning
+and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The current native implementation uses bounded Rust records and owner-local
+binary digest preimages. A matching Rust type name does not establish canonical
+JSON equivalence. For example, the native applicability certificate carries
+Hölder/Lipschitz profile digests and one control interval in milliseconds; the
+registered wire certificate requires the bounded profile objects, horizon and
+separate control-interval, jump and OOD policy digests. The native sensor manifest
+retains selected points but has no wire construction-algorithm or expiry fields.
+The target builder's `RegularityProfile` is diagnostic output, not the registered
+`RegularityProfileV1` wire record.
+
+This crate currently has no canonical JSON adapter or wire-schema conformance
+tests. Cross-owner publication under these contracts still requires explicit
+adapters and tests for round trips, maximum bounds, missing and unknown fields,
+invalid enums, canonical ordering and digest stability, plus preservation of the
+registered rejected, unavailable, timed out, indeterminate, quarantined and
+terminally failed outcomes. Native arithmetic, structural validation and signed
+attestation tests do not substitute for those wire-boundary checks.
+
+The canonical `BellmanOperatorArtifactV1` schema retains all fourteen design
+fields, including applicability, sensor core, branch and state/action trunks,
+rank, normalization, dataset/code/runtime identity, complete error budget and
+rollback lineage. [Section 6 of the operator specification](../../learning/HOLDER_BELLMAN_SPEC.md#6-data-protocol-and-lineage-schema)
+maps its symbolic design fields to canonical field names and bounds. Its registry
+entry defines the required shape; the current tabular payload does not implement
+that shape or establish its runtime/model and wire-conformance evidence.
 
 ## 6. Data authority, persistence and migrations
 
@@ -477,6 +515,7 @@ This generated projection binds `learning.operator` to the current canonical con
 - `SupportAuditReceiptV1`
 
 **Typed protocols:**
+- `BellmanOperatorArtifactV1`
 - `CandidateSetCompletenessReceiptV1`
 - `CreditAssignmentReceiptV1`
 - `DatasetSnapshotV1`
@@ -548,4 +587,80 @@ The bootstrap source-location obligation for `learning.operator` is implemented 
 
 - `codex-rs/hepta-bellman-operator`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+`.github/workflows/hepta-consolidated-source.yml` defines the source candidate's required checks: closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. Workflow configuration alone is not a receipt; only observed results for the actual candidate establish execution evidence. A passing source implementation receipt grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Concrete native development and audit boundaries
+
+The current native profile is an offline/reference library. The complete neural
+architecture remains in [the algorithm specification](../../learning/HOLDER_BELLMAN_SPEC.md).
+The following are implementation facts, distinct from its qualification targets:
+
+| Component | Actual input and computation | Native bound |
+|---|---|---|
+| Target builder | Caller-supplied transitions; terminal bootstrap is zero; Q32 nearest-even discount multiplication | 16,384 rows |
+| Sensor construction | Canonical farthest-point selection; finite-design coverage and selected-coordinate digest | 16,384 design points, 32 dimensions, 2–4,096 sensors |
+| Bellman reference | Complete caller-supplied reward/continuation grid; arithmetic, canonical greedy actions and gaps | 4,096 sensors, 128 actions, 262,144 cells |
+| Tabular fitting | Complete supported grid, evidence-unique rows, nearest-even means and attainable extrema | 1,000,000 rows, 262,144 cells |
+| World model | Action-conditioned empirical branches, exact count-derived Q32 probabilities and synthetic outcomes | 65,536 rows, 16,384 pairs, 1,024 branches per pair |
+| Persisted loading | Independent payload pin, complete grid, deny-all authority and attainable statistics | 64 MiB payload; immutable repeated lookup |
+| Terminal Cell | Owner-derived action labels and real terminal targets under one constant-state profile | 4,096 frozen source records, 128 actions |
+
+The reference arithmetic does not simulate/integrate a model or interpolate
+coordinates. Finite-design fill distance is not continuous-domain coverage, and
+`hull_digest` is not a convex-hull OOD oracle. Fill distance and mesh ratio round
+upward; separation rounds downward. Coordinate deduplication uses an ordered set,
+and nearest distances from farthest-point insertion also supply minimum separation.
+No extra quadratic selected-pair scan is needed.
+
+`validate_applicability_with_signed_evidence_v2` and
+`admit_operator_regularity_with_signed_evidence_v2` authenticate exact signed
+claims through the ledger-owned verifier. Qualification regularity requires all
+seven error components: model, sensor, reconstruction, network, optimization,
+statistical and rollout. A non-applicable component is an explicit zero with
+evidence, not an omitted measurement. Signatures do not prove scientific truth.
+
+Generic dataset-bound V2 APIs verify receipt self-consistency and exact row
+membership, including cardinality. They do not authenticate freeze issuance,
+derive caller-supplied targets or inspect current revocations. Hosts must enforce
+these owner obligations. `freeze_terminal_cell_from_signed_owner_v2` instead asks
+the actual `LedgerWriter` to verify the evaluator's exact freeze signature and
+derive the complete current source set, head, corrections and revocations, before
+creating an opaque bounded terminal input. The compatible V1 freezer accepts an
+already trusted receipt and additionally checks owner context, frontier, outcome
+watermark and active records. Arbitrary historical freeze attestation is not
+recoverable from the unsigned V3 receipt alone. Fitting rechecks active records,
+trust identity and forward time. A signed-owner V2 frozen input also retains the
+exact attested freeze payload and signature so fit can revalidate evidence expiry,
+credential validity and scheduled revocation at its current time without
+substituting a later ledger head. It produces a candidate with deny-all authority.
+
+Both public mutable tabular predictors enforce the same structural validator as
+encoding/loading. This does not reconstruct their sample-bound training digest;
+independent pins and immutable loaded state supply payload integrity. World-model
+prediction also recomputes its complete retained model digest. Candidate digests
+bind canonical row semantics and training admission thresholds. Numerical/profile
+changes require refitting candidates and new pins; an already independently
+admitted compatible predecessor payload remains loadable for rollback.
+
+Two explicit Agentd consumers exist:
+
+- `PinnedCognitiveRanker` at the cognitive read boundary binds artifact identity,
+  producer and host selection, and revalidates signed CURRENT on every read.
+  Exact query/revision support is required; any unsupported candidate abstains
+  from the whole ranking. Larger read input bounds do not widen the 128-action table.
+- `AgentdSharedReplayHostV1` trains, loads and predicts the narrow terminal profile,
+  with current shared-source permission, exact Memory support and ledger checks.
+  Its `train_signed_owner_v2` entrypoint preserves the signed-owner frozen input
+  through the shared fit helper; the compatible `train` entrypoint retains the
+  trusted-receipt V1 boundary. The updated async integration test is present in
+  source; its full integration execution is not established by this document.
+  Its registry reference is host supplied; this adapter does not independently
+  establish signed CURRENT or live selection.
+
+The default dataset-freeze → training → independent evaluation → selection →
+new-process load loop remains repository composition work. Model/simulator
+adapters and an optional tensor backend are distinct implementation profiles.
+Independent scientific review, target-host measurements, future-window efficacy,
+acceptance, canary, promotion and release remain externally evidenced gates.
+The [audit record](../../../codex-rs/hepta-bellman-operator/AUDIT.md)
+records this revision's adversarial cases and executed checks.

@@ -12,6 +12,13 @@ HEPTLR01 frame encoding remain readable. V1 APIs are retained for historical
 replay, migrations and focused durability tests; there is no automatic V1-to-V2
 reinterpretation.
 
+Retrieval tag 9 retains its original owner-asserted semantics. Additive tags 10/11
+record a planned assignment and host-observed full control-frame write. Their
+complete identity, bounded codec, projection and recovery behavior are specified
+in [RETRIEVAL_PUBLICATION.md](RETRIEVAL_PUBLICATION.md). These native records do
+not implement or replace a registered cross-module JSON protocol. Unknown
+publication is not a zero outcome; old readers fail closed on new event tags.
+
 New product composition uses `LedgerWriter`. It consumes the underlying durable
 backend, a pinned-root-authenticated signer distribution and an independently durable witness,
 so a caller using the owned writer cannot bypass V2 admission through the same
@@ -33,6 +40,8 @@ Owned logical domains remain:
 | durable append and anchored reopen | `DurableLedger`, `LedgerAnchor`, `LedgerRecovery` | `src/durable.rs` | retained backend |
 | segmented append/rotation/recovery | `SegmentedLedger` | `src/segments.rs` | implemented backend |
 | unique product admission writer | `LedgerWriter` | `src/production.rs` | implemented/source-composed in evaluated shadow |
+| witnessed retrieval publication intent/confirmation | `append_retrieval_assignment_intent_current` / `append_retrieval_publication_confirmed_current` | `src/retrieval_publication_writer.rs` | implemented; trusted host observes transport |
+| historical publication and current lineage view | `retrieval_publication` | `src/retrieval_publication.rs` | explicit legacy/unknown/full-write states |
 | authenticate pinned root + versioned signer distribution | `LearningTrustRootV1`, `SignedLearningTrustDistributionV1`, `activate_learning_trust` | `src/trust_distribution.rs` | implemented |
 | independently witness acknowledgements | `LedgerWitnessStore` | `src/witness.rs` | implemented |
 | append authenticated decision | `LedgerWriter::append_decision` | `src/production.rs` | implemented |

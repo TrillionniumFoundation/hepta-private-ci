@@ -152,6 +152,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `BellmanOperatorArtifactV1`
 - `CreditAssignmentReceiptV1`
 - `DatasetSnapshotV1`
 - `EvaluationReceiptV1`
@@ -181,6 +182,14 @@ Canonical vector `TEMPORAL-PLAN-DIGEST-GV-001` fixes the complete 293-byte compo
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+
+For `BellmanOperatorArtifactV1`, these wire guarantees remain integration
+requirements. Its canonical schema retains the complete fourteen-field operator
+design, with field correspondence in [HOLDER_BELLMAN_SPEC Section 6](../../learning/HOLDER_BELLMAN_SPEC.md#6-data-protocol-and-lineage-schema).
+Evaluation must bind the declared applicability, sensor/model/runtime identities,
+complete error budget and rollback lineage. The current native tabular candidate
+and evaluation receipts do not supply a canonical Bellman JSON adapter or establish
+those full operator obligations merely by having nonzero digests.
 
 ## 6. Data authority, persistence and migrations
 
@@ -490,6 +499,7 @@ This generated projection binds `learning.eval` to the current canonical contrac
 
 **Typed protocols:**
 - `AlgorithmFaultReceiptV1`
+- `BellmanOperatorArtifactV1`
 - `CandidateEvaluationReceiptV1`
 - `CandidateSetCompletenessReceiptV1`
 - `ConformanceReceiptV1`

@@ -17,11 +17,17 @@ try:
         AUTHORITY_KEYS,
         authority_fixture,
         has_schema_version,
+        validate_protocol_field_requirements,
     )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS, authority_fixture, has_schema_version
+    from hepta_metadata import (
+        AUTHORITY_KEYS,
+        authority_fixture,
+        has_schema_version,
+        validate_protocol_field_requirements,
+    )
 from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -1277,6 +1283,21 @@ def verify(profile="qualification") -> int:
                     },
                     "unbounded field " + p["id"] + "." + f["name"],
                 )
+    need(
+        d["algorithm_specs"]
+        .get("rules", {})
+        .get("declaredProtocolFieldSemanticsRequired")
+        is True,
+        "algorithm rule declaredProtocolFieldSemanticsRequired",
+    )
+    try:
+        validate_protocol_field_requirements(
+            d["algorithm_specs"].get("protocolFieldRequirements"),
+            d["algorithm_specs"].get("requiredProtocols", []),
+            {protocol["id"]: protocol for protocol in protocols},
+        )
+    except ValueError as error:
+        die(str(error))
     domains = d["data"]["domains"]
     need(len(domains) == len({x["id"] for x in domains}), "data IDs")
     for x in domains:
