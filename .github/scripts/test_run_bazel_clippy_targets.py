@@ -46,7 +46,11 @@ class ClippyTargetSelectionTests(unittest.TestCase):
         env["CLIPPY_QUERY_FAIL"] = "1" if fail else "0"
         return subprocess.run(
             [self.bash, str(self.selector), *args],
-            env=env, capture_output=True, text=True, timeout=15, check=False,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
         )
 
     def test_linux_and_native_windows_preserve_native_test_helpers(self):
