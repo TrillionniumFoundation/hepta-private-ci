@@ -2,7 +2,11 @@ name: First-passage owner native diagnostics
 
 on:
   push:
-    branches: [research/fpt-clock-owner-20261030, fix/4378-owner-assert-20261103-product]
+    branches:
+      [
+        research/fpt-clock-owner-20261030,
+        fix/4378-owner-assert-20261103-product,
+      ]
   workflow_dispatch:
 
 # These focused probes preserve their failures. They supplement the complete
