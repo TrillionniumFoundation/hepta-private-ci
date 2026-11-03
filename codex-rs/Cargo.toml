@@ -665,6 +665,10 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Declare ZIP's selected C bzip2 backend on its optional dependency, avoiding
+# same-named feature activation and graph-tool forwarding discrepancies.
+# The vendored Rust implementation is unchanged.
+zip = { path = "third_party/zip-9.0.0" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }

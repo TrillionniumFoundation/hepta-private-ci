@@ -1,0 +1,114 @@
+{
+  "command": [
+    "/root/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "metadata",
+    "--manifest-path",
+    "/workspace/scratch/1f1d02319616/private-ci-work/zip-feature-isolation/weak-feature/Cargo.toml",
+    "--all-features",
+    "--locked",
+    "--format-version",
+    "1",
+    "--offline"
+  ],
+  "manifest_sha256": "b7cddc2d6278cf5545e93170a17118da62f499c4f7ab3677276c3ce2a19da674",
+  "metadata_sha256": "3dfc38615b01e30a66462ad240ca00b632218e24ff5c523db5f2794e64f3d0b0",
+  "active_packages": [
+    {
+      "name": "bzip2",
+      "version": "0.6.1",
+      "features": [
+        "bzip2-sys"
+      ],
+      "dependencies": [
+        "registry+https://github.com/rust-lang/crates.io-index#bzip2-sys@0.1.13+1.0.8"
+      ],
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "bzip2-sys",
+      "version": "0.1.13+1.0.8",
+      "features": [],
+      "dependencies": [
+        "registry+https://github.com/rust-lang/crates.io-index#cc@1.2.55",
+        "registry+https://github.com/rust-lang/crates.io-index#pkg-config@0.3.32"
+      ],
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "zip",
+      "version": "9.0.0",
+      "features": [
+        "_bzip2_any",
+        "_deflate-any",
+        "aes-crypto",
+        "bzip2-rs",
+        "deflate",
+        "deflate-flate2",
+        "deflate-flate2-zlib-rs",
+        "deflate-zopfli",
+        "deflate64",
+        "getrandom",
+        "lzma",
+        "time",
+        "xz",
+        "zstd"
+      ],
+      "dependencies": [
+        "registry+https://github.com/rust-lang/crates.io-index#aes@0.9.4",
+        "registry+https://github.com/rust-lang/crates.io-index#bzip2@0.6.1",
+        "registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.4.2",
+        "registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0",
+        "registry+https://github.com/rust-lang/crates.io-index#deflate64@0.1.10",
+        "registry+https://github.com/rust-lang/crates.io-index#flate2@1.1.8",
+        "registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2",
+        "registry+https://github.com/rust-lang/crates.io-index#hmac@0.13.0",
+        "registry+https://github.com/rust-lang/crates.io-index#indexmap@2.14.0",
+        "registry+https://github.com/rust-lang/crates.io-index#lzma-rust2@0.21.0",
+        "registry+https://github.com/rust-lang/crates.io-index#memchr@2.8.1",
+        "registry+https://github.com/rust-lang/crates.io-index#pbkdf2@0.13.0",
+        "registry+https://github.com/rust-lang/crates.io-index#sha1@0.11.0",
+        "registry+https://github.com/rust-lang/crates.io-index#time@0.3.47",
+        "registry+https://github.com/rust-lang/crates.io-index#typed-path@0.12.4",
+        "registry+https://github.com/rust-lang/crates.io-index#zeroize@1.8.2",
+        "registry+https://github.com/rust-lang/crates.io-index#zopfli@0.8.3",
+        "registry+https://github.com/rust-lang/crates.io-index#zstd@0.13.4"
+      ],
+      "source": null
+    }
+  ],
+  "deny_license_graph": {
+    "command": [
+      "/root/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "deny",
+      "--manifest-path",
+      "/workspace/scratch/1f1d02319616/private-ci-work/zip-feature-isolation/weak-feature/Cargo.toml",
+      "--all-features",
+      "--locked",
+      "list",
+      "--config",
+      "/workspace/scratch/1f1d02319616/private-ci-work/repo/codex-rs/deny.toml",
+      "--format",
+      "json",
+      "--layout",
+      "crate"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "cc4b38e2f51a23e985c3a34b59b1089b78045b8cd96977d5db19bedd9d92d632",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "selected_packages": [
+      [
+        "bzip2",
+        "0.6.1"
+      ],
+      [
+        "zip",
+        "9.0.0"
+      ]
+    ]
+  },
+  "errors": [
+    "cargo-deny ZIP/bzip2 coverage differs from actual Cargo resolution"
+  ],
+  "passed": false,
+  "scope": "Locked Cargo feature resolution and optional cargo-deny package coverage; no Bazel or full CI claim"
+}
