@@ -999,7 +999,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     .fetch_one(&mut *rewind)
     .await
     .expect("inspect post-v1 owner tables");
-    assert_eq!(later_owner_tables, 2, "require both real later owner migrations");
+    assert_eq!(
+        later_owner_tables, 2,
+        "require both real later owner migrations"
+    );
 
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
@@ -1082,7 +1085,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     .fetch_one(&mut *rewind)
     .await
     .expect("inspect v1 owner-table absence");
-    assert_eq!(remaining_owner_tables, 0, "v1 must not retain later owner tables");
+    assert_eq!(
+        remaining_owner_tables, 0,
+        "v1 must not retain later owner tables"
+    );
     sqlx::query("ALTER TABLE automation_runs DROP COLUMN schedule_revision")
         .execute(&mut *rewind)
         .await
