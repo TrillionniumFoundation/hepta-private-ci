@@ -1,0 +1,27 @@
+name: PrivateCI ledger Ruff exact diagnostic
+
+on:
+  push:
+    branches:
+      - dot/privateci-ledger-ruff-fmt-20261103b
+
+permissions:
+  contents: read
+
+jobs:
+  ruff-exact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Ruff
+        run: python -m pip install --disable-pip-version-check --no-deps ruff==0.15.13
+      - name: Show original Ruff change and Python negatives
+        run: |
+          echo "SOURCE_SHA=$(git rev-parse HEAD)"
+          python -m ruff --version
+          python -m ruff format --diff scripts/tests/test_hepta_bazel_legacy_ledger_qualification.py
+          python scripts/tests/test_hepta_bazel_legacy_ledger_qualification.py
