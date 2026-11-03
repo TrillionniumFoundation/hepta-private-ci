@@ -13,6 +13,7 @@ SOURCE = Path(__file__).resolve().parents[2] / "scripts/list-bazel-clippy-target
 NATIVE = "//codex-rs/core:core-all-test-bin"
 CROSS = "//codex-rs/core:core-all-test-windows-cross-bin"
 UNIT = "//codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin"
+UNIX_ONLY = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
 PREFIX = ["//codex-rs/...", "-//codex-rs/v8-poc:all"]
 
 
@@ -33,7 +34,7 @@ class ClippyTargetSelectionTests(unittest.TestCase):
             "#!/bin/sh\n"
             'if [ "$CLIPPY_QUERY_FAIL" = "1" ]; then exit 29; fi\n'
             "printf '%s\\n' "
-            f"'{UNIT}' '{NATIVE}' '{CROSS}'\n",
+            f"'{UNIT}' '{NATIVE}' '{CROSS}' '{UNIX_ONLY}'\n",
             encoding="utf-8",
         )
         query.chmod(0o755)
@@ -58,7 +59,10 @@ class ClippyTargetSelectionTests(unittest.TestCase):
             with self.subTest(runner=runner):
                 result = self.select(runner)
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertEqual(result.stdout.splitlines(), PREFIX + [UNIT, NATIVE])
+                self.assertEqual(
+                    result.stdout.splitlines(),
+                    PREFIX + [UNIT, NATIVE] + ([] if runner == "Windows" else [UNIX_ONLY]),
+                )
 
     def test_explicit_windows_cross_leg_preserves_cross_helpers(self):
         result = self.select("Windows", "--windows-cross-compile")

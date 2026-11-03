@@ -41,6 +41,18 @@ elif [[ $windows_cross_compile -eq 1 ]]; then
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-test-bin$' || true)"
 fi
 
+if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 0 ]]; then
+  # This Agentd process qualification test uses Unix sockets and is explicitly
+  # incompatible with Windows in codex-rs/hepta-agentd/BUILD.bazel. `bazel query`
+  # cannot resolve target_compatible_with before analysis: omit only its
+  # explicit manual label on native Windows, not the Linux/macOS qualification
+  # or any native Windows unit tests.
+  manual_rust_test_targets="$(
+    printf '%s\n' "${manual_rust_test_targets}" |
+      grep -vFx -- '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin' || true
+  )"
+fi
+
 printf '%s\n' \
   "//codex-rs/..." \
   "-//codex-rs/v8-poc:all"
