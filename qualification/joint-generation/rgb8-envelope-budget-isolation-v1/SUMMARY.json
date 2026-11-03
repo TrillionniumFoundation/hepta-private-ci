@@ -1,0 +1,357 @@
+{
+  "freeze": {
+    "scope": "RGB8 adapter value isolation only",
+    "sources": {
+      "/workspace/scratch/4f754a4eb697/content-bound-delivery-checkpoint-candidate-v1/PLAN.md": "a5120b2b30dca26f98bc541dc3f336e144512e7890ca90ce3875370db4b8b5f3",
+      "/workspace/scratch/4f754a4eb697/content-bound-delivery-checkpoint-candidate-v1/SAVED_FINDINGS.md": "4bb91bbf23dba8fe00e4dba9c1cb5f89e1af61902df790243f8900b93a051d1f",
+      "/workspace/scratch/4f754a4eb697/content-latest-full-output-candidate-v1/contracts.py": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2",
+      "/workspace/scratch/4f754a4eb697/content-latest-full-output-candidate-v1/multimodal_contract.py": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "/workspace/scratch/4f754a4eb697/publish-isolated-utility-20261030/qualification/joint-generation/control.py": "1b79169db91317cf80f8cd29793ea8ac4a08dd2088e05095543c139181209c4b",
+      "/workspace/scratch/4f754a4eb697/publish-isolated-utility-20261030/qualification/joint-generation/data.py": "2e7401afac84deec2149fad89fe3a2b461046b6cd667408070c7da9ec130e0a3",
+      "/workspace/scratch/4f754a4eb697/publish-isolated-utility-20261030/qualification/joint-generation/model.py": "b1892fb8568336034cd52f7e280a6dbbad5b5cc48c072edf2455815e4c817291",
+      "/workspace/scratch/4f754a4eb697/publish-isolated-utility-20261030/qualification/joint-generation/multimodal_contract.py": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "/workspace/scratch/4f754a4eb697/publish-isolated-utility-20261030/qualification/joint-generation/serve.py": "e75cb3d003109599f18a95cb5ad8e6c3024e98aef76cb0c0831963b97abedd93",
+      "/workspace/scratch/4f754a4eb697/publish-isolated-utility-20261030/qualification/joint-generation/test_multimodal_contract.py": "579680aa5389272b6fc4d98ba1eba3d688b585d00f289f3b3aa4f288f4e27c46",
+      "/workspace/scratch/4f754a4eb697/publish-isolated-utility-20261030/qualification/joint-generation/utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/AUTHORING_NOTES.md": "4b940984a7943be638394fa88846f7374e0b60540e9416bb4831dfaa0e401d11",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/INPUTS.json": "96bc12298f030f08fc29f44d1f3a6233ce26f6fef690b7a56a1edf5db187fbb6",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/PLAN.md": "66d3af5492684e54cbed0abacb2551711b8fd7496323d9eb9f42d2c957a741a2",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/contracts.py": "cad384c480aa2ace4c214eed750188a96eb1022682bfbe8fb3fb9a1befd33dc2",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/control.py": "1b79169db91317cf80f8cd29793ea8ac4a08dd2088e05095543c139181209c4b",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/data.py": "2e7401afac84deec2149fad89fe3a2b461046b6cd667408070c7da9ec130e0a3",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/legacy_multimodal_contract.py": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/model.py": "b1892fb8568336034cd52f7e280a6dbbad5b5cc48c072edf2455815e4c817291",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/multimodal_contract.py": "3c9698412798bcb123d108c0bef1c3a73d75036928b19c38eb8caefe81b84da3",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/run_once.py": "cf43b0c32564d74cb2c63e91aa1651b1235ad849d158c208fbb7808655e43363",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/serve.py": "e75cb3d003109599f18a95cb5ad8e6c3024e98aef76cb0c0831963b97abedd93",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/test_isolation.py": "7f84b404885f119008051407158e7502ae461bed8d1e220563d234a25fc57d04",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037",
+      "/workspace/scratch/4f754a4eb697/rgb8-envelope-budget-isolation-candidate-v1/worker.py": "b4c4097ac6f31e341d0c35fc5da52d97c03abeecf944ed0042c6d11837b4a4d9"
+    }
+  },
+  "result": {
+    "CPU_observed_prefix_seconds": 0.12344397000000001,
+    "counts": {
+      "adapter_attempts": 42,
+      "adapter_refusals": 12,
+      "adapter_success": 30,
+      "encode_attempts": 48,
+      "encode_refusals": 2,
+      "encode_success": 46,
+      "forbidden_model_dataset_attempts": 0
+    },
+    "observations": [
+      {
+        "callback_calls": 1,
+        "case": "dispatch_callback",
+        "envelope_changed": true,
+        "module": "legacy_multimodal_contract"
+      },
+      {
+        "callback_calls": 1,
+        "case": "dispatch_callback",
+        "envelope_changed": false,
+        "module": "multimodal_contract"
+      },
+      {
+        "before": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "case": "fixed_isolation",
+        "direction": "request_to_envelope",
+        "envelope_after": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "field": "compute_units",
+        "fresh_request_after": null,
+        "passed": true,
+        "request_a_after": {
+          "compute_units": 5001,
+          "output_bytes": 4096
+        },
+        "request_b_after": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        }
+      },
+      {
+        "before": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "case": "fixed_isolation",
+        "direction": "envelope_to_request",
+        "envelope_after": {
+          "compute_units": 5001,
+          "output_bytes": 4096
+        },
+        "field": "compute_units",
+        "fresh_request_after": {
+          "compute_units": 5001,
+          "output_bytes": 4096
+        },
+        "passed": true,
+        "request_a_after": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "request_b_after": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        }
+      },
+      {
+        "before": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "case": "fixed_isolation",
+        "direction": "request_to_envelope",
+        "envelope_after": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "field": "output_bytes",
+        "fresh_request_after": null,
+        "passed": true,
+        "request_a_after": {
+          "compute_units": 5000,
+          "output_bytes": 4097
+        },
+        "request_b_after": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        }
+      },
+      {
+        "before": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "case": "fixed_isolation",
+        "direction": "envelope_to_request",
+        "envelope_after": {
+          "compute_units": 5000,
+          "output_bytes": 4097
+        },
+        "field": "output_bytes",
+        "fresh_request_after": {
+          "compute_units": 5000,
+          "output_bytes": 4097
+        },
+        "passed": true,
+        "request_a_after": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "request_b_after": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        }
+      },
+      {
+        "after": {
+          "compute_units": 5001,
+          "output_bytes": 4096
+        },
+        "before": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "case": "legacy_alias",
+        "field": "compute_units",
+        "identity_alias": true
+      },
+      {
+        "after": {
+          "compute_units": 5000,
+          "output_bytes": 4097
+        },
+        "before": {
+          "compute_units": 5000,
+          "output_bytes": 4096
+        },
+        "case": "legacy_alias",
+        "field": "output_bytes",
+        "identity_alias": true
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "legacy_multimodal_contract",
+        "reason": "artifact"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "legacy_multimodal_contract",
+        "reason": "expired"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "legacy_multimodal_contract",
+        "reason": "missing_text"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "legacy_multimodal_contract",
+        "reason": "geometry"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "legacy_multimodal_contract",
+        "reason": "unknown_word"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "legacy_multimodal_contract",
+        "reason": "output_profile"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "multimodal_contract",
+        "reason": "artifact"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "multimodal_contract",
+        "reason": "expired"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "multimodal_contract",
+        "reason": "missing_text"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "multimodal_contract",
+        "reason": "geometry"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "multimodal_contract",
+        "reason": "unknown_word"
+      },
+      {
+        "budget_unchanged": true,
+        "case": "expected_refusal",
+        "module": "multimodal_contract",
+        "reason": "output_profile"
+      },
+      {
+        "case": "parity",
+        "feature_sha256": "c0d61cbf537a97060245ec53ff3f0ba78fce6446532322d53a0fa4bb7ccb1b98",
+        "mode": "greedy",
+        "request_sha256": "320c19d271226b12db8adc3111a0b06f2542855685593d3ca20e92c238af68c8",
+        "reversed_stream_order": false,
+        "words": "keep keep keep"
+      },
+      {
+        "case": "parity",
+        "feature_sha256": "c0d61cbf537a97060245ec53ff3f0ba78fce6446532322d53a0fa4bb7ccb1b98",
+        "mode": "greedy",
+        "request_sha256": "320c19d271226b12db8adc3111a0b06f2542855685593d3ca20e92c238af68c8",
+        "reversed_stream_order": true,
+        "words": "keep keep keep"
+      },
+      {
+        "case": "parity",
+        "feature_sha256": "c0d61cbf537a97060245ec53ff3f0ba78fce6446532322d53a0fa4bb7ccb1b98",
+        "mode": "sample",
+        "request_sha256": "4c2b37c19648e2ce34d511748981b7036dd06e42d97aab31aaf82164e0dddd53",
+        "reversed_stream_order": false,
+        "words": "keep keep keep"
+      },
+      {
+        "case": "parity",
+        "feature_sha256": "c0d61cbf537a97060245ec53ff3f0ba78fce6446532322d53a0fa4bb7ccb1b98",
+        "mode": "sample",
+        "request_sha256": "4c2b37c19648e2ce34d511748981b7036dd06e42d97aab31aaf82164e0dddd53",
+        "reversed_stream_order": true,
+        "words": "keep keep keep"
+      },
+      {
+        "case": "parity",
+        "feature_sha256": "012eb9e726301c5630824f0b989f72cfa53c1bbe81c554b6135883a82c46bdeb",
+        "mode": "greedy",
+        "request_sha256": "7e16ff92106c95dd866e8826e9c2e2af1a02949ac36fb16823c54903d66b6fe3",
+        "reversed_stream_order": false,
+        "words": "blue cross right"
+      },
+      {
+        "case": "parity",
+        "feature_sha256": "012eb9e726301c5630824f0b989f72cfa53c1bbe81c554b6135883a82c46bdeb",
+        "mode": "greedy",
+        "request_sha256": "7e16ff92106c95dd866e8826e9c2e2af1a02949ac36fb16823c54903d66b6fe3",
+        "reversed_stream_order": true,
+        "words": "blue cross right"
+      },
+      {
+        "case": "parity",
+        "feature_sha256": "012eb9e726301c5630824f0b989f72cfa53c1bbe81c554b6135883a82c46bdeb",
+        "mode": "sample",
+        "request_sha256": "c54d91f93eaed269a116042975fd351c6630350b9835a38af6978e8a48628fb8",
+        "reversed_stream_order": false,
+        "words": "blue cross right"
+      },
+      {
+        "case": "parity",
+        "feature_sha256": "012eb9e726301c5630824f0b989f72cfa53c1bbe81c554b6135883a82c46bdeb",
+        "mode": "sample",
+        "request_sha256": "c54d91f93eaed269a116042975fd351c6630350b9835a38af6978e8a48628fb8",
+        "reversed_stream_order": true,
+        "words": "blue cross right"
+      }
+    ],
+    "scope": "Trusted local RGB8 TEXT+IMAGE input adapter budget value isolation. Actual original encode_request used; model modules imported but no models constructed, loaded, trained, inferred or datasets generated. Dispatch callbacks are local literal functions, NOT model output, production owner authority, security sandbox or integration into immutable releases.",
+    "source_freeze_sha256": "0cc4f7e0c096c3c60dfee08a04c4f6977d975f58a6ff0897d119c52c01b5d187",
+    "status": "COMPLETE_RGB8_ENVELOPE_BUDGET_ISOLATION",
+    "tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 5
+    },
+    "upstream_costs": "All historical science/engineering/preparation/review plus supervisor tails are additional nonzero costs."
+  },
+  "wait4_receipt": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 28752,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "e0ebcf91aaa996443898ea0696125fc3222fde4bb02078a3b706147e47154bd3",
+    "source_freeze_sha256": "0cc4f7e0c096c3c60dfee08a04c4f6977d975f58a6ff0897d119c52c01b5d187",
+    "status": "COMPLETE_RGB8_ENVELOPE_BUDGET_ISOLATION",
+    "supervisor_CPU_observed_prefix_seconds": 0.0027258959999999985,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.016312,
+    "timed_out": false,
+    "user_CPU_seconds": 0.14831,
+    "wall_seconds": 0.18562263998319395,
+    "whole_child_CPU_seconds": 0.164622
+  }
+}
