@@ -1,0 +1,50 @@
+{
+  "schema": "windows-owned-directory-flush-fixture-static-review-v1",
+  "base_HEAD": "64006d610208b0ff346f484265cd5597ceb971f0",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "bytes": 10372,
+      "sha256": "1169011b1de9133a5197cefa14cf07337b4de0cf3477243a7ca076899cd24e89",
+      "git_blob_sha": "f58a0ee93dabce9f04199590a2e6ecb1cd9df56c"
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-learning-ledger/src/production.rs",
+      "bytes": 48261,
+      "sha256": "182ebc861129278f517278cefe66df3fb369c3b892ae3d73046ebd8be6341f7c",
+      "git_blob_sha": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-learning-ledger/src/production_tests.rs",
+      "bytes": 31823,
+      "sha256": "a0c2c69d3def22b416a09543af9141cc24b81deb02eedc9800800b7f0ff70a46",
+      "git_blob_sha": "8250e8669700ddf6f67dcb2d7da803cb73773edf"
+    }
+  ],
+  "reviewed_behavior": "A Windows-only helper opens the already-owned temporary directory with read/write and FILE_FLAG_BACKUP_SEMANTICS; other platforms retain File::open. Both ledger and witness receive actual handles; production sync_directory_handle still requires metadata.is_dir and propagates sync_all failure.",
+  "original_test_body_bytes_preserved": true,
+  "original_assert_line_sequence_preserved": true,
+  "findings": [
+    {
+      "severity": "none_confirmed_in_static_scope",
+      "finding": "The fixture now follows the existing ledger test directory-opening contract. No durability bypass, synthetic success, AccessDenied suppression, new authorization, or production synchronization change is introduced."
+    }
+  ],
+  "primary_sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fileio/obtaining-a-handle-to-a-directory",
+      "claim": "Opening an existing directory handle through CreateFile requires FILE_FLAG_BACKUP_SEMANTICS."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers",
+      "claim": "FlushFileBuffers requires GENERIC_WRITE on the supplied handle."
+    }
+  ],
+  "limits": [
+    "These are necessary API conditions, not a guarantee of directory durability on every Windows filesystem or privilege configuration.",
+    "The new exact hosted Windows run remains required; no old green result was substituted."
+  ],
+  "files_modified_by_review": false,
+  "cargo_or_native_executed": false,
+  "new_hosted_qualification_inferred": false
+}

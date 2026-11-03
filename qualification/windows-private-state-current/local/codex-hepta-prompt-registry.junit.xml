@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="50" skipped="0" failures="0" errors="0" uuid="70d715ef-aac5-40c1-8528-5efadd3701d3" timestamp="2026-11-03T15:18:59.478-05:00" time="4.079">
+    <testsuite name="codex-hepta-prompt-registry" tests="50" skipped="0" errors="0" failures="0">
+        <testcase name="durable::payload_tests::metadata_mutation_rejects_a_missing_committed_extent_file" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.479-05:00" time="0.017"/>
+        <testcase name="durable::payload_tests::post_rename_unknown_commit_keeps_new_payload_and_requires_reopen" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.479-05:00" time="0.021"/>
+        <testcase name="durable::payload_tests::incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validation" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.479-05:00" time="0.026"/>
+        <testcase name="durable::payload_tests::failed_manifest_publication_never_selects_new_payload_bytes" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.479-05:00" time="0.026"/>
+        <testcase name="durable::payload_tests::v2_migration_preserves_payloads_frontiers_and_semantic_identity" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.479-05:00" time="0.027"/>
+        <testcase name="durable::tests::concurrent_writer_is_rejected_by_owner_lock" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.496-05:00" time="0.013"/>
+        <testcase name="durable::tests::failed_v1_migration_does_not_overwrite_predecessor_bytes" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.504-05:00" time="0.008"/>
+        <testcase name="durable::tests::exact_state_backup_restores_without_resurrection_or_digest_drift" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.500-05:00" time="0.013"/>
+        <testcase name="durable::payload_tests::missing_truncated_or_modified_committed_payload_is_never_repaired" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.479-05:00" time="0.034"/>
+        <testcase name="durable::tests::reopen_rejects_resource_policy_drift" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.513-05:00" time="0.008"/>
+        <testcase name="durable::tests::post_rename_sync_failure_poison_writer_until_reopen" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.513-05:00" time="0.018"/>
+        <testcase name="durable::tests::restart_preserves_active_payload_backed_realization" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.521-05:00" time="0.020"/>
+        <testcase name="durable::tests::restore_validator_rejects_orphan_payload_and_lifecycle_drift" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.542-05:00" time="0.004"/>
+        <testcase name="durable::payload_tests::malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.479-05:00" time="0.068"/>
+        <testcase name="durable::tests::poisoned_writer_rejects_before_consuming_final_use_grant" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.513-05:00" time="0.039"/>
+        <testcase name="durable::tests::final_use_revocation_binds_actor_reason_cutoff_and_persists_lineage" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.507-05:00" time="0.050"/>
+        <testcase name="durable::tests::storage_full_before_rename_keeps_predecessor_live_and_reopenable" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.552-05:00" time="0.014"/>
+        <testcase name="durable::tests::schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.547-05:00" time="0.019"/>
+        <testcase name="durable::tests::schema_v1_migrates_without_resurrecting_state" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.546-05:00" time="0.021"/>
+        <testcase name="durable::tests::truncated_state_fails_closed_on_reopen" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.557-05:00" time="0.014"/>
+        <testcase name="protocol::tests::prompt_factor_v1_round_trips_canonical_json_and_rejects_unknown_fields" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.566-05:00" time="0.006"/>
+        <testcase name="protocol::tests::prompt_realization_v1_round_trips_digest_fields" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.567-05:00" time="0.005"/>
+        <testcase name="protocol::tests::prompt_factor_v1_rejects_noncanonical_dimension_order" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.566-05:00" time="0.006"/>
+        <testcase name="tests::conflicting_identity_is_rejected" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.571-05:00" time="0.005"/>
+        <testcase name="durable::tests::restart_preserves_revocation_payload_and_admission_lineage" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.531-05:00" time="0.045"/>
+        <testcase name="tests::exhausted_revision_keeps_factor_insertion_and_admission_atomic" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.572-05:00" time="0.005"/>
+        <testcase name="tests::external_material_cannot_admit_itself" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.573-05:00" time="0.005"/>
+        <testcase name="tests::independent_admission_enables_realization_registration" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.577-05:00" time="0.005"/>
+        <testcase name="durable::tests::final_use_admission_is_scope_bound_single_use_and_revocation_aware" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.505-05:00" time="0.077"/>
+        <testcase name="tests::exhausted_revision_preserves_realizations_during_retirement_and_revocation" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.572-05:00" time="0.012"/>
+        <testcase name="tests::governed_factor_relations_are_owner_bound_and_rebuildable" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.577-05:00" time="0.007"/>
+        <testcase name="tests::factor_relation_requires_live_governed_canonical_endpoints" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.576-05:00" time="0.008"/>
+        <testcase name="tests::record_capacity_rejects_atomically" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.582-05:00" time="0.005"/>
+        <testcase name="tests::revocation_cascades_and_is_terminal" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.582-05:00" time="0.006"/>
+        <testcase name="tests::proposer_cannot_self_review" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.578-05:00" time="0.014"/>
+        <testcase name="v2::tests::active_realization_profile_requires_explicit_supersession" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.587-05:00" time="0.005"/>
+        <testcase name="v2::tests::equivalent_required_factor_order_has_one_canonical_digest" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.588-05:00" time="0.006"/>
+        <testcase name="v2::tests::every_state_change_allocates_one_revision_and_identical_retry_does_not" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.592-05:00" time="0.005"/>
+        <testcase name="v2::tests::exact_model_tuple_and_frozen_snapshot_gate_delivery" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.592-05:00" time="0.008"/>
+        <testcase name="v2::tests::expired_or_missing_required_realization_fails_closed" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.595-05:00" time="0.010"/>
+        <testcase name="tests::verified_admission_rejects_clock_rollback_between_verify_and_commit" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.584-05:00" time="0.021"/>
+        <testcase name="v2::tests::payload_registration_supersedes_and_dereferences_exact_bytes" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.600-05:00" time="0.008"/>
+        <testcase name="tests::signed_admission_persists_scope_evidence_and_grant_lineage" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.584-05:00" time="0.024"/>
+        <testcase name="v2::tests::payload_ceiling_rejects_atomically" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.596-05:00" time="0.012"/>
+        <testcase name="tests::verified_admission_cannot_be_used_after_expiry" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.584-05:00" time="0.026"/>
+        <testcase name="v2::tests::required_factors_are_not_starved_by_other_roles" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.605-05:00" time="0.006"/>
+        <testcase name="v2::tests::revocation_invalidates_old_snapshot_and_disables_realization" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.605-05:00" time="0.006"/>
+        <testcase name="v2::tests::untrusted_external_factor_cannot_obtain_v2_realization" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.607-05:00" time="0.005"/>
+        <testcase name="durable::tests::pilot_capacity_fixture_reports_bounded_owner_costs" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.509-05:00" time="1.093"/>
+        <testcase name="durable::payload_tests::metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifest" classname="codex-hepta-prompt-registry" timestamp="2026-11-03T15:18:59.479-05:00" time="4.078"/>
+    </testsuite>
+</testsuites>

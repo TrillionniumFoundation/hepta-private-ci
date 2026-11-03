@@ -1,0 +1,16 @@
+diff --git a/codex-rs/utils/path-utils/src/private_state_windows_directory.rs b/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
+--- a/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
++++ b/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
+@@ -66,0 +67,12 @@
++    with_private_security(|security| {
++        if unsafe {
++            windows_sys::Win32::Storage::FileSystem::CreateDirectoryW(name.as_ptr(), security)
++        } == 0
++        {
++            let error = io::Error::last_os_error();
++            if error.kind() != io::ErrorKind::AlreadyExists {
++                return Err(error);
++            }
++        }
++        Ok(())
++    })?;

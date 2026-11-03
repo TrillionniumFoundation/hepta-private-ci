@@ -1,0 +1,62 @@
+{
+  "schema": "private-state-windows-readonly-review-v1",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-review-20261103/common-4c493/codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "bytes": 26201,
+      "sha256": "ab6b480dc11705751f09f25ddf125f6d0ee7a3c42809d9d8867bac4803d5593d",
+      "git_blob_sha": "03a8170a874621c362e1b135df654016207082d5"
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-review-20261103/common-4c493/codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "bytes": 5376,
+      "sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+      "git_blob_sha": "b4e85af5ba4f2a92d37bbec2c3fa1d65795ce6c4"
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-review-20261103/common-4c493/codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+      "bytes": 3333,
+      "sha256": "bfa9700c839f6ddafcc833dc47f70fec0cc7706584d43f21d96a223d341281d0",
+      "git_blob_sha": "6289e7a878ef0494743b99734a60d368357c8562"
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-review-20261103/common-4c493/codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+      "bytes": 4909,
+      "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb",
+      "git_blob_sha": "1e0f78fdf05b7aa3e315127ef640e6af343ae431"
+    }
+  ],
+  "production_source_read_complete": true,
+  "source_executed": false,
+  "files_modified": false,
+  "native_tests_run_by_this_reviewer": false,
+  "confirmed_blocking_defects": [],
+  "findings": [
+    {
+      "topic": "root acquisition",
+      "conclusion": "NtCreateFile uses OBJ_DONT_REPARSE plus FILE_OPEN_REPARSE_POINT, creation-only protected current-user security, and excludes FILE_SHARE_DELETE. The exact returned handle is validated before return."
+    },
+    {
+      "topic": "child namespace assumption",
+      "conclusion": "Child open/exists/replacement use the retained handle final_path to reconstruct absolute paths rather than NtCreateFile RootDirectory relative handle operations. Final string comparison alone is not a general object-identity proof. Correctness depends on the retained root and relevant ancestry remaining namespace-pinned for the supported filesystem/host."
+    },
+    {
+      "topic": "actual regression construction",
+      "conclusion": "The read test asserts both root and ancestor rename fail while directory is retained, completes write/sync/MoveFileEx/re-read during retention, then asserts both renames succeed after handles drop. Acquisition substitution test constructs real private ACL leaves and performs the real rename+junction in a pre-open hook; rejection cannot be satisfied merely by ACL mismatch."
+    },
+    {
+      "topic": "native status",
+      "conclusion": "The owner independently reports the exact prior-host retained-directory test passed, and is preparing fresh combined-head native qualification. This review does not independently execute or replace that qualification, nor infer universal filesystem semantics."
+    },
+    {
+      "topic": "security boundaries",
+      "conclusion": "Creation descriptor storage outlives synchronous creation, owner is explicitly current process user, and existing descriptor is not silently repaired. ACL in-use span, complete SID, handle kind and single-link checks are present. No newly confirmed scope-relevant defect found in this bounded static review."
+    }
+  ],
+  "boundaries": [
+    "No proof for arbitrary SMB/custom filesystem behavior",
+    "Not isolation from the same user SID, trusted administrators or LocalSystem",
+    "No broad statement about unrelated Windows adaptation layers",
+    "Prior selector-native qualification is not a fresh all-owner-suite pass"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "argv": [
+    "cargo",
+    "deny",
+    "--format",
+    "json",
+    "--all-features",
+    "--locked",
+    "check",
+    "--disable-fetch",
+    "--show-stats"
+  ],
+  "exit": 0,
+  "seconds": 6.502756048001174,
+  "rustsec_commit_before": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "rustsec_commit_after": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "raw_bytes": 12819696,
+  "raw_sha256": "b9cacc7827c1563bb32d1015d976e7f3a226ced92036b89f1f640e04e01db853",
+  "events": [
+    {
+      "fields": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 22,
+          "warnings": 2
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 21,
+          "warnings": 115
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 1340,
+          "notes": 0,
+          "warnings": 1
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 6,
+          "warnings": 1
+        }
+      },
+      "type": "summary"
+    }
+  ]
+}

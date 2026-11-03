@@ -1,0 +1,52 @@
+{
+  "schema": "agentd-ownerlocal-static-review-v1",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-agentd/src/control.rs",
+      "bytes": 9016,
+      "sha256": "ac2d97f4190b231738e0886256f8fa6a055c516967cf6b9e8323a27a2d904f54"
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-agentd/src/client.rs",
+      "bytes": 26049,
+      "sha256": "201e03a4fb7522287827e51f229d467f6fc3e60de7bd70856a2a20dad7bee83e"
+    },
+    {
+      "path": "/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-agentd/src/control_native_tests.rs",
+      "bytes": 5124,
+      "sha256": "f5dc68beb789a00300faa4a1da51f2f631c12ba7d9693d4b8a5202f5fe05019a"
+    }
+  ],
+  "read_scope": [
+    "exact production diff",
+    "complete accept/auth/permit/timeout/serve_connection logic",
+    "client send/response identity checks",
+    "native test names and lifetime controls"
+  ],
+  "executed_source": false,
+  "cargo_run": false,
+  "files_modified": false,
+  "confirmed_blocking_defects": [],
+  "findings": [
+    {
+      "topic": "authentication and permit",
+      "detail": "Unix current-user peer check occurs before permit acquisition. Windows pending connections have no application I/O path until authenticate succeeds; authentication and normal handling share the original two-second timeout. Owned permit is retained by the spawned task and drops on timeout, error, completion or task cancellation."
+    },
+    {
+      "topic": "overload",
+      "detail": "No-permit Windows connections authenticate before receiving the constant overload frame. Authentication/write/shutdown share the original 50 ms bound. This can serialize overload processing for that bounded period; it does not permit unauthenticated application frames."
+    },
+    {
+      "topic": "client and authority",
+      "detail": "ControlStream alias changes transport. Existing bounded newline frame, request ID, expected AgentId and spawn-generation response checks remain. The constant overload frame is preserved and is interpreted only as retryable refusal, not authority."
+    },
+    {
+      "topic": "cancellation scope",
+      "detail": "Cancellation stops acceptance, as before. Already spawned handlers are not joined or immediately canceled by this server loop; they retain the original bounded handling timeout. This patch does not introduce or prove transactional rollback of an already dispatched application action."
+    },
+    {
+      "topic": "native qualification",
+      "detail": "No native test was executed by this reviewer. Fresh Windows and complete Agentd owner qualification remains with the owner agent. The earlier smaller-library pass cannot replace it."
+    }
+  ]
+}
