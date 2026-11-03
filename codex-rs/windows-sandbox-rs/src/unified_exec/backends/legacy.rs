@@ -318,6 +318,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
     stdin_open: bool,
     use_private_desktop: bool,
 ) -> Result<SpawnedProcess> {
+    #[cfg(test)]
+    eprintln!("strict legacy phase: prepare context");
     let common = prepare_legacy_spawn_context(
         permission_profile,
         workspace_roots,
@@ -347,6 +349,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
         &env_map,
         codex_home,
     );
+    #[cfg(test)]
+    eprintln!("strict legacy phase: prepare token and capability identities");
     let security = prepare_legacy_session_security(
         common.uses_write_capabilities,
         codex_home,
@@ -359,6 +363,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
             codex_home,
         ),
     )?;
+    #[cfg(test)]
+    eprintln!("strict legacy phase: token ready");
     allow_null_device_for_workspace_write(common.uses_write_capabilities);
 
     if let Err(err) = apply_legacy_session_acl_rules(
@@ -381,6 +387,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
         return Err(err);
     }
 
+    #[cfg(test)]
+    eprintln!("strict legacy phase: ACL plan installed");
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = broadcast::channel::<Vec<u8>>(256);
     let stderr_rx = if tty {
@@ -390,6 +398,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
     };
     let (exit_tx, exit_rx) = oneshot::channel::<i32>();
 
+    #[cfg(test)]
+    eprintln!("strict legacy phase: native child creation");
     let LegacyProcessHandles {
         process: pi,
         job,
@@ -420,6 +430,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
             return Err(err);
         }
     };
+    #[cfg(test)]
+    eprintln!("strict legacy phase: native child created");
     let hpc_handle = hpc.map(|hpc| Arc::new(StdMutex::new(Some(hpc))));
 
     let process_handle = Arc::new(StdMutex::new(Some(pi.hProcess)));

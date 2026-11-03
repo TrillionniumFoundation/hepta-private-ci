@@ -352,6 +352,11 @@ pub(crate) fn apply_legacy_session_acl_rules(
             }
         }
         for root_sid in acl_sids.read_root_sids {
+            #[cfg(test)]
+            eprintln!(
+                "strict legacy ACL read root begin: {}",
+                root_sid.root.display()
+            );
             ensure_allow_mask_aces(
                 &root_sid.root,
                 &[root_sid.sid.as_ptr()],
@@ -363,6 +368,11 @@ pub(crate) fn apply_legacy_session_acl_rules(
                     root_sid.root.display()
                 )
             })?;
+            #[cfg(test)]
+            eprintln!(
+                "strict legacy ACL read root complete: {}",
+                root_sid.root.display()
+            );
         }
         if !additional_deny_read_paths.is_empty() {
             if let Some(readonly_sid) = acl_sids.readonly_sid {

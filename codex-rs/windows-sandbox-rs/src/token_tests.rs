@@ -357,6 +357,46 @@ impl Drop for OwnedEvent {
     }
 }
 
+fn describe_actual_event_descriptor(label: &str, descriptor: *mut c_void) -> Result<()> {
+    use windows_sys::Win32::Security::GetSecurityDescriptorControl;
+    use windows_sys::Win32::Security::GetSecurityDescriptorGroup;
+    use windows_sys::Win32::Security::GetSecurityDescriptorLength;
+    use windows_sys::Win32::Security::GetSecurityDescriptorOwner;
+    use windows_sys::Win32::Security::IsValidSecurityDescriptor;
+    use windows_sys::Win32::Security::IsValidSid;
+
+    let valid = unsafe { IsValidSecurityDescriptor(descriptor) } != 0;
+    let mut control = 0;
+    let mut revision = 0;
+    let control_ok =
+        unsafe { GetSecurityDescriptorControl(descriptor, &mut control, &mut revision) };
+    let mut owner = std::ptr::null_mut();
+    let mut group = std::ptr::null_mut();
+    let mut owner_defaulted = 0;
+    let mut group_defaulted = 0;
+    let owner_ok =
+        unsafe { GetSecurityDescriptorOwner(descriptor, &mut owner, &mut owner_defaulted) };
+    let group_ok =
+        unsafe { GetSecurityDescriptorGroup(descriptor, &mut group, &mut group_defaulted) };
+    let owner_valid = !owner.is_null() && unsafe { IsValidSid(owner) } != 0;
+    let group_valid = !group.is_null() && unsafe { IsValidSid(group) } != 0;
+    let length = if valid {
+        unsafe { GetSecurityDescriptorLength(descriptor) }
+    } else {
+        0
+    };
+    eprintln!(
+        "actual Event SD {label}: valid={valid} length={length} control_ok={control_ok} control={control:#x} revision={revision} owner_ok={owner_ok} owner_present={} owner_valid={owner_valid} owner_defaulted={owner_defaulted} group_ok={group_ok} group_present={} group_valid={group_valid} group_defaulted={group_defaulted}",
+        !owner.is_null(),
+        !group.is_null(),
+    );
+    anyhow::ensure!(
+        valid && control_ok != 0 && owner_ok != 0 && group_ok != 0,
+        "actual Event descriptor inspection failed"
+    );
+    Ok(())
+}
+
 fn assert_event_access(descriptor: *mut c_void, token: HANDLE, expected: bool) -> Result<()> {
     use windows_sys::Win32::Security::AccessCheck;
     use windows_sys::Win32::Security::DuplicateToken;
@@ -511,7 +551,52 @@ fn actual_unnamed_event_default_dacl_keeps_shared_read_capabilities_nonwriting()
     );
     anyhow::ensure!(!descriptor.is_null(), "missing actual Event descriptor");
     let descriptor = Descriptor(descriptor);
-    assert_event_access(descriptor.0, first_token.0, true)?;
+    describe_actual_event_descriptor("GetSecurityInfo", descriptor.0)?;
+
+    // Independently inspect the same real object; do not add or synthesize a
+    // missing owner/group to make AccessCheck accept a different descriptor.
+    let information =
+        OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION;
+    let mut required = 0;
+    let first = unsafe {
+        windows_sys::Win32::Security::GetKernelObjectSecurity(
+            event.0,
+            information,
+            std::ptr::null_mut(),
+            0,
+            &mut required,
+        )
+    };
+    anyhow::ensure!(
+        first == 0
+            && unsafe { GetLastError() }
+                == windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER
+            && (20..=1_048_576).contains(&required),
+        "bound actual kernel Event descriptor: {} bytes={required}",
+        unsafe { GetLastError() },
+    );
+    let mut kernel = vec![0_u64; (required as usize).div_ceil(8)];
+    let ok = unsafe {
+        windows_sys::Win32::Security::GetKernelObjectSecurity(
+            event.0,
+            information,
+            kernel.as_mut_ptr().cast(),
+            (kernel.len() * std::mem::size_of::<u64>()) as u32,
+            &mut required,
+        )
+    };
+    anyhow::ensure!(ok != 0, "read actual kernel Event descriptor: {}", unsafe {
+        GetLastError()
+    });
+    let kernel_descriptor = kernel.as_mut_ptr().cast();
+    describe_actual_event_descriptor("GetKernelObjectSecurity", kernel_descriptor)?;
+    let info_check = assert_event_access(descriptor.0, first_token.0, true);
+    let kernel_check = assert_event_access(kernel_descriptor, first_token.0, true);
+    eprintln!(
+        "same real Event AccessCheck: GetSecurityInfo={info_check:?}, GetKernelObjectSecurity={kernel_check:?}"
+    );
+    info_check?;
+    kernel_check?;
     assert_event_access(descriptor.0, read_token.0, false)?;
     assert_event_access(descriptor.0, second_token.0, false)?;
     Ok(())
