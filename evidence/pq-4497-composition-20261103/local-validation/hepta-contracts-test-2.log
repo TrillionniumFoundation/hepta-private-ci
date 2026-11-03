@@ -1,0 +1,1794 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+    Updating git repository `https://github.com/openai-oss-forks/crossterm`
+    Updating git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+    Updating crates.io index
+    Updating git repository `https://github.com/dzbarsky/rules_rust`
+    Updating git repository `https://github.com/helix-editor/nucleo.git`
+ Downloading crates ...
+  Downloaded indexmap v2.14.2
+  Downloaded termtree v0.5.1
+  Downloaded anstyle v1.0.13
+  Downloaded toml_datetime v0.7.5+spec-1.1.0
+  Downloaded thiserror-impl v2.0.21
+  Downloaded zeroize v1.9.0
+  Downloaded bitflags v2.13.2
+  Downloaded autocfg v1.5.0
+  Downloaded predicates v3.1.3
+  Downloaded serde_spanned v1.1.1
+  Downloaded wait-timeout v0.2.1
+  Downloaded serde_derive v1.0.229
+  Downloaded predicates-core v1.0.9
+  Downloaded itoa v1.0.17
+  Downloaded predicates-tree v1.0.12
+  Downloaded pin-project-lite v0.2.17
+  Downloaded tokio-macros v2.7.0
+  Downloaded difflib v0.4.0
+  Downloaded diff v0.1.13
+  Downloaded assert_cmd v2.1.2
+  Downloaded toml_writer v1.0.6+spec-1.1.0
+  Downloaded serde v1.0.229
+  Downloaded unicode-ident v1.0.22
+  Downloaded zmij v1.0.19
+  Downloaded getrandom v0.4.3
+  Downloaded thiserror v2.0.21
+  Downloaded yansi v1.0.1
+  Downloaded toml v0.9.11+spec-1.1.0
+  Downloaded serde_core v1.0.229
+  Downloaded pretty_assertions v1.4.1
+  Downloaded typenum v1.20.0
+  Downloaded hashbrown v0.17.1
+  Downloaded serde_json v1.0.151
+  Downloaded winnow v0.7.14
+  Downloaded memchr v2.8.1
+  Downloaded syn v3.0.3
+  Downloaded bstr v1.12.1
+  Downloaded regex-automata v0.4.18
+  Downloaded tokio v1.53.1
+  Downloaded libc v0.2.186
+   Compiling proc-macro2 v1.0.106
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+   Compiling typenum v1.20.0
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.22
+   Compiling zeroize v1.9.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+   Compiling version_check v0.9.5
+   Compiling generic-array v0.14.7
+   Compiling cfg-if v1.0.4
+   Compiling cmov v0.5.4
+   Compiling ctutils v0.4.6
+   Compiling serde_core v1.0.229
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling libc v0.2.186
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+   Compiling hybrid-array v0.4.15
+   Compiling syn v2.0.117
+   Compiling syn v3.0.3
+   Compiling semver v1.0.27
+   Compiling const-oid v0.9.6
+   Compiling autocfg v1.5.0
+   Compiling num-traits v0.2.19
+   Compiling der v0.7.10
+   Compiling rustc_version v0.4.1
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling predicates-core v1.0.9
+   Compiling memchr v2.8.1
+   Compiling digest v0.10.7
+   Compiling digest v0.11.3
+   Compiling curve25519-dalek v4.1.3
+   Compiling spki v0.7.3
+   Compiling difflib v0.4.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling assert_cmd v2.1.2
+   Compiling cpufeatures v0.2.17
+   Compiling getrandom v0.4.3
+   Compiling rustix v1.1.4
+   Compiling regex-automata v0.4.18
+   Compiling anstyle v1.0.13
+   Compiling termtree v0.5.1
+   Compiling zmij v1.0.19
+   Compiling thiserror v2.0.21
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+   Compiling predicates-tree v1.0.12
+   Compiling predicates v3.1.3
+   Compiling bstr v1.12.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.1.2` which wasn't produced by cargo metadata
+   Compiling pkcs8 v0.10.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+   Compiling thiserror-impl v2.0.21
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling wait-timeout v0.2.1
+   Compiling keccak v0.2.2
+   Compiling sponge-cursor v0.1.0
+   Compiling winnow v1.0.4
+   Compiling serde v1.0.229
+   Compiling signature v2.2.0
+   Compiling linux-raw-sys v0.12.1
+   Compiling serde_json v1.0.151
+   Compiling subtle v2.6.1
+   Compiling bitflags v2.13.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+   Compiling ed25519 v2.2.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling shake v0.1.0
+   Compiling module-lattice v0.2.3
+   Compiling sha2 v0.10.9
+   Compiling signature v3.0.0
+   Compiling serde_derive v1.0.229
+   Compiling tokio-macros v2.7.0
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling itoa v1.0.17
+   Compiling once_cell v1.21.4
+   Compiling pin-project-lite v0.2.17
+   Compiling toml_writer v1.0.6+spec-1.1.0
+   Compiling winnow v0.7.14
+   Compiling fastrand v2.3.0
+   Compiling diff v0.1.13
+   Compiling runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/scratch/df0a4a720ed8/hepta-source/codex-rs/utils/cargo-bin)
+   Compiling tempfile v3.27.0
+   Compiling toml v0.9.11+spec-1.1.0
+   Compiling tokio v1.53.1
+   Compiling ml-dsa v0.1.1
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/df0a4a720ed8/hepta-source/codex-rs/hepta-contracts)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 20s
+────────────
+ Nextest run ID 9446d471-16c3-44b1-8d3e-f7f010062240 with nextest profile: local
+    Starting 195 tests across 1 binary
+       START [         ] (  1/195) codex-hepta-contracts agent_id::tests::canonical_id_is_stable_across_display_parse_and_serde
+
+running 1 test
+test agent_id::tests::canonical_id_is_stable_across_display_parse_and_serde ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (  1/195) codex-hepta-contracts agent_id::tests::canonical_id_is_stable_across_display_parse_and_serde
+       START [         ] (  2/195) codex-hepta-contracts agent_id::tests::deserialize_revalidates_untrusted_wire_value
+
+running 1 test
+test agent_id::tests::deserialize_revalidates_untrusted_wire_value ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  2/195) codex-hepta-contracts agent_id::tests::deserialize_revalidates_untrusted_wire_value
+       START [         ] (  3/195) codex-hepta-contracts agent_id::tests::noncanonical_or_directory_unsafe_ids_are_rejected
+
+running 1 test
+test agent_id::tests::noncanonical_or_directory_unsafe_ids_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  3/195) codex-hepta-contracts agent_id::tests::noncanonical_or_directory_unsafe_ids_are_rejected
+       START [         ] (  4/195) codex-hepta-contracts authbus::b1::tests::b1_identity_rejects_same_uid_and_forwarded_unknown_claims
+
+running 1 test
+test authbus::b1::tests::b1_identity_rejects_same_uid_and_forwarded_unknown_claims ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (  4/195) codex-hepta-contracts authbus::b1::tests::b1_identity_rejects_same_uid_and_forwarded_unknown_claims
+       START [         ] (  5/195) codex-hepta-contracts authbus::b1::tests::b1_identity_requires_full_peer_binding_and_derived_subject_digest
+
+running 1 test
+test authbus::b1::tests::b1_identity_requires_full_peer_binding_and_derived_subject_digest ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (  5/195) codex-hepta-contracts authbus::b1::tests::b1_identity_requires_full_peer_binding_and_derived_subject_digest
+       START [         ] (  6/195) codex-hepta-contracts authbus::b1::tests::b1_identity_wire_is_strict_and_authority_is_default_false
+
+running 1 test
+test authbus::b1::tests::b1_identity_wire_is_strict_and_authority_is_default_false ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (  6/195) codex-hepta-contracts authbus::b1::tests::b1_identity_wire_is_strict_and_authority_is_default_false
+       START [         ] (  7/195) codex-hepta-contracts authbus::b1::tests::b1_profile_is_exact_default_deny_and_key_generation_forbidden
+
+running 1 test
+test authbus::b1::tests::b1_profile_is_exact_default_deny_and_key_generation_forbidden ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] (  7/195) codex-hepta-contracts authbus::b1::tests::b1_profile_is_exact_default_deny_and_key_generation_forbidden
+       START [         ] (  8/195) codex-hepta-contracts authbus::b1::tests::b1_profile_rejects_route_or_descriptor_tampering
+
+running 1 test
+test authbus::b1::tests::b1_profile_rejects_route_or_descriptor_tampering ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] (  8/195) codex-hepta-contracts authbus::b1::tests::b1_profile_rejects_route_or_descriptor_tampering
+       START [         ] (  9/195) codex-hepta-contracts authbus::b1::tests::b1_registration_requires_unambiguous_algorithm_and_backend_binding
+
+running 1 test
+test authbus::b1::tests::b1_registration_requires_unambiguous_algorithm_and_backend_binding ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  9/195) codex-hepta-contracts authbus::b1::tests::b1_registration_requires_unambiguous_algorithm_and_backend_binding
+       START [         ] ( 10/195) codex-hepta-contracts authbus::b2::tests::b2_attenuation_clock_and_advertisement_bounds_fail_closed
+
+running 1 test
+test authbus::b2::tests::b2_attenuation_clock_and_advertisement_bounds_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 10/195) codex-hepta-contracts authbus::b2::tests::b2_attenuation_clock_and_advertisement_bounds_fail_closed
+       START [         ] ( 11/195) codex-hepta-contracts authbus::b2::tests::b2_contracts_validate_and_have_golden_digests
+
+running 1 test
+test authbus::b2::tests::b2_contracts_validate_and_have_golden_digests ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 11/195) codex-hepta-contracts authbus::b2::tests::b2_contracts_validate_and_have_golden_digests
+       START [         ] ( 12/195) codex-hepta-contracts authbus::b2::tests::b2_peer_and_resource_wire_round_trip_is_secret_free
+
+running 1 test
+test authbus::b2::tests::b2_peer_and_resource_wire_round_trip_is_secret_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.009s] ( 12/195) codex-hepta-contracts authbus::b2::tests::b2_peer_and_resource_wire_round_trip_is_secret_free
+       START [         ] ( 13/195) codex-hepta-contracts authbus::b2::tests::b2_provider_status_cas_is_fail_closed
+
+running 1 test
+test authbus::b2::tests::b2_provider_status_cas_is_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 13/195) codex-hepta-contracts authbus::b2::tests::b2_provider_status_cas_is_fail_closed
+       START [         ] ( 14/195) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_cas_is_terminal_and_idempotent
+
+running 1 test
+test authbus::b2::tests::b2_quota_reservation_cas_is_terminal_and_idempotent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 14/195) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_cas_is_terminal_and_idempotent
+       START [         ] ( 15/195) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_state_set_matches_registry_v13
+
+running 1 test
+test authbus::b2::tests::b2_quota_reservation_state_set_matches_registry_v13 ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 15/195) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_state_set_matches_registry_v13
+       START [         ] ( 16/195) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_transition_matrix_is_closed
+
+running 1 test
+test authbus::b2::tests::b2_quota_reservation_transition_matrix_is_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.018s] ( 16/195) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_transition_matrix_is_closed
+       START [         ] ( 17/195) codex-hepta-contracts authbus::b2::tests::b2_subject_epochs_and_fences_reject_stale_values
+
+running 1 test
+test authbus::b2::tests::b2_subject_epochs_and_fences_reject_stale_values ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 17/195) codex-hepta-contracts authbus::b2::tests::b2_subject_epochs_and_fences_reject_stale_values
+       START [         ] ( 18/195) codex-hepta-contracts authbus::b2::tests::b2_wire_shapes_are_strict_and_authority_defaults_false
+
+running 1 test
+test authbus::b2::tests::b2_wire_shapes_are_strict_and_authority_defaults_false ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 18/195) codex-hepta-contracts authbus::b2::tests::b2_wire_shapes_are_strict_and_authority_defaults_false
+       START [         ] ( 19/195) codex-hepta-contracts authbus::b3::tests::callback_events_require_current_fence_and_reject_stale_without_mutation
+
+running 1 test
+test authbus::b3::tests::callback_events_require_current_fence_and_reject_stale_without_mutation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 19/195) codex-hepta-contracts authbus::b3::tests::callback_events_require_current_fence_and_reject_stale_without_mutation
+       START [         ] ( 20/195) codex-hepta-contracts authbus::b3::tests::indeterminate_and_quarantine_forbid_new_refs
+
+running 1 test
+test authbus::b3::tests::indeterminate_and_quarantine_forbid_new_refs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 20/195) codex-hepta-contracts authbus::b3::tests::indeterminate_and_quarantine_forbid_new_refs
+       START [         ] ( 21/195) codex-hepta-contracts authbus::b3::tests::mutation_binding_rejects_epoch_generation_fence_and_payload_tamper
+
+running 1 test
+test authbus::b3::tests::mutation_binding_rejects_epoch_generation_fence_and_payload_tamper ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 21/195) codex-hepta-contracts authbus::b3::tests::mutation_binding_rejects_epoch_generation_fence_and_payload_tamper
+       START [         ] ( 22/195) codex-hepta-contracts authbus::b3::tests::operation_key_and_id_are_deterministically_bound
+
+running 1 test
+test authbus::b3::tests::operation_key_and_id_are_deterministically_bound ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 22/195) codex-hepta-contracts authbus::b3::tests::operation_key_and_id_are_deterministically_bound
+       START [         ] ( 23/195) codex-hepta-contracts authbus::b3::tests::raw_secret_fields_and_unknown_fields_are_rejected
+
+running 1 test
+test authbus::b3::tests::raw_secret_fields_and_unknown_fields_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 23/195) codex-hepta-contracts authbus::b3::tests::raw_secret_fields_and_unknown_fields_are_rejected
+       START [         ] ( 24/195) codex-hepta-contracts authbus::b3::tests::refresh_success_requires_opaque_refs_and_advancing_revision
+
+running 1 test
+test authbus::b3::tests::refresh_success_requires_opaque_refs_and_advancing_revision ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 24/195) codex-hepta-contracts authbus::b3::tests::refresh_success_requires_opaque_refs_and_advancing_revision
+       START [         ] ( 25/195) codex-hepta-contracts authbus::b3::tests::retry_budget_error_does_not_partially_mutate_record
+
+running 1 test
+test authbus::b3::tests::retry_budget_error_does_not_partially_mutate_record ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 25/195) codex-hepta-contracts authbus::b3::tests::retry_budget_error_does_not_partially_mutate_record
+       START [         ] ( 26/195) codex-hepta-contracts authbus::b3::tests::rotation_wire_shape_is_strict_and_terminal_rules_hold
+
+running 1 test
+test authbus::b3::tests::rotation_wire_shape_is_strict_and_terminal_rules_hold ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 26/195) codex-hepta-contracts authbus::b3::tests::rotation_wire_shape_is_strict_and_terminal_rules_hold
+       START [         ] ( 27/195) codex-hepta-contracts authbus::b3::tests::state_machine_is_fail_closed_after_response_loss
+
+running 1 test
+test authbus::b3::tests::state_machine_is_fail_closed_after_response_loss ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 27/195) codex-hepta-contracts authbus::b3::tests::state_machine_is_fail_closed_after_response_loss
+       START [         ] ( 28/195) codex-hepta-contracts authbus::b3::tests::status_lookup_is_binding_checked_and_lookup_only
+
+running 1 test
+test authbus::b3::tests::status_lookup_is_binding_checked_and_lookup_only ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 28/195) codex-hepta-contracts authbus::b3::tests::status_lookup_is_binding_checked_and_lookup_only
+       START [         ] ( 29/195) codex-hepta-contracts authbus_b4::tests::b4_atomic_hold_and_release_prevent_oversell
+
+running 1 test
+test authbus_b4::tests::b4_atomic_hold_and_release_prevent_oversell ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 29/195) codex-hepta-contracts authbus_b4::tests::b4_atomic_hold_and_release_prevent_oversell
+       START [         ] ( 30/195) codex-hepta-contracts authbus_b4::tests::b4_authority_flags_and_resource_states_are_explicitly_non_production
+
+running 1 test
+test authbus_b4::tests::b4_authority_flags_and_resource_states_are_explicitly_non_production ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 30/195) codex-hepta-contracts authbus_b4::tests::b4_authority_flags_and_resource_states_are_explicitly_non_production
+       START [         ] ( 31/195) codex-hepta-contracts authbus_b4::tests::b4_completion_and_release_overflow_are_transactional
+
+running 1 test
+test authbus_b4::tests::b4_completion_and_release_overflow_are_transactional ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 31/195) codex-hepta-contracts authbus_b4::tests::b4_completion_and_release_overflow_are_transactional
+       START [         ] ( 32/195) codex-hepta-contracts authbus_b4::tests::b4_cooldown_deadline_and_unavailable_states_fail_closed
+
+running 1 test
+test authbus_b4::tests::b4_cooldown_deadline_and_unavailable_states_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 32/195) codex-hepta-contracts authbus_b4::tests::b4_cooldown_deadline_and_unavailable_states_fail_closed
+       START [         ] ( 33/195) codex-hepta-contracts authbus_b4::tests::b4_default_denies_unknown_quota_without_mutating_head
+
+running 1 test
+test authbus_b4::tests::b4_default_denies_unknown_quota_without_mutating_head ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 33/195) codex-hepta-contracts authbus_b4::tests::b4_default_denies_unknown_quota_without_mutating_head
+       START [         ] ( 34/195) codex-hepta-contracts authbus_b4::tests::b4_duplicate_and_stale_callbacks_are_side_effect_free
+
+running 1 test
+test authbus_b4::tests::b4_duplicate_and_stale_callbacks_are_side_effect_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 34/195) codex-hepta-contracts authbus_b4::tests::b4_duplicate_and_stale_callbacks_are_side_effect_free
+       START [         ] ( 35/195) codex-hepta-contracts authbus_b4::tests::b4_edf_within_subject_and_jain_fairness_are_deterministic
+
+running 1 test
+test authbus_b4::tests::b4_edf_within_subject_and_jain_fairness_are_deterministic ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.009s] ( 35/195) codex-hepta-contracts authbus_b4::tests::b4_edf_within_subject_and_jain_fairness_are_deterministic
+       START [         ] ( 36/195) codex-hepta-contracts authbus_b4::tests::b4_enqueue_counter_overflow_is_transactional
+
+running 1 test
+test authbus_b4::tests::b4_enqueue_counter_overflow_is_transactional ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 36/195) codex-hepta-contracts authbus_b4::tests::b4_enqueue_counter_overflow_is_transactional
+       START [         ] ( 37/195) codex-hepta-contracts authbus_b4::tests::b4_grant_counter_overflow_is_transactional
+
+running 1 test
+test authbus_b4::tests::b4_grant_counter_overflow_is_transactional ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 37/195) codex-hepta-contracts authbus_b4::tests::b4_grant_counter_overflow_is_transactional
+       START [         ] ( 38/195) codex-hepta-contracts authbus_b4::tests::b4_safety_margin_is_counted_once_and_payload_conflict_is_non_mutating
+
+running 1 test
+test authbus_b4::tests::b4_safety_margin_is_counted_once_and_payload_conflict_is_non_mutating ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 38/195) codex-hepta-contracts authbus_b4::tests::b4_safety_margin_is_counted_once_and_payload_conflict_is_non_mutating
+       START [         ] ( 39/195) codex-hepta-contracts authbus_b5::tests::b5_dispatch_responses_and_lookup_uncertainty_are_explicit
+
+running 1 test
+test authbus_b5::tests::b5_dispatch_responses_and_lookup_uncertainty_are_explicit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 39/195) codex-hepta-contracts authbus_b5::tests::b5_dispatch_responses_and_lookup_uncertainty_are_explicit
+       START [         ] ( 40/195) codex-hepta-contracts authbus_b5::tests::b5_fault_matrix_keeps_rpo_zero_for_one_thousand_crash_points
+
+running 1 test
+test authbus_b5::tests::b5_fault_matrix_keeps_rpo_zero_for_one_thousand_crash_points ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.36s
+
+        PASS [   0.364s] ( 40/195) codex-hepta-contracts authbus_b5::tests::b5_fault_matrix_keeps_rpo_zero_for_one_thousand_crash_points
+       START [         ] ( 41/195) codex-hepta-contracts authbus_b5::tests::b5_fsync_before_call_and_crash_recovery_are_lookup_only
+
+running 1 test
+test authbus_b5::tests::b5_fsync_before_call_and_crash_recovery_are_lookup_only ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 41/195) codex-hepta-contracts authbus_b5::tests::b5_fsync_before_call_and_crash_recovery_are_lookup_only
+       START [         ] ( 42/195) codex-hepta-contracts authbus_b5::tests::b5_lookup_terminal_ack_is_bound_and_terminal_replay_is_immutable
+
+running 1 test
+test authbus_b5::tests::b5_lookup_terminal_ack_is_bound_and_terminal_replay_is_immutable ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 42/195) codex-hepta-contracts authbus_b5::tests::b5_lookup_terminal_ack_is_bound_and_terminal_replay_is_immutable
+       START [         ] ( 43/195) codex-hepta-contracts authbus_b5::tests::b5_outbox_dedupe_and_payload_conflict_are_side_effect_free
+
+running 1 test
+test authbus_b5::tests::b5_outbox_dedupe_and_payload_conflict_are_side_effect_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 43/195) codex-hepta-contracts authbus_b5::tests::b5_outbox_dedupe_and_payload_conflict_are_side_effect_free
+       START [         ] ( 44/195) codex-hepta-contracts authbus_b5::tests::b5_recovery_snapshot_maps_unknown_intent_to_safe_stop
+
+running 1 test
+test authbus_b5::tests::b5_recovery_snapshot_maps_unknown_intent_to_safe_stop ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 44/195) codex-hepta-contracts authbus_b5::tests::b5_recovery_snapshot_maps_unknown_intent_to_safe_stop
+       START [         ] ( 45/195) codex-hepta-contracts authbus_b5::tests::b5_reopen_rejects_corrupt_hash_or_missing_fsync_witness
+
+running 1 test
+test authbus_b5::tests::b5_reopen_rejects_corrupt_hash_or_missing_fsync_witness ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 45/195) codex-hepta-contracts authbus_b5::tests::b5_reopen_rejects_corrupt_hash_or_missing_fsync_witness
+       START [         ] ( 46/195) codex-hepta-contracts authbus_b5::tests::b5_unknown_intent_and_stale_fence_stop_without_dispatch
+
+running 1 test
+test authbus_b5::tests::b5_unknown_intent_and_stale_fence_stop_without_dispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 46/195) codex-hepta-contracts authbus_b5::tests::b5_unknown_intent_and_stale_fence_stop_without_dispatch
+       START [         ] ( 47/195) codex-hepta-contracts authbus_b5::tests::b5_unknown_lookup_remains_indeterminate_and_blocks_new_attempt
+
+running 1 test
+test authbus_b5::tests::b5_unknown_lookup_remains_indeterminate_and_blocks_new_attempt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 47/195) codex-hepta-contracts authbus_b5::tests::b5_unknown_lookup_remains_indeterminate_and_blocks_new_attempt
+       START [         ] ( 48/195) codex-hepta-contracts authbus_tests::auth_request_fences_subject_generation
+
+running 1 test
+test authbus_tests::auth_request_fences_subject_generation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 48/195) codex-hepta-contracts authbus_tests::auth_request_fences_subject_generation
+       START [         ] ( 49/195) codex-hepta-contracts authbus_tests::auth_request_has_stable_versioned_golden_bytes
+
+running 1 test
+test authbus_tests::auth_request_has_stable_versioned_golden_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 49/195) codex-hepta-contracts authbus_tests::auth_request_has_stable_versioned_golden_bytes
+       START [         ] ( 50/195) codex-hepta-contracts authbus_tests::lease_cas_epoch_and_permit_binding_are_strict
+
+running 1 test
+test authbus_tests::lease_cas_epoch_and_permit_binding_are_strict ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 50/195) codex-hepta-contracts authbus_tests::lease_cas_epoch_and_permit_binding_are_strict
+       START [         ] ( 51/195) codex-hepta-contracts authbus_tests::revoke_binds_owner_revision_and_epoch
+
+running 1 test
+test authbus_tests::revoke_binds_owner_revision_and_epoch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 51/195) codex-hepta-contracts authbus_tests::revoke_binds_owner_revision_and_epoch
+       START [         ] ( 52/195) codex-hepta-contracts authbus_tests::source_manifest_accepts_matching_observed_candidate_binding
+
+running 1 test
+test authbus_tests::source_manifest_accepts_matching_observed_candidate_binding ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 52/195) codex-hepta-contracts authbus_tests::source_manifest_accepts_matching_observed_candidate_binding
+       START [         ] ( 53/195) codex-hepta-contracts authbus_tests::source_manifest_fixture_is_pinned_and_fail_closed
+
+running 1 test
+test authbus_tests::source_manifest_fixture_is_pinned_and_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 53/195) codex-hepta-contracts authbus_tests::source_manifest_fixture_is_pinned_and_fail_closed
+       START [         ] ( 54/195) codex-hepta-contracts authbus_tests::source_manifest_rejects_authority_and_unknown_fields
+
+running 1 test
+test authbus_tests::source_manifest_rejects_authority_and_unknown_fields ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 54/195) codex-hepta-contracts authbus_tests::source_manifest_rejects_authority_and_unknown_fields
+       START [         ] ( 55/195) codex-hepta-contracts authbus_tests::source_manifest_rejects_malformed_expected_candidate_binding
+
+running 1 test
+test authbus_tests::source_manifest_rejects_malformed_expected_candidate_binding ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 55/195) codex-hepta-contracts authbus_tests::source_manifest_rejects_malformed_expected_candidate_binding
+       START [         ] ( 56/195) codex-hepta-contracts authbus_tests::source_manifest_requires_exact_observed_candidate_binding
+
+running 1 test
+test authbus_tests::source_manifest_requires_exact_observed_candidate_binding ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 56/195) codex-hepta-contracts authbus_tests::source_manifest_requires_exact_observed_candidate_binding
+       START [         ] ( 57/195) codex-hepta-contracts authbus_tests::usage_permit_rejects_subject_generation_mismatch
+
+running 1 test
+test authbus_tests::usage_permit_rejects_subject_generation_mismatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 57/195) codex-hepta-contracts authbus_tests::usage_permit_rejects_subject_generation_mismatch
+       START [         ] ( 58/195) codex-hepta-contracts authbus_tests::usage_receipt_binds_permit_and_preserves_indeterminate
+
+running 1 test
+test authbus_tests::usage_receipt_binds_permit_and_preserves_indeterminate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 58/195) codex-hepta-contracts authbus_tests::usage_receipt_binds_permit_and_preserves_indeterminate
+       START [         ] ( 59/195) codex-hepta-contracts authbus_tests::wire_round_trip_is_strict_and_secret_free
+
+running 1 test
+test authbus_tests::wire_round_trip_is_strict_and_secret_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 59/195) codex-hepta-contracts authbus_tests::wire_round_trip_is_strict_and_secret_free
+       START [         ] ( 60/195) codex-hepta-contracts authority_lease::tests::bounded_prune_reclaims_only_expired_unrevoked_leases
+
+running 1 test
+test authority_lease::tests::bounded_prune_reclaims_only_expired_unrevoked_leases ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.17s
+
+        PASS [   0.181s] ( 60/195) codex-hepta-contracts authority_lease::tests::bounded_prune_reclaims_only_expired_unrevoked_leases
+       START [         ] ( 61/195) codex-hepta-contracts authority_lease::tests::dispatch_boundary_serializes_revocation_until_local_entry_returns
+
+running 1 test
+test authority_lease::tests::dispatch_boundary_serializes_revocation_until_local_entry_returns ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.11s
+
+        PASS [   0.122s] ( 61/195) codex-hepta-contracts authority_lease::tests::dispatch_boundary_serializes_revocation_until_local_entry_returns
+       START [         ] ( 62/195) codex-hepta-contracts authority_lease::tests::epoch_rollover_is_durable_and_clears_bounded_history
+
+running 1 test
+test authority_lease::tests::epoch_rollover_is_durable_and_clears_bounded_history ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 62/195) codex-hepta-contracts authority_lease::tests::epoch_rollover_is_durable_and_clears_bounded_history
+       START [         ] ( 63/195) codex-hepta-contracts authority_lease::tests::epoch_rollover_is_the_only_revision_lineage_reset
+
+running 1 test
+test authority_lease::tests::epoch_rollover_is_the_only_revision_lineage_reset ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.015s] ( 63/195) codex-hepta-contracts authority_lease::tests::epoch_rollover_is_the_only_revision_lineage_reset
+       START [         ] ( 64/195) codex-hepta-contracts authority_lease::tests::external_frontier_ahead_after_local_commit_failure_fences_reopen
+
+running 1 test
+test authority_lease::tests::external_frontier_ahead_after_local_commit_failure_fences_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 64/195) codex-hepta-contracts authority_lease::tests::external_frontier_ahead_after_local_commit_failure_fences_reopen
+       START [         ] ( 65/195) codex-hepta-contracts authority_lease::tests::external_frontier_detects_old_snapshot_and_missing_store_reset
+
+running 1 test
+test authority_lease::tests::external_frontier_detects_old_snapshot_and_missing_store_reset ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.015s] ( 65/195) codex-hepta-contracts authority_lease::tests::external_frontier_detects_old_snapshot_and_missing_store_reset
+       START [         ] ( 66/195) codex-hepta-contracts authority_lease::tests::lease_is_durable_verified_and_cas_revoked
+
+running 1 test
+test authority_lease::tests::lease_is_durable_verified_and_cas_revoked ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.010s] ( 66/195) codex-hepta-contracts authority_lease::tests::lease_is_durable_verified_and_cas_revoked
+       START [         ] ( 67/195) codex-hepta-contracts authority_lease::tests::maximum_declared_state_shape_fits_restart_read_envelope
+
+running 1 test
+test authority_lease::tests::maximum_declared_state_shape_fits_restart_read_envelope ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 1.14s
+
+        PASS [   1.149s] ( 67/195) codex-hepta-contracts authority_lease::tests::maximum_declared_state_shape_fits_restart_read_envelope
+       START [         ] ( 68/195) codex-hepta-contracts authority_lease::tests::production_frontier_cas_detects_restored_local_snapshot
+
+running 1 test
+test authority_lease::tests::production_frontier_cas_detects_restored_local_snapshot ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.011s] ( 68/195) codex-hepta-contracts authority_lease::tests::production_frontier_cas_detects_restored_local_snapshot
+       START [         ] ( 69/195) codex-hepta-contracts authority_lease::tests::pruned_lease_id_preserves_monotonic_revision_lineage
+
+running 1 test
+test authority_lease::tests::pruned_lease_id_preserves_monotonic_revision_lineage ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.011s] ( 69/195) codex-hepta-contracts authority_lease::tests::pruned_lease_id_preserves_monotonic_revision_lineage
+       START [         ] ( 70/195) codex-hepta-contracts authority_lease::tests::revoke_retry_reuses_server_owned_timestamp
+
+running 1 test
+test authority_lease::tests::revoke_retry_reuses_server_owned_timestamp ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.014s] ( 70/195) codex-hepta-contracts authority_lease::tests::revoke_retry_reuses_server_owned_timestamp
+       START [         ] ( 71/195) codex-hepta-contracts authority_lease::tests::stale_cas_and_binding_drift_fail_closed
+
+running 1 test
+test authority_lease::tests::stale_cas_and_binding_drift_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.010s] ( 71/195) codex-hepta-contracts authority_lease::tests::stale_cas_and_binding_drift_fail_closed
+       START [         ] ( 72/195) codex-hepta-contracts authority_lease::tests::token_is_invalidated_by_lease_replacement
+
+running 1 test
+test authority_lease::tests::token_is_invalidated_by_lease_replacement ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.014s] ( 72/195) codex-hepta-contracts authority_lease::tests::token_is_invalidated_by_lease_replacement
+       START [         ] ( 73/195) codex-hepta-contracts authority_lease::tests::verified_use_releases_owner_lock_before_consumer_code
+
+running 1 test
+test authority_lease::tests::verified_use_releases_owner_lock_before_consumer_code ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.014s] ( 73/195) codex-hepta-contracts authority_lease::tests::verified_use_releases_owner_lock_before_consumer_code
+       START [         ] ( 74/195) codex-hepta-contracts authority_lease::tests::verified_use_witness_binds_current_lease_and_store_revision
+
+running 1 test
+test authority_lease::tests::verified_use_witness_binds_current_lease_and_store_revision ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 74/195) codex-hepta-contracts authority_lease::tests::verified_use_witness_binds_current_lease_and_store_revision
+       START [         ] ( 75/195) codex-hepta-contracts authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart
+
+running 1 test
+
+thread 'authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart' (1540) panicked at hepta-contracts/src/authority_trust_unix_tests.rs:64:57:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart ... FAILED
+
+failures:
+
+failures:
+    authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+  TRY 1 FAIL [   0.009s] (───────) codex-hepta-contracts authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart
+ TRY 2 START [         ] (───────) codex-hepta-contracts authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart
+
+running 1 test
+
+thread 'authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart' (1542) panicked at hepta-contracts/src/authority_trust_unix_tests.rs:64:57:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart ... FAILED
+
+failures:
+
+failures:
+    authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+  TRY 2 FAIL [   0.005s] ( 75/195) codex-hepta-contracts authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart
+       START [         ] ( 76/195) codex-hepta-contracts authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry
+
+running 1 test
+
+thread 'authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry' (1544) panicked at hepta-contracts/src/authority_trust_unix_tests.rs:64:57:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry ... FAILED
+
+failures:
+
+failures:
+    authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+  TRY 1 FAIL [   0.008s] (───────) codex-hepta-contracts authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry
+ TRY 2 START [         ] (───────) codex-hepta-contracts authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry
+
+running 1 test
+
+thread 'authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry' (1546) panicked at hepta-contracts/src/authority_trust_unix_tests.rs:64:57:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry ... FAILED
+
+failures:
+
+failures:
+    authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+  TRY 2 FAIL [   0.006s] ( 76/195) codex-hepta-contracts authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry
+       START [         ] ( 77/195) codex-hepta-contracts authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state
+
+running 1 test
+
+thread 'authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state' (1548) panicked at hepta-contracts/src/authority_trust_unix_tests.rs:64:57:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state ... FAILED
+
+failures:
+
+failures:
+    authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+  TRY 1 FAIL [   0.010s] (───────) codex-hepta-contracts authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state
+ TRY 2 START [         ] (───────) codex-hepta-contracts authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state
+
+running 1 test
+
+thread 'authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state' (1550) panicked at hepta-contracts/src/authority_trust_unix_tests.rs:64:57:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state ... FAILED
+
+failures:
+
+failures:
+    authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+  TRY 2 FAIL [   0.008s] ( 77/195) codex-hepta-contracts authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state
+       START [         ] ( 78/195) codex-hepta-contracts callers_manifest_tests::callers_manifest_entries_are_unique_and_well_formed
+
+running 1 test
+test callers_manifest_tests::callers_manifest_entries_are_unique_and_well_formed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.009s] ( 78/195) codex-hepta-contracts callers_manifest_tests::callers_manifest_entries_are_unique_and_well_formed
+       START [         ] ( 79/195) codex-hepta-contracts callers_manifest_tests::callers_manifest_records_the_live_product_chain
+
+running 1 test
+test callers_manifest_tests::callers_manifest_records_the_live_product_chain ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.009s] ( 79/195) codex-hepta-contracts callers_manifest_tests::callers_manifest_records_the_live_product_chain
+       START [         ] ( 80/195) codex-hepta-contracts callers_manifest_tests::callers_manifest_schema_and_cutoff_are_frozen
+
+running 1 test
+test callers_manifest_tests::callers_manifest_schema_and_cutoff_are_frozen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.010s] ( 80/195) codex-hepta-contracts callers_manifest_tests::callers_manifest_schema_and_cutoff_are_frozen
+       START [         ] ( 81/195) codex-hepta-contracts callers_manifest_tests::g3_intelligence_kg_truth_bounds_qualification_without_hiding_later_candidates
+
+running 1 test
+test callers_manifest_tests::g3_intelligence_kg_truth_bounds_qualification_without_hiding_later_candidates ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.009s] ( 81/195) codex-hepta-contracts callers_manifest_tests::g3_intelligence_kg_truth_bounds_qualification_without_hiding_later_candidates
+       START [         ] ( 82/195) codex-hepta-contracts callers_manifest_tests::g4_matrix_robrix_truth_matches_paired_exact_candidate_qualification
+
+running 1 test
+test callers_manifest_tests::g4_matrix_robrix_truth_matches_paired_exact_candidate_qualification ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.012s] ( 82/195) codex-hepta-contracts callers_manifest_tests::g4_matrix_robrix_truth_matches_paired_exact_candidate_qualification
+       START [         ] ( 83/195) codex-hepta-contracts callers_manifest_tests::g5_bounded_expansion_binds_exact_combined_head_and_stays_evidence_only
+
+running 1 test
+test callers_manifest_tests::g5_bounded_expansion_binds_exact_combined_head_and_stays_evidence_only ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.011s] ( 83/195) codex-hepta-contracts callers_manifest_tests::g5_bounded_expansion_binds_exact_combined_head_and_stays_evidence_only
+       START [         ] ( 84/195) codex-hepta-contracts callers_manifest_tests::g5_crash_recovery_ratchet_binds_exact_head_and_stays_fail_closed
+
+running 1 test
+test callers_manifest_tests::g5_crash_recovery_ratchet_binds_exact_head_and_stays_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.011s] ( 84/195) codex-hepta-contracts callers_manifest_tests::g5_crash_recovery_ratchet_binds_exact_head_and_stays_fail_closed
+       START [         ] ( 85/195) codex-hepta-contracts callers_manifest_tests::g5_fleet_automation_truth_matches_bounded_candidate_and_stays_fail_closed
+
+running 1 test
+test callers_manifest_tests::g5_fleet_automation_truth_matches_bounded_candidate_and_stays_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.011s] ( 85/195) codex-hepta-contracts callers_manifest_tests::g5_fleet_automation_truth_matches_bounded_candidate_and_stays_fail_closed
+       START [         ] ( 86/195) codex-hepta-contracts callers_manifest_tests::legacy_caller_zero_surfaces_are_explicitly_retired
+
+running 1 test
+test callers_manifest_tests::legacy_caller_zero_surfaces_are_explicitly_retired ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.011s] ( 86/195) codex-hepta-contracts callers_manifest_tests::legacy_caller_zero_surfaces_are_explicitly_retired
+       START [         ] ( 87/195) codex-hepta-contracts callers_manifest_tests::qualification_crates_are_excluded_from_product_callers
+
+running 1 test
+test callers_manifest_tests::qualification_crates_are_excluded_from_product_callers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.013s] ( 87/195) codex-hepta-contracts callers_manifest_tests::qualification_crates_are_excluded_from_product_callers
+       START [         ] ( 88/195) codex-hepta-contracts canonical::tests::length_delimited_sha256_counts_utf8_bytes
+
+running 1 test
+test canonical::tests::length_delimited_sha256_counts_utf8_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 88/195) codex-hepta-contracts canonical::tests::length_delimited_sha256_counts_utf8_bytes
+       START [         ] ( 89/195) codex-hepta-contracts final_use::store::tests::incompatible_experimental_pq_store_is_rejected_without_resetting_claims
+
+running 1 test
+test final_use::store::tests::incompatible_experimental_pq_store_is_rejected_without_resetting_claims ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.027s] ( 89/195) codex-hepta-contracts final_use::store::tests::incompatible_experimental_pq_store_is_rejected_without_resetting_claims
+       START [         ] ( 90/195) codex-hepta-contracts final_use::store::tests::legacy_journal_keeps_trust_binding_and_exact_head_checks
+
+running 1 test
+test final_use::store::tests::legacy_journal_keeps_trust_binding_and_exact_head_checks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.11s
+
+        PASS [   0.113s] ( 90/195) codex-hepta-contracts final_use::store::tests::legacy_journal_keeps_trust_binding_and_exact_head_checks
+       START [         ] ( 91/195) codex-hepta-contracts final_use::store::tests::legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims
+
+running 1 test
+test final_use::store::tests::legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.018s] ( 91/195) codex-hepta-contracts final_use::store::tests::legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims
+       START [         ] ( 92/195) codex-hepta-contracts final_use::store::tests::legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change
+
+running 1 test
+test final_use::store::tests::legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.01s
+
+        PASS [   0.013s] ( 92/195) codex-hepta-contracts final_use::store::tests::legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change
+       START [         ] ( 93/195) codex-hepta-contracts final_use::tests::async_effect_entry_is_denied_if_revoked_after_claim_before_entry
+
+running 1 test
+test final_use::tests::async_effect_entry_is_denied_if_revoked_after_claim_before_entry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.026s] ( 93/195) codex-hepta-contracts final_use::tests::async_effect_entry_is_denied_if_revoked_after_claim_before_entry
+       START [         ] ( 94/195) codex-hepta-contracts final_use::tests::async_effect_entry_rechecks_revocation_and_consumes_the_token
+
+running 1 test
+test final_use::tests::async_effect_entry_rechecks_revocation_and_consumes_the_token ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.022s] ( 94/195) codex-hepta-contracts final_use::tests::async_effect_entry_rechecks_revocation_and_consumes_the_token
+       START [         ] ( 95/195) codex-hepta-contracts final_use::tests::async_final_use_fence_survives_pending_and_releases_on_cancellation
+
+running 1 test
+test final_use::tests::async_final_use_fence_survives_pending_and_releases_on_cancellation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.022s] ( 95/195) codex-hepta-contracts final_use::tests::async_final_use_fence_survives_pending_and_releases_on_cancellation
+       START [         ] ( 96/195) codex-hepta-contracts final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files
+
+running 1 test
+test final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 96/195) codex-hepta-contracts final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files
+       START [         ] ( 97/195) codex-hepta-contracts final_use::tests::capacity_snapshot_tracks_claims_revocations_and_epoch_rollover
+
+running 1 test
+test final_use::tests::capacity_snapshot_tracks_claims_revocations_and_epoch_rollover ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.028s] ( 97/195) codex-hepta-contracts final_use::tests::capacity_snapshot_tracks_claims_revocations_and_epoch_rollover
+       START [         ] ( 98/195) codex-hepta-contracts final_use::tests::changing_signed_data_or_substituting_a_key_does_not_authorize
+
+running 1 test
+test final_use::tests::changing_signed_data_or_substituting_a_key_does_not_authorize ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.03s
+
+        PASS [   0.037s] ( 98/195) codex-hepta-contracts final_use::tests::changing_signed_data_or_substituting_a_key_does_not_authorize
+       START [         ] ( 99/195) codex-hepta-contracts final_use::tests::epoch_change_fences_outstanding_claims_and_old_grants
+
+running 1 test
+test final_use::tests::epoch_change_fences_outstanding_claims_and_old_grants ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.03s
+
+        PASS [   0.041s] ( 99/195) codex-hepta-contracts final_use::tests::epoch_change_fences_outstanding_claims_and_old_grants
+       START [         ] (100/195) codex-hepta-contracts final_use::tests::expired_grant_is_denied_using_verifier_clock
+
+running 1 test
+test final_use::tests::expired_grant_is_denied_using_verifier_clock ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.026s] (100/195) codex-hepta-contracts final_use::tests::expired_grant_is_denied_using_verifier_clock
+       START [         ] (101/195) codex-hepta-contracts final_use::tests::external_final_use_frontier_ahead_after_local_failure_fences_reopen
+
+running 1 test
+test final_use::tests::external_final_use_frontier_ahead_after_local_failure_fences_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.024s] (101/195) codex-hepta-contracts final_use::tests::external_final_use_frontier_ahead_after_local_failure_fences_reopen
+       START [         ] (102/195) codex-hepta-contracts final_use::tests::external_final_use_frontier_detects_restored_claim_snapshot
+
+running 1 test
+test final_use::tests::external_final_use_frontier_detects_restored_claim_snapshot ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.023s] (102/195) codex-hepta-contracts final_use::tests::external_final_use_frontier_detects_restored_claim_snapshot
+       START [         ] (103/195) codex-hepta-contracts final_use::tests::injected_clock_is_the_only_final_use_time_source
+
+running 1 test
+test final_use::tests::injected_clock_is_the_only_final_use_time_source ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.023s] (103/195) codex-hepta-contracts final_use::tests::injected_clock_is_the_only_final_use_time_source
+       START [         ] (104/195) codex-hepta-contracts final_use::tests::issuer_key_ring_supports_overlap_and_epoch_retirement
+
+running 1 test
+test final_use::tests::issuer_key_ring_supports_overlap_and_epoch_retirement ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.06s
+
+        PASS [   0.063s] (104/195) codex-hepta-contracts final_use::tests::issuer_key_ring_supports_overlap_and_epoch_retirement
+       START [         ] (105/195) codex-hepta-contracts final_use::tests::killed_owner_releases_lock_but_keeps_claim
+
+running 1 test
+test final_use::tests::killed_owner_releases_lock_but_keeps_claim ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.04s
+
+        PASS [   0.047s] (105/195) codex-hepta-contracts final_use::tests::killed_owner_releases_lock_but_keeps_claim
+       START [         ] (106/195) codex-hepta-contracts final_use::tests::missing_or_truncated_claim_journal_fails_closed_on_restart
+
+running 1 test
+test final_use::tests::missing_or_truncated_claim_journal_fails_closed_on_restart ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.03s
+
+        PASS [   0.037s] (106/195) codex-hepta-contracts final_use::tests::missing_or_truncated_claim_journal_fails_closed_on_restart
+       START [         ] (107/195) codex-hepta-contracts final_use::tests::pq::capacity_tests::pq_oversized_initial_head_fails_before_state_initialization
+
+running 1 test
+test final_use::tests::pq::capacity_tests::pq_oversized_initial_head_fails_before_state_initialization ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.07s
+
+        PASS [   0.077s] (107/195) codex-hepta-contracts final_use::tests::pq::capacity_tests::pq_oversized_initial_head_fails_before_state_initialization
+       START [         ] (108/195) codex-hepta-contracts final_use::tests::pq::capacity_tests::pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen
+
+running 1 test
+test final_use::tests::pq::capacity_tests::pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.08s
+
+        PASS [   0.087s] (108/195) codex-hepta-contracts final_use::tests::pq::capacity_tests::pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen
+       START [         ] (109/195) codex-hepta-contracts final_use::tests::pq::pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking
+
+running 1 test
+test final_use::tests::pq::pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.17s
+
+        PASS [   0.173s] (109/195) codex-hepta-contracts final_use::tests::pq::pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking
+       START [         ] (110/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay
+
+running 1 test
+test final_use::tests::pq::pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.07s
+
+        PASS [   0.078s] (110/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay
+       START [         ] (111/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_external_frontier_refuses_local_snapshot_rollback
+
+running 1 test
+test final_use::tests::pq::pq_final_use_external_frontier_refuses_local_snapshot_rollback ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.07s
+
+        PASS [   0.071s] (111/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_external_frontier_refuses_local_snapshot_rollback
+       START [         ] (112/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_independent_approval_revocation_and_ack_use_original_owners
+
+running 1 test
+test final_use::tests::pq::pq_final_use_independent_approval_revocation_and_ack_use_original_owners ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.38s
+
+        PASS [   0.388s] (112/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_independent_approval_revocation_and_ack_use_original_owners
+       START [         ] (113/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores
+
+running 1 test
+test final_use::tests::pq::pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.06s
+
+        PASS [   0.066s] (113/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores
+       START [         ] (114/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write
+
+running 1 test
+test final_use::tests::pq::pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.06s
+
+        PASS [   0.066s] (114/195) codex-hepta-contracts final_use::tests::pq::pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write
+       START [         ] (115/195) codex-hepta-contracts final_use::tests::pq::recovery_tests::pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces
+
+running 1 test
+test final_use::tests::pq::recovery_tests::pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.31s
+
+        PASS [   0.319s] (115/195) codex-hepta-contracts final_use::tests::pq::recovery_tests::pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces
+       START [         ] (116/195) codex-hepta-contracts final_use::tests::replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small
+
+running 1 test
+test final_use::tests::replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.03s
+
+        PASS [   0.033s] (116/195) codex-hepta-contracts final_use::tests::replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small
+       START [         ] (117/195) codex-hepta-contracts final_use::tests::replay_state_survives_owner_restart_and_prevents_concurrent_owners
+
+running 1 test
+test final_use::tests::replay_state_survives_owner_restart_and_prevents_concurrent_owners ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.03s
+
+        PASS [   0.034s] (117/195) codex-hepta-contracts final_use::tests::replay_state_survives_owner_restart_and_prevents_concurrent_owners
+       START [         ] (118/195) codex-hepta-contracts final_use::tests::revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back
+
+running 1 test
+test final_use::tests::revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.025s] (118/195) codex-hepta-contracts final_use::tests::revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back
+       START [         ] (119/195) codex-hepta-contracts final_use::tests::revocation_survives_restart_and_missing_state_is_not_reset
+
+running 1 test
+test final_use::tests::revocation_survives_restart_and_missing_state_is_not_reset ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.027s] (119/195) codex-hepta-contracts final_use::tests::revocation_survives_restart_and_missing_state_is_not_reset
+       START [         ] (120/195) codex-hepta-contracts final_use::tests::signed_claim_is_single_use_and_delivers_under_same_owner
+
+running 1 test
+test final_use::tests::signed_claim_is_single_use_and_delivers_under_same_owner ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.03s
+
+        PASS [   0.033s] (120/195) codex-hepta-contracts final_use::tests::signed_claim_is_single_use_and_delivers_under_same_owner
+       START [         ] (121/195) codex-hepta-contracts final_use::tests::startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations
+
+running 1 test
+test final_use::tests::startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.03s
+
+        PASS [   0.037s] (121/195) codex-hepta-contracts final_use::tests::startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations
+       START [         ] (122/195) codex-hepta-contracts final_use::tests::synchronous_final_use_rejects_a_concurrent_revocation_commit
+
+running 1 test
+test final_use::tests::synchronous_final_use_rejects_a_concurrent_revocation_commit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.028s] (122/195) codex-hepta-contracts final_use::tests::synchronous_final_use_rejects_a_concurrent_revocation_commit
+       START [         ] (123/195) codex-hepta-contracts final_use::tests::unrelated_frontier_advance_after_claim_requires_a_fresh_claim
+
+running 1 test
+test final_use::tests::unrelated_frontier_advance_after_claim_requires_a_fresh_claim ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.024s] (123/195) codex-hepta-contracts final_use::tests::unrelated_frontier_advance_after_claim_requires_a_fresh_claim
+       START [         ] (124/195) codex-hepta-contracts final_use::tests::verified_use_witness_binds_the_actual_consumer_entry
+
+running 1 test
+test final_use::tests::verified_use_witness_binds_the_actual_consumer_entry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.021s] (124/195) codex-hepta-contracts final_use::tests::verified_use_witness_binds_the_actual_consumer_entry
+       START [         ] (125/195) codex-hepta-contracts final_use_control::tests::approval_key_ring_enforces_epoch_windows_and_reports_selected_key
+
+running 1 test
+test final_use_control::tests::approval_key_ring_enforces_epoch_windows_and_reports_selected_key ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.04s
+
+        PASS [   0.043s] (125/195) codex-hepta-contracts final_use_control::tests::approval_key_ring_enforces_epoch_windows_and_reports_selected_key
+       START [         ] (126/195) codex-hepta-contracts final_use_control::tests::convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs
+
+running 1 test
+test final_use_control::tests::convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.05s
+
+        PASS [   0.061s] (126/195) codex-hepta-contracts final_use_control::tests::convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs
+       START [         ] (127/195) codex-hepta-contracts final_use_control::tests::convergence_report_requires_every_enrolled_node_ack
+
+running 1 test
+test final_use_control::tests::convergence_report_requires_every_enrolled_node_ack ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.07s
+
+        PASS [   0.079s] (127/195) codex-hepta-contracts final_use_control::tests::convergence_report_requires_every_enrolled_node_ack
+       START [         ] (128/195) codex-hepta-contracts final_use_control::tests::forged_revocation_feed_never_updates_authority
+
+running 1 test
+test final_use_control::tests::forged_revocation_feed_never_updates_authority ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.04s
+
+        PASS [   0.042s] (128/195) codex-hepta-contracts final_use_control::tests::forged_revocation_feed_never_updates_authority
+       START [         ] (129/195) codex-hepta-contracts final_use_control::tests::independent_approval_binds_exact_grant_semantics
+
+running 1 test
+test final_use_control::tests::independent_approval_binds_exact_grant_semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.022s] (129/195) codex-hepta-contracts final_use_control::tests::independent_approval_binds_exact_grant_semantics
+       START [         ] (130/195) codex-hepta-contracts final_use_control::tests::revocation_ack_requires_receipt_for_the_exact_applied_update
+
+running 1 test
+test final_use_control::tests::revocation_ack_requires_receipt_for_the_exact_applied_update ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.02s
+
+        PASS [   0.030s] (130/195) codex-hepta-contracts final_use_control::tests::revocation_ack_requires_receipt_for_the_exact_applied_update
+       START [         ] (131/195) codex-hepta-contracts final_use_control::tests::revocation_feed_freshness_fails_closed
+
+running 1 test
+test final_use_control::tests::revocation_feed_freshness_fails_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.010s] (131/195) codex-hepta-contracts final_use_control::tests::revocation_feed_freshness_fails_closed
+       START [         ] (132/195) codex-hepta-contracts final_use_control::tests::signed_revocation_feed_is_authenticated_and_monotonic
+
+running 1 test
+test final_use_control::tests::signed_revocation_feed_is_authenticated_and_monotonic ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.04s
+
+        PASS [   0.046s] (132/195) codex-hepta-contracts final_use_control::tests::signed_revocation_feed_is_authenticated_and_monotonic
+       START [         ] (133/195) codex-hepta-contracts identity::tests::tool_identity_is_versioned_and_length_delimited
+
+running 1 test
+test identity::tests::tool_identity_is_versioned_and_length_delimited ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (133/195) codex-hepta-contracts identity::tests::tool_identity_is_versioned_and_length_delimited
+       START [         ] (134/195) codex-hepta-contracts memory::tests::attachment_is_always_typed_as_quoted_untrusted_reference
+
+running 1 test
+test memory::tests::attachment_is_always_typed_as_quoted_untrusted_reference ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (134/195) codex-hepta-contracts memory::tests::attachment_is_always_typed_as_quoted_untrusted_reference
+       START [         ] (135/195) codex-hepta-contracts memory::tests::cross_thread_recall_stays_disabled_without_an_execution_witness
+
+running 1 test
+test memory::tests::cross_thread_recall_stays_disabled_without_an_execution_witness ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (135/195) codex-hepta-contracts memory::tests::cross_thread_recall_stays_disabled_without_an_execution_witness
+       START [         ] (136/195) codex-hepta-contracts memory::tests::deserialization_rejects_invalid_limits_scores_and_request_binding
+
+running 1 test
+test memory::tests::deserialization_rejects_invalid_limits_scores_and_request_binding ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (136/195) codex-hepta-contracts memory::tests::deserialization_rejects_invalid_limits_scores_and_request_binding
+       START [         ] (137/195) codex-hepta-contracts memory::tests::inactive_and_expired_revisions_are_not_recalled
+
+running 1 test
+test memory::tests::inactive_and_expired_revisions_are_not_recalled ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (137/195) codex-hepta-contracts memory::tests::inactive_and_expired_revisions_are_not_recalled
+       START [         ] (138/195) codex-hepta-contracts memory::tests::limits_reject_zero_unbounded_and_incoherent_values
+
+running 1 test
+test memory::tests::limits_reject_zero_unbounded_and_incoherent_values ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (138/195) codex-hepta-contracts memory::tests::limits_reject_zero_unbounded_and_incoherent_values
+       START [         ] (139/195) codex-hepta-contracts memory::tests::memory_ids_and_legacy_nested_bindings_have_fixed_canonical_oracles
+
+running 1 test
+test memory::tests::memory_ids_and_legacy_nested_bindings_have_fixed_canonical_oracles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (139/195) codex-hepta-contracts memory::tests::memory_ids_and_legacy_nested_bindings_have_fixed_canonical_oracles
+       START [         ] (140/195) codex-hepta-contracts memory::tests::ranking_is_integer_and_has_stable_tie_breaks
+
+running 1 test
+test memory::tests::ranking_is_integer_and_has_stable_tie_breaks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (140/195) codex-hepta-contracts memory::tests::ranking_is_integer_and_has_stable_tie_breaks
+       START [         ] (141/195) codex-hepta-contracts memory::tests::request_identity_is_stable_and_query_is_only_fingerprinted
+
+running 1 test
+test memory::tests::request_identity_is_stable_and_query_is_only_fingerprinted ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (141/195) codex-hepta-contracts memory::tests::request_identity_is_stable_and_query_is_only_fingerprinted
+       START [         ] (142/195) codex-hepta-contracts provider::tests::active_provider_wire_rejects_unknown_fields_but_keeps_legacy_optional_decode
+
+running 1 test
+test provider::tests::active_provider_wire_rejects_unknown_fields_but_keeps_legacy_optional_decode ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (142/195) codex-hepta-contracts provider::tests::active_provider_wire_rejects_unknown_fields_but_keeps_legacy_optional_decode
+       START [         ] (143/195) codex-hepta-contracts provider::tests::ephemeral_input_preserves_lineage_two_identity_and_binds_both_digests
+
+running 1 test
+test provider::tests::ephemeral_input_preserves_lineage_two_identity_and_binds_both_digests ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] (143/195) codex-hepta-contracts provider::tests::ephemeral_input_preserves_lineage_two_identity_and_binds_both_digests
+       START [         ] (144/195) codex-hepta-contracts provider::tests::host_ids_are_hashed_and_bound_without_persisting_plaintext
+
+running 1 test
+test provider::tests::host_ids_are_hashed_and_bound_without_persisting_plaintext ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (144/195) codex-hepta-contracts provider::tests::host_ids_are_hashed_and_bound_without_persisting_plaintext
+       START [         ] (145/195) codex-hepta-contracts provider::tests::orphaned_ephemeral_digest_cannot_alias_an_absent_binding
+
+running 1 test
+test provider::tests::orphaned_ephemeral_digest_cannot_alias_an_absent_binding ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (145/195) codex-hepta-contracts provider::tests::orphaned_ephemeral_digest_cannot_alias_an_absent_binding
+       START [         ] (146/195) codex-hepta-contracts provider::tests::provider_ids_are_versioned_stable_and_length_delimited
+
+running 1 test
+test provider::tests::provider_ids_are_versioned_stable_and_length_delimited ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (146/195) codex-hepta-contracts provider::tests::provider_ids_are_versioned_stable_and_length_delimited
+       START [         ] (147/195) codex-hepta-contracts provider::tests::provider_wire_validation_fences_identity_and_terminal_bindings
+
+running 1 test
+test provider::tests::provider_wire_validation_fences_identity_and_terminal_bindings ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (147/195) codex-hepta-contracts provider::tests::provider_wire_validation_fences_identity_and_terminal_bindings
+       START [         ] (148/195) codex-hepta-contracts provider::tests::request_binding_changes_for_websocket_incremental_semantics
+
+running 1 test
+test provider::tests::request_binding_changes_for_websocket_incremental_semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] (148/195) codex-hepta-contracts provider::tests::request_binding_changes_for_websocket_incremental_semantics
+       START [         ] (149/195) codex-hepta-contracts provider_effect::operation_binding_tests::operation_binding_reopen_rejects_rebinding_hidden_after_uncertainty
+
+running 1 test
+test provider_effect::operation_binding_tests::operation_binding_reopen_rejects_rebinding_hidden_after_uncertainty ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.011s] (149/195) codex-hepta-contracts provider_effect::operation_binding_tests::operation_binding_reopen_rejects_rebinding_hidden_after_uncertainty
+       START [         ] (150/195) codex-hepta-contracts provider_effect::operation_binding_tests::operation_binding_unknown_never_allows_a_different_provider_operation
+
+running 1 test
+test provider_effect::operation_binding_tests::operation_binding_unknown_never_allows_a_different_provider_operation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] (150/195) codex-hepta-contracts provider_effect::operation_binding_tests::operation_binding_unknown_never_allows_a_different_provider_operation
+       START [         ] (151/195) codex-hepta-contracts provider_effect::taskflow_key_v2::tests::taskflow_v2_preserves_field_boundaries_and_exact_payload_conflict
+
+running 1 test
+test provider_effect::taskflow_key_v2::tests::taskflow_v2_preserves_field_boundaries_and_exact_payload_conflict ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (151/195) codex-hepta-contracts provider_effect::taskflow_key_v2::tests::taskflow_v2_preserves_field_boundaries_and_exact_payload_conflict
+       START [         ] (152/195) codex-hepta-contracts provider_effect::taskflow_key_v2::tests::taskflow_v2_rejects_missing_identity_fields
+
+running 1 test
+test provider_effect::taskflow_key_v2::tests::taskflow_v2_rejects_missing_identity_fields ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.011s] (152/195) codex-hepta-contracts provider_effect::taskflow_key_v2::tests::taskflow_v2_rejects_missing_identity_fields
+       START [         ] (153/195) codex-hepta-contracts provider_effect::taskflow_key_v2::tests::taskflow_v2_separates_legacy_colon_collision_without_changing_old_keys
+
+running 1 test
+test provider_effect::taskflow_key_v2::tests::taskflow_v2_separates_legacy_colon_collision_without_changing_old_keys ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (153/195) codex-hepta-contracts provider_effect::taskflow_key_v2::tests::taskflow_v2_separates_legacy_colon_collision_without_changing_old_keys
+       START [         ] (154/195) codex-hepta-contracts provider_effect::taskflow_key_v2::tests::taskflow_v2_separates_owners_with_the_same_provider_run_and_step
+
+running 1 test
+test provider_effect::taskflow_key_v2::tests::taskflow_v2_separates_owners_with_the_same_provider_run_and_step ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (154/195) codex-hepta-contracts provider_effect::taskflow_key_v2::tests::taskflow_v2_separates_owners_with_the_same_provider_run_and_step
+       START [         ] (155/195) codex-hepta-contracts provider_effect::tests::accepted_ack_does_not_prove_effect_completion
+
+running 1 test
+test provider_effect::tests::accepted_ack_does_not_prove_effect_completion ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (155/195) codex-hepta-contracts provider_effect::tests::accepted_ack_does_not_prove_effect_completion
+       START [         ] (156/195) codex-hepta-contracts provider_effect::tests::conflict_lookup_is_not_a_success
+
+running 1 test
+test provider_effect::tests::conflict_lookup_is_not_a_success ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (156/195) codex-hepta-contracts provider_effect::tests::conflict_lookup_is_not_a_success
+       START [         ] (157/195) codex-hepta-contracts provider_effect::tests::coordinator_quarantines_malformed_dispatch_ack_before_returning_error
+
+running 1 test
+test provider_effect::tests::coordinator_quarantines_malformed_dispatch_ack_before_returning_error ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (157/195) codex-hepta-contracts provider_effect::tests::coordinator_quarantines_malformed_dispatch_ack_before_returning_error
+       START [         ] (158/195) codex-hepta-contracts provider_effect::tests::coordinator_quarantines_unknown_and_never_blind_retries
+
+running 1 test
+test provider_effect::tests::coordinator_quarantines_unknown_and_never_blind_retries ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.009s] (158/195) codex-hepta-contracts provider_effect::tests::coordinator_quarantines_unknown_and_never_blind_retries
+       START [         ] (159/195) codex-hepta-contracts provider_effect::tests::coordinator_rejects_malformed_ack_provenance_before_adapter_call
+
+running 1 test
+test provider_effect::tests::coordinator_rejects_malformed_ack_provenance_before_adapter_call ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (159/195) codex-hepta-contracts provider_effect::tests::coordinator_rejects_malformed_ack_provenance_before_adapter_call
+       START [         ] (160/195) codex-hepta-contracts provider_effect::tests::coordinator_restored_pending_is_quarantined_before_dispatch
+
+running 1 test
+test provider_effect::tests::coordinator_restored_pending_is_quarantined_before_dispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (160/195) codex-hepta-contracts provider_effect::tests::coordinator_restored_pending_is_quarantined_before_dispatch
+       START [         ] (161/195) codex-hepta-contracts provider_effect::tests::coordinator_restored_pending_payload_path_is_quarantined_before_dispatch
+
+running 1 test
+test provider_effect::tests::coordinator_restored_pending_payload_path_is_quarantined_before_dispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (161/195) codex-hepta-contracts provider_effect::tests::coordinator_restored_pending_payload_path_is_quarantined_before_dispatch
+       START [         ] (162/195) codex-hepta-contracts provider_effect::tests::coordinator_unsupported_capability_never_calls_lookup
+
+running 1 test
+test provider_effect::tests::coordinator_unsupported_capability_never_calls_lookup ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (162/195) codex-hepta-contracts provider_effect::tests::coordinator_unsupported_capability_never_calls_lookup
+       START [         ] (163/195) codex-hepta-contracts provider_effect::tests::coordinator_unsupported_capability_stays_quarantined
+
+running 1 test
+test provider_effect::tests::coordinator_unsupported_capability_stays_quarantined ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (163/195) codex-hepta-contracts provider_effect::tests::coordinator_unsupported_capability_stays_quarantined
+       START [         ] (164/195) codex-hepta-contracts provider_effect::tests::default_capability_is_unsupported
+
+running 1 test
+test provider_effect::tests::default_capability_is_unsupported ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.003s] (164/195) codex-hepta-contracts provider_effect::tests::default_capability_is_unsupported
+       START [         ] (165/195) codex-hepta-contracts provider_effect::tests::journal_deserialization_rejects_malformed_ack_contents
+
+running 1 test
+test provider_effect::tests::journal_deserialization_rejects_malformed_ack_contents ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (165/195) codex-hepta-contracts provider_effect::tests::journal_deserialization_rejects_malformed_ack_contents
+       START [         ] (166/195) codex-hepta-contracts provider_effect::tests::journal_late_dispatch_ack_after_pending_quarantine_is_side_effect_free
+
+running 1 test
+test provider_effect::tests::journal_late_dispatch_ack_after_pending_quarantine_is_side_effect_free ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (166/195) codex-hepta-contracts provider_effect::tests::journal_late_dispatch_ack_after_pending_quarantine_is_side_effect_free
+       START [         ] (167/195) codex-hepta-contracts provider_effect::tests::journal_persists_intent_and_monotonic_ack_observations
+
+running 1 test
+test provider_effect::tests::journal_persists_intent_and_monotonic_ack_observations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (167/195) codex-hepta-contracts provider_effect::tests::journal_persists_intent_and_monotonic_ack_observations
+       START [         ] (168/195) codex-hepta-contracts provider_effect::tests::journal_rejects_late_dispatch_ack_after_quarantine
+
+running 1 test
+test provider_effect::tests::journal_rejects_late_dispatch_ack_after_quarantine ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (168/195) codex-hepta-contracts provider_effect::tests::journal_rejects_late_dispatch_ack_after_quarantine
+       START [         ] (169/195) codex-hepta-contracts provider_effect::tests::journal_rejects_terminal_ack_replacement_and_unknown_lookup
+
+running 1 test
+test provider_effect::tests::journal_rejects_terminal_ack_replacement_and_unknown_lookup ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (169/195) codex-hepta-contracts provider_effect::tests::journal_rejects_terminal_ack_replacement_and_unknown_lookup
+       START [         ] (170/195) codex-hepta-contracts provider_effect::tests::journal_round_trip_is_serializable_without_plain_payloads
+
+running 1 test
+test provider_effect::tests::journal_round_trip_is_serializable_without_plain_payloads ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (170/195) codex-hepta-contracts provider_effect::tests::journal_round_trip_is_serializable_without_plain_payloads
+       START [         ] (171/195) codex-hepta-contracts provider_effect::tests::journal_status_acceptance_cannot_replace_the_original_operation
+
+running 1 test
+test provider_effect::tests::journal_status_acceptance_cannot_replace_the_original_operation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (171/195) codex-hepta-contracts provider_effect::tests::journal_status_acceptance_cannot_replace_the_original_operation
+       START [         ] (172/195) codex-hepta-contracts provider_effect::tests::journal_unknown_lookup_cannot_turn_accepted_into_rejected
+
+running 1 test
+test provider_effect::tests::journal_unknown_lookup_cannot_turn_accepted_into_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] (172/195) codex-hepta-contracts provider_effect::tests::journal_unknown_lookup_cannot_turn_accepted_into_rejected
+       START [         ] (173/195) codex-hepta-contracts provider_effect::tests::journal_unknown_lookup_persists_quarantine_until_reconciled
+
+running 1 test
+test provider_effect::tests::journal_unknown_lookup_persists_quarantine_until_reconciled ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (173/195) codex-hepta-contracts provider_effect::tests::journal_unknown_lookup_persists_quarantine_until_reconciled
+       START [         ] (174/195) codex-hepta-contracts provider_effect::tests::journal_with_ack_requires_exact_ack_source_provenance
+
+running 1 test
+test provider_effect::tests::journal_with_ack_requires_exact_ack_source_provenance ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (174/195) codex-hepta-contracts provider_effect::tests::journal_with_ack_requires_exact_ack_source_provenance
+       START [         ] (175/195) codex-hepta-contracts provider_effect::tests::journal_without_ack_sources_remains_compatible_when_empty
+
+running 1 test
+test provider_effect::tests::journal_without_ack_sources_remains_compatible_when_empty ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (175/195) codex-hepta-contracts provider_effect::tests::journal_without_ack_sources_remains_compatible_when_empty
+       START [         ] (176/195) codex-hepta-contracts provider_effect::tests::logical_effect_key_is_stable_across_local_attempts_and_payload_changes
+
+running 1 test
+test provider_effect::tests::logical_effect_key_is_stable_across_local_attempts_and_payload_changes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (176/195) codex-hepta-contracts provider_effect::tests::logical_effect_key_is_stable_across_local_attempts_and_payload_changes
+       START [         ] (177/195) codex-hepta-contracts provider_effect::tests::malformed_in_memory_ack_provenance_fails_closed_before_state_or_record
+
+running 1 test
+test provider_effect::tests::malformed_in_memory_ack_provenance_fails_closed_before_state_or_record ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (177/195) codex-hepta-contracts provider_effect::tests::malformed_in_memory_ack_provenance_fails_closed_before_state_or_record
+       START [         ] (178/195) codex-hepta-contracts provider_effect::tests::malformed_in_memory_journal_contents_fail_closed_before_state_or_append
+
+running 1 test
+test provider_effect::tests::malformed_in_memory_journal_contents_fail_closed_before_state_or_append ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (178/195) codex-hepta-contracts provider_effect::tests::malformed_in_memory_journal_contents_fail_closed_before_state_or_append
+       START [         ] (179/195) codex-hepta-contracts provider_effect::tests::matching_ack_binds_key_payload_and_operation
+
+running 1 test
+test provider_effect::tests::matching_ack_binds_key_payload_and_operation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] (179/195) codex-hepta-contracts provider_effect::tests::matching_ack_binds_key_payload_and_operation
+       START [         ] (180/195) codex-hepta-contracts provider_effect::tests::occurrence_key_is_stable_across_physical_retries_and_excludes_payload
+
+running 1 test
+test provider_effect::tests::occurrence_key_is_stable_across_physical_retries_and_excludes_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (180/195) codex-hepta-contracts provider_effect::tests::occurrence_key_is_stable_across_physical_retries_and_excludes_payload
+       START [         ] (181/195) codex-hepta-contracts provider_effect::tests::operation_effect_key_is_stable_across_payload_changes
+
+running 1 test
+test provider_effect::tests::operation_effect_key_is_stable_across_payload_changes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (181/195) codex-hepta-contracts provider_effect::tests::operation_effect_key_is_stable_across_payload_changes
+       START [         ] (182/195) codex-hepta-contracts provider_effect::tests::payload_coordinator_marks_explicit_not_dispatched_without_physical_attempt
+
+running 1 test
+test provider_effect::tests::payload_coordinator_marks_explicit_not_dispatched_without_physical_attempt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.008s] (182/195) codex-hepta-contracts provider_effect::tests::payload_coordinator_marks_explicit_not_dispatched_without_physical_attempt
+       START [         ] (183/195) codex-hepta-contracts provider_effect::tests::payload_coordinator_quarantines_malformed_dispatch_ack_before_retry
+
+running 1 test
+test provider_effect::tests::payload_coordinator_quarantines_malformed_dispatch_ack_before_retry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] (183/195) codex-hepta-contracts provider_effect::tests::payload_coordinator_quarantines_malformed_dispatch_ack_before_retry
+       START [         ] (184/195) codex-hepta-contracts provider_effect::tests::payload_coordinator_rejects_mismatch_before_adapter_call
+
+running 1 test
+test provider_effect::tests::payload_coordinator_rejects_mismatch_before_adapter_call ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (184/195) codex-hepta-contracts provider_effect::tests::payload_coordinator_rejects_mismatch_before_adapter_call
+       START [         ] (185/195) codex-hepta-contracts provider_effect::tests::reconciliation_lookup_can_consume_exact_durable_wire_without_dispatch
+
+running 1 test
+test provider_effect::tests::reconciliation_lookup_can_consume_exact_durable_wire_without_dispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (185/195) codex-hepta-contracts provider_effect::tests::reconciliation_lookup_can_consume_exact_durable_wire_without_dispatch
+       START [         ] (186/195) codex-hepta-contracts provider_effect::tests::same_key_different_payload_is_rejected
+
+running 1 test
+test provider_effect::tests::same_key_different_payload_is_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (186/195) codex-hepta-contracts provider_effect::tests::same_key_different_payload_is_rejected
+       START [         ] (187/195) codex-hepta-contracts provider_effect::tests::status_accepted_fences_late_dispatch_transition
+
+running 1 test
+test provider_effect::tests::status_accepted_fences_late_dispatch_transition ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (187/195) codex-hepta-contracts provider_effect::tests::status_accepted_fences_late_dispatch_transition
+       START [         ] (188/195) codex-hepta-contracts provider_effect::tests::status_observation_binds_exact_payload_and_requires_lookup_source
+
+running 1 test
+test provider_effect::tests::status_observation_binds_exact_payload_and_requires_lookup_source ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (188/195) codex-hepta-contracts provider_effect::tests::status_observation_binds_exact_payload_and_requires_lookup_source
+       START [         ] (189/195) codex-hepta-contracts provider_effect::tests::status_observation_is_monotonic_and_rejects_late_dispatch_or_unknown
+
+running 1 test
+test provider_effect::tests::status_observation_is_monotonic_and_rejects_late_dispatch_or_unknown ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (189/195) codex-hepta-contracts provider_effect::tests::status_observation_is_monotonic_and_rejects_late_dispatch_or_unknown
+       START [         ] (190/195) codex-hepta-contracts provider_effect::tests::unknown_and_not_found_lookup_remain_quarantined
+
+running 1 test
+test provider_effect::tests::unknown_and_not_found_lookup_remain_quarantined ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (190/195) codex-hepta-contracts provider_effect::tests::unknown_and_not_found_lookup_remain_quarantined
+       START [         ] (191/195) codex-hepta-contracts provider_effect::tests::unsupported_capability_fails_closed_even_with_matching_ack
+
+running 1 test
+test provider_effect::tests::unsupported_capability_fails_closed_even_with_matching_ack ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (191/195) codex-hepta-contracts provider_effect::tests::unsupported_capability_fails_closed_even_with_matching_ack
+       START [         ] (192/195) codex-hepta-contracts qualification_receipt::tests::qualification_receipt_is_digest_bound_and_fail_closed
+
+running 1 test
+test qualification_receipt::tests::qualification_receipt_is_digest_bound_and_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (192/195) codex-hepta-contracts qualification_receipt::tests::qualification_receipt_is_digest_bound_and_fail_closed
+       START [         ] (193/195) codex-hepta-contracts qualification_receipt::tests::rejected_receipt_can_witness_a_non_mutating_callback
+
+running 1 test
+test qualification_receipt::tests::rejected_receipt_can_witness_a_non_mutating_callback ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.007s] (193/195) codex-hepta-contracts qualification_receipt::tests::rejected_receipt_can_witness_a_non_mutating_callback
+       START [         ] (194/195) codex-hepta-contracts verified_use_witness::tests::malformed_witness_fails_validation
+
+running 1 test
+test verified_use_witness::tests::malformed_witness_fails_validation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (194/195) codex-hepta-contracts verified_use_witness::tests::malformed_witness_fails_validation
+       START [         ] (195/195) codex-hepta-contracts verified_use_witness::tests::witness_round_trip_is_evidence_only_and_strict
+
+running 1 test
+test verified_use_witness::tests::witness_round_trip_is_evidence_only_and_strict ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (195/195) codex-hepta-contracts verified_use_witness::tests::witness_round_trip_is_evidence_only_and_strict
+────────────
+     Summary [   5.398s] 195 tests run: 192 passed, 3 failed, 0 skipped
+  TRY 2 FAIL [   0.005s] ( 75/195) codex-hepta-contracts authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart
+  TRY 2 FAIL [   0.006s] ( 76/195) codex-hepta-contracts authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry
+  TRY 2 FAIL [   0.008s] ( 77/195) codex-hepta-contracts authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

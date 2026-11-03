@@ -15,7 +15,9 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 
 use crate::model_worker::ResourceGrant;
+use crate::smollm_cognitive_host::SmolLmCognitiveCellHostInputsV2;
 use crate::smollm_cognitive_host::SmolLmCognitiveHostInputsV1;
+use crate::smollm_neural_read::ControlledCellInputsV2;
 use crate::smollm_neural_read::SmolLmNeuralReadConfigV1;
 
 const MAX_HOST_FILE_BYTES: u64 = 64 * 1024;
@@ -72,6 +74,68 @@ struct HostFile {
     final_use_authorizer_config: PathBuf,
 }
 
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CellHostFileV2 {
+    schema: String,
+    owner: HostFile,
+    sidecar: PinnedFile,
+    dependency_closure: PinnedFile,
+    dependency_closure_id: String,
+    operation_id: String,
+}
+
+/// Decode a new, explicit schema without making an old host file satisfy Cell
+/// admission. Original descriptor/resource/FinalUse fields stay with their owner.
+pub fn load_smollm_cognitive_cell_host_inputs_v2(
+    path: &Path,
+    expected: Digest32,
+) -> Result<SmolLmCognitiveCellHostInputsV2, String> {
+    let bytes = read_pinned_file(path, expected, MAX_HOST_FILE_BYTES)?;
+    let file: CellHostFileV2 = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
+    if file.schema != "hepta-smollm-cognitive-cell-host-v2" {
+        return Err("unsupported Cell neural cognitive host schema".to_owned());
+    }
+    let sidecar_digest = file
+        .sidecar
+        .sha256
+        .parse::<Digest32>()
+        .map_err(|e| e.to_string())?;
+    let sidecar = read_pinned_file(&file.sidecar.path, sidecar_digest, /*limit*/ 65_536)?;
+    let dependency_wire = read_pinned_file(
+        &file.dependency_closure.path,
+        file.dependency_closure
+            .sha256
+            .parse::<Digest32>()
+            .map_err(|e| e.to_string())?,
+        /*limit*/ 1_048_576,
+    )?;
+    let dependency_id = file
+        .dependency_closure_id
+        .parse::<Digest32>()
+        .map_err(|e| e.to_string())?;
+    if dependency_id.is_zero()
+        || file.operation_id.is_empty()
+        || file.operation_id.len() > 128
+        || !file
+            .operation_id
+            .bytes()
+            .all(|byte| byte.is_ascii_graphic())
+    {
+        return Err("Cell host dependency pin or operation identity".to_owned());
+    }
+    Ok(SmolLmCognitiveCellHostInputsV2 {
+        owner: decode_host(file.owner)?,
+        cell: ControlledCellInputsV2 {
+            sidecar,
+            sidecar_digest,
+            dependency_wire,
+            dependency_id,
+            operation_id: file.operation_id,
+        },
+    })
+}
+
 /// Decode the exact independently authorized host file. No journal is opened,
 /// grant issued, qualification accepted or model loaded during this operation.
 pub fn load_smollm_cognitive_host_inputs_v1(
@@ -80,6 +144,10 @@ pub fn load_smollm_cognitive_host_inputs_v1(
 ) -> Result<SmolLmCognitiveHostInputsV1, String> {
     let bytes = read_pinned_file(path, expected, MAX_HOST_FILE_BYTES)?;
     let file: HostFile = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
+    decode_host(file)
+}
+
+fn decode_host(file: HostFile) -> Result<SmolLmCognitiveHostInputsV1, String> {
     if file.schema != "hepta-smollm-cognitive-host-v1" {
         return Err("unsupported neural cognitive host schema".to_owned());
     }

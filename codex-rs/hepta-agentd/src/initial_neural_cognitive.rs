@@ -134,11 +134,22 @@ impl PinnedCognitiveRanker {
             family_digest: input.family_digest,
             execution_profile_digest: input.execution_profile_digest,
         };
+        let time = RankerAuthorityTime::new(
+            input.material.authentication_profile(),
+            input.current.as_ref(),
+        )?;
         let view = input.current.current()?;
+        if view.authentication_profile() != time.profile() {
+            return Err("initial selection and CURRENT authentication profiles differ".to_owned());
+        }
         let current_owner_trust_digest = view.trust_digest();
         if input
             .material
-            .with_current(view, current_unix_micros()? / 1_000_000, Digest32::of_bytes)
+            .with_current(
+                view,
+                time.now_unix_micros()? / 1_000_000,
+                Digest32::of_bytes,
+            )
             .map_err(|error| error.to_string())?
             != pin.payload_digest
         {
@@ -160,6 +171,7 @@ impl PinnedCognitiveRanker {
             }),
             current: input.current,
             current_owner_trust_digest,
+            time,
             admission: RankerEvaluationAdmission::SelectedInitial,
             source_window: None,
             cache: Mutex::new(Some(RankerMaterial::Initial(input.material))),

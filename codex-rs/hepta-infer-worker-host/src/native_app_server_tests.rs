@@ -11,7 +11,7 @@ use codex_app_server_protocol::TurnStartedNotification;
 mod cognitive_provenance;
 #[path = "native_output_tests.rs"]
 mod completed_output;
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 #[path = "native_pq_final_use_tests.rs"]
 mod pq_final_use;
 

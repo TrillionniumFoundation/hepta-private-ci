@@ -107,7 +107,11 @@ pub fn prepare_self_evolution_product_selection_v1(
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
     let mut binding_digest = candidate_binding_evidence.signing_bytes();
-    binding_digest.extend_from_slice(&candidate_binding_evidence.signature);
+    if candidate_binding_evidence.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        binding_digest.extend_from_slice(&candidate_binding_evidence.signature);
+    }
     prepared.receipt.product_qualification_binding = Some(ProductSelfEvolutionSelectionBindingV1 {
         qualification_evidence_digest: qualification.evidence_digest,
         qualification_publication_digest: qualification.publication_digest,

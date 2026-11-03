@@ -1,0 +1,479 @@
+{
+  "schema": "hepta-installed-v5-retained-observations-v1",
+  "run_id": 41634290628,
+  "artifact_id": 13233273505,
+  "source_hepta": "a7c523f366de3aaf9bce923be885ad275d0ecc22",
+  "source_chain": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+  "records": [
+    {
+      "name": "artifact-controls.json",
+      "source": "a7c523f366de3aaf9bce923be885ad275d0ecc22",
+      "status": "passed",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_ci_installed_cell"
+      ],
+      "log_bytes": 3291,
+      "log_sha256": "5d2fe0b8ef5e906689fe77dfa5b2a17634f9b8612fd9c26b3960957b50b0a60e",
+      "observed": {
+        "passed": 17,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "chain-build.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "build",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-data-availability",
+        "--bin",
+        "trnm-cell"
+      ],
+      "log_bytes": 2655,
+      "log_sha256": "4123916e76943cd35cb05df07d92d034ba1f0ba61ecf40b8b86d97fe7b67b546"
+    },
+    {
+      "name": "chain-fetch.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "fetch",
+        "--locked",
+        "--manifest-path",
+        "trillionnium/Cargo.toml"
+      ],
+      "log_bytes": 4965,
+      "log_sha256": "faa86b8b24f5021c7698d0485cf01c3284ade44902c85725742561c6ad980dbe"
+    },
+    {
+      "name": "chain-preflight.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "log_bytes": 133,
+      "log_sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+    },
+    {
+      "name": "chain-provider.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "bash",
+        "scripts/ci/prepare_pq_provider.sh"
+      ],
+      "log_bytes": 173,
+      "log_sha256": "b7889717dcc96b67d36969bdd25f4dc0f520ad5031b77afcbd2b8f04a5b03cda"
+    },
+    {
+      "name": "current-from-zero-host-controls.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "python3",
+        "scripts/ci/test_from_zero_host_ci.py",
+        "-v"
+      ],
+      "log_bytes": 3185,
+      "log_sha256": "5ebc73aa2faaac8e419bd0abfe24bc5310d3395b93990021ed276d94567602c2",
+      "observed": {
+        "passed": 20,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "current-from-zero-reader-controls.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "python3",
+        "scripts/ci/test_run_from_zero_native.py",
+        "-v"
+      ],
+      "log_bytes": 15035,
+      "log_sha256": "fc27e7d91edb2ae1b3676cb8a7996b04263f2ee726ba4063abb2764e1fc9c291",
+      "observed": {
+        "passed": 98,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "current-from-zero.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "failed",
+      "command": [
+        "python3",
+        "scripts/ci/run_from_zero_host.py",
+        "--",
+        "python3",
+        "scripts/ci/run_from_zero_native.py",
+        "--out",
+        "/home/runner/work/_temp/installed-cell/current-from-zero"
+      ],
+      "log_bytes": 3804,
+      "log_sha256": "03577ea96f14ad064e9a969575e1887d8109270d3559077567ed75c4956bd754"
+    },
+    {
+      "name": "current-growth-cli.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--features",
+        "pq-native-openssl",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--test",
+        "native_growth_cli",
+        "--test",
+        "native_growth_public_cli",
+        "--",
+        "--show-output",
+        "--test-threads=1"
+      ],
+      "log_bytes": 1901,
+      "log_sha256": "0a883fb5201bd348ee391c461355f6cda1ff7306db10c9ac869a18e977856862",
+      "observed": {
+        "passed": 7,
+        "summaries": [
+          [
+            3,
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "name": "current-history-import.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--features",
+        "pq-native-openssl",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--lib",
+        "ingress::history_import::tests::",
+        "--",
+        "--show-output",
+        "--test-threads=1",
+        "--skip",
+        "ingress::history_import::tests::history_kill_cut_child"
+      ],
+      "log_bytes": 11689,
+      "log_sha256": "f58b0141a07b8cba15bfdb291ea97e4b4d46ad8cb3731a74de8342ec54abe690",
+      "observed": {
+        "passed": 15,
+        "summaries": [
+          [
+            15,
+            0,
+            0,
+            904
+          ]
+        ]
+      }
+    },
+    {
+      "name": "current-node-build.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "build",
+        "--locked",
+        "--release",
+        "--features",
+        "pq-native-openssl",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--bin",
+        "trnm-pon-node"
+      ],
+      "log_bytes": 2225,
+      "log_sha256": "4f9aad1e30e67c173384b2f7247c41df3fe93b2a102c52aaaa1abdd2f804e6dc"
+    },
+    {
+      "name": "current-pq-continuous.json",
+      "source": "12fe5f2c1f19704fe7eb635dede6839ed8b1e91e",
+      "status": "passed",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--features",
+        "pq-native-openssl",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--lib",
+        "operator_pq_startup::tests::",
+        "--",
+        "--show-output",
+        "--test-threads=1"
+      ],
+      "log_bytes": 4157,
+      "log_sha256": "8a6a0aa92016f232d6bef5349ba87de53b466f030ac30486b17c13a8195d7893",
+      "observed": {
+        "passed": 14,
+        "summaries": [
+          [
+            14,
+            0,
+            0,
+            905
+          ]
+        ]
+      }
+    },
+    {
+      "name": "diverse-source-controls.json",
+      "source": "a7c523f366de3aaf9bce923be885ad275d0ecc22",
+      "status": "passed",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_neural_*diverse_v3.py",
+        "-v"
+      ],
+      "log_bytes": 6233,
+      "log_sha256": "566987eb2670a05ec4118d82a2dea3f16c0bb7782192cedbe98ff24165661815",
+      "observed": {
+        "passed": 32,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "execution-source-controls.json",
+      "source": "a7c523f366de3aaf9bce923be885ad275d0ecc22",
+      "status": "passed",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_smollm_execution_source*.py",
+        "-v"
+      ],
+      "log_bytes": 9859,
+      "log_sha256": "55695d7e7103dd43b8a5fd80e3a26051ad4b402effff791804c5c901a39b9c4d",
+      "observed": {
+        "passed": 51,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "installed-handoff.json",
+      "source": "a7c523f366de3aaf9bce923be885ad275d0ecc22",
+      "status": "passed",
+      "command": [
+        "bash",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/chain/scripts/ci/run_llm_cell_installed_host_controls.sh",
+        "/home/runner/work/_temp/installed-cell-target/release/trnm-cell",
+        "/home/runner/work/_temp/installed-cell-bin/hepta-neural-agentd"
+      ],
+      "log_bytes": 2154,
+      "log_sha256": "80273e108ca7a835b1a4856711a015bfdcd8b7217016be801b01859b502f650c",
+      "observed": {
+        "passed": 8,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "native-import.json",
+      "source": "a7c523f366de3aaf9bce923be885ad275d0ecc22",
+      "status": "passed",
+      "command": [
+        "python3",
+        "scripts/hepta_ci_installed_cell.py",
+        "verify",
+        "--artifact",
+        "/home/runner/work/_temp/cell-native-source",
+        "--binary",
+        "/home/runner/work/_temp/installed-cell-bin/hepta-neural-agentd",
+        "--output",
+        "/home/runner/work/_temp/installed-cell/verified-native.json"
+      ],
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "original-handoff.json",
+      "source": "a7c523f366de3aaf9bce923be885ad275d0ecc22",
+      "status": "passed",
+      "command": [
+        "/usr/bin/python3",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/chain/scripts/ci/test_llm_cell_host_handoff.py",
+        "-v"
+      ],
+      "log_bytes": 2522,
+      "log_sha256": "ba1779476f2e1cfd37ebfb3b092f146f521e049ecce2c5e084ea8614b5a01dc7",
+      "observed": {
+        "passed": 14,
+        "skipped": 0
+      }
+    }
+  ],
+  "original_named_native_cases": 5,
+  "confirmation_report_sha256": "35462c99ed3afa1b33b64c4ec9622c8e63f6eea9b634bac06927d6e64b77b3e0",
+  "phases": [
+    {
+      "mode": "attack-free-baseline",
+      "original_window_ns": 4000000000,
+      "confirmations": 1,
+      "confirmation_latency_ns": 2809602982,
+      "full_native_state_equal": true,
+      "verification_errors": [],
+      "successful_submissions": 7,
+      "last_submission_ended_ns": 214182164,
+      "downloaded_history_pages": 7,
+      "accepted_replay_pages": 7,
+      "replay": [
+        {
+          "history_call_index": 0,
+          "replay_accepted": true,
+          "replay_started_ns": 226410399,
+          "replay_ended_ns": 809545911,
+          "replay_thread_cpu_ns": 77095081,
+          "replay_wall_ns": 583135512
+        },
+        {
+          "history_call_index": 1,
+          "replay_accepted": true,
+          "replay_started_ns": 821652521,
+          "replay_ended_ns": 1110008798,
+          "replay_thread_cpu_ns": 65193110,
+          "replay_wall_ns": 288356277
+        },
+        {
+          "history_call_index": 2,
+          "replay_accepted": true,
+          "replay_started_ns": 1121814735,
+          "replay_ended_ns": 1493173525,
+          "replay_thread_cpu_ns": 70382713,
+          "replay_wall_ns": 371358790
+        },
+        {
+          "history_call_index": 3,
+          "replay_accepted": true,
+          "replay_started_ns": 1504769285,
+          "replay_ended_ns": 1868401237,
+          "replay_thread_cpu_ns": 67071770,
+          "replay_wall_ns": 363631952
+        },
+        {
+          "history_call_index": 4,
+          "replay_accepted": true,
+          "replay_started_ns": 1880363130,
+          "replay_ended_ns": 2100885472,
+          "replay_thread_cpu_ns": 68124313,
+          "replay_wall_ns": 220522342
+        },
+        {
+          "history_call_index": 5,
+          "replay_accepted": true,
+          "replay_started_ns": 2112380439,
+          "replay_ended_ns": 2408175719,
+          "replay_thread_cpu_ns": 68795576,
+          "replay_wall_ns": 295795280
+        },
+        {
+          "history_call_index": 6,
+          "replay_accepted": true,
+          "replay_started_ns": 2419591967,
+          "replay_ended_ns": 2808887151,
+          "replay_thread_cpu_ns": 88984311,
+          "replay_wall_ns": 389295184
+        }
+      ]
+    },
+    {
+      "mode": "from-zero-pressure",
+      "original_window_ns": 4000000000,
+      "confirmations": 0,
+      "confirmation_latency_ns": null,
+      "full_native_state_equal": false,
+      "verification_errors": [
+        "PUBLIC_REQUEST_DEADLINE"
+      ],
+      "successful_submissions": 7,
+      "last_submission_ended_ns": 1879015810,
+      "downloaded_history_pages": 2,
+      "accepted_replay_pages": 1,
+      "replay": [
+        {
+          "history_call_index": 0,
+          "replay_accepted": true,
+          "replay_started_ns": 2070443460,
+          "replay_ended_ns": 3372539939,
+          "replay_thread_cpu_ns": 75876840,
+          "replay_wall_ns": 1302096479
+        },
+        {
+          "history_call_index": 1,
+          "replay_accepted": false,
+          "replay_started_ns": 3569914504,
+          "replay_ended_ns": 4069249051,
+          "replay_thread_cpu_ns": 30567533,
+          "replay_wall_ns": 499334547
+        }
+      ]
+    }
+  ],
+  "original_gate_failures": [
+    "CONFIRMATION_TARGET"
+  ],
+  "whole_system_qualified": false,
+  "production_activation": false
+}

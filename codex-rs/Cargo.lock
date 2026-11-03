@@ -3534,11 +3534,13 @@ dependencies = [
 name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
+ "rand 0.9.3",
  "serde",
  "serde_json",
  "sqlx",
@@ -3787,7 +3789,6 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek 2.2.0",
  "libc",
- "ml-dsa",
  "pretty_assertions",
  "rustix 1.1.4",
  "serde",
@@ -3859,6 +3860,7 @@ dependencies = [
 name = "codex-hepta-learning-artifacts"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
@@ -3868,6 +3870,7 @@ dependencies = [
 name = "codex-hepta-learning-ledger"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-intuition",
  "codex-hepta-memory-retrieval",
  "codex-hepta-types",
@@ -11292,6 +11295,7 @@ dependencies = [
  "pkcs8 0.11.0",
  "shake",
  "signature 3.0.0",
+ "zeroize",
 ]
 
 [[package]]
@@ -11316,6 +11320,7 @@ dependencies = [
  "ctutils",
  "hybrid-array 0.4.15",
  "num-traits",
+ "zeroize",
 ]
 
 [[package]]

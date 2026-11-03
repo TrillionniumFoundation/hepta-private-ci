@@ -1,0 +1,194 @@
+{
+  "schema": "hepta-pq-composition-followup2-summary-v1",
+  "created_at": "2026-11-03T09:58:32.457937+00:00",
+  "parent_commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "parent_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+  "prior_173_path_snapshot_unchanged": true,
+  "prior_followup_manifest_sha256": "5794390fb3f7eaf243b0ad6f061442b8d50ea90db08cbfa04fac06f68e15bf10",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "change": "Add the two existing learning authorization files to explicit crate_srcs, completing the current nested path-module inputs.",
+      "sha256": "4ab781703229cfd6c9de8e2047b9e96ce88e24b7d03a1d5a745b80c07b15dca5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "change": "Export those two existing source files under the original host-package visibility restriction.",
+      "sha256": "1c9e8b8c98ed4a31469bf437bd0b676e67d866398b6e2a4c94d8dc17e68e20eb"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+      "change": "Keep good.is_ok() and append the existing Debug recovery value to its assertion diagnostic.",
+      "diagnostic_only": true,
+      "observed_failure_fixed": false,
+      "sha256": "92df0882cdd16274e374c8056181503338118958162362c2e6e4f61a4fa8fba3"
+    }
+  ],
+  "local_validation": {
+    "original_just_fmt_exit_code": 0,
+    "format_receipt": "local-validation/hepta-followup2-fmt.json",
+    "post_format_receipt": "local-validation/hepta-followup2-post-fmt.json",
+    "closed_set_paths": 3,
+    "nested_rust_source_files": 7,
+    "pinned_buildifier_v8_5_1_exit_code": 0,
+    "new_rust_compile_native_rerun_or_bazel_execution": false,
+    "spelling": {
+      "status": "passed",
+      "exit_code": 0,
+      "version": "2.4.3",
+      "receipt": "spelling/codespell-candidate-followup2_final.json",
+      "receipt_sha256": "efc48387efebb9c8511641164b86f3ddb48e615f5918961659edfc67a6337110",
+      "scanned_present_tracked_paths": 9838,
+      "scanned_new_evidence_paths": 78,
+      "scanned_total_paths": 9916,
+      "missing_tracked_paths_not_scanned": 1256,
+      "source_and_view_bytes_unchanged_during_scan": true,
+      "configuration_dictionary_and_raw_evidence_unchanged": true,
+      "local_python": "3.12.14",
+      "not_same_as_hosted_ci_container": true,
+      "generated_after_scan_not_counted_as_inputs": [
+        "six full-scan spelling output files",
+        "two final README check outputs",
+        "one-word README correction",
+        "this final summary observation"
+      ],
+      "final_readme_followup": {
+        "reason": "Remove original from 22 original QA tests: 21 pre-existing tests plus one added negative control.",
+        "readme_sha256": "ebfa83f6027700ed5a38675a7e7cf234b487b7af53e2814a4eaa574206c79b30",
+        "covered_by_original_full_scan_snapshot": false,
+        "same_original_tool_and_configuration_single_file_check_exit_code": 0,
+        "receipt": "spelling/hepta-followup2-readme-spelling.json",
+        "receipt_sha256": "3d2e85eade0057b117bd810f6a6646da5d349d794543f6b4a6e1a7b27722308f"
+      }
+    }
+  },
+  "runtime_evidence_scope": {
+    "source_commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+    "source_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+    "prospective_merge_commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+    "prospective_merge_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+    "run_attempt": 1,
+    "new_three_path_candidate_tested": false,
+    "later_source_qualification_inherited": false
+  },
+  "cell": {
+    "run_id": 41609576379,
+    "completed_lanes": 4,
+    "passed_lanes": 4,
+    "passed_per_command_per_lane": {
+      "host-material.json": 23,
+      "cli-process.json": 3,
+      "arg0-owner.json": 7,
+      "original-owner.json": 42,
+      "canonical-pq-contracts.json": 195,
+      "pq-initial-material.json": 1,
+      "pq-initial-clock.json": 1,
+      "initial-startup-budget.json": 1,
+      "pq-native-turn-start.json": 1
+    },
+    "overlapping_selections_are_not_unique_test_total": true,
+    "three_actual_unix_trust_tests_passed_each_lane": true,
+    "native_codex_build_and_bound_turn_start_passed_each_lane": true,
+    "original_just_fix_and_format_passed_with_clean_source": true,
+    "just_fix_is_not_local_no_fix_strict_clippy": true,
+    "codex_binary_independently_downloaded_and_rehashed": false,
+    "evidence": "cell-ci/cell-four-lane-summary.json"
+  },
+  "renewal": {
+    "run_id": 41609576436,
+    "completed_lanes": 4,
+    "passed_lanes": 4,
+    "dispatcher_each_lane": 14,
+    "product_each_lane": 3,
+    "exact_cases_ran_once_without_selected_failure_or_ignored_case": true,
+    "original_just_fix_and_format_passed_with_clean_source": true,
+    "active_cancel_scope": "After protected read and before database mutation; does not establish all unknown-commit recovery outcomes.",
+    "evidence": "renewal-ci/review-4-lanes.json"
+  },
+  "effect_recovery": {
+    "run_id": 41609576379,
+    "passed_lanes": 3,
+    "failed_lanes": 1,
+    "passing_lanes": "134/134 and six exact HTTP controls",
+    "failed_lane": "x64 prospective merge",
+    "passed": 133,
+    "failed": 1,
+    "exit_code": 100,
+    "command_timed_out": false,
+    "subsequent_six_controls_executed": false,
+    "original_retry_attempts_both_failed": true,
+    "cause_established": false,
+    "fixed_by_followup2": false,
+    "evidence": "effect-ci/four-lane-summary.json"
+  },
+  "windows_diagnostics": {
+    "run_id": 41609576350,
+    "completed_lanes": 4,
+    "failed_lanes": 4,
+    "missing_windows_private_owner_module_error_cleared": true,
+    "final_use_passes_each_lane": 8,
+    "command_groups_each_lane": {
+      "passed": 19,
+      "failed": 3
+    },
+    "failure_groups": [
+      "broad-identity-delete",
+      "legacy-delete-boundary",
+      "command-runner-terminal"
+    ],
+    "environment_only_classification": false,
+    "evidence": "windows-ci/four-lane-review.json"
+  },
+  "general_blocking_ci": {
+    "run_id": 41609576580,
+    "observed_at": "2026-11-03T09:52:33.373Z",
+    "job_counts": {
+      "success": 21,
+      "in_progress": 4,
+      "failure": 6,
+      "skipped": 4
+    },
+    "run_status": "in_progress",
+    "run_conclusion": null,
+    "codespell_passed": true,
+    "repo_checks": {
+      "passed": true,
+      "qa_tests": 22,
+      "caller_boundaries": 52,
+      "rust_files": 5604,
+      "authority_granted": false,
+      "checkout": "21ceefde202d58ef60e937d637f725727a9fe086"
+    },
+    "linux_bazel_missing_source_actions_failed": 2,
+    "new_bazel_execution_pending": true,
+    "mac_intel": "Mixed native failures, two target timeouts and build-service DNS or availability errors. Original summary: 291 pass, 79 fail to build, 13 fail locally, 229 skipped; passing counts include cache.",
+    "windows_bazel_completed_failed_shards": 3,
+    "windows_bazel_fourth_shard_running_at_snapshot": true,
+    "environment_only_failure_classification": false,
+    "remaining_jobs_not_awaited_indefinitely": true,
+    "evidence": "blocking-ci/"
+  },
+  "pair": {
+    "chain_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+    "chain_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+    "v5_manifest_sha256": "57ebcfa34d3e578679c3040fab3e4065683bd032592a183574767d5d3eaa9404",
+    "pins_unchanged": true,
+    "deadline_and_cpu_failures_retained": true
+  },
+  "preservation": {
+    "original_thresholds_features_targets_retries_and_time_budgets_unchanged": true,
+    "prior_failure_evidence_unchanged": true,
+    "original_archives_unmodified": true,
+    "large_job_logs_lossless_xz": true,
+    "blob_ceiling_bytes": 512000,
+    "new_allowlist_exemptions": false
+  },
+  "qualification": {
+    "status": "HOLD",
+    "full_hepta_native": false,
+    "installed_business_loop": false,
+    "independent_wan_deployment": false,
+    "whole_chain_pq": false,
+    "proof_pq128_and_quantum_pow_argument_closed": false
+  }
+}

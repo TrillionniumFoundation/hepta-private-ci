@@ -1,0 +1,33 @@
+{
+  "status": "CLEAR_STATIC",
+  "source_base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "reviewer": "hepta_finaluse independent of ingress implementation owner",
+  "final_source_sha256": {
+    "codex-rs/hepta-agentd/src/authbus_ingress.rs": "bdf69640829a786bd2403a95a3eb4f112a58d6fe6e6b5281047521e369c42e19",
+    "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs": "578b0bcd17048e822d555ef79ad5ec33fb276f2681fb7b82c624b80f5d6acd9c",
+    ".github/workflows/hepta-pq-policy-renewal.yml": "28ed20a7b499fb9044588d6f6048d1eec8bd02d8e7062626e0f54281fcc6902b"
+  },
+  "checks": [
+    "Original Mutex had unit payload only; replacement is private one-permit asynchronous admission, not a renamed or owned invalid mutex guard",
+    "Both acquired permits retain original full method scope: trust read/profile check, checkpoint read/reconcile/publish/promotion, issuer pin, second checkpoint sync; no early release",
+    "Acquire error returns invalid and cannot execute owner transition; no application close/add_permits/forget or exposed gate access",
+    "Pinned Tokio1.53.1 acquire/drop implementations reviewed: queued future cancellation removes its waiter; SemaphorePermit drop restores its permit",
+    "New boxed futures actually own their states; queued cancellation and holder cancellation at the real protected-file read are both exercised without sleep selection; resumed operation sees unchanged durable checkpoint/no pending state and real signed submission succeeds",
+    "Existing concurrency/rollback test and polling helper remain byte-identical; new test exercises both Ed25519 and ML-DSA profiles",
+    "Original13 dispatcher controls and exact names retained; additive new exact14th name and minimum14; all existing timeout/source lanes/product controls retained; final workflow actionlint passed"
+  ],
+  "tokio_source_sha256": {
+    "semaphore.rs": "8d4693d43e9286249de2bcd70a263ae3a2b9a39b7a1fe5bc295c901c58068f21",
+    "batch_semaphore.rs": "6f761f4467676c29ec157894bec559a3d0ba3a4391ce2334c90ff59c30913d11"
+  },
+  "actionlint": {
+    "version": "1.7.12",
+    "exit_code": 0,
+    "workflow_sha256": "28ed20a7b499fb9044588d6f6048d1eec8bd02d8e7062626e0f54281fcc6902b"
+  },
+  "limits": [
+    "No claim that native runtime cancellation or original14-test dispatcher suite has executed in this review",
+    "Active-cancellation test pauses before SQLite mutation; existing rollback/recovery tests remain required for later commit/witness recovery windows",
+    "Final source is a follow-up overlay; native CI must validate the published composition"
+  ]
+}

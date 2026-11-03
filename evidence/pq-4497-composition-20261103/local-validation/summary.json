@@ -1,0 +1,99 @@
+{
+  "schema": "hepta-pq-composition-local-validation-v1",
+  "status": "draft_components_partially_validated",
+  "source_base": "a6c58700d23efd575d2803637aa7d9203d27e7bf",
+  "pq_delta_base": "bcb8f97164cefe494918fb0efe482029d7dfe6be",
+  "pq_delta_head": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "chain_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+  "chain_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+  "execution_manifest_sha256": "57ebcfa34d3e578679c3040fab3e4065683bd032592a183574767d5d3eaa9404",
+  "rustc": "1.96.0 (ac68faa20 2026-05-25)",
+  "just": "1.59.0",
+  "nextest": "0.9.151",
+  "build_jobs": 1,
+  "cargo_incremental": false,
+  "cargo_profiles": "No Cargo profile or feature override was added by this validation harness; repository defaults retained.",
+  "contracts": {
+    "receipt": "hepta-contracts-test-2.json",
+    "run": 195,
+    "passed": 192,
+    "failed": 3,
+    "skipped": 0,
+    "failure": "All three fail at UnixListener::bind with EPERM before requested trust-service behavior; no tests or security checks were disabled."
+  },
+  "artifacts": {
+    "receipt": "hepta-artifacts-test-2.json",
+    "run": 130,
+    "passed": 130,
+    "failed": 0,
+    "ignored_harnesses": 1,
+    "ignored_harness": "owner_host_process_fault_worker is invoked by its passing owner_host_process_kill_reopen_matrix parent.",
+    "new_coverage": "Real ML-DSA CURRENT and selector, classical refusal, profile, half-open expiry and sticky closure for historical and public initial material."
+  },
+  "source_controls": {
+    "execution_source": 51,
+    "diverse_source": 32,
+    "installed_artifact": 17,
+    "passed": 100,
+    "actual_final_chain_verifier": "passed: exact commit, tree and 42 selected files; no qualification or installation authority"
+  },
+  "caller_gate": {
+    "receipt": "hepta-final-callers-verify.json",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "rust_files": 5604,
+    "boundaries": 51,
+    "authority_granted": false,
+    "typed_negative_controls": 10,
+    "native_binary_binding_controls": 14,
+    "self_test": "passed"
+  },
+  "formatting": {
+    "receipt": "hepta-final-fmt.json",
+    "status": "passed"
+  },
+  "bazel_lock": {
+    "receipt": "hepta-bazel-lock-update.json",
+    "status": "passed",
+    "version": "9.3.0",
+    "lock_drift_after_update": false
+  },
+  "host_attempt_1": {
+    "receipt": "hepta-host-targeted-test.json",
+    "status": "build_failed_environment",
+    "reason": "pkg-config missing; installed upstream pkgconf 3.0.10 from its checksum-verified official release without changing source, dependencies or features."
+  },
+  "host_attempt_2": {
+    "receipt": "hepta-host-targeted-test-2.json",
+    "status": "build_failed_environment",
+    "reason": "ENOSPC building starlark archive. Complete logs preserved. Only own completed Bazel caches removed; source and logs retained."
+  },
+  "host_attempt_3": {
+    "status": "pending_at_this_draft",
+    "log_included": false,
+    "description": "Same original locked graph and profiles, with pkg-config and original checksum-verified V8 pair. No native pass or complete host compilation claimed."
+  },
+  "strict_clippy": {
+    "status": "pending_at_this_draft"
+  },
+  "qualifications": {
+    "whole_chain_pq": false,
+    "deployment": false,
+    "independent_end_to_end": false,
+    "installed_business_loop": false,
+    "previous_v5_acceptance_inherited": false
+  },
+  "claim_boundary": "Local component and source-control observations. The final committed composition still requires original hosted CI, including real Unix trust services, native Agentd turn/start and original model-dependent installed Cell controls.",
+  "paired_chain_native_ci": {
+    "evidence": "../chain-ci/",
+    "run": 41594378689,
+    "candidate_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+    "lanes": "Three lanes 43/43 pass; x64 base-merge 42/43 pass and one PQ_WITNESS_DEADLINE failure.",
+    "total_test_executions": 172,
+    "passed": 171,
+    "failed": 1,
+    "new_six_controls": "Passed in all four lanes.",
+    "deadline_preserved_ms": 250,
+    "source_defect_established": false,
+    "full_four_lane_qualification": false
+  }
+}

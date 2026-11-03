@@ -1,0 +1,199 @@
+{
+  "all_controls_passed": true,
+  "cases": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_smollm_execution_source*.py",
+        "-v"
+      ],
+      "control_passed": true,
+      "cwd": "/workspace/scratch/295b0f1bca6b/hepta-pair",
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at_utc": "2026-11-01T08:12:37.541652+00:00",
+      "gzip_sha256": "fa9e003990b72d88149831d37729f0cc2193bcb97e85af587f6629e763954dba",
+      "log": "final-controls/execution-sources.log.gz",
+      "minimum_expected_tests": 51,
+      "name": "execution-sources",
+      "native_execution": false,
+      "ok_terminal": true,
+      "seconds": 6.993693487998826,
+      "started_at_utc": "2026-11-01T08:12:30.547493+00:00",
+      "test_summary_counts": [
+        51
+      ],
+      "uncompressed_bytes": 9859,
+      "uncompressed_sha256": "b4d327ee91ab9f2c1af4c99948ed09c60f8f2ab4e93ab973bd50a36838014374"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_neural_*diverse_v3.py",
+        "-v"
+      ],
+      "control_passed": true,
+      "cwd": "/workspace/scratch/295b0f1bca6b/hepta-pair",
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at_utc": "2026-11-01T08:12:31.487789+00:00",
+      "gzip_sha256": "db16caee3e11d16ad56cc6f2a2a03ae0d01f394dc4f9ecdd4df0ddb1a835e852",
+      "log": "final-controls/diverse-sources.log.gz",
+      "minimum_expected_tests": 32,
+      "name": "diverse-sources",
+      "native_execution": false,
+      "ok_terminal": true,
+      "seconds": 0.9394500449998304,
+      "started_at_utc": "2026-11-01T08:12:30.547903+00:00",
+      "test_summary_counts": [
+        32
+      ],
+      "uncompressed_bytes": 6233,
+      "uncompressed_sha256": "b00ea8ef5a1d0d904cbe9bc9b21c1e39e1e4e6f4ad74f1e499dfc9d2232083b6"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/ci/test_from_zero_host_ci.py",
+        "-v"
+      ],
+      "control_passed": true,
+      "cwd": "/workspace/scratch/295b0f1bca6b/chain",
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at_utc": "2026-11-01T08:12:30.771261+00:00",
+      "gzip_sha256": "a323276f8c8b7f175c1e7fb795b552759a2411606acf7acd2eb6ae1d16f99420",
+      "log": "final-controls/from-zero-host.log.gz",
+      "minimum_expected_tests": 20,
+      "name": "from-zero-host",
+      "native_execution": false,
+      "ok_terminal": true,
+      "seconds": 0.22214228699886007,
+      "started_at_utc": "2026-11-01T08:12:30.548508+00:00",
+      "test_summary_counts": [
+        20
+      ],
+      "uncompressed_bytes": 3185,
+      "uncompressed_sha256": "5ebc73aa2faaac8e419bd0abfe24bc5310d3395b93990021ed276d94567602c2"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/ci/test_run_from_zero_native.py",
+        "-v"
+      ],
+      "control_passed": true,
+      "cwd": "/workspace/scratch/295b0f1bca6b/chain",
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at_utc": "2026-11-01T08:12:37.755420+00:00",
+      "gzip_sha256": "c76baa439b864ccb802966eac00d653319204685108f8a4356193a2e17d316e4",
+      "log": "final-controls/from-zero-reader.log.gz",
+      "minimum_expected_tests": 86,
+      "name": "from-zero-reader",
+      "native_execution": false,
+      "ok_terminal": true,
+      "seconds": 7.205603506001353,
+      "started_at_utc": "2026-11-01T08:12:30.549197+00:00",
+      "test_summary_counts": [
+        86
+      ],
+      "uncompressed_bytes": 12948,
+      "uncompressed_sha256": "0934aed7e51ba587bf2e012489c1777ce9ae5c3fcbf20a8cde6c596ec5d0ad25"
+    }
+  ],
+  "chain_commit": "acd8f79f2dcc22ecdee1d1a5fd88d619d06f37c9",
+  "chain_tree": "4e83d2d4ba6b15ddd962ef08652dbeb24858c533",
+  "finished_at_utc": "2026-11-01T08:12:37.757024+00:00",
+  "hepta_base_commit": "f0f1f16898c2f9737461a28752b421fe52e65ee7",
+  "hepta_base_tree": "81d52b6ea085a2b4e913cbea027d8198febc3046",
+  "hepta_checkout_kind": "selected authoritative baseline files plus seven reviewed edits; not a full Git checkout",
+  "installation_authorized": false,
+  "kind": "executed-python-controls-after-final-source-binding",
+  "learning_benefit_qualified": false,
+  "model_compatibility_changed": false,
+  "native_acceptance": false,
+  "source_files_unchanged_during_controls": true,
+  "source_snapshot_after": {
+    ".github/workflows/hepta-pon-native-pair.yml": {
+      "bytes": 87542,
+      "sha256": "e7c60874f822303693147d2a62bcb2ae356a3e3aaa0bab1c9ca55f6be1f80618"
+    },
+    "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v5.json": {
+      "bytes": 7086,
+      "sha256": "cc914a114f6216be856eb983c3326ea37e030cbea3c8e2535d2266c76d001dcf"
+    },
+    "scripts/hepta_neural_evidence_diverse_v3.py": {
+      "bytes": 23676,
+      "sha256": "202f4184340400605d6d1de01926e1543c7c7905b8acce5c5db88ca90bd4fe5f"
+    },
+    "scripts/hepta_neural_study_diverse_v3.py": {
+      "bytes": 16987,
+      "sha256": "5aa5e2894968db52b96093cb60a129398fd287b0c1a887857049239561304b1e"
+    },
+    "scripts/hepta_smollm_execution_source_v1.py": {
+      "bytes": 9453,
+      "sha256": "8be0917316284c5e0ab066a7300424f0877eac8f69bfc338ace67ddea81bbd1a"
+    },
+    "scripts/test_hepta_smollm_execution_source_v1.py": {
+      "bytes": 21354,
+      "sha256": "2ee455be7bfc39e9707f9434050ae5b282566d5206fe9ab749770d114d9e6fd6"
+    },
+    "scripts/test_hepta_smollm_execution_source_v5.py": {
+      "bytes": 8344,
+      "sha256": "fcd700ef89edf4960ba55df11c2e9be0953ae3af5fb49876070f3c385324b153"
+    }
+  },
+  "source_snapshot_before": {
+    ".github/workflows/hepta-pon-native-pair.yml": {
+      "bytes": 87542,
+      "sha256": "e7c60874f822303693147d2a62bcb2ae356a3e3aaa0bab1c9ca55f6be1f80618"
+    },
+    "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v5.json": {
+      "bytes": 7086,
+      "sha256": "cc914a114f6216be856eb983c3326ea37e030cbea3c8e2535d2266c76d001dcf"
+    },
+    "scripts/hepta_neural_evidence_diverse_v3.py": {
+      "bytes": 23676,
+      "sha256": "202f4184340400605d6d1de01926e1543c7c7905b8acce5c5db88ca90bd4fe5f"
+    },
+    "scripts/hepta_neural_study_diverse_v3.py": {
+      "bytes": 16987,
+      "sha256": "5aa5e2894968db52b96093cb60a129398fd287b0c1a887857049239561304b1e"
+    },
+    "scripts/hepta_smollm_execution_source_v1.py": {
+      "bytes": 9453,
+      "sha256": "8be0917316284c5e0ab066a7300424f0877eac8f69bfc338ace67ddea81bbd1a"
+    },
+    "scripts/test_hepta_smollm_execution_source_v1.py": {
+      "bytes": 21354,
+      "sha256": "2ee455be7bfc39e9707f9434050ae5b282566d5206fe9ab749770d114d9e6fd6"
+    },
+    "scripts/test_hepta_smollm_execution_source_v5.py": {
+      "bytes": 8344,
+      "sha256": "fcd700ef89edf4960ba55df11c2e9be0953ae3af5fb49876070f3c385324b153"
+    }
+  },
+  "started_at_utc": "2026-11-01T08:12:30.545286+00:00",
+  "total_executed_tests": 189
+}

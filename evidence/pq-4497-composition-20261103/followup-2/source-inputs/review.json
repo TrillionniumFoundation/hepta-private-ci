@@ -1,0 +1,79 @@
+{
+  "schema": "hepta-bazel-rust-source-closure-correction-v1",
+  "base_commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "base_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "baseline_sha256": "e9934646984ebaf4eb26880d3d5ea7fca445ff11e0cb05a239a8a02f2017fe6d",
+      "proposed_sha256": "4ab781703229cfd6c9de8e2047b9e96ce88e24b7d03a1d5a745b80c07b15dca5",
+      "local_path": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-bazel-source-closure/overlay/codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "added_lines": 2,
+      "deleted_lines": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "baseline_sha256": "f03e78fd809f3207e4516e271685127d908fcb15ed76c09d08ca67baf3b7d139",
+      "proposed_sha256": "1c9e8b8c98ed4a31469bf437bd0b676e67d866398b6e2a4c94d8dc17e68e20eb",
+      "local_path": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-bazel-source-closure/overlay/codex-rs/hepta-agentd/BUILD.bazel",
+      "added_lines": 2,
+      "deleted_lines": 0
+    }
+  ],
+  "patch_sha256": "4b44d38fea13116866c1040d42cf826d58a4c0df64437776452473b302dd01b3",
+  "existing_explicit_imports": [
+    "src/cognitive_process_wire.rs",
+    "src/cognitive_process_evidence.rs",
+    "src/cognitive_process_evaluation.rs",
+    "src/cognitive_process_materials.rs",
+    "src/cognitive_process_product_wire.rs"
+  ],
+  "transitive_path_edges": [
+    {
+      "parent": "src/cognitive_process_wire.rs",
+      "child": "src/cognitive_process_learning_auth.rs"
+    },
+    {
+      "parent": "src/cognitive_process_learning_auth.rs",
+      "child": "src/cognitive_process_learning_auth_tests.rs"
+    }
+  ],
+  "complete_existing_source_closure_sha256": {
+    "src/cognitive_process_wire.rs": "145bb4e0df3a48409b2fb07a88bef1df5edc12c3fc2c868b795d9baf266812f6",
+    "src/cognitive_process_evidence.rs": "ccae107b097889f623122e602c662abd9542d34114906e41eefff09a653ab195",
+    "src/cognitive_process_evaluation.rs": "76041a08a12668024cc2127e431573982d825ab64828644eb41b21ed7f4b5b74",
+    "src/cognitive_process_materials.rs": "65a43d57aaa90e46a60b14ed905e41ed547283ea46d7ce9e5d587eac9097a044",
+    "src/cognitive_process_product_wire.rs": "9e54111f2c1235f117c79a761bbaaae618cc863ad0d51cf60631fe9d4d43f379",
+    "src/cognitive_process_learning_auth.rs": "fc1d3dbbdd681be927a867f8aa97dfc77a69a11917fef1f156bb4bd3257e66bf",
+    "src/cognitive_process_learning_auth_tests.rs": "44ebc2286828f2200593ad31723fe3111154887da19c8854f2cc7220f3bc6eb8"
+  },
+  "exact_missing_inputs": [
+    "src/cognitive_process_learning_auth.rs",
+    "src/cognitive_process_learning_auth_tests.rs"
+  ],
+  "proposed_change": "Declare the two existing Rust source files in host crate_srcs and the already restricted Agentd exports_files list.",
+  "static_maintenance_findings": {
+    "governing_instructions": "AGENTS.md; no nested AGENTS applies to either crate",
+    "governing_requirement": "Compile-time source-tree reads require explicit Bazel inputs even when Cargo succeeds.",
+    "source_input_parameter": "defs.bzl:codex_rust_crate crate_srcs -> lib_srcs -> product library and test library -> unit-test harness",
+    "generated_file_status": "The two BUILD.bazel inputs are maintained macro invocations with no generated-file warning; generated targets are produced by defs.bzl. No generator or macro is edited.",
+    "exports_visibility": "//codex-rs/hepta-infer-worker-host:__pkg__; unchanged",
+    "cargo_dependencies_changed": false,
+    "module_lock_changes_required_by_dependency_rule": false,
+    "targets_features_budget_test_filters_changed": false,
+    "existing_lines_exactly_preserved": true
+  },
+  "validation_boundary": {
+    "static_source_path_closure": "PASS",
+    "formatting": "PASS exact pinned Buildifier v8.5.1 -mode=check -lint=off",
+    "bazel_action_execution": false,
+    "rust_recompiled": false,
+    "runtime_qualification": false
+  },
+  "source_worktree_modified": false,
+  "frozen_publication_snapshot_modified": false,
+  "original_failed_jobs": [
+    125827960123,
+    125827960329
+  ]
+}

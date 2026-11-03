@@ -1,0 +1,88 @@
+{
+  "base_head": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "prior_failed_strict_log": "pq-audit/hepta-scoped-clippy-4.log",
+  "prior_failed_strict_log_sha256": "1fa55e0bd85332eae98cc194d60f3cbf3fec040dde3e1778ec3560db28309851",
+  "changed_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "before_sha256": "d430bb413cc558c006a4293b249d8ba225b351c950a8a37481b35dd8f3af7922",
+      "after_sha256": "2ddf3dfcfd1ad35001bce18f766049dee82f2f350b337b3fc5cbebc6146ad6a5",
+      "original_assertions_preserved": 11,
+      "tests_preserved": [
+        "pq_installation_authenticates_root_clock_and_current_floor_before_returning_roles"
+      ]
+    }
+  ],
+  "patch_sha256": "0b8749eb78136f9d4c482b4a06358520b637b8f09c8a680e983d2abf60914605",
+  "caller_scope": "Private helpers in the Linux-only leaf test module; no exported helper or nested module; full12 helper calls below",
+  "all_helper_calls": [
+    {
+      "helper": "key",
+      "line": 65,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "key",
+      "line": 173,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "key",
+      "line": 174,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "id",
+      "line": 182,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "id",
+      "line": 190,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "id",
+      "line": 197,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "id",
+      "line": 206,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "signature",
+      "line": 216,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "Service::start",
+      "line": 226,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "id",
+      "line": 279,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "id",
+      "line": 280,
+      "handling": "propagates Result with ?"
+    },
+    {
+      "helper": "signature",
+      "line": 291,
+      "handling": "propagates Result with ?"
+    }
+  ],
+  "checks": [
+    "All original assertion expressions, test name, seeds, timing, request-size bound, request operations and signed negative cases remain unchanged",
+    "Binary framing reads and writes, signature and serialization failures still fail the service; no disconnected-request retry was introduced",
+    "Mutex poisoning returns a test error without recovering the protected frontier value",
+    "Thread errors panic in Drop and original thread panic payload resumes; bind failure remains failure",
+    "Original controlled service keys and their limitation regarding independent administration remain documented"
+  ],
+  "validation": "Rustfmt1.96 completed; original strict Clippy attempt5 pending; no new runtime pass claimed"
+}

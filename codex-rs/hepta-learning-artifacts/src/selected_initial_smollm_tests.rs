@@ -68,7 +68,8 @@ fn original_signed_expiry_survives_load_and_cold_reverification() {
     signed.signature = fixture
         .selector_key
         .sign(&signed.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     let mut loaded = load_initial(&fixture, &signed, /*verified_at*/ 30, /*now*/ 34)
         .fixture("load inside original window");
     let (current, _) = fixture.current();
@@ -207,7 +208,8 @@ fn current_expiry_and_clock_rollback_fail_closed_without_invoking_consumer() {
     longer_signed.signature = fixture
         .selector_key
         .sign(&longer_signed.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     let mut fresh = load_initial(
         &fixture,
         &longer_signed,
@@ -295,7 +297,7 @@ fn old_trained_profile_null_bytes_and_null_signature_cannot_make_typed_material(
     let bytes = material();
     let fixture = Fixture::new(&bytes, manifest(&bytes));
     let mut signed = signed_for(&fixture);
-    signed.signature = [0; 64];
+    signed.signature = [0; 64].into();
     assert!(matches!(
         load_initial(&fixture, &signed, /*verified_at*/ 30, /*now*/ 30),
         Err(ArtifactSelectionError::InvalidSignature)

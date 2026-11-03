@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.qa-pq-composition-followup.v1",
+  "base_commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "tested_source": "base commit plus explicit reviewed worktree overlay; input hashes recorded in qa-full-suite.json",
+  "modified_qa_files": [
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "base_sha256": "1fcb799fc8e1d82764b0a435934bbb0830186c95872b528074a0f3c8ddb89533",
+      "modified_sha256": "0a69a96af89583bc44492aa37864bc486eae73e8073e896dfd023c97bbe2b12f"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+      "base_sha256": "868dc981a1d0333d76702f8c70babee4f523e0c28c232a002191ac8bc176d937",
+      "modified_sha256": "89f5639650a124eefee1432e1bad956fa172a76781427be09bc0019e2b369eed"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+      "base_sha256": "d6a9ea3174c80355f77d72187458948998dff708b0e6e4fcead886addf81f61d",
+      "modified_sha256": "2cc023e4e6e328efa5b68d016e995b035adf9541fd5d00126f98caeb7abce5fc"
+    }
+  ],
+  "qa_patch": {
+    "path": "qa-followup.patch",
+    "sha256": "0449367bb238926cec1b8ef6cc746cbe09e7593bcd1be66efb16b97da233f4f7"
+  },
+  "runtime_rust_changed_by_this_followup": false,
+  "verifier_rules_or_original_negative_controls_removed": false,
+  "original_tests_retained": 21,
+  "new_test_count": 1,
+  "new_negative_controls": [
+    "explicit extension file omitted",
+    "unclassified public method added in second impl"
+  ],
+  "retained_source_pin_mutations": [
+    "nested_impl",
+    "macro",
+    "nested_import",
+    "nested_context",
+    "nested_key_binding",
+    "conditional_context",
+    "serde_grant"
+  ],
+  "retained_owner_mutations": [
+    "ensure_live_state returns Ok(state)",
+    "revalidate_owner returns Ok(())",
+    "revalidate_shared returns Ok(())"
+  ],
+  "mutation_scope": "isolated TemporaryDirectory copies; no product source mutation",
+  "independent_inventory": "literal reviewed types, paths, method classifications, patterns and exact caller sets; not derived from CALLERS.toml",
+  "explicit_split_types": [
+    "FinalUseAuthority",
+    "FinalUseApprovalVerifier",
+    "FinalUseRevocationFeedVerifier",
+    "FinalUseRevocationConvergenceVerifier"
+  ],
+  "new_independent_boundaries": [
+    "final_use_pq_open_state",
+    "final_use_pq_approval_trust",
+    "final_use_pq_revocation_feed_trust",
+    "final_use_pq_revocation_feed_confirm",
+    "final_use_pq_revocation_convergence_trust"
+  ],
+  "manifest_dependency": {
+    "path": "CALLERS.toml",
+    "sha256": "4d232f99011453793bb00a5c7eb5f4c39c970badcde78df9a398ead0ce53c88d",
+    "owner": "hepta_finaluse",
+    "new_boundary": "final_use_pq_revocation_convergence_trust",
+    "production_callers": [],
+    "previous_51_boundary_rows_and_all_source_pins_unchanged": true
+  },
+  "result": {
+    "command": "python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py'",
+    "tests": 22,
+    "exit_code": 0,
+    "test_report_duration_seconds": 1.823,
+    "log": "qa-full-suite.log",
+    "receipt": "qa-full-suite.json"
+  },
+  "original_failure_evidence": {
+    "job_id": 125788434869,
+    "log": "baseline-ci-repo-checks-125788434869.log",
+    "sha256": "2c0fa59b6a7ebf6e16438d43236cb9030fbe5c834889280fa91701f9ab0d2220",
+    "tests": 21,
+    "failures": 4,
+    "errors": 1
+  },
+  "limits": [
+    "Local source gate only; no claim that remote repo-checks has passed on an unpublished followup.",
+    "No Rust/native result is established by this Python suite."
+  ]
+}

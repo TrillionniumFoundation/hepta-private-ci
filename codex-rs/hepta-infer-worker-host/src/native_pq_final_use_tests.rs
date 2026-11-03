@@ -71,7 +71,7 @@ async fn real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_g
     drop(durable);
     let reopened = DurableInferenceControl::open(&journal, /*capacity*/ 8)?;
     assert_eq!(reopened.native_record("pq-final-use-accept"), Some(&record));
-    issuer.await??;
+    issuer.finish().await?;
     host.shutdown().await;
     Ok(())
 }

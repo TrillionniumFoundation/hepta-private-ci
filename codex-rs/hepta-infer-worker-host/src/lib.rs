@@ -13,6 +13,7 @@ pub mod controlled_funding;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+pub mod authority_trust_unix;
 pub mod final_use_authorizer;
 pub mod final_use_grant_courier;
 pub mod native_app_server;
