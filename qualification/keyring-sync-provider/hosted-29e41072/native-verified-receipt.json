@@ -1,0 +1,1186 @@
+{
+  "source_commit": "29e41072ce0d097acfd59b5ecc1fdb525e45d75e",
+  "run_id": 41669578892,
+  "job_id": 126034062498,
+  "artifact_id": 13249102835,
+  "artifact_sha256": "e94efa99ba4f7e6c618e12a5302cdd76908f060cb4bcdd97eb12474d4b32ae7e",
+  "artifact_bytes": 37735,
+  "source_inputs_git_verified": 27,
+  "native": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": [
+          "patch",
+          "--dry-run",
+          "-p1",
+          "-i",
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/third_party/dbus/close_range.patch"
+        ],
+        "exit": 0,
+        "stdout": "checking file dbus/dbus-sysdeps-unix.c\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "patch",
+          "-p1",
+          "-i",
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/third_party/dbus/close_range.patch"
+        ],
+        "exit": 0,
+        "stdout": "patching file dbus/dbus-sysdeps-unix.c\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-address.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-address.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-auth.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-auth.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-bus.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-bus.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-credentials.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-credentials.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-dataslot.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-dataslot.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-errors.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-errors.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-file.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-file.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-file-unix.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-file-unix.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-connection.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-connection.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-internals.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-internals.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-hash.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-hash.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-list.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-list.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-keyring.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-keyring.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-marshal-byteswap.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-byteswap.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-marshal-basic.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-basic.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-marshal-header.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-header.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-marshal-recursive.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-recursive.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-marshal-validate.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-validate.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-memory.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-memory.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-mempool.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-mempool.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-misc.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-misc.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-nonce.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-nonce.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-object-tree.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-object-tree.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-pending-call.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-pending-call.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-pipe.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-pipe.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-pipe-unix.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-pipe-unix.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-resources.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-resources.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-message.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-message.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-server-debug-pipe.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-server-debug-pipe.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-server.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-server.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-server-unix.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-server-unix.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-server-socket.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-server-socket.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-signature.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-signature.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-sha.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-sha.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-syntax.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-syntax.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-sysdeps.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-sysdeps.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-sysdeps-pthread.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-sysdeps-pthread.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-string.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-string.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-threads.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-threads.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-timeout.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-timeout.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-transport.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-transport.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-sysdeps-unix.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-sysdeps-unix.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-transport-unix.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-transport-unix.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-userdb.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-userdb.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-transport-socket.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-transport-socket.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-uuidgen.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-uuidgen.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "-c",
+          "/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2/dbus/dbus-watch.c",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-watch.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "ar",
+          "rcs",
+          "/home/runner/work/_temp/keyring-provider/native/lib/libdbus-1.a",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-address.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-auth.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-bus.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-connection.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-credentials.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-dataslot.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-errors.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-file.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-file-unix.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-hash.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-internals.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-keyring.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-list.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-basic.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-byteswap.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-header.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-recursive.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-marshal-validate.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-memory.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-mempool.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-message.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-misc.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-nonce.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-object-tree.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-pending-call.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-pipe.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-pipe-unix.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-resources.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-server.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-server-debug-pipe.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-server-socket.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-server-unix.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-sha.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-signature.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-string.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-syntax.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-sysdeps.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-sysdeps-pthread.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-sysdeps-unix.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-threads.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-timeout.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-transport.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-transport-socket.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-transport-unix.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-userdb.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-uuidgen.o",
+          "/home/runner/work/_temp/keyring-provider/native/objects/dbus-watch.o"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "gcc",
+          "-std=gnu11",
+          "-O2",
+          "-fno-strict-aliasing",
+          "-DDBUS_COMPILATION",
+          "-I/home/runner/work/_temp/keyring-provider/native/dbus-1.16.2",
+          "-pthread",
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/third_party/dbus/native_identity_test.c",
+          "/home/runner/work/_temp/keyring-provider/native/lib/libdbus-1.a",
+          "-o",
+          "/home/runner/work/_temp/keyring-provider/native/native-identity"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "/home/runner/work/_temp/keyring-provider/native/native-identity"
+        ],
+        "exit": 0,
+        "stdout": "PASS: D-Bus 1.16.2, wire ABI, pidfd identity, non-pidfd rejection, peer UID/PID, high-fd closure\n",
+        "stderr": ""
+      }
+    ],
+    "archive": {
+      "url": "https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz",
+      "bytes": 1115644,
+      "sha256": "0ba2a1a4b16afe7bceb2c07e9ce99a8c2c3508e5dec290dbb643384bd6beb7e2"
+    },
+    "inputs": {
+      "native_identity_test.c": "a28c13a4bd18d0d0d7001fde03b6b571d32b634081dd337e7ec250fdf85188e0",
+      "close_range.patch": "fbc17195f697908b129f843b24ce5d4b5fdbcbf79fde936a92bb011ee2c8b840",
+      "dbus.BUILD.bazel": "5a0cbe26f6c6104e2151fd419551329f3c36fbf5bfc423a7f0ad93fb059171be",
+      "BUILD.bazel": "172c1cc75e760b8bd72c6130e213194a1e5d17e38620f62e10bec020510a7c4b",
+      "README.md": "eb2d338f33c9c5c448de5189f4f6fcbb2187b8eeadeac5175d507d46613a9608",
+      "config.h": "70dcba70b2e07220c1ffade45a1aa493983eea65d8ad5df17e769b165cfd1cc9",
+      "dbus-arch-deps.h": "afc129c0f2c8ba06def8d41c6c7baca0fd9424877aaeb08ae74c575046468f41"
+    },
+    "static_sha256": "0201b82e87cf961a27b0dcad4e5eb262898fe67b2167adc71a07c3391298e30b",
+    "identity_sha256": "60d6abf5addda417cf1d4522847476be9eaaf2da8ae781c1aa1f91f486b07daa"
+  },
+  "service": {
+    "binaries": {
+      "baseline": {
+        "path": "/home/runner/work/_temp/keyring-provider/probe-target/debug/hepta-keyring-baseline-probe",
+        "sha256": "111d7da6e1684948bdf502111c0d2a2a95ee1d34f51b4b9a4582fb42745838f9"
+      },
+      "candidate": {
+        "path": "/home/runner/work/_temp/keyring-provider/probe-target/debug/hepta-keyring-candidate-probe",
+        "sha256": "0d0d319ba35c85d958baf77962c4786b4c4dd37d869010a2f840a02bc6f9a20a"
+      }
+    },
+    "steps": [
+      {
+        "provider": "baseline",
+        "operation": "save",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: save\n",
+        "stderr": ""
+      },
+      {
+        "provider": "baseline",
+        "operation": "save",
+        "account": "separate",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: save\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "load",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: load\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "load",
+        "account": "main",
+        "discover_address": true,
+        "exit": 0,
+        "stdout": "PASS: load\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "save",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: save\n",
+        "stderr": ""
+      },
+      {
+        "provider": "baseline",
+        "operation": "load",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: load\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "delete",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: delete\n",
+        "stderr": ""
+      },
+      {
+        "provider": "baseline",
+        "operation": "missing",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: missing\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "delete-missing",
+        "account": "main",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: delete-missing\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "load",
+        "account": "separate",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: load\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "delete",
+        "account": "separate",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: delete\n",
+        "stderr": ""
+      },
+      {
+        "provider": "candidate",
+        "operation": "reject-dh",
+        "account": "rejected",
+        "discover_address": false,
+        "exit": 0,
+        "stdout": "PASS: reject-dh\n",
+        "stderr": ""
+      }
+    ],
+    "status": "PASS",
+    "real_service_sessions": {
+      "dh": 17,
+      "plain": 0
+    },
+    "rejected_sessions": [
+      {
+        "algorithm": "dh-ietf1024-sha256-aes128-cbc-pkcs7"
+      }
+    ],
+    "source_inputs_unchanged": true
+  },
+  "files": {
+    "artifact.zip": {
+      "bytes": 37735,
+      "sha256": "e94efa99ba4f7e6c618e12a5302cdd76908f060cb4bcdd97eb12474d4b32ae7e"
+    },
+    "candidate-build.log": {
+      "bytes": 2062,
+      "sha256": "594cc5e76af52368dc439efee38db9785bfc1d671416b14c4d152b96f791085f"
+    },
+    "source-inputs.sha256": {
+      "bytes": 938,
+      "sha256": "d11b7fc78bb2a052dbd76c2f3d614be168b4890b3f856ac29ae0ea558ce17956"
+    },
+    "source-commit.txt": {
+      "bytes": 41,
+      "sha256": "7acb8cb1a5c71a0c631f712c3e5f2ee8ec0b216ac23a9be9af5d2b3ba8baff0c"
+    },
+    "secrets.junit.xml": {
+      "bytes": 2813,
+      "sha256": "94bbff2096b1da60c3de21496873be39c428a9e09e1812b12ecaec3e78623605"
+    },
+    "baseline-build.log": {
+      "bytes": 8528,
+      "sha256": "5da1dccb14adf54e494637e507c1288b47c5aba181b42fd12b38316093d21cc1"
+    },
+    "secrets-test.log": {
+      "bytes": 50289,
+      "sha256": "af89108736e54a5f43e5dc38e4066499103a7e112dbb1554a0bf6d4e7adc3a91"
+    },
+    "candidate-linkage.txt": {
+      "bytes": 230,
+      "sha256": "463ee9bee9863c6c91d578011dd30dd056308642eb655b809f07d5279a3c5be9"
+    },
+    "probes/inputs-before.json": {
+      "bytes": 3310,
+      "sha256": "9d5a33afc60d069ba7188f069c389dbc9bec635e890f5e5c0bd4ff6224ae1cbf"
+    },
+    "service/rejected-sessions.jsonl": {
+      "bytes": 53,
+      "sha256": "65b2ffe053477c92e17e72e1f186aa0b7b7d5a3f981492a4de6c0a8811e1f536"
+    },
+    "service/session-monitor.log": {
+      "bytes": 12532,
+      "sha256": "5bd6bc8adbb0de9a768fad9e2f1bf24d8609e98743b65912f76927c8b302cf6d"
+    },
+    "service/gnome-restarted.log": {
+      "bytes": 66,
+      "sha256": "4a8a48cb40e60b14823d3f1d0104321c2d0c713b96f640d38f2a3e565c5eef3f"
+    },
+    "service/reject-fixture.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "service/gnome-initial.log": {
+      "bytes": 66,
+      "sha256": "4a8a48cb40e60b14823d3f1d0104321c2d0c713b96f640d38f2a3e565c5eef3f"
+    },
+    "service/bus.log": {
+      "bytes": 260,
+      "sha256": "7c811ab759b7215d33adc3cfb8fc48708b2ccd35fca58c1c730ad069e246acfd"
+    },
+    "probes/candidate/Cargo.lock": {
+      "bytes": 12945,
+      "sha256": "575a8820621ecee0cd54353cf97f6350aa4932be32749d433933070bd6feec56"
+    },
+    "probes/baseline/Cargo.lock": {
+      "bytes": 39435,
+      "sha256": "64fa50f085008b7e2680fdf179de723e7c0e44e7a7345329df3c30d740f3716c"
+    }
+  },
+  "boundary": "Real compatibility proof for old 29e41072 only; security HOLD because official4.1 uses fastrand. Not acceptance for entropy-repaired successor."
+}

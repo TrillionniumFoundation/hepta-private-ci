@@ -1,3 +1,13 @@
+## Entropy-source follow-up
+
+The initial source and its completed hosted compatibility checks were placed
+on SECURITY HOLD after discovering official dbus-secret-service 4.1.0 uses
+fastrand for DH private bytes and IVs. The successor retains 4.1.0 zeroization
+and restores upstream OsRng. See [entropy-repair](entropy-repair/README.md) for
+the exact narrow diff, independent source review, fresh local checks, and
+remaining hosted/Bazel/platform acceptance. Earlier receipts below belong to
+the original source and are retained without relabeling their outcomes.
+
 # Keyring synchronous provider candidate
 
 Base: `4b1a326ec50c28e8803d390e81d2f03457cc7499` (i18n PR #4709).

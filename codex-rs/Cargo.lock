@@ -6422,17 +6422,15 @@ dependencies = [
 [[package]]
 name = "dbus-secret-service"
 version = "4.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "708b509edf7889e53d7efb0ffadd994cc6c2345ccb62f55cfd6b0682165e4fa6"
 dependencies = [
  "aes 0.8.4",
  "block-padding",
  "cbc",
  "dbus",
- "fastrand",
  "hkdf 0.12.4",
  "num",
  "once_cell",
+ "rand 0.8.6",
  "sha2 0.10.9",
  "zeroize",
 ]

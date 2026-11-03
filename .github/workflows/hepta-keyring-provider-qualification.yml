@@ -9,6 +9,7 @@ on:
       - codex-rs/keyring-store/**
       - codex-rs/rmcp-client/Cargo.toml
       - codex-rs/third_party/keyring-3.6.3/**
+      - codex-rs/third_party/dbus-secret-service-4.1.0/**
       - third_party/dbus/**
       - qualification/keyring-sync-provider/**
       - MODULE.bazel
@@ -35,7 +36,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
+          filter: blob:none
           persist-credentials: false
       - name: Install native fixture prerequisites
         run: |
@@ -61,6 +63,7 @@ jobs:
         run: |
           set -euo pipefail
           output="$RUNNER_TEMP/keyring-provider"
+          git fetch --no-tags --filter=blob:none --depth=1 origin 4b1a326ec50c28e8803d390e81d2f03457cc7499
           curl --fail --location --retry 3 https://static.crates.io/crates/keyring/keyring-3.6.3.crate --output "$output/keyring-3.6.3.crate"
           python3 qualification/keyring-sync-provider/prepare_probes.py --official-crate "$output/keyring-3.6.3.crate" --output "$output/probes"
           export CARGO_TARGET_DIR="$output/probe-target"

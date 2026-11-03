@@ -665,6 +665,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Restore the upstream OS entropy source for Secret Service DH keys and IVs,
+# retaining 4.1.0 zeroization and API behavior.
+dbus-secret-service = { path = "third_party/dbus-secret-service-4.1.0" }
 # Keep Secret Service encryption while isolating its synchronous provider from
 # the unmaintained asynchronous zbus dependency family.
 keyring = { path = "third_party/keyring-3.6.3" }

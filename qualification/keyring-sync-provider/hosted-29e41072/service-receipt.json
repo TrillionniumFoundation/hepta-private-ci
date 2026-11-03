@@ -1,0 +1,133 @@
+{
+  "binaries": {
+    "baseline": {
+      "path": "/home/runner/work/_temp/keyring-provider/probe-target/debug/hepta-keyring-baseline-probe",
+      "sha256": "111d7da6e1684948bdf502111c0d2a2a95ee1d34f51b4b9a4582fb42745838f9"
+    },
+    "candidate": {
+      "path": "/home/runner/work/_temp/keyring-provider/probe-target/debug/hepta-keyring-candidate-probe",
+      "sha256": "0d0d319ba35c85d958baf77962c4786b4c4dd37d869010a2f840a02bc6f9a20a"
+    }
+  },
+  "steps": [
+    {
+      "provider": "baseline",
+      "operation": "save",
+      "account": "main",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: save\n",
+      "stderr": ""
+    },
+    {
+      "provider": "baseline",
+      "operation": "save",
+      "account": "separate",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: save\n",
+      "stderr": ""
+    },
+    {
+      "provider": "candidate",
+      "operation": "load",
+      "account": "main",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: load\n",
+      "stderr": ""
+    },
+    {
+      "provider": "candidate",
+      "operation": "load",
+      "account": "main",
+      "discover_address": true,
+      "exit": 0,
+      "stdout": "PASS: load\n",
+      "stderr": ""
+    },
+    {
+      "provider": "candidate",
+      "operation": "save",
+      "account": "main",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: save\n",
+      "stderr": ""
+    },
+    {
+      "provider": "baseline",
+      "operation": "load",
+      "account": "main",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: load\n",
+      "stderr": ""
+    },
+    {
+      "provider": "candidate",
+      "operation": "delete",
+      "account": "main",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: delete\n",
+      "stderr": ""
+    },
+    {
+      "provider": "baseline",
+      "operation": "missing",
+      "account": "main",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: missing\n",
+      "stderr": ""
+    },
+    {
+      "provider": "candidate",
+      "operation": "delete-missing",
+      "account": "main",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: delete-missing\n",
+      "stderr": ""
+    },
+    {
+      "provider": "candidate",
+      "operation": "load",
+      "account": "separate",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: load\n",
+      "stderr": ""
+    },
+    {
+      "provider": "candidate",
+      "operation": "delete",
+      "account": "separate",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: delete\n",
+      "stderr": ""
+    },
+    {
+      "provider": "candidate",
+      "operation": "reject-dh",
+      "account": "rejected",
+      "discover_address": false,
+      "exit": 0,
+      "stdout": "PASS: reject-dh\n",
+      "stderr": ""
+    }
+  ],
+  "status": "PASS",
+  "real_service_sessions": {
+    "dh": 17,
+    "plain": 0
+  },
+  "rejected_sessions": [
+    {
+      "algorithm": "dh-ietf1024-sha256-aes128-cbc-pkcs7"
+    }
+  ],
+  "source_inputs_unchanged": true
+}

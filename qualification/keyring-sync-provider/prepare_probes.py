@@ -38,11 +38,13 @@ def main():
             target.write_bytes(members.extractfile(member).read())
     wrapper = repo / "codex-rs/keyring-store/src/lib.rs"
     candidate = repo / "codex-rs/third_party/keyring-3.6.3"
+    sync_provider = repo / "codex-rs/third_party/dbus-secret-service-4.1.0"
     inputs = {str(wrapper.relative_to(repo)): sha(wrapper.read_bytes())}
     inputs.update(
         {
             str(p.relative_to(repo)): sha(p.read_bytes())
-            for p in candidate.rglob("*")
+            for directory in (candidate, sync_provider)
+            for p in directory.rglob("*")
             if p.is_file()
         }
     )
@@ -66,6 +68,11 @@ edition = "2024"
 [dependencies]
 keyring = {{ path = {json.dumps(str(provider))}, default-features = false, features = {json.dumps(features)} }}
 tracing = "=0.1.44"
+"""
+        if label == "candidate":
+            manifest += f"""
+[patch.crates-io]
+dbus-secret-service = {{ path = {json.dumps(str(sync_provider))} }}
 """
         (project / "Cargo.toml").write_text(manifest)
         if label == "baseline":

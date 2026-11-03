@@ -1,0 +1,23 @@
+{
+  "source_commit": "29e41072ce0d097acfd59b5ecc1fdb525e45d75e",
+  "status": "HOLD_NON_CRYPTOGRAPHIC_PROVIDER_RANDOMNESS",
+  "sources": {
+    "dbus-secret-service-4.1.0/src/session.rs": {
+      "sha256": "6e74ab952549ed84ca85efb1196e4d2e20e2ac4764e6f910b51be074e1fdbcb2",
+      "bytes": 15518
+    },
+    "fastrand-2.3.0/src/lib.rs": {
+      "sha256": "34c09b1561225b09793721788ee19f1a7933e53405227614fd032286adea86c5",
+      "bytes": 20424
+    },
+    "secret-service-4.0.0/src/session.rs": {
+      "sha256": "e26837bc478e7b3fc39807abd8944d0b1abcb1f12a18ec0325f6909eb0adb060",
+      "bytes": 11333
+    },
+    "secret-service-4.0.0/src/util.rs": {
+      "sha256": "46d9829ae02604cca2ae9287025873f9fc0b140bb37e29d1e829bb92d0caa6e4",
+      "bytes": 4672
+    }
+  },
+  "finding": "dbus-secret-service4.1.0 shared crypto module: salt() and Keypair::generate() call fastrand::Rng::new/fill for AES IV and DH private bytes. Both Rust and OpenSSL backends share them. fastrand declares noncryptographic Wyrand. Previous secret-service4.0.0 obtains DH private bytes from rand::rngs::OsRng."
+}

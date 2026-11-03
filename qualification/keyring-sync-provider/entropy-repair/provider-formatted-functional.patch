@@ -1,0 +1,88 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -41,7 +41,7 @@
+ 
+ [features]
+ crypto-openssl = [
+-    "dep:fastrand",
++    "dep:rand",
+     "dep:num",
+     "dep:once_cell",
+     "dep:openssl",
+@@ -50,7 +50,7 @@
+     "dep:aes",
+     "dep:block-padding",
+     "dep:cbc",
+-    "dep:fastrand",
++    "dep:rand",
+     "dep:hkdf",
+     "dep:num",
+     "dep:once_cell",
+@@ -89,8 +89,8 @@
+ [dependencies.dbus]
+ version = "0.9"
+ 
+-[dependencies.fastrand]
+-version = "2.3"
++[dependencies.rand]
++version = "0.8"
+ optional = true
+ 
+ [dependencies.hkdf]
+--- a/Cargo.toml.orig
++++ b/Cargo.toml.orig
+@@ -14,15 +14,15 @@
+ 
+ [features]
+ vendored = ["dbus/vendored", "openssl?/vendored"]
+-crypto-rust = ["dep:aes", "dep:block-padding", "dep:cbc", "dep:fastrand", "dep:hkdf", "dep:num", "dep:once_cell", "dep:sha2"]
+-crypto-openssl = ["dep:fastrand", "dep:num", "dep:once_cell", "dep:openssl"]
++crypto-rust = ["dep:aes", "dep:block-padding", "dep:cbc", "dep:rand", "dep:hkdf", "dep:num", "dep:once_cell", "dep:sha2"]
++crypto-openssl = ["dep:rand", "dep:num", "dep:once_cell", "dep:openssl"]
+ 
+ [dependencies]
+ aes = { version = "0.8", optional = true }
+ block-padding = { version = "0.3", features = ["std"], optional = true }
+ cbc = { version = "0.1", features = ["block-padding", "alloc"], optional = true }
+ dbus = "0.9"
+-fastrand = { version = "2.3", optional = true }
++rand = { version = "0.8", optional = true }
+ hkdf = { version = "0.12", optional = true }
+ num = { version = "0.4", optional = true }
+ once_cell = { version = "1", optional = true }
+--- a/src/session.rs
++++ b/src/session.rs
+@@ -193,13 +193,14 @@
+     use std::ops::Rem;
+     use std::ops::Shr;
+ 
+-    use fastrand::Rng;
+     use num::bigint::BigUint;
+     use num::integer::Integer;
+     use num::traits::One;
+     use num::traits::Zero;
+     use num::FromPrimitive;
+     use once_cell::sync::Lazy;
++    use rand::rngs::OsRng;
++    use rand::Rng;
+ 
+     #[cfg(feature = "crypto-rust")]
+     pub(super) fn encrypt(data: &[u8], key: &AesKey) -> (Vec<u8>, Vec<u8>) {
+@@ -284,7 +285,7 @@
+     }
+ 
+     fn salt() -> [u8; 16] {
+-        let mut rng = Rng::new();
++        let mut rng = OsRng {};
+         let mut salt = [0; 16];
+         rng.fill(&mut salt);
+         salt
+@@ -317,7 +318,7 @@
+ 
+     impl Keypair {
+         pub(super) fn generate() -> Self {
+-            let mut rng = Rng::new();
++            let mut rng = OsRng {};
+             let mut private_key_bytes = [0; 128];
+             rng.fill(&mut private_key_bytes);
+ 
