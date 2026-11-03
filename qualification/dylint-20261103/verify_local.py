@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import re
+import subprocess
 import zipfile
 
 
@@ -22,6 +23,7 @@ def verify_bytes(data, expected):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--repository", type=Path, required=True)
+    parser.add_argument("--source-ref", default="ef384309bde52e30e9dd0bc5b625157bfaa77bd1")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     require(__debug__, "optimized Python is not accepted for evidence replay")
@@ -85,12 +87,19 @@ def main():
             "generated lock differs from the candidate")
     for inventory in [tests["source_before"], before]:
         for name, expected in inventory.items():
-            require(hashlib.sha256((root / name).read_bytes()).hexdigest() == expected,
+            data = subprocess.check_output(["git", "show", args.source_ref + ":" + name], cwd=root)
+            require(hashlib.sha256(data).hexdigest() == expected,
                     "recorded input differs: " + name)
+    for name, expected in tests["source_before"].items():
+        if name.startswith("tools/argument-comment-lint/"):
+            require(hashlib.sha256((root / name).read_bytes()).hexdigest() == expected,
+                    "current lint input differs from the tested source: " + name)
     report = {"local_original_tests": 8, "skipped": 0, "original_wrapper_tests": 6,
               "test_inputs": len(tests["source_before"]), "lock_inputs": len(before),
               "generated_lock_sha256": lock["generated_lock_sha256"],
-              "original_negative_retained": True, "committed_hosted_qualification": "pending"}
+              "source_ref": args.source_ref, "current_lint_inputs_unchanged": True,
+              "original_negative_retained": True,
+              "scope": "historical local tests and generation; inspect hosted evidence separately"}
     args.output.write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report))
 

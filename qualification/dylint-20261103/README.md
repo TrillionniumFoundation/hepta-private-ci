@@ -45,8 +45,34 @@ dependency checksums remained enabled.
 
 Run `python3 qualification/dylint-20261103/verify_local.py --repository .
 --output /tmp/dylint-local-verification.json` as a single command to replay the
-bounded evidence archives and compare all recorded inputs to the checkout.
+bounded evidence archives and compare all recorded inputs to the original Git source.
 The verifier does not execute archived code and rejects optimized Python.
+
+The local replay now binds those historical inputs to the immutable first
+candidate `ef384309bde52e30e9dd0bc5b625157bfaa77bd1` and separately requires all
+current lint workspace inputs to remain identical. It does not relabel an old
+local result as a new hosted result.
+
+## First hosted result and tool installation
+
+The original committed-lock gate passed on `ef384309bde52e30e9dd0bc5b625157bfaa77bd1`:
+run `41723995740`, job `126223851252`, artifact `13271804423`. Independent replay
+verified all 1,655 exact Git inputs, all nine output hashes, unchanged before
+and after inventories, and identical committed, regenerated and Git lock
+bytes. The complete original ZIP is preserved in two bounded gzip-framed
+parts under `hosted-ef384`; `verify_hosted_lock.py` reassembles and verifies it
+without executing any archived code.
+
+The original lint job `126224341110` failed before testing: installing the
+6.3.2 command-line tool with the default 1.92 nightly cannot build its locked
+`cargo-util` and `cargo-util-schemas` dependencies, which require Rust 1.97.
+The complete negative log is retained. The next change explicitly installs
+those two CLI tools with the official fixed Rust 1.97.0 toolchain and records
+its compiler identity. Their source builds still use `cargo install --locked`.
+This installation does not change the default toolchain: the lint package,
+driver and UI tests continue to use the original nightly-2025-09-18. The
+official 1.97.0 manifest and its exact bytes are preserved alongside the
+negative result. Native release targets are unchanged, and no release is run.
 
 ## Remaining hosted gate
 

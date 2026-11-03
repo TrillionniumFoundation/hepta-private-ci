@@ -31,6 +31,7 @@ jobs:
     env:
       CARGO_DYLINT_VERSION: 6.3.2
       DYLINT_LINK_VERSION: 6.3.2
+      DYLINT_BOOTSTRAP_TOOLCHAIN: 1.97.0
 
     strategy:
       fail-fast: false
@@ -79,8 +80,10 @@ jobs:
         shell: bash
         run: |
           install_root="${RUNNER_TEMP}/argument-comment-lint-tools"
-          cargo install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION" --root "$install_root"
-          cargo install --locked dylint-link --version "$DYLINT_LINK_VERSION"
+          rustup toolchain install "$DYLINT_BOOTSTRAP_TOOLCHAIN" --profile minimal --no-self-update
+          rustup run "$DYLINT_BOOTSTRAP_TOOLCHAIN" rustc -Vv
+          cargo "+$DYLINT_BOOTSTRAP_TOOLCHAIN" install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION" --root "$install_root"
+          cargo "+$DYLINT_BOOTSTRAP_TOOLCHAIN" install --locked dylint-link --version "$DYLINT_LINK_VERSION"
           echo "INSTALL_ROOT=$install_root" >> "$GITHUB_ENV"
 
       - name: Cargo build
