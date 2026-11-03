@@ -1,0 +1,149 @@
+{
+  "schema": "matrix-hosted-9cf-independent-readback-v1",
+  "source_commit": "9cfcb03e2205ae63032f5862962c6881d376bfd2",
+  "source_tree": "a0965311c6d111e19466498779023a8e47f04d4f",
+  "workflow_run": 41690457656,
+  "unique_git_source_paths_verified": 1281,
+  "all_source_before_after_equal": true,
+  "artifacts": [
+    {
+      "artifact_id": 13261895743,
+      "mode": "synapse-protocol",
+      "artifact_sha256": "316381c41b2add1cd8c48567238c0da99886bfa607a8a558e53631a276e62eed",
+      "artifact_bytes": 723079,
+      "receipt_sha256": "cc10275775bb3acee4f24f1135c484f9526d3c50fa226e7c0d14db447b1f781d",
+      "source_inputs": 1281,
+      "source_before_after_equal": true,
+      "commands": [
+        {
+          "name": "synapse-protocol",
+          "exit_code": 0,
+          "log_sha256": "ab61e2975dd6d7db9156eca164ab0944bdb8b422f755b54e00a547af1a223928"
+        }
+      ],
+      "tests": 1,
+      "zero_skipped": true,
+      "junit_sha256": "e539ede244dcd8024f9c5a0c5c41fbc4bb1a26776877953a3172814954e473a1"
+    },
+    {
+      "artifact_id": 13259000730,
+      "mode": "crypto-migration",
+      "artifact_sha256": "4a601ad2f09ddcd96e7f9a73a00ad324a0529837421cc02bedd2ea981509ce0c",
+      "artifact_bytes": 738791,
+      "receipt_sha256": "39b2a55b8324c0cf3f0914e64170ad4e85c6e88a450f2fdb9b00447df29ae3e3",
+      "source_inputs": 1281,
+      "source_before_after_equal": true,
+      "commands": [
+        {
+          "name": "crypto-migration",
+          "exit_code": 0,
+          "log_sha256": "6f554ad498103f4e95f9f39ed57a9f0e8a123455823fcf3a15897473d057626f"
+        }
+      ],
+      "tests": 1,
+      "zero_skipped": true,
+      "junit_sha256": "46418f8c05b1353f70ecb7661303acbd1b9aac4cf62ea9362585d01dcbe32079"
+    },
+    {
+      "artifact_id": 13258631681,
+      "mode": "owners",
+      "artifact_sha256": "da731da95864af130c1bde972e82c6b417a60ad096fdefa0818e50eba62a13af",
+      "artifact_bytes": 743076,
+      "receipt_sha256": "1730060e31422845046441afe1f6b14ed93b60e15cf0b3eb9c363ba974cc950a",
+      "source_inputs": 1281,
+      "source_before_after_equal": true,
+      "commands": [
+        {
+          "name": "pinned-dbus-client",
+          "exit_code": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "owners",
+          "exit_code": 0,
+          "log_sha256": "14fe6bd495e69170e986f398340a1f5b0cd0ae2e5341a5397494eaf7e2f8fbdd"
+        },
+        {
+          "name": "scoped-clippy-fix",
+          "exit_code": 0,
+          "log_sha256": "43278d381c03174813562744e9d7993d7593f0a1d7c3823b6b88ccd9bc5ae598"
+        }
+      ],
+      "tests": 113,
+      "zero_skipped": true,
+      "junit_sha256": "6818b29723e6d81fefd550a205dfe66636e51f7e9fae100a71d9e3c415b591f6",
+      "both_repaired_gap_fill_cases_executed": true,
+      "pinned_dbus_actual_build_and_identity_commands": 52
+    },
+    {
+      "artifact_id": 13258536251,
+      "mode": "sqlite-starlark",
+      "artifact_sha256": "0c8c245a840fdf04c347dc747aa0573cbe5116e91c44248d648da9a34871595d",
+      "artifact_bytes": 732060,
+      "receipt_sha256": "f473531b377585ca03c2d227aae268d1a30db064b7f1dd814c8362791be3def3",
+      "source_inputs": 1281,
+      "source_before_after_equal": true,
+      "commands": [
+        {
+          "name": "sqlite-starlark",
+          "exit_code": 0,
+          "log_sha256": "7b3464bd195d0bbce37c275ae7ae5b81bc9fe7cae3529e1086bd321ce3c4c45e"
+        }
+      ],
+      "tests": 221,
+      "zero_skipped": true,
+      "junit_sha256": "6d1f80d91786f57dd9f03315524fb88c2fc1a3d162531aafdd0d59582dc61481"
+    },
+    {
+      "artifact_id": 13257774309,
+      "mode": "bazel",
+      "artifact_sha256": "2216f7d2b93c51abaf57b8fd657c65afdf25dbe7bb3001f13ec3f7a287269529",
+      "artifact_bytes": 358834,
+      "receipt_sha256": "359e7dc44f28eaa01634ca959743edc116fd3648dcfaa24c0b3c54d33af78d72",
+      "source_inputs": 1281,
+      "source_before_after_equal": true,
+      "commands": [
+        {
+          "name": "committed-lock-check",
+          "exit_code": 0,
+          "log_sha256": "ad1d1aa229de2543a535f55c1885b7c924347c97f20e35cf8c1b3b364a097756"
+        },
+        {
+          "name": "original-lock-update",
+          "exit_code": 0,
+          "log_sha256": "ec9b1d86345b8cabe94692230f98dba94d9b7e0accae0f96280fe47bad0d3475"
+        },
+        {
+          "name": "original-lock-check",
+          "exit_code": 0,
+          "log_sha256": "d8a42790c0bc2c5ce7db51625cf6cf37dbf13c1e1a948c2bd3b560c0c3d83e5e"
+        },
+        {
+          "name": "sqlite-dependency-graph",
+          "exit_code": 0,
+          "log_sha256": "ac1a6088928541a2c3c50c04e141c97df9fb4f91d19b311883798ffb36484f51"
+        },
+        {
+          "name": "production-dependencies",
+          "exit_code": 0,
+          "log_sha256": "a89a187f937f29089abbd96be02ee52805ba68be3fb0ce209fc433a92645dff3"
+        },
+        {
+          "name": "matrix-regressions",
+          "exit_code": 0,
+          "log_sha256": "1966e05b9a83a6e9105e385217fb5c4286879f668896169a2bf5a4a99af75d60"
+        }
+      ],
+      "committed_lock_equal_generated": true,
+      "lock_sha256": "e356b9c87d885026862644ae1f5a4c1cf801dd9fa96dfad6c3b18aab5dc7cc8b",
+      "executed_bazel_test_targets": [
+        "hepta-matrix-sdk-crypto_advisory-test",
+        "hepta-matrix-sdk-event_handler_context-test",
+        "hepta-matrix-sdk-sdk_store_upgrade-test"
+      ]
+    }
+  ],
+  "native_cases_verified": 336,
+  "scope": "Exact-source scoped hosted qualification only; no combined union/full-platform/paired-host acceptance implied.",
+  "independent_execution": "No Cargo, native binaries, Bazel or archived code was executed by this verifier."
+}
