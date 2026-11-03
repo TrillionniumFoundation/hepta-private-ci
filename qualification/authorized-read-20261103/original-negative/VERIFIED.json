@@ -1,0 +1,121 @@
+{
+  "commit": "ae2876036274e3be07af122fb80cb3d18acf92d5",
+  "run_id": 41710889184,
+  "unique_exact_git_inputs": 182,
+  "original_artifacts": [
+    {
+      "artifact_id": 13266619365,
+      "bytes": 41643,
+      "sha256": "aeec407cdd6dac00a129c153864a25266e26d3c675be02760a8e4c567f745533",
+      "platform": "linux",
+      "exact_git_inputs": 182,
+      "outputs_verified": 13,
+      "source_before_after_equal": true,
+      "original_test_counts": {
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "//codex-rs/exec-server:exec-server-unit-tests": [
+          [
+            260,
+            1,
+            0,
+            0,
+            0
+          ]
+        ],
+        "//codex-rs/file-system:file-system-unit-tests": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "original_suite_result": "FAILED",
+      "clippy_reached": false
+    },
+    {
+      "artifact_id": 13266689342,
+      "bytes": 41617,
+      "sha256": "3dc751bc5902ee20885df0c546137a065beef6804f57a41e02062a88ed792481",
+      "platform": "windows",
+      "exact_git_inputs": 182,
+      "outputs_verified": 11,
+      "source_before_after_equal": true,
+      "original_test_counts": {
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "//codex-rs/exec-server:exec-server-unit-tests": [
+          [
+            251,
+            1,
+            0,
+            0,
+            0
+          ]
+        ],
+        "//codex-rs/file-system:file-system-unit-tests": []
+      },
+      "original_suite_result": "FAILED",
+      "clippy_reached": false
+    },
+    {
+      "artifact_id": 13267774672,
+      "bytes": 42555,
+      "sha256": "24604f91937b564489bc706c8e38ea6b17df36d4523465c8242d0324c4979a4e",
+      "platform": "macos",
+      "exact_git_inputs": 182,
+      "outputs_verified": 11,
+      "source_before_after_equal": true,
+      "original_test_counts": {
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test": [
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ]
+        ],
+        "//codex-rs/exec-server:exec-server-unit-tests": [
+          [
+            271,
+            4,
+            0,
+            0,
+            0
+          ]
+        ],
+        "//codex-rs/file-system:file-system-unit-tests": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "original_suite_result": "FAILED",
+      "clippy_reached": false
+    }
+  ],
+  "all_native_scopes_qualified": false,
+  "verification": "All retained original negative identities, bytes, inputs and execution boundaries verified"
+}

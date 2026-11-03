@@ -54,8 +54,12 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
     .await?;
 
     let temp = tempfile::tempdir()?;
-    let allowed_dir = temp.path().join("allowed");
-    let denied_dir = temp.path().join("denied");
+    #[cfg(target_os = "macos")]
+    let temp_root = temp.path().canonicalize()?;
+    #[cfg(not(target_os = "macos"))]
+    let temp_root = temp.path().to_path_buf();
+    let allowed_dir = temp_root.join("allowed");
+    let denied_dir = temp_root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let allowed_file = allowed_dir.join("allowed.txt");

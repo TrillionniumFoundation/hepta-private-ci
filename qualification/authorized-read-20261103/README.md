@@ -19,8 +19,9 @@ the operation as unsupported.
 The narrow fix adds the complementary non-macOS trait implementation. It
 returns the existing `Unsupported` error before any filesystem or sandbox
 access. The macOS stable-handle implementation, capability flags, generic
-trait fallback, RPC bounds validation, error mapper and every original test
-remain unchanged. The 17 added lines belong beside the existing trait
+trait fallback, RPC bounds validation and error mapper remain unchanged.
+The initial production repair also preserved every original test.
+The 17 added lines belong beside the existing trait
 implementation; this is a correction to an existing platform contract.
 
 The exact combined dependency parent is
@@ -39,7 +40,8 @@ The original source timed out its one test at the original 60-second limit
 (exit 100, zero passed, zero skipped). The candidate passed the exact same
 test and every original assertion (one passed, zero skipped, 0.069 seconds
 test execution). This is a Linux comparison. The original Windows failure
-has a different observed error and still requires actual Windows validation.
+has a different observed error. The subsequent exact native Windows run
+below now confirms its original RPC assertion passes.
 
 The original scoped `just fix --locked -p codex-exec-server` completed with
 exit 0 and did not change source. Its two existing deprecated-API warnings
@@ -94,3 +96,73 @@ Hosted results must be independently checked against the exact commit.
 This change does not close unrelated Windows failures, full blocking CI,
 private-state, security, performance or scientific obligations. No original
 test, assertion, capability or budget is weakened.
+
+## Retained native results and fixture follow-up
+
+Run `41710889184` used exact production commit
+`ae2876036274e3be07af122fb80cb3d18acf92d5`. Its complete original artifacts
+are retained byte for byte in `original-negative/`:
+
+| Native host | Artifact | Original RPC | Complete exec-server unit suite |
+| --- | --- | --- | --- |
+| Linux | 13266619365 | 1 passed | 260 passed, 1 failed |
+| Windows MSVC | 13266689342 | 1 passed | 251 passed, 1 failed |
+| macOS ARM64 | 13267774672 | 0 passed, 1 failed | 271 passed, 4 failed |
+
+All three complete unit suites had zero ignored, measured or filtered cases.
+The separate original file-system target contains zero Rust test cases;
+its wrapper did execute successfully on every host. The Windows wrapper
+prints no Rust summary for this empty target. Counting it as positive Rust
+coverage, or requiring a positive case count from it, would be incorrect.
+The runner now accepts only that exact empty-target contract while retaining
+the original execution and successful, non-skipped XML requirements.
+
+The independent `verify_original_negative.py` replays all three ZIP
+identities and CRCs, every output hash, 182 exact immutable Git input paths
+per host, before/after equality, original uncached target commands, complete
+Rust counts, precise failed case sets, and wrapper XML results. Linux's
+committed lock check passed first. Each original target command exited 3;
+Clippy was not reached on these failed runs. These are retained failures,
+not complete native acceptance.
+
+The macOS positive fixtures mixed logical temporary roots with the physical
+path returned by the existing stable-handle implementation. The follow-up
+creates its own temporary directories beneath the canonical temporary
+parent and derives all owned allow roots, targets and deny globs from the
+same physical namespace. The RPC fixture similarly canonicalizes only its
+owned macOS temporary root. Production policy interpretation stays exact;
+no arbitrary user policy root, symlink, hardlink or denied path is relaxed.
+All original authorization and attack assertions remain.
+
+All three native unit suites also exposed the original stalled-response
+fixture writing its response before reading the actual POST request. The
+follow-up drains the request headers and declared body through one
+4,096-byte total read bound before sending the same partial response.
+The original 50-millisecond request timeout, one-second server hold and
+`is_timeout()` predicate remain. No production HTTP code changed. This
+retains the original timeout test contract; there is no additional
+server-phase handshake that would prove its timing under arbitrary scheduler
+delays.
+
+The exact original local selected regression then passed with seven input
+hashes unchanged, exit 0, and 36.6234 seconds including compilation. Its
+selection deliberately excludes the other 260 tests and is not a whole-suite
+result. Scoped `just fix --locked -p codex-exec-server` and `just fmt`
+subsequently exited 0 without changing those inputs; the two pre-existing
+deprecated-API warnings remain in the full log. No Rust tests were rerun
+after formatting. `fixture-evidence.zip` retains these original logs and
+receipts, the earlier single-read trial, and independent read-only reviews.
+
+The following command verifies the retained originals without executing
+their code:
+
+```sh
+python3 qualification/authorized-read-20261103/verify_original_negative.py \
+  --repository . \
+  --artifacts qualification/authorized-read-20261103/original-negative \
+  --output /tmp/authorized-read-original-negatives.json
+```
+
+The follow-up must pass the same complete original RPC, unit, empty-wrapper
+and Clippy targets on all three native hosts at its own immutable commit.
+The original 30-minute job budgets remain unchanged.

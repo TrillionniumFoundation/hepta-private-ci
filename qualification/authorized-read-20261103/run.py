@@ -92,14 +92,21 @@ def main():
             name = target.split(":")[1]
             log = (output / (name + ".log")).read_text()
             counts = re.findall(r"test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out", log)
-            if len(counts) != 1 or int(counts[0][0]) == 0 or any(int(x) for x in counts[0][1:]):
+            # The original file-system macro emits an empty unit target: no
+            # Rust test cases exist in that crate. Its successful original
+            # Bazel execution/XML must still be retained on every platform.
+            if target == TARGETS[2]:
+                if counts not in [[], [("0", "0", "0", "0", "0")]]:
+                    raise RuntimeError("original empty filesystem target contract changed")
+            elif len(counts) != 1 or int(counts[0][0]) == 0 or any(int(x) for x in counts[0][1:]):
                 raise RuntimeError("original complete target failed or excluded cases: " + target)
             if target == TARGETS[0] and (int(counts[0][0]) != 1 or "test authorized_read_rpc_is_capability_gated_and_denies_outside_root ... ok" not in log):
                 raise RuntimeError("original capability and denial RPC test did not execute")
             suites = list(ET.fromstring((output / (name + ".xml")).read_bytes()).iter("testsuite"))
-            if not suites or any(int(s.get("failures", "0")) or int(s.get("errors", "0")) for s in suites):
-                raise RuntimeError("original target XML records failure")
-            receipt["test_counts"][target] = counts[0]
+            if not suites or any(int(s.get("failures", "0")) or int(s.get("errors", "0"))
+                                 or int(s.get("skipped", "0")) or list(s.iter("skipped")) for s in suites):
+                raise RuntimeError("original target XML records failure or skipped execution")
+            receipt["test_counts"][target] = counts[0] if counts else ["0"] * 5
         if run("original-clippy-selector", [bash, "./scripts/list-bazel-clippy-targets.sh"]):
             raise RuntimeError("original Clippy selector failed")
         selected = (output / "original-clippy-selector.stdout").read_text().splitlines()
