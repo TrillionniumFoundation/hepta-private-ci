@@ -16,14 +16,17 @@ ROOT = Path(__file__).resolve().parent
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, required=True)
-    output = parser.parse_args().output.resolve()
-    manifest = json.loads((ROOT / "local-evidence-manifest.json").read_text())
+    parser.add_argument("--manifest", type=Path, default=ROOT / "local-evidence-manifest.json")
+    parser.add_argument("--parts-dir", type=Path, default=ROOT / "local-evidence")
+    args = parser.parse_args()
+    output = args.output.resolve()
+    manifest = json.loads(args.manifest.read_text())
     parts = []
     for row in manifest["parts"]:
         name = Path(row["path"])
         if name.name != str(name):
             raise ValueError("unsafe part path")
-        content = (ROOT / "local-evidence" / name).read_bytes()
+        content = (args.parts_dir / name).read_bytes()
         if len(content) != row["bytes"] or hashlib.sha256(content).hexdigest() != row["sha256"]:
             raise ValueError(f"part differs: {name}")
         parts.append(b"".join(content.split()))

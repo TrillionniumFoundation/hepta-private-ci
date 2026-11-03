@@ -1,7 +1,8 @@
 # AWS DPoP maintained P-256 qualification
 
-Status: **HOLD_NO_GO** until the hosted platform jobs, actual generated Bazel
-lock adoption, and original required CI have completed for the published head.
+Status: **HOLD_NO_GO** until the adopted-lock successor and original required
+CI have completed for the published head. The first hosted source qualification
+has completed successfully on all three platforms and Bazel.
 This candidate does not clear the other dependency, product, or performance
 blockers.
 
@@ -67,6 +68,37 @@ The added workflow executes the same native driver on Linux, macOS and
 Windows. A separate job runs original `just bazel-lock-update`, original lock
 validation, the actual AWS SDK Bazel build, and the actual AWS consumer Bazel
 tests. It retains the generated lock, source hashes and command results.
-No Bazel lock has been manufactured or inferred from the Cargo result. The
-generated lock must be verified and committed before this candidate can be
-composed with the other dependency repairs.
+No Bazel lock has been manufactured or inferred from the Cargo result.
+
+## Hosted source result and adopted lock
+
+Source commit `2b5f05c1f5610e1bc5be17b065ceba449d586c9d`, run `41681326642`,
+completed all four hosted jobs successfully. Linux x86-64, macOS ARM64 and
+Windows x86-64 each passed the original five AWS consumer and eight DPoP cases,
+with zero skips. Actual Cargo metadata preserved the intended production graph.
+
+The Bazel job performed the original lock update and check, actual AWS SDK
+build, actual AWS consumer test and generated-target query, all with exit 0.
+All 315 captured inputs exactly match the immutable Git source. The generated
+lock is now adopted byte-for-byte: 1,668,385 bytes, SHA-256
+`c909dc974d03c61c3c7846271cfadd0d2275ba5c82a25cb1d826d4ae2eb7c6c4`.
+Independent review found only 23 new and 15 removed crate facts, all matching
+the real Cargo lock; all other facts and non-facts JSON are unchanged.
+
+Linux and macOS each match all 111 captured Git inputs byte-for-byte. The first
+Windows checkout used Git's default CRLF conversion for 110 text inputs, with
+one empty file unchanged; every hash is exactly explained by that conversion.
+The result is retained with this explicit boundary. The successor configures
+Windows checkout to preserve Git bytes and checks the committed Bazel lock
+before generation, then requires regeneration to leave it unchanged.
+
+`hosted-evidence-manifest.json` and `hosted-evidence/` retain every original
+artifact member, ZIP digest, source binding, JUnit result, complete metadata,
+actual lock output and independent reviews. Rebuild their verified evidence:
+
+    python3 qualification/aws-dpop/restore_local_evidence.py --manifest qualification/aws-dpop/hosted-evidence-manifest.json --parts-dir qualification/aws-dpop/hosted-evidence --output /tmp/aws-hosted-evidence.zip
+
+Run `verify_artifacts.py` against the exact commit to repeat source/JUnit/graph
+checks. Only the recorded first Windows artifact needs its explicit CRLF flag.
+The adoption successor and any composition with the Matrix migration still
+require fresh native and full original CI acceptance.
