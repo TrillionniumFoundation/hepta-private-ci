@@ -798,7 +798,8 @@ def science_gate_args(config, complete):
         pipeline_complete=item["path"], expected_pipeline_sha256=item["sha256"]
     )
     for name in ("verified", "manifest", "finalizer_freeze"):
-        result[name], result["expected_" + name + "_sha256"] = (
+        pin_name = "finalizer" if name == "finalizer_freeze" else name
+        result[name], result["expected_" + pin_name + "_sha256"] = (
             complete["artifacts"][name]["path"],
             complete["artifacts"][name]["sha256"],
         )
