@@ -72,6 +72,7 @@ impl ResponsesModel {
             idle_timeout: self.idle_timeout,
             response_id: None,
             output_items: Vec::new(),
+            text: super::text::TextTracker::default(),
             completed: false,
         })
     }

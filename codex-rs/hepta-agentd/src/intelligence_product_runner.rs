@@ -44,6 +44,12 @@ impl AgentdIntelligenceProductRunnerV1 {
         Ok(self)
     }
 
+    /// Structural startup prerequisite only. Each actual evaluation still
+    /// authenticates the current owner, evidence, and exact prepared use.
+    pub(crate) fn evaluation_trust_configured(&self) -> bool {
+        self.evaluation_trust.is_some()
+    }
+
     // The permit belongs to the worker, not the request future. Aborting a
     // running spawn_blocking task cannot stop its computation; releasing its
     // permit on request timeout would allow unbounded abandoned work.
@@ -83,8 +89,13 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        self.prepare_with_deadline(composition, request, inputs, PreparationDeadline::BudgetOnly)
-            .await
+        self.prepare_with_deadline(
+            composition,
+            request,
+            inputs,
+            PreparationDeadline::BudgetOnly,
+        )
+        .await
     }
 
     /// Preserve the authenticated objective's deadline throughout preparation
@@ -97,8 +108,13 @@ impl AgentdIntelligenceProductRunnerV1 {
         inputs: AgentdIntelligenceOwnerInputsV1,
         original_deadline_ms: u64,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        self.prepare_with_deadline(composition, request, inputs, PreparationDeadline::Original(original_deadline_ms))
-            .await
+        self.prepare_with_deadline(
+            composition,
+            request,
+            inputs,
+            PreparationDeadline::Original(original_deadline_ms),
+        )
+        .await
     }
 
     async fn prepare_with_deadline(
@@ -111,12 +127,14 @@ impl AgentdIntelligenceProductRunnerV1 {
         let started = tokio::time::Instant::now();
         let started_ms = wall_clock_ms()?;
         if let PreparationDeadline::Original(original) = deadline
-            && original <= started_ms {
-                return Err(AgentdIntelligenceProductError::TimedOut);
+            && original <= started_ms
+        {
+            return Err(AgentdIntelligenceProductError::TimedOut);
         }
         let budget = Duration::from_micros(request.budget.total_micros);
         let timeout_ms = request.budget.total_micros.saturating_add(999) / 1_000;
-        let budget_deadline_ms = started_ms.checked_add(timeout_ms.max(1))
+        let budget_deadline_ms = started_ms
+            .checked_add(timeout_ms.max(1))
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let (deadline_ms, worker_budget) = match deadline {
             PreparationDeadline::BudgetOnly => (budget_deadline_ms, budget),
@@ -125,7 +143,8 @@ impl AgentdIntelligenceProductRunnerV1 {
                 budget.min(Duration::from_millis(original - started_ms)),
             ),
         };
-        let worker_deadline = started.checked_add(worker_budget)
+        let worker_deadline = started
+            .checked_add(worker_budget)
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let candidate_ids = request
             .legal_candidates
@@ -213,7 +232,8 @@ impl AgentdIntelligenceProductRunnerV1 {
                 );
                 validate_current_snapshot(&snapshot, &mut oracle)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
-                if tokio::time::Instant::now() >= worker_deadline || wall_clock_ms()? >= deadline_ms {
+                if tokio::time::Instant::now() >= worker_deadline || wall_clock_ms()? >= deadline_ms
+                {
                     return Err(AgentdIntelligenceProductError::TimedOut);
                 }
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();

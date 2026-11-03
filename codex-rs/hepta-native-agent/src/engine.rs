@@ -2,12 +2,17 @@
 //!
 //! This independent Responses loop does not render Core's
 //! `ContextualUserFragment` objects. It checks serialized instructions, each
-//! tool definition, and every input item, including later model and tool
-//! outputs, against an 8 KiB byte ceiling. The retained array and complete
-//! request also have the host's context byte budget. These are
-//! byte bounds, not tokenizer counts. Oversized observations remain held with
-//! their original pending operation; the loop never truncates source evidence
-//! or rewrites earlier context to make an item fit.
+//! tool definition, and every input item against its frozen ContextPolicy.
+//! Original user/provider message items may grow with the request budget up
+//! to 64 KiB. Host instructions and system/developer messages, tool schemas,
+//! calls and presented outputs retain the 8 KiB ceiling. Requests have the
+//! host's context byte budget; complete history has a separate bound derived
+//! from its frozen step budget. These are
+//! byte bounds, not tokenizer counts. The requested output budget is at most
+//! 8192 tokens under the provider's token semantics; no local tokenizer proof
+//! is implied for retained original text. Source history remains append-only.
+//! Older completed observations may be projected into explicitly marked
+//! request-only excerpts; current inputs and the newest exchange stay intact.
 
 use std::time::Instant;
 
@@ -24,6 +29,9 @@ use tokio_util::sync::CancellationToken;
 use crate::Limits;
 use crate::ModelEvent;
 use crate::ModelPort;
+use crate::NativeEvent;
+use crate::NativeEventSink;
+use crate::NativeTextDelta;
 use crate::ObservedModelCompletion;
 use crate::PendingTool;
 use crate::RunOutcome;
@@ -32,8 +40,6 @@ use crate::ToolObservation;
 use crate::ToolPort;
 use crate::TurnOwner;
 use crate::TurnState;
-
-const MAX_CONTEXT_ITEM_BYTES: usize = 8 * 1024;
 
 /// Frozen provider and tool definitions used for every model call in this turn.
 pub struct NativeAgent {
@@ -45,26 +51,42 @@ pub struct NativeAgent {
 }
 
 impl NativeAgent {
+    /// Freeze this value into the existing owner's configuration binding.
+    pub fn context_policy(&self) -> Result<crate::ContextPolicy> {
+        crate::ContextPolicy::from_limits(&self.limits)
+    }
+
     /// Assemble the exact bounded request without admitting or sending it.
     /// Hosted turn preparation fingerprints these same bytes before the Core
     /// history owner records its original recovery binding.
     pub fn model_request_body(&self, state: &TurnState) -> Result<Vec<u8>> {
+        let policy = self.context_policy()?;
         self.validate_context(&state.context, &[])?;
-        let request = json!({
+        let mut request = json!({
             "model": self.model_name,
             "instructions": self.instructions,
-            "input": state.context,
+            "input": [],
             "tools": self.tools,
             "tool_choice": "auto",
             "parallel_tool_calls": false,
-            "max_output_tokens": self.limits.output_tokens,
+            "max_output_tokens": policy.requested_output_tokens,
             "store": self.store_responses,
             "stream": true
         });
-        Self::bounded_fragment_bytes(&request["instructions"])?;
+        Self::bounded_fragment_bytes(&request["instructions"], policy.host_item_bytes)?;
         for tool in &self.tools {
-            Self::bounded_fragment_bytes(tool)?;
+            Self::bounded_fragment_bytes(tool, policy.tool_item_bytes)?;
         }
+        let overhead = serde_json::to_vec(&request)?.len().saturating_sub(2);
+        let input_budget = self
+            .limits
+            .context_bytes
+            .checked_sub(overhead)
+            .context("assembled model request exceeds context byte budget")?;
+        request["input"] = Value::Array(crate::context_projection::project(
+            &state.context,
+            input_budget,
+        )?);
         let body = serde_json::to_vec(&request)?;
         if body.len() > self.limits.context_bytes {
             bail!("assembled model request exceeds context byte budget");
@@ -72,24 +94,42 @@ impl NativeAgent {
         Ok(body)
     }
 
-    fn bounded_fragment_bytes(fragment: &Value) -> Result<usize> {
+    fn bounded_fragment_bytes(fragment: &Value, limit: usize) -> Result<usize> {
         let bytes = serde_json::to_vec(fragment)?.len();
-        if bytes > MAX_CONTEXT_ITEM_BYTES {
+        if bytes > limit {
             bail!("native context item exceeds serialized byte limit");
         }
         Ok(bytes)
     }
 
+    /// Upper bound for the append-only context retained by the durable owner.
+    /// Hosts must use this separate storage budget instead of the smaller
+    /// per-request context cap. Snapshot envelope/pending bytes are additional.
+    pub fn retained_context_byte_limit(&self) -> Result<usize> {
+        Ok(self.context_policy()?.retained_context_bytes)
+    }
+
     fn validate_context(&self, retained: &[Value], appended: &[Value]) -> Result<()> {
+        let policy = self.context_policy()?;
         let mut bytes = 2usize; // Array brackets; commas are counted below.
         for (index, item) in retained.iter().chain(appended).enumerate() {
-            let item_bytes = Self::bounded_fragment_bytes(item)?;
+            let item_bytes = Self::bounded_fragment_bytes(item, policy.item_bytes(item))?;
             bytes = bytes
                 .checked_add(item_bytes)
                 .and_then(|bytes| bytes.checked_add(usize::from(index != 0)))
                 .context("native context length overflow")?;
         }
+        // The complete owner history is separately bounded by the frozen turn
+        // step budget. Model requests retain their tighter original byte cap.
+        let history_budget = self.retained_context_byte_limit()?;
+        if bytes > history_budget {
+            bail!("native retained history exceeds bounded turn storage budget");
+        }
         if bytes > self.limits.context_bytes {
+            let combined = retained.iter().chain(appended).cloned().collect::<Vec<_>>();
+            crate::context_projection::project(&combined, self.limits.context_bytes)?;
+        }
+        if self.limits.context_bytes == 0 {
             bail!("retained native context exceeds context byte budget");
         }
         Ok(())
@@ -102,6 +142,28 @@ impl NativeAgent {
         model: &M,
         state: &mut TurnState,
         cancel: &CancellationToken,
+    ) -> Result<RunOutcome> {
+        self.run_with_events(
+            owner,
+            tools,
+            model,
+            state,
+            cancel,
+            &crate::events::NoopEventSink,
+        )
+        .await
+    }
+
+    /// Run through the same durable owner while publishing provisional text.
+    /// The original pending operation survives UI delivery failure or timeout.
+    pub async fn run_with_events<O: TurnOwner, T: ToolPort, M: ModelPort, E: NativeEventSink>(
+        &self,
+        owner: &O,
+        tools: &T,
+        model: &M,
+        state: &mut TurnState,
+        cancel: &CancellationToken,
+        events: &E,
     ) -> Result<RunOutcome> {
         if self.limits.context_bytes == 0
             || self.limits.output_tokens == 0
@@ -197,7 +259,7 @@ impl NativeAgent {
                 }
                 result = tokio::time::timeout(
                     self.limits.model_timeout,
-                    self.collect_model(owner, model, state),
+                    self.collect_model(owner, model, state, events),
                 ) => result.context("model turn deadline; original operation pending").and_then(|v| v)
             };
             let (items, usage) = match result {
@@ -216,11 +278,12 @@ impl NativeAgent {
         }
     }
 
-    async fn collect_model<O: TurnOwner, M: ModelPort>(
+    async fn collect_model<O: TurnOwner, M: ModelPort, E: NativeEventSink>(
         &self,
         owner: &O,
         model: &M,
         state: &mut TurnState,
+        events: &E,
     ) -> Result<(Vec<Value>, Value)> {
         let request = state
             .pending_model
@@ -229,6 +292,8 @@ impl NativeAgent {
         // Admission persistence may yield while the host revokes this owner.
         // Recheck at entry; the target still owns its atomic FinalUse fence.
         owner.verify_current(&state.binding).await?;
+        let operation_id = request.operation_id.clone();
+        let context_base = state.context.len();
         let mut stream = model.open(request).await?;
         let mut items = Vec::new();
         while let Some(event) = stream.next().await? {
@@ -237,7 +302,35 @@ impl NativeAgent {
                     state.provider_response_id = Some(id);
                     owner.checkpoint(state).await?;
                 }
-                ModelEvent::TextDelta(_) => {}
+                ModelEvent::TextDelta(delta) => {
+                    let context_index = context_base
+                        .checked_add(delta.output_index)
+                        .context("native text delta context index overflow")?;
+                    let mut remaining = delta.text.as_str();
+                    while !remaining.is_empty() {
+                        let mut end = remaining.len().min(crate::events::MAX_TEXT_DELTA_BYTES);
+                        while !remaining.is_char_boundary(end) {
+                            end -= 1;
+                        }
+                        owner.verify_current(&state.binding).await?;
+                        events
+                            .emit(
+                                &state.binding,
+                                NativeEvent::TextDelta(NativeTextDelta {
+                                    operation_id: operation_id.clone(),
+                                    response_id: delta.response_id.clone(),
+                                    provider_item_id: delta.item_id.clone(),
+                                    context_index,
+                                    output_index: delta.output_index,
+                                    content_index: delta.content_index,
+                                    text: remaining[..end].to_owned(),
+                                    phase: delta.phase.clone(),
+                                }),
+                            )
+                            .await?;
+                        remaining = &remaining[end..];
+                    }
+                }
                 ModelEvent::Item(item) => items.push(item),
                 ModelEvent::Completed { usage, .. } => {
                     return Ok((items, usage));
@@ -272,13 +365,23 @@ impl NativeAgent {
     /// Pure replay of the same model-result projection used by the live loop.
     /// The caller must independently verify its original operation and terminal
     /// evidence. This method admits nothing and cannot create such evidence.
-    pub fn project_model_completion(&self, previous: &TurnState, items: Vec<Value>, usage: Value) -> Result<TurnState> {
+    pub fn project_model_completion(
+        &self,
+        previous: &TurnState,
+        items: Vec<Value>,
+        usage: Value,
+    ) -> Result<TurnState> {
         let mut projected = previous.clone();
         self.apply_model_completion(&mut projected, items, usage)?;
         Ok(projected)
     }
 
-    fn apply_model_completion(&self, state: &mut TurnState, items: Vec<Value>, usage: Value) -> Result<()> {
+    fn apply_model_completion(
+        &self,
+        state: &mut TurnState,
+        items: Vec<Value>,
+        usage: Value,
+    ) -> Result<()> {
         self.apply_model_items(state, items)?;
         state.model_usage.push(usage);
         Ok(())
@@ -286,25 +389,49 @@ impl NativeAgent {
 
     /// Pure replay of the exact bounded tool-output projection. Original raw
     /// bytes and a matching original terminal receipt are still required.
-    pub fn project_tool_completion(&self, previous: &TurnState, receipt: &RuntimeReceiptV1,
-        stdout: &[u8], stderr: &[u8]) -> Result<TurnState> {
+    pub fn project_tool_completion(
+        &self,
+        previous: &TurnState,
+        receipt: &RuntimeReceiptV1,
+        stdout: &[u8],
+        stderr: &[u8],
+    ) -> Result<TurnState> {
         let mut projected = previous.clone();
         self.apply_tool_completion(&mut projected, receipt, stdout, stderr)?;
         Ok(projected)
     }
 
-    fn apply_tool_completion(&self, state: &mut TurnState, receipt: &RuntimeReceiptV1,
-        stdout: &[u8], stderr: &[u8]) -> Result<()> {
+    fn apply_tool_completion(
+        &self,
+        state: &mut TurnState,
+        receipt: &RuntimeReceiptV1,
+        stdout: &[u8],
+        stderr: &[u8],
+    ) -> Result<()> {
         self.validate_tool_completion(state, receipt, stdout, stderr)?;
-        self.apply_tool_output(state, crate::state::terminal_output_json(receipt, stdout, stderr))
+        self.apply_tool_output(
+            state,
+            crate::state::terminal_output_json(receipt, stdout, stderr),
+        )
     }
 
-    fn validate_tool_completion(&self, state: &TurnState, receipt: &RuntimeReceiptV1,
-        stdout: &[u8], stderr: &[u8]) -> Result<()> {
-        let pending = state.pending_tool.as_ref().context("pending tool missing")?;
+    fn validate_tool_completion(
+        &self,
+        state: &TurnState,
+        receipt: &RuntimeReceiptV1,
+        stdout: &[u8],
+        stderr: &[u8],
+    ) -> Result<()> {
+        let pending = state
+            .pending_tool
+            .as_ref()
+            .context("pending tool missing")?;
         receipt.validate_against(&pending.intent)?;
         if !receipt.tool_outcome.terminal_observed
-            || !matches!(receipt.execution.status, ExecutionStatusV1::Completed | ExecutionStatusV1::Failed)
+            || !matches!(
+                receipt.execution.status,
+                ExecutionStatusV1::Completed | ExecutionStatusV1::Failed
+            )
             || receipt.tool_outcome.stdout_digest != Some(Digest32::of_bytes(stdout))
             || receipt.tool_outcome.stderr_digest != Some(Digest32::of_bytes(stderr))
         {
@@ -317,7 +444,10 @@ impl NativeAgent {
     }
 
     fn apply_tool_output(&self, state: &mut TurnState, output: String) -> Result<()> {
-        let pending = state.pending_tool.as_ref().context("pending tool missing")?;
+        let pending = state
+            .pending_tool
+            .as_ref()
+            .context("pending tool missing")?;
         let item = json!({ "type":"function_call_output", "call_id":pending.call.call_id, "output":output });
         // Escaping and lossy UTF-8 rendering can expand the original bytes.
         self.validate_context(&state.context, std::slice::from_ref(&item))?;
@@ -518,7 +648,8 @@ impl NativeAgent {
                     let output = match presentation {
                         Ok(output) => output,
                         Err(error) => {
-                            state.last_error = Some(format!("tool output presentation unavailable: {error}"));
+                            state.last_error =
+                                Some(format!("tool output presentation unavailable: {error}"));
                             owner.checkpoint(state).await?;
                             return Ok(Some(RunOutcome::PendingTool));
                         }

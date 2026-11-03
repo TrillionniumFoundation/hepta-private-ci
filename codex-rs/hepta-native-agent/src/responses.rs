@@ -20,6 +20,8 @@ use url::Url;
 mod entry;
 #[path = "responses_terminal.rs"]
 mod terminal;
+#[path = "responses_text.rs"]
+mod text;
 pub use terminal::ObservedModelTerminal;
 
 /// One exact request already persisted by the turn owner.
@@ -33,9 +35,21 @@ pub struct ModelRequest {
 #[derive(Clone, Debug, PartialEq)]
 pub enum ModelEvent {
     Created(String),
-    TextDelta(String),
+    TextDelta(ModelTextDelta),
     Item(Value),
     Completed { response_id: String, usage: Value },
+}
+
+/// Provider coordinates remain attached to provisional UI text. They are not
+/// substituted for the host's immutable history identity.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ModelTextDelta {
+    pub response_id: String,
+    pub item_id: String,
+    pub output_index: usize,
+    pub content_index: usize,
+    pub text: String,
+    pub phase: Option<String>,
 }
 
 /// Explicit transport configuration; routing policy and credentials come from the host.
@@ -123,6 +137,7 @@ impl ResponsesModel {
             idle_timeout: self.idle_timeout,
             response_id: None,
             output_items: Vec::new(),
+            text: text::TextTracker::default(),
             completed: false,
         })
     }
@@ -201,6 +216,7 @@ pub struct ResponsesStream {
     // Every retained item came from the byte-bounded transport decoder. The
     // terminal output must match the exact items exposed to the turn owner.
     output_items: Vec<Value>,
+    text: text::TextTracker,
     completed: bool,
 }
 
@@ -223,15 +239,31 @@ impl ResponsesStream {
                         self.response_id = Some(id.clone());
                         return Ok(Some(ModelEvent::Created(id)));
                     }
+                    "response.output_item.added" => {
+                        self.text.added(&value)?;
+                    }
                     "response.output_text.delta" => {
-                        let text = value["delta"].as_str().context("text delta missing")?;
-                        return Ok(Some(ModelEvent::TextDelta(text.to_owned())));
+                        let response_id = self
+                            .response_id
+                            .as_ref()
+                            .context("text delta preceded the original response identity")?;
+                        return Ok(Some(ModelEvent::TextDelta(
+                            self.text.delta(response_id, &value)?,
+                        )));
                     }
                     "response.output_item.done" => {
                         let item = value
                             .get("item")
                             .filter(|v| v.is_object())
                             .context("completed output item missing")?;
+                        // Older compatible providers may omit the index;
+                        // an explicit provider index must preserve append order.
+                        if let Some(index) = value.get("output_index")
+                            && index.as_u64() != u64::try_from(self.output_items.len()).ok()
+                        {
+                            bail!("completed output item is not in original output order");
+                        }
+                        self.text.done(self.output_items.len(), item)?;
                         self.output_items.push(item.clone());
                         return Ok(Some(ModelEvent::Item(item.clone())));
                     }
@@ -244,6 +276,14 @@ impl ResponsesStream {
                         {
                             bail!("terminal response does not match the observed response");
                         }
+                        self.text.completed()?;
+                        if let Some(output) = value["response"].get("output") {
+                            anyhow::ensure!(
+                                output.as_array().map(Vec::as_slice)
+                                    == Some(self.output_items.as_slice()),
+                                "terminal output differs from the actual streamed output items"
+                            );
+                        }
                         self.completed = true;
                         if let Some(observer) = self.terminal_observer.take() {
                             let items = terminal::completed_output(&value["response"])?;
@@ -252,9 +292,12 @@ impl ResponsesStream {
                                 "terminal output differs from the actual streamed output items"
                             );
                             observer(ObservedModelTerminal::observed(
-                                self.operation_id.clone(), id.clone(), items,
+                                self.operation_id.clone(),
+                                id.clone(),
+                                items,
                                 &value["response"]["usage"],
-                            )?).await?;
+                            )?)
+                            .await?;
                         }
                         return Ok(Some(ModelEvent::Completed {
                             response_id: id,
@@ -359,4 +402,4 @@ impl SseDecoder {
 
 #[cfg(test)]
 #[path = "responses_tests.rs"]
-mod tests;
+pub(crate) mod tests;

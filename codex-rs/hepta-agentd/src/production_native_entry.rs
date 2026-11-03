@@ -18,7 +18,10 @@ impl AgentdProductionWriterHost {
         operation_id: &str,
     ) -> Result<ProductionDispatchRequest, AgentdError> {
         self.require_native_destination(destination_id)?;
-        Ok(self.writer.resolve_operation_request(operation_id, destination_id).await?)
+        Ok(self
+            .writer
+            .resolve_operation_request(operation_id, destination_id)
+            .await?)
     }
 
     /// The same original owner resolves the receipt, derives the exact binding,
@@ -34,10 +37,18 @@ impl AgentdProductionWriterHost {
         let grants = self.grants.as_ref().ok_or_else(|| {
             AgentdError::Protocol("production final-use grant provider is not attached".to_string())
         })?;
-        let receipt = self.writer.resolve_queued_operation(operation_id, destination_id).await?;
-        let binding = self.writer.final_use_binding(&receipt, destination_id).await?;
-        let signed = grants.signed_grant(&binding)?;
-        Ok(dispatcher.begin_effect_entry(&self.writer, &signed, &binding, receipt).await?)
+        let receipt = self
+            .writer
+            .resolve_queued_operation(operation_id, destination_id)
+            .await?;
+        let binding = self
+            .writer
+            .final_use_binding(&receipt, destination_id)
+            .await?;
+        let signed = grants.signed_grant(&binding).await?;
+        Ok(dispatcher
+            .begin_effect_entry(&self.writer, &signed, &binding, receipt)
+            .await?)
     }
 
     /// Settle the original paired claim only from destination terminal evidence.
@@ -48,7 +59,10 @@ impl AgentdProductionWriterHost {
         outcome: ProductionTargetOutcome,
     ) -> Result<ProductionDispatchReceipt, AgentdError> {
         self.require_native_destination(&observation.request().operation_destination_id)?;
-        Ok(self.writer.settle_effect_entry(observation, outcome).await?)
+        Ok(self
+            .writer
+            .settle_effect_entry(observation, outcome)
+            .await?)
     }
 
     /// Observer-only restart recovery using the original operation identity.
@@ -60,7 +74,10 @@ impl AgentdProductionWriterHost {
         outcome: ProductionTargetOutcome,
     ) -> Result<ProductionDispatchReceipt, AgentdError> {
         self.require_native_destination(destination_id)?;
-        Ok(self.writer.reconcile_observed_operation(operation_id, destination_id, outcome).await?)
+        Ok(self
+            .writer
+            .reconcile_observed_operation(operation_id, destination_id, outcome)
+            .await?)
     }
 
     fn require_native_destination(&self, destination_id: &str) -> Result<(), AgentdError> {
@@ -72,4 +89,3 @@ impl AgentdProductionWriterHost {
         Ok(())
     }
 }
-

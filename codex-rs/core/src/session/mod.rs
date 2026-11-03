@@ -1,3 +1,7 @@
+#[path = "terminal_event.rs"]
+mod terminal_event;
+pub(crate) use terminal_event::PreparedTerminalEvent;
+
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -220,6 +224,9 @@ pub(crate) mod context_window;
 mod environment;
 pub(crate) mod extension_metrics;
 mod handlers;
+mod hosted_preparation_recovery;
+mod hosted_recovery;
+pub(crate) mod hosted_turn;
 mod inject;
 mod input_queue;
 mod mcp;
@@ -230,9 +237,6 @@ pub(crate) mod multi_agents;
 mod review;
 mod rollout_budget;
 mod rollout_reconstruction;
-pub(crate) mod hosted_turn;
-mod hosted_recovery;
-mod hosted_preparation_recovery;
 #[allow(clippy::module_inception)]
 pub(crate) mod session;
 pub(crate) mod step_context;

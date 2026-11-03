@@ -3,6 +3,7 @@
 
 use anyhow::Result;
 use anyhow::bail;
+use std::sync::Arc;
 
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::FinalUseProductionOutboxTarget;
@@ -50,10 +51,7 @@ pub(crate) struct NativeToolTerminalEvidence {
 }
 
 impl NativeRuntimeTarget {
-    pub fn new(
-        destination_id: String,
-        max_output_bytes: usize,
-    ) -> Result<Self> {
+    pub fn new(destination_id: String, max_output_bytes: usize) -> Result<Self> {
         if destination_id.is_empty()
             || destination_id.len() > 128
             || !destination_id
@@ -109,10 +107,7 @@ impl NativeRuntimeTarget {
         Ok(observed)
     }
 
-    pub(crate) async fn cancel_original(
-        &self,
-        request: &ProductionDispatchRequest,
-    ) -> Result<()> {
+    pub(crate) async fn cancel_original(&self, request: &ProductionDispatchRequest) -> Result<()> {
         let params = self.original_params(request)?;
         hepta_runtime::native::cancel_request(&params, /*grace_seconds*/ 1).await
     }
@@ -127,14 +122,19 @@ impl NativeRuntimeTarget {
     ) -> Result<ToolObservation> {
         Ok(match self.observe_tool_evidence(request, intent).await? {
             Some(evidence) => ToolObservation::Terminal {
-                receipt: evidence.receipt, stdout: evidence.stdout, stderr: evidence.stderr,
+                receipt: evidence.receipt,
+                stdout: evidence.stdout,
+                stderr: evidence.stderr,
             },
             None => ToolObservation::Accepted,
         })
     }
 
-    pub(crate) async fn observe_tool_evidence(&self, request: &ProductionDispatchRequest,
-        intent: &RuntimeToolIntentV1) -> Result<Option<NativeToolTerminalEvidence>> {
+    pub(crate) async fn observe_tool_evidence(
+        &self,
+        request: &ProductionDispatchRequest,
+        intent: &RuntimeToolIntentV1,
+    ) -> Result<Option<NativeToolTerminalEvidence>> {
         intent.validate()?;
         let params = self.original_params(request)?;
         if intent.tool_id.as_str() != "process_start"
@@ -179,16 +179,22 @@ impl NativeRuntimeTarget {
             tool_outcome,
         };
         receipt.validate_against(intent)?;
-        let terminal_receipt = terminal_receipt_parts(request, &job_id, exit_code, outcome, &stdout, &stderr);
-        Ok(Some(NativeToolTerminalEvidence { receipt, stdout, stderr, terminal_receipt }))
+        let terminal_receipt =
+            terminal_receipt_parts(request, &job_id, exit_code, outcome, &stdout, &stderr);
+        Ok(Some(NativeToolTerminalEvidence {
+            receipt,
+            stdout,
+            stderr,
+            terminal_receipt,
+        }))
     }
 
     pub(crate) async fn dispatch_effect_entry(
         &self,
         entry: ProductionEffectEntry,
-        currentness: &dyn ProductionEntryCurrentness,
+        currentness: Arc<dyn ProductionEntryCurrentness>,
     ) -> ProductionTargetOutcome {
-        let request = entry.request().clone();
+        let request = Arc::new(entry.request().clone());
         let params = match self.original_params(&request) {
             Ok(params) => params,
             Err(error) => {
@@ -208,16 +214,17 @@ impl NativeRuntimeTarget {
         // The writer retained the exact signed grant. Claim it only after runtime owner
         // waits and durable preparation, immediately before the actual SSH
         // spawn. Existing unknown/pending jobs never invoke this callback.
-        let submitted = hepta_runtime::native::execute_or_observe_with_entry(
-            params,
-            |actual| {
-                if serde_json::to_vec(actual)? != request.payload_json.as_bytes() {
+        // Keep the original request available for observation without copying
+        // its potentially large payload again solely to satisfy owned entry.
+        let entry_request = Arc::clone(&request);
+        let submitted =
+            hepta_runtime::native::execute_or_observe_with_entry(params, move |actual| {
+                if serde_json::to_vec(actual)? != entry_request.payload_json.as_bytes() {
                     bail!("runtime substituted the admitted process at physical entry");
                 }
-                Ok(ready.enter(currentness)?)
-            },
-        )
-        .await;
+                Ok(ready.enter(currentness.as_ref())?)
+            })
+            .await;
         if let Err(error) = submitted {
             // Admission can already be durable. Errors, lost acknowledgements
             // and cancellation never refund the original key or authorize retry.
@@ -292,8 +299,14 @@ fn terminal_outcome(outcome: NativeJobOutcome) -> &'static str {
     }
 }
 
-fn terminal_receipt_parts(request: &ProductionDispatchRequest, job_id: &str, exit_code: i32,
-    outcome: &str, stdout: &[u8], stderr: &[u8]) -> String {
+fn terminal_receipt_parts(
+    request: &ProductionDispatchRequest,
+    job_id: &str,
+    exit_code: i32,
+    outcome: &str,
+    stdout: &[u8],
+    stderr: &[u8],
+) -> String {
     // A nonzero process exit is still an observed physical effect. It must not
     // become NotApplied or authorize a resend. Tool completion maps the exit
     // outcome separately after the original writer has settled this receipt.

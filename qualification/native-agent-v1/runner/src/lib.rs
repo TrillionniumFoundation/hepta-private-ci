@@ -1,7 +1,9 @@
 //! Isolated qualification harness; production authorities are not substituted.
 pub mod owner;
 pub mod persist;
+pub mod representative;
 pub mod runtime_bridge;
+mod runtime_output;
 pub mod snapshot;
 pub mod tool_session;
 

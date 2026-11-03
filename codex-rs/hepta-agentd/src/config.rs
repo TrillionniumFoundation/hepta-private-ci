@@ -341,9 +341,14 @@ impl AgentdConfig {
     /// Attach native execution to this exact daemon and recovered production
     /// writer. `NativeHostedRuntimeConfig::CanonicalObjective` selects the
     /// signed ObjectiveStart owner and its original Core queue dispatch.
-    pub fn with_native_runtime(mut self, native: crate::AgentdNativeRuntimeConfig) -> Result<Self, AgentdError> {
+    pub fn with_native_runtime(
+        mut self,
+        native: crate::AgentdNativeRuntimeConfig,
+    ) -> Result<Self, AgentdError> {
         if self.native_runtime.is_some() {
-            return Err(AgentdError::Invalid("native runtime already configured".to_owned()));
+            return Err(AgentdError::Invalid(
+                "native runtime already configured".to_owned(),
+            ));
         }
         self.native_runtime = Some(native);
         Ok(self)
@@ -353,7 +358,9 @@ impl AgentdConfig {
     /// probing runtime hosts. Non-native compatibility remains unchanged;
     /// exact authority, lease, target and currentness checks stay at attachment.
     pub(crate) fn validate_native_composition(&self) -> Result<(), AgentdError> {
-        let Some(native) = self.native_runtime.as_ref() else { return Ok(()); };
+        let Some(native) = self.native_runtime.as_ref() else {
+            return Ok(());
+        };
         let runner = self.intelligence_product_runner.is_some();
         let provider = self.intelligence_invocation_provider.is_some();
         if runner != provider {
@@ -361,22 +368,43 @@ impl AgentdConfig {
                 "native execution requires the canonical intelligence runner and its host-owned invocation provider together when either is configured".to_owned(),
             ));
         }
-        if matches!(&native.hosted_turn, Some(crate::NativeHostedRuntimeConfig::CanonicalObjective { .. })) {
+        if matches!(
+            &native.hosted_turn,
+            Some(crate::NativeHostedRuntimeConfig::CanonicalObjective { .. })
+        ) {
             if !runner {
-                return Err(AgentdError::Invalid("canonical native execution requires both original intelligence owners".to_owned()));
+                return Err(AgentdError::Invalid(
+                    "canonical native execution requires both original intelligence owners"
+                        .to_owned(),
+                ));
+            }
+            if !self
+                .intelligence_product_runner
+                .as_deref()
+                .is_some_and(crate::AgentdIntelligenceProductRunnerV1::evaluation_trust_configured)
+            {
+                return Err(AgentdError::Invalid("canonical native execution requires configured host-authenticated evaluation trust".to_owned()));
             }
             if self.objective_profile_file.is_none() {
-                return Err(AgentdError::Invalid("canonical native execution requires the original objective profile".to_owned()));
+                return Err(AgentdError::Invalid(
+                    "canonical native execution requires the original objective profile".to_owned(),
+                ));
             }
             if self.authbus_trust_file.is_none() || self.authbus_checkpoint_file.is_none() {
                 return Err(AgentdError::Invalid("canonical native execution requires original AuthBus trust and replay checkpoint together".to_owned()));
             }
         }
         if self.production_writer_host.is_none() {
-            return Err(AgentdError::Invalid("native execution requires an independently recovered production writer host".to_owned()));
+            return Err(AgentdError::Invalid(
+                "native execution requires an independently recovered production writer host"
+                    .to_owned(),
+            ));
         }
         if self.production_operations.is_none() {
-            return Err(AgentdError::Invalid("native execution requires the configured original production operation service".to_owned()));
+            return Err(AgentdError::Invalid(
+                "native execution requires the configured original production operation service"
+                    .to_owned(),
+            ));
         }
         Ok(())
     }

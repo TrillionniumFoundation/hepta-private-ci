@@ -39,17 +39,22 @@ use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 use crate::AgentdConfig;
 use crate::AgentdError;
 
-#[path = "production_native_entry.rs"]
-mod native_entry;
 #[path = "production_writer_attachment.rs"]
 mod attachment;
+#[path = "production_native_entry.rs"]
+mod native_entry;
 
 use attachment::RecoveredWriterAttachment;
 
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
+pub type AgentdFinalUseGrantFuture<'a> = std::pin::Pin<
+    Box<dyn std::future::Future<Output = Result<SignedFinalUseGrant, AgentdError>> + Send + 'a>,
+>;
+
+/// Obtains an unclaimed grant without blocking the async owner runtime.
 pub trait AgentdFinalUseGrantProvider: Send + Sync {
-    fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError>;
+    fn signed_grant<'a>(&'a self, binding: &'a FinalUseBinding) -> AgentdFinalUseGrantFuture<'a>;
 }
 
 /// Explicit runtime composition input for the production operation service.
@@ -533,7 +538,7 @@ impl AgentdProductionWriterHost {
             .writer
             .final_use_binding(&receipt, dispatcher.destination_id())
             .await?;
-        let signed = grants.signed_grant(&binding)?;
+        let signed = grants.signed_grant(&binding).await?;
         Ok(dispatcher
             .dispatch(self.writer.as_ref(), &signed, &binding, receipt)
             .await?)

@@ -10,6 +10,7 @@ pub(super) fn digest(agent: &NativeAgent) -> Result<String> {
     let duration = |value: std::time::Duration| (value.as_secs(), value.subsec_nanos());
     Ok(Digest32::of_bytes(&serde_json::to_vec(&json!({
         "schema": "hepta.native.execution-config.v1",
+        "context_policy": agent.context_policy()?.binding_value(),
         "model": agent.model_name,
         "instructions": agent.instructions,
         "tools": agent.tools,
@@ -24,5 +25,6 @@ pub(super) fn digest(agent: &NativeAgent) -> Result<String> {
             "tool_timeout_secs_nanos": duration(limits.tool_timeout),
             "observation_interval_secs_nanos": duration(limits.observation_interval),
         },
-    }))?).to_string())
+    }))?)
+    .to_string())
 }

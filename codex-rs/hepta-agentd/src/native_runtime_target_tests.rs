@@ -65,7 +65,7 @@ fn rejects_rebound_runtime_payload_and_operation_identity() -> anyhow::Result<()
         Sha256Digest::for_bytes(changed_payload.payload_json.as_bytes());
     assert!(target.original_params(&changed_payload).is_err());
 
-    let mut noncanonical = original.clone();
+    let mut noncanonical = original;
     noncanonical.payload_json.push('\n');
     noncanonical.payload_sha256 = Sha256Digest::for_bytes(noncanonical.payload_json.as_bytes());
     assert!(target.original_params(&noncanonical).is_err());

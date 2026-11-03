@@ -7,14 +7,19 @@ use std::collections::BTreeMap;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU8;
+use std::sync::atomic::Ordering;
 
 use codex_history::TurnRecoveryRequestBinding;
 use codex_protocol::ThreadId;
-use codex_protocol::error::{CodexErr, Result as CodexResult};
+use codex_protocol::error::CodexErr;
+use codex_protocol::error::Result as CodexResult;
 use codex_protocol::user_input::UserInput;
-use codex_thread_store::{LiveThread, QueueStore};
-use serde::{Deserialize, Serialize};
+use codex_thread_store::LiveThread;
+use codex_thread_store::QueueStore;
+use serde::Deserialize;
+use serde::Serialize;
 use tokio::sync::Notify;
 use tokio_util::sync::CancellationToken;
 
@@ -22,11 +27,13 @@ use crate::session::session::Session;
 
 #[path = "hosted_turn_entry.rs"]
 mod entry;
+pub use entry::HostedTextDelta;
 pub use entry::HostedTurnEntry;
 
 #[path = "hosted_checkpoint_continuation.rs"]
 pub(crate) mod checkpoint_continuation;
-pub use checkpoint_continuation::{HostedCheckpointContinuationInput, HostedCheckpointContinuationOrigin};
+pub use checkpoint_continuation::HostedCheckpointContinuationInput;
+pub use checkpoint_continuation::HostedCheckpointContinuationOrigin;
 pub(crate) use checkpoint_continuation::HostedQueueConfirmation;
 
 const PROVENANCE_KEY: &str = "codex.hosted-turn.v1";
@@ -54,8 +61,11 @@ pub struct HostedTurnProvenance {
 
 impl HostedTurnProvenance {
     pub fn from_recovery(binding: &TurnRecoveryRequestBinding) -> CodexResult<Option<Self>> {
-        let Some(encoded) = binding.replay.as_ref()
-            .and_then(|replay| replay.start.responses_metadata_extra.get(PROVENANCE_KEY)) else {
+        let Some(encoded) = binding
+            .replay
+            .as_ref()
+            .and_then(|replay| replay.start.responses_metadata_extra.get(PROVENANCE_KEY))
+        else {
             return Ok(None);
         };
         if encoded.len() > MAX_PROVENANCE_BYTES {
@@ -78,9 +88,12 @@ impl HostedTurnProvenance {
     }
 
     fn validate(&self) -> CodexResult<()> {
-        if self.executor_id.is_empty() || self.executor_id.len() > 128
-            || self.queue.queued_item_id.is_empty() || self.queue.client_id.is_empty()
-            || !valid_sha256(&self.queue.payload_sha256) {
+        if self.executor_id.is_empty()
+            || self.executor_id.len() > 128
+            || self.queue.queued_item_id.is_empty()
+            || self.queue.client_id.is_empty()
+            || !valid_sha256(&self.queue.payload_sha256)
+        {
             return Err(invalid("incomplete hosted turn provenance"));
         }
         Ok(())
@@ -97,10 +110,21 @@ pub struct HostedTurnMode {
 impl HostedTurnMode {
     /// Compatibility installation supports observation and ordinary admission.
     /// Same-turn checkpoint continuation additionally needs the original queue.
-    pub fn new(executor: Arc<dyn HostedTurnExecutor>) -> Self { Self { executor, queue_owner: None } }
+    pub fn new(executor: Arc<dyn HostedTurnExecutor>) -> Self {
+        Self {
+            executor,
+            queue_owner: None,
+        }
+    }
 
-    pub fn with_queue_owner(executor: Arc<dyn HostedTurnExecutor>, queue_owner: Arc<dyn QueueStore>) -> Self {
-        Self { executor, queue_owner: Some(queue_owner) }
+    pub fn with_queue_owner(
+        executor: Arc<dyn HostedTurnExecutor>,
+        queue_owner: Arc<dyn QueueStore>,
+    ) -> Self {
+        Self {
+            executor,
+            queue_owner: Some(queue_owner),
+        }
     }
 }
 
@@ -131,12 +155,26 @@ enum HostedPreparationPurpose {
 
 impl HostedPreparationOrigin {
     pub(crate) fn new(thread_id: ThreadId, turn_id: String, queue: HostedQueueBinding) -> Self {
-        Self { thread_id, turn_id, queue, purpose: HostedPreparationPurpose::InitialAdmission }
+        Self {
+            thread_id,
+            turn_id,
+            queue,
+            purpose: HostedPreparationPurpose::InitialAdmission,
+        }
     }
 
-    pub(crate) fn retained(thread_id: ThreadId, turn_id: String, queue: HostedQueueBinding,
-        recovery: TurnRecoveryRequestBinding) -> Self {
-        Self { thread_id, turn_id, queue, purpose: HostedPreparationPurpose::RetainedTurn(Box::new(recovery)) }
+    pub(crate) fn retained(
+        thread_id: ThreadId,
+        turn_id: String,
+        queue: HostedQueueBinding,
+        recovery: TurnRecoveryRequestBinding,
+    ) -> Self {
+        Self {
+            thread_id,
+            turn_id,
+            queue,
+            purpose: HostedPreparationPurpose::RetainedTurn(Box::new(recovery)),
+        }
     }
 
     /// A retained turn requires the original executor's independent proof
@@ -145,7 +183,9 @@ impl HostedPreparationOrigin {
     pub fn require_initial(&self) -> CodexResult<()> {
         match &self.purpose {
             HostedPreparationPurpose::InitialAdmission => Ok(()),
-            HostedPreparationPurpose::RetainedTurn(_) => Err(invalid("retained hosted preparation requires original execution-owner evidence")),
+            HostedPreparationPurpose::RetainedTurn(_) => Err(invalid(
+                "retained hosted preparation requires original execution-owner evidence",
+            )),
         }
     }
 
@@ -158,13 +198,22 @@ impl HostedPreparationOrigin {
     pub fn retained_recovery(&self) -> CodexResult<&TurnRecoveryRequestBinding> {
         match &self.purpose {
             HostedPreparationPurpose::RetainedTurn(recovery) => Ok(recovery),
-            HostedPreparationPurpose::InitialAdmission => Err(invalid("original preparation repair requires a retained Core turn")),
+            HostedPreparationPurpose::InitialAdmission => Err(invalid(
+                "original preparation repair requires a retained Core turn",
+            )),
         }
     }
 
-    pub fn validate(&self, thread_id: ThreadId, turn_id: &str, queue: &HostedQueueBinding) -> CodexResult<()> {
+    pub fn validate(
+        &self,
+        thread_id: ThreadId,
+        turn_id: &str,
+        queue: &HostedQueueBinding,
+    ) -> CodexResult<()> {
         if self.thread_id != thread_id || self.turn_id != turn_id || &self.queue != queue {
-            return Err(invalid("hosted preparation changed its original Core reservation"));
+            return Err(invalid(
+                "hosted preparation changed its original Core reservation",
+            ));
         }
         Ok(())
     }
@@ -182,31 +231,53 @@ pub struct HostedTurnPlan {
 pub trait HostedTurnExecutor: Send + Sync {
     fn executor_id(&self) -> &str;
     fn prepare<'a>(&'a self, input: HostedTurnInput) -> HostedFuture<'a, HostedTurnPlan>;
-    fn observe_admission<'a>(&'a self, observation: HostedTurnObservation) -> HostedFuture<'a, Option<String>>;
+    fn observe_admission<'a>(
+        &'a self,
+        observation: HostedTurnObservation,
+    ) -> HostedFuture<'a, Option<String>>;
     /// Complete preparation of the retained original turn only after the
     /// executor proves through its existing durable owner that no operation
     /// was admitted. Missing host state alone is not such proof. This method
     /// must preserve the original fingerprint/correlation and create no effect.
-    fn resume_preparation<'a>(&'a self, _input: HostedPreparationRecoveryInput) -> HostedFuture<'a, HostedTurnPlan> {
-        Box::pin(async { Err(invalid("this hosted executor cannot restore original preparation")) })
+    fn resume_preparation<'a>(
+        &'a self,
+        _input: HostedPreparationRecoveryInput,
+    ) -> HostedFuture<'a, HostedTurnPlan> {
+        Box::pin(async {
+            Err(invalid(
+                "this hosted executor cannot restore original preparation",
+            ))
+        })
     }
     /// Opt in to the separate, sealed same-task continuation protocol. Legacy
     /// executors retain their existing read-only recovery without queue reads.
-    fn supports_checkpoint_continuation(&self) -> bool { false }
+    fn supports_checkpoint_continuation(&self) -> bool {
+        false
+    }
 
     /// Prove that the original checkpoint can continue without repeating an
     /// admitted operation. `None` means observation only; proof/currentness
     /// conflicts must return an error and must never fall back to execution.
     /// This hook cannot dispatch effects or consume a grant. Any retained
     /// writer proof must be released before execution touches ThreadStore.
-    fn prepare_checkpoint_continuation<'a>(&'a self, _input: HostedCheckpointContinuationInput) -> HostedFuture<'a, Option<HostedTurnPlan>> {
+    fn prepare_checkpoint_continuation<'a>(
+        &'a self,
+        _input: HostedCheckpointContinuationInput,
+    ) -> HostedFuture<'a, Option<HostedTurnPlan>> {
         Box::pin(async { Ok(None) })
     }
 
     /// Observe only the original effects while Core owns a recovery task.
     /// No new input, queue claim, grant or effect may be prepared here.
-    fn recover<'a>(&'a self, _input: HostedTurnRecoveryInput) -> HostedFuture<'a, HostedTurnOutcome> {
-        Box::pin(async { Err(invalid("this hosted executor has no original-effect recovery route")) })
+    fn recover<'a>(
+        &'a self,
+        _input: HostedTurnRecoveryInput,
+    ) -> HostedFuture<'a, HostedTurnOutcome> {
+        Box::pin(async {
+            Err(invalid(
+                "this hosted executor has no original-effect recovery route",
+            ))
+        })
     }
 }
 
@@ -246,7 +317,9 @@ impl HostedTurnObservation {
         let provenance = HostedTurnProvenance::from_recovery(&self.recovery)?
             .ok_or_else(|| invalid("original hosted provenance is absent"))?;
         if self.recovery.turn_id != self.turn_id || provenance.queue != self.queue {
-            return Err(invalid("hosted observation belongs to another original input"));
+            return Err(invalid(
+                "hosted observation belongs to another original input",
+            ));
         }
         Ok(provenance)
     }
@@ -268,19 +341,34 @@ pub struct HostedAdmittedTurn {
 }
 
 impl HostedAdmittedTurn {
-    pub fn live_thread(&self) -> &LiveThread { &self.live_thread }
-    pub fn recovery(&self) -> &TurnRecoveryRequestBinding { &self.recovery }
-    pub fn queue(&self) -> &HostedQueueBinding { &self.queue }
-    pub fn thread_id(&self) -> ThreadId { self.thread_id }
-    pub fn turn_id(&self) -> &str { &self.recovery.turn_id }
-    pub fn cancellation(&self) -> &CancellationToken { &self.cancellation }
-    pub fn entry(&self) -> &Arc<HostedTurnEntry> { &self.entry }
+    pub fn live_thread(&self) -> &LiveThread {
+        &self.live_thread
+    }
+    pub fn recovery(&self) -> &TurnRecoveryRequestBinding {
+        &self.recovery
+    }
+    pub fn queue(&self) -> &HostedQueueBinding {
+        &self.queue
+    }
+    pub fn thread_id(&self) -> ThreadId {
+        self.thread_id
+    }
+    pub fn turn_id(&self) -> &str {
+        &self.recovery.turn_id
+    }
+    pub fn cancellation(&self) -> &CancellationToken {
+        &self.cancellation
+    }
+    pub fn entry(&self) -> &Arc<HostedTurnEntry> {
+        &self.entry
+    }
 
     pub async fn confirm_durable(&self) -> CodexResult<()> {
         match &self.completion {
             HostedQueueConfirmation::AwaitQueueCommit(completion) => {
                 if !self.confirmed.load(Ordering::Acquire) {
-                    self.session.pending_user_message_admissions
+                    self.session
+                        .pending_user_message_admissions
                         .confirm_hosted_persistence(&self.recovery.turn_id);
                 }
                 completion.wait(&self.cancellation).await?;
@@ -309,8 +397,16 @@ pub struct HostedQueueCommitWaiter {
 
 impl HostedQueueCompletion {
     pub fn channel() -> (Self, HostedQueueCommitWaiter) {
-        let shared = Arc::new(QueueCompletionState { state: AtomicU8::new(0), changed: Notify::new() });
-        (Self { shared: Arc::clone(&shared) }, HostedQueueCommitWaiter { shared })
+        let shared = Arc::new(QueueCompletionState {
+            state: AtomicU8::new(0),
+            changed: Notify::new(),
+        });
+        (
+            Self {
+                shared: Arc::clone(&shared),
+            },
+            HostedQueueCommitWaiter { shared },
+        )
     }
 
     /// Call only after the existing complete-client-dispatch transaction succeeds.
@@ -322,7 +418,10 @@ impl HostedQueueCompletion {
 
 impl Drop for HostedQueueCompletion {
     fn drop(&mut self) {
-        let _ = self.shared.state.compare_exchange(0, 2, Ordering::AcqRel, Ordering::Acquire);
+        let _ = self
+            .shared
+            .state
+            .compare_exchange(0, 2, Ordering::AcqRel, Ordering::Acquire);
         self.shared.changed.notify_waiters();
     }
 }
@@ -359,10 +458,15 @@ pub(crate) struct HostedPreparationRequest {
 }
 
 pub(crate) fn valid_sha256(value: &str) -> bool {
-    value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
-pub(crate) fn invalid(message: &str) -> CodexErr { CodexErr::InvalidRequest(message.to_string()) }
+pub(crate) fn invalid(message: &str) -> CodexErr {
+    CodexErr::InvalidRequest(message.to_string())
+}
 
 #[cfg(test)]
 #[path = "hosted_turn_tests.rs"]

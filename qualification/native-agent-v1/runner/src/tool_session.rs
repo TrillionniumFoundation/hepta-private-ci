@@ -15,6 +15,16 @@ use serde_json::json;
 use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ToolSessionPolicy {
+    /// The original fixture API, retained for existing callers/tests.
+    LegacySingleOperation,
+    /// One fresh, explicitly versioned backend owner for an entire Codex turn.
+    SharedTurn { max_calls: usize },
+    /// An old per-call owner may only observe its already recorded operation.
+    ObserveOriginal,
+}
+
 pub async fn run_tool<T: ToolPort>(
     owner: &SessionOwner,
     tools: &T,
@@ -23,7 +33,38 @@ pub async fn run_tool<T: ToolPort>(
     timeout: Duration,
     cancel: &CancellationToken,
 ) -> Result<Value> {
+    run_tool_with_policy(
+        owner,
+        tools,
+        state,
+        call,
+        timeout,
+        cancel,
+        ToolSessionPolicy::LegacySingleOperation,
+    )
+    .await
+}
+
+pub async fn run_tool_with_policy<T: ToolPort>(
+    owner: &SessionOwner,
+    tools: &T,
+    state: &mut TurnState,
+    call: ToolCall,
+    timeout: Duration,
+    cancel: &CancellationToken,
+    policy: ToolSessionPolicy,
+) -> Result<Value> {
     owner.verify_current(&state.binding).await?;
+    if state.pending_model.is_some() || !state.queued_tools.is_empty() {
+        anyhow::bail!("external tool owner cannot replace a model-loop continuation");
+    }
+    // Cancellation belongs to the original turn, including when it arrives
+    // before any tool admission. Persist that stop before returning: a fresh
+    // token after reopening this owner must not make another call admissible.
+    if cancel.is_cancelled() && !state.cancelled {
+        state.cancelled = true;
+        owner.checkpoint(state).await?;
+    }
     if state.completed_call_ids.contains(&call.call_id) {
         owner.load_call(&call)?;
         let output = state
@@ -39,7 +80,33 @@ pub async fn run_tool<T: ToolPort>(
             anyhow::bail!("a different tool is still pending");
         }
     } else {
+        if policy == ToolSessionPolicy::ObserveOriginal {
+            anyhow::bail!(
+                "legacy per-call session permits only its original pending/completed operation"
+            );
+        }
+        if state.cancelled || cancel.is_cancelled() {
+            // Cancellation may arrive after the earlier check. Any branch
+            // that observes it must preserve that fact before refusing work.
+            if !state.cancelled {
+                state.cancelled = true;
+                owner.checkpoint(state).await?;
+            }
+            anyhow::bail!("cancelled turn cannot admit another tool");
+        }
+        if let ToolSessionPolicy::SharedTurn { max_calls } = policy
+            && (max_calls == 0 || state.tool_calls >= max_calls)
+        {
+            anyhow::bail!("shared turn tool budget exhausted");
+        }
         let admitted = owner.admit_tool(&state.binding, &call).await?;
+        if matches!(policy, ToolSessionPolicy::SharedTurn { .. }) {
+            state
+                .context
+                .push(json!({"type":"function_call", "call_id":call.call_id,
+                "name":call.name, "arguments":String::from_utf8(call.arguments.clone())?}));
+            state.final_answer = None;
+        }
         state.pending_tool = Some(PendingTool {
             call,
             intent: admitted.intent,
@@ -68,7 +135,11 @@ pub async fn run_tool<T: ToolPort>(
                     .as_mut()
                     .context("pending tool missing")?
                     .cancel_requested = true;
-                state.cancelled |= cancel.is_cancelled();
+                // The measured shared turn is finished after either an
+                // explicit cancellation or its tool deadline. Reconciling
+                // this same operation later must not reopen fresh admission.
+                state.cancelled |=
+                    cancel.is_cancelled() || matches!(policy, ToolSessionPolicy::SharedTurn { .. });
                 owner.checkpoint(state).await?;
                 let _ = tokio::time::timeout(Duration::from_secs(5), tools.cancel(&pending.intent))
                     .await;
@@ -77,8 +148,10 @@ pub async fn run_tool<T: ToolPort>(
         }
         // A cancelled admission remains observation-only even if no start was
         // attempted before the cancellation checkpoint or process restart.
-        let observe_only =
-            pending.submission_attempted || pending.cancel_requested || state.cancelled;
+        let observe_only = policy == ToolSessionPolicy::ObserveOriginal
+            || pending.submission_attempted
+            || pending.cancel_requested
+            || state.cancelled;
         if !observe_only {
             state
                 .pending_tool
@@ -115,12 +188,40 @@ pub async fn run_tool<T: ToolPort>(
                 {
                     anyhow::bail!("tool output is not an exact terminal observation");
                 }
-                let output = json!({"exit_code":receipt.tool_outcome.exit_code,
-                    "stdout":String::from_utf8_lossy(&stdout),"stderr":String::from_utf8_lossy(&stderr)}).to_string();
+                let presentation = tokio::select! {
+                    biased;
+                    _ = cancel.cancelled(), if !pending.cancel_requested && !state.cancelled => {
+                        state.cancelled = true;
+                        Err(anyhow::anyhow!("tool output presentation cancelled"))
+                    }
+                    result = tokio::time::timeout_at(deadline,
+                        tools.present_output(&pending.intent, &receipt, &stdout, &stderr)) =>
+                        result.context("tool output presentation deadline").and_then(|value| value),
+                };
+                let output = match presentation {
+                    Ok(output) => output,
+                    Err(error) => {
+                        // Output presentation can itself await the original
+                        // runtime. Its deadline closes the same shared turn
+                        // even though the original effect is already terminal.
+                        state.cancelled |= cancel.is_cancelled()
+                            || (matches!(policy, ToolSessionPolicy::SharedTurn { .. })
+                                && tokio::time::Instant::now() >= deadline);
+                        state.last_error =
+                            Some(format!("tool output presentation unavailable: {error}"));
+                        owner.checkpoint(state).await?;
+                        return Ok(json!({"status":"pending_tool","error":state.last_error}));
+                    }
+                };
                 state.context.push(json!({"type":"function_call_output","call_id":pending.call.call_id,"output":output}));
                 state.completed_call_ids.push(pending.call.call_id);
                 state.pending_tool = None;
-                state.final_answer = Some(output.clone());
+                // A completed tool is not completion of the surrounding
+                // Codex turn. Its original receipt/output remain in this
+                // owner's history while the next distinct call is admitted.
+                if policy == ToolSessionPolicy::LegacySingleOperation {
+                    state.final_answer = Some(output.clone());
+                }
                 owner.checkpoint(state).await?;
                 return Ok(json!({"status":"completed","output":output,"reused":false,
                     "runtime_intent_digest":receipt.runtime_intent_digest.to_string()}));
@@ -140,3 +241,7 @@ pub async fn run_tool<T: ToolPort>(
         }
     }
 }
+
+#[cfg(test)]
+#[path = "shared_turn_tests.rs"]
+mod shared_turn_tests;

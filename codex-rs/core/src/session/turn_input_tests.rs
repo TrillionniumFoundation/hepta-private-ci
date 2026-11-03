@@ -2347,3 +2347,6 @@ async fn rejects_non_regular_turns() {
         session.abort_all_tasks(TurnAbortReason::Interrupted).await;
     }
 }
+
+#[path = "terminal_publication_tests.rs"]
+mod terminal_publication;

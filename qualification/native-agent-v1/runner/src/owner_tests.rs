@@ -54,6 +54,7 @@ impl Fixture {
             file.sync_all()?;
         }
         let config = FixtureConfig {
+            representative: false,
             host: "fixture".to_owned(),
             script: script.to_string_lossy().into_owned(),
             script_sha256: Digest32::of_bytes(script_bytes).to_string(),
@@ -336,6 +337,19 @@ async fn external_tool_cancellation_before_submission_survives_reopen_and_fresh_
     let fixture = Fixture::new()?;
     let (owner, mut state) = fixture.open()?;
     let proposal = call("sum");
+    // Model the distinct boundary after the original durable admission but
+    // before physical submission. A token cancelled before admission now
+    // records a durable turn stop and must create no operation at all.
+    let admitted = owner.admit_tool(&state.binding, &proposal).await?;
+    state.pending_tool = Some(PendingTool {
+        call: proposal.clone(),
+        intent: admitted.intent,
+        arguments: admitted.arguments,
+        submission_attempted: false,
+        cancel_requested: false,
+    });
+    state.tool_calls = 1;
+    owner.checkpoint(&state).await?;
     let tools = RecoveryTools::default();
     let cancelled = CancellationToken::new();
     cancelled.cancel();

@@ -3,13 +3,26 @@
 
 #![forbid(unsafe_code)]
 
+mod context_policy;
+mod context_projection;
+mod events;
 mod model_port;
 mod responses;
+
+pub use context_policy::CONTEXT_POLICY_VERSION;
+pub use context_policy::ContextPolicy;
+pub use context_policy::LEGACY_CONTEXT_POLICY_VERSION;
+pub use context_projection::CONTEXT_PROJECTION_VERSION;
+
+pub use events::NativeEvent;
+pub use events::NativeEventSink;
+pub use events::NativeTextDelta;
 
 pub use model_port::ModelPort;
 
 pub use responses::ModelEvent;
 pub use responses::ModelRequest;
+pub use responses::ModelTextDelta;
 pub use responses::ObservedModelCompletion;
 pub use responses::ObservedModelTerminal;
 pub use responses::ResponsesModel;

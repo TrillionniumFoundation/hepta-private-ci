@@ -218,6 +218,9 @@ impl ToolPort for Tools {
 #[path = "engine_context_tests.rs"]
 mod context_limits;
 
+#[path = "engine_event_tests.rs"]
+mod events;
+
 fn fixture(behavior: Behavior) -> Result<(NativeAgent, Arc<Owner>, Tools, TurnState)> {
     let owner = Arc::new(Owner {
         generation: AtomicU64::new(1),
@@ -297,6 +300,13 @@ fn answer_body() -> String {
 }
 
 async fn model_server(bodies: Vec<String>) -> Result<(ResponsesModel, Arc<Mutex<Vec<Value>>>)> {
+    model_server_with_limit(bodies, 64 * 1024).await
+}
+
+async fn model_server_with_limit(
+    bodies: Vec<String>,
+    max_stream_bytes: usize,
+) -> Result<(ResponsesModel, Arc<Mutex<Vec<Value>>>)> {
     let listener = TcpListener::bind("127.0.0.1:0").await?;
     let address = listener.local_addr()?;
     let requests = Arc::new(Mutex::new(Vec::new()));
@@ -359,7 +369,7 @@ async fn model_server(bodies: Vec<String>) -> Result<(ResponsesModel, Arc<Mutex<
             format!("http://{address}/v1/responses"),
             None,
             Duration::from_secs(2),
-            64 * 1024,
+            max_stream_bytes,
         )?,
         requests,
     ))
