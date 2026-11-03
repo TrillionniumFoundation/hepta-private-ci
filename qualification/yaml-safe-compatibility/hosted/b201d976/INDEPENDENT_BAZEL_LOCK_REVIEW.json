@@ -1,0 +1,62 @@
+{
+  "review": "Read-only independent current YAML hosted Bazel lock review",
+  "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+  "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+  "before_lock_sha256": "8a20bf1a4a4755f970511e2d6b860665473d2928d43a8fd3b5da9a7a668bf024",
+  "after_lock_sha256": "5a6fbcf975d99e97e5562677643f3960e34929d423d22e788c6d41a43247ae26",
+  "new_facts": [
+    "annotate-snippets_0.12.5",
+    "arraydeque_0.5.1",
+    "encoding_rs_io_0.1.8",
+    "granit-parser_2.1.0",
+    "path+crates/third_party/serde-saphyr-2.1.0_serde-saphyr"
+  ],
+  "removed_facts": [
+    "serde_yaml_0.9.34+deprecated",
+    "unsafe-libyaml_0.2.11"
+  ],
+  "other_json_equal": true,
+  "path_fork_manifest_features_exact": true,
+  "granit_parser": "=2.1.0",
+  "verified_input_count": 75,
+  "inputs_equal_before_after_and_current_checkout": true,
+  "commands": [
+    {
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "matching_log_files": [
+        "original-bazel-lock-update.stdout",
+        "original-bazel-lock-update.stderr",
+        "original-bazel-lock-check.stdout"
+      ]
+    },
+    {
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "matching_log_files": [
+        "original-bazel-lock-update.stdout",
+        "original-bazel-lock-check.stdout",
+        "original-bazel-lock-check.stderr"
+      ]
+    },
+    {
+      "command": [
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/.github/scripts/run_bazel_with_buildbuddy.py",
+        "test",
+        "//codex-rs/utils/yaml:yaml-unit-tests"
+      ],
+      "exit_code": 0,
+      "matching_log_files": [
+        "bazel-yaml-utility-tests.stdout",
+        "bazel-yaml-utility-tests.stderr"
+      ]
+    }
+  ],
+  "scope": "No Cargo/Bazel rerun and no source mutation. This validates the retained original update/check/unit receipts and exact lock delta, not the four pending consumer native jobs."
+}
