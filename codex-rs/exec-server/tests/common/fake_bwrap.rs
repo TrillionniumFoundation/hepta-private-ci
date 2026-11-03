@@ -5,6 +5,9 @@ use std::path::PathBuf;
 pub(crate) fn write_fake_bwrap(bin_dir: &Path) -> anyhow::Result<PathBuf> {
     std::fs::create_dir_all(bin_dir)?;
     let fake_bwrap = bin_dir.join("bwrap");
+    // Resolve the declared binary before callers prepend this fixture directory to PATH.
+    let real_bwrap = codex_utils_cargo_bin::cargo_bin("bwrap")?;
+    std::os::unix::fs::symlink(real_bwrap, bin_dir.join("bwrap.real"))?;
     std::fs::write(
         &fake_bwrap,
         r#"#!/bin/bash
@@ -12,18 +15,13 @@ set -euo pipefail
 
 for arg in "$@"; do
   if [[ "${arg}" == "--help" ]]; then
-    echo "Usage: bwrap --argv0 --perms --as-pid-1"
-    exit 0
+    exec "${0}.real" "$@"
   fi
 done
 
 args=("$@")
-argv0=""
 command_start=-1
 for i in "${!args[@]}"; do
-  if [[ "${args[$i]}" == "--argv0" && $((i + 1)) -lt ${#args[@]} ]]; then
-    argv0="${args[$((i + 1))]}"
-  fi
   if [[ "${args[$i]}" == "--" ]]; then
     command_start=$((i + 1))
     break
@@ -38,7 +36,7 @@ fi
 cmd=("${args[@]:$command_start}")
 case "${cmd[0]}" in
   /usr/bin/true|/bin/true|true)
-    exec "${cmd[@]}"
+    exec "${0}.real" "$@"
     ;;
 esac
 
@@ -49,10 +47,7 @@ if [[ -f "${0}.fail-once" ]]; then
   exit 125
 fi
 
-if [[ -n "${argv0}" ]]; then
-  exec -a "${argv0}" "${cmd[@]}"
-fi
-exec "${cmd[@]}"
+exec "${0}.real" "$@"
 "#,
     )?;
     let mut permissions = std::fs::metadata(&fake_bwrap)?.permissions();
