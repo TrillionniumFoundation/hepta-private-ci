@@ -57,6 +57,14 @@ impl VerifiedArtifactSelectionV1 {
 }
 
 impl SelectedPublicInitialSmolLmMaterialV2 {
+    /// Preserve the original selector/CURRENT authentication profile at use.
+    #[must_use]
+    pub const fn authentication_profile(
+        &self,
+    ) -> codex_hepta_contracts::LearningAuthenticationProfile {
+        self.material.authentication_profile()
+    }
+
     pub fn manifest(&self) -> &ArtifactManifest {
         self.material.manifest()
     }

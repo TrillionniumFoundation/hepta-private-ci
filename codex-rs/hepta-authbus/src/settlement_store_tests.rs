@@ -4,6 +4,7 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;
+use crate::IssuerSpec;
 use crate::PolicyDecision;
 use crate::PolicySpec;
 use crate::QuotaSpec;
@@ -109,7 +110,7 @@ async fn registered(
             crate::IssuerSpec {
                 issuer_id: id("issuer:settlement"),
                 key_epoch: Generation::new(1).expect("generation"),
-                verifying_key: key.verifying_key(),
+                verifying_key: key.verifying_key().into(),
             },
         )
         .await
@@ -121,9 +122,72 @@ fn issuer(key: &SigningKey) -> SettlementIssuerRegistration {
     SettlementIssuerRegistration {
         issuer_id: id("issuer:settlement"),
         key_epoch: Generation::new(1).expect("generation"),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     }
+}
+
+async fn enroll(store: &AuthBusAuthorityStore, key: &SigningKey) {
+    let registration = issuer(key);
+    store
+        .enroll_issuer(
+            IssuerPurpose::Settlement,
+            IssuerSpec {
+                issuer_id: registration.issuer_id,
+                key_epoch: registration.key_epoch,
+                verifying_key: registration.verifying_key,
+            },
+        )
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn settlement_rereads_registration_and_revocation_inside_the_commit_transaction() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let dispatched = store
+        .mark_dispatch_attempted(
+            &reservation.reservation_id,
+            1,
+            reservation.effect_digest,
+            sample(5, 1_500),
+        )
+        .await
+        .unwrap();
+    let key = SigningKey::from_bytes(&[42; 32]);
+    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
+    let quota = store.quota_snapshot(&dispatched.quota_key).await.unwrap();
+    assert!(matches!(
+        store.settle(&issuer(&key), &signed, sample(6, 1_600)).await,
+        Err(AuthBusAuthorityError::IssuerMissing)
+    ));
+    enroll(&store, &key).await;
+    let snapshot = store
+        .settlement_issuer(&signed.claims.issuer_id, signed.claims.key_epoch)
+        .await
+        .unwrap();
+    store
+        .revoke_issuer(
+            IssuerPurpose::Settlement,
+            &snapshot.issuer_id,
+            snapshot.key_epoch,
+            1,
+        )
+        .await
+        .unwrap();
+    assert!(!snapshot.revoked);
+    assert!(matches!(
+        store.settle(&snapshot, &signed, sample(7, 1_700)).await,
+        Err(AuthBusAuthorityError::SettlementIssuerRevoked)
+    ));
+    assert_eq!(
+        store.quota_snapshot(&dispatched.quota_key).await.unwrap(),
+        quota
+    );
+    assert_eq!(
+        store.reservation(&dispatched.reservation_id).await.unwrap(),
+        dispatched
+    );
 }
 
 fn evidence(
@@ -145,7 +209,10 @@ fn evidence(
         expires_at_ms: observed_at_ms + 2_000,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    SignedSettlementEvidence { claims, signature }
+    SignedSettlementEvidence {
+        claims,
+        signature: signature.into(),
+    }
 }
 
 #[tokio::test]

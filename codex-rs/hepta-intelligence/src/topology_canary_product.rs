@@ -82,15 +82,23 @@ pub fn observe_authenticated_structural_canary_v1(
         .observe(observation)
         .map_err(AuthenticatedStructuralCanaryErrorV1::Canary)?;
 
-    let mut authentication =
-        b"hepta.intelligence.structural-canary-observer-authentication.v1\0".to_vec();
+    let mut authentication = verifier.authentication_profile().learning_domain(
+        b"hepta.intelligence.structural-canary-observer-authentication.v1\0",
+        b"hepta.intelligence.structural-canary-observer-authentication.pq.v2\0",
+    );
     authentication.extend_from_slice(verifier.trust_digest().as_array());
     authentication.extend_from_slice(verified.payload_digest().as_array());
     let principal = verified.principal();
     push_id(&mut authentication, &principal.principal_id);
     authentication.extend_from_slice(principal.credential_chain_digest.as_array());
     authentication.extend_from_slice(principal.signing_key_digest.as_array());
-    authentication.extend_from_slice(&observer_attestation.signature);
+    if observer_attestation.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        authentication.extend_from_slice(&observer_attestation.signature);
+    } else {
+        authentication.extend_from_slice(&observer_attestation.signing_bytes());
+    }
 
     Ok(AuthenticatedStructuralCanaryReceiptV1 {
         canary,

@@ -57,16 +57,10 @@ impl Arg0PathEntryGuard {
     }
 }
 
-pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
-    dispatch_with_preflight(|| Ok(())).unwrap_or_else(|error| {
-        eprintln!("arg0 preflight failed: {error}");
-        std::process::exit(1)
-    })
-}
-
-fn dispatch_with_preflight(
-    preflight: impl FnOnce() -> anyhow::Result<()>,
-) -> anyhow::Result<Option<Arg0PathEntryGuard>> {
+/// Dispatch helper re-execs before a product loads daemon-only configuration.
+/// A recognized helper never returns. Ordinary invocations return without
+/// reading configuration, preparing PATH aliases, or starting runtime threads.
+pub fn dispatch_helper_if_requested() {
     // Determine if we were invoked via the special alias.
     let mut args = std::env::args_os();
     let argv0 = args.next().unwrap_or_default();
@@ -162,6 +156,19 @@ fn dispatch_with_preflight(
         };
         std::process::exit(exit_code);
     }
+}
+
+pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+    dispatch_with_preflight(|| Ok(())).unwrap_or_else(|error| {
+        eprintln!("arg0 preflight failed: {error}");
+        std::process::exit(1)
+    })
+}
+
+fn dispatch_with_preflight(
+    preflight: impl FnOnce() -> anyhow::Result<()>,
+) -> anyhow::Result<Option<Arg0PathEntryGuard>> {
+    dispatch_helper_if_requested();
 
     // Every original helper dispatch above retains priority over daemon checks.
     // The caller can reject an unsupported daemon image before aliases or owners.

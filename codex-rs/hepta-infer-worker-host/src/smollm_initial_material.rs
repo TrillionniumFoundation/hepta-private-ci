@@ -19,6 +19,13 @@ impl From<SelectedInitialSmolLmMaterialV1> for InitialMaterial {
 }
 
 impl InitialMaterial {
+    pub(super) fn authentication_profile(&self) -> LearningAuthenticationProfile {
+        match self {
+            Self::Historical(value) => value.authentication_profile(),
+            Self::Public(value) => value.authentication_profile(),
+        }
+    }
+
     pub(super) fn manifest(&self) -> &ArtifactManifest {
         match self {
             Self::Historical(value) => value.manifest(),

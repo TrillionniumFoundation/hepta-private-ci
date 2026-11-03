@@ -142,7 +142,7 @@ fn original_startup_window_and_cancellation_survive_transfer_to_the_loader() {
 
 #[test]
 fn expired_startup_is_not_restarted_and_cannot_admit_claim_or_spawn() {
-    for cancelled in [false, true] {
+    for (initial, cancelled) in [(false, false), (false, true), (true, false), (true, true)] {
         let directory = tempfile::tempdir().unwrap();
         let root = directory.path();
         let runtime = runtime();
@@ -167,19 +167,36 @@ fn expired_startup_is_not_restarted_and_cannot_admit_claim_or_spawn() {
             ),
             cancellation: token,
         };
-        let result = SmolLmNeuralReadPortV1::start_with_execution(
-            config,
-            pin,
-            parameters,
-            owner(),
-            1,
-            "controlled-neural-worker".to_owned(),
-            grant(),
-            control,
-            issuer.clone(),
-            runtime.handle().clone(),
-            startup,
-        );
+        let result = if initial {
+            SmolLmNeuralReadPortV1::start_initial_with_execution(
+                config,
+                SmolLmRuntimeIdentityV1::from(&pin),
+                pin.compatibility_digest(),
+                parameters,
+                owner(),
+                1,
+                "controlled-neural-worker".to_owned(),
+                grant(),
+                control,
+                issuer.clone(),
+                runtime.handle().clone(),
+                startup,
+            )
+        } else {
+            SmolLmNeuralReadPortV1::start_with_execution(
+                config,
+                pin,
+                parameters,
+                owner(),
+                1,
+                "controlled-neural-worker".to_owned(),
+                grant(),
+                control,
+                issuer.clone(),
+                runtime.handle().clone(),
+                startup,
+            )
+        };
         assert!(
             matches!(result, Err(ref error) if error.contains(if cancelled { "cancelled" } else { "deadline" }))
         );

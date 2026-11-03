@@ -22,7 +22,7 @@ async fn enqueue(
     let issuer = IssuerRegistration {
         issuer_id: StableId::new(issuer_name).unwrap(),
         key_epoch: Generation::new(epoch).unwrap(),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
@@ -36,7 +36,10 @@ async fn enqueue(
         expires_at_ms: u64::MAX,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    let message = SignedMessage { claims, signature };
+    let message = SignedMessage {
+        claims,
+        signature: signature.into(),
+    };
     let status = store
         .enqueue_authbus_message(
             &issuer,

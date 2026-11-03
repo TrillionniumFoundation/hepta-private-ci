@@ -14,6 +14,10 @@ use codex_hepta_learning_artifacts::SelectedPublicInitialSmolLmMaterialV2;
 mod material;
 use material::InitialMaterial;
 
+#[path = "smollm_initial_time.rs"]
+mod time;
+use time::InitialAuthorityTime;
+
 #[path = "smollm_initial_query.rs"]
 mod query;
 pub(crate) use query::InitialReadPermitV1;
@@ -40,6 +44,9 @@ pub struct PreparedSelectedInitialSmolLmV1 {
     config: AgentdConfig,
     material: Option<InitialMaterial>,
     current: Arc<ArtifactOwnerCurrentReaderV1>,
+    authority_time: InitialAuthorityTime,
+    physical: SmolLmRuntimeIdentityV1,
+    startup_execution: codex_hepta_agentd::NeuralCognitiveExecutionV1,
     session: SmolLmCognitiveSessionV1,
     association: Option<(Digest32, String, String)>,
     cleanup: Option<tokio::task::JoinHandle<Result<(), String>>>,
@@ -119,7 +126,8 @@ impl PreparedSelectedInitialSmolLmV1 {
         &mut self,
         observe: impl for<'a> FnOnce(InitialSelectedLoadObservationV1<'a>) -> Result<T, String>,
     ) -> Result<T, String> {
-        self.observe(initial_now_seconds, observe)
+        let time = self.authority_time.clone();
+        self.observe(|| time.now_seconds(), observe)
     }
 
     fn observe<T>(
@@ -262,6 +270,9 @@ async fn prepare_selected_initial_smollm(
     let worker_runtime = runtime.clone();
     let cancellation = CancellationToken::new();
     let mut pending = CancelPreparation(Some(cancellation.clone()));
+    // Include blocking-executor queueing and external trust RPCs in the same
+    // original 120-second window used by physical loading.
+    let startup = SmolLmStartupExecutionV1::new(cancellation);
     let result = runtime
         .spawn_blocking(move || {
             prepare_initial(
@@ -270,7 +281,7 @@ async fn prepare_selected_initial_smollm(
                 current,
                 inputs,
                 worker_runtime,
-                cancellation,
+                startup,
                 initial_now_seconds,
             )
         })
@@ -286,13 +297,12 @@ fn prepare_initial(
     current: ArtifactOwnerCurrentReaderV1,
     inputs: SmolLmInitialHostInputsV1,
     runtime: tokio::runtime::Handle,
-    cancellation: CancellationToken,
+    startup: SmolLmStartupExecutionV1,
     mut clock: impl FnMut() -> Result<u64, String>,
 ) -> Result<PreparedSelectedInitialSmolLmV1, InitialSmolLmPreparationErrorV1> {
+    let load_execution = startup.execution().clone();
+    load_execution.check()?;
     let mut material = material.into();
-    if cancellation.is_cancelled() {
-        return Err("initial preparation cancelled".to_owned().into());
-    }
     StableId::new(inputs.worker_id.clone()).map_err(|e| e.to_string())?;
     if !(1..=16_384).contains(&inputs.inference_journal_capacity) {
         return Err("initial inference journal capacity is invalid"
@@ -309,7 +319,15 @@ fn prepare_initial(
             &[&identity.home_root, &identity.run_root, &identity.workspace],
         )?;
     }
-    let now = clock()?;
+    let authorizer = Arc::new(
+        UnixFinalUseAuthorizer::open(&inputs.final_use_authorizer_config)
+            .map_err(|error| error.to_string())?,
+    );
+    load_execution.check()?;
+    let authority_time =
+        InitialAuthorityTime::from_authorizer(&authorizer, material.authentication_profile())?;
+    let now = authority_time.now_seconds_with_legacy(&mut clock)?;
+    load_execution.check()?;
     let view = current
         .current_registry_view(now)
         .map_err(|e| e.to_string())?;
@@ -337,17 +355,14 @@ fn prepare_initial(
         physical.execution_profile_digest.as_array(),
         material.selection_digest().as_array(),
     ]);
-    let authorizer = Arc::new(
-        UnixFinalUseAuthorizer::open(&inputs.final_use_authorizer_config)
-            .map_err(|e| e.to_string())?,
-    );
+    load_execution.check()?;
     let control = Arc::new(Mutex::new(
         DurableInferenceControl::open(inputs.inference_journal, inputs.inference_journal_capacity)
             .map_err(|e| e.to_string())?,
     ));
-    let port = Arc::new(SmolLmNeuralReadPortV1::start_initial_cancellable(
+    let port = Arc::new(SmolLmNeuralReadPortV1::start_initial_with_execution(
         inputs.worker,
-        physical,
+        physical.clone(),
         scope,
         parameters,
         identity.agent_id.clone(),
@@ -357,12 +372,15 @@ fn prepare_initial(
         control,
         authorizer,
         runtime.clone(),
-        cancellation.clone(),
+        startup,
     )?);
     let mut prepared = PreparedSelectedInitialSmolLmV1 {
         config,
         material: Some(material),
         current: Arc::new(current),
+        authority_time: authority_time.clone(),
+        physical,
+        startup_execution: load_execution.clone(),
         session: SmolLmCognitiveSessionV1 {
             port: Some(port),
             runtime,
@@ -370,13 +388,15 @@ fn prepare_initial(
         association: None,
         cleanup: None,
     };
-    let verified = prepared.observe(clock, |_| {
-        if cancellation.is_cancelled() {
-            Err("initial preparation cancelled after load".to_owned())
-        } else {
-            Ok(())
-        }
-    });
+    let verified = prepared
+        .observe(
+            || {
+                load_execution.check()?;
+                authority_time.now_seconds_with_legacy(&mut clock)
+            },
+            |_| load_execution.check(),
+        )
+        .and_then(|()| load_execution.check());
     match verified {
         Ok(()) => Ok(prepared),
         Err(reason) => Err(InitialSmolLmPreparationErrorV1 {

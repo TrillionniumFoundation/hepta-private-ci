@@ -394,7 +394,7 @@ impl SmolLmNeuralReadPortV1 {
 
     // Initial loading has no evaluated pin, even at this internal boundary.
     #[allow(clippy::too_many_arguments)]
-    pub(crate) fn start_initial_cancellable(
+    pub(crate) fn start_initial_with_execution(
         config: SmolLmNeuralReadConfigV1,
         identity: SmolLmRuntimeIdentityV1,
         scope: Digest32,
@@ -406,7 +406,7 @@ impl SmolLmNeuralReadPortV1 {
         control: Arc<Mutex<DurableInferenceControl>>,
         authorizer: Arc<dyn TurnStartAuthorizer>,
         runtime: tokio::runtime::Handle,
-        cancellation: CancellationToken,
+        startup: SmolLmStartupExecutionV1,
     ) -> Result<Self, String> {
         Self::start_physical(
             config,
@@ -421,7 +421,7 @@ impl SmolLmNeuralReadPortV1 {
             control,
             authorizer,
             runtime,
-            SmolLmStartupExecutionV1::new(cancellation),
+            startup,
         )
     }
 

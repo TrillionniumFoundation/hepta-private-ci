@@ -316,7 +316,11 @@ pub fn propose_authenticated_topology_plasticity_v1(
 
 fn attestation_digest(evidence: &SignedLearningEvidenceV1) -> Digest32 {
     let mut bytes = evidence.signing_bytes();
-    bytes.extend_from_slice(&evidence.signature);
+    if evidence.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        bytes.extend_from_slice(&evidence.signature);
+    }
     Digest32::of_bytes(&bytes)
 }
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
@@ -391,7 +395,7 @@ mod tests {
                 .map(|(index, (principal, key))| TrustedLearningSignerV1 {
                     principal: principal.clone(),
                     controller_id: id(&format!("controller:{index}")),
-                    verifying_key: key.verifying_key().to_bytes(),
+                    verifying_key: key.verifying_key().to_bytes().into(),
                     roles: vec![match index {
                         0 => LearningEvidenceRoleV1::Generator,
                         1 => LearningEvidenceRoleV1::Observer,
@@ -447,7 +451,7 @@ mod tests {
             issued_at: 20,
             expires_at: 90,
             payload_digest: digest(b"placeholder"),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
         let mut request = TopologyPlasticityProductRequestV1 {
             proposal_id: id("proposal:topology"),
@@ -483,7 +487,7 @@ mod tests {
             payload: &[u8],
         ) -> SignedLearningEvidenceV1 {
             evidence.payload_digest = Digest32::of_bytes(payload);
-            evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+            evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes().into();
             evidence
         }
 

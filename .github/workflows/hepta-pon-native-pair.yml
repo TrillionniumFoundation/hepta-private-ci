@@ -881,6 +881,7 @@ jobs:
       RUSTUP_TOOLCHAIN: "1.96.0"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-cell-host-target
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
@@ -999,6 +1000,66 @@ jobs:
           CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/original-owner.json" --minimum-tests 40 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(final_use_authorizer::) | test(model_worker::tests::) | test(smollm_neural_read::driver::failure::tests::) | test(smollm_neural_read::driver::session::owner::tests::) | test(smollm_neural_read::tests::)' --no-capture
+      - name: Require canonical PQ contracts including actual Unix trust services
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/canonical-pq-contracts.json" --minimum-tests 195 -- just test --locked -p codex-hepta-contracts --lib --no-capture
+      - name: Require the exact initial material, protected clock and startup controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/pq-initial-material.json" --minimum-tests 1 -- just test --locked -p codex-hepta-learning-artifacts --lib -E 'test(=selection::initial_smollm_genesis::tests::pq_initial_tests::pq_initial_material_keeps_selector_current_and_final_use_profile_bound)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/pq-initial-clock.json" --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(=smollm_cognitive_host::initial::time::tests::initial_consumers_retain_the_real_pq_clock_and_refuse_wall_time_after_failure)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/initial-startup-budget.json" --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(=smollm_neural_read::tests::expired_startup_is_not_restarted_and_cannot_admit_claim_or_spawn)' --no-capture
+      - name: Build the actual same-tree Codex executable for canonical PQ turn start
+        id: pq_codex
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/pq-build-codex.json" -- cargo build --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex --locked --message-format=json
+      - name: Bind and execute the original native PQ turn start against that executable
+        if: ${{ !cancelled() && steps.pq_codex.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+          PYTHONPATH: scripts
+        run: |
+          python3 - <<'PYCODE'
+          import os
+          from pathlib import Path
+          import hepta_ci_exec as owner
+          import hepta_final_use_pq_ci as pq
+
+          root = Path.cwd().resolve()
+          target = Path(os.environ["CARGO_TARGET_DIR"])
+          if not target.is_absolute() or target.resolve().is_relative_to(root):
+              raise ValueError("native PQ requires the original fresh external Cargo target")
+          if "RUNFILES_MANIFEST_ONLY" in os.environ:
+              raise ValueError("native Cargo CI cannot select a Bazel runfiles resolver")
+          output = Path(os.environ["RUNNER_TEMP"]) / "cell-host"
+          # Reuse the existing strict Cargo JSON/package/path/ELF/hash binding.
+          # This is not the historical raw-key V2 workflow or its old selectors.
+          binding = pq.build_binding(output / "pq-build-codex.json", root, target)
+          pq.write_json(output / "pq-codex-binding.json", binding)
+          executable = Path(binding["executable"])
+          os.environ["CARGO_BIN_EXE_codex"] = str(executable)
+          if pq.digest(executable) != binding["sha256"]:
+              raise ValueError("selected Codex executable changed before the native test")
+          result = owner.run(
+              output / "pq-native-turn-start.json",
+              ["just", "test", "--locked", "-p", "codex-hepta-infer-worker-host", "--lib",
+               "-E", "test(=native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant)",
+               "--test-threads", "1", "--no-capture"],
+              minimum_tests=1,
+              timeout_seconds=3600,
+          )
+          if pq.digest(executable) != binding["sha256"]:
+              raise ValueError("selected Codex executable changed during the native test")
+          raise SystemExit(result)
+          PYCODE
       - name: Run the required scoped Clippy fix with unchanged-source enforcement
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
         env:
@@ -1032,8 +1093,8 @@ jobs:
       TESTED_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEPTA_CI_LANE: source-head
-      CHAIN_INSTALLED_SOURCE_SHA: 0e9eac5d2a8cdb0a6f0cc7920f84e290e0d5d0d0
-      CHAIN_INSTALLED_TREE: 7b973f6891c74e2ac1dfb36e0368fae2ba41f3cb
+      CHAIN_INSTALLED_SOURCE_SHA: 1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c
+      CHAIN_INSTALLED_TREE: 535660af742d62b6578b5e4334e0f2d2c17527e0
       RUSTUP_TOOLCHAIN: "1.95.0"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
