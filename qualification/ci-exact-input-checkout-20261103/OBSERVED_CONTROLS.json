@@ -1,0 +1,42 @@
+{
+  "schema": "scope-checkout-observed-controls-v1",
+  "original_failure": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+    "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+    "run_id": 41676913872,
+    "job_id": 126059898997,
+    "conclusion": "cancelled",
+    "original_timeout_minutes": 5,
+    "failed_phase": "actions/checkout fetch all branch and tag history",
+    "log": "ORIGINAL_SCOPE_JOB_126059898997.log",
+    "log_sha256": "588d9035f84da7f6814902766dbed4e57da80eb451cd2f607798a3ee308c5fca",
+    "scope_script_executed": false
+  },
+  "existing_regressions": {
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "scripts.tests.test_hepta_ci_scope",
+      "scripts.tests.test_hepta_ci_dependencies",
+      "scripts.test_hepta_readiness_semantics"
+    ],
+    "cwd": "repository root",
+    "exit_code": 0,
+    "tests_run": 59,
+    "seconds": 2.383,
+    "result": "OK",
+    "capture": "Only the actual final tool output segment is stored, not a complete stdout/stderr transcript.",
+    "tail": "EXISTING_TESTS_FINAL_OUTPUT_ONLY.txt"
+  },
+  "preserved": [
+    "Five-minute scope deadline",
+    "Original direct exact-base/head diff",
+    "All scope/dependency/readiness tests",
+    "All scope classifications and fan-in requirements",
+    "persist-credentials false"
+  ],
+  "hosted_candidate_status": "pending exact changed-head execution"
+}
