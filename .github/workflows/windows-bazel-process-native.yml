@@ -105,8 +105,11 @@ jobs:
               "$child.WaitForExit(); [Console]::WriteLine('parent-finished')"
           )
           encoded = base64.b64encode(script.encode("utf-16le")).decode()
+          standard_dirs = select(["USERPROFILE", "APPDATA", "LOCALAPPDATA", "ProgramData", "SystemDrive", "PATHEXT"])
           cases = [("minimal", minimum), ("program-files-pair", dict(minimum, **programs)),
-                   ("profile-group", dict(minimum, **profiles)), ("full-runner-reference", full)]
+                   ("program-files-and-standard-dirs", dict(minimum, **programs, **standard_dirs)),
+                   ("program-files-and-profile-group", dict(minimum, **programs, **profiles)),
+                   ("full-runner-reference", full)]
           results = []
           for executable in ("powershell.exe", "pwsh.exe"):
               path = shutil.which(executable)
@@ -161,6 +164,12 @@ jobs:
             --nocache_test_results \
             --test_env=ProgramFiles \
             --test_env='ProgramFiles(x86)' \
+            --test_env=USERPROFILE \
+            --test_env=APPDATA \
+            --test_env=LOCALAPPDATA \
+            --test_env=ProgramData \
+            --test_env=SystemDrive \
+            --test_env=PATHEXT \
             --build_metadata=COMMIT_SHA=$GITHUB_SHA \
             -- \
             //codex-rs/git-utils:git-utils-unit-tests \
