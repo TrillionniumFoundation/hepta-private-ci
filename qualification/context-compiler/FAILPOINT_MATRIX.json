@@ -1,0 +1,206 @@
+{
+  "schema": "hepta.context-compiler.failpoint-matrix.v1",
+  "module": "context.compiler",
+  "rules": {
+    "everyPointRequired": true,
+    "status": "passed",
+    "unresolvedIsNeverFinal": true,
+    "blindReplayForbidden": true,
+    "identityBinding": [
+      "sourceCommit",
+      "sourceTree",
+      "mergeCommit",
+      "mergeTree",
+      "hostImageDigest",
+      "providerTenant"
+    ]
+  },
+  "points": [
+    {
+      "id": "tokenizer.acquire.before",
+      "phase": "tokenizer",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "tokenizer.acquire.after",
+      "phase": "tokenizer",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "tokenizer.stdin.before",
+      "phase": "tokenizer",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "tokenizer.stdin.after",
+      "phase": "tokenizer",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "tokenizer.stdout.before",
+      "phase": "tokenizer",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "tokenizer.stdout.after",
+      "phase": "tokenizer",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "tokenizer.exit.before",
+      "phase": "tokenizer",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "tokenizer.exit.after",
+      "phase": "tokenizer",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "lease.acquire.before",
+      "phase": "lease",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "lease.acquire.after",
+      "phase": "lease",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "durable.intent_write.before",
+      "phase": "durability",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "durable.intent_write.after",
+      "phase": "durability",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "durable.data_fsync.before",
+      "phase": "durability",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "durable.data_fsync.after",
+      "phase": "durability",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "durable.rename.before",
+      "phase": "durability",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "durable.rename.after",
+      "phase": "durability",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "durable.directory_fsync.before",
+      "phase": "durability",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "durable.directory_fsync.after",
+      "phase": "durability",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "transport.commit.before",
+      "phase": "transport",
+      "allowedObservedStates": [
+        "known_not_dispatched"
+      ]
+    },
+    {
+      "id": "transport.commit.after",
+      "phase": "transport",
+      "allowedObservedStates": [
+        "may_have_dispatched_unresolved",
+        "confirmed_and_reconciled"
+      ]
+    },
+    {
+      "id": "provider.ack.before",
+      "phase": "provider",
+      "allowedObservedStates": [
+        "may_have_dispatched_unresolved",
+        "confirmed_and_reconciled"
+      ]
+    },
+    {
+      "id": "provider.ack.after",
+      "phase": "provider",
+      "allowedObservedStates": [
+        "may_have_dispatched_unresolved",
+        "confirmed_and_reconciled"
+      ]
+    },
+    {
+      "id": "terminal.persist.before",
+      "phase": "terminal",
+      "allowedObservedStates": [
+        "may_have_dispatched_unresolved",
+        "confirmed_and_reconciled"
+      ]
+    },
+    {
+      "id": "terminal.persist.after",
+      "phase": "terminal",
+      "allowedObservedStates": [
+        "terminal_persisted"
+      ]
+    },
+    {
+      "id": "lease.settle.before",
+      "phase": "lease",
+      "allowedObservedStates": [
+        "terminal_persisted"
+      ]
+    },
+    {
+      "id": "lease.settle.after",
+      "phase": "lease",
+      "allowedObservedStates": [
+        "lease_settled"
+      ]
+    }
+  ]
+}

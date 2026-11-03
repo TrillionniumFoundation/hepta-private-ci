@@ -1,4 +1,5 @@
 use anyhow::Result;
+use codex_core::test_support::wait_for_turn_retirement;
 use codex_extension_api::ModelProviderRequestKind;
 use codex_extension_api::ModelProviderTerminal;
 use codex_extension_api::ModelProviderTransport;
@@ -26,6 +27,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 use tokio::time::Instant;
 use tokio::time::timeout;
+use tokio::time::timeout_at;
 use wiremock::ResponseTemplate;
 
 use super::compact::SUMMARY_TEXT;
@@ -268,30 +270,54 @@ async fn provider_policy_block_prevents_remote_v1_compaction_send() -> Result<()
     test.submit_turn("seed history before governed compaction")
         .await?;
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 0);
-    test.codex.submit(Op::Compact).await?;
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+    // TurnComplete precedes fence retirement. Observe it outside the dispatcher
+    // without treating it as a reservation or evidence of a successful flush.
+    let compact_deadline = Instant::now() + Duration::from_secs(10);
+    wait_for_turn_retirement(&test.codex, compact_deadline).await?;
+    let compact_id = test.codex.submit(Op::Compact).await?;
+    timeout_at(compact_deadline, async {
+        loop {
+            let event = test.codex.next_event().await?;
+            if event.id == compact_id {
+                match &event.msg {
+                    EventMsg::Error(error)
+                        if error.message.starts_with("failed to start compaction:") =>
+                    {
+                        panic!("unexpected compact admission rejection: {event:?}")
+                    }
+                    EventMsg::TurnComplete(_) => break,
+                    _ => {}
+                }
+            }
+        }
+        Ok::<(), anyhow::Error>(())
     })
-    .await;
+    .await??;
     assert_eq!(compact_mock.requests().len(), 2);
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 0);
 
+    let compact_deadline = Instant::now() + Duration::from_secs(10);
+    wait_for_turn_retirement(&test.codex, compact_deadline).await?;
     state.set_active(true);
     test.codex.submit(Op::Compact).await?;
 
-    let error = wait_for_event(&test.codex, |event| matches!(event, EventMsg::Error(_))).await;
-    let EventMsg::Error(error) = error else {
-        unreachable!("event predicate requires an error")
-    };
-    assert!(
-        error
-            .message
-            .contains("blocked by the test provider policy")
-    );
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+    timeout_at(compact_deadline, async {
+        let error = wait_for_event(&test.codex, |event| matches!(event, EventMsg::Error(_))).await;
+        let EventMsg::Error(error) = error else {
+            unreachable!("event predicate requires an error")
+        };
+        assert!(
+            error
+                .message
+                .contains("blocked by the test provider policy"),
+            "unexpected remote-v1 compaction rejection: {error:?}"
+        );
+        wait_for_event(&test.codex, |event| {
+            matches!(event, EventMsg::TurnComplete(_))
+        })
+        .await;
     })
-    .await;
+    .await?;
 
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 1);
     assert_eq!(state.terminal_count.load(Ordering::SeqCst), 0);
@@ -347,10 +373,19 @@ async fn provider_policy_claims_each_remote_v1_compaction_retry() -> Result<()> 
     test.submit_turn("seed history before governed compaction")
         .await?;
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 0);
+    let compact_deadline = Instant::now() + Duration::from_secs(5);
+    wait_for_turn_retirement(&test.codex, compact_deadline).await?;
     state.set_active(true);
-    test.codex.submit(Op::Compact).await?;
+    let compact_id = test.codex.submit(Op::Compact).await?;
 
-    timeout(Duration::from_secs(5), state.wait_for_terminal_count(1)).await?;
+    wait_for_provider_terminal_or_compaction_error(
+        &test.codex,
+        &compact_id,
+        &state,
+        /*expected*/ 1,
+        compact_deadline,
+    )
+    .await?;
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 1);
     assert_eq!(compact_mock.requests().len(), 1);
     assert!(matches!(
@@ -363,7 +398,14 @@ async fn provider_policy_claims_each_remote_v1_compaction_retry() -> Result<()> 
     assert_compaction_replacement_pending(&test.codex).await;
 
     state.terminal_release.add_permits(1);
-    timeout(Duration::from_secs(5), state.wait_for_terminal_count(2)).await?;
+    wait_for_provider_terminal_or_compaction_error(
+        &test.codex,
+        &compact_id,
+        &state,
+        /*expected*/ 2,
+        Instant::now() + Duration::from_secs(5),
+    )
+    .await?;
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 2);
     assert_eq!(compact_mock.requests().len(), 2);
     assert_eq!(state.completed_count.load(Ordering::SeqCst), 1);
@@ -397,6 +439,48 @@ async fn provider_policy_claims_each_remote_v1_compaction_retry() -> Result<()> 
         vec![http_compaction_observation(), http_compaction_observation()]
     );
     Ok(())
+}
+
+async fn wait_for_provider_terminal_or_compaction_error(
+    codex: &codex_core::CodexThread,
+    compact_id: &str,
+    state: &ProviderPolicyState,
+    expected: usize,
+    deadline: Instant,
+) -> Result<()> {
+    timeout_at(deadline, async {
+        loop {
+            tokio::select! {
+                () = state.wait_for_terminal_count(expected) => return Ok(()),
+                event = codex.next_event() => {
+                    let event = event?;
+                    if event.id == compact_id {
+                        assert!(
+                            !matches!(
+                                &event.msg,
+                                EventMsg::Error(error)
+                                    if error.message.starts_with("failed to start compaction:")
+                            ),
+                            "compact admission failed before provider terminal {expected}: {event:?}"
+                        );
+                    }
+                    // Do not discard replacement events of any ID that the existing
+                    // pending assertion would reject while observing admission errors.
+                    assert!(
+                        !matches!(
+                            event.msg,
+                            EventMsg::ItemCompleted(ItemCompletedEvent {
+                                item: TurnItem::ContextCompaction(_),
+                                ..
+                            }) | EventMsg::TurnComplete(_)
+                        ),
+                        "compaction replaced history before provider terminal acknowledgement: {event:?}"
+                    );
+                }
+            }
+        }
+    })
+    .await?
 }
 
 async fn assert_compaction_replacement_pending(codex: &codex_core::CodexThread) {

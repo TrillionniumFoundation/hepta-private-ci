@@ -106,3 +106,50 @@ fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions() -> Result<(
     ));
     Ok(())
 }
+
+#[test]
+fn context_wire_rejects_impossible_token_accounting_on_encode_and_decode()
+-> Result<(), Box<dyn StdError>> {
+    let codec = ContextCompilationWireCodec::new()?;
+    for (selected, used_tokens) in [
+        (vec!["item.1".to_string()], 0),
+        (vec!["item.1".to_string(), "item.2".to_string()], 1),
+        (Vec::new(), 1),
+        (vec!["item.1".to_string()], crate::MAX_TOKENS + 1),
+        (vec!["item.1".to_string()], u64::MAX),
+    ] {
+        let value = ContextCompilationWireV2 {
+            compilation_id: "compile.tokens".to_string(),
+            trusted_instruction_ids: selected,
+            untrusted_evidence_ids: Vec::new(),
+            omitted_ids: vec!["omitted.1".to_string()],
+            used_tokens,
+            context_digest: Digest32::of_bytes(b"context").to_string(),
+        };
+        let rejected = Err(SchemaCodecError::Rejected(
+            "invalid context token accounting",
+        ));
+        assert_eq!(codec.encode_value(&value), rejected);
+        assert_eq!(
+            codec.decode_value(&serde_json::to_vec(&value)?),
+            Err(SchemaCodecError::Rejected(
+                "invalid context token accounting"
+            ))
+        );
+    }
+    for (selected, used_tokens) in [
+        (Vec::new(), 0),
+        (vec!["item.1".to_string()], crate::MAX_TOKENS),
+    ] {
+        let value = ContextCompilationWireV2 {
+            compilation_id: "compile.tokens.valid".to_string(),
+            trusted_instruction_ids: selected,
+            untrusted_evidence_ids: Vec::new(),
+            omitted_ids: Vec::new(),
+            used_tokens,
+            context_digest: Digest32::of_bytes(b"context").to_string(),
+        };
+        assert_eq!(codec.decode_value(&codec.encode_value(&value)?)?, value);
+    }
+    Ok(())
+}

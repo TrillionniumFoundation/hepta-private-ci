@@ -1,0 +1,25 @@
+test_alias_and_short_oid_rejected (test_context_compiler_candidate.CandidateTests.test_alias_and_short_oid_rejected) ... ok
+test_changed_head_fails_even_when_worktree_clean (test_context_compiler_candidate.CandidateTests.test_changed_head_fails_even_when_worktree_clean) ... ok
+test_conflicting_merge_fails_without_source_mutation (test_context_compiler_candidate.CandidateTests.test_conflicting_merge_fails_without_source_mutation) ... ok
+test_deterministic_merge_and_ordered_parents (test_context_compiler_candidate.CandidateTests.test_deterministic_merge_and_ordered_parents) ... ok
+test_dirty_tracked_source_is_not_overwritten (test_context_compiler_candidate.CandidateTests.test_dirty_tracked_source_is_not_overwritten) ... ok
+test_divergent_base_changes_are_in_tested_tree (test_context_compiler_candidate.CandidateTests.test_divergent_base_changes_are_in_tested_tree) ... ok
+test_duplicate_merge_parents_rejected (test_context_compiler_candidate.CandidateTests.test_duplicate_merge_parents_rejected) ... ok
+test_forged_tree_and_parents_rejected (test_context_compiler_candidate.CandidateTests.test_forged_tree_and_parents_rejected) ... ok
+test_git_environment_cannot_redirect_repository (test_context_compiler_candidate.CandidateTests.test_git_environment_cannot_redirect_repository) ... ok
+test_replace_refs_do_not_change_identity (test_context_compiler_candidate.CandidateTests.test_replace_refs_do_not_change_identity) ... ok
+test_source_identity (test_context_compiler_candidate.CandidateTests.test_source_identity) ... ok
+test_source_record_cannot_self_assert_acceptance (test_context_compiler_candidate.CandidateTests.test_source_record_cannot_self_assert_acceptance) ... ok
+test_tree_and_missing_objects_are_not_commits (test_context_compiler_candidate.CandidateTests.test_tree_and_missing_objects_are_not_commits) ... ok
+test_untracked_source_is_not_ignored (test_context_compiler_candidate.CandidateTests.test_untracked_source_is_not_ignored) ... ok
+test_ansi (test_context_compiler_execution.ExecutionSummaryTests.test_ansi) ... ok
+test_cargo_summary (test_context_compiler_execution.ExecutionSummaryTests.test_cargo_summary) ... ok
+test_empty_and_no_tests (test_context_compiler_execution.ExecutionSummaryTests.test_empty_and_no_tests) ... ok
+test_multiple_cargo_suites (test_context_compiler_execution.ExecutionSummaryTests.test_multiple_cargo_suites) ... ok
+test_nextest_summary (test_context_compiler_execution.ExecutionSummaryTests.test_nextest_summary) ... ok
+test_unrelated_log_text_is_not_test_execution (test_context_compiler_execution.ExecutionSummaryTests.test_unrelated_log_text_is_not_test_execution) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 5.462s
+
+OK

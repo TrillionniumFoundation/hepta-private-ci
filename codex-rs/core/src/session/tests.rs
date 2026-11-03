@@ -1,3 +1,6 @@
+#[path = "compaction_admission_tests.rs"]
+mod compaction_admission_tests;
+
 use super::mcp_refresh::McpRefresh;
 use super::turn_context::TurnEnvironment;
 use super::*;
@@ -11092,7 +11095,14 @@ pub(crate) async fn attach_in_memory_thread_store(
     session: &mut Session,
 ) -> Arc<codex_thread_store::InMemoryThreadStore> {
     let store = Arc::new(codex_thread_store::InMemoryThreadStore::default());
-    let thread_store: Arc<dyn codex_thread_store::ThreadStore> = store.clone();
+    attach_thread_store(session, store.clone()).await;
+    store
+}
+
+async fn attach_thread_store(
+    session: &mut Session,
+    thread_store: Arc<dyn codex_thread_store::ThreadStore>,
+) {
     let config = session.get_config().await;
     let live_thread = LiveThread::create(
         Arc::clone(&thread_store),
@@ -11128,7 +11138,6 @@ pub(crate) async fn attach_in_memory_thread_store(
     .expect("create thread persistence");
     session.services.thread_store = thread_store;
     session.services.live_thread = Some(live_thread);
-    store
 }
 
 #[tokio::test]

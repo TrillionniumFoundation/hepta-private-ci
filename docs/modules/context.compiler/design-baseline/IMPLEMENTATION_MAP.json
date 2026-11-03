@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 4,
+  "module": "context.compiler",
+  "generated": {
+    "manifest": "docs/modules/context.compiler/MODULE_MANIFEST.json",
+    "manifestSha256": "f15a6b933050094662b25c31a1b645072bd7584d985db4263d361e7688280a2f",
+    "generator": "scripts/generate_context_compiler_module_docs.py",
+    "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "integrationBranch": "codex/context-compiler-provider-closure-final-20260927"
+  },
+  "baselineStatus": {
+    "coreImplementation": "complete",
+    "productComposition": "partial",
+    "v2ProviderClosure": "incomplete",
+    "currentHeadQualification": "absent"
+  },
+  "status": {
+    "coreImplementation": "complete",
+    "productComposition": "complete",
+    "v2ProviderClosure": "complete",
+    "currentHeadQualification": "absent"
+  },
+  "statusRationale": {
+    "coreImplementation": "V2 compilation, verified admission, compiler-owned canonical serialization, typed snapshot succession, attachment, exact request proof, delivery observation, and deny-all proof objects are implemented.",
+    "productComposition": "The registry, hepta-intelligence, Agentd, ext.hepta-prompt, Core, and codex-api compose one fail-closed exact-body path; the physical send is released only after durable pre-send evidence exists.",
+    "v2ProviderClosure": "The exact encoded provider body is framed by a qualified provider/model policy, tokenized by a binary/vocabulary identity bound to the model profile, submitted without reconstruction, and reconciled into a durable ContextDeliveryReceiptV2.",
+    "currentHeadQualification": "Source state never self-asserts qualification. Only a successful immutable receipt whose headSha equals the reviewed Git commit changes the external qualification judgment."
+  },
+  "sourceRoots": [
+    "codex-rs/hepta-context-compiler/src/provider_closure.rs",
+    "codex-rs/hepta-context-compiler/src/v2.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+    "codex-rs/ext/hepta-prompt/src/exact_body.rs",
+    "codex-rs/ext/hepta-prompt/src/lib.rs",
+    "codex-rs/codex-api/src/encoded_body_observer.rs",
+    "codex-rs/codex-api/src/endpoint/responses.rs",
+    "codex-rs/core/src/client.rs",
+    "codex-rs/core/src/model_provider_policy",
+    "codex-rs/hepta-codex-adapter/src/lib.rs"
+  ],
+  "publicSurface": [
+    "compile_prompt_registry_v2",
+    "record_canonical_context_bundle_v2",
+    "build_attachment",
+    "verify_admission_snapshot_successor_typed_v2",
+    "prepare_delivery_from_successor_v2",
+    "prove_final_provider_request_v2",
+    "FinalRequestFramingVerifierV2",
+    "ExactFinalRequestTokenizerV2",
+    "observe_final_provider_delivery_v2",
+    "AgentdExactContextDeliveryOwner"
+  ],
+  "proofObjects": [
+    "VerifiedAdmissionSnapshotV2",
+    "VerifiedAdmissionSnapshotSuccessorV2",
+    "ContextCompilationReceiptV2",
+    "ContextAttachmentV2",
+    "ContextDeliveryPreparationV2",
+    "FinalRequestTokenizerIdentityV2",
+    "FinalRequestTokenizationReceiptV2",
+    "FinalProviderRequestProofV2",
+    "ContextDeliveryReceiptV2"
+  ],
+  "byteIdentities": [
+    {
+      "name": "canonical context bundle",
+      "owner": "context.compiler",
+      "material": "Compiler-owned JSON envelope containing selected realized items, explicit roles, IDs, content digests, and exact content.",
+      "digest": "ContextSerializationReceiptV2.payload_digest",
+      "securityMeaning": "The selected context is deterministic and cannot be replaced by a caller-supplied prepared payload on the strict product path."
+    },
+    {
+      "name": "prompt fragments",
+      "owner": "hepta-intelligence / ext.hepta-prompt",
+      "material": "Typed product projection inserted into the host request builder.",
+      "digest": "PromptRuntimeAttachmentV1.source_binding_digest",
+      "securityMeaning": "Useful for product composition and migration, but never accepted as proof of the final provider body."
+    },
+    {
+      "name": "provider final request",
+      "owner": "codex-api encoded-body boundary",
+      "material": "Exact canonical JSON bytes after all provider/model request construction and before compression or signing.",
+      "digest": "FinalProviderRequestProofV2.provider_request_digest",
+      "securityMeaning": "The qualified tokenizer, framing verifier, durable pre-send claim, and physical HTTP send all consume this same byte string."
+    },
+    {
+      "name": "provider wire semantic digest",
+      "owner": "Core model-provider policy",
+      "material": "Secret-free canonical semantics of the physical provider attempt, including provider, endpoint, transport, model, request kind, and logical input binding.",
+      "digest": "ModelProviderInvocationInput.wire_semantic_sha256",
+      "securityMeaning": "Binds transport semantics and terminal evidence; it is intentionally distinct from the byte-for-byte final-request digest."
+    }
+  ],
+  "targetSequence": [
+    "registry/admission snapshot",
+    "compile_v2",
+    "canonical context serialization",
+    "build_attachment",
+    "fresh typed snapshot successor",
+    "prepare_delivery_from_successor_v2",
+    "host constructs exact encoded provider request",
+    "qualified provider framing verification",
+    "exact tokenizer over final request bytes",
+    "durable pre-send claim",
+    "provider submit using the attested bytes",
+    "provider terminal evidence",
+    "observe_final_provider_delivery_v2",
+    "durable ContextDeliveryReceiptV2"
+  ],
+  "invariants": [
+    "The strict serializer is compiler-owned; product callers cannot certify arbitrary prepared payload bytes.",
+    "Every final request contains exactly one canonical context bundle and all remaining bytes are accepted only by a qualified provider/model framing verifier.",
+    "Tokenizer identity binds provider, model, declared profile tokenizer, executable digest, version digest, vocabulary digest, and normalization-policy digest.",
+    "The exact encoded body observed before transport is the tokenizer input and the physical HTTP body; no post-proof reconstruction is permitted.",
+    "Delivery preparation consumes a typed monotone snapshot successor whose predecessor is the attachment-bound snapshot.",
+    "A pre-send record is durably persisted before the exact request is released to transport.",
+    "An unresolved durable pre-send survives restart and blocks blind replay; terminal retries are idempotent only for an identical normalized terminal observation.",
+    "Provider terminal evidence binds the provider intent, wire-semantic digest, final-request proof, preparation, and deny-all authority receipt."
+  ],
+  "testMatrix": [
+    "canonical serializer golden and adversarial prepared-payload rejection",
+    "Unicode, embedded control bytes, large request, and exact JSON escaping",
+    "segment-map gaps, overlaps, duplicate context, wrong model, and unqualified framing",
+    "tokenizer binary/version/vocabulary/normalization/profile identity mismatch",
+    "real subprocess tokenizer receiving the exact Unicode/control-byte provider body",
+    "snapshot reset, time rollback, revocation-epoch rollback, and revocation resurrection",
+    "crash/reopen unresolved pre-send blocking, retry idempotency, and terminal conflict",
+    "registry → compiler → exact encoded body → provider terminal → durable receipt integration",
+    "property-generated deterministic coverage and mutation fail-closed corpus"
+  ],
+  "productComposition": {
+    "state": "complete",
+    "singlePhysicalPath": "codex-api exact encoded body -> qualified framing/tokenizer -> Agentd durable pre-send -> same-body HTTP send -> terminal receipt",
+    "legacyEvidencePolicy": "V1 records may be retained for migration and audit but do not satisfy V2 provider closure."
+  },
+  "qualification": {
+    "workflow": ".github/workflows/context-compiler-qualification.yml",
+    "receiptArtifact": "context-compiler-qualification-receipt-<head-sha>",
+    "commands": [
+      "python3 scripts/generate_context_compiler_module_docs.py --check",
+      "cargo fmt --all -- --check",
+      "cargo test --locked -p codex-hepta-context-compiler",
+      "cargo test --locked -p codex-hepta-intelligence prompt_delivery",
+      "cargo test --locked -p codex-hepta-prompt-extension exact_body",
+      "cargo test --locked -p codex-hepta-agentd exact_context_delivery",
+      "cargo check --locked for codex-api/core/compiler/intelligence/prompt/agentd",
+      "cargo clippy --locked for all affected crates and all targets with -D warnings",
+      "cargo deny --locked check bans licenses sources",
+      "cargo deny --locked check advisories (recorded non-blocking repository audit)",
+      "bazel test //codex-rs/hepta-context-compiler:all",
+      "python3 scripts/hepta-readiness.py verify",
+      "python3 scripts/hepta-docs.py verify"
+    ]
+  },
+  "knownOpenItems": [
+    "Exact-head qualification remains absent in source until the external workflow publishes a passing receipt bound to that Git SHA.",
+    "Deployment must provision an approved tokenizer executable, vocabulary, provider/model identity, normalization policy, and profile digest; missing or mismatched capabilities fail closed.",
+    "Historical V1 receipt data may be retained for migration and audit, but it is not accepted as V2 provider-closure evidence."
+  ]
+}

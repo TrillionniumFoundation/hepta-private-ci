@@ -17,5 +17,9 @@ workspace = true
 codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
+memchr = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

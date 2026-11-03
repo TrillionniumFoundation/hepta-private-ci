@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.context-compiler.external-acceptance-gates.v1",
+  "module": "context.compiler",
+  "claimBoundary": {
+    "sourceQualificationMaySetExternalAcceptance": false,
+    "repositoryMayMintOperatorApproval": false,
+    "repositoryMayMintSecurityAcceptance": false
+  },
+  "gates": {
+    "externalAuthoritySignerQualified": {
+      "passed": false,
+      "requiredEvidence": [
+        "KMS/HSM custody receipt",
+        "key rotation and revocation exercise",
+        "issuer/audience/key-epoch negative tests"
+      ],
+      "evidence": []
+    },
+    "immutableTokenizerCustodyQualified": {
+      "passed": false,
+      "requiredEvidence": [
+        "content-addressed executable and vocabulary custody receipt",
+        "no mutable-path reopen proof",
+        "provider semantic golden vectors"
+      ],
+      "evidence": []
+    },
+    "distributedAttemptLeaseQualified": {
+      "passed": false,
+      "requiredEvidence": [
+        "multi-process duplicate-send denial",
+        "multi-host duplicate-send denial",
+        "lease authority fail-closed exercise"
+      ],
+      "evidence": []
+    },
+    "appendOnlyRecoveryQualified": {
+      "passed": false,
+      "requiredEvidence": [
+        "append-only journal receipt",
+        "external monotonic generation anchor receipt",
+        "rollback and backup-restore negative tests"
+      ],
+      "evidence": []
+    },
+    "independentTerminalAttestationQualified": {
+      "passed": false,
+      "requiredEvidence": [
+        "attempt/exact-body-bound terminal attestation",
+        "late terminal reconciliation after process death",
+        "terminal conflict and stale-key negative tests"
+      ],
+      "evidence": []
+    },
+    "realProviderE2EQualified": {
+      "passed": false,
+      "requiredEvidence": [
+        "delivered/rejected/not-dispatched/indeterminate E2E receipts",
+        "transport-commit crash receipt",
+        "provider-ack crash receipt"
+      ],
+      "evidence": []
+    },
+    "namedHostCapacityQualified": {
+      "passed": false,
+      "requiredEvidence": [
+        "named host image and hardware identity",
+        "p50/p95/p99 latency and peak memory",
+        "long-lived unresolved backlog and recovery throughput"
+      ],
+      "evidence": []
+    },
+    "operatorCanaryApproved": {
+      "passed": false,
+      "requiredEvidence": [
+        "protected-environment approval",
+        "canary observation receipt",
+        "rollback exercise receipt"
+      ],
+      "evidence": []
+    },
+    "independentSecurityAcceptance": {
+      "passed": false,
+      "requiredEvidence": [
+        "independent reviewer identity",
+        "reviewed source and merge tree",
+        "signed security acceptance receipt"
+      ],
+      "evidence": []
+    }
+  },
+  "derivedState": {
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}
