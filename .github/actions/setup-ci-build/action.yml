@@ -72,3 +72,8 @@ runs:
           echo "TMP=$tmp"
         } >> "$GITHUB_ENV"
 
+    - name: Configure a private NTFS temporary namespace (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: ./.github/scripts/setup-windows-private-temp.ps1
+

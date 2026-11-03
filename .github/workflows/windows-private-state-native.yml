@@ -1,0 +1,126 @@
+name: Windows private state native qualification
+
+on:
+  push:
+    branches: [fix/windows-private-state-adapters-20261103]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-private-state-native-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: Original Windows private state owner controls
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare native Windows Bazel
+        id: prepare
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Record exact source and private temporary root
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "windows-private-state"
+          output.mkdir(parents=True, exist_ok=True)
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["GITHUB_SHA"]:
+              raise SystemExit("unexpected source head")
+          root = Path(os.environ["HEPTA_CI_PRIVATE_TEMP_ROOT"])
+          if not root.is_dir():
+              raise SystemExit("private Windows temporary root is absent")
+          receipt = {
+              "source_head": head,
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "private_temp_root": str(root),
+              "scope": "Native owner and adapter controls; test frontier is not externally durable or attested",
+          }
+          (output / "source.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+      - name: Run original owner and caller targets
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/windows-private-state"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --test_tmpdir="$HEPTA_CI_PRIVATE_TEMP_ROOT/bazel" \
+            --test_env=TMP="$HEPTA_CI_PRIVATE_TEMP_ROOT" \
+            --test_env=TEMP="$HEPTA_CI_PRIVATE_TEMP_ROOT" \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_output=all --test_arg=--nocapture -- \
+            //codex-rs/hepta-contracts:hepta-contracts-unit-tests \
+            //codex-rs/hepta-memory:hepta-memory-unit-tests \
+            //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests \
+            //codex-rs/hepta-agentd:hepta-agentd-unit-tests \
+            //codex-rs/hepta-learning-artifacts:hepta-learning-artifacts-unit-tests \
+            2>&1 | tee "$output/native-owner-controls.log"
+      - name: Preserve complete native test logs
+        if: ${{ always() && !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "windows-private-state"
+          result = subprocess.run(
+              ["bash", ".github/scripts/run-bazel-ci.sh", "--windows-msvc-host-platform", "--",
+               "info", "--platforms=//:windows_x86_64_msvc", "bazel-testlogs"],
+              check=True, capture_output=True, text=True,
+          )
+          root = Path(result.stdout.strip().splitlines()[-1])
+          records = []
+          for crate in ("hepta-contracts", "hepta-memory", "hepta-infer-worker-host", "hepta-agentd", "hepta-learning-artifacts"):
+              for path in sorted((root / "codex-rs" / crate / f"{crate}-unit-tests").rglob("test.log")):
+                  relative = path.relative_to(root)
+                  destination = output / "native-test-logs" / relative
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(path, destination)
+                  data = destination.read_bytes()
+                  records.append({"path": relative.as_posix(), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
+          (output / "native-test-logs.json").write_text(json.dumps(records, indent=2) + "\n")
+          print(json.dumps({"complete_test_logs": records}))
+          PY
+      - name: Preserve original failures and source identity
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-private-state-${{ github.sha }}
+          path: ${{ runner.temp }}/windows-private-state/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Check unchanged tracked source
+        if: ${{ always() && !cancelled() }}
+        uses: ./.github/actions/check-clean-worktree

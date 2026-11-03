@@ -48,8 +48,21 @@ impl Fixture {
         }
         let issuer = SigningKey::from_bytes(&[113; 32]);
         let clock = Arc::new(TestClock(AtomicU64::new(1_000)));
+        #[cfg(not(windows))]
         let authority = FinalUseAuthority::open_state_dir_with_clock(
             directory.path(),
+            "verified-dispatch-issuer".to_owned(),
+            issuer.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 1,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+            clock.clone(),
+        )
+        .expect("actual durable FinalUse authority");
+        #[cfg(windows)]
+        let authority = crate::windows_test_authority::open_fresh(
             "verified-dispatch-issuer".to_owned(),
             issuer.verifying_key().to_bytes(),
             FinalUseRevocations {

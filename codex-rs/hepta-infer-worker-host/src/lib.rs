@@ -293,3 +293,6 @@ mod tests;
 
 pub use ordinary_cpu_registration::DESTINATION as ORDINARY_CPU_DESTINATION_V1;
 pub use ordinary_cpu_registration::TOPIC as ORDINARY_CPU_TOPIC_V1;
+
+#[cfg(all(test, windows))]
+mod windows_test_authority;

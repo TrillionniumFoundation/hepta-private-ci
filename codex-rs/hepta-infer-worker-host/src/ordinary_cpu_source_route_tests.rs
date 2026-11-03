@@ -74,28 +74,48 @@ fn registered_worker(
 }
 
 fn authority(temp: &TempDir, name: &str, clock: Arc<TestClock>) -> FinalUseAuthority {
-    let path = temp.path().join(name);
-    std::fs::create_dir(&path).expect("authority directory");
-    #[cfg(unix)]
+    #[cfg(not(windows))]
     {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700))
-            .expect("private authority");
+        let path = temp.path().join(name);
+        std::fs::create_dir(&path).expect("authority directory");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700))
+                .expect("private authority");
+        }
+        FinalUseAuthority::open_state_dir_with_clock(
+            &path,
+            "ordinary-source-route-issuer".to_owned(),
+            SigningKey::from_bytes(&[113; 32])
+                .verifying_key()
+                .to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 1,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+            clock,
+        )
+        .expect("original durable FinalUse owner")
     }
-    FinalUseAuthority::open_state_dir_with_clock(
-        &path,
-        "ordinary-source-route-issuer".to_owned(),
-        SigningKey::from_bytes(&[113; 32])
-            .verifying_key()
-            .to_bytes(),
-        FinalUseRevocations {
-            authority_epoch: 1,
-            revision: 1,
-            revoked_grant_ids: BTreeSet::new(),
-        },
-        clock,
-    )
-    .expect("original durable FinalUse owner")
+    #[cfg(windows)]
+    {
+        let _ = (temp, name);
+        crate::windows_test_authority::open_fresh(
+            "ordinary-source-route-issuer".to_owned(),
+            SigningKey::from_bytes(&[113; 32])
+                .verifying_key()
+                .to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 1,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+            clock,
+        )
+        .expect("original durable FinalUse owner")
+    }
 }
 
 fn source_authority_bytes(lease: &ProductionAuthorityLease) -> Result<Vec<u8>, String> {

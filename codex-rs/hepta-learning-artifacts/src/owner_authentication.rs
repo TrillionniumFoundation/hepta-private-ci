@@ -51,7 +51,7 @@ pub(super) fn bind_namespace(
     let mut marker = options.open(root.join(MARKER))?;
     marker.write_all(CONTENT)?;
     marker.sync_all()?;
-    File::open(root)?.sync_all()?;
+    durability::sync_parent(&root.join(MARKER))?;
     Ok(())
 }
 
