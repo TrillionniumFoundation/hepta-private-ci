@@ -26,6 +26,7 @@ jobs:
       native: ${{ steps.scope.outputs.native }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
+      ndu_v6: ${{ steps.ndu_v6.outputs.selected }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -52,6 +53,37 @@ jobs:
             args+=(--full)
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}"
+
+      - name: Select v6 rollout and native dependency changes
+        id: ndu_v6
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from scripts.hepta_ci_scope import changed_paths
+          prefixes = (
+              "experiments/multimodal_output_portfolio/", "codex-rs/hepta-ndu/",
+              "codex-rs/hepta-types/", "codex-rs/hepta-contracts/", "codex-rs/.cargo/",
+              "codex-rs/hepta-infer-core/", "codex-rs/hepta-infer-worker-host/",
+              "codex-rs/hepta-agentd/src/test_support.rs",
+          )
+          shared = {
+              "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml",
+              "justfile", "scripts/run-nextest.py", "scripts/just-shell.py",
+              "scripts/hepta_ci_exec.py", "scripts/hepta_ci_scope.py",
+              "scripts/verify_cargo_lock.py", ".github/workflows/ndu-v6.yml",
+              ".github/workflows/blocking-ci.yml",
+          }
+          selected = os.environ["EVENT_NAME"] != "pull_request" or any(
+              path.startswith(prefixes) or path in shared
+              for path in changed_paths(os.environ["BASE_SHA"], os.environ["HEAD_SHA"])
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"selected={str(selected).lower()}\n")
+          PY
 
       - name: Regression-test scoped fan-in policy
         shell: bash
@@ -98,6 +130,12 @@ jobs:
     name: Codespell
     uses: ./.github/workflows/codespell.yml
     secrets: inherit
+
+  ndu-v6:
+    name: NDU v6 neural rollout smoke
+    needs: scope
+    if: needs.scope.outputs.ndu_v6 == 'true'
+    uses: ./.github/workflows/ndu-v6.yml
 
   repo-checks:
     name: repo-checks
@@ -215,6 +253,7 @@ jobs:
       - blob-size-policy
       - cargo-deny
       - codespell
+      - ndu-v6
       - repo-checks
       - rust-ci
       - sdk
@@ -231,6 +270,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          NDU_V6: ${{ needs.scope.outputs.ndu_v6 }}
         shell: bash
         run: |
           set -euo pipefail
@@ -241,6 +281,8 @@ jobs:
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
           allowed = []
+          if os.environ["NDU_V6"] != "true":
+              allowed.append("ndu-v6")
           if not (native or full):
               allowed.append("hepta-contract-gate")
           if not full:

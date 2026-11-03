@@ -6,7 +6,18 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
+mod generation_step;
 mod neuron_feature;
+
+pub use generation_step::GENERATION_MAX_BYTES;
+pub use generation_step::GENERATION_SCHEMA;
+pub use generation_step::GenerationActionV1;
+pub use generation_step::GenerationContractError;
+pub use generation_step::GenerationExecutionV1;
+pub use generation_step::GenerationModelPinsV1;
+pub use generation_step::GenerationRequestV1;
+pub use generation_step::GenerationStateV1;
+pub use generation_step::generation_json_digest;
 
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;
