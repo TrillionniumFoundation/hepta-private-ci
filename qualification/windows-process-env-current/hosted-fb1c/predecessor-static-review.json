@@ -1,0 +1,46 @@
+{
+  "schema": "windows-process-env-readonly-independent-review-v1",
+  "reviewed_head": "fb1c40250317f035efeaa998184bad190857fbe0",
+  "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "reviewed_utc": "2026-11-03T21:53:58.561816+00:00",
+  "inputs": [
+    {
+      "path": ".bazelrc",
+      "sha256": "c851702682dcd66ee0d378803477060383b0de36cca183536708440515e85a6c",
+      "bytes": 14043
+    },
+    {
+      "path": "qualification/windows-process-env-current/run_qualification.py",
+      "sha256": "f3992681fa80342442c9ac71add606d662f01b00cc76c047a9649526f173631d",
+      "bytes": 9631
+    },
+    {
+      "path": "qualification/windows-process-env-current/test_reports.py",
+      "sha256": "d390c45f4293ac816811ed36c0525cd3be8af840d132d4ad05079ea4a574b80f",
+      "bytes": 3817
+    },
+    {
+      "path": ".github/workflows/hepta-windows-process-env-qualification.yml",
+      "sha256": "1d2b23fb451ef32c88e49e118ca65a39f844e8828cf09a0abbfe80fb3a5c0dda",
+      "bytes": 2744
+    }
+  ],
+  "scope": "static read only; no source changes, Cargo, tests, native programs or new downloads",
+  "finding": "no blocking issue identified in requested fresh-report, current-source binding and zero-run rejection scope",
+  "observations": [
+    "Only eight Windows-specific OS path environment names plus explanatory comments were added to production .bazelrc; no forwarding of the whole runner environment.",
+    "Workflow binds checkout to source-head or actual PR merge commit, disables autocrlf via Git environment and sets an explicit expected commit for the wrapper.",
+    "Wrapper rejects non-Windows execution, unexpected HEAD, tracked source changes, missing exact env entries, and changed before/after source snapshots.",
+    "Existing target log and XML paths are deleted before --nocache_test_results run; each target requires exactly one fresh log and XML report.",
+    "XML requires one unfailed/unskipped Bazel wrapper and exact normalized log text; native summaries require full 33/35 outer counts with zero failed, ignored, measured or filtered tests.",
+    "The original one-test Git child with 32 filtered cases is required in its exact expected position and is not added to the outer denominator.",
+    "Zero test exits, skipped/cached target executions, missing lifecycle names and duplicate report wrappers cannot qualify under these explicit checks.",
+    "Command exit zero and literal two-out-of-two-executed summary are required in addition to original report parsing.",
+    "Historical retained reports serve parser controls only; current native qualification is not inferred from those controls."
+  ],
+  "limitations": [
+    "No fresh Windows runner execution or actual nine parser control tests were run by this reviewer.",
+    "This review does not prove all Windows child-process security or semantics, nor all workspace CI acceptance.",
+    "Input snapshot and Git clean checks operate in the freshly checked-out workflow context; they are not a defense against a malicious Git/toolchain or arbitrary local environment."
+  ]
+}

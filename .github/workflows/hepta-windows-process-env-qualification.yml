@@ -1,0 +1,72 @@
+name: hepta Windows process environment union qualification
+
+on:
+  pull_request:
+    paths:
+      - .bazelrc
+      - codex-rs/git-utils/**
+      - codex-rs/ext/queue/**
+      - codex-rs/utils/pty/**
+      - qualification/windows-process-env-current/**
+      - .github/workflows/hepta-windows-process-env-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-process-env-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    if: github.head_ref == 'fix/private-ci-windows-process-env-union-20261103' || (github.event_name == 'workflow_dispatch' && github.ref_name == 'fix/private-ci-windows-process-env-union-20261103')
+    name: Original Windows Git and queue suites (${{ matrix.ref-kind }})
+    strategy:
+      fail-fast: false
+      matrix:
+        ref-kind: [source-head, base-merge]
+    runs-on: windows-2025
+    timeout-minutes: 120
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      PYTHONIOENCODING: utf-8
+      CANDIDATE_SHA: ${{ matrix.ref-kind == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: "false"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: windows-process-env-union
+      - name: Check actual report acceptance against retained original cases
+        shell: bash
+        run: python -m unittest discover -s qualification/windows-process-env-current -p 'test_*.py' -v
+      - name: Run original suites with fresh reports and no PowerShell prewarm
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          HEPTA_EXPECTED_COMMIT: ${{ env.CANDIDATE_SHA }}
+        shell: bash
+        run: |
+          HEPTA_BASH="$(cygpath -w "$BASH")" \
+            python qualification/windows-process-env-current/run_qualification.py --output "$RUNNER_TEMP/windows-process-env-evidence"
+      - name: Retain original outcomes including failures
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-process-env-union-${{ matrix.ref-kind }}-${{ env.CANDIDATE_SHA }}
+          path: ${{ runner.temp }}/windows-process-env-evidence
+          if-no-files-found: error
+          retention-days: 7
+      - name: Check clean source
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
