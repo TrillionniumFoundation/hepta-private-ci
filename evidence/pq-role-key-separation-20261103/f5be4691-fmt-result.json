@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "phase": "published_actual_package_format",
+  "job_id": "1a1a2d426f1-96a-752e",
+  "status": {
+    "at_unix_ms": 1793733177822,
+    "audit_recorded": true,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a2d426f1-96a-752e",
+    "log_bytes": {
+      "stderr": {
+        "seen": 424,
+        "stored": 424
+      },
+      "stdout": {
+        "seen": 1825,
+        "stored": 1825
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "state": "succeeded",
+    "timed_out": false
+  },
+  "source_before": "f5be4691-source-before.json",
+  "source_after": "f5be4691-source-after.json",
+  "commands": [
+    "just fmt",
+    "cargo fmt -p codex-hepta-infer-worker-host -- --config imports_granularity=Item --check",
+    "git diff --exit-code",
+    "git diff --cached --exit-code"
+  ],
+  "note": "The default clean-worktree just fmt reports no changed files. The separate actual package-wide Rust format check executes and exits zero. Stable Rustfmt warns that the nightly-only imports_granularity option is ignored; all four original warning lines are retained.",
+  "logs": {
+    "stdout.log": {
+      "file": "f5be4691-fmt-stdout.log",
+      "bytes": 1825,
+      "sha256": "8eee863dcc673089e9288be9abb22393a8c5a24b41cbdd017262abb1ec22b506"
+    },
+    "stderr.log": {
+      "file": "f5be4691-fmt-stderr.log",
+      "bytes": 424,
+      "sha256": "82c967bb3d05505caa04ec415561efee37d40827744218d060ff630761361d72"
+    },
+    "request.json": {
+      "file": "f5be4691-fmt-request.json",
+      "bytes": 3621,
+      "sha256": "08878e10b7c491367f65311d5559ca0302366607010768fd573000d0327eeaef"
+    }
+  }
+}
