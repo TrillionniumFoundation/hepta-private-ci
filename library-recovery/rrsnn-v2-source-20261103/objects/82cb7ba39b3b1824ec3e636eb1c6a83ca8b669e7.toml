@@ -1,0 +1,16 @@
+[package]
+name = "rrsnn-hepta-type-adapter"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+codex-hepta-neuron = { path = "../hepta-neuron" }
+codex-hepta-infer-core = { path = "../hepta-infer-core" }
+codex-hepta-types = { path = "../hepta-types" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
