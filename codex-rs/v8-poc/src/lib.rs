@@ -36,6 +36,9 @@ mod tests {
         INIT.call_once(|| {
             v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
             v8::V8::initialize();
+            // Publish initialization only after the shared PartitionAlloc-backed
+            // sandbox allocator's unsynchronized lazy construction has completed.
+            drop(v8::new_default_allocator());
         });
     }
 
@@ -77,6 +80,35 @@ mod tests {
     #[test]
     fn evaluates_string_concatenation() {
         assert_eq!(evaluate_expression("'hello ' + 'world'"), "hello world");
+    }
+
+    #[test]
+    fn parallel_first_isolates_keep_array_buffers_independent() {
+        const WORKERS: usize = 16;
+        initialize_v8();
+        let start = std::sync::Barrier::new(WORKERS);
+        let results = std::thread::scope(|scope| {
+            let workers = (0..WORKERS)
+                .map(|index| {
+                    let start = &start;
+                    scope.spawn(move || {
+                        start.wait();
+                        evaluate_expression(&format!(
+                            "const bytes = new Uint8Array(4096); bytes.fill({index}); \
+                             bytes.every(value => value === {index}) ? bytes[0] : -1"
+                        ))
+                    })
+                })
+                .collect::<Vec<_>>();
+            workers
+                .into_iter()
+                .map(|worker| worker.join().expect("parallel isolate should finish"))
+                .collect::<Vec<_>>()
+        });
+        let expected = (0..WORKERS)
+            .map(|index| index.to_string())
+            .collect::<Vec<_>>();
+        assert_eq!(results, expected);
     }
 
     #[test]

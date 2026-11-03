@@ -1,0 +1,72 @@
+name: hepta V8 sandbox allocator qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-v8-allocator-qualification.yml
+      - qualification/v8-allocator-20261103/**
+      - codex-rs/v8-poc/**
+      - codex-rs/code-mode-runtime/**
+      - codex-rs/code-mode-host/**
+      - third_party/v8/**
+      - MODULE.bazel
+      - MODULE.bazel.lock
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v8-allocator-qualification-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    if: github.head_ref == 'fix/private-ci-v8-allocator-initialization-20261103-gpt6'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            config: ci-windows
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            config: ci-linux
+    env:
+      BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+    steps:
+      - name: Preserve exact Git bytes on Windows
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: v8-allocator-qualification
+      - name: Run original V8 consumers and fresh parallel allocator regression
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            export V8_QUALIFICATION_BASH="$(cygpath -w "$BASH")"
+          else
+            export V8_QUALIFICATION_BASH="$BASH"
+          fi
+          python3 qualification/v8-allocator-20261103/run.py --config "${{ matrix.config }}" --output "$RUNNER_TEMP/v8-allocator"
+      - name: Retain exact inputs and original test evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: v8-allocator-${{ matrix.target }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/v8-allocator
+          if-no-files-found: error
+          retention-days: 7

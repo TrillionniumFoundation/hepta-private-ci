@@ -49,6 +49,12 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // V8 15.0 initializes its shared PartitionAlloc-backed sandbox allocator
+    // lazily without a lock.
+    // Finish that initialization before publishing this OnceLock to threads
+    // that create isolates. Dropping this wrapper leaves the group-owned
+    // sandbox allocator alive and preserves its normal allocation policy.
+    drop(v8::new_default_allocator());
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,

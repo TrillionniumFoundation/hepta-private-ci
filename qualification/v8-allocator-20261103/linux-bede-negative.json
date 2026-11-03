@@ -1,0 +1,25 @@
+{
+  "schema": "v8-linux-output-materialization-negative-v1",
+  "source_commit": "bede07d3050d897a505020215a46a3ec8d66020d",
+  "run": 41705384578,
+  "job": 126159901127,
+  "artifact_id": 13266411249,
+  "artifact_bytes": 22300,
+  "artifact_sha256": "d7f7ddd07b5ac2f6ad46536f2ba3f425c9c6d5da8e34784692c13920c7b7e7b2",
+  "immutable_initial_git_inputs_verified": 129,
+  "receipt_outputs_verified": 6,
+  "committed_lock_check_exit": 0,
+  "fresh_parallel_first_use_exit": 0,
+  "fresh_test_counts": [
+    1,
+    0,
+    0,
+    0,
+    6
+  ],
+  "failure": "The qualifier could not copy the remote test.xml after the actual fresh test passed. Original CI config uses remote_download_minimal.",
+  "full_consumers_and_clippy_executed": false,
+  "qualification_inputs_after_failure_recorded": false,
+  "correction": "Request the original wrapper remote-download-toplevel option on Linux as already done on Windows. Require a fresh output directory and retain after-input hashes on failures.",
+  "unchanged": "Consumer source, original target selections and assertions, authenticated RBE, native MSVC configuration and 30-minute budget."
+}
