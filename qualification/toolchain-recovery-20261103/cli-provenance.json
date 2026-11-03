@@ -1,0 +1,36 @@
+{
+  "tools": [
+    {
+      "name": "cargo-nextest",
+      "version": "0.9.151",
+      "url": "https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.151/cargo-nextest-0.9.151-x86_64-unknown-linux-musl.tar.gz",
+      "sha256": "6b284d6fde9670dfb6ee10ea9d9abbc85f95643d3f592472d420d82e257b3a6c",
+      "size": 9792418,
+      "expected_binary_sha256": "559f38665a6fbb6a18900d7172cf7e9c9155d96916452209b91cdd9d30c80f4d",
+      "binary_bytes": 27128632,
+      "binary_sha256": "559f38665a6fbb6a18900d7172cf7e9c9155d96916452209b91cdd9d30c80f4d",
+      "actual_version": "cargo-nextest 0.9.151 (6b3f99457 2026-11-02)\nrelease: 0.9.151\ncommit-hash: 6b3f994577a98874a2e0ea5bef77fbbab3434044\ncommit-date: 2026-11-02\nhost: x86_64-unknown-linux-musl"
+    },
+    {
+      "name": "just",
+      "version": "1.51.0",
+      "url": "https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz",
+      "sha256": "c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59",
+      "size": 2257502,
+      "binary_bytes": 5452040,
+      "binary_sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "actual_version": "just 1.51.0"
+    },
+    {
+      "name": "cargo-deny",
+      "version": "0.19.0",
+      "url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.0/cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz",
+      "sha256": "0e8c2aa59128612c90d9e09c02204e912f29a5b8d9a64671b94608cbe09e064f",
+      "size": 8265108,
+      "binary_bytes": 16086896,
+      "binary_sha256": "06f9d1a0ba92b201bff1215b6dc24e669b212c151ecd52cae5d38aab73931d3c",
+      "actual_version": "cargo-deny 0.19.0"
+    }
+  ],
+  "scope": "Official checksum-verified isolated CLI tools, no account/global configuration changes"
+}

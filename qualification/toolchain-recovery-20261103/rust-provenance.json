@@ -1,0 +1,133 @@
+{
+  "source_manifest": "https://static.rust-lang.org/dist/channel-rust-1.95.0.toml",
+  "manifest_sha256": "821ff14e4c4a1cbe1e8915f35aff0a3fbbdf8d293ad48ab8f31e3b0440c581f9",
+  "manifest_date": "2026-04-16",
+  "target": "x86_64-unknown-linux-gnu",
+  "components": [
+    {
+      "name": "rustc",
+      "version": "1.95.0 (59807616e 2026-04-14)",
+      "url": "https://static.rust-lang.org/dist/2026-04-16/rustc-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "sha256": "8426a3d170a5879f5682f5fbdd024a1779b3951e7baba685af2d6dc32a6dfc15",
+      "archive_bytes": 80351960,
+      "archive_path": "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/rustc-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "installer_sha256": "a8773d6aa551d7f1315acfbc8e6c6a1141313a1a6d1b608d88c41a80fc9b7886",
+      "install_command": [
+        "bash",
+        "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/unpacked-rustc/rustc-1.95.0-x86_64-unknown-linux-gnu/install.sh",
+        "--prefix=/workspace/scratch/1f1d02319616/recovered-toolchain-20261103",
+        "--disable-ldconfig"
+      ],
+      "install_exit": 0
+    },
+    {
+      "name": "rust-std",
+      "version": "1.95.0 (59807616e 2026-04-14)",
+      "url": "https://static.rust-lang.org/dist/2026-04-16/rust-std-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "sha256": "047ea7098803d3500fa1072e9cee5392697e21525559e4458128a2bf874aa382",
+      "archive_bytes": 29573972,
+      "archive_path": "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/rust-std-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "installer_sha256": "154455acfbef45eab3bb41d4fc5106e253861c0b2f83ee0312eede46f9526d4c",
+      "install_command": [
+        "bash",
+        "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/unpacked-rust-std/rust-std-1.95.0-x86_64-unknown-linux-gnu/install.sh",
+        "--prefix=/workspace/scratch/1f1d02319616/recovered-toolchain-20261103",
+        "--disable-ldconfig"
+      ],
+      "install_exit": 0
+    },
+    {
+      "name": "cargo",
+      "version": "0.96.0 (f2d3ce0bd 2026-03-21)",
+      "url": "https://static.rust-lang.org/dist/2026-04-16/cargo-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "sha256": "e74edd2cf7d0f1f1383b4f00eb90c843750bc489e2ccf7214e6476678a907425",
+      "archive_bytes": 10984780,
+      "archive_path": "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/cargo-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "installer_sha256": "dce3fa141d059ab01852bbe7aa22dfb273fced17e9fa51824824ffde73fb3830",
+      "install_command": [
+        "bash",
+        "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/unpacked-cargo/cargo-1.95.0-x86_64-unknown-linux-gnu/install.sh",
+        "--prefix=/workspace/scratch/1f1d02319616/recovered-toolchain-20261103",
+        "--disable-ldconfig"
+      ],
+      "install_exit": 0
+    },
+    {
+      "name": "rustfmt-preview",
+      "version": "1.9.0",
+      "url": "https://static.rust-lang.org/dist/2026-04-16/rustfmt-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "sha256": "f1b2a7301513ffdd95ebf22ebbdd932e4d17fc806f748d93924740d0297b1396",
+      "archive_bytes": 2164880,
+      "archive_path": "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/rustfmt-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "installer_sha256": "fee3feb4e13eca149d58fe23a7f66989d780ef67946ce53db84972b7f2e0073d",
+      "install_command": [
+        "bash",
+        "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/unpacked-rustfmt-preview/rustfmt-1.95.0-x86_64-unknown-linux-gnu/install.sh",
+        "--prefix=/workspace/scratch/1f1d02319616/recovered-toolchain-20261103",
+        "--disable-ldconfig"
+      ],
+      "install_exit": 0
+    },
+    {
+      "name": "clippy-preview",
+      "version": "0.1.95",
+      "url": "https://static.rust-lang.org/dist/2026-04-16/clippy-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "sha256": "ac779bc9839dd47180806b133e4e2563c4a34716284cd5b8fede8ef289f452ca",
+      "archive_bytes": 4697128,
+      "archive_path": "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/clippy-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+      "installer_sha256": "3bb61240d8ce136fcee5367e6ddcb7c748678a6dcf775fffb5458fb4cd294da3",
+      "install_command": [
+        "bash",
+        "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/unpacked-clippy-preview/clippy-1.95.0-x86_64-unknown-linux-gnu/install.sh",
+        "--prefix=/workspace/scratch/1f1d02319616/recovered-toolchain-20261103",
+        "--disable-ldconfig"
+      ],
+      "install_exit": 0
+    }
+  ],
+  "versions": {
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2",
+    "cargo": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\nrelease: 1.95.0\ncommit-hash: f2d3ce0bd7f24a49f8f72d9000448f8838c4e850\ncommit-date: 2026-03-21\nhost: x86_64-unknown-linux-gnu\nlibgit2: 1.9.2 (sys:0.20.4 vendored)\nlibcurl: 8.15.0-DEV (sys:0.4.83+curl-8.15.0 vendored ssl:OpenSSL/3.5.4)\nssl: OpenSSL 3.5.4 30 Sep 2025\nos: Ubuntu 24.4.0 (noble) [64-bit]",
+    "rustfmt": "rustfmt 1.9.0-stable (59807616e1 2026-04-14)",
+    "clippy-driver": "clippy 0.1.95 (59807616e1 2026-04-14)",
+    "cargo-clippy": "clippy 0.1.95 (59807616e1 2026-04-14)"
+  },
+  "binaries": {
+    "rustc": {
+      "bytes": 644784,
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6"
+    },
+    "cargo": {
+      "bytes": 42185192,
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66"
+    },
+    "rustfmt": {
+      "bytes": 5295560,
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c"
+    },
+    "clippy-driver": {
+      "bytes": 20339280,
+      "sha256": "81bd985ee50d78e9d8c5810f6ca836614d1bf95e0e8142f1ec5f42eb250ed729"
+    },
+    "cargo-clippy": {
+      "bytes": 1263912,
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb"
+    }
+  },
+  "probe": {
+    "source_sha256": "f89e0996e92cc8756e9d9f9e0fe45486d5f395597bbe522480ece431126af98f",
+    "command": [
+      "/workspace/scratch/1f1d02319616/recovered-toolchain-20261103/bin/rustc",
+      "--edition=2024",
+      "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/toolchain-smoke.rs",
+      "-Cdebuginfo=0",
+      "-o",
+      "/workspace/scratch/1f1d02319616/recovered-rust-download-20261103/toolchain-smoke"
+    ],
+    "compile_exit": 0,
+    "run_exit": 0,
+    "stdout": "rust-toolchain-smoke:10\n",
+    "binary_sha256": "a3e909490701b53784daada3cefeb750c453638ed448ec83aefe24e718a64752"
+  },
+  "scope": "Isolated official tools; no global rustup or account settings modified"
+}
