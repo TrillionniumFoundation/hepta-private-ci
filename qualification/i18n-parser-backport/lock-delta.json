@@ -1,0 +1,93 @@
+{
+  "base_commit": "6e552daa20614b128fe50cbcef253fc5c8e6e428",
+  "old_sha256": "9bd97ee53e641986502cf32a5a10cf71f53739e18d7ab6dec3e2992cc85d51ed",
+  "new_sha256": "74db452102601d2c8e2e1ab9cca70b0446709a86590cf2977e503b2cc24693c2",
+  "unchanged_packages": 1518,
+  "changes": {
+    "basic-toml 0.1.10": {
+      "before": {
+        "name": "basic-toml",
+        "version": "0.1.10",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "ba62675e8242a4c4e806d12f11d136e626e6c8361d6b829310732241652a178a",
+        "dependencies": [
+          "serde"
+        ]
+      },
+      "after": null
+    },
+    "codex-secrets 0.0.0": {
+      "before": {
+        "name": "codex-secrets",
+        "version": "0.0.0",
+        "dependencies": [
+          "age",
+          "anyhow",
+          "base64 0.22.1",
+          "codex-git-utils",
+          "codex-keyring-store",
+          "keyring",
+          "pretty_assertions",
+          "rand 0.9.3",
+          "regex",
+          "schemars 0.8.22",
+          "serde",
+          "serde_json",
+          "sha2 0.10.9",
+          "tempfile",
+          "tracing"
+        ]
+      },
+      "after": {
+        "name": "codex-secrets",
+        "version": "0.0.0",
+        "dependencies": [
+          "age",
+          "anyhow",
+          "base64 0.22.1",
+          "codex-git-utils",
+          "codex-keyring-store",
+          "i18n-config",
+          "keyring",
+          "pretty_assertions",
+          "rand 0.9.3",
+          "regex",
+          "schemars 0.8.22",
+          "serde",
+          "serde_json",
+          "sha2 0.10.9",
+          "tempfile",
+          "tracing"
+        ]
+      }
+    },
+    "i18n-config 0.4.8": {
+      "before": {
+        "name": "i18n-config",
+        "version": "0.4.8",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef",
+        "dependencies": [
+          "basic-toml",
+          "log",
+          "serde",
+          "serde_derive",
+          "thiserror 1.0.69",
+          "unic-langid"
+        ]
+      },
+      "after": {
+        "name": "i18n-config",
+        "version": "0.4.8",
+        "dependencies": [
+          "log",
+          "serde",
+          "serde_derive",
+          "thiserror 1.0.69",
+          "toml 0.9.11+spec-1.1.0",
+          "unic-langid"
+        ]
+      }
+    }
+  }
+}

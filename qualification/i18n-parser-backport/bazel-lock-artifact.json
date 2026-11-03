@@ -1,0 +1,65 @@
+{
+  "run_id": 41660442536,
+  "job_id": 126001900751,
+  "job_conclusion": "failure",
+  "source_commit": "5e584c763e70a9d9b69bd80c465a7a7988de44ea",
+  "artifact_id": 13241767095,
+  "artifact_sha256": "2288a6f09ee7dfba63e597a30129c70ca4ab9f9fe19d1a1a1514e23bb349b36a",
+  "source_inputs_verified": true,
+  "lock_sha256": "8a20bf1a4a4755f970511e2d6b860665473d2928d43a8fd3b5da9a7a668bf024",
+  "lock_bytes": 1661637,
+  "lock_git_blob": "8baedc0e6cabb1c0879ccf2ff63fca3d305403ff",
+  "prior_lock_sha256": "ec1e338feb2b52286e537bfe8947feb9ae729feed5fd3a09bd43d28e696f6fee",
+  "changed_root_sections": [
+    "facts"
+  ],
+  "files": {
+    "zip-generated-target.log": {
+      "bytes": 733,
+      "sha256": "98977f07380895c5da5a9b6af780a9b9e4573f5842982f0ba5a9ac5f89c1beac"
+    },
+    "zip-generated-target.bazel": {
+      "bytes": 189921,
+      "sha256": "a58292815f54485de3a60639b25f41dfa7f612c305fd445194c80b9f5ef7505a"
+    },
+    "source-inputs.sha256": {
+      "bytes": 172,
+      "sha256": "e9718545634520c73eb7a11d2d47e537e36dc3150a3977e4a4d08661b41f162d"
+    },
+    "source-commit.txt": {
+      "bytes": 41,
+      "sha256": "93e9eebea84cd382465da4e05dc4e4f2872a1e3c0f733a6f76f7508158d5804b"
+    },
+    "patched-crates-build.log": {
+      "bytes": 2786,
+      "sha256": "708fd2a6aa9213471c758388fe5610519b9f398c05e3946550a09a580eeb7496"
+    },
+    "i18n-generated-target.log": {
+      "bytes": 146,
+      "sha256": "fc9f474aa04fb5f52f2216e8cfce1b8392b839ddc94750ef5545e1e98e46a949"
+    },
+    "i18n-generated-target.bazel": {
+      "bytes": 27904,
+      "sha256": "d64064c7fc7180f4ddfb40081e24e9b3242d6404f652c3c6bdd49d855de95043"
+    },
+    "bazel-lock-update.log": {
+      "bytes": 2328,
+      "sha256": "ead4090b4be3c75bdd372ad484d5daf9c511aa0294d19052e13ca7bb1a42b7a1"
+    },
+    "bazel-lock-check.log": {
+      "bytes": 1005,
+      "sha256": "0c43c0247a831c4f67eaae40242336f06d55b8a41cadd871f803ec90b66f8eb7"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1661637,
+      "sha256": "8a20bf1a4a4755f970511e2d6b860665473d2928d43a8fd3b5da9a7a668bf024"
+    }
+  },
+  "generation_and_original_lock_check": "passed before the subsequent build command under set -euo pipefail",
+  "build": "failed during ZIP/zstd-sys repository patch application; neither target is claimed built",
+  "adopted_bytes_equal": true,
+  "actual_i18n_target_sha256": "e2b0f821d31ae660c5d3054cc65a53c52840facd8e222623a5e7478f33d487ef",
+  "i18n_target_rule_kind": "rust_library",
+  "i18n_target_deps": "deps = [\"@crates//:log-0.4.29\", \"@crates//:serde-1.0.228\", \"@crates//:serde_derive-1.0.228\", \"@crates//:thiserror-1.0.69\", \"@crates//:toml-0.9.11+spec-1.1.0\", \"@crates//:unic-langid-0.9.6\"],",
+  "basic_toml_in_bounded_i18n_query": false
+}

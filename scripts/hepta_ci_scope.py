@@ -135,6 +135,18 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             selected.update(FILE_GROUPS[path])
             continue
 
+        if (
+            len(parts) > 2
+            and parts[0] == "codex-rs"
+            and (parts[-1] in {"BUILD", "BUILD.bazel"} or path.endswith(".bzl"))
+        ):
+            # Changing Bazel targets, test execution tags, or repository macros
+            # must run Bazel itself. The Cargo-only scoped lane cannot test
+            # these declarations even when they belong to a Hepta package.
+            full_repo = True
+            selected.update(GROUPS)
+            continue
+
         if len(parts) > 2 and parts[0] == "codex-rs":
             package = parts[1]
             if package in PACKAGE_GROUPS:

@@ -1,0 +1,5 @@
+==> Bazel/Starlark formatter failed
+$ dotslash /workspace/scratch/1f1d02319616/private-ci-recovered-20261103/tools/buildifier -mode=fix -lint=off codex-rs/hepta-operator-acceptance/BUILD.bazel
+[Errno 2] No such file or directory: 'dotslash'
+Formatting failed: Bazel/Starlark
+error: recipe `fmt` failed on line 51 with exit code 1
