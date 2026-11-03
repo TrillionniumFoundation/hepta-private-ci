@@ -1,0 +1,121 @@
+--- a/qualification/cell_meta_execution_af/physical_router_safe_export.py
++++ b/qualification/cell_meta_execution_af/physical_router_safe_export.py
+@@ -39,6 +39,12 @@
+     f"{seed}-{suffix}.json" for seed in SEEDS for suffix in SEED_SUFFIXES
+ })
+ SOURCE_SHA = "2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4"
++# These refer to the previously pinned, source-checked AG News parquet bytes.
++# Equality is an end-of-run integrity check; it is not external provenance signing.
++SOURCE_PARQUET_SHA = {
++    "source-train.parquet": "cc35afe9d5e7ff01878c9aeba08bb0bdfa16947702789530b216a580a1bc09d5",
++    "source-cal-test.parquet": "3171d3aeee227372165bb0f9e84ebf2bfaf5fc870d034f33a5fc568e7995c672",
++}
+ MODEL_NAME = "ibm-granite/granite-embedding-97m-multilingual-r2"
+ OS_ARMS = (
+     "frozen_stage1_no_second_phase_learning", "unsplit_continued_update",
+@@ -333,13 +339,23 @@
+         result["reason_codes"] = sorted(set(reasons))
+         return result
+     try:
++        # Recheck actual pinned inputs at the point of evidence export, not
++        # just their separately produced digest-claim sidecars. A changed
++        # payload with an unchanged sidecar must never be marked complete.
++        for name, expected_sha in SOURCE_PARQUET_SHA.items():
++            actual_sha = hashlib.sha256(safe_read(root / name)).hexdigest()
++            require(actual_sha == expected_sha, "pinned_source_bytes_mismatch")
++        actual_panel_sha = hashlib.sha256(
++            safe_read(root / "source-panel.json")).hexdigest()
++        require(actual_panel_sha == SOURCE_SHA, "public_panel_bytes_mismatch")
+         source_sha = safe_read(root / "original-source-sha256.txt", max_bytes=128)
+         require(source_sha == (SOURCE_SHA + "\n").encode("ascii"),
+                 "original_source_digest_drift")
+-        for name in ("model-files-source-hash.txt",):
+-            value = safe_read(root / name, max_bytes=128)
+-            require(HEX64.fullmatch(value.strip().decode("ascii")) is not None,
+-                    "model_inventory_digest_missing")
++        model_inventory_sha = hashlib.sha256(
++            safe_read(root / "model-files.json")).hexdigest()
++        model_pointer = safe_read(root / "model-files-source-hash.txt", max_bytes=128)
++        require(model_pointer == (model_inventory_sha + "\n").encode("ascii"),
++                "model_inventory_bytes_mismatch")
+         soft = load_json(root / "descriptive-retrospective-summary.json")
+         hard = load_json(root / "hardtop1-descriptive-retrospective-summary.json")
+         kernel = load_json(root / "os-meter-joined.json")
+--- a/qualification/cell_meta_execution_af/physical_router_safe_export_tests.py
++++ b/qualification/cell_meta_execution_af/physical_router_safe_export_tests.py
+@@ -2,11 +2,13 @@
+ from __future__ import annotations
+ 
+ import copy
++import hashlib
+ import json
+ import os
+ from pathlib import Path
+ import tempfile
+ import unittest
++from unittest import mock
+ 
+ from qualification.cell_meta_execution_af import physical_router_safe_export as subject
+ 
+@@ -106,7 +108,8 @@
+         if name == "original-source-sha256.txt":
+             payload = (subject.SOURCE_SHA + "\n").encode()
+         elif name == "model-files-source-hash.txt":
+-            payload = ("c" * 64 + "\n").encode()
++            model_bytes = (SENTINEL + "_model-files.json\n").encode()
++            payload = (hashlib.sha256(model_bytes).hexdigest() + "\n").encode()
+         elif name == "descriptive-retrospective-summary.json":
+             payload = json.dumps(summary(hard=False)).encode()
+         elif name == "hardtop1-descriptive-retrospective-summary.json":
+@@ -124,6 +127,20 @@
+         self.addCleanup(self.dir.cleanup)
+         self.root = Path(self.dir.name) / "evidence"
+         self.root.mkdir()
++        # Only synthetic test inputs: patch the expected exact digests to this
++        # fixture's bytes. Real CLI execution always uses immutable originals.
++        sample_bytes = lambda name: (SENTINEL + "_" + name + "\n").encode()
++        patchers = [
++            mock.patch.object(subject, "SOURCE_SHA",
++                hashlib.sha256(sample_bytes("source-panel.json")).hexdigest()),
++            mock.patch.object(subject, "SOURCE_PARQUET_SHA", {
++                name: hashlib.sha256(sample_bytes(name)).hexdigest()
++                for name in subject.SOURCE_PARQUET_SHA
++            }),
++        ]
++        for patch in patchers:
++            patch.start()
++            self.addCleanup(patch.stop)
+         staged_directory(self.root)
+ 
+     def modify_summary(self, hard: bool, mutate) -> None:
+@@ -206,6 +223,30 @@
+         self.modify_summary(True, lambda o: o.__setitem__("independent_NDU_verified", True))
+         self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+ 
++    def test_changed_public_panel_bytes_even_with_unchanged_claim_block(self):
++        (self.root / "source-panel.json").write_bytes(b"changed upstream source panel")
++        output = subject.produce(self.root)
++        self.assertEqual(output["status"], "BLOCKED")
++        self.assertEqual(output["aggregate"], {})
++
++    def test_changed_pinned_parquet_bytes_even_with_unchanged_claim_block(self):
++        for name in subject.SOURCE_PARQUET_SHA:
++            with self.subTest(name=name):
++                original = (self.root / name).read_bytes()
++                (self.root / name).write_bytes(original + b"tamper")
++                self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
++                (self.root / name).write_bytes(original)
++
++    def test_changed_model_inventory_bytes_with_unchanged_pointer_block(self):
++        (self.root / "model-files.json").write_bytes(b"falsified pretrained file list")
++        output = subject.produce(self.root)
++        self.assertEqual(output["status"], "BLOCKED")
++        self.assertEqual(output["aggregate"], {})
++
++    def test_changed_model_inventory_pointer_only_block(self):
++        (self.root / "model-files-source-hash.txt").write_bytes(("b" * 64 + "\n").encode())
++        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
++
+     def test_wrong_model_name_blocks(self):
+         self.modify_summary(False, lambda o: o.__setitem__("registered_public_model", "other/model"))
+         self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")

@@ -1,0 +1,15 @@
+--- a/.github/workflows/hepta-cell-meta-granite-real.yml
++++ b/.github/workflows/hepta-cell-meta-granite-real.yml
+@@ -27,8 +27,10 @@
+   contents: read
+ 
+ concurrency:
+-  group: hepta-meta-granite-${{ github.event.pull_request.head.sha || github.sha }}
+-  cancel-in-progress: false
++  # P0 REVIEW PROPOSAL: one active run per PR for this read-only research lane.
++  # Keep distinct PR identities separate; production/owner workflows unchanged.
++  group: hepta-meta-granite-${{ github.event.pull_request.number || github.ref }}
++  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+ 
+ env:
+   HF_HUB_DISABLE_TELEMETRY: '1'

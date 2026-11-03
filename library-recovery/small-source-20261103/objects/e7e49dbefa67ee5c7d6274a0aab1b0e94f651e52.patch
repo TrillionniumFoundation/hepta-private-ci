@@ -1,0 +1,1689 @@
+diff --git a/.github/workflows/ui-control-rust-parity.yml b/.github/workflows/ui-control-rust-parity.yml
+index 050a7a85e1..c95441a6e8 100644
+--- a/.github/workflows/ui-control-rust-parity.yml
++++ b/.github/workflows/ui-control-rust-parity.yml
+@@ -143,6 +143,7 @@ jobs:
+           set -euo pipefail
+           node --test apps/hepta-control-ui/test/rust-migration-contract.test.js
+           node apps/hepta-control-ui/rust/core/tests/generate-differential.mjs --check
++          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_prepare_fonts.py -v
+           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
+           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml --locked -p hepta-control-core -p hepta-control-web 2>&1 | tee .tmp/ui-control-rust-evidence/native-tests.log
+           cargo clippy --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-control-web --all-targets -- -D warnings
+@@ -250,16 +251,17 @@ jobs:
+         shell: bash
+         run: |
+           set -euo pipefail
++          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_prepare_fonts.py -v
+           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
+           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
+           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
+-          node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs
++          node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+       - id: default_build
+         name: Build canonical strict-CSP no-threads artifact
+         run: |
+           npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+           npm run build --prefix apps/hepta-control-ui
+-          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs apps/hepta-control-ui/test/makepad-network-memory.test.mjs apps/hepta-control-ui/test/makepad-widget-borrow.test.mjs apps/hepta-control-ui/test/makepad-ime-router.test.mjs
++          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs apps/hepta-control-ui/test/makepad-network-memory.test.mjs apps/hepta-control-ui/test/makepad-widget-borrow.test.mjs apps/hepta-control-ui/test/makepad-ime-router.test.mjs apps/hepta-control-ui/test/makepad-cjk-font.test.mjs
+           python3 apps/hepta-control-ui/test/check-makepad-ime-dto.py
+           cd apps/hepta-control-ui
+           npx playwright install --with-deps chromium firefox webkit
+diff --git a/.github/workflows/ui-native-robrix-preview.yml b/.github/workflows/ui-native-robrix-preview.yml
+index fdb7e2abaf..0358220de4 100644
+--- a/.github/workflows/ui-native-robrix-preview.yml
++++ b/.github/workflows/ui-native-robrix-preview.yml
+@@ -1,12 +1,16 @@
+ name: Native Robrix Linux developer preview
+ on:
+   pull_request:
+-    branches: [work/ui-rust-scifi-audit-20261002]
++    branches: [work/ui-rust-scifi-audit-20261002, dot/ui-ime-routing-20261005]
+     paths:
+       - apps/hepta-native/**
+       - apps/hepta-control-ui/rust/robrix-ui/**
+       - apps/hepta-control-ui/rust/core/**
+       - apps/hepta-control-ui/rust/Cargo.toml
++      - apps/hepta-control-ui/rust/Cargo.lock
++      - apps/hepta-control-ui/tools/prepare-fonts.py
++      - apps/hepta-control-ui/tools/run-desktop.py
++      - scripts/test_hepta_native_robrix_build.py
+       - codex-rs/**
+       - scripts/test_hepta_native_robrix_preview.py
+       - scripts/hepta_ci_exec.py
+@@ -24,7 +28,7 @@ concurrency:
+   cancel-in-progress: false
+ jobs:
+   preview:
+-    if: github.event.pull_request.number == 1338
++    if: github.event.pull_request.head.repo.full_name == github.repository
+     name: Native Robrix preview / Linux / ${{ matrix.lane }}
+     runs-on: ubuntu-24.04
+     timeout-minutes: 90
+@@ -63,7 +67,7 @@ jobs:
+         with:
+           base-sha: ${{ env.BASE_SHA }}
+           source-sha: ${{ env.SOURCE_SHA }}
+-          pr-number: '1338'
++          pr-number: ${{ github.event.pull_request.number }}
+           author-name: Native Robrix preview CI
+           author-email: native-robrix-preview@invalid
+           message: Synthetic native Robrix preview merge
+diff --git a/apps/hepta-control-ui/README.md b/apps/hepta-control-ui/README.md
+index 097d8e4481..c59f0888a0 100644
+--- a/apps/hepta-control-ui/README.md
++++ b/apps/hepta-control-ui/README.md
+@@ -110,3 +110,36 @@ These are intermediate results, not product or release completion. Existing
+ Console/DOM/egui test receipts and CPU fixtures do not qualify this new host.
+ The UI continues to use existing core state and authorization contracts; no
+ new runtime, credentials, signing authority or Matrix service behavior is added.
++
++### Shared CJK resources and visual candidate
++
++The shared Rust font stack keeps IBM Plex Latin, adds unmodified Noto Sans SC
++Regular/Bold as the secondary face, and retains complete WenKai as tertiary
++fallback plus existing emoji. This is **not** uniform pan-CJK sans: rare and
++out-of-subset characters retain their previous face. The pinned pair adds exactly
++16,874,504 bytes, with a 17,000,000-byte preparation cap. Immutable provenance,
++original OFL1.1 and font copyright are in `rust/robrix-ui/resources/fonts/`.
++No runtime font download is introduced.
++
++`npm run build` prepares a verified reusable cache under `rust/target`, then
++packages the same hashes into the Web resource manifest. `npm run desktop`
++prepares and runs a resource-complete staged Rust workspace; direct native Cargo
++builds without those resources fail with a preparation diagnostic. Use
++`python3 tools/run-desktop.py --offline` or `HEPTA_FONTS_OFFLINE=1 npm run build`
++after preparation. `HEPTA_CJK_FONT_CACHE` may name a reusable cache root. A corrupt
++cache fails explicitly rather than silently downloading a replacement. Preparation
++uses immutable HTTPS URLs, exact byte counts/SHA256, byte-bounded reads and atomic writes.
++The60-second timeout is per socket operation, not an overall transfer deadline.
++Each desktop invocation retains its own unique staged resource tree until its
++child exits; concurrent previews cannot delete one another's resources. The
++build-script guard is a missing/length diagnostic; hash verification belongs
++to the supported preparation wrapper.
++The embedded native wrapper uses the same preparation helper and fixed30-asset
++catalog; `--offline` also forbids CJK asset downloads.
++
++The visual candidate reduces header space and reading width, distinguishes the
++selected mobile page from focus, and displays an unavailable Send as a neutral
++lock while preserving the real disabled Button and owner boundary. Numeric
++contrast tests and SDK font rasterization do not replace actual browser/native
++pixel, focus, IME and accessibility qualification. See the module technical guide
++for the product-completion ledger and remaining owner integration.
+diff --git a/apps/hepta-control-ui/e2e/robrix-host.spec.mjs b/apps/hepta-control-ui/e2e/robrix-host.spec.mjs
+index a3f94560ca..07262e673a 100644
+--- a/apps/hepta-control-ui/e2e/robrix-host.spec.mjs
++++ b/apps/hepta-control-ui/e2e/robrix-host.spec.mjs
+@@ -1,5 +1,6 @@
+ // Real canvas evidence. OCR is a necessary glyph regression, not full visual/a11y acceptance.
+ import {test,expect} from '@playwright/test';
++import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
+ import {readFile,writeFile} from 'node:fs/promises';
+ import {createHash} from 'node:crypto';
+ import {execFileSync} from 'node:child_process';
+@@ -71,7 +72,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
+    if(process.env.HEPTA_ROBRIX_FIXTURES==='1'&&!consoleView){
+     // HTTP requestfinished precedes Rust resource adoption and the redraw.
+     // Wait for the real message renderer's font-family observation, not a sleep.
+-    await expect.poll(()=>rustFontStates.some(text=>/HEPTA_FIXTURE_FONT_STATE .*loaded_fonts=3 complete=true/.test(text)),{timeout:60000}).toBe(true);
++    await expect.poll(()=>rustFontStates.some(text=>sharedFontFamilyReady(text)),{timeout:60000}).toBe(true);
+    }
+    // A Rust draw observation can precede browser compositing. Cross a real
+    // frame boundary before reading pixels; no time-based sleep or retry waiver.
+diff --git a/apps/hepta-control-ui/e2e/robrix-sidebar.spec.mjs b/apps/hepta-control-ui/e2e/robrix-sidebar.spec.mjs
+index 5267fbf81e..f08b98c1cf 100644
+--- a/apps/hepta-control-ui/e2e/robrix-sidebar.spec.mjs
++++ b/apps/hepta-control-ui/e2e/robrix-sidebar.spec.mjs
+@@ -1,6 +1,7 @@
+ // Additional fixture-only real-input regression; the original six host cases and
+ // their capture/OCR contract remain unchanged. No command or state-setting hook.
+ import {test,expect} from '@playwright/test';
++import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
+ import {readFile,writeFile} from 'node:fs/promises';
+ import {createHash} from 'node:crypto';
+ import {execFileSync} from 'node:child_process';
+@@ -114,12 +115,21 @@ test('Compact sidebar creates once and preserves both conversations',async({page
+  try{
+   await page.setViewportSize({width:640,height:800});await page.goto('/');
+   await expect(page.locator('canvas')).toBeVisible();await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
+-  await expect.poll(()=>logs.some(value=>/HEPTA_FIXTURE_FONT_STATE .*loaded_fonts=3 complete=true/.test(value.text)),{timeout:60000}).toBe(true);
++  await expect.poll(()=>logs.some(value=>sharedFontFamilyReady(value.text)),{timeout:60000}).toBe(true);
+   await expect.poll(()=>current()?.count).toBe(1);await expect.poll(()=>currentGeometry()?.total).toBe(64);
+   original=current().active;const originalIds=[...current().draftIds];
+   const originalText='Original room draft 中文 preserved';
+   const newText='New local draft 中文 retained';
+   await editorText(originalText,{write:true});
++  // Real pointer activation must not dispatch or erase a draft when no owner exists.
++  expect(current().sendEnabled).toBe(false);
++  const unavailableDraftBytes=current().draftBytes,unavailableCount=current().count;
++  await clickControl('send');
++  expect(current().sendEnabled).toBe(false);
++  expect(current().active).toBe(original);expect(current().count).toBe(unavailableCount);
++  expect(current().draftBytes).toBe(unavailableDraftBytes);
++  await editorText(originalText);
++
+   const beforeScroll=await capture('original-before-scroll'),point=center(beforeScroll.geometryAfter.viewport);
+   inputs.push({atMs:performance.now(),kind:'wheel',point,deltaY:-480,sourceCapture:beforeScroll.name,sourcePngSha256:beforeScroll.pngSha256});
+   await page.mouse.move(point.x,point.y);await page.mouse.wheel(0,-480);
+diff --git a/apps/hepta-control-ui/package.json b/apps/hepta-control-ui/package.json
+index 18e0976a14..8d451160bb 100644
+--- a/apps/hepta-control-ui/package.json
++++ b/apps/hepta-control-ui/package.json
+@@ -25,9 +25,10 @@
+     "legacy:test-oracle": "node --test test/control.test.js test/canonical-profile.test.js test/runtime-client.test.js test/runtime-client-adversarial.test.js test/runtime-client-lifecycle.test.js test/browser-app-lifecycle.test.js test/browser-maintenance.test.js test/terminal-cleanup.test.js test/http-transport.test.js test/session-provider.test.js test/recovery-safety.test.js test/recovery-directory.test.js test/recovery-directory-integrity.test.js test/runtime-recovery-integration.test.js test/external-evidence.test.js",
+     "legacy:test-contract": "node --test test/api-surface.test.js test/package-boundary.test.js",
+     "legacy:lint": "node tools/lint.mjs",
+-    "desktop": "cargo +1.95.0 run --manifest-path rust/Cargo.toml -p hepta-robrix-ui --bin hepta-robrix",
++    "desktop": "python3 tools/run-desktop.py",
+     "legacy:test-e2e": "playwright test --config=playwright.config.mjs",
+-    "legacy:receipt": "node tools/write-receipt.mjs"
++    "legacy:receipt": "node tools/write-receipt.mjs",
++    "prepare:fonts": "python3 tools/prepare-fonts.py"
+   },
+   "devDependencies": {
+     "@axe-core/playwright": "4.13.0",
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/build.rs b/apps/hepta-control-ui/rust/robrix-ui/build.rs
+new file mode 100644
+index 0000000000..ed633d5729
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/build.rs
+@@ -0,0 +1,23 @@
++fn main() {
++    println!("cargo:rerun-if-changed=build.rs");
++    // Web and the embedded native host use their own verified packaging paths.
++    if std::env::var_os("CARGO_FEATURE_UI").is_none()
++        || std::env::var_os("CARGO_FEATURE_NATIVE_HOST").is_some()
++        || std::env::var("CARGO_CFG_TARGET_ARCH").as_deref() == Ok("wasm32")
++    {
++        return;
++    }
++    let root = std::path::PathBuf::from(std::env::var_os("CARGO_MANIFEST_DIR").unwrap());
++    for (name, length) in [
++        ("NotoSansSC-Regular.otf", 8_331_336),
++        ("NotoSansSC-Bold.otf", 8_543_168),
++    ] {
++        let path = root.join("resources/fonts").join(name);
++        println!("cargo:rerun-if-changed={}", path.display());
++        assert_eq!(
++            std::fs::metadata(&path).map(|m| m.len()).ok(),
++            Some(length),
++            "Rust desktop CJK resources are missing or invalid; use python3 tools/run-desktop.py (or npm run desktop), which verifies hashes and prepares an offline-reusable staged workspace"
++        );
++    }
++}
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json b/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json
+new file mode 100644
+index 0000000000..e94fdfb7a5
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json
+@@ -0,0 +1,80 @@
++{
++  "schema": "hepta.cjk-fonts.v1",
++  "revision": "523d033d6cb47f4a80c58a35753646f5c3608a78",
++  "release": "Sans2.004",
++  "maxBytes": 17000000,
++  "license": {
++    "path": "OFL.txt",
++    "bytes": 4301,
++    "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
++  },
++  "coverage": "SC subset secondary; entire WenKai tertiary preserves out-of-subset coverage. Not uniform pan-CJK sans.",
++  "assets": [
++    {
++      "file": "NotoSansSC-Bold.otf",
++      "bytes": 8543168,
++      "sha256": "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0",
++      "format": "OTTO",
++      "outlines": "CFF",
++      "codepoints": 30890,
++      "samples": {
++        "中": true,
++        "文": true,
++        "界": true,
++        "面": true,
++        "简": true,
++        "體": true,
++        "日": true,
++        "本": true,
++        "語": true,
++        "か": true,
++        "な": true,
++        "カ": true,
++        "ナ": true,
++        "한": false,
++        "국": false,
++        "어": false,
++        "𠮷": false
++      },
++      "logical": "hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf",
++      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Bold.otf",
++      "license_group": "noto-sans-cjk-ofl-1.1"
++    },
++    {
++      "file": "NotoSansSC-Regular.otf",
++      "bytes": 8331336,
++      "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
++      "format": "OTTO",
++      "outlines": "CFF",
++      "codepoints": 30890,
++      "samples": {
++        "中": true,
++        "文": true,
++        "界": true,
++        "面": true,
++        "简": true,
++        "體": true,
++        "日": true,
++        "本": true,
++        "語": true,
++        "か": true,
++        "な": true,
++        "カ": true,
++        "ナ": true,
++        "한": false,
++        "국": false,
++        "어": false,
++        "𠮷": false
++      },
++      "logical": "hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf",
++      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Regular.otf",
++      "license_group": "noto-sans-cjk-ofl-1.1"
++    }
++  ],
++  "copyright": "© 2014-2021 Adobe (http://www.adobe.com/).",
++  "notice": {
++    "path": "NOTICE.txt",
++    "bytes": 559,
++    "sha256": "53eac13efa92294d76c9866527f46ceef1bb06804ea943ccbfe4963a4ff1111c"
++  }
++}
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NOTICE.txt b/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NOTICE.txt
+new file mode 100644
+index 0000000000..f9afe09895
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NOTICE.txt
+@@ -0,0 +1,5 @@
++Noto Sans SC Regular and Bold, unmodified static OTF/CFF, Sans2.004.
++Copyright from both font name tables: © 2014-2021 Adobe (http://www.adobe.com/).
++Licensed under SIL Open Font License1.1; original license in OFL.txt.
++Immutable source: https://github.com/notofonts/noto-cjk/tree/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC
++SC subset is secondary to IBM Plex Latin. Complete WenKai remains tertiary; rare/out-of-subset glyphs retain existing coverage and style. This is not uniform pan-CJK sans. No font modification or runtime remote fetch.
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt b/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt
+new file mode 100644
+index 0000000000..d952d62c06
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt
+@@ -0,0 +1,92 @@
++This Font Software is licensed under the SIL Open Font License,
++Version 1.1.
++
++This license is copied below, and is also available with a FAQ at:
++http://scripts.sil.org/OFL
++
++-----------------------------------------------------------
++SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
++-----------------------------------------------------------
++
++PREAMBLE
++The goals of the Open Font License (OFL) are to stimulate worldwide
++development of collaborative font projects, to support the font
++creation efforts of academic and linguistic communities, and to
++provide a free and open framework in which fonts may be shared and
++improved in partnership with others.
++
++The OFL allows the licensed fonts to be used, studied, modified and
++redistributed freely as long as they are not sold by themselves. The
++fonts, including any derivative works, can be bundled, embedded,
++redistributed and/or sold with any software provided that any reserved
++names are not used by derivative works. The fonts and derivatives,
++however, cannot be released under any other type of license. The
++requirement for fonts to remain under this license does not apply to
++any document created using the fonts or their derivatives.
++
++DEFINITIONS
++"Font Software" refers to the set of files released by the Copyright
++Holder(s) under this license and clearly marked as such. This may
++include source files, build scripts and documentation.
++
++"Reserved Font Name" refers to any names specified as such after the
++copyright statement(s).
++
++"Original Version" refers to the collection of Font Software
++components as distributed by the Copyright Holder(s).
++
++"Modified Version" refers to any derivative made by adding to,
++deleting, or substituting -- in part or in whole -- any of the
++components of the Original Version, by changing formats or by porting
++the Font Software to a new environment.
++
++"Author" refers to any designer, engineer, programmer, technical
++writer or other person who contributed to the Font Software.
++
++PERMISSION & CONDITIONS
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of the Font Software, to use, study, copy, merge, embed,
++modify, redistribute, and sell modified and unmodified copies of the
++Font Software, subject to the following conditions:
++
++1) Neither the Font Software nor any of its individual components, in
++Original or Modified Versions, may be sold by itself.
++
++2) Original or Modified Versions of the Font Software may be bundled,
++redistributed and/or sold with any software, provided that each copy
++contains the above copyright notice and this license. These can be
++included either as stand-alone text files, human-readable headers or
++in the appropriate machine-readable metadata fields within text or
++binary files as long as those fields can be easily viewed by the user.
++
++3) No Modified Version of the Font Software may use the Reserved Font
++Name(s) unless explicit written permission is granted by the
++corresponding Copyright Holder. This restriction only applies to the
++primary font name as presented to the users.
++
++4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
++Software shall not be used to promote, endorse or advertise any
++Modified Version, except to acknowledge the contribution(s) of the
++Copyright Holder(s) and the Author(s) or with their explicit written
++permission.
++
++5) The Font Software, modified or unmodified, in part or in whole,
++must be distributed entirely under this license, and must not be
++distributed under any other license. The requirement for fonts to
++remain under this license does not apply to any document created using
++the Font Software.
++
++TERMINATION
++This license becomes null and void if any of the above conditions are
++not met.
++
++DISCLAIMER
++THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
++OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
++COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
++DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
++OTHER DEALINGS IN THE FONT SOFTWARE.
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+index 38c7e76ab6..ff9b13fa19 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+@@ -85,7 +85,7 @@ impl AppMain for App {
+             use makepad_widgets::makepad_platform::script::res::CxScriptResourceData;
+             let resources = cx.script_data.resources.resources.clone();
+             for resource in resources.borrow().iter() {
+-                if !resource.abs_path.ends_with(".ttf") {
++                if !resource.abs_path.ends_with(".ttf") && !resource.abs_path.ends_with(".otf") {
+                     continue;
+                 }
+                 let state = match &resource.data {
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+index 68565aea8b..cefd2fe71c 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+@@ -83,9 +83,9 @@ script_mod! {
+     }
+     channel_heading := mod.widgets.ConversationHeading {compact: true}
+     View {width: Fill height: Fit flow: Flow.Right{wrap: true} spacing: 6 padding: 6
+-     conversations := mod.widgets.AuroraButton {text: "Conversations"}
+-     chat_tab := mod.widgets.AuroraButton {text: "Chat"}
+-     console_tab_button := mod.widgets.AuroraButton {text: "Console"}
++     conversations := mod.widgets.NavigationButton {text: "Conversations"}
++     chat_tab := mod.widgets.NavigationButton {text: "Chat"}
++     console_tab_button := mod.widgets.NavigationButton {text: "Console"}
+      mobile_theme_switch := mod.widgets.AuroraButton {grab_key_focus: false text: "Aurora Graphite"}
+     }
+     mobile_pages := PageFlip {
+@@ -143,6 +143,8 @@ pub struct HomeScreen {
+     #[deref]
+     view: View,
+     #[rust]
++    mobile_page: Option<(LiveId, [WidgetUid; 3])>,
++    #[rust]
+     rendered: Option<RoomKey>,
+     #[rust]
+     theme_return_focus: Option<(RoomKey, TextInputRef)>,
+@@ -315,6 +317,25 @@ impl Widget for HomeScreen {
+             self.view
+                 .page_flip(cx, ids!(mobile_pages))
+                 .set_active_page(cx, page);
++            let mut buttons = [
++                self.view.widget(cx, ids!(conversations)),
++                self.view.widget(cx, ids!(chat_tab)),
++                self.view.widget(cx, ids!(console_tab_button)),
++            ];
++            let identities = buttons.each_ref().map(|button| button.widget_uid());
++            if !buttons.iter().any(WidgetRef::is_empty)
++                && self.mobile_page != Some((page, identities))
++            {
++                for (button, target) in buttons.iter_mut().zip([
++                    id!(navigation_page),
++                    id!(chat_page),
++                    id!(console_page),
++                ]) {
++                    let selected = if page == target { 1.0 } else { 0.0 };
++                    script_apply_eval!(cx, button, {draw_bg +: {current_page: #(selected)}});
++                }
++                self.mobile_page = Some((page, identities));
++            }
+             self.view
+                 .button(cx, ids!(conversations))
+                 .set_enabled(cx, !workspace.composing);
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs
+index cb5842a0c7..6da934165e 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs
+@@ -40,8 +40,8 @@ script_mod! {
+       return mix(mix(face, edge, top_edge * 0.28), #x383e49, bottom_edge * 0.6)
+      }
+      let warm = max(0.0, 1.0 - self.pos.y)
+-     let face = mix(self.color, #xfffaf3, warm * 0.32)
+-     return mix(mix(face, #xffffff, top_edge * 0.72), #xdad8d4, bottom_edge * 0.65)
++     let face = mix(self.color, #xffffff, warm * 0.45)
++     return mix(mix(face, #xffffff, top_edge * 0.72), #x88999f, bottom_edge * 0.55)
+     }
+    }
+    room_actions := Label {
+@@ -517,7 +517,7 @@ impl Widget for RoomScreen {
+                 let own = message.role == Role::User;
+                 let available = cx.turtle().rect().size.x.max(160.0);
+                 // 40 px outer padding + 36 px avatar + 14 px profile gap.
+-                let content_width = (available - 90.0).clamp(70.0, 780.0);
++                let content_width = (available - 90.0).clamp(70.0, 720.0);
+                 let theme = cx.global::<crate::visual_theme::ThemeState>().selected;
+                 let style = (theme, own, content_width.to_bits());
+                 if cx
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/rooms.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/rooms.rs
+index 84c3e9540e..2aaeb1d979 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/rooms.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/rooms.rs
+@@ -140,8 +140,8 @@ script_mod! {
+     let top_edge = max(0.0, 1.0 - self.pos.y * self.rect_size.y)
+     let right_edge = max(0.0, 1.0 - (1.0 - self.pos.x) * self.rect_size.x)
+     let lower_shade = max(0.0, self.pos.y - 0.45)
+-    let face = mix(mix(self.color, #xf9f8f6, top_light * top_light * 0.14), #xb6afa5, lower_shade * 0.035)
+-    return mix(mix(face, #xffffff, top_edge * 0.65), #xbcb7af, right_edge * 0.4)
++    let face = mix(mix(self.color, #xffffff, top_light * top_light * 0.28), #x8b9da3, lower_shade * 0.09)
++    return mix(mix(face, #xffffff, top_edge * 0.65), #x88999f, right_edge * 0.7)
+    }
+    if self.material > 0.5 {
+     let top_glow = max(0.0, 1.0 - self.pos.y * 4.0)
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/sidebar_fixture.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/sidebar_fixture.rs
+index cdd54b4655..819abaf0e0 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/sidebar_fixture.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/sidebar_fixture.rs
+@@ -143,10 +143,16 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
+     } else {
+         "null".into()
+     };
++    // Observe the real control; absence is null, never a fabricated disabled state.
++    let send_enabled = ui
++        .widget(cx, ids!(send_message_button))
++        .borrow::<Button>()
++        .map(|button| button.enabled().to_string())
++        .unwrap_or_else(|| "null".into());
+     let geometry_frame = cx.global::<SidebarFixture>().geometry_frame;
+     let geometry = cx.global::<SidebarFixture>().geometry.clone();
+     let serialized = format!(
+-        "{{\"active\":{},\"draftIds\":{:?},\"count\":{},\"draftBytes\":{},\"navigationOpen\":{},\"consoleOpen\":{},\"theme\":{:?},\"newDraftAreaValid\":{},\"newDraftFocused\":{},\"keyFocusValid\":{},\"controls\":{{{}}},\"targets\":{},\"geometryFrame\":{},\"geometry\":{},\"drawDpiFactor\":{},\"dpiProbe\":{},\"dpiProbeRaw\":{},\"dpiBarRaw\":{},\"dpiBarClipped\":{}}}",
++        "{{\"active\":{},\"draftIds\":{:?},\"count\":{},\"draftBytes\":{},\"navigationOpen\":{},\"consoleOpen\":{},\"theme\":{:?},\"newDraftAreaValid\":{},\"newDraftFocused\":{},\"keyFocusValid\":{},\"sendEnabled\":{},\"controls\":{{{}}},\"targets\":{},\"geometryFrame\":{},\"geometry\":{},\"drawDpiFactor\":{},\"dpiProbe\":{},\"dpiProbeRaw\":{},\"dpiBarRaw\":{},\"dpiBarClipped\":{}}}",
+         workspace.active_id(),
+         ids,
+         ids.len(),
+@@ -157,6 +163,7 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
+         new_draft_valid,
+         new_draft_focused,
+         cx.key_focus().is_valid(cx),
++        send_enabled,
+         controls,
+         targets.unwrap_or_else(|| "null".into()),
+         geometry_frame,
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/styles.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/styles.rs
+index 32c99e16c0..6de4967a8c 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/styles.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/styles.rs
+@@ -28,6 +28,26 @@ script_mod! {
+    border_color_hover: mod.widgets.COLOR_ROBRIX_PURPLE border_color_focus: mod.widgets.COLOR_ROBRIX_PURPLE
+   }
+  }
++ // Current page is independent of keyboard focus: theme controls must not look
++ // like selected navigation merely because they retain focus after a click.
++ mod.widgets.NavigationButton = mod.widgets.AuroraButton {
++  draw_bg +: {
++   current_page: uniform(0.0)
++   pixel: fn() {
++    let sdf = Sdf2d.viewport(self.pos * self.rect_size)
++    sdf.box(0.5, 0.5, self.rect_size.x - 1.0, self.rect_size.y - 1.0, 10.0)
++    let face = mix(self.color, self.color_hover, self.hover)
++    sdf.fill_keep(mix(face, self.color_focus, self.current_page * 0.7))
++    sdf.stroke(mix(self.border_color, self.border_color_focus, self.focus), 1.0)
++    if self.current_page > 0.5 {
++     sdf.move_to(14.0, self.rect_size.y - 5.0)
++     sdf.line_to(self.rect_size.x - 14.0, self.rect_size.y - 5.0)
++     sdf.stroke(self.border_color_focus, 2.0)
++    }
++    return sdf.result
++   }
++  }
++ }
+  mod.widgets.RailButton = mod.widgets.AuroraButton {
+   width: Fill height: 44 padding: 0
+   // Retain the action label in Button state; draw its visible icon in Rust.
+@@ -71,11 +91,24 @@ script_mod! {
+    pixel: fn() {
+     let sdf = Sdf2d.viewport(self.pos * self.rect_size)
+     let center = self.rect_size * 0.5
+-    let face = mix(self.accent, self.color_disabled, self.disabled * 0.72)
+-    let ink = mix(self.ink, self.border_color, self.disabled * 0.45)
++    let face = mix(self.accent, self.color_disabled, self.disabled)
++    let ink = mix(self.ink, self.border_color, self.disabled)
+     sdf.circle(center.x, center.y, min(self.rect_size.x, self.rect_size.y) * 0.5 - 1.0)
+     sdf.fill_keep(face)
+-    sdf.stroke(mix(self.accent, self.border_color_focus, self.focus), 1.0)
++    let rim = mix(mix(self.accent, self.border_color_focus, self.focus), self.border_color, self.disabled)
++    sdf.stroke(rim, 1.0)
++    // A locked outline, not an active-looking send arrow, communicates that
++    // the real owner is unavailable. Button.enabled remains authoritative.
++    if self.disabled > 0.5 {
++     sdf.box(center.x - 6.0, center.y - 1.0, 12.0, 10.0, 2.0)
++     sdf.stroke(ink, 1.5)
++     sdf.move_to(center.x - 4.0, center.y - 1.0)
++     sdf.line_to(center.x - 4.0, center.y - 6.0)
++     sdf.line_to(center.x + 4.0, center.y - 6.0)
++     sdf.line_to(center.x + 4.0, center.y - 1.0)
++     sdf.stroke(ink, 1.5)
++     return sdf.result
++    }
+     sdf.move_to(center.x, center.y + 8.0)
+     sdf.line_to(center.x, center.y - 8.0)
+     sdf.move_to(center.x - 6.0, center.y - 2.0)
+@@ -119,14 +152,16 @@ script_mod! {
+  mod.widgets.HEPTA_REGULAR = theme.font_regular {
+   font_family: FontFamily {
+    latin := FontMember {res: crate_resource("makepad_widgets:resources/IBMPlexSans-Text.ttf") asc: -0.1 desc: 0.0}
+-   cjk := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiRegular.ttf") asc: 0.0 desc: 0.0}
++   cjk := FontMember {res: crate_resource("hepta_robrix_ui:resources/fonts/NotoSansSC-Regular.otf") asc: 0.0 desc: 0.0}
++   rare := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiRegular.ttf") asc: 0.0 desc: 0.0}
+    emoji := FontMember {res: crate_resource("makepad_widgets:resources/NotoColorEmoji.ttf") asc: 0.0 desc: 0.0}
+   }
+  }
+  mod.widgets.HEPTA_BOLD = theme.font_bold {
+   font_family: FontFamily {
+    latin := FontMember {res: crate_resource("makepad_widgets:resources/IBMPlexSans-SemiBold.ttf") asc: -0.1 desc: 0.0}
+-   cjk := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiBold.ttf") asc: 0.0 desc: 0.0}
++   cjk := FontMember {res: crate_resource("hepta_robrix_ui:resources/fonts/NotoSansSC-Bold.otf") asc: 0.0 desc: 0.0}
++   rare := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiBold.ttf") asc: 0.0 desc: 0.0}
+    emoji := FontMember {res: crate_resource("makepad_widgets:resources/NotoColorEmoji.ttf") asc: 0.0 desc: 0.0}
+   }
+  }
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs b/apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs
+index 8465da79ca..abb17e4b8b 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs
+@@ -34,9 +34,9 @@ impl VisualTheme {
+     /// Display-only header geometry, measured inside the shared chat shell.
+     pub fn channel_heading_height(self) -> f64 {
+         match self {
+-            Self::ObsidianIce => 84.0,
+-            Self::LunarTitanium => 90.0,
+-            Self::AuroraGraphite => 92.0,
++            Self::ObsidianIce => 76.0,
++            Self::LunarTitanium => 80.0,
++            Self::AuroraGraphite => 80.0,
+         }
+     }
+     pub fn tokens(self) -> Tokens {
+@@ -46,8 +46,8 @@ impl VisualTheme {
+                 0x284665ff, 0x8ed9ffff,
+             ],
+             Self::LunarTitanium => [
+-                0xf7f6f2ff, 0xdddcd9ff, 0xf9f8f6ff, 0x18232cff, 0x595953ff, 0x18707dff, 0xdad8d4ff,
+-                0xc3d5d5ff, 0xecc9abff,
++                0xf9f8f4ff, 0xe4e7e7ff, 0xffffffff, 0x18232cff, 0x535e63ff, 0x176b78ff, 0x6d838cff,
++                0xcbdfe1ff, 0xb89b82ff,
+             ],
+             Self::AuroraGraphite => [
+                 0x15191fff, 0x151a21ff, 0x181d26ff, 0xeef1f4ff, 0xaab0bbff, 0xa5f0ccff, 0x383e49ff,
+@@ -210,6 +210,7 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
+                 script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent) ink: #(text)}});
+             }
+             if name == id!(theme_switch) || name == id!(mobile_theme_switch) {
++                script_apply_eval!(cx,widget,{draw_bg +: {color_focus: #(surface)}});
+                 widget.as_button().set_text(cx, theme.label());
+             }
+         } else if widget.borrow::<Tab>().is_some() {
+diff --git a/apps/hepta-control-ui/test/fixtures/cjk-font-probe.rs b/apps/hepta-control-ui/test/fixtures/cjk-font-probe.rs
+new file mode 100644
+index 0000000000..14735ee95b
+--- /dev/null
++++ b/apps/hepta-control-ui/test/fixtures/cjk-font-probe.rs
+@@ -0,0 +1,63 @@
++extern crate makepad_widgets;
++extern crate rustybuzz;
++use makepad_widgets::makepad_draw::text::{
++    font_face::FontFace,
++    geom::{Point, Rect, Size},
++    glyph_outline::Builder,
++    image::{Image, R},
++    loader::FontData,
++};
++#[unsafe(no_mangle)]
++pub extern "C" fn check_fonts() -> u32 {
++    let mut count = 0;
++    for bytes in [
++        include_bytes!(concat!(
++            env!("HEPTA_CJK_FONT_DIR"),
++            "/NotoSansSC-Regular.otf"
++        ))
++        .as_slice(),
++        include_bytes!(concat!(env!("HEPTA_CJK_FONT_DIR"), "/NotoSansSC-Bold.otf")).as_slice(),
++    ] {
++        let face = FontFace::from_data_and_index(FontData::from_vec(bytes.to_vec()), 0)
++            .expect("static CFF face");
++        let mut buffer = rustybuzz::UnicodeBuffer::new();
++        buffer.push_str("中文输入鍵盤日本語");
++        buffer.guess_segment_properties();
++        let shaped = face.shape(&[], buffer);
++        assert!(shaped.glyph_infos().iter().all(|g| g.glyph_id > 0));
++        assert!(
++            shaped
++                .glyph_positions()
++                .iter()
++                .map(|p| p.x_advance)
++                .sum::<i32>()
++                > 0
++        );
++        count += 1;
++        face.with_ttf_parser_face(|f| {
++            for c in "中文输入键盘焦点滚动位置繁體漢字日本語かなカナ".chars()
++            {
++                let id = f.glyph_index(c).expect("glyph coverage");
++                assert!(f.glyph_hor_advance(id).unwrap() > 0);
++                let mut builder = Builder::new();
++                let b = f.outline_glyph(id, &mut builder).expect("CFF outline");
++                let outline = builder.finish(
++                    Rect::new(
++                        Point::new(b.x_min as f32, b.y_min as f32),
++                        Size::new((b.x_max - b.x_min) as f32, (b.y_max - b.y_min) as f32),
++                    ),
++                    f.units_per_em() as f32,
++                );
++                assert!(!outline.commands().is_empty());
++                let mut pixels = Image::<R>::new(Size::new(128, 128));
++                outline.rasterize(
++                    32.0,
++                    &mut pixels.subimage_mut(Rect::new(Point::new(0, 0), Size::new(128, 128))),
++                );
++                assert!(pixels.as_pixels().iter().any(|p| p.r() > 0));
++                count += 1;
++            }
++        });
++    }
++    count
++}
+diff --git a/apps/hepta-control-ui/test/makepad-cjk-font.test.mjs b/apps/hepta-control-ui/test/makepad-cjk-font.test.mjs
+new file mode 100644
+index 0000000000..895ea017b9
+--- /dev/null
++++ b/apps/hepta-control-ui/test/makepad-cjk-font.test.mjs
+@@ -0,0 +1,75 @@
++// Executes both pinned CJK faces through actual Makepad parsing/shaping/outlines.
++// CPU glyph rasterization is not GPU or multilingual layout qualification.
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {readFile,readdir,writeFile,mkdir,mkdtemp,rm} from 'node:fs/promises';
++import {dirname,join} from 'node:path';
++import {tmpdir} from 'node:os';
++import {fileURLToPath} from 'node:url';
++import {execFileSync} from 'node:child_process';
++import {createHash} from 'node:crypto';
++import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
++const root=fileURLToPath(new URL('..',import.meta.url));
++const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
++async function filesBelow(path){
++ const files=[];
++ for(const item of await readdir(path,{withFileTypes:true})){
++  const child=join(path,item.name);
++  if(item.isDirectory())files.push(...await filesBelow(child));
++  else if(item.isFile())files.push(child);
++ }
++ return files;
++}
++test('pinned SC fonts parse, shape and rasterize with the actual Makepad SDK',async t=>{
++ const target=join(root,'rust/target/robrix-build/workspace/target');
++ const files=await filesBelow(target);
++ const dirs=[...new Set(files.filter(f=>/\.(rmeta|so|dylib|dll)$/.test(f)).map(dirname))];
++ const manifestBytes=await readFile(join(root,'dist/build-manifest.json'));
++ const manifest=JSON.parse(manifestBytes);
++ const upstream=JSON.parse(await readFile(join(root,'rust/robrix-ui/UPSTREAM.json'),'utf8'));
++ assert.equal(manifest.packagerSource,upstream.makepad.revision);
++ const sourceIdentity=await robrixSourceIdentity(root);
++ const sourceIdentityCurrent=sourceIdentity.sha256===manifest.sourceIdentity.sha256;
++ if(process.env.GITHUB_ACTIONS==='true')assert.equal(sourceIdentityCurrent,true,'CI probe requires current candidate build');
++ const compiler=execFileSync('rustup',['run','nightly-2026-10-02','rustc','--version'],{encoding:'utf8'}).trim();
++ assert.equal(compiler,manifest.nightly);
++ const fonts=JSON.parse(execFileSync('python3',[join(root,'tools/prepare-fonts.py'),'--offline'],{encoding:'utf8'}));
++ const fontDirectory=dirname(fonts.assets[0].inputPath);
++ for(const asset of fonts.assets)assert.equal(sha(await readFile(asset.inputPath)),asset.sha256);
++ const temporary=await mkdtemp(join(tmpdir(),'hepta-cjk-font-'));
++ t.after(()=>rm(temporary,{recursive:true,force:true}));
++ const source=join(root,'test/fixtures/cjk-font-probe.rs');
++ const wasm=join(temporary,'probe.wasm');
++ const args=['-Zunstable-options','--edition=2024','--crate-type=cdylib','--target',join(target,'makepad-wasm-target/single/wasm32-unknown-unknown.json'),'-C','panic=abort',source,'-o',wasm];
++ const artifactHashes={};
++ for(const name of ['makepad_widgets','rustybuzz','std']){
++  const matches=files.filter(f=>f.includes('wasm32-unknown-unknown')&&new RegExp('/lib'+name+'-[^/]+\\.rmeta$').test(f));
++  assert.equal(matches.length,1,'Require one exact '+name+' artifact');
++  for(const file of [matches[0],matches[0].replace(/\.rmeta$/,'.rlib')]){
++   args.push('--extern',name+'='+file);artifactHashes[file]=sha(await readFile(file));
++  }
++ }
++ for(const dir of dirs)args.push('-L','dependency='+dir);
++ execFileSync('rustup',['run','nightly-2026-10-02','rustc',...args],{stdio:'pipe',timeout:120000,env:{...process.env,CARGO_MANIFEST_DIR:dirname(source),HEPTA_CJK_FONT_DIR:fontDirectory}});
++ const bytes=await readFile(wasm),module=await WebAssembly.compile(bytes),env={};
++ for(const entry of WebAssembly.Module.imports(module)){
++  assert.equal(entry.module,'env');assert.equal(entry.kind,'function');
++  env[entry.name]=entry.name==='js_monotonic_now'?()=>performance.now()/1000
++   :entry.name==='js_time_now'?()=>Date.now()/1000
++   :['js_console_log','js_wake_ui'].includes(entry.name)?()=>{}
++   :()=>{throw Error('Unexpected probe import: '+entry.name);};
++ }
++ const results=[];
++ const cases={check_fonts:48};
++ for(const [name,expected] of Object.entries(cases)){
++  const {exports}=await WebAssembly.instantiate(module,{env});
++  let count;
++  try{count=exports[name]();}catch(error){throw Error(`${name}: SDK font probe failed`,{cause:error});}
++  assert.equal(count,expected);results.push({name,count,passed:true});
++ }
++ const sourceFiles={};
++ for(const path of ['test/fixtures/cjk-font-probe.rs','rust/robrix-ui/resources/fonts/MANIFEST.json','rust/robrix-ui/resources/fonts/OFL.txt'])sourceFiles[path]=sha(await readFile(join(root,path)));
++ const receipt={schema:'hepta.cjk-font-probe.v1',scope:'actual SDK CFF parsing/shaping/outlines/CPU rasterization only; no GPU/layout qualification',appQualified:false,sourceIdentityCurrent,sourceIdentity:sourceIdentity.sha256,producerManifestSha256:sha(manifestBytes),sdkRevision:upstream.makepad.revision,compiler,fontAssets:fonts.assets.map(({inputPath,...asset})=>asset),sourceFiles,artifactHashes,probeWasmSha256:sha(bytes),results};
++ await mkdir(join(root,'test-results'),{recursive:true});
++ await writeFile(join(root,'test-results/robrix-cjk-font-results.json'),JSON.stringify(receipt,null,2)+'\n');
++});
+diff --git a/apps/hepta-control-ui/test/robrix-font-readiness.test.mjs b/apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+new file mode 100644
+index 0000000000..b65ee5f4ea
+--- /dev/null
++++ b/apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+@@ -0,0 +1,16 @@
++import {test} from 'node:test';
++import assert from 'node:assert/strict';
++import {readFile} from 'node:fs/promises';
++import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
++const ready='robrix-ui/src/robrix/room.rs:585:28 - HEPTA_FIXTURE_FONT_STATE index=59 loaded_fonts=4 complete=true members=["latin", "cjk", "rare", "emoji"]';
++test('all four actual shared font members must finish loading',()=>{
++ assert.equal(sharedFontFamilyReady(ready),true);
++ for(const value of [ready.replace('loaded_fonts=4','loaded_fonts=3'),ready.replace('complete=true','complete=false'),ready.replace(', "rare"',''),ready.replace('"rare"','"unknown"'),ready.replace('"rare", "emoji"','"emoji", "rare"'),ready+' trailing',null,'x'.repeat(8193)])assert.equal(sharedFontFamilyReady(value),false);
++});
++test('both Rust font families retain exact Latin/SC/rare/emoji order',async()=>{
++ const styles=await readFile(new URL('../rust/robrix-ui/src/robrix/styles.rs',import.meta.url),'utf8');
++ for(const name of ['HEPTA_REGULAR','HEPTA_BOLD']){
++  const family=styles.split('mod.widgets.'+name+' =')[1].split('\n }')[0];
++  assert.deepEqual([...family.matchAll(/(\w+) := FontMember/g)].map(m=>m[1]),['latin','cjk','rare','emoji']);
++ }
++});
+diff --git a/apps/hepta-control-ui/test/test_prepare_fonts.py b/apps/hepta-control-ui/test/test_prepare_fonts.py
+new file mode 100644
+index 0000000000..dbb3e4ff35
+--- /dev/null
++++ b/apps/hepta-control-ui/test/test_prepare_fonts.py
+@@ -0,0 +1,133 @@
++import importlib.util
++import json
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++
++ROOT = Path(__file__).resolve().parents[1]
++SPEC = importlib.util.spec_from_file_location("fonts", ROOT / "tools/prepare-fonts.py")
++fonts = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(fonts)
++
++
++class FontPreparationTests(unittest.TestCase):
++    def setUp(self):
++        temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(temporary.cleanup)
++        self.root = Path(temporary.name)
++        self.value, self.identity = fonts.manifest()
++        self.payload = b"bounded-font-fixture"
++        self.small = json.loads(json.dumps(self.value))
++        for entry in self.small["assets"]:
++            entry.update(bytes=len(self.payload), sha256=fonts.sha(self.payload))
++
++    def prepare(self, **kwargs):
++        with patch.object(fonts, "manifest", return_value=(self.small, self.identity)):
++            return fonts.prepare(self.root / "cache", **kwargs)
++
++    def test_missing_offline_fails_without_network(self):
++        with patch.object(fonts, "download", side_effect=AssertionError("network")):
++            with self.assertRaisesRegex(ValueError, "missing offline"):
++                self.prepare(offline=True)
++
++    def test_exact_download_reuses_offline_and_installs_identical_bytes(self):
++        with patch.object(fonts, "download", return_value=self.payload) as fetch:
++            result = self.prepare()
++            self.assertEqual(fetch.call_count, 2)
++        with patch.object(fonts, "download", side_effect=AssertionError("network")):
++            reused = self.prepare(offline=True, install=self.root / "installed")
++        self.assertEqual(result, reused)
++        for entry in result["assets"]:
++            self.assertEqual((self.root / "installed" / entry["file"]).read_bytes(), self.payload)
++
++    def test_corrupt_cache_fails_without_silent_redownload(self):
++        with patch.object(fonts, "download", return_value=self.payload):
++            result = self.prepare()
++        Path(result["assets"][0]["inputPath"]).write_bytes(b"X" * len(self.payload))
++        with patch.object(fonts, "download", side_effect=AssertionError("network")):
++            for offline in (False, True):
++                with self.assertRaisesRegex(ValueError, "bytes mismatch"):
++                    self.prepare(offline=offline)
++
++    def test_invalid_download_never_publishes_cache_entry(self):
++        with patch.object(fonts, "download", return_value=self.payload + b"oversize"):
++            with self.assertRaisesRegex(ValueError, "bytes mismatch"):
++                self.prepare()
++        self.assertFalse(list(self.root.rglob("*.otf")))
++
++    def test_atomic_failure_removes_temporary_file(self):
++        with patch.object(fonts.os, "replace", side_effect=OSError("interrupted")):
++            with self.assertRaises(OSError):
++                fonts.atomic_write(self.root / "font.otf", self.payload)
++        self.assertEqual(list(self.root.iterdir()), [])
++
++    def test_symlink_cache_is_rejected(self):
++        with patch.object(fonts, "download", return_value=self.payload):
++            result = self.prepare()
++        path = Path(result["assets"][0]["inputPath"])
++        path.unlink()
++        path.symlink_to(self.root / "outside")
++        with self.assertRaisesRegex(ValueError, "symlink"):
++            self.prepare(offline=True)
++
++    def test_native_and_web_catalogs_bind_identical_resources(self):
++        native = json.loads((ROOT.parent / "hepta-native/resources/NATIVE-ASSETS.json").read_text())
++        actual = [a for a in native["assets"] if a["license_group"] == "noto-sans-cjk-ofl-1.1"]
++        expected = [{k: a[k] for k in ("logical", "bytes", "sha256", "license_group")} for a in self.value["assets"]]
++        self.assertEqual(actual, expected)
++        self.assertEqual(sum(a["bytes"] for a in actual), 16_874_504)
++        self.assertLessEqual(sum(a["bytes"] for a in actual), 17_000_000)
++        self.assertEqual(len(native["assets"]), 30)
++        styles = (ROOT / "rust/robrix-ui/src/robrix/styles.rs").read_text()
++        for weight in ("Regular", "Bold"):
++            self.assertIn("resources/fonts/NotoSansSC-" + weight + ".otf", styles)
++            self.assertIn("resources/LXGWWenKai" + weight + ".ttf", styles)
++        self.assertEqual((ROOT.parent / "hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt").read_bytes(),
++                         (fonts.MANIFEST.parent / "OFL.txt").read_bytes())
++
++
++class DesktopStagingTests(unittest.TestCase):
++    def test_concurrent_stages_are_distinct_and_cleanup_only_their_own_tree(self):
++        spec = importlib.util.spec_from_file_location("desktop", ROOT / "tools/run-desktop.py")
++        desktop = importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(desktop)
++        with tempfile.TemporaryDirectory() as temporary:
++            source = Path(temporary)
++            for name in ("core", "web", "robrix-ui"):
++                (source / name).mkdir()
++                (source / name / "Cargo.toml").write_text(name)
++            for name in ("Cargo.toml", "Cargo.lock"):
++                (source / name).write_text("fixture")
++            def prepare(*, offline, install):
++                self.assertTrue(offline)
++                install.mkdir(parents=True)
++                (install / "font.otf").write_bytes(b"verified fixture")
++            with desktop.staged_workspace(source, prepare) as first:
++                original = first / "robrix-ui/resources/fonts/font.otf"
++                with desktop.staged_workspace(source, prepare) as second:
++                    self.assertNotEqual(first, second)
++                    self.assertEqual(original.read_bytes(), b"verified fixture")
++                    self.assertTrue((second / "robrix-ui/resources/fonts/font.otf").exists())
++                self.assertFalse(second.exists())
++                self.assertEqual(original.read_bytes(), b"verified fixture")
++            self.assertFalse(first.exists())
++            self.assertEqual((source / "core/Cargo.toml").read_text(), "core")
++
++    def test_failed_staging_does_not_remove_an_existing_preview(self):
++        spec = importlib.util.spec_from_file_location("desktop", ROOT / "tools/run-desktop.py")
++        desktop = importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(desktop)
++        with tempfile.TemporaryDirectory() as temporary:
++            source = Path(temporary)
++            survivor = source / "target/existing-preview/font.otf"
++            survivor.parent.mkdir(parents=True)
++            survivor.write_bytes(b"active")
++            with self.assertRaises(FileNotFoundError):
++                with desktop.staged_workspace(source, lambda **kw: None):
++                    self.fail("incomplete source must not become a preview")
++            self.assertEqual(survivor.read_bytes(), b"active")
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/apps/hepta-control-ui/test/visual-theme-contract.test.mjs b/apps/hepta-control-ui/test/visual-theme-contract.test.mjs
+new file mode 100644
+index 0000000000..4d19c32796
+--- /dev/null
++++ b/apps/hepta-control-ui/test/visual-theme-contract.test.mjs
+@@ -0,0 +1,33 @@
++// Numerical source-token checks, not rendered-pixel or platform accessibility qualification.
++import {test} from 'node:test';
++import assert from 'node:assert/strict';
++import {readFile} from 'node:fs/promises';
++const source=await readFile(new URL('../rust/robrix-ui/src/visual_theme.rs',import.meta.url),'utf8');
++function luminance(value){
++ const channels=[24,16,8].map(shift=>((value>>>shift)&255)/255).map(c=>c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4);
++ return channels[0]*0.2126+channels[1]*0.7152+channels[2]*0.0722;
++}
++function contrast(a,b){const x=luminance(a),y=luminance(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);}
++for(const name of ['ObsidianIce','LunarTitanium','AuroraGraphite'])test(`${name} source text tokens preserve readable contrast`,()=>{
++ const match=source.match(new RegExp(`Self::${name} => \\[([^\\]]+)\\]`));assert.ok(match);
++ const values=[...match[1].matchAll(/0x([0-9a-f]{8})/g)].map(m=>Number.parseInt(m[1],16));assert.equal(values.length,9);
++ const [canvas,panel,surface,text,muted,accent,border,selected]=values;
++ for(const background of [canvas,panel,surface,selected])for(const foreground of [text,muted])assert.ok(contrast(foreground,background)>=4.5,`${name} text contrast ${contrast(foreground,background)}`);
++ if(name==='LunarTitanium')for(const background of [canvas,panel,surface]){
++  assert.ok(contrast(border,background)>=3,'Lunar boundary contrast');
++  assert.ok(contrast(accent,background)>=3,'Lunar focus indicator contrast');
++ }
++});
++test('unavailable Send retains disabled owner boundary and a separate lock glyph',async()=>{
++ const composer=await readFile(new URL('../rust/robrix-ui/src/robrix/composer.rs',import.meta.url),'utf8');
++ const styles=await readFile(new URL('../rust/robrix-ui/src/robrix/styles.rs',import.meta.url),'utf8');
++ assert.match(composer,/send_message_button := mod.widgets.SendButton \{\s*enabled: false/);
++ const send=styles.split('mod.widgets.SendButton =')[1].split('mod.widgets.HeptaMark =')[0];
++ assert.match(send,/if self.disabled > 0.5/);assert.match(send,/return sdf.result/);
++ assert.match(send,/mix\(self.accent, self.color_disabled, self.disabled\)/);
++});
++
++test('shared preview serves the added CFF fonts with an explicit OTF content type',async()=>{
++ const server=await readFile(new URL('../tools/serve-robrix.mjs',import.meta.url),'utf8');
++ assert.match(server,/\'.otf\':\'font\/otf\'/);
++});
+diff --git a/apps/hepta-control-ui/tools/build-robrix.mjs b/apps/hepta-control-ui/tools/build-robrix.mjs
+index bc4a62a3ea..84ecb28f61 100644
+--- a/apps/hepta-control-ui/tools/build-robrix.mjs
++++ b/apps/hepta-control-ui/tools/build-robrix.mjs
+@@ -16,6 +16,7 @@ const output = join(root, fixtures?'dist-robrix-fixtures':'dist');
+ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+ const provenance = JSON.parse(await readFile(join(workspace, 'robrix-ui/UPSTREAM.json'), 'utf8'));
+ const sourceIdentity=await robrixSourceIdentity(root);
++const cjkFonts=JSON.parse(execFileSync('python3',[join(root,'tools/prepare-fonts.py'),...(process.env.HEPTA_FONTS_OFFLINE==='1'?['--offline']:[])],{encoding:'utf8'}));
+ const metadata=JSON.parse(execFileSync('cargo',['+1.95.0','metadata','--locked','--format-version','1','--manifest-path',join(workspace,'Cargo.toml')],{encoding:'utf8',maxBuffer:16*1024*1024}));
+ const widgets=metadata.packages.find(p=>p.name==='makepad-widgets');
+ if(!widgets?.source?.endsWith('#'+provenance.makepad.revision)) throw new Error('Makepad lock does not match provenance');
+@@ -88,6 +89,14 @@ for(const asset of art.assets){
+  await mkdir(dirname(destination),{recursive:true});await writeFile(destination,bytes);
+ }
+ 
++// Bind the same verified cache bytes used by native compile-time assets.
++for(const asset of cjkFonts.assets){
++ const bytes=await readFile(asset.inputPath);
++ if(bytes.length!==asset.bytes||sha(bytes)!==asset.sha256)throw new Error('CJK resource identity drift');
++ const destination=join(output,asset.logical);
++ await mkdir(dirname(destination),{recursive:true});await writeFile(destination,bytes);
++}
++for(const name of ['OFL.txt','NOTICE.txt'])await cp(join(workspace,'robrix-ui/resources/fonts',name),join(output,'hepta_robrix_ui/resources/fonts',name));
+ const frameworkPath = join(output, 'makepad_platform/web.js');
+ let framework = await readFile(frameworkPath, 'utf8');
+ const originalFrameworkSha256 = sha(framework);
+@@ -128,5 +137,5 @@ async function inventory(dir) {
+  }
+ }
+ await inventory(output);
+-await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
++await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,cjkFonts:{manifestSha256:cjkFonts.manifestSha256,bytes:cjkFonts.bytes,assets:cjkFonts.assets.map(({inputPath,...asset})=>asset)},nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
+ console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);
+diff --git a/apps/hepta-control-ui/tools/prepare-fonts.py b/apps/hepta-control-ui/tools/prepare-fonts.py
+new file mode 100644
+index 0000000000..2001636ffb
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/prepare-fonts.py
+@@ -0,0 +1,108 @@
++"""Provision exact licensed CJK assets at build time; never fetch at UI runtime."""
++import argparse
++import hashlib
++import json
++import os
++import re
++from pathlib import Path
++import tempfile
++import urllib.request
++
++ROOT = Path(__file__).resolve().parents[1]
++MANIFEST = ROOT / "rust/robrix-ui/resources/fonts/MANIFEST.json"
++EXPECTED_NAMES = {"NotoSansSC-Regular.otf", "NotoSansSC-Bold.otf"}
++URL_ROOT = "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/"
++
++
++def sha(data):
++    return hashlib.sha256(data).hexdigest()
++
++
++def manifest(path=MANIFEST):
++    raw = path.read_bytes()
++    value = json.loads(raw)
++    assets = value["assets"]
++    if (value.get("schema") != "hepta.cjk-fonts.v1"
++        or value.get("maxBytes") != 17_000_000
++        or len(assets) != 2
++        or {a["file"] for a in assets} != EXPECTED_NAMES
++        or sum(a["bytes"] for a in assets) > 17_000_000):
++        raise ValueError("CJK font inventory/payload cap differs")
++    for a in assets:
++        if (a["url"] != URL_ROOT + a["file"]
++            or a["logical"] != "hepta_robrix_ui/resources/fonts/" + a["file"]
++            or not isinstance(a["bytes"], int)
++            or not 0 < a["bytes"] <= 17_000_000
++            or not re.fullmatch(r"[0-9a-f]{64}", a["sha256"])):
++            raise ValueError("Unpinned CJK asset")
++    notice = path.parent / "OFL.txt"
++    check(notice.read_bytes(), value["license"], "license")
++    check((path.parent / "NOTICE.txt").read_bytes(), value["notice"], "notice")
++    return value, sha(raw)
++
++
++def check(data, entry, label):
++    if len(data) != entry["bytes"] or sha(data) != entry["sha256"]:
++        raise ValueError("CJK resource bytes mismatch: " + label)
++
++
++def atomic_write(path, data):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with tempfile.NamedTemporaryFile(dir=path.parent, prefix=".font-", delete=False) as f:
++        temporary = Path(f.name)
++        try:
++            f.write(data)
++            f.flush()
++            os.fsync(f.fileno())
++            f.close()
++            os.replace(temporary, path)
++        finally:
++            temporary.unlink(missing_ok=True)
++
++
++def download(entry):
++    request = urllib.request.Request(entry["url"], headers={"User-Agent": "Hepta-pinned-font-builder"})
++    # This is a per-socket-operation timeout, not a whole-transfer deadline.
++    # The allocation/read is independently limited to the exact byte cap + 1.
++    with urllib.request.urlopen(request, timeout=60) as response:
++        if response.geturl() != entry["url"]:
++            raise ValueError("Unexpected CJK font redirect")
++        return response.read(entry["bytes"] + 1)
++
++
++def prepare(cache=None, *, offline=False, install=None):
++    value, identity = manifest()
++    cache = (cache or Path(os.environ.get("HEPTA_CJK_FONT_CACHE", ROOT / "rust/target/font-assets"))) / identity
++    records = []
++    for entry in value["assets"]:
++        path = cache / entry["file"]
++        if path.is_symlink():
++            raise ValueError("CJK cache entry must not be a symlink")
++        if path.exists():
++            if not path.is_file() or path.stat().st_size != entry["bytes"]:
++                raise ValueError("CJK resource bytes mismatch: " + entry["file"])
++            with path.open("rb") as stream:
++                data = stream.read(entry["bytes"] + 1)
++            check(data, entry, entry["file"])  # corrupt cache fails; never silently replaced
++        else:
++            if offline:
++                raise ValueError("CJK font missing offline; run tools/prepare-fonts.py first: " + str(path))
++            data = download(entry)
++            check(data, entry, entry["file"])
++            atomic_write(path, data)
++        if install is not None:
++            destination = install / entry["file"]
++            if destination.is_symlink():
++                raise ValueError("CJK installation entry must not be a symlink")
++            atomic_write(destination, data)
++        records.append({**entry, "inputPath": str(path.resolve())})
++    return {"manifestSha256": identity, "bytes": sum(a["bytes"] for a in records), "assets": records}
++
++
++if __name__ == "__main__":
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--cache", type=Path)
++    parser.add_argument("--offline", action="store_true")
++    parser.add_argument("--install", type=Path)
++    args = parser.parse_args()
++    print(json.dumps(prepare(args.cache, offline=args.offline, install=args.install)))
+diff --git a/apps/hepta-control-ui/tools/robrix-font-readiness.mjs b/apps/hepta-control-ui/tools/robrix-font-readiness.mjs
+new file mode 100644
+index 0000000000..ef10a0b964
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/robrix-font-readiness.mjs
+@@ -0,0 +1,8 @@
++// This fixture-only observation is a renderer-readiness assertion, not owner authority.
++export function sharedFontFamilyReady(text){
++ if(typeof text!=='string'||text.length>8192)return false;
++ const match=text.match(/HEPTA_FIXTURE_FONT_STATE index=\d+ loaded_fonts=4 complete=true members=(\[[^\n]+\])$/);
++ if(!match)return false;
++ try{return JSON.stringify(JSON.parse(match[1]))===JSON.stringify(['latin','cjk','rare','emoji']);}
++ catch{return false;}
++}
+diff --git a/apps/hepta-control-ui/tools/robrix-source-identity.mjs b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+index 42050695e1..e53f6bf321 100644
+--- a/apps/hepta-control-ui/tools/robrix-source-identity.mjs
++++ b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+@@ -17,6 +17,7 @@ export async function robrixSourceIdentity(root){
+  await walk(join(root,'rust/robrix-ui/patches'));
+  await walk(join(root,'rust/robrix-ui/resources'));
+  await add(join(root,'rust/robrix-ui/UPSTREAM.json'));
+- for(const name of ['build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs'])await add(join(root,'tools',name));
++ await add(join(root,'rust/robrix-ui/build.rs'));
++ for(const name of ['build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py'])await add(join(root,'tools',name));
+  return {sha256:sha(JSON.stringify(files)),files};
+ }
+diff --git a/apps/hepta-control-ui/tools/run-desktop.py b/apps/hepta-control-ui/tools/run-desktop.py
+new file mode 100644
+index 0000000000..47e294a314
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/run-desktop.py
+@@ -0,0 +1,44 @@
++"""Run the Rust desktop preview from a verified resource-complete staged workspace."""
++import argparse
++from contextlib import contextmanager
++import importlib.util
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import tempfile
++
++ROOT = Path(__file__).resolve().parents[1]
++
++@contextmanager
++def staged_workspace(source, prepare):
++    """Own only this invocation's resources until its child process exits."""
++    parent = source / "target"
++    parent.mkdir(parents=True, exist_ok=True)
++    with tempfile.TemporaryDirectory(prefix="desktop-font-workspace-", dir=parent) as temporary:
++        staged = Path(temporary)
++        for name in ("core", "web", "robrix-ui"):
++            shutil.copytree(source / name, staged / name)
++        for name in ("Cargo.toml", "Cargo.lock"):
++            shutil.copyfile(source / name, staged / name)
++        prepare(offline=True, install=staged / "robrix-ui/resources/fonts")
++        yield staged
++
++
++if __name__ == "__main__":
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--offline", action="store_true")
++    args, remaining = parser.parse_known_args()
++    spec = importlib.util.spec_from_file_location("hepta_fonts", ROOT / "tools/prepare-fonts.py")
++    fonts = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(fonts)
++    fonts.prepare(offline=args.offline)
++    source = ROOT / "rust"
++    env = dict(os.environ)
++    env["CARGO_TARGET_DIR"] = str(source / "target/desktop-build")
++    # subprocess.run waits for (and on interruption terminates) its child before
++    # the context removes this invocation's files. Other previews are untouched.
++    with staged_workspace(source, fonts.prepare) as staged:
++        subprocess.run(["cargo", "+1.95.0", "run", "--locked", "--manifest-path", str(staged / "Cargo.toml"),
++                        "-p", "hepta-robrix-ui", "--bin", "hepta-robrix", *(["--offline"] if args.offline else []), *remaining],
++                       env=env, check=True)
+diff --git a/apps/hepta-control-ui/tools/serve-robrix.mjs b/apps/hepta-control-ui/tools/serve-robrix.mjs
+index e26deb1af0..122ba4485a 100644
+--- a/apps/hepta-control-ui/tools/serve-robrix.mjs
++++ b/apps/hepta-control-ui/tools/serve-robrix.mjs
+@@ -11,7 +11,7 @@ const manifest=JSON.parse(await readFile(resolve(root,'build-manifest.json'),'ut
+ const sourceRoot=fileURLToPath(new URL('..',import.meta.url));
+ if((await robrixSourceIdentity(sourceRoot)).sha256!==manifest.sourceIdentity?.sha256) throw new Error('Built artifact is stale; rebuild current UI source');
+ if (manifest.browserRuntime!=='rust-makepad-wasm') throw new Error('Build the canonical Robrix UI first');
+-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.wasm':'application/wasm','.ttf':'font/ttf','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'};
++const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.wasm':'application/wasm','.ttf':'font/ttf','.otf':'font/otf','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'};
+ createServer(async(req,res)=>{
+  try {
+   if(req.method!=='GET'&&req.method!=='HEAD'){res.writeHead(405);res.end();return;}
+diff --git a/apps/hepta-native/ROBRIX-PREVIEW.md b/apps/hepta-native/ROBRIX-PREVIEW.md
+index 61f216e6a4..43e0d17ef4 100644
+--- a/apps/hepta-native/ROBRIX-PREVIEW.md
++++ b/apps/hepta-native/ROBRIX-PREVIEW.md
+@@ -31,14 +31,14 @@ source archive checkout. Its platform overlay admits only loaded embedded
+ resource bytes and publishes the X11 process ID before mapping the window for
+ process-scoped diagnostics. It never patches the canonical checkout or Cargo cache. Its
+ generated lock differs only in the platform package's Git-to-local source.
+-The fixed 28 assets and original notices are checked by size and SHA-256 before
++The fixed 30 assets and original notices are checked by size and SHA-256 before
+ compilation. Asset identities are regenerated from the generated checkout's
+ manifest paths. Keep `native-preview-build-input.json` and the asset input
+ records with build evidence.
+ 
+ For an already downloaded original source archive, replace
+ `--download-font-source` with `--liberation-source /absolute/archive.tar.gz`.
+-`--offline` disables Cargo network resolution. `prepare-preview` prepares the
++`--offline` disables Cargo network resolution and shared CJK font downloads. The wrapper automatically prepares the fixed Noto Sans SC pair through the shared verified helper; `--cjk-font-cache` can select an existing cache for offline reuse. `prepare-preview` prepares the
+ same inputs without compiling. `test-preview` runs the repository's `just test`
+ entry point against the generated overlay and includes the resource conflict,
+ missing-resource, source export and retained-owner adapter tests. Each prepare,
+diff --git a/apps/hepta-native/resources/NATIVE-ASSETS.json b/apps/hepta-native/resources/NATIVE-ASSETS.json
+index c7b5bb5c96..53a6b08d71 100644
+--- a/apps/hepta-native/resources/NATIVE-ASSETS.json
++++ b/apps/hepta-native/resources/NATIVE-ASSETS.json
+@@ -169,6 +169,18 @@
+       "bytes": 10643852,
+       "sha256": "39ee3c587e10e89669b9ff32703261d10d5f9c4dd5ad147b6b5a1c5200591817",
+       "license_group": "noto-emoji"
++    },
++    {
++      "logical": "hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf",
++      "bytes": 8543168,
++      "sha256": "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0",
++      "license_group": "noto-sans-cjk-ofl-1.1"
++    },
++    {
++      "logical": "hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf",
++      "bytes": 8331336,
++      "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
++      "license_group": "noto-sans-cjk-ofl-1.1"
+     }
+   ],
+   "noticeFileSha256": [
+@@ -236,6 +248,16 @@
+       "path": "notices/ROBRIX-MIT.txt",
+       "bytes": 1097,
+       "sha256": "7c370204a7507a3c33398d6377aa69691991b0582a3d92ace8d27d8819b223f7"
++    },
++    {
++      "path": "notices/Noto-Sans-CJK-2.004-OFL.txt",
++      "bytes": 4301,
++      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
++    },
++    {
++      "path": "notices/Noto-Sans-CJK-2.004-NOTICE.txt",
++      "bytes": 559,
++      "sha256": "53eac13efa92294d76c9866527f46ceef1bb06804ea943ccbfe4963a4ff1111c"
+     }
+   ],
+   "liberationSource": {
+diff --git a/apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-NOTICE.txt b/apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-NOTICE.txt
+new file mode 100644
+index 0000000000..f9afe09895
+--- /dev/null
++++ b/apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-NOTICE.txt
+@@ -0,0 +1,5 @@
++Noto Sans SC Regular and Bold, unmodified static OTF/CFF, Sans2.004.
++Copyright from both font name tables: © 2014-2021 Adobe (http://www.adobe.com/).
++Licensed under SIL Open Font License1.1; original license in OFL.txt.
++Immutable source: https://github.com/notofonts/noto-cjk/tree/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC
++SC subset is secondary to IBM Plex Latin. Complete WenKai remains tertiary; rare/out-of-subset glyphs retain existing coverage and style. This is not uniform pan-CJK sans. No font modification or runtime remote fetch.
+diff --git a/apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt b/apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
+new file mode 100644
+index 0000000000..d952d62c06
+--- /dev/null
++++ b/apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
+@@ -0,0 +1,92 @@
++This Font Software is licensed under the SIL Open Font License,
++Version 1.1.
++
++This license is copied below, and is also available with a FAQ at:
++http://scripts.sil.org/OFL
++
++-----------------------------------------------------------
++SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
++-----------------------------------------------------------
++
++PREAMBLE
++The goals of the Open Font License (OFL) are to stimulate worldwide
++development of collaborative font projects, to support the font
++creation efforts of academic and linguistic communities, and to
++provide a free and open framework in which fonts may be shared and
++improved in partnership with others.
++
++The OFL allows the licensed fonts to be used, studied, modified and
++redistributed freely as long as they are not sold by themselves. The
++fonts, including any derivative works, can be bundled, embedded,
++redistributed and/or sold with any software provided that any reserved
++names are not used by derivative works. The fonts and derivatives,
++however, cannot be released under any other type of license. The
++requirement for fonts to remain under this license does not apply to
++any document created using the fonts or their derivatives.
++
++DEFINITIONS
++"Font Software" refers to the set of files released by the Copyright
++Holder(s) under this license and clearly marked as such. This may
++include source files, build scripts and documentation.
++
++"Reserved Font Name" refers to any names specified as such after the
++copyright statement(s).
++
++"Original Version" refers to the collection of Font Software
++components as distributed by the Copyright Holder(s).
++
++"Modified Version" refers to any derivative made by adding to,
++deleting, or substituting -- in part or in whole -- any of the
++components of the Original Version, by changing formats or by porting
++the Font Software to a new environment.
++
++"Author" refers to any designer, engineer, programmer, technical
++writer or other person who contributed to the Font Software.
++
++PERMISSION & CONDITIONS
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of the Font Software, to use, study, copy, merge, embed,
++modify, redistribute, and sell modified and unmodified copies of the
++Font Software, subject to the following conditions:
++
++1) Neither the Font Software nor any of its individual components, in
++Original or Modified Versions, may be sold by itself.
++
++2) Original or Modified Versions of the Font Software may be bundled,
++redistributed and/or sold with any software, provided that each copy
++contains the above copyright notice and this license. These can be
++included either as stand-alone text files, human-readable headers or
++in the appropriate machine-readable metadata fields within text or
++binary files as long as those fields can be easily viewed by the user.
++
++3) No Modified Version of the Font Software may use the Reserved Font
++Name(s) unless explicit written permission is granted by the
++corresponding Copyright Holder. This restriction only applies to the
++primary font name as presented to the users.
++
++4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
++Software shall not be used to promote, endorse or advertise any
++Modified Version, except to acknowledge the contribution(s) of the
++Copyright Holder(s) and the Author(s) or with their explicit written
++permission.
++
++5) The Font Software, modified or unmodified, in part or in whole,
++must be distributed entirely under this license, and must not be
++distributed under any other license. The requirement for fonts to
++remain under this license does not apply to any document created using
++the Font Software.
++
++TERMINATION
++This license becomes null and void if any of the above conditions are
++not met.
++
++DISCLAIMER
++THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
++OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
++COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
++DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
++OTHER DEALINGS IN THE FONT SOFTWARE.
+diff --git a/apps/hepta-native/src/native_assets.rs b/apps/hepta-native/src/native_assets.rs
+index da9db9708c..f396c10ebe 100644
+--- a/apps/hepta-native/src/native_assets.rs
++++ b/apps/hepta-native/src/native_assets.rs
+@@ -24,6 +24,8 @@ pub(crate) fn configure(cx: &mut Cx, font_override: Option<Vec<u8>>) {
+         for (logical, embedded) in ASSETS {
+             let bytes = if logical.ends_with("LXGWWenKaiRegular.ttf")
+                 || logical.ends_with("LXGWWenKaiBold.ttf")
++                || logical.ends_with("NotoSansSC-Regular.otf")
++                || logical.ends_with("NotoSansSC-Bold.otf")
+             {
+                 font_override.as_deref().unwrap_or(embedded)
+             } else {
+diff --git a/apps/hepta-native/tools/build-robrix-native.py b/apps/hepta-native/tools/build-robrix-native.py
+index 7e3fef2249..fc58df3c12 100644
+--- a/apps/hepta-native/tools/build-robrix-native.py
++++ b/apps/hepta-native/tools/build-robrix-native.py
+@@ -132,6 +132,9 @@ def prepare_assets(
+     root: Path, out: Path, target: Path, font_source: Path, offline: bool
+ ):
+     sdk, robrix = metadata(root, target, offline)
++    subprocess.run(["python3", str(root / "apps/hepta-control-ui/tools/prepare-fonts.py"),
++                    *(["--offline"] if offline else [])], check=True, stdout=subprocess.PIPE)
++
+     generator = root / NATIVE / "tools/generate-native-assets.py"
+     subprocess.run(
+         [
+@@ -189,6 +192,9 @@ def verify_assets(
+             (root / NATIVE / "tools/generate-native-assets.py").read_bytes()
+         ),
+         "helperSha256": sha(Path(__file__).read_bytes()),
++        "cjkPreparationSha256": sha((root / "apps/hepta-control-ui/tools/prepare-fonts.py").read_bytes()),
++        "cjkManifestSha256": sha((root / ROBRIX / "resources/fonts/MANIFEST.json").read_bytes()),
++        "cjkLicenseSha256": sha((root / ROBRIX / "resources/fonts/OFL.txt").read_bytes()),
+         "assetRustSha256": sha((out / "native-assets.rs").read_bytes()),
+         "assetInputJsonSha256": sha((out / "native-assets-input.json").read_bytes()),
+         "liberationSourceSha256": sha(font_source.read_bytes()),
+@@ -436,11 +442,13 @@ def main():
+     parser.add_argument("--liberation-source", type=Path)
+     parser.add_argument("--download-font-source", action="store_true")
+     parser.add_argument("--offline", action="store_true")
++    parser.add_argument("--cjk-font-cache", type=Path)
+     parser.add_argument("--receipt", type=Path)
+     args = parser.parse_args()
+     if sys.platform != "linux":
+         parser.error("This developer preview is currently Linux-only")
+     root = args.source_root.resolve(strict=True)
++    os.environ["HEPTA_CJK_FONT_CACHE"] = str((args.cjk_font_cache or root / "apps/hepta-control-ui/rust/target/font-assets").resolve())
+     out = args.out.resolve()
+     out.mkdir(parents=True, exist_ok=True)
+     font_source = checked_font_source(
+diff --git a/apps/hepta-native/tools/generate-native-assets.py b/apps/hepta-native/tools/generate-native-assets.py
+index 118406cba0..9d7d9fff6e 100644
+--- a/apps/hepta-native/tools/generate-native-assets.py
++++ b/apps/hepta-native/tools/generate-native-assets.py
+@@ -5,8 +5,10 @@ This program never discovers or modifies a Cargo cache and never fetches files.
+ """
+ 
+ import argparse
++import importlib.util
+ import hashlib
+ import json
++import os
+ from pathlib import Path
+ import subprocess
+ 
+@@ -40,13 +42,21 @@ def main():
+     if pin != catalog["makepadRevision"]:
+         raise ValueError("SDK revision differs from the fixed asset catalog")
+     subprocess.run(["git", "-C", str(sdk), "diff", "--quiet", "HEAD", "--"], check=True)
++    helper = robrix.parents[1] / "tools/prepare-fonts.py"
++    spec = importlib.util.spec_from_file_location("hepta_fonts", helper)
++    fonts = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(fonts)
++    cjk = fonts.prepare(Path(os.environ.get("HEPTA_CJK_FONT_CACHE", robrix.parent / "target/font-assets")), offline=True)
++    cjk_paths = {a["logical"]: Path(a["inputPath"]) for a in cjk["assets"]}
+     registered, records = [], []
+     for asset in catalog["assets"]:
+         logical = asset["logical"]
+         crate, resource = logical.split("/", 1)
+         if ".." in Path(resource).parts or Path(resource).is_absolute():
+             raise ValueError("invalid logical asset path")
+-        if crate == "makepad_widgets":
++        if logical in cjk_paths:
++            path = cjk_paths[logical]
++        elif crate == "makepad_widgets":
+             path = sdk / "widgets" / resource
+         elif crate == "hepta_robrix_ui":
+             path = robrix / resource
+@@ -59,7 +69,7 @@ def main():
+             f"    ({rust_string(logical)}, include_bytes!({rust_string(str(path))})),"
+         )
+         records.append({**asset, "inputPath": str(path)})
+-    if len(registered) != 28 or len({r["logical"] for r in records}) != 28:
++    if len(registered) != 30 or len({r["logical"] for r in records}) != 30:
+         raise ValueError("fixed asset inventory changed")
+     notices = []
+     for notice in catalog["noticeFileSha256"]:
+diff --git a/docs/modules/ui.control/TECHNICAL.md b/docs/modules/ui.control/TECHNICAL.md
+index c519088641..b63e496975 100644
+--- a/docs/modules/ui.control/TECHNICAL.md
++++ b/docs/modules/ui.control/TECHNICAL.md
+@@ -254,3 +254,39 @@ This section records the source-location obligation of `UI-V5`, not an execution
+ The Rust controller and Robrix-derived Makepad widgets are present in that source tree. [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) binds the mapped paths and exact source objects; its source observation must be checked against the candidate by `python3 scripts/ui-control-source-map.py`.
+ 
+ The current chat host has no qualified production principal/signer/bridge, operational Console composition remains pending, and transient chat drafts do not imply durable reload recovery. Actual execution outcomes belong only to source-bound external CI receipts. This source-location record grants no runtime authority, production-writer authority, independent acceptance, merge or release authorization.
++
++## Product-completion ledger: shared Rust UI
++
++This ledger separates implemented presentation from externally owned authority.
++It is not a percentage-complete or release qualification claim.
++
++| Area | Actual implementation | Remaining product boundary |
++| --- | --- | --- |
++| Shared views | Rust Robrix/Makepad conversation sidebar, virtual timeline, local draft, theme and responsive layouts; Web package is WASM with generated platform glue | Target-host usability, accessibility and high-end visual acceptance remain independent |
++| Input lifecycle | Central Rust preedit routing, stale owner/epoch checks and bounded rejected pointer tracking; actual SDK regressions | Physical IME candidate control, inside-field pointer interruption, hidden retained pages and full touch lifecycle need platform evidence |
++| Chat authority | `ChatWorkspace::install_owner`, `stage_authorized_text`, `begin_authorized_submit`, `observe_delivery` and bounded `ChatOwnerAdapter` contracts exist | No authenticated production principal/signer/gateway is composed into this shell; Send stays disabled |
++| Native lifecycle | `native_host::NativeHost` and `apps/hepta-native/src/ui/robrix_host.rs` adapt the existing polling, readiness witness, close/retry and post-exit owner | Runtime readiness observations do not grant chat or Operations authority; Linux developer preview is not universal native qualification |
++| Console | Existing retained controller contracts and a visible unavailable explanation | Operational controls are not composed into the canonical Rust host; no fabricated telemetry or successful effects |
++| Fixtures | Explicit `ui-fixtures` owner histories, geometry and input observations support real rendered regression tests | Fixture histories/callbacks are not live authenticated chat, module health or mutation receipts |
++| Typography/resources | Pinned SC sans pair, full WenKai tertiary and emoji; one bounded build-time preparation path feeds Web, staged desktop and native catalog | New glyph/layout pixels and native installed-resource behavior require their own exact-source evidence; no runtime network fallback |
++| Completion evidence | Exact source, tests, source-bound browser captures and independent review are recorded per candidate | Cross-module fan-in, host authorization, cancellation/revocation, platform IME, accessibility and deployment gates are still distinct |
++
++### Next typed owner integration seam
++
++The next seam is the existing signed-text host adapter, not a new UI-owned
++network/signing stack. `rust/core/src/chat_owner.rs` names the trusted host's
++`AgentdClient::submit_authbus_text` and status path. A genuine host must install
++current principal/session/generation/permission scope, retain the independently
++signed exact envelope, bind the real history/thread identity and revalidate
++AuthBus authority at dispatch. The UI receives only `SignedTextRef` correlation
++and authoritative delivery observations; queue admission must not become effect
++completion. Revocation/reconnect must clear stale signed references and invalidate
++in-flight observations before any Send enablement is considered.
++
++Operations remains behind its existing runtime owner and authenticated gateway.
++Compose read-only bounded status first through that typed owner, prove cancellation
++and stale-response rejection, then expose separately authorized commands with
++real operation identifiers and terminal receipts. The current `NativeHost` status
++panel is an existing lifecycle seam, not permission to derive Operations grants
++from a view or reuse Console credentials for chat. This work does not enable any
++such business action.
+diff --git a/docs/modules/ui.native/TECHNICAL.md b/docs/modules/ui.native/TECHNICAL.md
+index a80bcba8eb..a2d189c3fe 100644
+--- a/docs/modules/ui.native/TECHNICAL.md
++++ b/docs/modules/ui.native/TECHNICAL.md
+@@ -820,3 +820,20 @@ for lane ownership, execution-receipt fields and external evidence requirements.
+ These references preserve the native owner/platform boundaries and incomplete
+ qualification status. They do not qualify the new Makepad host or grant release
+ authority; historical native receipts remain limited to their recorded subjects.
++
++### Shared CJK preparation boundary
++
++The visual candidate adds two immutable, unmodified Noto Sans SC OTF/CFF assets
++through `apps/hepta-control-ui/tools/prepare-fonts.py`. The source manifest and
++original OFL/copyright notice bind exact URLs, byte counts and SHA256. The shared
++cache is build-time only; the native asset generator consumes verified cache
++paths and embeds the same bytes that the Web manifest names. The catalog changes
++explicitly from28 to30 assets, with original WenKai coverage retained. Asset
++verification also binds the preparation helper, font manifest and license.
++
++The native wrapper's `--cjk-font-cache` selects a reusable cache; `--offline`
++rejects missing fonts without network access. The standalone shared desktop
++preview uses `tools/run-desktop.py` to stage a resource-complete workspace; no
++canonical source/Cargo cache is patched. New resource inventory tests and actual
++SDK CPU font checks do not qualify a native window, installed package, platform
++IME or accessibility. Those remain exact-source runtime obligations.
+diff --git a/scripts/hepta_native_lifecycle_ci.py b/scripts/hepta_native_lifecycle_ci.py
+index 7636dfec25..9d22af3a3d 100644
+--- a/scripts/hepta_native_lifecycle_ci.py
++++ b/scripts/hepta_native_lifecycle_ci.py
+@@ -388,6 +388,9 @@ def verify_asset_inputs(directory: Path, root: Path) -> dict:
+         "catalogSha256": catalog_path,
+         "generatorSha256": native / "tools/generate-native-assets.py",
+         "helperSha256": native / "tools/build-robrix-native.py",
++        "cjkPreparationSha256": root / "apps/hepta-control-ui/tools/prepare-fonts.py",
++        "cjkManifestSha256": root / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json",
++        "cjkLicenseSha256": root / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt",
+     }
+     if (
+         receipt.get("schema") != "hepta.native-assets-verification.v1"
+@@ -415,7 +418,7 @@ def verify_asset_inputs(directory: Path, root: Path) -> dict:
+         {key: asset[key] for key in ("logical", "bytes", "sha256", "license_group")}
+         for asset in inputs["assets"]
+     ]
+-    if projected != catalog["assets"] or len({a["logical"] for a in projected}) != 28:
++    if projected != catalog["assets"] or len({a["logical"] for a in projected}) != 30:
+         raise ValueError("embedded asset inventory differs from the fixed catalog")
+     source = catalog["liberationSource"]
+     if (
+diff --git a/scripts/test_hepta_native_lifecycle_ci.py b/scripts/test_hepta_native_lifecycle_ci.py
+index 1e5714c68c..19a5295c4b 100644
+--- a/scripts/test_hepta_native_lifecycle_ci.py
++++ b/scripts/test_hepta_native_lifecycle_ci.py
+@@ -404,6 +404,9 @@ class AssetInputTests(unittest.TestCase):
+             "catalogSha256": native / "resources/NATIVE-ASSETS.json",
+             "generatorSha256": native / "tools/generate-native-assets.py",
+             "helperSha256": native / "tools/build-robrix-native.py",
++        "cjkPreparationSha256": self.root / "apps/hepta-control-ui/tools/prepare-fonts.py",
++        "cjkManifestSha256": self.root / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json",
++        "cjkLicenseSha256": self.root / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt",
+         }
+         for path in self.sources.values():
+             path.parent.mkdir(parents=True, exist_ok=True)
+@@ -417,7 +420,7 @@ class AssetInputTests(unittest.TestCase):
+                     "sha256": ci.sha(bytes([i])),
+                     "license_group": "fixture",
+                 }
+-                for i in range(28)
++                for i in range(30)
+             ],
+             "noticeFileSha256": [],
+             "liberationSource": {
+@@ -466,7 +469,7 @@ class AssetInputTests(unittest.TestCase):
+                 result["assetBytes"],
+                 result["nativeRendererObserved"],
+             ),
+-            (28, 28, False),
++            (30, 30, False),
+         )
+ 
+     def test_changed_compiler_rust_is_rejected(self):
+diff --git a/scripts/test_hepta_native_robrix_build.py b/scripts/test_hepta_native_robrix_build.py
+index cd14490c91..126f17973e 100644
+--- a/scripts/test_hepta_native_robrix_build.py
++++ b/scripts/test_hepta_native_robrix_build.py
+@@ -129,6 +129,37 @@ class BuildInputsTests(unittest.TestCase):
+         self.assertIn("branches: [work/ui-rust-scifi-audit-20261002]", workflow)
+         self.assertIn("permissions:\n  contents: read", workflow)
+ 
++    def test_current_preview_caller_binds_same_repository_head_and_merge(self):
++        workflow = (ROOT / ".github/workflows/ui-native-robrix-preview.yml").read_text()
++        self.assertIn("branches: [work/ui-rust-scifi-audit-20261002, dot/ui-ime-routing-20261005]", workflow)
++        self.assertEqual(
++            [line.strip() for line in workflow.splitlines() if line.startswith("    if: ")],
++            ["if: github.event.pull_request.head.repo.full_name == github.repository"],
++        )
++        self.assertIn("pr-number: ${{ github.event.pull_request.number }}", workflow)
++        self.assertNotIn("1338", workflow)
++        self.assertIn("lane: [source-head, base-merge]", workflow)
++        self.assertIn("SOURCE_SHA: ${{ github.event.pull_request.head.sha }}", workflow)
++        self.assertIn("BASE_SHA: ${{ github.event.pull_request.base.sha }}", workflow)
++        self.assertIn('git checkout --detach "$SOURCE_SHA"', workflow)
++        self.assertIn("base-sha: ${{ env.BASE_SHA }}", workflow)
++        self.assertIn("source-sha: ${{ env.SOURCE_SHA }}", workflow)
++        self.assertIn("runs-on: ubuntu-24.04", workflow)
++        self.assertIn("permissions:\n  contents: read", workflow)
++        self.assertIn("persist-credentials: false", workflow)
++        for forbidden in ("self-hosted", "secrets.", "contents: write", "write-all", "id-token: write"):
++            self.assertNotIn(forbidden, workflow)
++        paths = [line.strip()[2:] for line in workflow.splitlines() if line.startswith("      - ")]
++        for changed in (
++            "apps/hepta-control-ui/rust/Cargo.lock",
++            "apps/hepta-control-ui/rust/robrix-ui/build.rs",
++            "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json",
++            "apps/hepta-control-ui/tools/prepare-fonts.py",
++            "apps/hepta-control-ui/tools/run-desktop.py",
++            "scripts/test_hepta_native_robrix_build.py",
++        ):
++            self.assertTrue(any(fnmatch.fnmatchcase(changed, pattern) for pattern in paths), changed)
++
+     def test_toml_platform_path_roundtrips_unicode_and_controls(self):
+         for value in [
+             "/tmp/中文 😀/platform",
+@@ -193,6 +224,9 @@ class BuildInputsTests(unittest.TestCase):
+             module.NATIVE / "Cargo.lock",
+             module.NATIVE / "resources/NATIVE-ASSETS.json",
+             module.NATIVE / "tools/generate-native-assets.py",
++            Path("apps/hepta-control-ui/tools/prepare-fonts.py"),
++            module.ROBRIX / "resources/fonts/MANIFEST.json",
++            module.ROBRIX / "resources/fonts/OFL.txt",
+         ):
+             file = source / path
+             file.parent.mkdir(parents=True, exist_ok=True)

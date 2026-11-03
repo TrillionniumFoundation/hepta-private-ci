@@ -1,0 +1,12 @@
+--- a/.github/workflows/hepta-e1-real-public-three.yml
++++ b/.github/workflows/hepta-e1-real-public-three.yml
+@@
+       - "experiments/shared_stem_cell/e1_mmbert_tied_loader.py"
++      - "experiments/shared_stem_cell/p0_mmbert_tied_load_contract_v15.py"
++      - "experiments/shared_stem_cell/test_p0_mmbert_tied_load_contract_v15.py"
+--- a/.github/workflows/hepta-p0-mmbert-strict-physical-v15.yml
++++ b/.github/workflows/hepta-p0-mmbert-strict-physical-v15.yml
+@@
+-            grep -F 'Ran 23 tests' "$RUNNER_TEMP/p0-mmbert-v15-evidence/tests-$mode.log"
++            # Exact current original V15 physical + alias-contract census: 16 + 17 tests.
++            grep -F 'Ran 33 tests' "$RUNNER_TEMP/p0-mmbert-v15-evidence/tests-$mode.log"
