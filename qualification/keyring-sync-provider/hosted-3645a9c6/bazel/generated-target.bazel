@@ -1,0 +1,888 @@
+# /home/runner/.cache/codex-ci/o/external/bazel_tools/tools/cpp/BUILD:21:15
+toolchain_type(
+  name = "toolchain_type",
+)
+# Rule toolchain_type instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/bazel_tools/tools/cpp/BUILD:21:15 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/llvm+/constraints/windows/abi/BUILD.bazel:12:17
+constraint_value(
+  name = "gnullvm",
+  constraint_setting = "@llvm//constraints/windows/abi:abi",
+)
+# Rule gnullvm instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/llvm+/constraints/windows/abi/BUILD.bazel:12:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/llvm+/constraints/windows/abi/BUILD.bazel:17:17
+constraint_value(
+  name = "msvc",
+  constraint_setting = "@llvm//constraints/windows/abi:abi",
+)
+# Rule msvc instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/llvm+/constraints/windows/abi/BUILD.bazel:17:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/llvm+/constraints/windows/crt/BUILD.bazel:14:17
+constraint_value(
+  name = "msvcrt",
+  constraint_setting = "@llvm//constraints/windows/crt:crt",
+)
+# Rule msvcrt instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/llvm+/constraints/windows/crt/BUILD.bazel:14:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/llvm++osx+macos_sdk/sysroot/BUILD.bazel:3:18
+_headers_directory(
+  name = "sysroot",
+  visibility = ["//visibility:public"],
+  generator_name = "sysroot",
+  generator_function = "headers_directory",
+  generator_location = "sysroot/BUILD.bazel:3:18",
+  directory = "@macos_sdk//sysroot:sysroot_directory",
+  source_directory = "@macos_sdk//sysroot:sysroot_source_directory",
+)
+# Rule sysroot instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/llvm++osx+macos_sdk/sysroot/BUILD.bazel:3:18 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/llvm+/directory.bzl:30:23                    in headers_directory
+# Rule _headers_directory defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/llvm+/directory.bzl:48:26 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/platforms/BUILD:64:17
+constraint_value(
+  name = "incompatible",
+  constraint_setting = "@platforms//:incompatible_setting",
+)
+# Rule incompatible instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/platforms/BUILD:64:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/platforms/BUILD:62:19
+constraint_setting(
+  name = "incompatible_setting",
+)
+# Rule incompatible_setting instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/platforms/BUILD:62:19 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/platforms/cpu/BUILD:57:17
+constraint_value(
+  name = "aarch64",
+  constraint_setting = "@platforms//cpu:cpu",
+)
+# Rule aarch64 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/platforms/cpu/BUILD:57:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/platforms/cpu/BUILD:169:17
+constraint_value(
+  name = "x86_64",
+  constraint_setting = "@platforms//cpu:cpu",
+)
+# Rule x86_64 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/platforms/cpu/BUILD:169:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/platforms/os/BUILD:41:17
+constraint_value(
+  name = "linux",
+  constraint_setting = "@platforms//os:os",
+)
+# Rule linux instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/platforms/os/BUILD:41:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/platforms/os/BUILD:71:17
+constraint_value(
+  name = "osx",
+  constraint_setting = "@platforms//os:os",
+)
+# Rule osx instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/platforms/os/BUILD:71:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/platforms/os/BUILD:46:17
+constraint_value(
+  name = "windows",
+  constraint_setting = "@platforms//os:os",
+)
+# Rule windows instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/platforms/os/BUILD:46:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/BUILD.bazel:6:17
+_package_metadata(
+  name = "package_metadata",
+  visibility = ["//visibility:public"],
+  generator_name = "package_metadata",
+  generator_function = "package_metadata",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs+/BUILD.bazel:6:17",
+  package_metadata = [],
+  attributes = [],
+  purl = "pkg:bazel/rules_rs@0.0.96",
+)
+# Rule package_metadata instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/BUILD.bazel:6:17                         in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/package_metadata+/rules/package_metadata.bzl:73:22 in package_metadata
+# Rule _package_metadata defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/package_metadata+/rules/package_metadata.bzl:36:25 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "aarch64-apple-darwin",
+  visibility = ["//visibility:public"],
+  generator_name = "aarch64-apple-darwin",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:aarch64", "@platforms//os:osx"],
+)
+# Rule aarch64-apple-darwin instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "aarch64-pc-windows-gnullvm",
+  visibility = ["//visibility:public"],
+  generator_name = "aarch64-pc-windows-gnullvm",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:aarch64", "@platforms//os:windows", "@llvm//constraints/windows/abi:gnullvm", "@llvm//constraints/windows/crt:msvcrt"],
+)
+# Rule aarch64-pc-windows-gnullvm instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "aarch64-pc-windows-msvc",
+  visibility = ["//visibility:public"],
+  generator_name = "aarch64-pc-windows-msvc",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:aarch64", "@platforms//os:windows", "@llvm//constraints/windows/abi:msvc"],
+)
+# Rule aarch64-pc-windows-msvc instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "aarch64-unknown-linux-gnu",
+  visibility = ["//visibility:public"],
+  generator_name = "aarch64-unknown-linux-gnu",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:aarch64", "@platforms//os:linux", "@rules_rs//rs/platforms/constraints:glibc"],
+)
+# Rule aarch64-unknown-linux-gnu instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "aarch64-unknown-linux-musl",
+  visibility = ["//visibility:public"],
+  generator_name = "aarch64-unknown-linux-musl",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:aarch64", "@platforms//os:linux", "@rules_rs//rs/platforms/constraints:musl"],
+)
+# Rule aarch64-unknown-linux-musl instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "x86_64-apple-darwin",
+  visibility = ["//visibility:public"],
+  generator_name = "x86_64-apple-darwin",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:x86_64", "@platforms//os:osx"],
+)
+# Rule x86_64-apple-darwin instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "x86_64-pc-windows-gnullvm",
+  visibility = ["//visibility:public"],
+  generator_name = "x86_64-pc-windows-gnullvm",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:x86_64", "@platforms//os:windows", "@llvm//constraints/windows/abi:gnullvm", "@llvm//constraints/windows/crt:msvcrt"],
+)
+# Rule x86_64-pc-windows-gnullvm instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "x86_64-pc-windows-msvc",
+  visibility = ["//visibility:public"],
+  generator_name = "x86_64-pc-windows-msvc",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:x86_64", "@platforms//os:windows", "@llvm//constraints/windows/abi:msvc"],
+)
+# Rule x86_64-pc-windows-msvc instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "x86_64-unknown-linux-gnu",
+  visibility = ["//visibility:public"],
+  generator_name = "x86_64-unknown-linux-gnu",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:x86_64", "@platforms//os:linux", "@rules_rs//rs/platforms/constraints:glibc"],
+)
+# Rule x86_64-unknown-linux-gnu instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24
+config_setting(
+  name = "x86_64-unknown-linux-musl",
+  visibility = ["//visibility:public"],
+  generator_name = "x86_64-unknown-linux-musl",
+  generator_function = "declare_config_settings",
+  generator_location = "rs/platforms/config/BUILD.bazel:4:24",
+  constraint_values = ["@platforms//cpu:x86_64", "@platforms//os:linux", "@rules_rs//rs/platforms/constraints:musl"],
+)
+# Rule x86_64-unknown-linux-musl instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/BUILD.bazel:4:24                 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/config/declare_config_settings.bzl:7:30 in declare_config_settings
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/constraints/BUILD.bazel:12:17
+constraint_value(
+  name = "glibc",
+  constraint_setting = "@rules_rs//rs/platforms/constraints:linux_libc",
+)
+# Rule glibc instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/constraints/BUILD.bazel:12:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/constraints/BUILD.bazel:17:17
+constraint_value(
+  name = "musl",
+  constraint_setting = "@rules_rs//rs/platforms/constraints:linux_libc",
+)
+# Rule musl instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/platforms/constraints/BUILD.bazel:17:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:707:6
+alias(
+  name = "byteorder-1.5.0",
+  actual = "@@rules_rs++crate+crates__byteorder-1.5.0//:byteorder",
+)
+# Rule byteorder-1.5.0 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:707:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:1347:6
+alias(
+  name = "dbus-secret-service-4.1.0",
+  actual = "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:dbus-secret-service",
+)
+# Rule dbus-secret-service-4.1.0 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:1347:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:3167:6
+alias(
+  name = "keyring",
+  actual = "@crates//:keyring-3.6.3",
+)
+# Rule keyring instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:3167:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:3162:6
+alias(
+  name = "keyring-3.6.3",
+  actual = "@@rules_rs++crate+crates__keyring-3.6.3//:keyring",
+)
+# Rule keyring-3.6.3 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:3162:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:3287:6
+alias(
+  name = "linux-keyutils-0.2.4",
+  actual = "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:linux-keyutils",
+)
+# Rule linux-keyutils-0.2.4 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:3287:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:3327:6
+alias(
+  name = "log-0.4.29",
+  actual = "@@rules_rs++crate+crates__log-0.4.29//:log",
+)
+# Rule log-0.4.29 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:3327:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:5237:6
+alias(
+  name = "security-framework-3.5.1",
+  actual = "@@rules_rs++crate+crates__security-framework-3.5.1//:security-framework",
+)
+# Rule security-framework-3.5.1 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:5237:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:7187:6
+alias(
+  name = "windows-sys-0.60.2",
+  actual = "@@rules_rs++crate+crates__windows-sys-0.60.2//:windows-sys",
+)
+# Rule windows-sys-0.60.2 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:7187:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:7527:6
+alias(
+  name = "zeroize-1.8.2",
+  actual = "@@rules_rs++crate+crates__zeroize-1.8.2//:zeroize",
+)
+# Rule zeroize-1.8.2 instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates/BUILD.bazel:7527:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__byteorder-1.5.0/BUILD.bazel:5:11
+rust_library(
+  name = "byteorder",
+  visibility = ["//visibility:public"],
+  tags = ["crate-name=byteorder", "manual", "noclippy", "norustfmt"],
+  generator_name = "byteorder",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__byteorder-1.5.0/BUILD.bazel:5:11",
+  package_metadata = ["@@rules_rs++crate+crates__byteorder-1.5.0//:byteorder_package_metadata"],
+  target_compatible_with = select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": [], "//conditions:default": ["@platforms//:incompatible"]}),
+  aliases = {},
+  compile_data = ["@@rules_rs++crate+crates__byteorder-1.5.0//:.cargo_vcs_info.json", "@@rules_rs++crate+crates__byteorder-1.5.0//:.github/workflows/ci.yml", "@@rules_rs++crate+crates__byteorder-1.5.0//:.gitignore", "@@rules_rs++crate+crates__byteorder-1.5.0//:CHANGELOG.md", "@@rules_rs++crate+crates__byteorder-1.5.0//:COPYING", "@@rules_rs++crate+crates__byteorder-1.5.0//:Cargo.toml", "@@rules_rs++crate+crates__byteorder-1.5.0//:LICENSE-MIT", "@@rules_rs++crate+crates__byteorder-1.5.0//:README.md", "@@rules_rs++crate+crates__byteorder-1.5.0//:UNLICENSE", "@@rules_rs++crate+crates__byteorder-1.5.0//:benches/bench.rs", "@@rules_rs++crate+crates__byteorder-1.5.0//:cargo_toml_env_vars.env", "@@rules_rs++crate+crates__byteorder-1.5.0//:rustfmt.toml", "@@rules_rs++crate+crates__byteorder-1.5.0//:src/io.rs", "@@rules_rs++crate+crates__byteorder-1.5.0//:src/lib.rs"],
+  crate_features = ["default", "std"],
+  crate_name = "byteorder",
+  crate_root = "@@rules_rs++crate+crates__byteorder-1.5.0//:src/lib.rs",
+  data = [],
+  deps = [],
+  edition = "2021",
+  proc_macro_deps = [],
+  skip_deps_verification = False,
+  rustc_env = {"CARGO_MANIFEST_PATH": "$(execpath :Cargo.toml)"},
+  rustc_env_files = ["@@rules_rs++crate+crates__byteorder-1.5.0//:cargo_toml_env_vars.env"],
+  rustc_flags = ["--cap-lints=allow"],
+  srcs = ["@@rules_rs++crate+crates__byteorder-1.5.0//:benches/bench.rs", "@@rules_rs++crate+crates__byteorder-1.5.0//:src/io.rs", "@@rules_rs++crate+crates__byteorder-1.5.0//:src/lib.rs"],
+  version = "1.5.0",
+  skip_per_crate_rustc_flags = True,
+)
+# Rule byteorder instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__byteorder-1.5.0/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:209:72                       in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1      in rust_library
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13      in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__dbus-secret-service-4.1.0/BUILD.bazel:5:11
+rust_library(
+  name = "dbus-secret-service",
+  visibility = ["//visibility:public"],
+  tags = ["crate-name=dbus-secret-service", "manual", "noclippy", "norustfmt"],
+  generator_name = "dbus-secret-service",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__dbus-secret-service-4.1.0/BUILD.bazel:5:11",
+  package_metadata = ["@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:dbus-secret-service_package_metadata"],
+  target_compatible_with = select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": [], "//conditions:default": ["@platforms//:incompatible"]}),
+  aliases = {},
+  compile_data = ["@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:.cargo_vcs_info.json", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:.gitignore", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:CHANGELOG.md", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:Cargo.lock", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:Cargo.toml", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:HEPTA_PATCH.md", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:LICENSE-APACHE", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:LICENSE-MIT", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:README.md", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:cargo_toml_env_vars.env", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:examples/example.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/collection.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/error.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/item.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/lib.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/prompt.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/collection.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/item.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/mod.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/prompt.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/service.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/session.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/ss.rs"],
+  crate_features = [] + select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": ["crypto-rust", "default"], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": ["crypto-rust", "default"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": ["crypto-rust", "default"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": ["crypto-rust", "default"], "//conditions:default": []}),
+  crate_name = "dbus_secret_service",
+  crate_root = "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/lib.rs",
+  data = [],
+  deps = ["@crates//:dbus-0.9.10", "@crates//:zeroize-1.8.2"] + select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": ["@crates//:aes-0.8.4", "@crates//:block-padding-0.3.3", "@crates//:cbc-0.1.2", "@crates//:hkdf-0.12.4", "@crates//:num-0.4.3", "@crates//:once_cell-1.21.4", "@crates//:rand-0.8.6", "@crates//:sha2-0.10.9"], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": ["@crates//:aes-0.8.4", "@crates//:block-padding-0.3.3", "@crates//:cbc-0.1.2", "@crates//:hkdf-0.12.4", "@crates//:num-0.4.3", "@crates//:once_cell-1.21.4", "@crates//:rand-0.8.6", "@crates//:sha2-0.10.9"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": ["@crates//:aes-0.8.4", "@crates//:block-padding-0.3.3", "@crates//:cbc-0.1.2", "@crates//:hkdf-0.12.4", "@crates//:num-0.4.3", "@crates//:once_cell-1.21.4", "@crates//:rand-0.8.6", "@crates//:sha2-0.10.9"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": ["@crates//:aes-0.8.4", "@crates//:block-padding-0.3.3", "@crates//:cbc-0.1.2", "@crates//:hkdf-0.12.4", "@crates//:num-0.4.3", "@crates//:once_cell-1.21.4", "@crates//:rand-0.8.6", "@crates//:sha2-0.10.9"], "//conditions:default": []}) + [] + [],
+  edition = "2021",
+  proc_macro_deps = ["@crates//:dbus-0.9.10", "@crates//:zeroize-1.8.2"] + select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": ["@crates//:aes-0.8.4", "@crates//:block-padding-0.3.3", "@crates//:cbc-0.1.2", "@crates//:hkdf-0.12.4", "@crates//:num-0.4.3", "@crates//:once_cell-1.21.4", "@crates//:rand-0.8.6", "@crates//:sha2-0.10.9"], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": ["@crates//:aes-0.8.4", "@crates//:block-padding-0.3.3", "@crates//:cbc-0.1.2", "@crates//:hkdf-0.12.4", "@crates//:num-0.4.3", "@crates//:once_cell-1.21.4", "@crates//:rand-0.8.6", "@crates//:sha2-0.10.9"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": ["@crates//:aes-0.8.4", "@crates//:block-padding-0.3.3", "@crates//:cbc-0.1.2", "@crates//:hkdf-0.12.4", "@crates//:num-0.4.3", "@crates//:once_cell-1.21.4", "@crates//:rand-0.8.6", "@crates//:sha2-0.10.9"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": ["@crates//:aes-0.8.4", "@crates//:block-padding-0.3.3", "@crates//:cbc-0.1.2", "@crates//:hkdf-0.12.4", "@crates//:num-0.4.3", "@crates//:once_cell-1.21.4", "@crates//:rand-0.8.6", "@crates//:sha2-0.10.9"], "//conditions:default": []}) + [] + [],
+  skip_deps_verification = False,
+  rustc_env = {"CARGO_MANIFEST_PATH": "$(execpath :Cargo.toml)"},
+  rustc_env_files = ["@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:cargo_toml_env_vars.env"],
+  rustc_flags = ["--cap-lints=allow"],
+  srcs = ["@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:examples/example.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/collection.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/error.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/item.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/lib.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/prompt.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/collection.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/item.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/mod.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/prompt.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/proxy/service.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/session.rs", "@@rules_rs++crate+crates__dbus-secret-service-4.1.0//:src/ss.rs"],
+  version = "4.1.0",
+  skip_per_crate_rustc_flags = True,
+)
+# Rule dbus-secret-service instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__dbus-secret-service-4.1.0/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:209:72                                 in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1                in rust_library
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13                in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__keyring-3.6.3/BUILD.bazel:5:11
+rust_library(
+  name = "keyring",
+  visibility = ["//visibility:public"],
+  tags = ["crate-name=keyring", "manual", "noclippy", "norustfmt"],
+  generator_name = "keyring",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__keyring-3.6.3/BUILD.bazel:5:11",
+  package_metadata = ["@@rules_rs++crate+crates__keyring-3.6.3//:keyring_package_metadata"],
+  target_compatible_with = select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": [], "//conditions:default": ["@platforms//:incompatible"]}),
+  aliases = {},
+  compile_data = ["@@rules_rs++crate+crates__keyring-3.6.3//:.cargo_vcs_info.json", "@@rules_rs++crate+crates__keyring-3.6.3//:.gitignore", "@@rules_rs++crate+crates__keyring-3.6.3//:CHANGELOG.md", "@@rules_rs++crate+crates__keyring-3.6.3//:Cargo.lock", "@@rules_rs++crate+crates__keyring-3.6.3//:Cargo.toml", "@@rules_rs++crate+crates__keyring-3.6.3//:HEPTA_PATCH.md", "@@rules_rs++crate+crates__keyring-3.6.3//:LICENSE-APACHE", "@@rules_rs++crate+crates__keyring-3.6.3//:LICENSE-MIT", "@@rules_rs++crate+crates__keyring-3.6.3//:README.md", "@@rules_rs++crate+crates__keyring-3.6.3//:cargo_toml_env_vars.env", "@@rules_rs++crate+crates__keyring-3.6.3//:examples/cli.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:examples/ios.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:release.toml", "@@rules_rs++crate+crates__keyring-3.6.3//:src/credential.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/error.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/ios.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/keyutils.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/keyutils_persistent.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/lib.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/macos.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/mock.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/secret_service.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/windows.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:tests/basic.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:tests/common/mod.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:tests/threading.rs"],
+  crate_features = ["crypto-rust-sync"] + select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": ["linux-native", "linux-native-sync-persistent", "sync-secret-service"], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": ["linux-native", "linux-native-sync-persistent", "sync-secret-service"], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": ["apple-native"], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": ["windows-native"], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": ["windows-native"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": ["linux-native", "linux-native-sync-persistent", "sync-secret-service"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": ["linux-native", "linux-native-sync-persistent", "sync-secret-service"], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": ["apple-native"], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": ["windows-native"], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": ["windows-native"], "//conditions:default": []}),
+  crate_name = "keyring",
+  crate_root = "@@rules_rs++crate+crates__keyring-3.6.3//:src/lib.rs",
+  data = [],
+  deps = ["@crates//:log-0.4.29"] + select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": ["@crates//:dbus-secret-service-4.1.0", "@crates//:linux-keyutils-0.2.4"], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": ["@crates//:dbus-secret-service-4.1.0", "@crates//:linux-keyutils-0.2.4"], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": ["@crates//:security-framework-3.5.1"], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": ["@crates//:byteorder-1.5.0", "@crates//:windows-sys-0.60.2", "@crates//:zeroize-1.8.2"], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": ["@crates//:byteorder-1.5.0", "@crates//:windows-sys-0.60.2", "@crates//:zeroize-1.8.2"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": ["@crates//:dbus-secret-service-4.1.0", "@crates//:linux-keyutils-0.2.4"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": ["@crates//:dbus-secret-service-4.1.0", "@crates//:linux-keyutils-0.2.4"], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": ["@crates//:security-framework-3.5.1"], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": ["@crates//:byteorder-1.5.0", "@crates//:windows-sys-0.60.2", "@crates//:zeroize-1.8.2"], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": ["@crates//:byteorder-1.5.0", "@crates//:windows-sys-0.60.2", "@crates//:zeroize-1.8.2"], "//conditions:default": []}) + [] + [],
+  edition = "2021",
+  proc_macro_deps = ["@crates//:log-0.4.29"] + select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": ["@crates//:dbus-secret-service-4.1.0", "@crates//:linux-keyutils-0.2.4"], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": ["@crates//:dbus-secret-service-4.1.0", "@crates//:linux-keyutils-0.2.4"], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": ["@crates//:security-framework-3.5.1"], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": ["@crates//:byteorder-1.5.0", "@crates//:windows-sys-0.60.2", "@crates//:zeroize-1.8.2"], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": ["@crates//:byteorder-1.5.0", "@crates//:windows-sys-0.60.2", "@crates//:zeroize-1.8.2"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": ["@crates//:dbus-secret-service-4.1.0", "@crates//:linux-keyutils-0.2.4"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": ["@crates//:dbus-secret-service-4.1.0", "@crates//:linux-keyutils-0.2.4"], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": ["@crates//:security-framework-3.5.1"], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": ["@crates//:byteorder-1.5.0", "@crates//:windows-sys-0.60.2", "@crates//:zeroize-1.8.2"], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": ["@crates//:byteorder-1.5.0", "@crates//:windows-sys-0.60.2", "@crates//:zeroize-1.8.2"], "//conditions:default": []}) + [] + [],
+  skip_deps_verification = False,
+  rustc_env = {"CARGO_MANIFEST_PATH": "$(execpath :Cargo.toml)"},
+  rustc_env_files = ["@@rules_rs++crate+crates__keyring-3.6.3//:cargo_toml_env_vars.env"],
+  rustc_flags = ["--cap-lints=allow"],
+  srcs = ["@@rules_rs++crate+crates__keyring-3.6.3//:examples/cli.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:examples/ios.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/credential.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/error.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/ios.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/keyutils.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/keyutils_persistent.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/lib.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/macos.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/mock.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/secret_service.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:src/windows.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:tests/basic.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:tests/common/mod.rs", "@@rules_rs++crate+crates__keyring-3.6.3//:tests/threading.rs"],
+  version = "3.6.3",
+  skip_per_crate_rustc_flags = True,
+)
+# Rule keyring instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__keyring-3.6.3/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:209:72                     in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1    in rust_library
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13    in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__keyring-3.6.3/BUILD.bazel:5:11
+_package_metadata(
+  name = "keyring_package_metadata",
+  visibility = ["//visibility:public"],
+  generator_name = "keyring",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__keyring-3.6.3/BUILD.bazel:5:11",
+  package_metadata = [],
+  attributes = [],
+  purl = "pkg:cargo/keyring@3.6.3",
+)
+# Rule keyring_package_metadata instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__keyring-3.6.3/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:49:21                      in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/package_metadata+/rules/package_metadata.bzl:73:22     in package_metadata
+# Rule _package_metadata defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/package_metadata+/rules/package_metadata.bzl:36:25 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__linux-keyutils-0.2.4/BUILD.bazel:5:11
+rust_library(
+  name = "linux-keyutils",
+  visibility = ["//visibility:public"],
+  tags = ["crate-name=linux-keyutils", "manual", "noclippy", "norustfmt"],
+  generator_name = "linux-keyutils",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__linux-keyutils-0.2.4/BUILD.bazel:5:11",
+  package_metadata = ["@@rules_rs++crate+crates__linux-keyutils-0.2.4//:linux-keyutils_package_metadata"],
+  target_compatible_with = select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": [], "//conditions:default": ["@platforms//:incompatible"]}),
+  aliases = {},
+  compile_data = ["@@rules_rs++crate+crates__linux-keyutils-0.2.4//:.cargo_vcs_info.json", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:.github/workflows/checks.yml", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:.github/workflows/coverage.yml", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:.gitignore", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:.gitmodules", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:Cargo.lock", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:Cargo.toml", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:README.md", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:cargo_toml_env_vars.env", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:examples/keyctl.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/errors.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/ffi/functions.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/ffi/mod.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/ffi/types.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/key.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/keyring.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/lib.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/links.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/metadata.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/permissions.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:tarpaulin.toml"],
+  crate_features = [] + select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": ["default", "std"], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": ["default", "std"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": ["default", "std"], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": ["default", "std"], "//conditions:default": []}),
+  crate_root = "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/lib.rs",
+  data = [],
+  deps = ["@crates//:bitflags-2.13.1", "@crates//:libc-0.2.186"],
+  edition = "2021",
+  proc_macro_deps = ["@crates//:bitflags-2.13.1", "@crates//:libc-0.2.186"],
+  skip_deps_verification = False,
+  rustc_env = {"CARGO_MANIFEST_PATH": "$(execpath :Cargo.toml)"},
+  rustc_env_files = ["@@rules_rs++crate+crates__linux-keyutils-0.2.4//:cargo_toml_env_vars.env"],
+  rustc_flags = ["--cap-lints=allow"],
+  srcs = ["@@rules_rs++crate+crates__linux-keyutils-0.2.4//:examples/keyctl.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/errors.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/ffi/functions.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/ffi/mod.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/ffi/types.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/key.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/keyring.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/lib.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/links.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/metadata.rs", "@@rules_rs++crate+crates__linux-keyutils-0.2.4//:src/permissions.rs"],
+  version = "0.2.4",
+  skip_per_crate_rustc_flags = True,
+)
+# Rule linux-keyutils instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__linux-keyutils-0.2.4/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:209:72                            in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1           in rust_library
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13           in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__log-0.4.29/BUILD.bazel:5:11
+rust_library(
+  name = "log",
+  visibility = ["//visibility:public"],
+  tags = ["crate-name=log", "manual", "noclippy", "norustfmt"],
+  generator_name = "log",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__log-0.4.29/BUILD.bazel:5:11",
+  package_metadata = ["@@rules_rs++crate+crates__log-0.4.29//:log_package_metadata"],
+  target_compatible_with = select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": [], "//conditions:default": ["@platforms//:incompatible"]}),
+  aliases = {},
+  compile_data = ["@@rules_rs++crate+crates__log-0.4.29//:.cargo_vcs_info.json", "@@rules_rs++crate+crates__log-0.4.29//:.github/workflows/main.yml", "@@rules_rs++crate+crates__log-0.4.29//:.gitignore", "@@rules_rs++crate+crates__log-0.4.29//:CHANGELOG.md", "@@rules_rs++crate+crates__log-0.4.29//:Cargo.lock", "@@rules_rs++crate+crates__log-0.4.29//:Cargo.toml", "@@rules_rs++crate+crates__log-0.4.29//:LICENSE-APACHE", "@@rules_rs++crate+crates__log-0.4.29//:LICENSE-MIT", "@@rules_rs++crate+crates__log-0.4.29//:README.md", "@@rules_rs++crate+crates__log-0.4.29//:benches/value.rs", "@@rules_rs++crate+crates__log-0.4.29//:cargo_toml_env_vars.env", "@@rules_rs++crate+crates__log-0.4.29//:src/__private_api.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/error.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/key.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/mod.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/source.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/value.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/lib.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/macros.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/serde.rs", "@@rules_rs++crate+crates__log-0.4.29//:tests/integration.rs", "@@rules_rs++crate+crates__log-0.4.29//:tests/macros.rs", "@@rules_rs++crate+crates__log-0.4.29//:triagebot.toml"],
+  crate_features = ["default", "std"],
+  crate_name = "log",
+  crate_root = "@@rules_rs++crate+crates__log-0.4.29//:src/lib.rs",
+  data = [],
+  deps = [],
+  edition = "2021",
+  proc_macro_deps = [],
+  skip_deps_verification = False,
+  rustc_env = {"CARGO_MANIFEST_PATH": "$(execpath :Cargo.toml)"},
+  rustc_env_files = ["@@rules_rs++crate+crates__log-0.4.29//:cargo_toml_env_vars.env"],
+  rustc_flags = ["--cap-lints=allow"],
+  srcs = ["@@rules_rs++crate+crates__log-0.4.29//:benches/value.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/__private_api.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/error.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/key.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/mod.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/source.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/kv/value.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/lib.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/macros.rs", "@@rules_rs++crate+crates__log-0.4.29//:src/serde.rs", "@@rules_rs++crate+crates__log-0.4.29//:tests/integration.rs", "@@rules_rs++crate+crates__log-0.4.29//:tests/macros.rs"],
+  version = "0.4.29",
+  skip_per_crate_rustc_flags = True,
+)
+# Rule log instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__log-0.4.29/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:209:72                  in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1 in rust_library
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13 in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__security-framework-3.5.1/BUILD.bazel:5:11
+rust_library(
+  name = "security-framework",
+  visibility = ["//visibility:public"],
+  tags = ["crate-name=security-framework", "manual", "noclippy", "norustfmt"],
+  generator_name = "security-framework",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__security-framework-3.5.1/BUILD.bazel:5:11",
+  package_metadata = ["@@rules_rs++crate+crates__security-framework-3.5.1//:security-framework_package_metadata"],
+  target_compatible_with = select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": [], "//conditions:default": ["@platforms//:incompatible"]}),
+  aliases = {},
+  compile_data = ["@@rules_rs++crate+crates__security-framework-3.5.1//:.cargo_vcs_info.json", "@@rules_rs++crate+crates__security-framework-3.5.1//:Cargo.lock", "@@rules_rs++crate+crates__security-framework-3.5.1//:Cargo.toml", "@@rules_rs++crate+crates__security-framework-3.5.1//:LICENSE-APACHE", "@@rules_rs++crate+crates__security-framework-3.5.1//:LICENSE-MIT", "@@rules_rs++crate+crates__security-framework-3.5.1//:README.md", "@@rules_rs++crate+crates__security-framework-3.5.1//:THIRD_PARTY", "@@rules_rs++crate+crates__security-framework-3.5.1//:cargo_toml_env_vars.env", "@@rules_rs++crate+crates__security-framework-3.5.1//:examples/client.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:examples/find_internet_password.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:examples/set_internet_password.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/access_control.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/authorization.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/base.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/certificate.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/cipher_suite.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/cms.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/dlsym.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/identity.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/import_export.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/item.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/key.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/lib.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/access.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/certificate.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/certificate_oids.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/code_signing.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/digest_transform.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/encrypt_transform.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/identity.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/import_export.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/item.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/key.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/keychain.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/keychain_item.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/mod.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/passwords.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/secure_transport.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/transform.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/mod.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/passwords.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/passwords_options.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/policy.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/random.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/secure_transport.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/trust.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/trust_settings.rs"],
+  crate_features = [] + select({"@rules_rs//rs/platforms/config:aarch64-apple-darwin": ["OSX_10_12", "default"], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": ["OSX_10_12", "default"], "//conditions:default": []}),
+  crate_name = "security_framework",
+  crate_root = "@@rules_rs++crate+crates__security-framework-3.5.1//:src/lib.rs",
+  data = [],
+  deps = ["@crates//:bitflags-2.13.1", "@crates//:core-foundation-0.10.1", "@crates//:core-foundation-sys-0.8.7", "@crates//:libc-0.2.186", "@crates//:security-framework-sys-2.15.0"],
+  edition = "2021",
+  proc_macro_deps = ["@crates//:bitflags-2.13.1", "@crates//:core-foundation-0.10.1", "@crates//:core-foundation-sys-0.8.7", "@crates//:libc-0.2.186", "@crates//:security-framework-sys-2.15.0"],
+  skip_deps_verification = False,
+  rustc_env = {"CARGO_MANIFEST_PATH": "$(execpath :Cargo.toml)"},
+  rustc_env_files = ["@@rules_rs++crate+crates__security-framework-3.5.1//:cargo_toml_env_vars.env"],
+  rustc_flags = ["--cap-lints=allow"],
+  srcs = ["@@rules_rs++crate+crates__security-framework-3.5.1//:examples/client.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:examples/find_internet_password.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:examples/set_internet_password.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/access_control.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/authorization.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/base.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/certificate.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/cipher_suite.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/cms.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/dlsym.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/identity.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/import_export.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/item.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/key.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/lib.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/access.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/certificate.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/certificate_oids.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/code_signing.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/digest_transform.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/encrypt_transform.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/identity.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/import_export.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/item.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/key.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/keychain.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/keychain_item.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/mod.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/passwords.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/secure_transport.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/macos/transform.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/os/mod.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/passwords.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/passwords_options.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/policy.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/random.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/secure_transport.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/trust.rs", "@@rules_rs++crate+crates__security-framework-3.5.1//:src/trust_settings.rs"],
+  version = "3.5.1",
+  skip_per_crate_rustc_flags = True,
+)
+# Rule security-framework instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__security-framework-3.5.1/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:209:72                                in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1               in rust_library
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13               in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__windows-sys-0.60.2/BUILD.bazel:5:11
+rust_library(
+  name = "windows-sys",
+  visibility = ["//visibility:public"],
+  tags = ["crate-name=windows-sys", "manual", "noclippy", "norustfmt"],
+  generator_name = "windows-sys",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__windows-sys-0.60.2/BUILD.bazel:5:11",
+  package_metadata = ["@@rules_rs++crate+crates__windows-sys-0.60.2//:windows-sys_package_metadata"],
+  target_compatible_with = select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": [], "//conditions:default": ["@platforms//:incompatible"]}),
+  aliases = {},
+  compile_data = ["@@rules_rs++crate+crates__windows-sys-0.60.2//:.cargo_vcs_info.json", "@@rules_rs++crate+crates__windows-sys-0.60.2//:Cargo.lock", "@@rules_rs++crate+crates__windows-sys-0.60.2//:Cargo.toml", "@@rules_rs++crate+crates__windows-sys-0.60.2//:cargo_toml_env_vars.env", "@@rules_rs++crate+crates__windows-sys-0.60.2//:license-apache-2.0", "@@rules_rs++crate+crates__windows-sys-0.60.2//:license-mit", "@@rules_rs++crate+crates__windows-sys-0.60.2//:readme.md", "@@rules_rs++crate+crates__windows-sys-0.60.2//:rustfmt.toml", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Devices/Bluetooth/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Devices/HumanInterfaceDevice/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Devices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Foundation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Graphics/Direct3D/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Graphics/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/NetworkManagement/Ndis/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/NetworkManagement/WindowsFilteringPlatform/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/NetworkManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Storage/FileSystem/Minifilters/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Storage/FileSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Storage/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/IO/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/Memory/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/OfflineRegistry/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/Registry/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/SystemInformation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/SystemServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/Threading/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Data/HtmlHelp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Data/RightsManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Data/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/AllJoyn/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Beep/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/BiometricFramework/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Bluetooth/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Cdrom/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Communication/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/DeviceAndDriverInstallation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/DeviceQuery/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Display/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Dvd/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Enumeration/Pnp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Enumeration/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Fax/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/HumanInterfaceDevice/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Nfc/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Nfp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/PortableDevices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Properties/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Pwm/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Sensors/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/SerialCommunication/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Tapi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Usb/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/WebServicesOnDevices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Foundation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Gaming/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Globalization/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Dwm/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Gdi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/GdiPlus/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Hlsl/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/OpenGL/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Printing/PrintTicket/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Printing/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Management/MobileDeviceManagementRegistration/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Management/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/Audio/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/DxMediaObjects/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/KernelStreaming/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/Multimedia/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/Streaming/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/WindowsMediaFormat/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Dhcp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Dns/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/InternetConnectionWizard/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/IpHelper/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Multicast/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Ndis/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/NetBios/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/NetManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/NetShell/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/NetworkDiagnosticsFramework/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/P2P/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/QoS/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Rras/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Snmp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WNet/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WebDav/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WiFi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WindowsConnectionManager/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WindowsFilteringPlatform/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WindowsFirewall/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WindowsNetworkVirtualization/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/ActiveDirectory/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/Clustering/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/HttpServer/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/Ldap/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WebSocket/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WinHttp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WinInet/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WinSock/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WindowsWebServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/AppLocker/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Authentication/Identity/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Authentication/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Authorization/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Credentials/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/Catalog/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/Certificates/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/Sip/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/UI/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/DiagnosticDataQuery/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/DirectoryServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/EnterpriseData/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/ExtensibleAuthenticationProtocol/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Isolation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/LicenseProtection/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/NetworkAccessProtection/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/WinTrust/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/WinWlx/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Cabinets/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/CloudFilters/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Compression/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/DistributedFileSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/FileHistory/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/FileSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Imapi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/IndexServer/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/InstallableFileSystems/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/IscsiDisc/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Jet/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Nvme/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/OfflineFiles/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/OperationRecorder/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Packaging/Appx/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Packaging/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/ProjectedFileSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/StructuredStorage/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Vhd/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Xps/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/AddressBook/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Antimalware/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ApplicationInstallationAndServicing/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ApplicationVerifier/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ClrHosting/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Com/Marshal/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Com/StructuredStorage/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Com/Urlmon/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Com/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ComponentServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Console/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/CorrelationVector/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/DataExchange/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/DeploymentServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/DeveloperLicensing/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/Ceip/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/Debug/Extensions/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/Debug/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/Etw/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/ProcessSnapshotting/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/ToolHelp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/TraceLogging/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/DistributedTransactionCoordinator/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Environment/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ErrorReporting/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/EventCollector/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/EventLog/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/EventNotificationService/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/GroupPolicy/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/HostCompute/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/HostComputeNetwork/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/HostComputeSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Hypervisor/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/IO/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Iis/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Ioctl/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/JobObjects/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Js/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Kernel/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/LibraryLoader/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Mailslots/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Mapi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Memory/NonVolatile/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Memory/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/MessageQueuing/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/MixedReality/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Ole/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/PasswordManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Performance/HardwareCounterProfiling/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Performance/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Pipes/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Power/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ProcessStatus/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Recovery/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Registry/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/RemoteDesktop/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/RemoteManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/RestartManager/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Restore/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Rpc/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Search/Common/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Search/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SecurityCenter/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Services/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SetupAndMigration/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Shutdown/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/StationsAndDesktops/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SubsystemForLinux/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SystemInformation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SystemServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Threading/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Time/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/TpmBaseServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/UserAccessLogging/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Variant/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/VirtualDosMachines/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/WindowsProgramming/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Wmi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Accessibility/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/ColorSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Controls/Dialogs/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Controls/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/HiDpi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/Ime/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/KeyboardAndMouse/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/Pointer/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/Touch/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/XboxController/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/InteractionContext/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Magnification/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Shell/Common/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Shell/PropertiesSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Shell/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/TabletPC/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/TextServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/WindowsAndMessaging/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Web/InternetExplorer/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Web/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/core/literals.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/core/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/lib.rs"],
+  crate_features = [] + select({"@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": ["Win32", "Win32_Foundation", "Win32_Graphics", "Win32_Graphics_Gdi", "Win32_Networking", "Win32_Networking_WinSock", "Win32_Security", "Win32_Security_Credentials", "Win32_Storage", "Win32_Storage_FileSystem", "Win32_System", "Win32_System_Console", "Win32_System_DataExchange", "Win32_System_IO", "Win32_System_Memory", "Win32_System_Ole", "Win32_System_Threading", "Win32_System_WindowsProgramming", "Win32_UI", "Win32_UI_Shell", "default"], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": ["Win32", "Win32_Foundation", "Win32_Graphics", "Win32_Graphics_Gdi", "Win32_Networking", "Win32_Networking_WinSock", "Win32_Security", "Win32_Security_Credentials", "Win32_Storage", "Win32_Storage_FileSystem", "Win32_System", "Win32_System_Console", "Win32_System_DataExchange", "Win32_System_IO", "Win32_System_Memory", "Win32_System_Ole", "Win32_System_Threading", "Win32_System_WindowsProgramming", "Win32_UI", "Win32_UI_Shell", "default"], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": ["Win32", "Win32_Foundation", "Win32_Graphics", "Win32_Graphics_Gdi", "Win32_Networking", "Win32_Networking_WinSock", "Win32_Security", "Win32_Security_Credentials", "Win32_Storage", "Win32_Storage_FileSystem", "Win32_System", "Win32_System_Console", "Win32_System_DataExchange", "Win32_System_IO", "Win32_System_Memory", "Win32_System_Ole", "Win32_System_Threading", "Win32_System_WindowsProgramming", "Win32_UI", "Win32_UI_Shell", "default"], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": ["Win32", "Win32_Foundation", "Win32_Graphics", "Win32_Graphics_Gdi", "Win32_Networking", "Win32_Networking_WinSock", "Win32_Security", "Win32_Security_Credentials", "Win32_Storage", "Win32_Storage_FileSystem", "Win32_System", "Win32_System_Console", "Win32_System_DataExchange", "Win32_System_IO", "Win32_System_Memory", "Win32_System_Ole", "Win32_System_Threading", "Win32_System_WindowsProgramming", "Win32_UI", "Win32_UI_Shell", "default"], "//conditions:default": []}),
+  crate_name = "windows_sys",
+  crate_root = "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/lib.rs",
+  data = [],
+  deps = ["@crates//:windows-targets-0.53.5"],
+  edition = "2021",
+  proc_macro_deps = ["@crates//:windows-targets-0.53.5"],
+  skip_deps_verification = False,
+  rustc_env = {"CARGO_MANIFEST_PATH": "$(execpath :Cargo.toml)"},
+  rustc_env_files = ["@@rules_rs++crate+crates__windows-sys-0.60.2//:cargo_toml_env_vars.env"],
+  rustc_flags = ["--cap-lints=allow"],
+  srcs = ["@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Devices/Bluetooth/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Devices/HumanInterfaceDevice/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Devices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Foundation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Graphics/Direct3D/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Graphics/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/NetworkManagement/Ndis/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/NetworkManagement/WindowsFilteringPlatform/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/NetworkManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Storage/FileSystem/Minifilters/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Storage/FileSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/Storage/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/IO/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/Memory/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/OfflineRegistry/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/Registry/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/SystemInformation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/SystemServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/Threading/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/System/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Wdk/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Data/HtmlHelp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Data/RightsManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Data/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/AllJoyn/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Beep/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/BiometricFramework/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Bluetooth/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Cdrom/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Communication/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/DeviceAndDriverInstallation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/DeviceQuery/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Display/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Dvd/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Enumeration/Pnp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Enumeration/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Fax/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/HumanInterfaceDevice/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Nfc/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Nfp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/PortableDevices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Properties/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Pwm/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Sensors/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/SerialCommunication/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Tapi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/Usb/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/WebServicesOnDevices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Devices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Foundation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Gaming/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Globalization/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Dwm/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Gdi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/GdiPlus/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Hlsl/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/OpenGL/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Printing/PrintTicket/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/Printing/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Graphics/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Management/MobileDeviceManagementRegistration/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Management/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/Audio/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/DxMediaObjects/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/KernelStreaming/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/Multimedia/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/Streaming/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/WindowsMediaFormat/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Media/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Dhcp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Dns/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/InternetConnectionWizard/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/IpHelper/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Multicast/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Ndis/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/NetBios/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/NetManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/NetShell/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/NetworkDiagnosticsFramework/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/P2P/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/QoS/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Rras/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/Snmp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WNet/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WebDav/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WiFi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WindowsConnectionManager/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WindowsFilteringPlatform/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WindowsFirewall/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/WindowsNetworkVirtualization/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/NetworkManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/ActiveDirectory/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/Clustering/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/HttpServer/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/Ldap/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WebSocket/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WinHttp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WinInet/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WinSock/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/WindowsWebServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Networking/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/AppLocker/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Authentication/Identity/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Authentication/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Authorization/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Credentials/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/Catalog/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/Certificates/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/Sip/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/UI/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Cryptography/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/DiagnosticDataQuery/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/DirectoryServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/EnterpriseData/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/ExtensibleAuthenticationProtocol/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/Isolation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/LicenseProtection/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/NetworkAccessProtection/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/WinTrust/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/WinWlx/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Security/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Cabinets/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/CloudFilters/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Compression/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/DistributedFileSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/FileHistory/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/FileSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Imapi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/IndexServer/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/InstallableFileSystems/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/IscsiDisc/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Jet/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Nvme/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/OfflineFiles/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/OperationRecorder/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Packaging/Appx/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Packaging/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/ProjectedFileSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/StructuredStorage/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Vhd/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/Xps/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Storage/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/AddressBook/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Antimalware/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ApplicationInstallationAndServicing/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ApplicationVerifier/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ClrHosting/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Com/Marshal/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Com/StructuredStorage/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Com/Urlmon/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Com/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ComponentServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Console/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/CorrelationVector/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/DataExchange/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/DeploymentServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/DeveloperLicensing/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/Ceip/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/Debug/Extensions/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/Debug/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/Etw/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/ProcessSnapshotting/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/ToolHelp/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/TraceLogging/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Diagnostics/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/DistributedTransactionCoordinator/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Environment/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ErrorReporting/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/EventCollector/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/EventLog/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/EventNotificationService/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/GroupPolicy/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/HostCompute/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/HostComputeNetwork/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/HostComputeSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Hypervisor/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/IO/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Iis/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Ioctl/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/JobObjects/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Js/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Kernel/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/LibraryLoader/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Mailslots/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Mapi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Memory/NonVolatile/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Memory/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/MessageQueuing/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/MixedReality/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Ole/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/PasswordManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Performance/HardwareCounterProfiling/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Performance/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Pipes/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Power/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/ProcessStatus/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Recovery/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Registry/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/RemoteDesktop/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/RemoteManagement/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/RestartManager/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Restore/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Rpc/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Search/Common/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Search/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SecurityCenter/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Services/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SetupAndMigration/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Shutdown/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/StationsAndDesktops/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SubsystemForLinux/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SystemInformation/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/SystemServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Threading/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Time/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/TpmBaseServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/UserAccessLogging/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Variant/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/VirtualDosMachines/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/WindowsProgramming/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/Wmi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/System/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Accessibility/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/ColorSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Controls/Dialogs/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Controls/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/HiDpi/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/Ime/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/KeyboardAndMouse/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/Pointer/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/Touch/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/XboxController/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Input/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/InteractionContext/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Magnification/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Shell/Common/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Shell/PropertiesSystem/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/Shell/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/TabletPC/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/TextServices/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/WindowsAndMessaging/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/UI/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Web/InternetExplorer/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/Web/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/Win32/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/Windows/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/core/literals.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/core/mod.rs", "@@rules_rs++crate+crates__windows-sys-0.60.2//:src/lib.rs"],
+  version = "0.60.2",
+  skip_per_crate_rustc_flags = True,
+)
+# Rule windows-sys instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__windows-sys-0.60.2/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:209:72                          in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1         in rust_library
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13         in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__zeroize-1.8.2/BUILD.bazel:5:11
+rust_library(
+  name = "zeroize",
+  visibility = ["//visibility:public"],
+  tags = ["crate-name=zeroize", "manual", "noclippy", "norustfmt"],
+  generator_name = "zeroize",
+  generator_function = "rust_crate",
+  generator_location = "/home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__zeroize-1.8.2/BUILD.bazel:5:11",
+  package_metadata = ["@@rules_rs++crate+crates__zeroize-1.8.2//:zeroize_package_metadata"],
+  target_compatible_with = select({"@rules_rs//rs/platforms/config:aarch64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:aarch64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:aarch64-apple-darwin": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:aarch64-pc-windows-gnullvm": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-gnu": [], "@rules_rs//rs/platforms/config:x86_64-unknown-linux-musl": [], "@rules_rs//rs/platforms/config:x86_64-apple-darwin": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-msvc": [], "@rules_rs//rs/platforms/config:x86_64-pc-windows-gnullvm": [], "//conditions:default": ["@platforms//:incompatible"]}),
+  aliases = {},
+  compile_data = ["@@rules_rs++crate+crates__zeroize-1.8.2//:.cargo_vcs_info.json", "@@rules_rs++crate+crates__zeroize-1.8.2//:CHANGELOG.md", "@@rules_rs++crate+crates__zeroize-1.8.2//:Cargo.lock", "@@rules_rs++crate+crates__zeroize-1.8.2//:Cargo.toml", "@@rules_rs++crate+crates__zeroize-1.8.2//:LICENSE-APACHE", "@@rules_rs++crate+crates__zeroize-1.8.2//:LICENSE-MIT", "@@rules_rs++crate+crates__zeroize-1.8.2//:README.md", "@@rules_rs++crate+crates__zeroize-1.8.2//:cargo_toml_env_vars.env", "@@rules_rs++crate+crates__zeroize-1.8.2//:src/aarch64.rs", "@@rules_rs++crate+crates__zeroize-1.8.2//:src/lib.rs", "@@rules_rs++crate+crates__zeroize-1.8.2//:src/x86.rs", "@@rules_rs++crate+crates__zeroize-1.8.2//:tests/zeroize.rs", "@@rules_rs++crate+crates__zeroize-1.8.2//:tests/zeroize_derive.rs"],
+  crate_features = ["alloc", "default", "derive", "serde", "zeroize_derive"],
+  crate_name = "zeroize",
+  crate_root = "@@rules_rs++crate+crates__zeroize-1.8.2//:src/lib.rs",
+  data = [],
+  deps = ["@crates//:serde-1.0.228", "@crates//:zeroize_derive-1.4.3"],
+  edition = "2021",
+  proc_macro_deps = ["@crates//:serde-1.0.228", "@crates//:zeroize_derive-1.4.3"],
+  skip_deps_verification = False,
+  rustc_env = {"CARGO_MANIFEST_PATH": "$(execpath :Cargo.toml)"},
+  rustc_env_files = ["@@rules_rs++crate+crates__zeroize-1.8.2//:cargo_toml_env_vars.env"],
+  rustc_flags = ["--cap-lints=allow"],
+  srcs = ["@@rules_rs++crate+crates__zeroize-1.8.2//:src/aarch64.rs", "@@rules_rs++crate+crates__zeroize-1.8.2//:src/lib.rs", "@@rules_rs++crate+crates__zeroize-1.8.2//:src/x86.rs", "@@rules_rs++crate+crates__zeroize-1.8.2//:tests/zeroize.rs", "@@rules_rs++crate+crates__zeroize-1.8.2//:tests/zeroize_derive.rs"],
+  version = "1.8.2",
+  skip_per_crate_rustc_flags = True,
+)
+# Rule zeroize instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++crate+crates__zeroize-1.8.2/BUILD.bazel:5:11 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/rust_crate.bzl:209:72                     in rust_crate
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:114:1    in rust_library
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13    in _wrapped
+# Rule rust_library defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1030:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/ffi/rs/BUILD.bazel:6:25
+rust_allocator_libraries(
+  name = "allocator_libraries_with_mangling_support",
+  visibility = ["//visibility:public"],
+  allocator_library = "@rules_rust//ffi/rs/allocator_library:allocator_library",
+  global_allocator_library = "@rules_rust//ffi/rs/global_allocator_library:global_allocator_library",
+)
+# Rule allocator_libraries_with_mangling_support instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/ffi/rs/BUILD.bazel:6:25 in <toplevel>
+# Rule rust_allocator_libraries defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust_allocator_libraries.bzl:284:32 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/ffi/rs/BUILD.bazel:18:6
+alias(
+  name = "default_allocator_libraries",
+  visibility = ["//visibility:public"],
+  actual = select({"@rules_rust//rust/settings:experimental_use_allocator_libraries_with_mangled_symbols_on": "@rules_rust//ffi/rs:allocator_libraries_with_mangling_support", "//conditions:default": "@rules_rust//ffi/rs:empty_allocator_libraries"}),
+)
+# Rule default_allocator_libraries instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/ffi/rs/BUILD.bazel:18:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/ffi/rs/BUILD.bazel:13:25
+rust_allocator_libraries(
+  name = "empty_allocator_libraries",
+  visibility = ["//visibility:public"],
+)
+# Rule empty_allocator_libraries instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/ffi/rs/BUILD.bazel:13:25 in <toplevel>
+# Rule rust_allocator_libraries defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rust_allocator_libraries.bzl:284:32 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/BUILD.bazel:11:15
+toolchain_type(
+  name = "toolchain_type",
+)
+# Rule toolchain_type instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/BUILD.bazel:11:15 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/BUILD.bazel:20:6
+alias(
+  name = "default_macos_sdkroot",
+  visibility = ["//visibility:public"],
+  actual = select({"@platforms//os:osx": "@macos_sdk//sysroot:sysroot", "//conditions:default": "@rules_rust//rust/private:empty_macos_sdkroot"}),
+)
+# Rule default_macos_sdkroot instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/BUILD.bazel:20:6 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/BUILD.bazel:15:10
+filegroup(
+  name = "empty_macos_sdkroot",
+  visibility = ["//visibility:public"],
+)
+# Rule empty_macos_sdkroot instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/BUILD.bazel:15:10 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/BUILD.bazel:63:20
+_stamp_build_setting(
+  name = "stamp",
+  visibility = ["//visibility:public"],
+  generator_name = "stamp",
+  generator_function = "stamp_build_setting",
+  generator_location = "rust/private/BUILD.bazel:63:20",
+  value = select({"@rules_rust//rust/private:stamp_detect": True, "//conditions:default": False}),
+)
+# Rule stamp instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/BUILD.bazel:63:20 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/stamp.bzl:48:25   in stamp_build_setting
+# Rule _stamp_build_setting defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/stamp.bzl:19:28 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/BUILD.bazel:63:20
+config_setting(
+  name = "stamp_detect",
+  visibility = ["//visibility:public"],
+  generator_name = "stamp",
+  generator_function = "stamp_build_setting",
+  generator_location = "rust/private/BUILD.bazel:63:20",
+  values = {"stamp": "1"},
+)
+# Rule stamp_detect instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/BUILD.bazel:63:20 in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/stamp.bzl:42:26   in stamp_build_setting
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:70:37
+always_enable_metadata_output_groups(
+  name = "always_enable_metadata_output_groups",
+  visibility = ["//visibility:public"],
+  generator_name = "always_enable_metadata_output_groups",
+  generator_function = "always_enable_metadata_output_groups",
+  generator_location = "rust/settings/BUILD.bazel:70:37",
+  build_setting_default = False,
+)
+# Rule always_enable_metadata_output_groups instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:70:37   in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:381:42 in always_enable_metadata_output_groups
+# Rule always_enable_metadata_output_groups defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3393:44 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:84:13
+bool_flag(
+  name = "collect_cfgs",
+  generator_name = "collect_cfgs",
+  generator_function = "collect_cfgs",
+  generator_location = "rust/settings/BUILD.bazel:84:13",
+  scope = "universal",
+  build_setting_default = False,
+)
+# Rule collect_cfgs instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:84:13   in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:556:14 in collect_cfgs
+# Rule bool_flag defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/bazel_skylib+/rules/common_settings.bzl:89:17 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:88:13
+error_format(
+  name = "error_format",
+  generator_name = "error_format",
+  generator_function = "error_format",
+  generator_location = "rust/settings/BUILD.bazel:88:13",
+  build_setting_default = "human",
+)
+# Rule error_format instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:88:13   in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:348:18 in error_format
+# Rule error_format defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3366:20 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:94:34
+per_crate_rustc_flag(
+  name = "experimental_per_crate_rustc_flag",
+  generator_name = "experimental_per_crate_rustc_flag",
+  generator_function = "experimental_per_crate_rustc_flag",
+  generator_location = "rust/settings/BUILD.bazel:94:34",
+  build_setting_default = [],
+)
+# Rule experimental_per_crate_rustc_flag instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:94:34   in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:515:26 in experimental_per_crate_rustc_flag
+# Rule per_crate_rustc_flag defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3512:28 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:102:58
+config_setting(
+  name = "experimental_use_allocator_libraries_with_mangled_symbols_on",
+  generator_name = "experimental_use_allocator_libraries_with_mangled_symbols_on",
+  generator_function = "experimental_use_allocator_libraries_with_mangled_symbols",
+  generator_location = "rust/settings/BUILD.bazel:102:58",
+  flag_values = {"@rules_rust//rust/settings:experimental_use_allocator_libraries_with_mangled_symbols": "true"},
+)
+# Rule experimental_use_allocator_libraries_with_mangled_symbols_on instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:102:58  in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:229:26 in experimental_use_allocator_libraries_with_mangled_symbols
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:104:21
+extra_exec_rustc_env(
+  name = "extra_exec_rustc_env",
+  generator_name = "extra_exec_rustc_env",
+  generator_function = "extra_exec_rustc_env",
+  generator_location = "rust/settings/BUILD.bazel:104:21",
+  build_setting_default = [],
+)
+# Rule extra_exec_rustc_env instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:104:21  in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:475:26 in extra_exec_rustc_env
+# Rule extra_exec_rustc_env defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3487:28 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:106:22
+extra_exec_rustc_flag(
+  name = "extra_exec_rustc_flag",
+  generator_name = "extra_exec_rustc_flag",
+  generator_function = "extra_exec_rustc_flag",
+  generator_location = "rust/settings/BUILD.bazel:106:22",
+  scope = "universal",
+  build_setting_default = [],
+)
+# Rule extra_exec_rustc_flag instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:106:22  in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:499:27 in extra_exec_rustc_flag
+# Rule extra_exec_rustc_flag defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3499:29 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:108:23
+extra_exec_rustc_flags(
+  name = "extra_exec_rustc_flags",
+  generator_name = "extra_exec_rustc_flags",
+  generator_function = "extra_exec_rustc_flags",
+  generator_location = "rust/settings/BUILD.bazel:108:23",
+  scope = "universal",
+  build_setting_default = [],
+)
+# Rule extra_exec_rustc_flags instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:108:23  in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:487:28 in extra_exec_rustc_flags
+# Rule extra_exec_rustc_flags defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3472:30 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:110:16
+extra_rustc_env(
+  name = "extra_rustc_env",
+  generator_name = "extra_rustc_env",
+  generator_function = "extra_rustc_env",
+  generator_location = "rust/settings/BUILD.bazel:110:16",
+  build_setting_default = [],
+)
+# Rule extra_rustc_env instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:110:16  in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:429:21 in extra_rustc_env
+# Rule extra_rustc_env defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3433:23 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:112:17
+extra_rustc_flag(
+  name = "extra_rustc_flag",
+  generator_name = "extra_rustc_flag",
+  generator_function = "extra_rustc_flag",
+  generator_location = "rust/settings/BUILD.bazel:112:17",
+  build_setting_default = [],
+)
+# Rule extra_rustc_flag instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:112:17  in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:463:22 in extra_rustc_flag
+# Rule extra_rustc_flag defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3460:24 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:114:18
+extra_rustc_flags(
+  name = "extra_rustc_flags",
+  generator_name = "extra_rustc_flags",
+  generator_function = "extra_rustc_flags",
+  generator_location = "rust/settings/BUILD.bazel:114:18",
+  build_setting_default = [],
+)
+# Rule extra_rustc_flags instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:114:18  in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:452:23 in extra_rustc_flags
+# Rule extra_rustc_flags defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3445:25 in <toplevel>
+
+# /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:132:25
+rustc_output_diagnostics(
+  name = "rustc_output_diagnostics",
+  visibility = ["//visibility:public"],
+  generator_name = "rustc_output_diagnostics",
+  generator_function = "rustc_output_diagnostics",
+  generator_location = "rust/settings/BUILD.bazel:132:25",
+  build_setting_default = False,
+)
+# Rule rustc_output_diagnostics instantiated at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/BUILD.bazel:132:25  in <toplevel>
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/settings/settings.bzl:391:30 in rustc_output_diagnostics
+# Rule rustc_output_diagnostics defined at (most recent call last):
+#   /home/runner/.cache/codex-ci/o/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl:3417:32 in <toplevel>
+

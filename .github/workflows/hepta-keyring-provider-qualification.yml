@@ -117,7 +117,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
+          filter: blob:none
           persist-credentials: false
       - uses: ./.github/actions/prepare-bazel-ci
         with:
