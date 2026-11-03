@@ -1,0 +1,275 @@
+{
+  "source_commit": "8275996f2c589a96843e116ac6f2c1d194ef3d2b",
+  "workflow_run": 41713496978,
+  "verification": "original_mixed_result_evidence_verified",
+  "acceptance": "HOLD_NO_GO",
+  "distinct_immutable_git_inputs": 8874,
+  "git_input_bytes": 99684160,
+  "all_four_before_after_maps_match_verified_git_checkout": true,
+  "exact_git_blob_bytes": 8873,
+  "resolved_git_symlinks": [
+    {
+      "path": "codex-rs/vendor/bubblewrap/LICENSE",
+      "git_mode": "120000",
+      "link_bytes": "COPYING",
+      "link_blob_sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22",
+      "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+      "observed_resolved_bytes_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+    }
+  ],
+  "artifacts": {
+    "13270382017": {
+      "artifact_id": 13270382017,
+      "receipt_sha256": "33c021e0d8fcbcccbeff54a6eaf2b833fcfa9450ba9c6b1a91319e2d7a6a60c0",
+      "status": "passed",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "git_checkout_inputs_verified": 8874,
+      "exact_git_blob_bytes": 8873,
+      "resolved_git_symlinks": [
+        {
+          "path": "codex-rs/vendor/bubblewrap/LICENSE",
+          "git_mode": "120000",
+          "link_bytes": "COPYING",
+          "link_blob_sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22",
+          "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+          "observed_resolved_bytes_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+        }
+      ],
+      "source_before_after_equal_verified_git_checkout": true,
+      "commands": [
+        {
+          "name": "initial-tracked-source",
+          "exit": 0
+        },
+        {
+          "name": "rustc-version",
+          "exit": 0
+        },
+        {
+          "name": "pinned-dbus-client",
+          "exit": 0
+        },
+        {
+          "name": "codex-utils-path",
+          "exit": 0
+        },
+        {
+          "name": "codex-hepta-contracts",
+          "exit": 0
+        },
+        {
+          "name": "codex-hepta-prompt-registry",
+          "exit": 0
+        },
+        {
+          "name": "codex-hepta-agentd",
+          "exit": 0
+        },
+        {
+          "name": "scoped-clippy-fix",
+          "exit": 0
+        },
+        {
+          "name": "final-tracked-source",
+          "exit": 0
+        }
+      ],
+      "library_tests": {
+        "codex-utils-path": {
+          "total": 7,
+          "passed": 7,
+          "failed": [],
+          "skipped": 0
+        },
+        "codex-hepta-contracts": {
+          "total": 174,
+          "passed": 174,
+          "failed": [],
+          "skipped": 0
+        },
+        "codex-hepta-prompt-registry": {
+          "total": 50,
+          "passed": 50,
+          "failed": [],
+          "skipped": 0
+        },
+        "codex-hepta-agentd": {
+          "total": 173,
+          "passed": 173,
+          "failed": [],
+          "skipped": 0
+        }
+      }
+    },
+    "13270157656": {
+      "artifact_id": 13270157656,
+      "receipt_sha256": "0176665834688fcc77cf400a5773ef053cae1a07022da4330efb7125402110ac",
+      "status": "passed",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "git_checkout_inputs_verified": 8874,
+      "exact_git_blob_bytes": 8873,
+      "resolved_git_symlinks": [
+        {
+          "path": "codex-rs/vendor/bubblewrap/LICENSE",
+          "git_mode": "120000",
+          "link_bytes": "COPYING",
+          "link_blob_sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22",
+          "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+          "observed_resolved_bytes_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+        }
+      ],
+      "source_before_after_equal_verified_git_checkout": true,
+      "commands": [
+        {
+          "name": "initial-tracked-source",
+          "exit": 0
+        },
+        {
+          "name": "committed-lock-first",
+          "exit": 0
+        },
+        {
+          "name": "original-lock-update",
+          "exit": 0
+        },
+        {
+          "name": "original-lock-check",
+          "exit": 0
+        },
+        {
+          "name": "original-private-state-targets",
+          "exit": 0
+        },
+        {
+          "name": "final-tracked-source",
+          "exit": 0
+        }
+      ],
+      "original_bazel_targets_executed_passed": 4,
+      "lock_sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+      "committed_first_update_check_exit0": true
+    },
+    "13269466844": {
+      "artifact_id": 13269466844,
+      "receipt_sha256": "5c6b9e0739f1ed579db1c045c9bad0199cd570d03c810eb4923a1cd421622854",
+      "status": "failed",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "git_checkout_inputs_verified": 8874,
+      "exact_git_blob_bytes": 8873,
+      "resolved_git_symlinks": [
+        {
+          "path": "codex-rs/vendor/bubblewrap/LICENSE",
+          "git_mode": "120000",
+          "link_bytes": "COPYING",
+          "link_blob_sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22",
+          "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+          "observed_resolved_bytes_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+        }
+      ],
+      "source_before_after_equal_verified_git_checkout": true,
+      "commands": [
+        {
+          "name": "initial-tracked-source",
+          "exit": 0
+        },
+        {
+          "name": "rustc-version",
+          "exit": 0
+        },
+        {
+          "name": "acquisition-verifier-controls",
+          "exit": 0
+        },
+        {
+          "name": "actual-acquisition-attacks",
+          "exit": 1
+        }
+      ],
+      "positive_selected_cases_passed": 2,
+      "unrelated_cases_filtered": 15,
+      "mutants_executed": false,
+      "full_libraries_executed": false
+    },
+    "13268992702": {
+      "artifact_id": 13268992702,
+      "receipt_sha256": "84fd801d28f9f0ad88c2ec709f393a7bb6c4e7c4094f2639a1345640facd2bb0",
+      "status": "failed",
+      "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+      "git_checkout_inputs_verified": 8874,
+      "exact_git_blob_bytes": 8873,
+      "resolved_git_symlinks": [
+        {
+          "path": "codex-rs/vendor/bubblewrap/LICENSE",
+          "git_mode": "120000",
+          "link_bytes": "COPYING",
+          "link_blob_sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22",
+          "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+          "observed_resolved_bytes_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+        }
+      ],
+      "source_before_after_equal_verified_git_checkout": true,
+      "commands": [
+        {
+          "name": "initial-tracked-source",
+          "exit": 0
+        },
+        {
+          "name": "rustc-version",
+          "exit": 0
+        },
+        {
+          "name": "codex-utils-path",
+          "exit": 0
+        },
+        {
+          "name": "codex-hepta-contracts",
+          "exit": 0
+        },
+        {
+          "name": "codex-hepta-prompt-registry",
+          "exit": 0
+        },
+        {
+          "name": "codex-hepta-agentd",
+          "exit": 100
+        }
+      ],
+      "library_tests": {
+        "codex-utils-path": {
+          "total": 4,
+          "passed": 4,
+          "failed": [],
+          "skipped": 0
+        },
+        "codex-hepta-contracts": {
+          "total": 174,
+          "passed": 174,
+          "failed": [],
+          "skipped": 0
+        },
+        "codex-hepta-prompt-registry": {
+          "total": 50,
+          "passed": 50,
+          "failed": [],
+          "skipped": 0
+        },
+        "codex-hepta-agentd": {
+          "total": 173,
+          "passed": 166,
+          "failed": [
+            "cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed",
+            "cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery",
+            "cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context",
+            "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+            "control::native_tests::ordinary_control_preserves_server_identity_and_launch_generation",
+            "control::native_tests::saturated_ordinary_control_returns_original_overload_and_recovers",
+            "state::isolation_tests::current_durable_run_start_requires_live_owner_trust"
+          ],
+          "skipped": 0
+        }
+      }
+    }
+  },
+  "successor_qualification_transferred": false,
+  "archive_content_executed": false
+}

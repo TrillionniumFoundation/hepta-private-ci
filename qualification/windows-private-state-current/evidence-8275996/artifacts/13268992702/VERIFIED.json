@@ -1,0 +1,79 @@
+{
+  "artifact_id": 13268992702,
+  "receipt_sha256": "84fd801d28f9f0ad88c2ec709f393a7bb6c4e7c4094f2639a1345640facd2bb0",
+  "status": "failed",
+  "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+  "git_checkout_inputs_verified": 8874,
+  "exact_git_blob_bytes": 8873,
+  "resolved_git_symlinks": [
+    {
+      "path": "codex-rs/vendor/bubblewrap/LICENSE",
+      "git_mode": "120000",
+      "link_bytes": "COPYING",
+      "link_blob_sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22",
+      "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+      "observed_resolved_bytes_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+    }
+  ],
+  "source_before_after_equal_verified_git_checkout": true,
+  "commands": [
+    {
+      "name": "initial-tracked-source",
+      "exit": 0
+    },
+    {
+      "name": "rustc-version",
+      "exit": 0
+    },
+    {
+      "name": "codex-utils-path",
+      "exit": 0
+    },
+    {
+      "name": "codex-hepta-contracts",
+      "exit": 0
+    },
+    {
+      "name": "codex-hepta-prompt-registry",
+      "exit": 0
+    },
+    {
+      "name": "codex-hepta-agentd",
+      "exit": 100
+    }
+  ],
+  "library_tests": {
+    "codex-utils-path": {
+      "total": 4,
+      "passed": 4,
+      "failed": [],
+      "skipped": 0
+    },
+    "codex-hepta-contracts": {
+      "total": 174,
+      "passed": 174,
+      "failed": [],
+      "skipped": 0
+    },
+    "codex-hepta-prompt-registry": {
+      "total": 50,
+      "passed": 50,
+      "failed": [],
+      "skipped": 0
+    },
+    "codex-hepta-agentd": {
+      "total": 173,
+      "passed": 166,
+      "failed": [
+        "cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed",
+        "cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery",
+        "cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context",
+        "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "control::native_tests::ordinary_control_preserves_server_identity_and_launch_generation",
+        "control::native_tests::saturated_ordinary_control_returns_original_overload_and_recovers",
+        "state::isolation_tests::current_durable_run_start_requires_live_owner_trust"
+      ],
+      "skipped": 0
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "artifact_id": 13270157656,
+  "receipt_sha256": "0176665834688fcc77cf400a5773ef053cae1a07022da4330efb7125402110ac",
+  "status": "passed",
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "git_checkout_inputs_verified": 8874,
+  "exact_git_blob_bytes": 8873,
+  "resolved_git_symlinks": [
+    {
+      "path": "codex-rs/vendor/bubblewrap/LICENSE",
+      "git_mode": "120000",
+      "link_bytes": "COPYING",
+      "link_blob_sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22",
+      "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+      "observed_resolved_bytes_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+    }
+  ],
+  "source_before_after_equal_verified_git_checkout": true,
+  "commands": [
+    {
+      "name": "initial-tracked-source",
+      "exit": 0
+    },
+    {
+      "name": "committed-lock-first",
+      "exit": 0
+    },
+    {
+      "name": "original-lock-update",
+      "exit": 0
+    },
+    {
+      "name": "original-lock-check",
+      "exit": 0
+    },
+    {
+      "name": "original-private-state-targets",
+      "exit": 0
+    },
+    {
+      "name": "final-tracked-source",
+      "exit": 0
+    }
+  ],
+  "original_bazel_targets_executed_passed": 4,
+  "lock_sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+  "committed_first_update_check_exit0": true
+}

@@ -1,0 +1,41 @@
+{
+  "artifact_id": 13269466844,
+  "receipt_sha256": "5c6b9e0739f1ed579db1c045c9bad0199cd570d03c810eb4923a1cd421622854",
+  "status": "failed",
+  "platform": "Windows-2025Server-10.0.26100-SP0",
+  "git_checkout_inputs_verified": 8874,
+  "exact_git_blob_bytes": 8873,
+  "resolved_git_symlinks": [
+    {
+      "path": "codex-rs/vendor/bubblewrap/LICENSE",
+      "git_mode": "120000",
+      "link_bytes": "COPYING",
+      "link_blob_sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22",
+      "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+      "observed_resolved_bytes_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+    }
+  ],
+  "source_before_after_equal_verified_git_checkout": true,
+  "commands": [
+    {
+      "name": "initial-tracked-source",
+      "exit": 0
+    },
+    {
+      "name": "rustc-version",
+      "exit": 0
+    },
+    {
+      "name": "acquisition-verifier-controls",
+      "exit": 0
+    },
+    {
+      "name": "actual-acquisition-attacks",
+      "exit": 1
+    }
+  ],
+  "positive_selected_cases_passed": 2,
+  "unrelated_cases_filtered": 15,
+  "mutants_executed": false,
+  "full_libraries_executed": false
+}
