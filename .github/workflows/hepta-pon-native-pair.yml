@@ -70,7 +70,7 @@ jobs:
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/effect-recovery/automation-complete.json" --minimum-tests 134 -- just test --locked -p codex-hepta-automation --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/effect-recovery/automation-complete.json" --minimum-tests 136 -- just test --locked -p codex-hepta-automation --no-capture
       - name: Execute each actual HTTP owner and recovery control
         env:
           CARGO_NET_OFFLINE: "true"
@@ -1097,8 +1097,8 @@ jobs:
       TESTED_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEPTA_CI_LANE: source-head
-      CHAIN_INSTALLED_SOURCE_SHA: 1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c
-      CHAIN_INSTALLED_TREE: 535660af742d62b6578b5e4334e0f2d2c17527e0
+      CHAIN_INSTALLED_SOURCE_SHA: 12fe5f2c1f19704fe7eb635dede6839ed8b1e91e
+      CHAIN_INSTALLED_TREE: c44112da731e3f958e55eb024e5762d6723ea2c9
       RUSTUP_TOOLCHAIN: "1.95.0"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
