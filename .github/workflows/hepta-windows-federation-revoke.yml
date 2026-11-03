@@ -1,0 +1,169 @@
+name: Hepta Memory P0 native regressions
+
+# Continue the original federated revoke regression owner with repository
+# Nextest execution and independent schema-oracle coverage. These two cases
+# complement the complete Blocking CI; they do not authorize production use.
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/state/**"
+      - "codex-rs/utils/path-uri/**"
+      - "codex-rs/utils/absolute-path/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
+      - "scripts/run-nextest.py"
+      - "justfile"
+      - ".github/actions/setup-ci-tools/**"
+      - ".github/workflows/hepta-windows-federation-revoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-memory-regressions:
+    name: Memory schema and final-use (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-24.04]
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      RUSTUP_TOOLCHAIN: "1.95.0"
+      EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        working-directory: codex-rs
+        shell: bash
+    steps:
+      - name: Checkout immutable pull-request source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and initialize isolated evidence
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'CARGO_TARGET_DIR=%s/hepta-memory-p0-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/hepta-memory-p0-evidence"
+          git show -s --format='source=%H tree=%T parents=%P' | tee "$RUNNER_TEMP/hepta-memory-p0-evidence/source.txt"
+
+      - name: Install repository CI tools
+        uses: ./.github/actions/setup-ci-tools
+
+      - name: Install pinned nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Install pinned Rust 1.95
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy,rust-src
+
+      - name: Install Linux native Secret Service dependencies
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y pkg-config libdbus-1-dev
+
+      - name: Execute both original native regressions
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-memory -p codex-hepta-memory-extension \
+            --lib --profile default --test-threads 1 --no-tests fail --retries 0 \
+            --status-level all --final-status-level all \
+            -E 'test(compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected) | test(revoke_removes_prepared_federated_context_from_next_physical_send)' \
+            2>&1 | tee "$RUNNER_TEMP/hepta-memory-p0-evidence/native.log"
+
+      - name: Verify unique cases and original JUnit identity
+        run: |
+          python - <<'PYTEST'
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import re
+          import shutil
+          import subprocess
+          import xml.etree.ElementTree as ET
+
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["EXPECTED_SOURCE_SHA"]:
+              raise SystemExit("test source changed")
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "hepta-memory-p0-evidence"
+          report = Path(os.environ["GITHUB_WORKSPACE"]) / "codex-rs/target/nextest/default/junit.xml"
+          root = ET.parse(report).getroot()
+          cases = list(root.iter("testcase"))
+          expected = {
+              "cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected",
+              "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+          }
+          if len(cases) != 2 or {case.get("name") for case in cases} != expected:
+              raise SystemExit("missing, extra, or duplicated native regression result")
+          for case in cases:
+              if any(case.find(tag) is not None for tag in ("failure", "error", "skipped")):
+                  raise SystemExit(f"native case did not pass: {case.get('name')}")
+          uuid = root.get("uuid", "")
+          if not re.fullmatch(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", uuid):
+              raise SystemExit("missing native Nextest run UUID")
+          if uuid not in (evidence / "native.log").read_text():
+              raise SystemExit("JUnit UUID does not match the actual test log")
+          if int(root.get("tests", "-1")) != len(cases):
+              raise SystemExit("JUnit count mismatch")
+          shutil.copyfile(report, evidence / "junit.xml")
+          result = {
+              "source_sha": source,
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "platform": platform.system(),
+              "nextest_uuid": uuid,
+              "passed": len(cases),
+              "required_tests": sorted(expected),
+              "full_package_qualification": False,
+              "target_hardware_qualification": False,
+              "production_authorized": False,
+          }
+          (evidence / "native-result.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result, sort_keys=True))
+          PYTEST
+
+      - name: Strict Memory Clippy
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy --locked -p codex-hepta-memory \
+            -p codex-hepta-memory-extension --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hepta-memory-p0-evidence/clippy.log"
+
+      - name: Verify canonical Memory Rust format
+        if: always()
+        run: cargo +1.95.0 fmt -p codex-hepta-memory -p codex-hepta-memory-extension -- --check
+
+      - name: Preserve native evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-memory-p0-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-memory-p0-evidence
+          if-no-files-found: error
+
+      - name: Ensure the test source remained immutable
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

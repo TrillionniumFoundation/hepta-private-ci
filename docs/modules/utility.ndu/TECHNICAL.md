@@ -70,6 +70,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Keep the deterministic utility and legal-abstain baseline executable while
+integrating group observations and bounded System2 depth/resource proposals.
+Suggestions remain advisory to the existing execution owner. Numerical FBSDE,
+critic or portfolio experiments require independent oracle/evaluation evidence;
+their source or solver residual does not establish learned policy improvement or
+global optimality. Compare complete candidate sets and equal total budgets.
+
 The bounded components are:
 
 - `preference-state reader`

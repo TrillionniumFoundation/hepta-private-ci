@@ -1,7 +1,11 @@
 use pretty_assertions::assert_eq;
+#[cfg(unix)]
 use std::collections::BTreeMap;
+#[cfg(unix)]
 use std::ffi::OsString;
+#[cfg(unix)]
 use std::path::Path;
+#[cfg(unix)]
 use std::path::PathBuf;
 use tempfile::TempDir;
 
@@ -94,12 +98,14 @@ async fn seeded(
     (store, access, receipt.memory)
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct RecoveryTreeImage {
     directory: MetadataImage,
     entries: BTreeMap<OsString, EntryImage>,
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct MetadataImage {
     length: u64,
@@ -123,12 +129,14 @@ struct MetadataImage {
     changed_nanoseconds: i64,
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct EntryImage {
     metadata: MetadataImage,
     payload: EntryPayload,
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum EntryPayload {
     Bytes(Vec<u8>),
@@ -552,6 +560,7 @@ fn install_identity_attack(database: &Path, attack: IdentityAttack) {
     }
 }
 
+#[cfg(unix)]
 fn capture_recovery_tree(root: &Path) -> RecoveryTreeImage {
     let directory = MetadataImage::capture(&std::fs::symlink_metadata(root).expect("stat root"));
     let mut entries = BTreeMap::new();
@@ -575,6 +584,7 @@ fn capture_recovery_tree(root: &Path) -> RecoveryTreeImage {
     RecoveryTreeImage { directory, entries }
 }
 
+#[cfg(unix)]
 impl MetadataImage {
     fn capture(metadata: &std::fs::Metadata) -> Self {
         Self {

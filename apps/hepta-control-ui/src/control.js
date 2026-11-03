@@ -49,7 +49,9 @@ function requireRevision(value) {
 
 function requireDigest(value) {
   if (typeof value !== "string" || !DIGEST.test(value)) {
-    throw new TypeError("digest must contain 64 lowercase hexadecimal characters");
+    throw new TypeError(
+      "digest must contain 64 lowercase hexadecimal characters",
+    );
   }
   return value;
 }
@@ -87,7 +89,9 @@ function parseCanonicalInput(encoded, expectedKeys, name) {
     keys.length !== canonicalKeys.length ||
     keys.some((key, index) => key !== canonicalKeys[index])
   ) {
-    throw new TypeError(`${name} contains missing, unknown, or unordered fields`);
+    throw new TypeError(
+      `${name} contains missing, unknown, or unordered fields`,
+    );
   }
   const snapshot = Object.fromEntries(
     canonicalKeys.map((key) => [key, value[key]]),

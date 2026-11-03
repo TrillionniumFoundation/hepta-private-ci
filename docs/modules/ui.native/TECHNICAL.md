@@ -69,6 +69,12 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Reuse the shared presentation contract while attaching native resources and
+platform input through this owner. A desktop preview or copied resource catalog
+does not establish an installed product host. Integrate authenticated Agentd
+status and terminal task observations before native effects; retain per-platform
+input, lifecycle and recovery tests for the actual selected host.
+
 The bounded components are:
 
 - `native shell`

@@ -1,0 +1,83 @@
+name: Hepta Keyring Sync Security Migration (Draft)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/keyring-store/Cargo.toml"
+      - "codex-rs/rmcp-client/Cargo.toml"
+      - "codex-rs/third_party/keyring-3.6.3/**"
+      - "codex-rs/Cargo.lock"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - "third_party/dbus/**"
+      - ".github/workflows/hepta-keyring-sync-advisory.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keyring-sync-resolution:
+    name: Encrypted keyring closure (${{ matrix.os }}, non-authorizing)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Rust 1.95.0
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Install synchronous Secret Service native build dependencies
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y pkg-config libdbus-1-dev
+      - name: Validate current SHA and diagnose actual Cargo resolver drift
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          rustc --version
+          cargo --version
+          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 > /dev/null
+          git diff --no-ext-diff -- codex-rs/Cargo.lock > "$RUNNER_TEMP/keyring-cargo-lock.diff"
+          if test -s "$RUNNER_TEMP/keyring-cargo-lock.diff"; then
+            echo "::error::Actual Cargo.lock must be committed before any security pass"
+            cat "$RUNNER_TEMP/keyring-cargo-lock.diff"
+            exit 1
+          fi
+          python3 - <<'PY'
+          import pathlib
+          import tomllib
+          lock = tomllib.loads(pathlib.Path("codex-rs/Cargo.lock").read_text())
+          forbidden = {"zbus_names", "zvariant_derive"}
+          found = [(p["name"], p["version"]) for p in lock["package"]
+                   if p["name"] in forbidden or
+                   (p["name"] in {"secret-service", "zbus", "zvariant"} and p["version"].startswith("4."))]
+          if found:
+              raise SystemExit(f"Legacy security-advised DBus packages remain: {found}")
+          print("keyring advisory-targeted packages absent from all-target lock")
+          PY
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-keyring-store
+          git diff --quiet
+      - name: Retain diagnostic Cargo diff
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: keyring-sync-cargo-lock-diff-${{ matrix.os }}
+          path: ${{ runner.temp }}/keyring-cargo-lock.diff
+          if-no-files-found: ignore
+          retention-days: 7
