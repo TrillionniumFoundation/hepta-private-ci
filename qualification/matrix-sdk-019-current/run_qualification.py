@@ -21,7 +21,8 @@ QUALIFICATION = Path(__file__).resolve().parent
 
 def snapshot():
     roots = [
-        "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "MODULE.bazel",
+        "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "MODULE.bazel", "MODULE.bazel.lock",
+        "patches/zstd-sys_windows_msvc_include_dirs.patch",
         "codex-rs/rust-toolchain.toml", "codex-rs/.config/nextest.toml",
         "justfile", "scripts/run-nextest.py", "scripts/check-module-bazel-lock.sh",
         "codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrix-store",
