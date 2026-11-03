@@ -1,0 +1,291 @@
+{
+  "artifacts": [
+    {
+      "artifact": 13262201923,
+      "artifact_bytes": 4523101,
+      "artifact_sha256": "b8c55a51c11da7c72091fc4e5971433b1774103b737d96936dc0c198066b2cec",
+      "source": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+      "tree": "06231d3b8806471223a609b14b066d7e4e4b7774",
+      "run": 41692381139,
+      "job": 126113986503,
+      "inputs": [
+        {
+          "path": ".bazelrc",
+          "blob": "5c728a21858257fd70740b0f61b5669ea3cf35ed",
+          "git_bytes": 14367,
+          "git_sha256": "e94558bfc7392435fb67cc36ff57f421d3bcc10a07357622d7e684e86ec2f817",
+          "checked_out_sha256": "e4650891bfe06ff6364560986ab212e57d01948ea375e65ff75f71d6ca0fa162",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "MODULE.bazel.lock",
+          "blob": "83ab81c6952d06fd35046068901210b3cc3d9807",
+          "git_bytes": 1738127,
+          "git_sha256": "2af31c1631bfb41fda53d3e322858dd00dfd50a6b88baffc95c6567ac7a678fc",
+          "checked_out_sha256": "3499e8251674d1a4d63abef4f223a3df703ecb3189163db152b45808df95d397",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/Cargo.lock",
+          "blob": "66b26967e177030264768983aa1a78ae8c8e9fc4",
+          "git_bytes": 413320,
+          "git_sha256": "35cfe06df466df0401878f0bec8a50241734ffcade6349c80fded1ba97693637",
+          "checked_out_sha256": "0700fb6b027bb87f2df0988d81d02b51de55bfe4d4b0e1582e5a4bb7e856b02c",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/ext/queue/BUILD.bazel",
+          "blob": "ece6922f7b389aa7b23336c34567955cf2755a89",
+          "git_bytes": 506,
+          "git_sha256": "b7610f80115d2c8dae38c28e8ed66c7bdcb9f21969a4a0c79fe572204d620c47",
+          "checked_out_sha256": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/ext/queue/tests/queue_service.rs",
+          "blob": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8",
+          "git_bytes": 97163,
+          "git_sha256": "c4bede7a3ec5e44e30b769aa1d3d0ef23891902bd7a6c230c98ef3673262d992",
+          "checked_out_sha256": "6d0ef6b9d1c9334c125c1f2d8e6e5c8f5024d8b6cc630d52b4eda3e6edca7b9f",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/git-utils/BUILD.bazel",
+          "blob": "346fd3f8f4c6885b7fa1b688bd192531945f39d0",
+          "git_bytes": 121,
+          "git_sha256": "b53e9acc1db161a40e5cc88dabcee638929885d726a8b1f366dfbfe7c3771951",
+          "checked_out_sha256": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/git-utils/src/git_process.rs",
+          "blob": "3ce0431434d0c0e4bbde65eb68bce27cc572d9c6",
+          "git_bytes": 2716,
+          "git_sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06",
+          "checked_out_sha256": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/git-utils/src/git_process_tests.rs",
+          "blob": "fafd04517317251dd14b94991c7311b72b781e7d",
+          "git_bytes": 8206,
+          "git_sha256": "b1e1c269c2f35b013a3f7806aa214ffc24fd126ee821b91c9574b1105aff6b74",
+          "checked_out_sha256": "e4d0b04ec4a4f40fbbf80de9ac73d43bf7c71136981cd3e1b1ed7762b0a6948a",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/utils/pty/src/win/job.rs",
+          "blob": "b06035f72d227b4069da677e8104617ae5616283",
+          "git_bytes": 8506,
+          "git_sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+          "checked_out_sha256": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "defs.bzl",
+          "blob": "35911b57dd46f44ade3fcc5ad45d56c56c394a38",
+          "git_bytes": 34487,
+          "git_sha256": "b2f233ff0d656b4863426a1e167001818f77d7d2d645fc92c982dfea47bc623a",
+          "checked_out_sha256": "22097e30ec9bcd5b9c8cdd6e0218764da870dd37b02bf384348a481e2977ed12",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "workspace_root_test_launcher.bat.tpl",
+          "blob": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69",
+          "git_bytes": 7627,
+          "git_sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae",
+          "checked_out_sha256": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        }
+      ],
+      "native_results": [
+        {
+          "target": "git-utils-unit-tests",
+          "outer_passed": 33,
+          "outer_failed": 0,
+          "outer_ignored": 0,
+          "outer_filtered": 0,
+          "bazel_wrapper_cases": 1,
+          "original_nested_subprocess_summaries": [
+            [
+              1,
+              0,
+              0,
+              0,
+              32
+            ]
+          ]
+        },
+        {
+          "target": "queue-queue_service-test",
+          "outer_passed": 35,
+          "outer_failed": 0,
+          "outer_ignored": 0,
+          "outer_filtered": 0,
+          "bazel_wrapper_cases": 1,
+          "original_nested_subprocess_summaries": []
+        }
+      ],
+      "source_unchanged_by_original_harness": true,
+      "pre_test_powershell_probe": false,
+      "job_log_utf8_bytes": 311559,
+      "job_log_utf8_sha256": "e3ac7d268586ef0ec45541a899392aa95d036f8eafdcf2988aebf3015706ebf8",
+      "execution_streams": [
+        {
+          "file": "bazel-execution-logs/execution-log-test-native-1823.zst",
+          "bytes": 4516962,
+          "sha256": "35a55a3df301064c6c5e7fc2bb164ec42646c6749624fff6115a719ad8682039",
+          "decompressed_bytes": 25092171,
+          "decompressed_sha256": "629837c3558abce44a6920912c35ac160dd7b66647290b505012b7fed88653e0",
+          "scope": "Compression and original-byte integrity only; compact execution protocol not interpreted."
+        }
+      ],
+      "scope": "Exact upstream source and test merge; no current union compatibility claim."
+    },
+    {
+      "artifact": 13260754449,
+      "artifact_bytes": 4544101,
+      "artifact_sha256": "0288d248b1299df47a0e736934dc8ad395a44f7516e17051d74cf9fea4b6dfb4",
+      "source": "5333650cac868e4a1d2c9efbd9d80ab656a8c655",
+      "tree": "06231d3b8806471223a609b14b066d7e4e4b7774",
+      "run": 41692381139,
+      "job": 126113987076,
+      "inputs": [
+        {
+          "path": ".bazelrc",
+          "blob": "5c728a21858257fd70740b0f61b5669ea3cf35ed",
+          "git_bytes": 14367,
+          "git_sha256": "e94558bfc7392435fb67cc36ff57f421d3bcc10a07357622d7e684e86ec2f817",
+          "checked_out_sha256": "e4650891bfe06ff6364560986ab212e57d01948ea375e65ff75f71d6ca0fa162",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "MODULE.bazel.lock",
+          "blob": "83ab81c6952d06fd35046068901210b3cc3d9807",
+          "git_bytes": 1738127,
+          "git_sha256": "2af31c1631bfb41fda53d3e322858dd00dfd50a6b88baffc95c6567ac7a678fc",
+          "checked_out_sha256": "3499e8251674d1a4d63abef4f223a3df703ecb3189163db152b45808df95d397",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/Cargo.lock",
+          "blob": "66b26967e177030264768983aa1a78ae8c8e9fc4",
+          "git_bytes": 413320,
+          "git_sha256": "35cfe06df466df0401878f0bec8a50241734ffcade6349c80fded1ba97693637",
+          "checked_out_sha256": "0700fb6b027bb87f2df0988d81d02b51de55bfe4d4b0e1582e5a4bb7e856b02c",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/ext/queue/BUILD.bazel",
+          "blob": "ece6922f7b389aa7b23336c34567955cf2755a89",
+          "git_bytes": 506,
+          "git_sha256": "b7610f80115d2c8dae38c28e8ed66c7bdcb9f21969a4a0c79fe572204d620c47",
+          "checked_out_sha256": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/ext/queue/tests/queue_service.rs",
+          "blob": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8",
+          "git_bytes": 97163,
+          "git_sha256": "c4bede7a3ec5e44e30b769aa1d3d0ef23891902bd7a6c230c98ef3673262d992",
+          "checked_out_sha256": "6d0ef6b9d1c9334c125c1f2d8e6e5c8f5024d8b6cc630d52b4eda3e6edca7b9f",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/git-utils/BUILD.bazel",
+          "blob": "346fd3f8f4c6885b7fa1b688bd192531945f39d0",
+          "git_bytes": 121,
+          "git_sha256": "b53e9acc1db161a40e5cc88dabcee638929885d726a8b1f366dfbfe7c3771951",
+          "checked_out_sha256": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/git-utils/src/git_process.rs",
+          "blob": "3ce0431434d0c0e4bbde65eb68bce27cc572d9c6",
+          "git_bytes": 2716,
+          "git_sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06",
+          "checked_out_sha256": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/git-utils/src/git_process_tests.rs",
+          "blob": "fafd04517317251dd14b94991c7311b72b781e7d",
+          "git_bytes": 8206,
+          "git_sha256": "b1e1c269c2f35b013a3f7806aa214ffc24fd126ee821b91c9574b1105aff6b74",
+          "checked_out_sha256": "e4d0b04ec4a4f40fbbf80de9ac73d43bf7c71136981cd3e1b1ed7762b0a6948a",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "codex-rs/utils/pty/src/win/job.rs",
+          "blob": "b06035f72d227b4069da677e8104617ae5616283",
+          "git_bytes": 8506,
+          "git_sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+          "checked_out_sha256": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "defs.bzl",
+          "blob": "35911b57dd46f44ade3fcc5ad45d56c56c394a38",
+          "git_bytes": 34487,
+          "git_sha256": "b2f233ff0d656b4863426a1e167001818f77d7d2d645fc92c982dfea47bc623a",
+          "checked_out_sha256": "22097e30ec9bcd5b9c8cdd6e0218764da870dd37b02bf384348a481e2977ed12",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        },
+        {
+          "path": "workspace_root_test_launcher.bat.tpl",
+          "blob": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69",
+          "git_bytes": 7627,
+          "git_sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae",
+          "checked_out_sha256": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+          "representation": "Exact Git LF to Windows CRLF conversion"
+        }
+      ],
+      "native_results": [
+        {
+          "target": "git-utils-unit-tests",
+          "outer_passed": 33,
+          "outer_failed": 0,
+          "outer_ignored": 0,
+          "outer_filtered": 0,
+          "bazel_wrapper_cases": 1,
+          "original_nested_subprocess_summaries": [
+            [
+              1,
+              0,
+              0,
+              0,
+              32
+            ]
+          ]
+        },
+        {
+          "target": "queue-queue_service-test",
+          "outer_passed": 35,
+          "outer_failed": 0,
+          "outer_ignored": 0,
+          "outer_filtered": 0,
+          "bazel_wrapper_cases": 1,
+          "original_nested_subprocess_summaries": []
+        }
+      ],
+      "source_unchanged_by_original_harness": true,
+      "pre_test_powershell_probe": false,
+      "job_log_utf8_bytes": 313554,
+      "job_log_utf8_sha256": "f4daf93b2c7280d71445f400f091e4596a5a21d11375246dd1eca532979cf285",
+      "execution_streams": [
+        {
+          "file": "bazel-execution-logs/execution-log-test-native-1610.zst",
+          "bytes": 4538911,
+          "sha256": "398a499f2322c2f4fd79a6f6a30d89f635cb92813cff6df510fe7f18a2e5f7d1",
+          "decompressed_bytes": 25077454,
+          "decompressed_sha256": "f9b6801c46db4f94a7c135bf6cdeed5bfd69069b35a3082ee0b11a6895bc972b",
+          "scope": "Compression and original-byte integrity only; compact execution protocol not interpreted."
+        }
+      ],
+      "scope": "Exact upstream source and test merge; no current union compatibility claim."
+    }
+  ],
+  "outer_suite_passed_executions": 136,
+  "current_union_qualification": "pending",
+  "nested_subprocess_note": "Each original Git suite runs one existing 1-of-33 subprocess with 32 filtered. Outer Git and queue suites have no filtering; nested executions are not added to the denominator."
+}
