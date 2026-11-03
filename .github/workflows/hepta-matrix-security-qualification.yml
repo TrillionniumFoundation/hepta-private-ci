@@ -1,0 +1,89 @@
+name: hepta Matrix security migration
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-matrix-security-qualification.yml
+      - codex-rs/hepta-matrix*/**
+      - codex-rs/third_party/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - qualification/matrix-sdk-019-current/**
+      - MODULE.bazel
+      - MODULE.bazel.lock
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-matrix-security-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    if: github.head_ref == 'fix/private-ci-matrix-security-20261103'
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [owners, sqlite-starlark, crypto-migration, synapse-protocol]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          components: clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.151
+      - name: Verify the exact current source against actual consumers
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/matrix-target
+          HEPTA_SDK_ARTIFACTS: ${{ runner.temp }}/matrix-qualification
+        run: python3 qualification/matrix-sdk-019-current/run_qualification.py '${{ matrix.mode }}' --output "$RUNNER_TEMP/matrix-qualification"
+      - name: Retain native results including failures
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: matrix-${{ matrix.mode }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/matrix-qualification
+          if-no-files-found: error
+          retention-days: 7
+
+  bazel:
+    if: github.head_ref == 'fix/private-ci-matrix-security-20261103'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: matrix-sdk019-qualification
+      - name: Generate the real lock and run original Bazel targets
+        run: python3 qualification/matrix-sdk-019-current/run_qualification.py bazel --output "$RUNNER_TEMP/matrix-bazel"
+      - name: Retain generated lock and original Bazel results
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: matrix-bazel-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/matrix-bazel
+          if-no-files-found: error
+          retention-days: 7

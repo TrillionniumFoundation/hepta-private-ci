@@ -1,0 +1,7 @@
+error: failed to select a version for the requirement `base64 = "^0.23.1"`
+candidate versions found which didn't match: 0.23.0
+location searched: crates.io index
+required by package `matrix-sdk-sqlite v0.19.1`
+    ... which satisfies dependency `matrix-sdk-sqlite = "=0.19.1"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/hepta-matrix-sdk)`
+note: offline mode (via `--offline`) can sometimes cause surprising resolution failures
+help: if this error is too confusing you may wish to retry without `--offline`

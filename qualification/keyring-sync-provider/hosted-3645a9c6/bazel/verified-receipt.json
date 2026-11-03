@@ -1,0 +1,62 @@
+{
+  "run_id": 41674396703,
+  "job_id": 126050996356,
+  "source_commit": "3645a9c67ee7ff1dae193e372c932e9e3ed1f8b1",
+  "artifact_id": 13250653321,
+  "artifact_bytes": 234370,
+  "artifact_sha256": "682f69651f7bc276af1c1bac54dfa7dff1b8ce610d73eb1385d2fc82a38d8458",
+  "verified_inputs": [
+    "codex-rs/Cargo.toml",
+    "codex-rs/Cargo.lock",
+    "MODULE.bazel"
+  ],
+  "lock_bytes": 1645528,
+  "lock_sha256": "c5b9158e8adffc1642a0f476f383b4753d0822dc092775c20724a5198afe9648",
+  "lock_git_blob": "d72e67fb680efcac4151ab3647efdd46a26aee04",
+  "files": {
+    "native-test.log": {
+      "bytes": 6525,
+      "sha256": "2b4a12c5fcdb274c6fd78b2da1930d98ee647fc122dab62dc8c14f292c2a7475"
+    },
+    "generated-target.log": {
+      "bytes": 254,
+      "sha256": "6aa59abfbbd611d3f60ee350b896c4c643591758773a544a2d0bdf4a7030c2af"
+    },
+    "artifact.zip": {
+      "bytes": 234370,
+      "sha256": "682f69651f7bc276af1c1bac54dfa7dff1b8ce610d73eb1385d2fc82a38d8458"
+    },
+    "source-inputs.sha256": {
+      "bytes": 251,
+      "sha256": "a877cb33b1037b9e4a980d6d074a77e47e7da5dd0c38ae1ef36ff8ed613573c6"
+    },
+    "source-commit.txt": {
+      "bytes": 41,
+      "sha256": "c51d9b4aceb527a4df6c8b80072e0a05c350a2de388c8a6903a5783330fdf8bb"
+    },
+    "lock-check.log": {
+      "bytes": 1045,
+      "sha256": "6aece20e9732284bb0d8c43a231328e99f5785b46c7165776c38ebb07098eb39"
+    },
+    "keyring-build.log": {
+      "bytes": 14128,
+      "sha256": "9eaf73271d2319caa1a534cabe95550df22af78a2f596c46b86fa9059d230ca5"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1645528,
+      "sha256": "c5b9158e8adffc1642a0f476f383b4753d0822dc092775c20724a5198afe9648"
+    },
+    "lock-update.log": {
+      "bytes": 2328,
+      "sha256": "961d0cca3b4ca9d8488ec114610fb76424a3d7509c689b4f4297068d6b027f1d"
+    },
+    "generated-target.bazel": {
+      "bytes": 129064,
+      "sha256": "7da62b880365d363fbd3b77a0fb109b8cb291e1575a1d4d788e1a135771fbdd2"
+    }
+  },
+  "provider_fact_keys": [
+    "path+crates/third_party/dbus-secret-service-4.1.0_dbus-secret-service"
+  ],
+  "scope": "Hosted current secure source: original lock generation/check, pinned D-Bus identity test and actual keyring consumer rlib build. Not full-platform/global CI admission."
+}

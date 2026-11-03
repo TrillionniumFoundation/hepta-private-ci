@@ -1,0 +1,19 @@
+{
+  "uncompressed": {
+    "bytes": 13170035,
+    "sha256": "3f065ce619e0b3bb2e2cf392a5cb2282270e795ac6378aa2d3d3e4dea1c3d6db"
+  },
+  "gzip": {
+    "path": "qualification/keyring-sync-provider/entropy-repair/cargo-deny.log.gz",
+    "bytes": 707828,
+    "sha256": "847073551b031fd285981d5464d310ed5ea8e588f6134b82ddb7526bb17e1fe0"
+  },
+  "reproduce": "gzip -dc cargo-deny.log.gz > cargo-deny.log",
+  "policy_unchanged": true,
+  "remaining_errors": [
+    "RUSTSEC-2024-0449",
+    "RUSTSEC-2026-0318",
+    "RUSTSEC-2026-0319",
+    "RUSTSEC-2026-0387"
+  ]
+}

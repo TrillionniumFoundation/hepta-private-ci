@@ -1,0 +1,119 @@
+{
+  "release_signature_verified": true,
+  "inrelease_sha256": "cdb2f31d809f589719a53c6ad15f255b27569c4059542ada282aaa21b8e164b0",
+  "index": {
+    "url": "https://archive.ubuntu.com/ubuntu/dists/noble/main/binary-amd64/Packages.xz",
+    "bytes": 1401160,
+    "sha256": "2a6a199e1031a5c279cb346646d594993f35b1c03dd4a82aaa0323980dd92451"
+  },
+  "packages": [
+    {
+      "name": "pkgconf",
+      "version": "1.8.1-2build1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/pkgconf/pkgconf_1.8.1-2build1_amd64.deb",
+      "bytes": 16790,
+      "sha256": "834a58031069d97d7cfb8b2f5bfd5effc69cecf7f30cc362071875f1f8dc1828",
+      "depends": "pkgconf-bin",
+      "extract_exit": 0
+    },
+    {
+      "name": "pkgconf-bin",
+      "version": "1.8.1-2build1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/pkgconf/pkgconf-bin_1.8.1-2build1_amd64.deb",
+      "bytes": 20730,
+      "sha256": "7a812f05ee1610154b433e2ad54f6e4163fcbb306b9fb31afe959afb2e5e1545",
+      "depends": "libc6 (>= 2.34), libpkgconf3 (>= 1.8.0)",
+      "extract_exit": 0
+    },
+    {
+      "name": "libpkgconf3",
+      "version": "1.8.1-2build1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/pkgconf/libpkgconf3_1.8.1-2build1_amd64.deb",
+      "bytes": 30652,
+      "sha256": "fc3a57e8f931ec06cb7c51acc56878f1fec247ff02a7adcab26905c2faeb2792",
+      "depends": "libc6 (>= 2.38)",
+      "extract_exit": 0
+    },
+    {
+      "name": "libdbus-1-dev",
+      "version": "1.14.10-4ubuntu4",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/d/dbus/libdbus-1-dev_1.14.10-4ubuntu4_amd64.deb",
+      "bytes": 189774,
+      "sha256": "c9f1daac0a75b462cbdcb56830b39041dc4ae8ef7ffc79b7d78e5e79a788818b",
+      "depends": "libdbus-1-3 (= 1.14.10-4ubuntu4), pkgconf, xml-core (>= 0.14)",
+      "extract_exit": 0
+    },
+    {
+      "name": "gnome-keyring",
+      "version": "46.1-2build1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gnome-keyring/gnome-keyring_46.1-2build1_amd64.deb",
+      "bytes": 639068,
+      "sha256": "e3aa9b15ec0c025d3d0730321c3bcf136200cb45643c71d3dedbb1bc5b978d4c",
+      "depends": "dconf-gsettings-backend | gsettings-backend, init-system-helpers (>= 1.52), libc6 (>= 2.38), libgck-1-0 (>= 3.3.90), libgcr-base-3-1 (>= 3.28.0), libgcrypt20 (>= 1.10.0), libglib2.0-0t64 (>= 2.77.3), libsystemd0, gcr (>= 3.4), default-dbus-session-bus | dbus-session-bus, p11-kit (>= 0.16), pinentry-gnome3",
+      "extract_exit": 0
+    },
+    {
+      "name": "libgck-1-0",
+      "version": "3.41.2-1build3",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcr/libgck-1-0_3.41.2-1build3_amd64.deb",
+      "bytes": 79912,
+      "sha256": "bceace92f5cbbf55ab2c963a426f73335c887f0c1c45c7b0b7d7610b36d9afde",
+      "depends": "libc6 (>= 2.14), libglib2.0-0t64 (>= 2.79.0), libp11-kit0 (>= 0.25.0)",
+      "extract_exit": 0
+    },
+    {
+      "name": "libgcr-base-3-1",
+      "version": "3.41.2-1build3",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gcr/libgcr-base-3-1_3.41.2-1build3_amd64.deb",
+      "bytes": 202216,
+      "sha256": "b702e0ef02517caf5a3e35b9b663dfc22935315dc2e7dc507e78435963ff2e24",
+      "depends": "libgck-1-0 (= 3.41.2-1build3), libc6 (>= 2.28), libgcrypt20 (>= 1.10.0), libglib2.0-0t64 (>= 2.79.0), libp11-kit0 (>= 0.25.0)",
+      "extract_exit": 0
+    },
+    {
+      "name": "python3-dbus",
+      "version": "1.3.2-5build3",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/d/dbus-python/python3-dbus_1.3.2-5build3_amd64.deb",
+      "bytes": 100066,
+      "sha256": "45c94c9c4eda925a285dff3c1da01bd93b1467c8a83b10d764398ea8a8306419",
+      "depends": "python3 (<< 3.13), python3 (>= 3.12~), python3:any, libc6 (>= 2.4), libdbus-1-3 (>= 1.9.14), libglib2.0-0t64 (>= 2.16.0)",
+      "extract_exit": 0
+    },
+    {
+      "name": "python3-gi",
+      "version": "3.48.2-1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/pygobject/python3-gi_3.48.2-1_amd64.deb",
+      "bytes": 232016,
+      "sha256": "2a69ad9d8ab3b5801725480986b9abbf83bd4a06c38450fe143f6689d19d4bd8",
+      "depends": "gir1.2-glib-2.0 (>= 1.64.0), gir1.2-girepository-2.0, python3 (<< 3.13), python3 (>= 3.12~), python3:any, libc6 (>= 2.14), libffi8 (>= 3.4), libgirepository-1.0-1 (>= 1.71.0), libgirepository-1.0-1-with-libffi8 (>= 1.64.0~), libglib2.0-0t64 (>= 2.77.0)",
+      "extract_exit": 0
+    },
+    {
+      "name": "libgirepository-1.0-1",
+      "version": "1.80.1-1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/gobject-introspection/libgirepository-1.0-1_1.80.1-1_amd64.deb",
+      "bytes": 81920,
+      "sha256": "67ab4f3dc402229519f36f63b24a987a123a611e21cbef71ed4a110ed339e547",
+      "depends": "libc6 (>= 2.29), libffi8 (>= 3.4), libglib2.0-0t64 (>= 2.80.0)",
+      "extract_exit": 0
+    },
+    {
+      "name": "gir1.2-glib-2.0",
+      "version": "2.80.0-6ubuntu1",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glib2.0/gir1.2-glib-2.0_2.80.0-6ubuntu1_amd64.deb",
+      "bytes": 183276,
+      "sha256": "35e46a249adf7bf94567e3ef6deb44dae7965c21dbeb4128c67a45fbf70256ab",
+      "depends": "libglib2.0-0t64 (= 2.80.0-6ubuntu1)",
+      "extract_exit": 0
+    },
+    {
+      "name": "libdbus-1-3",
+      "version": "1.14.10-4ubuntu4",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/d/dbus/libdbus-1-3_1.14.10-4ubuntu4_amd64.deb",
+      "bytes": 209620,
+      "sha256": "bbb55111182a44d0fe97a84120407e17bb6e23d41e2670d73aa78f619e29efa2",
+      "depends": "libc6 (>= 2.38), libsystemd0",
+      "extract_exit": 0
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+   Compiling libdbus-sys v0.2.7
+   Compiling dbus v0.9.10
+   Compiling dbus-secret-service v4.1.0
+   Compiling keyring v3.6.3 (/workspace/scratch/1f1d02319616/private-ci-keyring-work-20261103/codex-rs/third_party/keyring-3.6.3)
+   Compiling hepta-keyring-candidate-probe v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-keyring-probes-20261103/candidate)
+warning: method `message` is never used
+  --> src/production_keyring_store.rs:18:12
+   |
+13 | impl CredentialStoreError {
+   | ------------------------- method in this implementation
+...
+18 |     pub fn message(&self) -> String {
+   |            ^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `MockKeyringStore` is never constructed
+   --> src/production_keyring_store.rs:121:16
+    |
+121 |     pub struct MockKeyringStore {
+    |                ^^^^^^^^^^^^^^^^
+
+warning: methods `credential`, `saved_value`, `set_error`, and `contains` are never used
+   --> src/production_keyring_store.rs:126:16
+    |
+125 |     impl MockKeyringStore {
+    |     --------------------- methods in this implementation
+126 |         pub fn credential(&self, account: &str) -> Arc<MockCredential> {
+    |                ^^^^^^^^^^
+...
+137 |         pub fn saved_value(&self, account: &str) -> Option<String> {
+    |                ^^^^^^^^^^^
+...
+148 |         pub fn set_error(&self, account: &str, error: KeyringError) {
+    |                ^^^^^^^^^
+...
+153 |         pub fn contains(&self, account: &str) -> bool {
+    |                ^^^^^^^^
+
+warning: `hepta-keyring-candidate-probe` (bin "hepta-keyring-candidate-probe") generated 3 warnings
+    Finished `dev` profile [unoptimized] target(s) in 3.21s

@@ -1,0 +1,12 @@
+{
+  "reason": "Preserve exact tool-produced diagnostic bytes in compressed evidence; do not rewrite the upstream truncated word or widen spelling policy.",
+  "source_artifact_id": 13250700080,
+  "source_artifact_path": "service/bus.log",
+  "original_bytes": 260,
+  "original_sha256": "4b6bb15705db8e44b6e72f3ce089db265a749abe89f5e635b96f0b7562245863",
+  "stored_file": "bus.log.gz",
+  "stored_bytes": 175,
+  "stored_sha256": "deaa03320f050740590f8cc6e94e84d137b8fc8ea31451e4c92632f9dcd0fad3",
+  "replay": "gzip -dc bus.log.gz",
+  "decoded_matches_original": true
+}

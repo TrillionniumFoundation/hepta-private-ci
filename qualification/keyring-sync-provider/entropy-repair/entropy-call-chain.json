@@ -1,0 +1,336 @@
+{
+  "locked_metadata_command": [
+    "cargo",
+    "metadata",
+    "--locked",
+    "--offline",
+    "--all-features",
+    "--format-version",
+    "1"
+  ],
+  "exit": 0,
+  "locked_provider_chain": [
+    {
+      "name": "dbus-secret-service",
+      "version": "4.1.0",
+      "source": null,
+      "manifest_path": "/workspace/scratch/1f1d02319616/private-ci-keyring-work-20261103/codex-rs/third_party/dbus-secret-service-4.1.0/Cargo.toml",
+      "resolve": {
+        "id": "path+file:///workspace/scratch/1f1d02319616/private-ci-keyring-work-20261103/codex-rs/third_party/dbus-secret-service-4.1.0#dbus-secret-service@4.1.0",
+        "dependencies": [
+          "registry+https://github.com/rust-lang/crates.io-index#aes@0.8.4",
+          "registry+https://github.com/rust-lang/crates.io-index#block-padding@0.3.3",
+          "registry+https://github.com/rust-lang/crates.io-index#cbc@0.1.2",
+          "registry+https://github.com/rust-lang/crates.io-index#dbus@0.9.10",
+          "registry+https://github.com/rust-lang/crates.io-index#hkdf@0.12.4",
+          "registry+https://github.com/rust-lang/crates.io-index#num@0.4.3",
+          "registry+https://github.com/rust-lang/crates.io-index#once_cell@1.21.4",
+          "registry+https://github.com/rust-lang/crates.io-index#rand@0.8.6",
+          "registry+https://github.com/rust-lang/crates.io-index#sha2@0.10.9",
+          "registry+https://github.com/rust-lang/crates.io-index#zeroize@1.8.2"
+        ],
+        "deps": [
+          {
+            "name": "aes",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#aes@0.8.4",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "block_padding",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#block-padding@0.3.3",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "cbc",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#cbc@0.1.2",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "dbus",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#dbus@0.9.10",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "hkdf",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#hkdf@0.12.4",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "num",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#num@0.4.3",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "once_cell",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#once_cell@1.21.4",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "rand",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#rand@0.8.6",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "sha2",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#sha2@0.10.9",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "zeroize",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#zeroize@1.8.2",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          }
+        ],
+        "features": [
+          "crypto-rust"
+        ]
+      }
+    },
+    {
+      "name": "rand",
+      "version": "0.8.6",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "manifest_path": "/workspace/scratch/1f1d02319616/private-ci-keyring-cargo-home-20261103/registry/src/index.crates.io-1949cf8c6b5b557f/rand-0.8.6/Cargo.toml",
+      "resolve": {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#rand@0.8.6",
+        "dependencies": [
+          "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186",
+          "registry+https://github.com/rust-lang/crates.io-index#rand_chacha@0.3.1",
+          "registry+https://github.com/rust-lang/crates.io-index#rand_core@0.6.4"
+        ],
+        "deps": [
+          {
+            "name": "libc",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": "cfg(unix)"
+              }
+            ]
+          },
+          {
+            "name": "rand_chacha",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#rand_chacha@0.3.1",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "rand_core",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#rand_core@0.6.4",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          }
+        ],
+        "features": [
+          "alloc",
+          "default",
+          "getrandom",
+          "libc",
+          "rand_chacha",
+          "small_rng",
+          "std",
+          "std_rng"
+        ]
+      }
+    },
+    {
+      "name": "rand_core",
+      "version": "0.6.4",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "manifest_path": "/workspace/scratch/1f1d02319616/private-ci-keyring-cargo-home-20261103/registry/src/index.crates.io-1949cf8c6b5b557f/rand_core-0.6.4/Cargo.toml",
+      "resolve": {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#rand_core@0.6.4",
+        "dependencies": [
+          "registry+https://github.com/rust-lang/crates.io-index#getrandom@0.2.17"
+        ],
+        "deps": [
+          {
+            "name": "getrandom",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#getrandom@0.2.17",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          }
+        ],
+        "features": [
+          "alloc",
+          "getrandom",
+          "std"
+        ]
+      }
+    },
+    {
+      "name": "getrandom",
+      "version": "0.2.17",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "manifest_path": "/workspace/scratch/1f1d02319616/private-ci-keyring-cargo-home-20261103/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17/Cargo.toml",
+      "resolve": {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#getrandom@0.2.17",
+        "dependencies": [
+          "registry+https://github.com/rust-lang/crates.io-index#cfg-if@1.0.4",
+          "registry+https://github.com/rust-lang/crates.io-index#js-sys@0.3.85",
+          "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186",
+          "registry+https://github.com/rust-lang/crates.io-index#wasi@0.11.1+wasi-snapshot-preview1",
+          "registry+https://github.com/rust-lang/crates.io-index#wasm-bindgen@0.2.108"
+        ],
+        "deps": [
+          {
+            "name": "cfg_if",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#cfg-if@1.0.4",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ]
+          },
+          {
+            "name": "js_sys",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#js-sys@0.3.85",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": "cfg(all(any(target_arch = \"wasm32\", target_arch = \"wasm64\"), target_os = \"unknown\"))"
+              }
+            ]
+          },
+          {
+            "name": "libc",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": "cfg(unix)"
+              }
+            ]
+          },
+          {
+            "name": "wasi",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#wasi@0.11.1+wasi-snapshot-preview1",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": "cfg(target_os = \"wasi\")"
+              }
+            ]
+          },
+          {
+            "name": "wasm_bindgen",
+            "pkg": "registry+https://github.com/rust-lang/crates.io-index#wasm-bindgen@0.2.108",
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": "cfg(all(any(target_arch = \"wasm32\", target_arch = \"wasm64\"), target_os = \"unknown\"))"
+              }
+            ]
+          }
+        ],
+        "features": [
+          "js",
+          "js-sys",
+          "std",
+          "wasm-bindgen"
+        ]
+      }
+    }
+  ],
+  "official_member_hashes": {
+    "rand-0.8.6/src/rngs/mod.rs": {
+      "bytes": 5959,
+      "sha256": "e18bcadc13c867a0b12f96b50557d6fb650e8508cfae57466023bafcc4094bcb"
+    },
+    "rand-0.8.6/src/rng.rs": {
+      "bytes": 18953,
+      "sha256": "7519250d70e466e497cbe2009ea89b0c823aabbde39ebb1dcdc219c06c6af97e"
+    },
+    "rand_core-0.6.4/src/os.rs": {
+      "bytes": 2548,
+      "sha256": "47849479e19c43dd01259eb14be7b4daf8474d23567dc32a1547c10b108b7069"
+    },
+    "getrandom-0.2.17/src/lib.rs": {
+      "bytes": 20300,
+      "sha256": "50dbe3913bc42b354bfedd773b54540d569215cc4615140f549fd6be7266f24d"
+    },
+    "getrandom-0.2.17/src/linux_android_with_fallback.rs": {
+      "bytes": 1198,
+      "sha256": "620577d889d92916aeed62ac0e4f711725fddb7e7bb331f02474160104354e8e"
+    },
+    "getrandom-0.2.17/src/use_file.rs": {
+      "bytes": 3813,
+      "sha256": "9a743fbf324120cfb4fd23c925f6b756edb3898f269654bc50dc5a73d6329266"
+    },
+    "getrandom-0.2.17/src/util_libc.rs": {
+      "bytes": 6314,
+      "sha256": "39fddfc06948dbd65c4dc696f71d32cf158c5ca91632afa78cbc4c22e0192502"
+    }
+  },
+  "call_chain": [
+    "Session::new(Dh) -> crypto::Keypair::generate -> OsRng::fill([u8;128])",
+    "Session::encrypt_secret(Dh) -> crypto::encrypt (Rust or OpenSSL) -> crypto::salt -> OsRng::fill([u8;16])",
+    "rand0.8.6 Rng::fill -> Fill<[u8;N]>::try_fill -> [u8]::try_fill -> rand_core0.6.4 OsRng::try_fill_bytes -> getrandom0.2.17",
+    "Linux kernel getrandom; only ENOSYS/EPERM use getrandom crate standard /dev/random readiness wait then /dev/urandom read. Errors panic at upstream Rng::fill; no weak random fallback."
+  ],
+  "boundary": "Source and resolved graph evidence. This is not a claim of live credential or full platform acceptance."
+}

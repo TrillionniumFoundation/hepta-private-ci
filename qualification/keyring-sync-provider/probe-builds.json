@@ -1,0 +1,30 @@
+[
+  {
+    "label": "baseline",
+    "command": [
+      "cargo",
+      "build",
+      "--manifest-path",
+      "/workspace/scratch/1f1d02319616/private-ci-keyring-probes-20261103/baseline/Cargo.toml"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 38.35917559099971,
+    "log_sha256": "85294af3a03d0e238bbf31502656efe6f7983a3e5d76ab40948acb823ddd5198",
+    "lock_sha256": "64fa50f085008b7e2680fdf179de723e7c0e44e7a7345329df3c30d740f3716c",
+    "binary_sha256": "3950038e714d237d907f7495f96124ee940361d1db69f5c573459b5ed21f06c4"
+  },
+  {
+    "label": "candidate",
+    "command": [
+      "cargo",
+      "build",
+      "--manifest-path",
+      "/workspace/scratch/1f1d02319616/private-ci-keyring-probes-20261103/candidate/Cargo.toml"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 5.882101413999862,
+    "log_sha256": "194d4d618b1233f229329cdeff7b74c752a8ff91b358c4d5c2fde16233e75f53",
+    "lock_sha256": "575a8820621ecee0cd54353cf97f6350aa4932be32749d433933070bd6feec56",
+    "binary_sha256": "8ce38e4267bf1d882a42a7e1484e8b8288274a741ce0c2760ae349f7ae412c93"
+  }
+]
