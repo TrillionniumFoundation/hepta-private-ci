@@ -528,7 +528,12 @@ mod tests {
     use crate::cap::load_or_create_cap_sids;
     use crate::cap::workspace_write_cap_sid_for_root;
     use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
+    use codex_protocol::models::ManagedFileSystemPermissions;
     use codex_protocol::models::PermissionProfile;
+    use codex_protocol::permissions::FileSystemAccessMode;
+    use codex_protocol::permissions::FileSystemPath;
+    use codex_protocol::permissions::FileSystemSandboxEntry;
+    use codex_protocol::permissions::FileSystemSpecialPath;
     use codex_protocol::permissions::NetworkSandboxPolicy;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use pretty_assertions::assert_eq;
@@ -587,8 +592,32 @@ mod tests {
         let mut env_map = HashMap::new();
         let workspace_roots = workspace_roots_for(cwd.path());
 
+        // This test exercises offline environment preparation under the supported
+        // explicit-read contract. Full-disk read refusal is tested separately.
+        let mut profile = PermissionProfile::workspace_write();
+        let PermissionProfile::Managed {
+            file_system: ManagedFileSystemPermissions::Restricted { entries, .. },
+            ..
+        } = &mut profile
+        else {
+            panic!("workspace-write profile must be restricted");
+        };
+        entries.retain(|entry| {
+            !matches!(
+                &entry.path,
+                FileSystemPath::Special {
+                    value: FileSystemSpecialPath::Root
+                }
+            )
+        });
+        entries.push(FileSystemSandboxEntry::new(
+            FileSystemPath::Special {
+                value: FileSystemSpecialPath::Minimal,
+            },
+            FileSystemAccessMode::Read,
+        ));
         let _context = prepare_legacy_spawn_context(
-            &PermissionProfile::workspace_write(),
+            &profile,
             workspace_roots.as_slice(),
             codex_home.path(),
             cwd.path(),

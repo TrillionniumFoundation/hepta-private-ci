@@ -52,6 +52,7 @@ jobs:
           import os
           from pathlib import Path
           import subprocess
+          import sys
 
           output = Path(os.environ["RUNNER_TEMP"]) / "fpt-owner-diagnostics"
           output.mkdir(parents=True, exist_ok=True)
@@ -173,12 +174,15 @@ jobs:
           output = Path(os.environ["RUNNER_TEMP"]) / "fpt-owner-diagnostics"
           result = subprocess.run(
               [
-                  "bash", ".github/scripts/run-bazel-ci.sh",
-                  "--windows-msvc-host-platform", "--", "info",
+                  sys.executable, ".github/scripts/run_bazel_with_buildbuddy.py",
+                  "info", "--config=ci-windows",
+                  "--host_platform=//:local_windows_msvc",
                   "--platforms=//:windows_x86_64_msvc", "bazel-testlogs",
               ],
-              check=True, capture_output=True, text=True,
+              capture_output=True, text=True,
           )
+          if result.returncode:
+              raise RuntimeError(f"bazel info failed: {result.stderr[-8000:]}")
           root = Path(result.stdout.strip().splitlines()[-1])
           records = []
           for target in (

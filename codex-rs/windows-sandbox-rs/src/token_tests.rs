@@ -389,11 +389,24 @@ fn shared_read_root_cannot_authorize_cross_workspace_ipc_writes() -> Result<()> 
     let name = to_wide(format!("Local\\codex-read-cap-ipc-{}", caps.workspace));
     let event = {
         let _identity = unsafe { Impersonation::enter(first_token.0)? };
+        // Compare unnamed and named creation with the same restricted token and
+        // default DACL. This distinguishes object DACL access from access to the
+        // shared Windows object-manager namespace without adding any grants.
+        let unnamed = unsafe { CreateEventW(std::ptr::null(), 1, 0, std::ptr::null()) };
+        let unnamed_error = (unnamed == 0).then(|| unsafe { GetLastError() });
+        let unnamed = (unnamed != 0).then(|| Event(unnamed));
         let handle = unsafe { CreateEventW(std::ptr::null(), 1, 0, name.as_ptr()) };
-        anyhow::ensure!(handle != 0, "create first workspace event: {}", unsafe {
-            GetLastError()
-        });
-        Event(handle)
+        let named_error = (handle == 0).then(|| unsafe { GetLastError() });
+        eprintln!(
+            "strict token default-DACL IPC: unnamed_error={unnamed_error:?}, named_error={named_error:?}"
+        );
+        anyhow::ensure!(
+            handle != 0,
+            "create first workspace named event: {named_error:?}; unnamed: {unnamed_error:?}"
+        );
+        let event = Event(handle);
+        anyhow::ensure!(unnamed.is_some(), "create unnamed event: {unnamed_error:?}");
+        event
     };
     {
         let _identity = unsafe { Impersonation::enter(first_token.0)? };

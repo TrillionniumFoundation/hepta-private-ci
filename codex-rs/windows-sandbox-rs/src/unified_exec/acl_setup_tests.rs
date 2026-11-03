@@ -1,5 +1,6 @@
 use super::collect_stdout_and_exit;
 use super::current_thread_runtime;
+use super::explicit_legacy_profile;
 use super::legacy_process_test_guard;
 use super::sandbox_cwd;
 use super::spawn_windows_sandbox_session_legacy;
@@ -7,7 +8,6 @@ use super::workspace_roots_for;
 use crate::run_windows_sandbox_capture_with_filesystem_overrides;
 use crate::token::LocalSid;
 use crate::winutil::to_wide;
-use codex_protocol::models::PermissionProfile;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use std::collections::HashMap;
@@ -373,7 +373,7 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
     current_thread_runtime().block_on(async {
         let fixture = AclSetupFailureFixture::new();
         let result = spawn_windows_sandbox_session_legacy(
-            &PermissionProfile::workspace_write(),
+            &explicit_legacy_profile(&[&fixture.workspace]),
             &workspace_roots_for(&fixture.workspace),
             &fixture.codex_home,
             AclSetupFailureFixture::command(),
@@ -405,7 +405,7 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
     let _caller = PrivilegeRestrictedCaller::enter();
     let fixture = AclSetupFailureFixture::new();
     let result = run_windows_sandbox_capture_with_filesystem_overrides(
-        &PermissionProfile::workspace_write(),
+        &explicit_legacy_profile(&[&fixture.workspace]),
         &workspace_roots_for(&fixture.workspace),
         &fixture.codex_home,
         AclSetupFailureFixture::command(),
