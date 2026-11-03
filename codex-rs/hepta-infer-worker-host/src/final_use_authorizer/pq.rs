@@ -10,6 +10,7 @@ use codex_hepta_contracts::FinalUseAuthenticationProfile;
 use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
 use codex_hepta_contracts::PqAuthorityTrustKey;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
+use codex_hepta_contracts::pq_auth::PqNativeVerifier;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -66,6 +67,37 @@ impl UnixFinalUseAuthorizer {
     pub fn from_pq_config(config: PqFinalUseAuthorizerConfig) -> Result<Self> {
         if config.authentication_profile != FinalUseAuthenticationProfile::MlDsa65V2 {
             return Err("PQ final-use authentication profile required".into());
+        }
+        if !(1..=8).contains(&config.issuer_keys.len())
+            || !(1..=8).contains(&config.revocation_keys.len())
+        {
+            return Err("PQ final-use requires one to eight keys per authority ring".into());
+        }
+        // Distinct role names, sockets or supplied digests cannot turn one
+        // signing key into independent issuer, feed, clock and frontier roots.
+        // Decode and pin every canonical key before any external request or
+        // local namespace creation, then compare the full public-key bytes.
+        let mut public_keys = BTreeSet::new();
+        for (spki, pin) in config
+            .issuer_keys
+            .iter()
+            .chain(&config.revocation_keys)
+            .map(|key| (key.public_key_spki.as_slice(), key.public_key_id))
+            .chain([
+                (
+                    config.external_clock.public_key_spki.as_slice(),
+                    config.external_clock.public_key_id,
+                ),
+                (
+                    config.external_frontier.public_key_spki.as_slice(),
+                    config.external_frontier.public_key_id,
+                ),
+            ])
+        {
+            let key = PqNativeVerifier::from_pinned_spki(spki, pin)?;
+            if !public_keys.insert(*key.public_spki()) {
+                return Err("PQ final-use authority roles must use distinct public keys".into());
+            }
         }
         // Resolve every protected identity before any remote request or local
         // store open. Lexical prefix checks alone permit ancestor-symlink aliases
@@ -234,6 +266,10 @@ mod resource_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "pq_path_tests.rs"]
 mod path_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "pq_role_tests.rs"]
+mod role_tests;
 
 #[cfg(all(test, target_os = "linux"))]
 #[path = "pq_concurrency_tests.rs"]

@@ -42,6 +42,15 @@ windows. A deployment must additionally keep issuer, independent approver,
 revocation distributor, clock and frontier identities separate. Merely giving
 one key several role names does not establish independent authorization.
 
+The ordinary Unix final-use configuration checks its issuer and revocation
+rings and its clock and frontier keys before contacting external services or
+opening local authority state. It decodes the canonical SPKI, verifies the
+pinned key identity and rejects repeated public-key bytes across these roles,
+including keys reserved for future epochs. Valid independent rotation keys
+retain their original epoch windows and persistent trust identity. This check
+does not attest independent service operation or secret custody, and the
+separately configured approver still requires its own deployment review.
+
 ## Resource and custody boundary
 
 The PQ revocation payload is limited to 256 grant IDs; the legacy feed limit
