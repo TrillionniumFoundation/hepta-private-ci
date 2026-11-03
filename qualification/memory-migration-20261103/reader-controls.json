@@ -1,0 +1,136 @@
+{
+  "scope": "Reader controls only; synthetic partitions are not native Windows test evidence.",
+  "controls": [
+    {
+      "name": "actual_linux_complete_original_pass",
+      "expected_acceptance": true,
+      "actual_acceptance": true,
+      "result": {
+        "test_counts": [
+          272,
+          0,
+          7,
+          0,
+          0
+        ],
+        "native_batch_counts": [
+          [
+            272,
+            0,
+            7,
+            0,
+            0
+          ]
+        ],
+        "original_ignored_cases": [
+          "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+          "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+          "cognitive_store_tests::kg_projection_crash_child",
+          "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+          "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+          "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+          "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+        ],
+        "unique_native_cases": 279,
+        "complete_disjoint_coverage": true
+      }
+    },
+    {
+      "name": "actual_windows_five_failures_rejected",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "result": "original test case outcomes did not all pass"
+    },
+    {
+      "name": "actual_macos_158_failures_rejected",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "result": "original test case outcomes did not all pass"
+    },
+    {
+      "name": "synthetic_partition_of_actual_linux_case_names",
+      "expected_acceptance": true,
+      "actual_acceptance": true,
+      "result": {
+        "test_counts": [
+          272,
+          0,
+          7,
+          0,
+          0
+        ],
+        "native_batch_counts": [
+          [
+            67,
+            0,
+            3,
+            0,
+            209
+          ],
+          [
+            69,
+            0,
+            1,
+            0,
+            209
+          ],
+          [
+            67,
+            0,
+            3,
+            0,
+            209
+          ],
+          [
+            69,
+            0,
+            0,
+            0,
+            210
+          ]
+        ],
+        "original_ignored_cases": [
+          "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+          "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+          "cognitive_store_tests::kg_projection_crash_child",
+          "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+          "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+          "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+          "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+        ],
+        "unique_native_cases": 279,
+        "complete_disjoint_coverage": true
+      }
+    },
+    {
+      "name": "synthetic_missing_batch_rejected",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "result": "native batches do not form a complete disjoint suite"
+    },
+    {
+      "name": "synthetic_duplicate_batch_rejected",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "result": "native batches do not form a complete disjoint suite"
+    },
+    {
+      "name": "actual_linux_missing_case_line_rejected",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "result": "original test case outcomes did not all pass"
+    },
+    {
+      "name": "actual_linux_duplicate_case_line_rejected",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "result": "original test case outcomes did not all pass"
+    },
+    {
+      "name": "synthetic_filtered_nonwindows_rejected",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "result": "original native suite summaries are missing or duplicated"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "source_commit": "398838d15eaa6f2b68939cb227029c71e1083cc4",
+  "source_tree": "58d674b4edb2534957e02ed7b25656eeadac55f4",
+  "run_id": 41725804919,
+  "artifacts": [
+    {
+      "host": "Linux",
+      "id": 13275361588,
+      "job_id": 126230138898,
+      "bytes": 43108,
+      "sha256": "7a198d2781e4c29b8459d8d578c420de1e0d1b5d4005104f6b83d20bbc5d0c6c",
+      "counts": [
+        [
+          272,
+          0,
+          7,
+          0,
+          0
+        ]
+      ],
+      "status": "passed",
+      "original_target_exit": 0
+    },
+    {
+      "host": "Darwin",
+      "id": 13275610579,
+      "job_id": 126230138865,
+      "bytes": 63110,
+      "sha256": "4611df798501cf230e1b7186ae67ea27c5bda5ab6f1a19f7817a70c9774c23b1",
+      "counts": [
+        [
+          114,
+          158,
+          7,
+          0,
+          0
+        ]
+      ],
+      "status": "failed",
+      "original_target_exit": 3
+    },
+    {
+      "host": "Windows",
+      "id": 13275381359,
+      "job_id": 126230138564,
+      "bytes": 41988,
+      "sha256": "93f883b4bd6eaf7422edb588efbec69825031f889e05f202cfb8f2718764a7c2",
+      "counts": [
+        [
+          63,
+          5,
+          4,
+          0,
+          195
+        ],
+        [
+          80,
+          0,
+          2,
+          0,
+          185
+        ],
+        [
+          78,
+          0,
+          1,
+          0,
+          188
+        ],
+        [
+          34,
+          0,
+          0,
+          0,
+          233
+        ]
+      ],
+      "status": "failed",
+      "original_target_exit": 3
+    }
+  ]
+}

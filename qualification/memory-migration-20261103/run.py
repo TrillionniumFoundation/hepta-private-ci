@@ -26,6 +26,46 @@ ORIGINAL_IGNORED = {
 }
 
 
+def complete_test_counts(log, windows):
+    """Require every native test once, including the original Windows batches."""
+    summaries = list(re.finditer(
+        r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; "
+        r"(\d+) measured; (\d+) filtered out", log))
+    if not summaries or (not windows and len(summaries) != 1):
+        raise RuntimeError("original native suite summaries are missing or duplicated")
+    batches, names, ignored = [], [], []
+    previous = 0
+    for summary in summaries:
+        counts = list(map(int, summary.groups()[1:]))
+        rows = re.findall(r"^test (\S+) \.\.\. (ok|FAILED|ignored)(?:,.*)?$",
+                          log[previous:summary.start()], re.MULTILINE)
+        previous = summary.end()
+        actual = [sum(status == value for _, status in rows)
+                  for value in ["ok", "FAILED", "ignored"]]
+        if actual != counts[:3] or summary.group(1) != "ok" or counts[1] or counts[3]:
+            raise RuntimeError("original test case outcomes did not all pass")
+        if not windows and counts[4]:
+            raise RuntimeError("the original non-Windows suite was filtered")
+        batches.append(counts)
+        names.extend(name for name, _ in rows)
+        ignored.extend(name for name, status in rows if status == "ignored")
+    totals = {sum(counts) for counts in batches}
+    if len(totals) != 1 or len(names) != len(set(names)) or len(names) != next(iter(totals)):
+        raise RuntimeError("native batches do not form a complete disjoint suite")
+    if any(line.startswith("test ") for line in log[previous:].splitlines()):
+        raise RuntimeError("unaccounted native test output follows the final summary")
+    if set(ignored) != ORIGINAL_IGNORED:
+        raise RuntimeError("the original ignored qualification probes changed")
+    if REQUIRED not in names or REQUIRED in ignored:
+        raise RuntimeError("the original migration preservation/revocation test did not execute")
+    passed = sum(counts[0] for counts in batches)
+    if passed == 0:
+        raise RuntimeError("no original test executed")
+    return {"test_counts": [passed, 0, len(ignored), 0, 0],
+            "native_batch_counts": batches, "original_ignored_cases": ignored,
+            "unique_native_cases": len(names), "complete_disjoint_coverage": True}
+
+
 def snapshot():
     names = subprocess.check_output([
         "git", "ls-files", "-z", "--", "codex-rs/hepta-memory", "codex-rs/Cargo.toml",
@@ -92,21 +132,12 @@ def main():
         if code or info:
             raise RuntimeError("original target failed; all available test evidence retained")
         log = (output / "memory.log").read_text()
-        counts = re.findall(r"test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out", log)
-        if len(counts) != 1 or int(counts[0][0]) == 0 or any(int(counts[0][index]) for index in [1, 3, 4]):
-            raise RuntimeError("original complete suite did not pass without filtering")
-        ignored = re.findall(r"^test (\S+) \.\.\. ignored(?:,|$)", log, re.MULTILINE)
-        if len(ignored) != int(counts[0][2]) or len(ignored) != len(set(ignored)) or not set(ignored) <= ORIGINAL_IGNORED:
-            raise RuntimeError("an unexpected ignored case appeared")
-        if "test " + REQUIRED + " ... ok" not in log:
-            raise RuntimeError("the original migration preservation/revocation test did not execute")
+        receipt.update(complete_test_counts(log, windows))
         suites = list(ET.fromstring((output / "memory.xml").read_bytes()).iter("testsuite"))
         if not suites or any(int(s.get(key, "0")) for s in suites for key in ["failures", "errors", "skipped"]):
             raise RuntimeError("original Bazel wrapper XML did not pass")
         if any(list(s.iter("skipped")) for s in suites):
             raise RuntimeError("original Bazel wrapper was skipped")
-        receipt["test_counts"] = list(map(int, counts[0]))
-        receipt["original_ignored_cases"] = ignored
         if run("original-clippy-selector", [bash, "./scripts/list-bazel-clippy-targets.sh"]):
             raise RuntimeError("original Clippy selector failed")
         if TARGET + "-bin" not in (output / "original-clippy-selector.stdout").read_text().splitlines():
