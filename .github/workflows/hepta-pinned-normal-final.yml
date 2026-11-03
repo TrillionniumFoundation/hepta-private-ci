@@ -1,0 +1,377 @@
+name: Hepta pinned final normal controls
+
+on:
+  push:
+    branches:
+      - test/hepta-normal-final-20261103
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-pinned-normal-final-20261103
+  cancel-in-progress: false
+
+jobs:
+  normal-controls:
+    name: Original normal Bazel controls (${{ matrix.source }}, ${{ matrix.platform }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, prospective-merge]
+        platform: [gnu, musl]
+    env:
+      EXPECTED_HEAD: 817e91bbf184a36e7546b5ea8ba16d9042269d30
+      EXPECTED_BASE: 3a81000aae08c658276958d678874aca4db5eedd
+      EXPECTED_MERGE: 2acb1024920e9dde820aa337cd6f677fa0afd397
+      EXPECTED_TREE: ce7d4cebb6e88618ca28628318e99eb0edb58453
+      SOURCE_KIND: ${{ matrix.source }}
+      BAZEL_PLATFORM: ${{ matrix.platform == 'gnu' && '//:local_linux' || '@rules_rs//rs/platforms:x86_64-unknown-linux-musl' }}
+    steps:
+      - name: Fetch the exact harness and its bounded ancestry
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 32
+          persist-credentials: false
+      - name: Check out the exact tested source with bounded history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && env.EXPECTED_HEAD || env.EXPECTED_MERGE }}
+          fetch-depth: 32
+          persist-credentials: false
+      - name: Bind the harness and the exact tested source before execution
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/normal-bazel"
+          python3 - <<'PYSOURCE'
+          import hashlib, json, os, re, subprocess
+          from pathlib import Path
+          def git(*args):
+              return subprocess.check_output(['git', '--no-replace-objects', *args]).decode().strip()
+          for key in ['EXPECTED_HEAD', 'EXPECTED_BASE', 'EXPECTED_MERGE', 'EXPECTED_TREE']:
+              assert re.fullmatch(r'[0-9a-f]{40}', os.environ[key]), 'bind every immutable source identity before publication'
+          tested = git('rev-parse', 'HEAD')
+          expected = os.environ['EXPECTED_HEAD'] if os.environ['SOURCE_KIND'] == 'head' else os.environ['EXPECTED_MERGE']
+          assert tested == expected
+          assert git('rev-parse', 'HEAD^{tree}') == os.environ['EXPECTED_TREE']
+          if os.environ['SOURCE_KIND'] == 'prospective-merge':
+              assert git('show', '-s', '--format=%P', 'HEAD').split() == [os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD']]
+              assert git('merge-tree', '--write-tree', os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD']) == os.environ['EXPECTED_TREE']
+          harness = os.environ['GITHUB_SHA']
+          required_objects = {'harness': harness, 'candidate': os.environ['EXPECTED_HEAD'],
+              'base': os.environ['EXPECTED_BASE'], 'tested': tested,
+              'dependency_declaration': 'dc69725d957c79d8737eb5fbedfe6f213252317a'}
+          for label, revision in required_objects.items():
+              assert git('cat-file', '-t', revision) == 'commit', 'bounded checkout omitted required object: ' + label
+          merge_base = git('merge-base', os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD'])
+          assert merge_base == os.environ['EXPECTED_BASE'], 'expected base must remain the common ancestor in each bounded checkout'
+          workflow = '.github/workflows/hepta-pinned-normal-final.yml'
+          assert os.environ['GITHUB_EVENT_NAME'] == 'push'
+          assert os.environ['GITHUB_REF'] == 'refs/heads/test/hepta-normal-final-20261103'
+          assert os.environ['GITHUB_REPOSITORY'] == 'TrillionniumFoundation/hepta-private-ci'
+          assert git('show', '-s', '--format=%P', harness) == os.environ['EXPECTED_HEAD']
+          assert git('diff-tree', '--no-commit-id', '--name-status', '-r', harness) == 'A\t' + workflow
+          source = subprocess.check_output(['git', 'show', harness + ':' + workflow])
+          assert git('status', '--porcelain', '--untracked-files=normal') == ''
+          subprocess.run(['git', 'diff', '--exit-code', 'dc69725d957c79d8737eb5fbedfe6f213252317a', tested,
+              '--', 'MODULE.bazel', 'MODULE.bazel.lock', '.bazelversion'], check=True)
+          record = {'schema': 'hepta-scoped-normal-bazel-v3', 'tested_commit': tested,
+              'tested_tree': os.environ['EXPECTED_TREE'], 'source_kind': os.environ['SOURCE_KIND'],
+              'candidate': os.environ['EXPECTED_HEAD'], 'base': os.environ['EXPECTED_BASE'],
+              'prospective_merge': os.environ['EXPECTED_MERGE'], 'harness_commit': harness,
+              'workflow_sha256': hashlib.sha256(source).hexdigest(), 'bazel_platform': os.environ['BAZEL_PLATFORM'],
+              'checkout_fetch_depth': 32, 'required_git_objects': required_objects,
+              'observed_merge_base': merge_base, 'is_shallow_repository': git('rev-parse', '--is-shallow-repository'),
+              'scope': '61 selected native entries: Robrix 2, IPC 1, operator 25, Core headers 4, Infer 22 original plus 3 parser controls, two namespace positive cases, and Supervisord 2 entries for one five-Agent lifecycle scenario; not full native or whole-system qualification'}
+          (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/source-before.json').write_text(json.dumps(record, indent=2) + '\n')
+          print(json.dumps(record))
+          PYSOURCE
+      - name: Prepare the existing Bazel toolchain and repository cache
+        id: prepare
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.platform == 'gnu' && 'x86_64-unknown-linux-gnu' || 'x86_64-unknown-linux-musl' }}
+          cache-scope: bazel-test
+      - name: Import the already verified fixed dependency artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: '13245890316'
+          run-id: '41664243615'
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          merge-multiple: true
+          digest-mismatch: error
+          path: ${{ runner.temp }}/normal-bazel-distdir
+      - name: Recheck the fixed metadata and complete dependency bytes
+        id: dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYDEPENDENCY'
+          import base64, hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'
+          assert sorted(path.name for path in root.iterdir()) == ['source.json', 'transfer.json', 'v5.1.0.tar.gz']
+          metadata = (root / 'source.json').read_bytes()
+          assert hashlib.sha256(metadata).hexdigest() == '7d88fc6db323947a11d1638fe95185e9c733c337a1d1e7b50cdcf487e29ce56e'
+          source = json.loads(metadata)
+          assert 'https://github.com/aws/aws-lc/archive/refs/tags/v5.1.0.tar.gz' in [source.get('url')] + source.get('urls', [])
+          expected = 'a6bf6adfc5f9bba559d28554b7d3581b15f2813f03bc9f2ae19f0d915e97dadf'
+          assert source['integrity'].startswith('sha256-')
+          assert base64.b64decode(source['integrity'][7:], validate=True).hex() == expected
+          archive = root / 'v5.1.0.tar.gz'
+          assert archive.stat().st_size == 145542555
+          with archive.open('rb') as stream:
+              actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+          assert actual == expected
+          transfer = json.loads((root / 'transfer.json').read_text())
+          assert transfer['workflow_commit'] == '4a78bf9314197ef5a8ea97f67134fdac6795589f'
+          assert transfer['workflow_run_id'] == '41664243615'
+          assert transfer['declaration_source_commit'] == 'dc69725d957c79d8737eb5fbedfe6f213252317a'
+          assert transfer['verified'] is True and transfer['source_sha256'] == expected and transfer['source_bytes'] == 145542555
+          report = {'artifact_id': 13245890316, 'sha256': actual, 'bytes': archive.stat().st_size,
+              'fixed_metadata_sha256': hashlib.sha256(metadata).hexdigest(), 'verified': True}
+          (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/dependency-import.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report))
+          PYDEPENDENCY
+          test "$(cat .bazelversion)" = '9.3.0'
+          bazel --version | tee "$RUNNER_TEMP/normal-bazel/bazel-version.txt"
+          test "$(cat "$RUNNER_TEMP/normal-bazel/bazel-version.txt")" = 'bazel 9.3.0'
+      - name: Write the scoped runner outside the tested source
+        id: runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/normal-bazel/run-target.py" <<'PYCONTROL'
+          import hashlib, json, os, re, shutil, subprocess, sys, urllib.parse
+          from pathlib import Path
+          cases = {
+              'robrix': ('//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test',
+                  '//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test',
+                  ['robrix_control_v2_generated_projection_and_cross_parser_corpus', 'writer_reproduces_the_tracked_artifact_set_byte_for_byte']),
+              'ipc': ('//codex-rs/hepta-agentd:hepta-agentd-unit-tests',
+                  '//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin',
+                  ['automation_effect_host::pon_process::native_tests::sealed_adapter_success_observes_full_payload_and_eof']),
+              'operator': ('//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests',
+                  '//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-test-bin',
+                  [
+                      'ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child',
+                      'g5_trust::tests::exact_head_and_predecessor_binding_is_required',
+                      'g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance',
+                      'g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority',
+                      'g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted',
+                      'g5_trust::tests::policy_and_revocation_files_must_be_canonical',
+                      'g5_trust::tests::revocation_digest_change_invalidates_existing_challenge',
+                      'g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance',
+                      'manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths',
+                      'manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks',
+                      'manifest_inventory::tests::verified_manifest_rejects_symlinks',
+                      'preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected',
+                      'sshsig::tests::real_openssh_sha256_and_sha512_packets_verify_with_exact_pins',
+                      'tests::durable_time_watermark_rejects_clock_rollback',
+                      'tests::exact_challenge_boundary_accepts_only_operator_acceptance',
+                      'tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails',
+                      'tests::final_consumption_at_expiry_creates_no_claim_or_receipt',
+                      'tests::read_only_lock_never_creates_missing_state',
+                      'tests::receipt_repeated_authority_must_match_exact_boundary',
+                      'tests::unknown_or_noncanonical_stored_json_is_rejected',
+                      'tests::validity_window_is_half_open_and_policy_bounded',
+                      'trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy',
+                      'trust::tests::trust_policy_digest_is_external_and_fail_closed',
+                      'trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers',
+                      'trust::tests::weak_ed25519_public_key_is_rejected_before_openssh',
+                  ]),
+              "core_headers": ("//codex-rs/core:core-responses_headers-test", "//codex-rs/core:core-responses_headers-test", [
+                  "responses_stream_includes_subagent_header_on_review",
+                  "responses_stream_includes_subagent_header_on_other",
+                  "responses_respects_model_info_overrides_from_config",
+                  "responses_stream_includes_turn_metadata_header_for_git_workspace_e2e",
+              ]),
+              "infer": ("//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests", "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin", [
+                  "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+                  "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant",
+                  "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+                  "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+                  "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+                  "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+                  "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+                  "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+                  "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+                  "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+                  "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+                  "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+                  "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+                  "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+                  "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+                  "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+                  "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+                  "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+                  "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+                  "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+                  "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+                  "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+                  "test_process::tests::requires_the_exact_original_case_and_one_pass",
+                  "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+                  "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion",
+              ]),
+              "exec_discovery": ("//codex-rs/exec-server:exec-server-capability_discovery-test", "//codex-rs/exec-server:exec-server-capability_discovery-test", [
+                  "sandboxed_discovery_batches_roots_without_combining_different_permissions",
+              ]),
+              "exec_fs": ("//codex-rs/exec-server:exec-server-file_system_unix-test", "//codex-rs/exec-server:exec-server-file_system_unix-test", [
+                  "sandboxed_file_system_helper_finds_bwrap_on_preserved_path",
+              ]),
+              "supervisord": ("//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test", "//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test", [
+                  "supervisord_child_entry",
+                  "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+              ]),
+          }
+          operator_registry = cases['operator'][2]
+          assert len(operator_registry) == len(set(operator_registry)) == 25, 'bind the exact original operator native registry before publication'
+          assert all(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_:]*', name) for name in operator_registry)
+          expected_counts = {'robrix': 2, 'ipc': 1, 'operator': 25, 'core_headers': 4, 'infer': 25, 'exec_discovery': 1, 'exec_fs': 1, 'supervisord': 2}
+          assert {key: len(value[2]) for key, value in cases.items()} == expected_counts
+          assert all(len(value[2]) == len(set(value[2])) for value in cases.values())
+          case = sys.argv[1]
+          target, binary_target, expected = cases[case]
+          root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel' / case
+          root.mkdir()
+          platform = '--platforms=' + os.environ['BAZEL_PLATFORM']
+          command = ['bazel', 'test', '--jobs=2', '--cache_test_results=no', '--test_output=all',
+              '--distdir=' + str(Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'), platform,
+              '--build_event_json_file=' + str(root / 'build-events.jsonl')]
+          if case in ('ipc', 'infer', 'exec_discovery', 'exec_fs'):
+              command += ['--test_arg=' + name for name in expected]
+              command += ['--test_arg=--exact', '--test_arg=--nocapture']
+          if case == 'ipc':
+              command += ['--test_arg=--test-threads=1']
+          if case == 'core_headers':
+              command += ['--test_arg=--nocapture']
+          command.append(target)
+          (root / 'command.json').write_text(json.dumps({'argv': command, 'cwd': os.getcwd(),
+              'expected_tests': expected, 'original_test_budgets_unchanged': True}, indent=2) + '\n')
+          with (root / 'bazel.log').open('wb') as log:
+              child = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+              for line in child.stdout:
+                  log.write(line)
+                  sys.stdout.buffer.write(line)
+                  sys.stdout.buffer.flush()
+              code = child.wait()
+          (root / 'native.exit').write_text(str(code) + '\n')
+          verdict = {'result': 'FAIL', 'target': target, 'native_exit': code, 'expected_count': len(expected)}
+          try:
+              events = [json.loads(line) for line in (root / 'build-events.jsonl').read_text().splitlines() if line.strip()]
+              results = [row for row in events if row.get('id', {}).get('testResult', {}).get('label') == target]
+              assert len(results) == 1, 'expected one unsharded test attempt; retain every other outcome as failure'
+              result_id = results[0]['id']['testResult']
+              verdict['bazel_test_result_id'] = result_id
+              assert all(result_id.get(key) == 1 for key in ('run', 'shard', 'attempt')), 'expected run 1, shard 1, attempt 1'
+              result = results[0]['testResult']
+              verdict['bazel_test_status'] = result['status']
+              logs = [value['uri'] for value in result.get('testActionOutput', []) if value.get('name') == 'test.log']
+              assert len(logs) == 1
+              location = urllib.parse.urlparse(logs[0])
+              assert location.scheme == 'file' and location.netloc in ('', 'localhost')
+              path = Path(urllib.parse.unquote(location.path))
+              shutil.copyfile(path, root / 'original-test.log')
+              text = (root / 'original-test.log').read_text().replace('\r', '')
+              names = re.findall(r'^test ([A-Za-z_][A-Za-z0-9_:]*) \.\.\.', text, re.M)
+              summaries = re.findall(r'^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;', text, re.M)
+              verdict.update({'observed_names': names, 'native_summaries': summaries})
+              query = ['bazel', 'cquery', '--output=files', platform, binary_target]
+              with (root / 'binary-query.stderr').open('wb') as error:
+                  found = subprocess.run(query, stdout=subprocess.PIPE, stderr=error, check=False)
+              (root / 'binary-query.stdout').write_bytes(found.stdout)
+              assert found.returncode == 0
+              binaries = []
+              for line in found.stdout.decode().splitlines():
+                  binary = Path(line)
+                  if not binary.is_file():
+                      continue
+                  with binary.open('rb') as stream:
+                      if stream.read(4) != b'\x7fELF':
+                          continue
+                      stream.seek(0)
+                      digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                  binaries.append({'path': str(binary.resolve()), 'bytes': binary.stat().st_size, 'sha256': digest})
+              assert len(binaries) == 1, 'expected one actual library test ELF'
+              (root / 'binary-identities.json').write_text(json.dumps(binaries, indent=2) + '\n')
+              running = re.findall(r'^running (\d+) tests?$', text, re.M)
+              assert running == [str(len(expected))], 'original native count required'
+              assert len(names) == len(set(names)), 'duplicate native names'
+              assert 'Skipping test' not in text, 'guard returned before execution'
+              assert sorted(names) == sorted(expected), (names, expected)
+              assert len(summaries) == 1
+              outcome, passed, failed, ignored, measured, filtered = summaries[0]
+              verdict.update({'observed_names': names, 'passed': int(passed), 'failed': int(failed), 'ignored': int(ignored), 'filtered': int(filtered)})
+              assert outcome == 'ok' and int(passed) == len(expected) and int(failed) == int(ignored) == int(measured) == 0
+              if case in ('robrix', 'operator', 'core_headers', 'supervisord'):
+                  assert int(filtered) == 0
+              assert code == 0 and result['status'] == 'PASSED'
+              verdict['result'] = 'PASS'
+          except Exception as error:
+              verdict['reader_error'] = str(error)
+          finally:
+              (root / 'result.json').write_text(json.dumps(verdict, indent=2) + '\n')
+              print(json.dumps(verdict))
+          sys.exit(0 if verdict['result'] == 'PASS' else 1)
+          PYCONTROL
+      - name: Run the original two-test Robrix Bazel target
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome == 'success' && steps.runner.outcome == 'success' }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" robrix
+      - name: Run only the original normal IPC positive control
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome == 'success' && steps.runner.outcome == 'success' }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" ipc
+      - name: Run the complete original 25-test operator Bazel target
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome == 'success' && steps.runner.outcome == 'success' }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" operator
+      - name: Run the original four Core response-header tests
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome == 'success' && steps.runner.outcome == 'success' }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" core_headers
+      - name: Run the 22 original isolated Infer cases and three parser controls
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome == 'success' && steps.runner.outcome == 'success' }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" infer
+      - name: Run the original namespace-aware discovery positive case
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome == 'success' && steps.runner.outcome == 'success' }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" exec_discovery
+      - name: Run the original preserved-PATH filesystem positive case
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome == 'success' && steps.runner.outcome == 'success' }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" exec_fs
+      - name: Run the original five-Agent lifecycle target including its child entry
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome == 'success' && steps.runner.outcome == 'success' }}
+        shell: bash
+        run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" supervisord
+      - name: Retain the exact source state after every outcome
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/normal-bazel"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/normal-bazel/source-after.txt"
+          git status --porcelain --untracked-files=normal > "$RUNNER_TEMP/normal-bazel/source-after-status.txt"
+          expected="$EXPECTED_HEAD"
+          if [ "$SOURCE_KIND" = prospective-merge ]; then expected="$EXPECTED_MERGE"; fi
+          test "$(git rev-parse HEAD)" = "$expected"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test ! -s "$RUNNER_TEMP/normal-bazel/source-after-status.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: normal-bazel-final-${{ matrix.source }}-${{ matrix.platform }}-${{ env.EXPECTED_HEAD }}
+          path: ${{ runner.temp }}/normal-bazel/
+          if-no-files-found: error
+          retention-days: 30
