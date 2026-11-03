@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="7" skipped="0" failures="0" errors="0" uuid="b4e2a247-8364-40ae-a3c0-f1c284277027" timestamp="2026-11-03T15:18:11.005-05:00" time="0.018">
+    <testsuite name="codex-utils-path" tests="7" skipped="0" errors="0" failures="0">
+        <testcase name="tests::native_workdir::non_windows_paths_are_unchanged" classname="codex-utils-path" timestamp="2026-11-03T15:18:11.005-05:00" time="0.006"/>
+        <testcase name="tests::wsl::wsl_non_mnt_paths_unchanged" classname="codex-utils-path" timestamp="2026-11-03T15:18:11.005-05:00" time="0.007"/>
+        <testcase name="tests::path_comparison::matches_identical_existing_paths" classname="codex-utils-path" timestamp="2026-11-03T15:18:11.006-05:00" time="0.007"/>
+        <testcase name="tests::wsl::wsl_non_drive_paths_unchanged" classname="codex-utils-path" timestamp="2026-11-03T15:18:11.006-05:00" time="0.008"/>
+        <testcase name="tests::wsl::wsl_mnt_drive_paths_lowercase" classname="codex-utils-path" timestamp="2026-11-03T15:18:11.005-05:00" time="0.009"/>
+        <testcase name="tests::path_comparison::falls_back_to_raw_equality_when_paths_cannot_be_normalized" classname="codex-utils-path" timestamp="2026-11-03T15:18:11.005-05:00" time="0.010"/>
+        <testcase name="tests::symlinks::symlink_cycles_fall_back_to_root_write_path" classname="codex-utils-path" timestamp="2026-11-03T15:18:11.005-05:00" time="0.017"/>
+    </testsuite>
+</testsuites>

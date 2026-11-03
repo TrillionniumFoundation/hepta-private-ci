@@ -1,0 +1,33 @@
+{
+  "commands": [
+    {
+      "name": "scoped-clippy-fix",
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-utils-path",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--no-deps"
+      ],
+      "exit": 0,
+      "seconds": 32.11032131600223,
+      "log_sha256": "5342c6cd6535adb5863872fe9f1798d57f18a9d391391f671e05313373fdfac5"
+    },
+    {
+      "name": "just-fmt",
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "exit": 0,
+      "seconds": 1.1550025610013108,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Three changed small libraries locally; Agentd full native/Clippy deferred to actual hosted qualification."
+}

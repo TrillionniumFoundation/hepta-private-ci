@@ -1,0 +1,115 @@
+{
+  "argv": [
+    "/workspace/scratch/1f1d02319616/matrix-toolchain-1.96.0-20261103/bin/cargo",
+    "metadata",
+    "--offline",
+    "--all-features",
+    "--format-version",
+    "1"
+  ],
+  "exit": 0,
+  "seconds": 2.0613845469997614,
+  "source_base": "9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+  "before_lock_sha256": "c0ff3c86fc2938bf7239919aeaf5f424abae97b4d6405cdd992968492d3b8823",
+  "after_lock_sha256": "04ad14edd92986051b2d1bc3ad81a30a34a9cef954d08ce2468b7dda51704e78",
+  "before_packages": 1517,
+  "after_packages": 1517,
+  "added_package_records": 0,
+  "removed_package_records": 0,
+  "changed": [
+    {
+      "package": "codex-hepta-prompt-registry",
+      "before": {
+        "name": "codex-hepta-prompt-registry",
+        "version": "0.0.0",
+        "dependencies": [
+          "codex-hepta-contracts",
+          "codex-hepta-types",
+          "ed25519-dalek 2.2.0",
+          "rustix 1.1.4",
+          "serde",
+          "serde_json",
+          "tempfile"
+        ]
+      },
+      "after": {
+        "name": "codex-hepta-prompt-registry",
+        "version": "0.0.0",
+        "dependencies": [
+          "codex-hepta-contracts",
+          "codex-hepta-types",
+          "codex-utils-path",
+          "ed25519-dalek 2.2.0",
+          "rustix 1.1.4",
+          "serde",
+          "serde_json",
+          "tempfile"
+        ]
+      }
+    },
+    {
+      "package": "codex-utils-path",
+      "before": {
+        "name": "codex-utils-path",
+        "version": "0.0.0",
+        "dependencies": [
+          "codex-utils-absolute-path",
+          "dunce",
+          "pretty_assertions",
+          "tempfile"
+        ]
+      },
+      "after": {
+        "name": "codex-utils-path",
+        "version": "0.0.0",
+        "dependencies": [
+          "codex-utils-absolute-path",
+          "dunce",
+          "pretty_assertions",
+          "tempfile",
+          "winapi-util",
+          "windows-sys 0.52.0"
+        ]
+      }
+    },
+    {
+      "package": "codex-hepta-contracts",
+      "before": {
+        "name": "codex-hepta-contracts",
+        "version": "0.0.0",
+        "dependencies": [
+          "codex-utils-cargo-bin",
+          "ed25519-dalek 2.2.0",
+          "pretty_assertions",
+          "rustix 1.1.4",
+          "serde",
+          "serde_json",
+          "sha2 0.10.9",
+          "tempfile",
+          "tokio",
+          "toml 0.9.11+spec-1.1.0",
+          "zeroize"
+        ]
+      },
+      "after": {
+        "name": "codex-hepta-contracts",
+        "version": "0.0.0",
+        "dependencies": [
+          "codex-utils-cargo-bin",
+          "codex-utils-path",
+          "ed25519-dalek 2.2.0",
+          "pretty_assertions",
+          "rustix 1.1.4",
+          "serde",
+          "serde_json",
+          "sha2 0.10.9",
+          "tempfile",
+          "tokio",
+          "toml 0.9.11+spec-1.1.0",
+          "zeroize"
+        ]
+      }
+    }
+  ],
+  "metadata_sha256": "9d4c1fff49e9614fd54ca563824d04e5a265e91e31ef62053acd9b66ea1e212f"
+}

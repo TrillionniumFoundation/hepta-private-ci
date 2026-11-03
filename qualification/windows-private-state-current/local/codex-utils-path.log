@@ -1,0 +1,112 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+   Compiling syn v3.0.3
+   Compiling serde_core v1.0.229
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+   Compiling syn v2.0.117
+   Compiling zmij v1.0.19
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+   Compiling serde_json v1.0.154
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+   Compiling serde v1.0.229
+   Compiling memchr v2.8.1
+   Compiling itoa v1.0.17
+   Compiling thiserror v2.0.21
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+   Compiling serde_derive_internals v0.29.1
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling option-ext v0.2.0
+   Compiling termcolor v1.4.1
+   Compiling schemars v0.8.22
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+   Compiling ts-rs-macros v11.1.0
+   Compiling dirs-sys v0.5.0
+   Compiling schemars_derive v0.8.22
+   Compiling dyn-clone v1.0.20
+   Compiling ts-rs v11.1.0
+   Compiling dirs v6.0.0
+   Compiling dunce v1.0.5
+   Compiling codex-utils-absolute-path v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/utils/absolute-path)
+   Compiling codex-utils-path v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/utils/path-utils)
+    Finished `test` profile [unoptimized] target(s) in 19.80s
+────────────
+ Nextest run ID b4e2a247-8364-40ae-a3c0-f1c284277027 with nextest profile: local
+    Starting 7 tests across 1 binary
+        PASS [   0.006s] (1/7) codex-utils-path tests::native_workdir::non_windows_paths_are_unchanged
+        PASS [   0.007s] (2/7) codex-utils-path tests::wsl::wsl_non_mnt_paths_unchanged
+        PASS [   0.007s] (3/7) codex-utils-path tests::path_comparison::matches_identical_existing_paths
+        PASS [   0.008s] (4/7) codex-utils-path tests::wsl::wsl_non_drive_paths_unchanged
+        PASS [   0.009s] (5/7) codex-utils-path tests::wsl::wsl_mnt_drive_paths_lowercase
+        PASS [   0.010s] (6/7) codex-utils-path tests::path_comparison::falls_back_to_raw_equality_when_paths_cannot_be_normalized
+        PASS [   0.017s] (7/7) codex-utils-path tests::symlinks::symlink_cycles_fall_back_to_root_write_path
+────────────
+     Summary [   0.018s] 7 tests run: 7 passed, 0 skipped
+        PASS [   0.006s] (1/7) codex-utils-path tests::native_workdir::non_windows_paths_are_unchanged
+  stdout ───
+
+    running 1 test
+    test tests::native_workdir::non_windows_paths_are_unchanged ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] (2/7) codex-utils-path tests::wsl::wsl_non_mnt_paths_unchanged
+  stdout ───
+
+    running 1 test
+    test tests::wsl::wsl_non_mnt_paths_unchanged ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] (3/7) codex-utils-path tests::path_comparison::matches_identical_existing_paths
+  stdout ───
+
+    running 1 test
+    test tests::path_comparison::matches_identical_existing_paths ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] (4/7) codex-utils-path tests::wsl::wsl_non_drive_paths_unchanged
+  stdout ───
+
+    running 1 test
+    test tests::wsl::wsl_non_drive_paths_unchanged ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+
+        PASS [   0.009s] (5/7) codex-utils-path tests::wsl::wsl_mnt_drive_paths_lowercase
+  stdout ───
+
+    running 1 test
+    test tests::wsl::wsl_mnt_drive_paths_lowercase ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+
+        PASS [   0.010s] (6/7) codex-utils-path tests::path_comparison::falls_back_to_raw_equality_when_paths_cannot_be_normalized
+  stdout ───
+
+    running 1 test
+    test tests::path_comparison::falls_back_to_raw_equality_when_paths_cannot_be_normalized ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+
+        PASS [   0.017s] (7/7) codex-utils-path tests::symlinks::symlink_cycles_fall_back_to_root_write_path
+  stdout ───
+
+    running 1 test
+    test tests::symlinks::symlink_cycles_fall_back_to_root_write_path ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+

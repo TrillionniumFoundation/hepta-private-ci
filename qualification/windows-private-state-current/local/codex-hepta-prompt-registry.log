@@ -1,0 +1,531 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+   Compiling libc v0.2.186
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+   Compiling syn v3.0.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+   Compiling serde_derive v1.0.229
+   Compiling getrandom v0.4.3
+   Compiling serde v1.0.229
+   Compiling tempfile v3.27.0
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-contracts)
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-types)
+   Compiling codex-hepta-prompt-registry v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-windows-state-work-20261103/codex-rs/hepta-prompt-registry)
+    Finished `test` profile [unoptimized] target(s) in 14.51s
+────────────
+ Nextest run ID 70d715ef-aac5-40c1-8528-5efadd3701d3 with nextest profile: local
+    Starting 50 tests across 1 binary
+        PASS [   0.017s] ( 1/50) codex-hepta-prompt-registry durable::payload_tests::metadata_mutation_rejects_a_missing_committed_extent_file
+        PASS [   0.021s] ( 2/50) codex-hepta-prompt-registry durable::payload_tests::post_rename_unknown_commit_keeps_new_payload_and_requires_reopen
+        PASS [   0.026s] ( 3/50) codex-hepta-prompt-registry durable::payload_tests::incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validation
+        PASS [   0.026s] ( 4/50) codex-hepta-prompt-registry durable::payload_tests::failed_manifest_publication_never_selects_new_payload_bytes
+        PASS [   0.027s] ( 5/50) codex-hepta-prompt-registry durable::payload_tests::v2_migration_preserves_payloads_frontiers_and_semantic_identity
+        PASS [   0.013s] ( 6/50) codex-hepta-prompt-registry durable::tests::concurrent_writer_is_rejected_by_owner_lock
+        PASS [   0.008s] ( 7/50) codex-hepta-prompt-registry durable::tests::failed_v1_migration_does_not_overwrite_predecessor_bytes
+        PASS [   0.013s] ( 8/50) codex-hepta-prompt-registry durable::tests::exact_state_backup_restores_without_resurrection_or_digest_drift
+        PASS [   0.034s] ( 9/50) codex-hepta-prompt-registry durable::payload_tests::missing_truncated_or_modified_committed_payload_is_never_repaired
+        PASS [   0.008s] (10/50) codex-hepta-prompt-registry durable::tests::reopen_rejects_resource_policy_drift
+        PASS [   0.018s] (11/50) codex-hepta-prompt-registry durable::tests::post_rename_sync_failure_poison_writer_until_reopen
+        PASS [   0.020s] (12/50) codex-hepta-prompt-registry durable::tests::restart_preserves_active_payload_backed_realization
+        PASS [   0.004s] (13/50) codex-hepta-prompt-registry durable::tests::restore_validator_rejects_orphan_payload_and_lifecycle_drift
+        PASS [   0.068s] (14/50) codex-hepta-prompt-registry durable::payload_tests::malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes
+        PASS [   0.039s] (15/50) codex-hepta-prompt-registry durable::tests::poisoned_writer_rejects_before_consuming_final_use_grant
+        PASS [   0.050s] (16/50) codex-hepta-prompt-registry durable::tests::final_use_revocation_binds_actor_reason_cutoff_and_persists_lineage
+        PASS [   0.014s] (17/50) codex-hepta-prompt-registry durable::tests::storage_full_before_rename_keeps_predecessor_live_and_reopenable
+        PASS [   0.019s] (18/50) codex-hepta-prompt-registry durable::tests::schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation
+        PASS [   0.021s] (19/50) codex-hepta-prompt-registry durable::tests::schema_v1_migrates_without_resurrecting_state
+        PASS [   0.014s] (20/50) codex-hepta-prompt-registry durable::tests::truncated_state_fails_closed_on_reopen
+        PASS [   0.006s] (21/50) codex-hepta-prompt-registry protocol::tests::prompt_factor_v1_round_trips_canonical_json_and_rejects_unknown_fields
+        PASS [   0.005s] (22/50) codex-hepta-prompt-registry protocol::tests::prompt_realization_v1_round_trips_digest_fields
+        PASS [   0.006s] (23/50) codex-hepta-prompt-registry protocol::tests::prompt_factor_v1_rejects_noncanonical_dimension_order
+        PASS [   0.005s] (24/50) codex-hepta-prompt-registry tests::conflicting_identity_is_rejected
+        PASS [   0.045s] (25/50) codex-hepta-prompt-registry durable::tests::restart_preserves_revocation_payload_and_admission_lineage
+        PASS [   0.005s] (26/50) codex-hepta-prompt-registry tests::exhausted_revision_keeps_factor_insertion_and_admission_atomic
+        PASS [   0.005s] (27/50) codex-hepta-prompt-registry tests::external_material_cannot_admit_itself
+        PASS [   0.005s] (28/50) codex-hepta-prompt-registry tests::independent_admission_enables_realization_registration
+        PASS [   0.077s] (29/50) codex-hepta-prompt-registry durable::tests::final_use_admission_is_scope_bound_single_use_and_revocation_aware
+        PASS [   0.012s] (30/50) codex-hepta-prompt-registry tests::exhausted_revision_preserves_realizations_during_retirement_and_revocation
+        PASS [   0.007s] (31/50) codex-hepta-prompt-registry tests::governed_factor_relations_are_owner_bound_and_rebuildable
+        PASS [   0.008s] (32/50) codex-hepta-prompt-registry tests::factor_relation_requires_live_governed_canonical_endpoints
+        PASS [   0.005s] (33/50) codex-hepta-prompt-registry tests::record_capacity_rejects_atomically
+        PASS [   0.006s] (34/50) codex-hepta-prompt-registry tests::revocation_cascades_and_is_terminal
+        PASS [   0.014s] (35/50) codex-hepta-prompt-registry tests::proposer_cannot_self_review
+        PASS [   0.005s] (36/50) codex-hepta-prompt-registry v2::tests::active_realization_profile_requires_explicit_supersession
+        PASS [   0.006s] (37/50) codex-hepta-prompt-registry v2::tests::equivalent_required_factor_order_has_one_canonical_digest
+        PASS [   0.005s] (38/50) codex-hepta-prompt-registry v2::tests::every_state_change_allocates_one_revision_and_identical_retry_does_not
+        PASS [   0.008s] (39/50) codex-hepta-prompt-registry v2::tests::exact_model_tuple_and_frozen_snapshot_gate_delivery
+        PASS [   0.010s] (40/50) codex-hepta-prompt-registry v2::tests::expired_or_missing_required_realization_fails_closed
+        PASS [   0.021s] (41/50) codex-hepta-prompt-registry tests::verified_admission_rejects_clock_rollback_between_verify_and_commit
+        PASS [   0.008s] (42/50) codex-hepta-prompt-registry v2::tests::payload_registration_supersedes_and_dereferences_exact_bytes
+        PASS [   0.024s] (43/50) codex-hepta-prompt-registry tests::signed_admission_persists_scope_evidence_and_grant_lineage
+        PASS [   0.012s] (44/50) codex-hepta-prompt-registry v2::tests::payload_ceiling_rejects_atomically
+        PASS [   0.026s] (45/50) codex-hepta-prompt-registry tests::verified_admission_cannot_be_used_after_expiry
+        PASS [   0.006s] (46/50) codex-hepta-prompt-registry v2::tests::required_factors_are_not_starved_by_other_roles
+        PASS [   0.006s] (47/50) codex-hepta-prompt-registry v2::tests::revocation_invalidates_old_snapshot_and_disables_realization
+        PASS [   0.005s] (48/50) codex-hepta-prompt-registry v2::tests::untrusted_external_factor_cannot_obtain_v2_realization
+        PASS [   1.093s] (49/50) codex-hepta-prompt-registry durable::tests::pilot_capacity_fixture_reports_bounded_owner_costs
+        PASS [   4.078s] (50/50) codex-hepta-prompt-registry durable::payload_tests::metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifest
+────────────
+     Summary [   4.079s] 50 tests run: 50 passed, 0 skipped
+        PASS [   0.017s] ( 1/50) codex-hepta-prompt-registry durable::payload_tests::metadata_mutation_rejects_a_missing_committed_extent_file
+  stdout ───
+
+    running 1 test
+    test durable::payload_tests::metadata_mutation_rejects_a_missing_committed_extent_file ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.021s] ( 2/50) codex-hepta-prompt-registry durable::payload_tests::post_rename_unknown_commit_keeps_new_payload_and_requires_reopen
+  stdout ───
+
+    running 1 test
+    test durable::payload_tests::post_rename_unknown_commit_keeps_new_payload_and_requires_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.026s] ( 3/50) codex-hepta-prompt-registry durable::payload_tests::incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validation
+  stdout ───
+
+    running 1 test
+    test durable::payload_tests::incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.02s
+
+
+        PASS [   0.026s] ( 4/50) codex-hepta-prompt-registry durable::payload_tests::failed_manifest_publication_never_selects_new_payload_bytes
+  stdout ───
+
+    running 1 test
+    test durable::payload_tests::failed_manifest_publication_never_selects_new_payload_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.02s
+
+
+        PASS [   0.027s] ( 5/50) codex-hepta-prompt-registry durable::payload_tests::v2_migration_preserves_payloads_frontiers_and_semantic_identity
+  stdout ───
+
+    running 1 test
+    test durable::payload_tests::v2_migration_preserves_payloads_frontiers_and_semantic_identity ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.02s
+
+
+        PASS [   0.013s] ( 6/50) codex-hepta-prompt-registry durable::tests::concurrent_writer_is_rejected_by_owner_lock
+  stdout ───
+
+    running 1 test
+    test durable::tests::concurrent_writer_is_rejected_by_owner_lock ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] ( 7/50) codex-hepta-prompt-registry durable::tests::failed_v1_migration_does_not_overwrite_predecessor_bytes
+  stdout ───
+
+    running 1 test
+    test durable::tests::failed_v1_migration_does_not_overwrite_predecessor_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.013s] ( 8/50) codex-hepta-prompt-registry durable::tests::exact_state_backup_restores_without_resurrection_or_digest_drift
+  stdout ───
+
+    running 1 test
+    test durable::tests::exact_state_backup_restores_without_resurrection_or_digest_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.034s] ( 9/50) codex-hepta-prompt-registry durable::payload_tests::missing_truncated_or_modified_committed_payload_is_never_repaired
+  stdout ───
+
+    running 1 test
+    test durable::payload_tests::missing_truncated_or_modified_committed_payload_is_never_repaired ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.03s
+
+
+        PASS [   0.008s] (10/50) codex-hepta-prompt-registry durable::tests::reopen_rejects_resource_policy_drift
+  stdout ───
+
+    running 1 test
+    test durable::tests::reopen_rejects_resource_policy_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.018s] (11/50) codex-hepta-prompt-registry durable::tests::post_rename_sync_failure_poison_writer_until_reopen
+  stdout ───
+
+    running 1 test
+    test durable::tests::post_rename_sync_failure_poison_writer_until_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.020s] (12/50) codex-hepta-prompt-registry durable::tests::restart_preserves_active_payload_backed_realization
+  stdout ───
+
+    running 1 test
+    test durable::tests::restart_preserves_active_payload_backed_realization ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.02s
+
+
+        PASS [   0.004s] (13/50) codex-hepta-prompt-registry durable::tests::restore_validator_rejects_orphan_payload_and_lifecycle_drift
+  stdout ───
+
+    running 1 test
+    test durable::tests::restore_validator_rejects_orphan_payload_and_lifecycle_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.068s] (14/50) codex-hepta-prompt-registry durable::payload_tests::malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes
+  stdout ───
+
+    running 1 test
+    test durable::payload_tests::malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.06s
+
+
+        PASS [   0.039s] (15/50) codex-hepta-prompt-registry durable::tests::poisoned_writer_rejects_before_consuming_final_use_grant
+  stdout ───
+
+    running 1 test
+    test durable::tests::poisoned_writer_rejects_before_consuming_final_use_grant ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.03s
+
+
+        PASS [   0.050s] (16/50) codex-hepta-prompt-registry durable::tests::final_use_revocation_binds_actor_reason_cutoff_and_persists_lineage
+  stdout ───
+
+    running 1 test
+    test durable::tests::final_use_revocation_binds_actor_reason_cutoff_and_persists_lineage ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.05s
+
+
+        PASS [   0.014s] (17/50) codex-hepta-prompt-registry durable::tests::storage_full_before_rename_keeps_predecessor_live_and_reopenable
+  stdout ───
+
+    running 1 test
+    test durable::tests::storage_full_before_rename_keeps_predecessor_live_and_reopenable ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.019s] (18/50) codex-hepta-prompt-registry durable::tests::schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation
+  stdout ───
+
+    running 1 test
+    test durable::tests::schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.021s] (19/50) codex-hepta-prompt-registry durable::tests::schema_v1_migrates_without_resurrecting_state
+  stdout ───
+
+    running 1 test
+    test durable::tests::schema_v1_migrates_without_resurrecting_state ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.014s] (20/50) codex-hepta-prompt-registry durable::tests::truncated_state_fails_closed_on_reopen
+  stdout ───
+
+    running 1 test
+    test durable::tests::truncated_state_fails_closed_on_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.006s] (21/50) codex-hepta-prompt-registry protocol::tests::prompt_factor_v1_round_trips_canonical_json_and_rejects_unknown_fields
+  stdout ───
+
+    running 1 test
+    test protocol::tests::prompt_factor_v1_round_trips_canonical_json_and_rejects_unknown_fields ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (22/50) codex-hepta-prompt-registry protocol::tests::prompt_realization_v1_round_trips_digest_fields
+  stdout ───
+
+    running 1 test
+    test protocol::tests::prompt_realization_v1_round_trips_digest_fields ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (23/50) codex-hepta-prompt-registry protocol::tests::prompt_factor_v1_rejects_noncanonical_dimension_order
+  stdout ───
+
+    running 1 test
+    test protocol::tests::prompt_factor_v1_rejects_noncanonical_dimension_order ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (24/50) codex-hepta-prompt-registry tests::conflicting_identity_is_rejected
+  stdout ───
+
+    running 1 test
+    test tests::conflicting_identity_is_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.045s] (25/50) codex-hepta-prompt-registry durable::tests::restart_preserves_revocation_payload_and_admission_lineage
+  stdout ───
+
+    running 1 test
+    test durable::tests::restart_preserves_revocation_payload_and_admission_lineage ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.04s
+
+
+        PASS [   0.005s] (26/50) codex-hepta-prompt-registry tests::exhausted_revision_keeps_factor_insertion_and_admission_atomic
+  stdout ───
+
+    running 1 test
+    test tests::exhausted_revision_keeps_factor_insertion_and_admission_atomic ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (27/50) codex-hepta-prompt-registry tests::external_material_cannot_admit_itself
+  stdout ───
+
+    running 1 test
+    test tests::external_material_cannot_admit_itself ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (28/50) codex-hepta-prompt-registry tests::independent_admission_enables_realization_registration
+  stdout ───
+
+    running 1 test
+    test tests::independent_admission_enables_realization_registration ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.077s] (29/50) codex-hepta-prompt-registry durable::tests::final_use_admission_is_scope_bound_single_use_and_revocation_aware
+  stdout ───
+
+    running 1 test
+    test durable::tests::final_use_admission_is_scope_bound_single_use_and_revocation_aware ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.07s
+
+
+        PASS [   0.012s] (30/50) codex-hepta-prompt-registry tests::exhausted_revision_preserves_realizations_during_retirement_and_revocation
+  stdout ───
+
+    running 1 test
+    test tests::exhausted_revision_preserves_realizations_during_retirement_and_revocation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] (31/50) codex-hepta-prompt-registry tests::governed_factor_relations_are_owner_bound_and_rebuildable
+  stdout ───
+
+    running 1 test
+    test tests::governed_factor_relations_are_owner_bound_and_rebuildable ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] (32/50) codex-hepta-prompt-registry tests::factor_relation_requires_live_governed_canonical_endpoints
+  stdout ───
+
+    running 1 test
+    test tests::factor_relation_requires_live_governed_canonical_endpoints ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (33/50) codex-hepta-prompt-registry tests::record_capacity_rejects_atomically
+  stdout ───
+
+    running 1 test
+    test tests::record_capacity_rejects_atomically ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (34/50) codex-hepta-prompt-registry tests::revocation_cascades_and_is_terminal
+  stdout ───
+
+    running 1 test
+    test tests::revocation_cascades_and_is_terminal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.014s] (35/50) codex-hepta-prompt-registry tests::proposer_cannot_self_review
+  stdout ───
+
+    running 1 test
+    test tests::proposer_cannot_self_review ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (36/50) codex-hepta-prompt-registry v2::tests::active_realization_profile_requires_explicit_supersession
+  stdout ───
+
+    running 1 test
+    test v2::tests::active_realization_profile_requires_explicit_supersession ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (37/50) codex-hepta-prompt-registry v2::tests::equivalent_required_factor_order_has_one_canonical_digest
+  stdout ───
+
+    running 1 test
+    test v2::tests::equivalent_required_factor_order_has_one_canonical_digest ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (38/50) codex-hepta-prompt-registry v2::tests::every_state_change_allocates_one_revision_and_identical_retry_does_not
+  stdout ───
+
+    running 1 test
+    test v2::tests::every_state_change_allocates_one_revision_and_identical_retry_does_not ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] (39/50) codex-hepta-prompt-registry v2::tests::exact_model_tuple_and_frozen_snapshot_gate_delivery
+  stdout ───
+
+    running 1 test
+    test v2::tests::exact_model_tuple_and_frozen_snapshot_gate_delivery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.010s] (40/50) codex-hepta-prompt-registry v2::tests::expired_or_missing_required_realization_fails_closed
+  stdout ───
+
+    running 1 test
+    test v2::tests::expired_or_missing_required_realization_fails_closed ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.021s] (41/50) codex-hepta-prompt-registry tests::verified_admission_rejects_clock_rollback_between_verify_and_commit
+  stdout ───
+
+    running 1 test
+    test tests::verified_admission_rejects_clock_rollback_between_verify_and_commit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.01s
+
+
+        PASS [   0.008s] (42/50) codex-hepta-prompt-registry v2::tests::payload_registration_supersedes_and_dereferences_exact_bytes
+  stdout ───
+
+    running 1 test
+    test v2::tests::payload_registration_supersedes_and_dereferences_exact_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.024s] (43/50) codex-hepta-prompt-registry tests::signed_admission_persists_scope_evidence_and_grant_lineage
+  stdout ───
+
+    running 1 test
+    test tests::signed_admission_persists_scope_evidence_and_grant_lineage ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.02s
+
+
+        PASS [   0.012s] (44/50) codex-hepta-prompt-registry v2::tests::payload_ceiling_rejects_atomically
+  stdout ───
+
+    running 1 test
+    test v2::tests::payload_ceiling_rejects_atomically ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.026s] (45/50) codex-hepta-prompt-registry tests::verified_admission_cannot_be_used_after_expiry
+  stdout ───
+
+    running 1 test
+    test tests::verified_admission_cannot_be_used_after_expiry ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.02s
+
+
+        PASS [   0.006s] (46/50) codex-hepta-prompt-registry v2::tests::required_factors_are_not_starved_by_other_roles
+  stdout ───
+
+    running 1 test
+    test v2::tests::required_factors_are_not_starved_by_other_roles ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] (47/50) codex-hepta-prompt-registry v2::tests::revocation_invalidates_old_snapshot_and_disables_realization
+  stdout ───
+
+    running 1 test
+    test v2::tests::revocation_invalidates_old_snapshot_and_disables_realization ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] (48/50) codex-hepta-prompt-registry v2::tests::untrusted_external_factor_cannot_obtain_v2_realization
+  stdout ───
+
+    running 1 test
+    test v2::tests::untrusted_external_factor_cannot_obtain_v2_realization ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.00s
+
+
+        PASS [   1.093s] (49/50) codex-hepta-prompt-registry durable::tests::pilot_capacity_fixture_reports_bounded_owner_costs
+  stdout ───
+
+    running 1 test
+    test durable::tests::pilot_capacity_fixture_reports_bounded_owner_costs ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 1.09s
+
+  stderr ───
+    PREG_CAPACITY factors=128 seeded_bytes=390772 committed_bytes=391649 seed_us=20422 read_us=13638 commit_us=23591 reopen_us=42540
+
+        PASS [   4.078s] (50/50) codex-hepta-prompt-registry durable::payload_tests::metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifest
+  stdout ───
+
+    running 1 test
+    test durable::payload_tests::metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifest ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 4.07s
+
+  stderr ───
+    PREG_V3_GROWTH payloads=64 raw_bytes=1048576 legacy_snapshot_bytes=3324688 metadata_commit_bytes=189579 old_payload_bytes_rewritten=0
+
