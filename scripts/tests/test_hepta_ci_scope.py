@@ -80,6 +80,22 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(all(lock_scope[key] for key in GROUPS))
         self.assertTrue(lock_scope["full_repo"])
 
+    def test_hepta_bazel_inputs_force_real_bazel_ci(self):
+        for path in [
+            "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+            "codex-rs/hepta-ndu/BUILD",
+            "codex-rs/hepta-automation/toolchain/rules.bzl",
+        ]:
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(all(scope[group] for group in GROUPS))
+
+        # Source-only owner changes retain the existing scoped Cargo path.
+        self.assertFalse(
+            select(["codex-rs/hepta-operator-acceptance/src/lib.rs"])["full_repo"]
+        )
+
     def test_generated_module_projections_do_not_force_native_builds(self):
         for path in [
             "docs/modules/SOURCE_BINDINGS.json",
