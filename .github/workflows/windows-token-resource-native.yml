@@ -64,8 +64,10 @@ jobs:
             test --platforms=//:windows_x86_64_msvc \
             --cache_test_results=no --flaky_test_attempts=1 \
             --test_sharding_strategy=disabled --test_output=all \
-            --test_env=ProgramFiles \
-            --test_arg=token::tests:: --test_arg=--nocapture -- \
+            --test_env=ProgramFiles --test_env=SystemRoot \
+            --test_arg=token::tests:: \
+            --test_arg=unified_exec::tests::private_cmd_bundle::fixed_cmd_bundle_executes_with_explicit_private_read_roots \
+            --test_arg=--nocapture -- \
             //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests \
             2>&1 | tee "$output/token-controls.log"
           python - "$output/token-controls.log" <<'PY'
@@ -80,6 +82,9 @@ jobs:
           for name in required:
               if f"test token::tests::{name} ... ok" not in log:
                   raise RuntimeError(f"required native control did not pass: {name}")
+          bundle = "unified_exec::tests::private_cmd_bundle::fixed_cmd_bundle_executes_with_explicit_private_read_roots"
+          if f"test {bundle} ... ok" not in log:
+              raise RuntimeError("private pinned cmd challenge did not pass")
           PY
       - name: Preserve observations and real failures
         if: always()

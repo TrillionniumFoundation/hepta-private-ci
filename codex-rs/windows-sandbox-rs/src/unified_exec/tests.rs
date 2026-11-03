@@ -3,6 +3,9 @@
 #[path = "acl_setup_tests.rs"]
 mod acl_setup_tests;
 
+#[path = "private_cmd_bundle_tests.rs"]
+mod private_cmd_bundle;
+
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
