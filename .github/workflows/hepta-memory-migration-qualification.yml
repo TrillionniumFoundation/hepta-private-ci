@@ -1,0 +1,70 @@
+name: hepta original memory migration qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-memory-migration-qualification.yml
+      - qualification/memory-migration-20261103/**
+      - codex-rs/hepta-memory/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-migration-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    if: github.head_ref == 'fix/private-ci-memory-migration-ledger-20261103-gpt6'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            config: ci-linux
+          - runner: macos-15
+            target: aarch64-apple-darwin
+            config: ci-macos
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            config: ci-windows
+    env:
+      BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+    steps:
+      - name: Preserve exact Git bytes on Windows
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: memory-migration
+      - name: Run the complete original memory unit target and Clippy
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            export MEMORY_MIGRATION_BASH="$(cygpath -w "$BASH")"
+          else
+            export MEMORY_MIGRATION_BASH="$BASH"
+          fi
+          python3 qualification/memory-migration-20261103/run.py --config "${{ matrix.config }}" --output "$RUNNER_TEMP/memory-migration"
+      - name: Retain complete native results and source identities
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: memory-migration-${{ matrix.target }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/memory-migration
+          if-no-files-found: error
+          retention-days: 7
