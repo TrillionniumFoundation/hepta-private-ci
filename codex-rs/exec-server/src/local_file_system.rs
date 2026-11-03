@@ -310,6 +310,23 @@ impl ExecutorFileSystem for LocalFileSystem {
         ))
     }
 
+    // The generic stream fallback does not prove stable-handle provenance.
+    // Match the advertised capability before attempting any filesystem access.
+    #[cfg(not(target_os = "macos"))]
+    fn read_file_bounded_authorized<'a>(
+        &'a self,
+        _path: &'a PathUri,
+        _sandbox: &'a FileSystemSandboxContext,
+        _max_bytes: usize,
+    ) -> ExecutorFileSystemFuture<'a, Vec<u8>> {
+        Box::pin(async {
+            Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "bounded authorized file reads are unsupported",
+            ))
+        })
+    }
+
     fn read_file_stream<'a>(
         &'a self,
         path: &'a PathUri,
