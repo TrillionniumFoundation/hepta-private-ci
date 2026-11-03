@@ -77,7 +77,7 @@ impl Fixture {
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
             },
-            Arc::new(codex_hepta_contracts::SystemAuthorityClock),
+            std::sync::Arc::new(codex_hepta_contracts::SystemAuthorityClock),
         )
         .expect("real FinalUse owner");
         let pool = crate::ordinary_cpu_owner::tests::pool(&temp).await;

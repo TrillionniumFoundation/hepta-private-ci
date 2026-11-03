@@ -421,3 +421,73 @@ async fn production_constructor_never_resumes_a_draining_owner() {
     assert!(!fixture.state.is_fenced().expect("host fence"));
     fixture.store.close().await;
 }
+
+#[cfg(windows)]
+#[test]
+fn native_fleet_prompt_owner_path_admission() -> Result<(), Box<dyn std::error::Error>> {
+    use codex_hepta_contracts::windows_private_owner::ParentAnchor;
+    use codex_hepta_prompt_registry::DurablePromptRegistry;
+
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().canonicalize()?;
+    let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    let workspace = root.join("workspace");
+    std::fs::create_dir(&workspace)?;
+    let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    let record = registry.register(AgentManifest::new(
+        agent,
+        WorkspaceBinding::new(&workspace, &fleet_root)?,
+        ResourceBudget::local_default(),
+    )?)?;
+
+    // These are the actual Fleet-provisioned parents used by AgentdState::new.
+    // Inspect each prefix without creating, repairing, adopting, or replacing it.
+    for (role, parent) in [
+        ("registry", record.layout.home_root()),
+        ("runtime", record.layout.run_root()),
+    ] {
+        let mut prefixes = parent
+            .ancestors()
+            .filter(|path| path.is_absolute())
+            .collect::<Vec<_>>();
+        prefixes.reverse();
+        for (index, prefix) in prefixes.into_iter().enumerate() {
+            ParentAnchor::for_create_only(prefix).map_err(|error| {
+                std::io::Error::other(format!(
+                    "{role} ancestry index {index} ({}) refused: {error:?}",
+                    prefix.display()
+                ))
+            })?;
+        }
+    }
+
+    let registry_path = record.layout.home_root().join("prompt-registry");
+    let parent = ParentAnchor::for_create_only(record.layout.home_root())
+        .map_err(|error| std::io::Error::other(format!("registry parent admission: {error:?}")))?;
+    // Distinguish parent capture from fresh/create-collision private leaf
+    // admission. A held unverified-created role is never repaired or retried.
+    let input = parent
+        .prepare_private_store_directory("prompt-registry")
+        .map_err(|error| std::io::Error::other(format!("registry leaf admission: {error:?}")))?;
+    let owner = DurablePromptRegistry::open_windows_private(input, 128)
+        .map_err(|error| std::io::Error::other(format!("registry original owner: {error:?}")))?;
+    let expected = owner.registry()?.snapshot_digest();
+    drop(owner);
+    let reopened = DurablePromptRegistry::open_state_dir(&registry_path, 128)
+        .map_err(|error| std::io::Error::other(format!("registry path cold reopen: {error:?}")))?;
+    assert_eq!(reopened.registry()?.snapshot_digest(), expected);
+    drop(reopened);
+
+    let runtime_path = record.layout.run_root().join("prompt-runtime");
+    drop(
+        crate::AgentdPromptRuntimeOwner::open_state_dir(&runtime_path)
+            .map_err(|error| std::io::Error::other(format!("runtime original owner: {error:?}")))?,
+    );
+    drop(
+        crate::AgentdPromptRuntimeOwner::open_state_dir(&runtime_path).map_err(|error| {
+            std::io::Error::other(format!("runtime path cold reopen: {error:?}"))
+        })?,
+    );
+    Ok(())
+}

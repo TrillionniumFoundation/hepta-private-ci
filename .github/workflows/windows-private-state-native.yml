@@ -60,7 +60,36 @@ jobs:
           }
           (output / "source.json").write_text(json.dumps(receipt, indent=2) + "\n")
           PY
+      - name: Probe the actual Fleet prompt namespace admission
+        id: parent_probe
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/windows-private-state"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --test_tmpdir="$HEPTA_CI_PRIVATE_TEMP_ROOT/bazel" \
+            --test_env=TMP="$HEPTA_CI_PRIVATE_TEMP_ROOT" \
+            --test_env=TEMP="$HEPTA_CI_PRIVATE_TEMP_ROOT" \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_output=all --test_arg=--nocapture \
+            --test_arg=automation::service_tests::native_fleet_prompt_owner_path_admission \
+            --test_arg=--exact -- \
+            //codex-rs/hepta-agentd:hepta-agentd-unit-tests \
+            2>&1 | tee "$output/parent-admission.log"
+      - name: Preserve the parent admission result before the full matrix
+        if: ${{ always() && !cancelled() && steps.prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-private-parent-${{ github.sha }}
+          path: ${{ runner.temp }}/windows-private-state/
+          if-no-files-found: error
+          retention-days: 7
       - name: Run original owner and caller targets
+        if: ${{ always() && !cancelled() && steps.prepare.outcome == 'success' }}
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         run: |
@@ -93,13 +122,17 @@ jobs:
           from pathlib import Path
           import shutil
           import subprocess
+          import sys
 
           output = Path(os.environ["RUNNER_TEMP"]) / "windows-private-state"
           result = subprocess.run(
-              ["bash", ".github/scripts/run-bazel-ci.sh", "--windows-msvc-host-platform", "--",
-               "info", "--platforms=//:windows_x86_64_msvc", "bazel-testlogs"],
-              check=True, capture_output=True, text=True,
+              [sys.executable, ".github/scripts/run_bazel_with_buildbuddy.py",
+               "info", "--config=ci-windows", "--host_platform=//:local_windows_msvc",
+               "--platforms=//:windows_x86_64_msvc", "bazel-testlogs"],
+              capture_output=True, text=True,
           )
+          if result.returncode:
+              raise RuntimeError(f"bazel info failed: {result.stderr[-8000:]}")
           root = Path(result.stdout.strip().splitlines()[-1])
           records = []
           for crate in ("hepta-contracts", "hepta-memory", "hepta-infer-worker-host", "hepta-agentd", "hepta-learning-artifacts"):
