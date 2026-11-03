@@ -95,3 +95,8 @@ artifacts are published. No unrestricted runner, model weights, private input,
 runtime path, merge/deployment or remote write is included. Independent saved review
 validates execution/accounting, not the failed NDU primary. Publication authorization
 is separate and not implied by these local files.
+
+
+## Lossless evidence storage
+
+The complete original SUMMARY is stored as `SUMMARY.json.gz` to meet the repository blob limit. No metric or failed gate was removed. From `qualification/joint-generation`, run `python3 restore_evidence.py` to verify all four compressed summaries, or `python3 restore_evidence.py --output /path/to/new-output-directory` to restore exact original JSON files. The output directory must not already exist. `compressed-evidence-manifest.json` binds compressed and original SHA256 hashes and byte counts. This command verifies evidence only and does not run models or training. Old commit history remains unchanged.
