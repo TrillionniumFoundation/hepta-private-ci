@@ -92,6 +92,22 @@ fn main() -> io::Result<()> {
         )?;
         step("rename.sync_parent", sync_directory(&root))
     });
+    case("exact_production_directory_publication", || {
+        use std::os::unix::fs::DirBuilderExt;
+
+        let staging = root.join("private-staging");
+        std::fs::DirBuilder::new().mode(0o700).create(&staging)?;
+        let published = root.join("sealed-publication");
+        step(
+            "publication.rename_and_seal",
+            publish_release_directory(&staging, &published),
+        )?;
+        step("publication.sync_parent", sync_directory(&root))?;
+        let mode = std::fs::metadata(&published)?.permissions().mode() & 0o777;
+        println!("{{\"observation\":\"published_mode\",\"mode\":{mode}}}");
+        assert_eq!(mode, 0o555);
+        Ok(())
+    });
     case("full_publication_sequence", || {
         let staging = root.join("publish-staging");
         std::fs::create_dir(&staging)?;

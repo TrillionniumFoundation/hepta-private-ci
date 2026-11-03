@@ -18,6 +18,7 @@ EXPECTED = {
     "release::tests::catalog_resolves_only_digest_bound_per_agent_allowances",
     "release::tests::program_mutation_is_detected_and_release_state_survives_reopen",
     "release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world",
+    "release::tests::unsealed_release_root_cannot_be_resolved_or_first_allowed_after_reopen",
 }
 
 
@@ -68,7 +69,7 @@ def main():
         if os.getuid() == 0:
             raise RuntimeError("permission probes require the ordinary unprivileged runner")
         source = (ROOT / "codex-rs/hepta-fleet/src/release.rs").read_text()
-        functions = "\n".join(extract(source, name) for name in ["copy_immutable_program", "set_mode", "sync_directory"])
+        functions = "\n".join(extract(source, name) for name in ["copy_immutable_program", "set_mode", "sync_directory", "publish_release_directory"])
         extracted = output / "production-functions.rs"
         extracted.write_text(functions)
         receipt["extracted_functions_sha256"] = digest(extracted.read_bytes())
@@ -89,9 +90,13 @@ def main():
             if rows[-1] != {"probe_complete": True, "acceptance_claim": False}:
                 raise RuntimeError("incomplete operation observation")
             receipt.setdefault("operation_observations", {})[version] = rows
+            if {"case": "exact_production_directory_publication", "completed_without_error": True} not in rows:
+                raise RuntimeError("the exact candidate directory publication operation failed")
+            if {"observation": "published_mode", "mode": 0o555} not in rows:
+                raise RuntimeError("candidate publication did not leave a sealed directory")
         junit = ROOT / "codex-rs/target/nextest/local/junit.xml"
         junit.unlink(missing_ok=True)
-        code = run("original-fleet-suite", ["just", "test", "-p", "codex-hepta-fleet", "--lib", "--locked", "--no-tests=fail", "--no-fail-fast", "--retries", "0"])
+        code = run("original-fleet-suite", ["just", "test", "-p", "codex-hepta-fleet", "--lib", "--locked", "--no-tests=fail", "--retries", "0"])
         if junit.exists():
             raw = junit.read_bytes()
             (output / "fleet.junit.xml").write_bytes(raw)
@@ -100,8 +105,8 @@ def main():
             names = {c.get("name") for c in cases}
             failures = [c.get("name") for c in cases if any(e.tag in {"failure", "error", "skipped"} for e in c)]
             receipt["tests"] = {"count": len(cases), "names": sorted(names), "failed_or_skipped": failures,
-                                "sha256": digest(raw), "original_five_present": EXPECTED <= names}
-            if len(cases) < 41 or int(tree.get("tests", "-1")) != len(cases) or not EXPECTED <= names or failures:
+                                "sha256": digest(raw), "all_required_cases_present": EXPECTED <= names}
+            if len(cases) < 42 or int(tree.get("tests", "-1")) != len(cases) or not EXPECTED <= names or failures:
                 raise RuntimeError("original complete Fleet tests contain failures, skips or missing cases")
         else:
             raise RuntimeError("original Fleet tests produced no JUnit report")
