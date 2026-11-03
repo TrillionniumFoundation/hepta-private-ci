@@ -56,7 +56,9 @@ jobs:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
           HEPTA_EXPECTED_COMMIT: ${{ env.CANDIDATE_SHA }}
         shell: bash
-        run: python qualification/windows-process-env-current/run_qualification.py --output "$RUNNER_TEMP/windows-process-env-evidence"
+        run: |
+          HEPTA_BASH="$(cygpath -w "$BASH")" \
+            python qualification/windows-process-env-current/run_qualification.py --output "$RUNNER_TEMP/windows-process-env-evidence"
       - name: Retain original outcomes including failures
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f

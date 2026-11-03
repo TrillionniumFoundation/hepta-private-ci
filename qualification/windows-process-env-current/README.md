@@ -60,3 +60,8 @@ python qualification/windows-process-env-current/run_qualification.py --output /
 
 `HEPTA_EXPECTED_COMMIT` must equal the immutable checkout. The original Bazel CI
 setup supplies its normal output roots, MSVC tools, and cache configuration.
+`HEPTA_BASH` is the absolute executable of the workflow's running Git Bash,
+resolved with `cygpath -w "$BASH"`; the wrapper records its bytes and version.
+The failed first current run selected the Windows WSL launcher through a bare
+`bash` lookup and executed zero tests. That negative evidence is retained in
+`hosted-fb1c`; it does not establish a failure or pass of either native suite.

@@ -1,0 +1,83 @@
+{
+  "run": 41725603099,
+  "artifacts": [
+    {
+      "artifact_id": 13274310753,
+      "artifact_bytes": 852318,
+      "artifact_sha256": "3dccda24e6bd111dbaed5d5616204564f26a2e3fbecd82d448ad6aefc03ca8a2",
+      "source_commit": "fb1c40250317f035efeaa998184bad190857fbe0",
+      "source_tree": "63363a66eea0abbeea4ac18b96c30d4b0daacddd",
+      "receipt_sha256": "50674233582b66fbf160390d5479ad5cc03bca1b81788a255878b55ee82d96fa",
+      "bound_inputs": 9084,
+      "source_unchanged": true,
+      "original_command": {
+        "argv": [
+          "bash",
+          "D:\\a\\hepta-private-ci\\hepta-private-ci\\.github\\scripts\\run-bazel-ci.sh",
+          "--print-failed-action-summary",
+          "--print-failed-test-logs",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--skip_incompatible_explicit_targets",
+          "--test_tag_filters=-argument-comment-lint",
+          "--test_verbose_timeout_warnings",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--build_metadata=COMMIT_SHA=fb1c40250317f035efeaa998184bad190857fbe0",
+          "--",
+          "//codex-rs/git-utils:git-utils-unit-tests",
+          "//codex-rs/ext/queue:queue-queue_service-test"
+        ],
+        "exit_code": 1,
+        "seconds": 0.047000000000025466,
+        "log_sha256": "756a9ae833f91603d69b5ee0e38d855073252c2585b8808c37f801cf43646c15"
+      },
+      "native_test_cases_executed": 0,
+      "qualification_status": "failed",
+      "retained_log": "wsl-launcher.log.bin"
+    },
+    {
+      "artifact_id": 13275310906,
+      "artifact_bytes": 852319,
+      "artifact_sha256": "be572c2b95169835b03b6d28dc610ef3318947486e28b02ec2169357b71ce0c7",
+      "source_commit": "b5f470aa2e66a5378dc2099b3ea68f6257c92a6d",
+      "source_tree": "63363a66eea0abbeea4ac18b96c30d4b0daacddd",
+      "receipt_sha256": "44eb149ef984f693f25b4adcd9b4a94c262672866d31ded8046d7173d2253f85",
+      "bound_inputs": 9084,
+      "source_unchanged": true,
+      "original_command": {
+        "argv": [
+          "bash",
+          "D:\\a\\hepta-private-ci\\hepta-private-ci\\.github\\scripts\\run-bazel-ci.sh",
+          "--print-failed-action-summary",
+          "--print-failed-test-logs",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--skip_incompatible_explicit_targets",
+          "--test_tag_filters=-argument-comment-lint",
+          "--test_verbose_timeout_warnings",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--build_metadata=COMMIT_SHA=b5f470aa2e66a5378dc2099b3ea68f6257c92a6d",
+          "--",
+          "//codex-rs/git-utils:git-utils-unit-tests",
+          "//codex-rs/ext/queue:queue-queue_service-test"
+        ],
+        "exit_code": 1,
+        "seconds": 0.046999999999997044,
+        "log_sha256": "756a9ae833f91603d69b5ee0e38d855073252c2585b8808c37f801cf43646c15"
+      },
+      "native_test_cases_executed": 0,
+      "qualification_status": "failed",
+      "retained_log": "wsl-launcher.log.bin"
+    }
+  ],
+  "repair": "Bind the actual Git Bash executable selected by the running workflow and use the original relative wrapper path; OS environment entries, source and suite budgets unchanged.",
+  "successor_native_status": "pending"
+}

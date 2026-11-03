@@ -125,7 +125,19 @@ def main():
                 for path in report_paths(base, package, target, suffix):
                     receipt["removed_stale_reports"].append(str(path))
                     path.unlink()
-        argv = ["bash", str(ROOT / ".github/scripts/run-bazel-ci.sh"),
+        bash = Path(os.environ["HEPTA_BASH"])
+        if not bash.is_absolute() or bash.name.casefold() != "bash.exe" or not bash.is_file():
+            raise RuntimeError("qualification requires the workflow's actual Git Bash executable")
+        bash_bytes = bash.read_bytes()
+        receipt["bash_launcher"] = {"path": str(bash), "bytes": len(bash_bytes),
+                                    "sha256": digest(bash_bytes)}
+        version = subprocess.run([str(bash), "--version"], cwd=ROOT, capture_output=True)
+        (output / "git-bash-version.log").write_bytes(version.stdout + version.stderr)
+        receipt["bash_launcher"].update(version_exit=version.returncode,
+                                       version_log_sha256=digest(version.stdout + version.stderr))
+        if version.returncode or not version.stdout.startswith(b"GNU bash, version "):
+            raise RuntimeError("the selected workflow shell did not identify as GNU Bash")
+        argv = [str(bash), ".github/scripts/run-bazel-ci.sh",
                 "--print-failed-action-summary", "--print-failed-test-logs",
                 "--windows-msvc-host-platform", "--remote-download-toplevel", "--",
                 "test", "--platforms=//:windows_x86_64_msvc",
