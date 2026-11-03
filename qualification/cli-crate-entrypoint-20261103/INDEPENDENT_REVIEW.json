@@ -1,0 +1,44 @@
+{
+  "reviewer": "private_ci_blockers",
+  "mode": "read_only_no_execution",
+  "source": {
+    "codex-rs/cli/src/main.rs": {
+      "bytes": 57,
+      "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971"
+    },
+    "codex-rs/cli/src/hepta.rs": {
+      "bytes": 57,
+      "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971"
+    },
+    "codex-rs/cli/src/main_shared.rs": {
+      "bytes": 176978,
+      "sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513"
+    },
+    "codex-rs/cli/BUILD.bazel": {
+      "bytes": 671,
+      "sha256": "a9a9f3ff8fbc4f554cdaa3647c40b32d5953f9088d8afd556e91b994af4f06c3"
+    },
+    "codex-rs/cli/Cargo.toml": {
+      "bytes": 4239,
+      "sha256": "967fd38c5e9fd05c50f19fbcbde5271e5a786f07436ab05310679fba736a947d"
+    },
+    "defs.bzl": {
+      "bytes": 33180,
+      "sha256": "048824095490c1c8938f00065ae47e0910265dbd01944da5fc8ebf9dd4f99d1f"
+    }
+  },
+  "business_body_byte_equal_to_original_main": true,
+  "original_main_blob": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+  "findings": [],
+  "observations": [
+    "Both binary crate roots own recursion_limit=256 before include!(main_shared.rs).",
+    "All files remain in src; external module path directory stays src. Original top-level and test bodies are byte identical.",
+    "Bazel binary srcs use src/**/*.rs and retain explicit crate_root; new shared file is present in the unchanged source glob. Cargo binary names/paths unchanged.",
+    "No file!/line!/include_str!/include_bytes!/insta snapshot macros occur in the moved body; adjacent module directories and snapshot glob remain unchanged.",
+    "env!(CARGO_BIN_NAME) remains evaluated for the original target; binary-facing product name logic is unchanged."
+  ],
+  "limits": [
+    "Static review does not establish Rust expansion, full CLI compile, tests, Clippy or hosted CI success.",
+    "Compiler diagnostics will name main_shared.rs for moved body spans."
+  ]
+}

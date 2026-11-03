@@ -1,0 +1,62 @@
+{
+  "schema": "cli-crate-entrypoint-source-v1",
+  "base": "e5891fffb795531f0a8887a786eeaa55995a3065",
+  "original_body_commit": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "body_preserved_byte_for_byte": true,
+  "inputs": [
+    {
+      "path": "codex-rs/cli/src/main.rs",
+      "bytes": 57,
+      "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+      "git_blob": "27c294cd065862c50a7de0673d1836f6e66881d4"
+    },
+    {
+      "path": "codex-rs/cli/src/hepta.rs",
+      "bytes": 57,
+      "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+      "git_blob": "27c294cd065862c50a7de0673d1836f6e66881d4"
+    },
+    {
+      "path": "codex-rs/cli/src/main_shared.rs",
+      "bytes": 176978,
+      "sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513",
+      "git_blob": "1bd3eb0bfb183f6a436ba56220906f91b49f0679"
+    },
+    {
+      "path": "codex-rs/cli/Cargo.toml",
+      "bytes": 4239,
+      "sha256": "967fd38c5e9fd05c50f19fbcbde5271e5a786f07436ab05310679fba736a947d",
+      "git_blob": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab"
+    },
+    {
+      "path": "codex-rs/cli/BUILD.bazel",
+      "bytes": 671,
+      "sha256": "a9a9f3ff8fbc4f554cdaa3647c40b32d5953f9088d8afd556e91b994af4f06c3",
+      "git_blob": "8eaf86e3da41e5590ff76d1af13533d7025a53d9"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 416693,
+      "sha256": "4d84dbb8e5b04d4ff62db84134267ddc825d0c0bc03a53a37ea7a4cb667f0f42",
+      "git_blob": "d6c49a2eed9bddda69d9a46726014c5262c7b310"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "bytes": 1701389,
+      "sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+      "git_blob": "dca2622a029cad67b0f9a947814cf3ea45d0e39d"
+    },
+    {
+      "path": "defs.bzl",
+      "bytes": 33180,
+      "sha256": "048824095490c1c8938f00065ae47e0910265dbd01944da5fc8ebf9dd4f99d1f",
+      "git_blob": "cea6bce354c399971b7dece62be8578010971da9"
+    }
+  ],
+  "only_production_changes": [
+    "codex-rs/cli/src/main.rs",
+    "codex-rs/cli/src/hepta.rs",
+    "codex-rs/cli/src/main_shared.rs"
+  ],
+  "runtime_behavior_tested_by_this_check": false
+}
