@@ -2,7 +2,9 @@ name: Joint Hepta v3 execution contracts
 
 on:
   push:
-    branches: [research/joint-hepta-portfolio-v3-20261030, fix/joint-hepta-v3-prefix-cost-20261103]
+    branches:
+      - research/joint-hepta-portfolio-v3-20261030
+      - fix/joint-hepta-v3-prefix-cost-20261103
     paths:
       - experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/**
       - .github/workflows/joint-hepta-v3.yml
