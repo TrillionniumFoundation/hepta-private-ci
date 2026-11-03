@@ -1,7 +1,8 @@
 # Exact 8393775e qualification, including failures
 
 Source: `8393775ed68714144d9e27449789ce42c254dc47`; workflow run `41685527480`.
-The five original GitHub artifact ZIPs are retained without modification. Each
+The five original GitHub artifact ZIPs are retained losslessly; larger ZIPs use
+the bounded parts listed in `../artifact-parts.json`. Each
 download matched the service-provided size, SHA-256 digest, and ZIP CRC checks.
 `VERIFIED.json` records the subsequent input, log, JUnit and committed-lock checks.
 All 1,279 distinct recorded source inputs were reread from this exact Git commit.

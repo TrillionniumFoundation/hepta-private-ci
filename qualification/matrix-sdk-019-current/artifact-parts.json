@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "maximum_part_bytes": 384000,
+  "reason": "Preserve every original archive byte under the unchanged 512000-byte blob limit. No allowlist changes.",
+  "artifacts": [
+    {
+      "path": "cargo-deny.log.gz",
+      "bytes": 827176,
+      "sha256": "66a6839bc0b9adc5bd32d730f1b928ee24718379de7ff87dde21bcfc7635f811",
+      "parts": [
+        {
+          "path": "cargo-deny.log.gz.part000",
+          "bytes": 384000,
+          "sha256": "b766c38a4a5a10696daa6afb2c19a9a98915ea0cd730e8d5cf33ea4b66ebd466"
+        },
+        {
+          "path": "cargo-deny.log.gz.part001",
+          "bytes": 384000,
+          "sha256": "2e7e7924a6128d959d196abf51c9067e54511eb3d805eac5236e8b1e6bfe74e0"
+        },
+        {
+          "path": "cargo-deny.log.gz.part002",
+          "bytes": 59176,
+          "sha256": "9d34e9dce0ba26fb24a0ede1932ba3ff55f2f073dd5da61ddf2e6861275dab7b"
+        }
+      ]
+    },
+    {
+      "path": "hosted-49a9afe9/crypto-migration.zip",
+      "bytes": 733014,
+      "sha256": "19f2393386a83c67465b99cb18bfeeaa5a94c072dff89eb80aaab3544b9865e6",
+      "parts": [
+        {
+          "path": "hosted-49a9afe9/crypto-migration.zip.part000",
+          "bytes": 384000,
+          "sha256": "ddd539e1b57560dcab869709519e57bb2466546c863fac37d8c5f2317453b982"
+        },
+        {
+          "path": "hosted-49a9afe9/crypto-migration.zip.part001",
+          "bytes": 349014,
+          "sha256": "4a73950b907bc3794c3a60efb29ea2621b7bb0742e2738fd0b1a6e1841b9e945"
+        }
+      ]
+    },
+    {
+      "path": "hosted-49a9afe9/owners.zip",
+      "bytes": 652924,
+      "sha256": "d710ebf0269f767c8742060c8db79f503d4e59a958a4a57e32b4270395f667fd",
+      "parts": [
+        {
+          "path": "hosted-49a9afe9/owners.zip.part000",
+          "bytes": 384000,
+          "sha256": "dd19965c897bf1d2a82d94fc858a93d2a350f45f873237943e65ae2d3cb5ff01"
+        },
+        {
+          "path": "hosted-49a9afe9/owners.zip.part001",
+          "bytes": 268924,
+          "sha256": "0e036752a860e4d51d5abe1620f371e52983eefa0f33abcb310324affbdcd967"
+        }
+      ]
+    },
+    {
+      "path": "hosted-49a9afe9/sqlite-starlark.zip",
+      "bytes": 726216,
+      "sha256": "83157007ac1666245990e08f068408e712bea9b2bdc0a9caccc8f8fab0af4c31",
+      "parts": [
+        {
+          "path": "hosted-49a9afe9/sqlite-starlark.zip.part000",
+          "bytes": 384000,
+          "sha256": "78fc35bc77a8896dfa79bbb76e6c9e404d14d2dd7844698d1fcac4f8a1e87eed"
+        },
+        {
+          "path": "hosted-49a9afe9/sqlite-starlark.zip.part001",
+          "bytes": 342216,
+          "sha256": "f96bd3be89ae51f185415c541918d615bcf06c14d19b83fe0a67cd5ae18d2c7b"
+        }
+      ]
+    },
+    {
+      "path": "hosted-49a9afe9/synapse-protocol.zip",
+      "bytes": 717311,
+      "sha256": "1ab2ac90d81b477bcd8636d3b9a6ce27ba4df818c4150790497191457cd49729",
+      "parts": [
+        {
+          "path": "hosted-49a9afe9/synapse-protocol.zip.part000",
+          "bytes": 384000,
+          "sha256": "35fca7f397de8d2961927337cf701a1eb45e555acfd5a083f44054d33a6186c6"
+        },
+        {
+          "path": "hosted-49a9afe9/synapse-protocol.zip.part001",
+          "bytes": 333311,
+          "sha256": "b79fb3c6daa1a90bdf2816055db0c662dc9f31d27ac96a6c1a5e57a8223600a4"
+        }
+      ]
+    },
+    {
+      "path": "hosted-8393775e/crypto-migration.zip",
+      "bytes": 738296,
+      "sha256": "2a2bfad3f33fa2ce011a202bd7940e50e727eb7de20abf556bca81f1ff719162",
+      "parts": [
+        {
+          "path": "hosted-8393775e/crypto-migration.zip.part000",
+          "bytes": 384000,
+          "sha256": "d8ab77175f50383c0c83aed95e29473d00dbe13758f9a35bdb81c08404f7ecf7"
+        },
+        {
+          "path": "hosted-8393775e/crypto-migration.zip.part001",
+          "bytes": 354296,
+          "sha256": "dec476c27a941d8d1c73defe93a22a798d5a5f05dc79339ffa069e5411146350"
+        }
+      ]
+    },
+    {
+      "path": "hosted-8393775e/owners.zip",
+      "bytes": 724106,
+      "sha256": "81ff78efe53bd9a98e9d20ac7c7a41c0e539656d8dc1a9ce1f5c6bf5f3f8579f",
+      "parts": [
+        {
+          "path": "hosted-8393775e/owners.zip.part000",
+          "bytes": 384000,
+          "sha256": "773aa0790467359a10202694c42393dad07486ed02389a1328ae6307ebb8c626"
+        },
+        {
+          "path": "hosted-8393775e/owners.zip.part001",
+          "bytes": 340106,
+          "sha256": "bd4bec6494a74255e34a81485b98c301dd82f197bd10b6ef22d3dc671c22bbb0"
+        }
+      ]
+    },
+    {
+      "path": "hosted-8393775e/sqlite-starlark.zip",
+      "bytes": 731981,
+      "sha256": "64d089d25aa7aa04a6ac9abecb01b5df853b2907b6261214625e93a6afd3c2c9",
+      "parts": [
+        {
+          "path": "hosted-8393775e/sqlite-starlark.zip.part000",
+          "bytes": 384000,
+          "sha256": "35d6cf727352ec614d0890d32765218a7a89169911f770e89cad9cb2df434bd8"
+        },
+        {
+          "path": "hosted-8393775e/sqlite-starlark.zip.part001",
+          "bytes": 347981,
+          "sha256": "778a70632f546500d5a2cda11bf09127d274f1f3653b135b904c7e42e7802f1e"
+        }
+      ]
+    },
+    {
+      "path": "hosted-8393775e/synapse-protocol.zip",
+      "bytes": 722726,
+      "sha256": "b791cc8994d180a7d46e5cd088b56acdf14ba85a63a855a1d38562d50bedb19a",
+      "parts": [
+        {
+          "path": "hosted-8393775e/synapse-protocol.zip.part000",
+          "bytes": 384000,
+          "sha256": "b2306afc48d9261594641d709ad660382bed0f2c025fbaa73e38e369c0144849"
+        },
+        {
+          "path": "hosted-8393775e/synapse-protocol.zip.part001",
+          "bytes": 338726,
+          "sha256": "b0af69ac6aaf04a8dae0fff177d899b562071579792059384b3aae33bf21f0d7"
+        }
+      ]
+    }
+  ]
+}
