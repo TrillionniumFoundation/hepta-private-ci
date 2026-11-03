@@ -1,0 +1,89 @@
+{
+  "source_commit": "64006d610208b0ff346f484265cd5597ceb971f0",
+  "workflow_run": 41717068036,
+  "job": 126199743931,
+  "artifact": {
+    "id": 13270984815,
+    "bytes": 1498653,
+    "sha256": "f6fac691d31e40e2f6e50c7da2a53b430b80348267bc2dd0c3fd3be399757ee8"
+  },
+  "input_count": 8880,
+  "source_unchanged": true,
+  "raw_evidence": {
+    "codex-hepta-agentd.junit.xml.gz": {
+      "raw_bytes": 40825,
+      "raw_sha256": "32c4436cd7e24b2106b35b23bf6ee78ba2c27c22e6c721a238e118ce560822b1",
+      "gzip_bytes": 6362,
+      "gzip_sha256": "1c8f9257438d24ea7359ddd9e40b11fb7e9887ab4278db0544d8ceaa19934ec3"
+    },
+    "acquisition-manifest.json.gz": {
+      "raw_bytes": 3166,
+      "raw_sha256": "de76a449f19a74628a2b4f564493a6a63cd91f73f0261990d9c766f8ab0040ce",
+      "gzip_bytes": 1085,
+      "gzip_sha256": "6d4305fc3576925392ddf2aec67f8909d513f28d8d67d56cd4732482b04b0b8e"
+    }
+  },
+  "original_native_results": {
+    "codex-utils-path": {
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    "codex-hepta-contracts": {
+      "passed": 131,
+      "failed": 0,
+      "skipped": 0
+    },
+    "codex-hepta-prompt-registry": {
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0
+    },
+    "codex-hepta-agentd": {
+      "passed": 160,
+      "failed": 5,
+      "skipped": 0
+    }
+  },
+  "failures": [
+    {
+      "name": "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+      "failure": "thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (5856) panicked at hepta-agentd\\src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+      "failure": "thread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (5700) panicked at hepta-agentd\\src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+      "failure": "thread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (4912) panicked at hepta-agentd\\src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+      "failure": "thread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (7844) panicked at hepta-agentd\\src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+      "failure": "thread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (2176) panicked at hepta-agentd\\src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    }
+  ],
+  "acquisition_positive_and_both_production_mutants_qualified": true,
+  "scoped_clippy_executed": false,
+  "upstream_helper": {
+    "source_commit": "19af2b4fb3dd84feb65c0271b07cf8026cab16b3",
+    "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+    "blob": "ddffddd9ea29f97d236d2ca8b98cfb8e81d1adb0",
+    "adaptation": "Only directory opener and its two callsites; exact flags parameter comment added. Unrelated key/signature conversions excluded."
+  },
+  "candidate": {
+    "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+    "sha256": "1169011b1de9133a5197cefa14cf07337b4de0cf3477243a7ca076899cd24e89",
+    "original_test_bodies_identical": true,
+    "original_assert_lines_identical": true,
+    "production_runtime_changed": false,
+    "native_qualification": "pending",
+    "original_just_fmt_exit": 0,
+    "original_codespell_exit": 0,
+    "independent_review_sha256": "80ba093180c863da4685f29af99c26268a8ce5633ddd72d3f48507e673684f88"
+  }
+}

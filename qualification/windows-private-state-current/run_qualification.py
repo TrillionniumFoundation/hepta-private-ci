@@ -38,6 +38,11 @@ REQUIRED = {
         "control::native_tests::saturated_ordinary_control_returns_original_overload_and_recovers",
         "control::peer_auth_tests::control_peer_check_runs_before_control_frames",
         "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+        "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+        "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+        "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+        "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
     },
 }
 WINDOWS_REQUIRED = {
