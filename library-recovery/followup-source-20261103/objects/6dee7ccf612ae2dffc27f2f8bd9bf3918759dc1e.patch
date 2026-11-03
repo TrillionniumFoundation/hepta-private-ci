@@ -1,0 +1,426 @@
+diff --git a/experiments/hcsn_hx_unified_v3/RENEWAL_DISTANCE_SERIES_20261031.md b/experiments/hcsn_hx_unified_v3/RENEWAL_DISTANCE_SERIES_20261031.md
+new file mode 100644
+index 0000000..012c407
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/RENEWAL_DISTANCE_SERIES_20261031.md
+@@ -0,0 +1,49 @@
++# P0/P2: finite-horizon Brownian regenerative event series
++
++Status: **RESEARCH ONLY / DENY_ALL**, not a production activation or complete He–Xiong mathematical kernel. Base: stacked PR #4489, HEAD `1bf388463a48ba6286afe0811618b5b8bd900636`; upstream `stopping.py` exact Git blob `d165ed777990bbf8f3606b58e1b0991de59a1544` (reproduced locally with matching byte hash).
++
++## Derivation
++
++For a scalar time-homogeneous Brownian state `dX=μdt+σdW`, a **fixed upper** FIRE threshold `b`, reset `r<b`, deterministic refractory `h>=0`, discount `ρ>0`, and fixed nonnegative boundary payoff `b-K`, let `T_d` be the first hitting time of a level at distance `d>0`. Define:
++
++- `Gρ(d,T) = E[exp(-ρ T_d) 1{T_d<=T}]`, with `Gρ(d,T)=0` if `T<=0` and `d>0`.
++- `ν=sqrt(μ²+2ρσ²)`, `κ=(ν-μ)/σ²`, `A=exp(-ρh-κ(b-r))<1`.
++- The independent two-normal-tail formula for `Gρ` is
++  `exp((μ+ν)d/σ²) Φ(-(d+νT)/(σsqrt(T))) + exp((μ-ν)d/σ²) Φ(-(d-νT)/(σsqrt(T)))`.
++
++The **strong Markov property**, spatial translation invariance and independent increments make successive reset-to-threshold hitting times equal in law to first hitting a more distant level. Consequently, starting below the boundary `x<b`:
++
++`E[sum_{spikes t_j<=T} exp(-ρ t_j)] = sum_{n>=0} exp(-ρ n h) Gρ((b-x)+n(b-r), T-nh)`.
++
++Starting at or above `b`, there is one immediate spike and the sum for `n>=1` uses distance `n(b-r)`. If only `n=0,..,N-1` have been evaluated below threshold, the **exact-model truncation remainder** is bounded by `exp(-κ(b-x))*A^N/(1-A)`; for initially active state the omitted future terms from index `N` onward are bounded by `A^N/(1-A)`. A tighter optional envelope follows from Markov/Chernoff: for any `a>=0`, `Gρ(d,t)<=exp(a*t-κ(ρ+a)d)`; after missing event index `N`, the series remainder is bounded by `exp(a*(T-N*h)-ρ*N*h-κ(ρ+a)*d_N) / (1-exp(-(ρ+a)*h-κ(ρ+a)*(b-r)))`. Minimize over a finite predetermined nonnegative tilt grid, including `a=0`, and refuse if none meets the tolerance. This avoids an otherwise enormous `ρ≈0` geometric bound for short finite horizons without pretending to certify floating-point roundoff. With positive refractory, no spike can occur for `n*h>T`; with `h=0`, adaptive truncation uses the same geometric upper bound. The implementation refuses an insufficient maximum-term budget.
++
++Taking `T -> infinity`, the series equals `exp(-κ(b-x))/(1-A)` below threshold. Multiplication by `(b-K)` gives the *same scalar threshold-policy value* as `stopping.regenerative_value`. Above threshold the initial payoff is `(x-K)`, **not** `(b-K)`; only future events pay `(b-K)`. This is a policy evaluation identity, not proof that an arbitrary threshold is globally optimal. Tests independently obtain the stationary threshold using Brent smooth fit.
++
++## Reproducibility
++
++From repository root (with Python, SciPy, NumPy):
++
++```sh
++python -m unittest -v experiments.hcsn_hx_unified_v3.test_renewal_distance_series
++```
++
++Twelve locally executed tests passed (0 skipped). The pre-submission local test environment used Python 3.13.5, SciPy 1.17.0, NumPy 2.3.5. Numerical evidence:
++
++- 108 fixed-parameter first-hit cases across positive/zero/negative drift, three distances, three discount rates including zero, and three time horizons were compared against **independent integration of the positive first-hit density**; worst absolute discrepancy was `3.3306690738754696e-16`.
++- Four drift signs/regimes × three initial states were tested against the infinite-horizon stationary QVI value at horizon 120, including immediate FIRE above threshold.
++- 20,000 independent positive-drift Wald trajectories: finite-horizon analytic discounted event count `0.96942873348`, sample `0.96738451078 ± 0.00450183531` standard error.
++- 30,000 defective negative-drift trajectories, with an independently sampled Bernoulli probability of eventual hit: analytic `0.15459930123`, sample `0.15372530653 ± 0.00189782016` standard error.
++- Zero refractory, negative drift non-hit mass, horizon zero, truncation residual, physical-domain refusal and numerical-resolution refusal were covered. A tiny-discount, large-drift Chernoff-tail fixture terminates in fewer than 40 terms while the original infinite-horizon geometric envelope would remain unusably loose.
++
++These are **local** unit tests, not a full repository run, GitHub CI, directed-rounding interval arithmetic, a formal proof, GPU FP32/BF16 tests or real encoded multimodal training. The `omitted_events_upper_bound` excludes binary-floating-point and normal-CDF approximation error. Any distribution shift away from homogeneous Brownian drift/diffusion, fixed threshold, deterministic refractory, and exact reset invalidates the closed series as stated.
++
++## P0–P5 gate impact
++
++- **P0 OPEN:** strong exact-model cross-check for the simplified regenerative QVI; it does not certify the original coupled He–Xiong bond/equity equations, endogenous boundary, full parameter domain, gradients or device precision.
++- **P1 OPEN:** no new matched Call/Risk/Margin causal-benefit evidence; ordinary matched gates remain valid controls and historic negative results remain.
++- **P2 OPEN:** exact scalar repeated-event finite-horizon reference added; task-level selective memory, MQAR, long unseen lengths, heterogeneous event streams and arbitrary crash recovery unverified.
++- **P3 OPEN:** no real four-modal encoder quality evidence in this increment.
++- **P4 OPEN:** no new Rust/GPU/64–4096 physical-cell energy or recovery evidence in this increment; earlier R8 native-owner research is distinct.
++- **P5 OPEN:** no fair net advantage over tuned Transformer/SSM or authorization to scale.
++
++No activation, merge, production hook, release tag or false PASS signal is introduced. Preserve `production_activation=false` and `all_scientific_blockers_closed=false`.
+diff --git a/experiments/hcsn_hx_unified_v3/renewal_distance_series.py b/experiments/hcsn_hx_unified_v3/renewal_distance_series.py
+new file mode 100644
+index 0000000..bb77f27
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/renewal_distance_series.py
+@@ -0,0 +1,207 @@
++"""P0/P2 analytic reference: finite-horizon discounted Brownian repeated FIREs.
++
++For dX=mu dt+sigma dW, an upper threshold b, reset r<b, deterministic
++refractory h>=0 and constant discount rho>0, the n-th event time is the
++first-passage time over d0+n*(b-r), plus n*h (for initial x<b).
++
++This identity follows from stationary independent Brownian increments and
++strong Markov. It does NOT describe He--Xiong's coupled bond/equity free
++boundary, a moving boundary, or a live native GPU spike kernel.
++
++A geometrically bounded truncation controls the omitted *analytic terms*,
++not rounding or normal-CDF implementation error. Unsupported regimes refuse.
++"""
++
++from dataclasses import dataclass
++import math
++
++from scipy.special import log_ndtr, logsumexp
++
++from .stopping import Stop
++
++
++class UnresolvedRenewal(ValueError):
++    """Refuse a numerically undecidable or unsupported scalar renewal case."""
++
++
++@dataclass(frozen=True)
++class SeriesEstimate:
++    discounted_events: float
++    omitted_events_upper_bound: float
++    terms_evaluated: int
++    full_finite_series: bool
++
++
++def _finite(*values: float) -> bool:
++    return all(type(v) in (float, int) and math.isfinite(v) for v in values)
++
++
++def _kappa(mu: float, sigma: float, rate: float) -> float:
++    magnitude = math.hypot(mu, sigma * math.sqrt(2 * rate))
++    if mu >= 0:
++        denominator = magnitude + mu
++        k = 2 * rate / denominator if denominator else 0.0
++    else:
++        k = (magnitude - mu) / (sigma * sigma)
++    if not math.isfinite(k) or k < 0:
++        raise UnresolvedRenewal('unresolved Laplace root')
++    return k
++
++
++def discounted_first_hit(distance: float, drift: float, diffusion: float,
++                         rate: float, horizon: float) -> float:
++    """E[exp(-rate*T_hit) 1{T_hit<=horizon}] for upward Brownian hitting.
++
++    A positive sum of two log-normal-tail terms avoids subtracting nearly
++    equal default and survival probabilities. An at-boundary hit is at t=0.
++    """
++    if (not _finite(distance, drift, diffusion, rate, horizon)
++            or distance < 0 or diffusion <= 0 or rate < 0 or horizon < 0):
++        raise UnresolvedRenewal('invalid first-passage inputs')
++    if distance == 0:
++        return 1.0
++    if horizon == 0:
++        return 0.0
++    scale = diffusion * math.sqrt(horizon)
++    magnitude = math.hypot(drift, diffusion * math.sqrt(2 * rate))
++    variance = diffusion * diffusion
++    if not _finite(scale, magnitude, variance) or scale <= 0 or variance <= 0:
++        raise UnresolvedRenewal('unresolved Brownian scaling')
++    # Signed roots, rationalizing the potentially cancelling branch.
++    plus = ((magnitude + drift) / variance if drift >= 0 else
++            (2 * rate / (magnitude - drift) if magnitude > drift else 0.0))
++    minus = (-(magnitude - drift) / variance if drift <= 0 else
++             (-2 * rate / (magnitude + drift) if magnitude + drift else 0.0))
++    q1 = (-distance - magnitude * horizon) / scale
++    q2 = (-distance + magnitude * horizon) / scale
++    a = plus * distance + float(log_ndtr(q1))
++    b = minus * distance + float(log_ndtr(q2))
++    if any(math.isnan(x) or x == math.inf for x in (a, b)):
++        raise UnresolvedRenewal('unresolved logarithmic normal-tail terms')
++    lp = float(logsumexp((a, b)))
++    # True discounted probability is in [0,1], no silent clipping to mask error.
++    if math.isnan(lp) or lp > 0:
++        raise UnresolvedRenewal('discounted first-hit probability outside [0,1]')
++    return math.exp(lp)
++
++
++def _validate(p: Stop, state: float, boundary: float, horizon: float,
++              absolute_tail_tolerance: float, max_terms: int) -> None:
++    if not isinstance(p, Stop) or not _finite(state, boundary, horizon,
++                                               absolute_tail_tolerance):
++        raise UnresolvedRenewal('invalid renewal inputs')
++    if not (boundary > p.cost and boundary > p.reset and horizon >= 0
++            and 0 < absolute_tail_tolerance < 1 and
++            type(max_terms) is int and 1 <= max_terms <= 100000):
++        raise UnresolvedRenewal('invalid threshold, horizon or truncation budget')
++
++
++def expected_discounted_event_count(
++    p: Stop, state: float, boundary: float, horizon: float, *,
++    absolute_tail_tolerance: float = 1e-11, max_terms: int = 4096,
++) -> SeriesEstimate:
++    """Finite-horizon E[sum_{spikes at t<=T} exp(-rho*t)] for fixed b.
++
++    For initial state x<b, nth term is exp(-rho*n*h)*G_rho(
++      (b-x)+n*(b-reset), T-n*h), n>=0.
++    For x>=b, count 1 at t=0 plus n>=1 with distance n*(b-reset).
++    Truncation uses the *infinite-horizon* Laplace geometric envelope.
++    """
++    _validate(p, state, boundary, horizon, absolute_tail_tolerance, max_terms)
++    kappa = _kappa(p.drift, p.diffusion, p.discount)
++    gap = boundary - p.reset
++    cycle_decay = p.discount * p.refractory + kappa * gap
++    if not math.isfinite(cycle_decay) or cycle_decay <= 0:
++        raise UnresolvedRenewal('noncontractive or unresolvable reset cycle')
++    denominator = -math.expm1(-cycle_decay)
++    if denominator <= 0:
++        raise UnresolvedRenewal('unresolved geometric denominator')
++
++    instant = state >= boundary
++    initial_distance = gap if instant else boundary - state
++    start_index = 1 if instant else 0
++    # Event n first appears at n*h, including all possible n for finite h.
++    n_max = None
++    if p.refractory > 0:
++        budget = horizon / p.refractory
++        if not math.isfinite(budget):
++            raise UnresolvedRenewal('unresolved physical horizon/event budget')
++        n_max = math.floor(budget)
++    # Chernoff family: for any a>=0,
++    # G_rho(d,t) <= exp(a*t) E[exp(-(rho+a)*T_hit)]
++    # = exp(a*t-kappa(rho+a)*d). Minimizing finitely many such
++    # *valid upper bounds* tightens the late finite-horizon event tail.
++    # This remains an exact-model bound, NOT an outward-rounded f64 certificate.
++    envelopes = [(0.0, kappa, denominator)]
++    if horizon > 0:
++        for factor in (.25, 1., 4., 16., 64., 256., 1024., 4096.):
++            tilt = factor / horizon
++            tilted_rate = p.discount + tilt
++            if not math.isfinite(tilted_rate):
++                continue
++            try:
++                kt = _kappa(p.drift, p.diffusion, tilted_rate)
++            except (UnresolvedRenewal, OverflowError, ZeroDivisionError):
++                continue
++            loss = tilted_rate * p.refractory + kt * gap
++            if math.isfinite(loss) and loss > 0:
++                denom = -math.expm1(-loss)
++                if denom > 0:
++                    envelopes.append((tilt, kt, denom))
++    values = [1.0] if instant else []
++    terms = 0
++    tail = math.inf
++    full = False
++    for n in range(start_index, start_index + max_terms):
++        if n_max is not None and n > n_max:
++            full, tail = True, 0.0
++            break
++        remaining = horizon - n * p.refractory
++        if remaining < 0:
++            full, tail = True, 0.0
++            break
++        distance = initial_distance + (n - start_index) * gap
++        # In the instant case, n=1 is the first future hitting event.
++        term = math.exp(-p.discount * n * p.refractory) * discounted_first_hit(
++            distance, p.drift, p.diffusion, p.discount, remaining)
++        values.append(term)
++        terms += 1
++        # First omitted event n+1, with an upper bound from infinite horizon.
++        omitted_index = n + 1
++        omitted_distance = initial_distance + (omitted_index-start_index) * gap
++        log_bounds = [
++            (tilt * (horizon - omitted_index * p.refractory)
++             - p.discount * omitted_index * p.refractory
++             - kt * omitted_distance - math.log(denom))
++            for tilt, kt, denom in envelopes]
++        best_log = min(log_bounds)
++        tail = math.exp(best_log) if best_log < 709 else math.inf
++        if n_max is not None and omitted_index > n_max:
++            full, tail = True, 0.0
++            break
++        if tail <= absolute_tail_tolerance:
++            break
++    if not math.isfinite(tail) or tail > absolute_tail_tolerance:
++        raise UnresolvedRenewal('truncation tail cannot be bounded by budget')
++    result = math.fsum(values)
++    if not math.isfinite(result) or result < 0:
++        raise UnresolvedRenewal('nonfinite or negative event estimate')
++    return SeriesEstimate(result, tail, terms, full)
++
++
++def expected_discounted_reward(
++    p: Stop, state: float, boundary: float, horizon: float, *,
++    absolute_tail_tolerance: float = 1e-11, max_terms: int = 4096,
++) -> tuple[float, float]:
++    """Finite-horizon threshold-policy reward and analytic truncation bound.
++
++    The first immediate reward from x>=b is (x-K) rather than (b-K).
++    """
++    estimate = expected_discounted_event_count(
++        p, state, boundary, horizon,
++        absolute_tail_tolerance=absolute_tail_tolerance, max_terms=max_terms)
++    payoff = boundary - p.cost
++    value = payoff * estimate.discounted_events
++    if state >= boundary:
++        value = math.fsum((value, state - boundary))
++    return value, payoff * estimate.omitted_events_upper_bound
+diff --git a/experiments/hcsn_hx_unified_v3/test_renewal_distance_series.py b/experiments/hcsn_hx_unified_v3/test_renewal_distance_series.py
+new file mode 100644
+index 0000000..de26d5f
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/test_renewal_distance_series.py
+@@ -0,0 +1,152 @@
++"""Independent analytic, quadrature and simulated checks for renewal series."""
++import math
++import unittest
++from scipy.integrate import quad
++import numpy as np
++
++from .stopping import Stop, regenerative_boundary_independent, regenerative_value
++from .renewal_distance_series import (discounted_first_hit,
++    expected_discounted_event_count, expected_discounted_reward,
++    UnresolvedRenewal)
++
++
++class RenewalSeriesTests(unittest.TestCase):
++    def test_laplace_fpt_matches_density_quadrature(self):
++        for mu in (-.65, 0., .4, 1.2):
++            for d in (.3, 1., 2.):
++                for rate in (0., .03, .8):
++                    for T in (.5, 2., 6.):
++                        sigma=.8
++                        f=lambda t: (d/(sigma*math.sqrt(2*math.pi*t**3))
++                            * math.exp(-((d-mu*t)**2)/(2*sigma*sigma*t)-rate*t))
++                        oracle=quad(f,0,T,epsabs=2e-12,epsrel=1e-11,limit=300)[0]
++                        actual=discounted_first_hit(d,mu,sigma,rate,T)
++                        self.assertAlmostEqual(actual,oracle,delta=3e-9*max(oracle,1e-4))
++
++    def test_event_count_matches_infinite_horizon_qvi_discounted_value(self):
++        for mu in (-.8,0.,.5,1.3):
++            p=Stop(mu,.8,.13,1.5,.25,.2)
++            b=regenerative_boundary_independent(p)
++            for x in (p.reset,b-.45,b+.15):
++                v,tail=expected_discounted_reward(p,x,b,120,
++                    absolute_tail_tolerance=1e-13)
++                target=regenerative_value(p,x,boundary=b)
++                self.assertLessEqual(v,target+2e-12)
++                self.assertAlmostEqual(v,target,delta=max(2e-8,1e-6*abs(target)))
++                self.assertLessEqual(tail,1e-13*(b-p.cost))
++
++    def test_finite_horizon_count_vs_monte_carlo(self):
++        rng=np.random.default_rng(20261031)
++        mu,sigma=.6,.85
++        p=Stop(mu,sigma,.16,1.,0.,.35)
++        b=1.35
++        T=3.5
++        analytic=expected_discounted_event_count(p,0.,b,T)
++        samples=[]
++        for _ in range(20000):
++            t=0.0; d=b; acc=0.0
++            for __ in range(100):
++                t+=float(rng.wald(d/mu,(d/sigma)**2))
++                if t>T: break
++                acc+=math.exp(-p.discount*t)
++                t+=p.refractory; d=b-p.reset
++            samples.append(acc)
++        mean=float(np.mean(samples))
++        stderr=float(np.std(samples,ddof=1)/math.sqrt(len(samples)))
++        self.assertLess(abs(mean-analytic.discounted_events),5*stderr+1e-3)
++        self.assertLess(analytic.omitted_events_upper_bound,1e-11)
++
++    def test_nonzero_event_at_initial_above_threshold(self):
++        p=Stop(-.3,.7,.2,2.,.1,.5)
++        b=2.4
++        a=expected_discounted_event_count(p,b+.8,b,0.)
++        self.assertEqual(a.discounted_events,1.)
++        v,_=expected_discounted_reward(p,b+.8,b,0.)
++        self.assertAlmostEqual(v,b+.8-p.cost)
++        self.assertEqual(expected_discounted_event_count(p,b-.8,b,0.).discounted_events,0.)
++
++    def test_chernoff_truncates_tiny_discount_large_drift(self):
++        p=Stop(2.,.5,1e-12,1.,0.,0.)
++        b=2.; x=0.; T=2.
++        result=expected_discounted_event_count(p,x,b,T,max_terms=40)
++        oracle=math.fsum(discounted_first_hit(2.+2.*n,p.drift,p.diffusion,
++                        p.discount,T) for n in range(40))
++        self.assertLessEqual(abs(oracle-result.discounted_events),
++                             result.omitted_events_upper_bound+2e-12)
++        self.assertLess(result.terms_evaluated,40)
++        self.assertLess(result.omitted_events_upper_bound,1e-11)
++
++    def test_without_refractory_geometric_tail_is_bounded(self):
++        p=Stop(.8,.7,.2,1.,0.,0.)
++        b=2.0
++        a=expected_discounted_event_count(p,.2,b,3.,max_terms=1024)
++        self.assertGreater(a.discounted_events,0.)
++        self.assertFalse(a.full_finite_series)
++        self.assertLessEqual(a.omitted_events_upper_bound,1e-11)
++
++    def test_negative_drift_defective_probability(self):
++        d,mu,sig=1.2,-.5,.8
++        g=discounted_first_hit(d,mu,sig,0,1000)
++        self.assertAlmostEqual(g,math.exp(2*mu*d/(sig*sig)),delta=1e-12)
++        p=Stop(mu,sig,.2,1.5,.2,.1)
++        b=2.1
++        a=expected_discounted_event_count(p,.4,b,50.)
++        self.assertLess(a.discounted_events,1.0)
++
++    def test_defective_negative_drift_renewal_against_simulation(self):
++        rng=np.random.default_rng(310031)
++        p=Stop(-.35,.75,.2,1.1,.1,.25)
++        b=1.4; x=.25; T=6.0
++        theoretical=expected_discounted_event_count(p,x,b,T)
++        weighted=[]
++        for _ in range(30000):
++            t=0.; distance=b-x; total=0.
++            for __ in range(50):
++                probability=math.exp(2*p.drift*distance/(p.diffusion**2))
++                if rng.random()>=probability: break
++                t+=float(rng.wald(distance/abs(p.drift),
++                                   (distance/p.diffusion)**2))
++                if t>T: break
++                total+=math.exp(-p.discount*t)
++                t+=p.refractory
++                distance=b-p.reset
++            weighted.append(total)
++        sample=float(np.mean(weighted))
++        se=float(np.std(weighted,ddof=1)/math.sqrt(len(weighted)))
++        self.assertLess(abs(sample-theoretical.discounted_events),5*se+1e-3)
++
++    def test_loose_vs_tight_truncation_envelope(self):
++        p=Stop(.6,.9,.1,1.,.15,0.)
++        b=1.3; x=.2; T=4.
++        loose=expected_discounted_event_count(p,x,b,T,
++             absolute_tail_tolerance=2e-3)
++        tight=expected_discounted_event_count(p,x,b,T,
++             absolute_tail_tolerance=1e-13)
++        self.assertLessEqual(abs(loose.discounted_events-tight.discounted_events),
++                             loose.omitted_events_upper_bound + 1e-12)
++        self.assertLessEqual(tight.omitted_events_upper_bound,1e-13)
++
++    def test_first_hit_monotonic_horizon(self):
++        for mu in (-1.,0.,1.):
++            vals=[discounted_first_hit(1.,mu,.6,.1,t) for t in (.1,.5,2.,6.,20.)]
++            self.assertTrue(all(x<=y for x,y in zip(vals,vals[1:])))
++            self.assertTrue(all(0<=x<=1 for x in vals))
++
++    def test_reject_out_of_domain_instead_of_clipping(self):
++        for args in [(1.,0.,0.,0.,1.),(-1.,0.,1.,0.,1.),(1.,0.,1.,-1.,1.),
++                     (1.,0.,1.,0.,-1.),(math.nan,0.,1.,0.,1.)]:
++            with self.assertRaises(UnresolvedRenewal): discounted_first_hit(*args)
++        p=Stop(1000.,1e-6,1e-12,1.,0.,0.)
++        with self.assertRaises(UnresolvedRenewal):
++            expected_discounted_event_count(p,0.,2.,1.,max_terms=8)
++
++    def test_analytic_tail_starts_at_correct_event_index(self):
++        p=Stop(.5,1.,.12,1.,.1,.05)
++        b=1.5
++        # Deliberately truncated series must be rejected if omitted tail > budget.
++        with self.assertRaises(UnresolvedRenewal):
++            expected_discounted_event_count(p,0.,b,10.,max_terms=1)
++        full=expected_discounted_event_count(p,0.,b,10.)
++        self.assertGreater(full.terms_evaluated,1)
++
++if __name__=='__main__': unittest.main()

@@ -1,0 +1,85 @@
+name: Hepta E1 original AG News two-model partial strict review (DENY_ALL)
+'on':
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/e1_original_partial_two_model_audit_v1.py'
+      - 'experiments/shared_stem_cell/test_e1_original_partial_two_model_audit_v1.py'
+      - 'experiments/shared_stem_cell/E1_ORIGINAL_AGNEWS_PARTIAL_TWO_MODEL_REVIEW_V1.md'
+      - '.github/workflows/hepta-e1-original-public-two-partial.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-bound-original-partial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test source-only anti-tamper controls in normal and optimized modes
+        run: |
+          set -euo pipefail
+          D=experiments/shared_stem_cell
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha || github.sha }}'
+          python -m py_compile "$D/e1_original_partial_two_model_audit_v1.py" "$D/test_e1_original_partial_two_model_audit_v1.py"
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_e1_original_partial_two_model_audit_v1.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_e1_original_partial_two_model_audit_v1.py -v
+      - name: Verify original producer run and download exact historical failed artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/e1-two-source"
+          mkdir -p "$ROOT"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/38893928466" \
+            --jq '{head_sha, conclusion, status}' > "$ROOT/original-run-identity.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          o=json.loads((Path(os.environ['RUNNER_TEMP'])/'e1-two-source/original-run-identity.json').read_text())
+          if o != {'head_sha':'ec889943bbc990dce34c8546ad013fefe7fc7a78',
+                   'conclusion':'failure','status':'completed'}:
+              raise ValueError('original failed three-Encoder producer run identity changed')
+          PY
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/12046289415/zip" > "$ROOT/original-e1-artifact.zip"
+          printf '%s  %s\n' '62fc3d986c66bc35b78f449ba6972efecd58e8752ff53103f0f18d9f6e509e8b' "$ROOT/original-e1-artifact.zip" | sha256sum -c -
+      - name: Recount real Granite and Gemma partial source-bound E1/E2 task scores
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/e1-two-source"
+          D=experiments/shared_stem_cell
+          python "$D/e1_original_partial_two_model_audit_v1.py" \
+            --original-run-zip "$ROOT/original-e1-artifact.zip" \
+            --output "$ROOT/source-partial-e1-e2.json"
+          python -O "$D/e1_original_partial_two_model_audit_v1.py" \
+            --original-run-zip "$ROOT/original-e1-artifact.zip" \
+            --output "$ROOT/source-partial-e1-e2-optimized.json"
+          cmp -s "$ROOT/source-partial-e1-e2.json" "$ROOT/source-partial-e1-e2-optimized.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'e1-two-source/source-partial-e1-e2.json'
+          s=json.loads(p.read_text())
+          if (set(s['reviewed_models'])!={'granite_97m_r2','embeddinggemma_2_text'} or
+              s['unavailable_model']['model']!='mmbert_small' or
+              s['unavailable_model']['scored'] or
+              s['original_complete_three_encoder_panel_qualified'] or
+              s['independent_future_outcome_or_negative_transfer_verified'] or
+              s['production_promotion_permitted'] or s['authority']!='DENY_ALL'):
+              raise ValueError('missing partial-only scientific admission boundary')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e1-original-public-two-model-partial-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e1-two-source/source-partial-e1-e2.json
+            ${{ runner.temp }}/e1-two-source/original-run-identity.json
+          retention-days: 14
+          if-no-files-found: warn

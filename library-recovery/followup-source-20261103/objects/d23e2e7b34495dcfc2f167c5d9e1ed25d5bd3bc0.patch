@@ -1,0 +1,751 @@
+diff --git a/.github/scripts/test_hepta_neuron_production_baseline_compare.py b/.github/scripts/test_hepta_neuron_production_baseline_compare.py
+new file mode 100644
+index 0000000..11bd5db
+--- /dev/null
++++ b/.github/scripts/test_hepta_neuron_production_baseline_compare.py
+@@ -0,0 +1,276 @@
++"""Pure synthetic adversarial fixtures; NO real model/host evidence or signing API."""
++from __future__ import annotations
++
++import copy
++import hashlib
++import json
++from pathlib import Path
++import sys
++import tempfile
++import unittest
++
++from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
++from cryptography.hazmat.primitives import serialization
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT / "scripts"))
++sys.path.insert(0, str(ROOT / ".github" / "scripts"))
++from test_hepta_neuron_model_trials import fixture as trial_fixture, packet as trial_packet
++from hepta_neuron_real_cohort_preflight import (
++    ATTEST_SCHEMA, COHORT_SCHEMA, DOMAIN, ROLES, SPLITS, TRUST_SCHEMA,
++    InvalidCohort, canonical, observation_digest, sha_bytes,
++)
++from hepta_neuron_model_trials import (ARMS, InvalidTrial, blind_rows,
++                                       canonical_jsonl, sha_file, write_new)
++from hepta_neuron_production_baseline_compare import (
++    SCHEMA, SIGNATURE_DOMAIN, compare_to_production,
++)
++
++FREEZE = 1_757_000_000_000_000
++TIMES = {
++    "train": FREEZE-700_000_000,
++    "calibration": FREEZE-500_000_000,
++    "holdout": FREEZE-300_000_000,
++    "future_1": FREEZE+200_000_000,
++    "future_2": FREEZE+400_000_000,
++}
++
++def dig(s): return hashlib.sha256(s.encode()).hexdigest()
++
++
++class ProductionBaselinePairTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.root=Path(self.temp.name)
++        self.family="decisions"
++        self.build_fixture()
++
++    def build_fixture(self, family="decisions", deterministic=False):
++        self.family=family
++        self.manifest,self.rows,self.sealed,self.manifest_path=trial_fixture(self.root,family)
++        for i, row in enumerate(self.rows):
++            t=TIMES[row["split"]]+i*1000
++            row["observed_at_ms"]=t//1000
++            if family != "heads":
++                row["state"]=f"fixture-only-{i}"
++            else:
++                row["features_q24"][0] = i + 1
++        self.sealed.write_text("".join(json.dumps(x,sort_keys=True)+"\n" for x in self.rows))
++        self.manifest["dataset_sha256"]=sha_file(self.sealed)
++        self.manifest["blind_dataset_sha256"]=sha_bytes(canonical_jsonl(blind_rows(self.rows,family)))
++        self.manifest_path.write_text(json.dumps(self.manifest))
++        self.keys={role:Ed25519PrivateKey.generate() for role in ROLES}
++        self.trust={"schema":TRUST_SCHEMA,"roles":{
++            role:{"key_id":f"key-{role}","controller_id":f"controller-{role}",
++                "principal_id":f"principal-{role}","ed25519_public_key_hex":
++                  self.keys[role].public_key().public_bytes(
++                      serialization.Encoding.Raw,serialization.PublicFormat.Raw).hex()}
++            for role in ROLES}}
++        self.trust_path=self.root/"trust.json"
++        self.trust_path.write_text(json.dumps(self.trust))
++        self.trust_hash=sha_file(self.trust_path)
++        members=[];joined=[]
++        for i,row in enumerate(self.rows):
++            t=row["observed_at_ms"]*1000
++            decision,outcome=dig(f"decision-{i}"),dig(f"outcome-{i}")
++            members.extend((decision,outcome))
++            joined.append({"id":row["id"],"episode_id":f"episode-{i}",
++                "split":row["split"],"source_group":row["source_group"],
++                "decision_record_digest":decision,"terminal_outcome_record_digest":outcome,
++                "observation_sha256":observation_digest(row,family),
++                "observed_at_unix_micros":t,"terminal_at_unix_micros":t+10_000_000,
++                "terminality":"Terminal"})
++        baseline={"kind":"deployed_deterministic" if deterministic else "deployed_learned",
++            "scope_digest":dig("scope"),"objective_digest":dig("objective"),
++            "generation":10,"policy_digest":dig("policy"),"route_digest":dig("route"),
++            "checkpoint_digest":dig("checkpoint"),"runtime_receipt_digest":dig("runtime"),
++            "artifact_load_receipt_digest":dig("artifact"),
++            "source_use_receipt_digest":dig("source"),"frozen_at_unix_micros":FREEZE,
++            "model_manifest_digest":None if deterministic else dig("manifest"),
++            "weights_digest":None if deterministic else dig("weights"),
++            "code_digest":dig("code") if deterministic else None}
++        self.cohort_payload={"schema":COHORT_SCHEMA,"family":family,
++            "source":"hepta.learning-ledger.LedgerWriter",
++            "dataset":{"receipt_schema":"DatasetSnapshotReceiptV3","snapshot_id":"snapshot-1",
++                "dataset_digest":dig("dataset"),"ledger_head_digest":dig("ledger-head"),
++                "objective_digest":dig("objective"),"correction_cut_digest":dig("correction"),
++                "revocation_cut_digest":dig("revocation"),"inclusion_policy_digest":dig("inclusion"),
++                "eligible_frontier":20,"outcome_watermark":20,
++                "source_record_digests":sorted(members)},
++            "no_change":baseline,"frozen_plan_digest":dig("plan"),
++            "sealed_dataset_sha256":sha_file(self.sealed),
++            "source_current_revalidated_at_unix_micros":FREEZE+600_000_000,
++            "rows":joined}
++        self.cohort_path=self.root/"cohort.json"
++        self.build_cohort()
++        self.production_body={"cohort_sha256":sha_file(self.cohort_path),
++            "trial_manifest_sha256":sha_file(self.manifest_path),
++            "dataset_sha256":self.manifest["dataset_sha256"],
++            "blind_dataset_sha256":self.manifest["blind_dataset_sha256"],
++            "source_dataset_digest":self.cohort_payload["dataset"]["dataset_digest"],
++            "frozen_plan_digest":self.cohort_payload["frozen_plan_digest"],
++            "no_change":copy.deepcopy(self.cohort_payload["no_change"]),
++            "revalidated_at_unix_micros":self.cohort_payload["source_current_revalidated_at_unix_micros"],
++            "observations":[]}
++        for j in self.cohort_payload["rows"]:
++            if j["split"]=="train":continue
++            idx=self.rows.index(next(r for r in self.rows if r["id"]==j["id"]))
++            x={"id":j["id"],"split":j["split"],
++               "decision_record_digest":j["decision_record_digest"],
++               "observation_sha256":j["observation_sha256"],
++               "generation":10,"production_runtime_receipt_digest":dig(f"runtime-{idx}"),
++               "decision_at_unix_micros":j["observed_at_unix_micros"]+1000}
++            if family=="heads":
++                x.update({"drive_q24":[0]*256,"prediction_q24":[0]*256})
++            else:
++                x.update({"disposition":"selected","selected_option":"yes"})
++            self.production_body["observations"].append(x)
++        self.baseline_path=self.root/"actual-selected-baseline.json"
++        self.build_baseline()
++        self.arms={}
++        for arm in ARMS[family]:
++            path=self.root/f"{arm}.json"
++            if path.exists(): path.unlink()
++            write_new(path,trial_packet(self.manifest,self.rows,arm,damaged=arm=="typed"))
++            self.arms[arm]=path
++
++    def build_cohort(self):
++        h=sha_bytes(canonical(self.cohort_payload))
++        records={}
++        for role in ROLES:
++            s={"schema":ATTEST_SCHEMA,"role":role,"key_id":"key-"+role,
++               "body_sha256":h,"signed_at_unix_micros":FREEZE+700_000_000}
++            s["signature_ed25519_hex"]=self.keys[role].sign(DOMAIN+canonical(s)).hex()
++            records[role]=s
++        self.cohort_path.write_text(json.dumps({"schema":COHORT_SCHEMA,
++            "payload":self.cohort_payload,"attestations":records}))
++
++    def build_baseline(self):
++        signed_at=FREEZE+710_000_000
++        signed={"schema":SCHEMA,"role":"baseline_owner","key_id":"key-baseline_owner",
++                "signed_at_unix_micros":signed_at,"body":self.production_body}
++        sig=self.keys["baseline_owner"].sign(SIGNATURE_DOMAIN+canonical(signed)).hex()
++        self.baseline_path.write_text(json.dumps({"schema":SCHEMA,"body":self.production_body,
++            "owner_signature":{"role":"baseline_owner","key_id":"key-baseline_owner",
++                 "signed_at_unix_micros":signed_at,"signature_ed25519_hex":sig}}))
++
++    def check(self):
++        return compare_to_production(self.cohort_path,self.sealed,self.trust_path,
++            self.trust_hash,self.manifest_path,self.baseline_path,self.arms)
++
++    def blocked(self):
++        with self.assertRaises((InvalidCohort,InvalidTrial)):
++            self.check()
++
++    def test_actual_production_baseline_is_distinct_from_laya_control(self):
++        v=self.check()
++        self.assertEqual(v["family"],"decisions")
++        self.assertIn("laya",v["production_baseline_paired_proxies"])
++        self.assertEqual(v["production_no_change"]["kind"],"deployed_learned")
++        self.assertFalse(v["ndu_net_gain_verified"])
++        self.assertFalse(v["production_promotion_authorized"])
++        self.assertFalse(v["production_baseline_executed_by_this_process"])
++        self.assertIsNone(v["production_no_change"]["measured"]["future_1"]["brier_multiclass"])
++        self.assertNotIn("fixture-only",json.dumps(v))
++
++    def test_deterministic_baseline_measures_coverage_not_fake_brier(self):
++        self.build_fixture("decisions",deterministic=True)
++        v=self.check()
++        self.assertEqual(v["production_no_change"]["kind"],"deployed_deterministic")
++        self.assertIsNone(v["production_no_change"]["measured"]["future_2"]["ece10"])
++
++    def test_head_baseline_paired_mse_is_not_ndu_gain(self):
++        self.build_fixture("heads")
++        v=self.check()
++        self.assertIn("mse",v["production_no_change"]["measured"]["future_1"])
++        self.assertFalse(v["selection_authorized"])
++
++    def test_multilingual_baseline_pairs_all_languages(self):
++        self.build_fixture("multilingual")
++        v=self.check()
++        self.assertEqual(v["family"],"multilingual")
++        self.assertEqual(v["production_no_change"]["measured"]["future_2"]["count"],3)
++
++    def test_valid_abstain_excluded_from_paired_accuracy(self):
++        row=self.production_body["observations"][-1]
++        row["disposition"]="abstained";row["selected_option"]=None
++        self.build_baseline()
++        v=self.check()
++        self.assertEqual(v["production_baseline_paired_proxies"]["typed"]["future_2"]
++                         ["baseline_abstentions_or_slow_path_excluded"],1)
++
++    def test_false_baseline_choice_denied(self):
++        self.production_body["observations"][0]["selected_option"]="invented"
++        self.build_baseline();self.blocked()
++
++    def test_wrong_decision_event_denied_even_with_valid_signature(self):
++        self.production_body["observations"][0]["decision_record_digest"]=dig("unrelated")
++        self.build_baseline();self.blocked()
++
++    def test_runtime_receipt_and_generation_required(self):
++        self.production_body["observations"][0]["production_runtime_receipt_digest"]="0"*64
++        self.build_baseline();self.blocked()
++        self.production_body["observations"][0]["production_runtime_receipt_digest"]=dig("fix")
++        self.production_body["observations"][0]["generation"]=11
++        self.build_baseline();self.blocked()
++
++    def test_decision_after_terminal_outcome_denied(self):
++        j=self.cohort_payload["rows"][1]
++        self.production_body["observations"][0]["decision_at_unix_micros"]=j["terminal_at_unix_micros"]+1
++        self.build_baseline();self.blocked()
++
++    def test_incomplete_or_duplicate_baseline_events_denied(self):
++        self.production_body["observations"].pop()
++        self.build_baseline();self.blocked()
++        self.production_body["observations"].append(copy.deepcopy(self.production_body["observations"][0]))
++        self.build_baseline();self.blocked()
++
++    def test_changed_selected_nochange_tuple_denied(self):
++        self.production_body["no_change"]["policy_digest"]=dig("different")
++        self.build_baseline();self.blocked()
++
++    def test_swapped_training_dataset_or_manifest_denied(self):
++        self.production_body["trial_manifest_sha256"]=dig("different")
++        self.build_baseline();self.blocked()
++
++    def test_missing_or_unmatched_laya_arm_denied(self):
++        self.arms.pop("typed")
++        self.blocked()
++
++    def test_bad_actor_signature_denied(self):
++        self.build_baseline()
++        p=json.loads(self.baseline_path.read_text())
++        p["owner_signature"]["signature_ed25519_hex"]="0"*128
++        self.baseline_path.write_text(json.dumps(p))
++        self.blocked()
++
++    def test_stale_or_wrong_signer_denied(self):
++        self.build_baseline()
++        p=json.loads(self.baseline_path.read_text())
++        p["owner_signature"]["role"]="evaluator"
++        self.baseline_path.write_text(json.dumps(p))
++        self.blocked()
++
++    def test_label_and_input_mutation_denied(self):
++        rows=[dict(r) for r in self.rows]
++        rows[-1]["gold"]="no"
++        self.sealed.write_text("".join(json.dumps(r)+"\n" for r in rows))
++        self.blocked()
++
++    def test_symlinked_baseline_denied(self):
++        original=self.root/"actual-file.json"
++        original.write_bytes(self.baseline_path.read_bytes())
++        self.baseline_path.unlink();self.baseline_path.symlink_to(original)
++        self.blocked()
++
++    def test_baseline_window_proxies_do_not_grant_promotion(self):
++        for item in self.production_body["observations"]:
++            item["selected_option"]="yes"
++        self.build_baseline()
++        report=self.check()
++        self.assertIs(report["selection_authorized"],False)
++        self.assertIs(report["production_promotion_authorized"],False)
++
++
++if __name__=="__main__":unittest.main()
+diff --git a/qualification/neuron-model-trials/PRODUCTION_NO_CHANGE_PAIRED_REPLAY.md b/qualification/neuron-model-trials/PRODUCTION_NO_CHANGE_PAIRED_REPLAY.md
+new file mode 100644
+index 0000000..05a4598
+--- /dev/null
++++ b/qualification/neuron-model-trials/PRODUCTION_NO_CHANGE_PAIRED_REPLAY.md
+@@ -0,0 +1,134 @@
++# Pair a production no-change baseline with the three Neuron model trials
++
++**Scope:** read-only diagnostic. This **does not** sign, issue authority, invoke the
++live Neuron worker, or independently validate an actual LedgerWriter/host clock.
++The selected production no-change is **not** synonymous with the `laya`
++external A/B arm or the `linear` Head arm.
++
++Use the existing `hepta_neuron_real_cohort_preflight.py` on the independent
++Evaluator host first. That tool requires five externally pinned Ed25519 roles and
++links the exact sealed JSONL to `DatasetSnapshotReceiptV3`-named source digests,
++actual selected baseline descriptors, observation hashes, and chrono splits.
++Those exported facts are *claims* until the actual owner and Observer prove their
++origin. The trust profile must be controlled **out of band**; don't derive keys
++from the cohort or register test fixture keys as production signers.
++
++## Signed production baseline observation receipt
++
++The real production owner (or an independently authorized read-only exporter)
++provides a JSON file that is **not shipped in the source tree**:
++
++```json
++{
++  "schema": "hepta.neuron.production-baseline-pair.v1",
++  "body": {
++    "cohort_sha256": "<raw SHA-256 of signed cohort.json>",
++    "trial_manifest_sha256": "<raw SHA-256 of experimental manifest.json>",
++    "dataset_sha256": "<raw SHA-256 of sealed.jsonl>",
++    "blind_dataset_sha256": "<raw SHA-256 of blinded.jsonl>",
++    "source_dataset_digest": "<native frozen dataset digest>",
++    "frozen_plan_digest": "<pre-registered plan digest>",
++    "no_change": "<exact object from the signed cohort payload>",
++    "revalidated_at_unix_micros": 1757000600000000,
++    "observations": "<every calibration, holdout, future_1, future_2 row>"
++  },
++  "owner_signature": {
++    "role": "baseline_owner",
++    "key_id": "<pinned baseline owner signing key ID>",
++    "signed_at_unix_micros": 1757000700000000,
++    "signature_ed25519_hex": "<valid signature>"
++  }
++}
++```
++
++This JSON above is a **schema sketch only**; angle bracket placeholders and
++string-valued example `no_change`/`observations` are **invalid inputs**.
++The signed message is the UTF-8 canonical sorted/minified JSON of
++`{schema,body,role,key_id,signed_at_unix_micros}`, prefixed by the byte domain
++`hepta.neuron.production-baseline-pair.v1\\0` (with an actual NUL byte). The
++signature uses the independently registered **baseline_owner** Ed25519 key.
++This diagnostic provides no private-key tooling; signing must happen inside
++the owning production trust boundary and remain separate from the runner.
++
++A text-decision observation binds `id`, `split`, native
++`decision_record_digest`, `observation_sha256`,
++`production_runtime_receipt_digest`, actual
++`decision_at_unix_micros`, frozen `generation`, disposition
++(`selected` / `abstained` / `slow_path`) and optional `selected_option` (a
++legal option ID only when selected). For a Head observation, replace disposition
++and selected option with two signed `drive_q24` / `prediction_q24` vectors.
++Each observation must have a decision-time between its native input and terminal
++outcome. The same frozen generation is required across windows; changed
++production policies must be compared as a **new** preregistered experiment, not
++reinterpreted as frozen no-change.
++
++Native owner requirements **outside** this script:
++
++* Re-open or query the current `LedgerWriter` under an authorized owner;
++  `freeze_dataset`, `read_dataset_records`, and
++  `revalidate_dataset_snapshot` must all succeed with current revocation and
++  source-use policy checks. A previous hash is not a current-use grant.
++* Join an actual `AuthenticatedDecisionV2` and terminal
++  `AuthenticatedOutcomeV2` per observation with an independently authorized
++  observation payload. The option ID must come from the native selected
++  candidate; do not infer behavior from a model's argmax or use an Outcome's
++  utility as an automatic ground-truth choice label.
++* Record the **deployed** model/policy/route/owner runtime identities and the
++  actual outcome/decision times. An unsigned JSON runtime digest is not proof
++  that a model ran or that the policy remained deployed.
++* Keep evaluator-only raw labels, source-use grants and private keys off GitHub
++  and the model runner. Require independent host/clock/provenance attestation
++  before any substantive efficacy or resource claim.
++
++## Evaluator-only diagnostic comparison
++
++After supplying the **real** signed cohort, sealed labels, immutable manifest,
++production no-change receipt and all Laya or Head arm receipts:
++
++```bash
++python3 scripts/hepta_neuron_production_baseline_compare.py \
++  --cohort /evaluator/immutable/cohort.json \
++  --sealed /evaluator/private/sealed.jsonl \
++  --trusted-issuers /control-plane/independently-pinned-issuers.json \
++  --trust-sha256 OUT_OF_BAND_TRUST_SHA256 \
++  --trial-manifest /evaluator/immutable/trial-manifest.json \
++  --production-baseline /evaluator/immutable/no-change.json \
++  --arm-receipt laya=/evaluator/immutable/laya.json \
++  --arm-receipt typed=/evaluator/immutable/typed.json \
++  --output /evaluator/new/production-paired-diagnostic.json
++```
++
++Use `laya` and `multilingual` for the multilingual family; `linear`, `mlp`
++and `swiglu` for the Head family. No absent or cherry-picked arm is accepted.
++The evaluator independently rechecks the original model-trial input/weight/
++SDK/host/candidate receipt identities via `hepta_neuron_model_trials.compare`,
++then pairs outputs by the **same source case ID** with the separately signed
++production no-change decisions. It rejects omitted/reused episodes, wrong
++source digests, wrong generation, wrong chosen option, stale trust signatures,
++mismatched sealed-input bytes, time drift, malformed Q24 Head vectors and
++missing calibration/future windows.
++
++Output deliberately reports:
++
++* The **external** Laya-vs-Typed / Laya-vs-Multilingual or Head A/B summary
++  separately from the actual deployed no-change result.
++* For text-choice baselines: selection coverage, abstentions/slow paths,
++  selective accuracy and correct-decision coverage. A deterministic baseline
++  without observed probability distributions has **no** meaningful Brier/ECE;
++  these fields remain `null` rather than being manufactured from hard choices.
++* For Head baselines: signed Q24 prediction MSE and paired MSE differences.
++* Candidate-better/worse/equal event counts by holdout, future_1 and future_2.
++  This is a **paired outcome proxy**, not an NDU causal gain; any unmatched
++  abstention/slow-path cannot be relabeled as a wrong answer.
++* `ndu_net_gain_verified=false`, `selection_authorized=false`, and
++  `production_promotion_authorized=false` regardless of candidate result.
++
++**Production admission stays elsewhere:** the trusted `ProductEvaluationRunnerV1`
++and original `LongitudinalTimeEvidenceV1` / `ObservedFutureWindowV1` verifier
++must observe two genuinely elapsed future windows, independent Observer,
++proper risk/utilities, retained no-change, negative transfer, resource cost,
++recovery and rollback before an owner can even request promotion.
++
++CI tests use only synthetic labels and ephemeral test keys. They cannot
++materialize a real Ledger Owner, secret data, production baseline, real-time
++observer, NDU utility, or authorization token.
+diff --git a/scripts/hepta_neuron_production_baseline_compare.py b/scripts/hepta_neuron_production_baseline_compare.py
+new file mode 100644
+index 0000000..27f7eb0
+--- /dev/null
++++ b/scripts/hepta_neuron_production_baseline_compare.py
+@@ -0,0 +1,323 @@
++#!/usr/bin/env python3
++"""Pair actual selected no-change evidence with Laya/Head trial observations.
++
++Read-only evaluator diagnostic. Owner signatures attest imported claims, not
++physical truth. Neither this code nor an improvement score can promote a model.
++The independent evaluator must use a *sealed* cohort; the model worker must
++never receive this file, its labels, or the baseline decision receipt.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import math
++from pathlib import Path
++import statistics
++
++from hepta_neuron_real_cohort_preflight import (
++    COHORT_SCHEMA, InvalidCohort, canonical, check_sha, check_time,
++    read_json, read_sealed, require, sha_bytes, verify,
++)
++from hepta_neuron_model_trials import (
++    ARMS, Q24, InvalidTrial, blind_rows, canonical_jsonl, compare,
++    load_inputs, sha_file, checked_probabilities, write_new,
++)
++
++SCHEMA = "hepta.neuron.production-baseline-pair.v1"
++REPORT_SCHEMA = "hepta.neuron.production-baseline-paired-evaluation.diagnostic.v1"
++SIGNATURE_DOMAIN = b"hepta.neuron.production-baseline-pair.v1\x00"
++WINDOWS = ("holdout", "future_1", "future_2")
++SOURCE_SPLITS = ("calibration", *WINDOWS)
++MAX_RECEIPT_BYTES = 4 * 1024 * 1024
++
++
++def read_pinned(path: Path, max_bytes: int = MAX_RECEIPT_BYTES):
++    path = Path(path)
++    require(path.is_file() and not path.is_symlink() and 0 < path.stat().st_size <= max_bytes,
++            "receipt must be bounded regular file without symlinks")
++    return read_json(path)
++
++
++def _verify_owner_signature(receipt: dict, trust: dict, revalidated_time: int):
++    from cryptography.exceptions import InvalidSignature
++    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
++    require(isinstance(receipt, dict) and set(receipt) == {"schema", "body", "owner_signature"}
++            and receipt["schema"] == SCHEMA,
++            "unrecognized signed baseline receipt schema")
++    s = receipt["owner_signature"]
++    require(isinstance(s, dict) and set(s) == {
++        "role", "key_id", "signed_at_unix_micros", "signature_ed25519_hex"
++    }, "missing baseline owner signature")
++    owner = trust["roles"]["baseline_owner"]
++    require(s["role"] == "baseline_owner" and s["key_id"] == owner["key_id"]
++            and check_time(s["signed_at_unix_micros"])
++            and s["signed_at_unix_micros"] >= revalidated_time,
++            "baseline signed by wrong/early owner")
++    sig = s["signature_ed25519_hex"]
++    require(isinstance(sig, str) and len(sig) == 128 and all(c in "0123456789abcdef" for c in sig),
++            "invalid baseline signature encoding")
++    message = SIGNATURE_DOMAIN + canonical({
++        "schema": SCHEMA, "body": receipt["body"],
++        "role": s["role"], "key_id": s["key_id"],
++        "signed_at_unix_micros": s["signed_at_unix_micros"],
++    })
++    try:
++        Ed25519PublicKey.from_public_bytes(
++            bytes.fromhex(owner["ed25519_public_key_hex"])
++        ).verify(bytes.fromhex(sig), message)
++    except (InvalidSignature, ValueError) as error:
++        raise InvalidCohort("baseline owner signature failed") from error
++    return sha_bytes(message)
++
++
++def _check_baseline_receipt(receipt, cohort, sealed_rows, manifest_path, manifest, trust, cohort_path):
++    body = receipt["body"]
++    require(isinstance(body, dict) and set(body) == {
++        "cohort_sha256", "trial_manifest_sha256", "dataset_sha256",
++        "blind_dataset_sha256", "source_dataset_digest", "frozen_plan_digest",
++        "no_change", "revalidated_at_unix_micros", "observations",
++    }, "baseline packet missing full source/freeze/selected state binding")
++    payload = cohort["payload"]
++    require(body["cohort_sha256"] == sha_file(cohort_path)
++            and body["trial_manifest_sha256"] == sha_file(manifest_path)
++            and body["dataset_sha256"] == manifest["dataset_sha256"]
++            and body["blind_dataset_sha256"] == manifest["blind_dataset_sha256"]
++            and body["source_dataset_digest"] == payload["dataset"]["dataset_digest"]
++            and body["frozen_plan_digest"] == payload["frozen_plan_digest"]
++            and body["no_change"] == payload["no_change"]
++            and body["revalidated_at_unix_micros"] == payload["source_current_revalidated_at_unix_micros"],
++            "baseline source, plan, bytes or current selected model drift")
++    require(body["no_change"]["kind"] in ("deployed_learned", "deployed_deterministic"),
++            "test arm is not the selected production no-change")
++    signature_sha = _verify_owner_signature(receipt, trust, body["revalidated_at_unix_micros"])
++    rows = {r["id"]: r for r in sealed_rows if r["split"] in SOURCE_SPLITS}
++    cohort_rows = {r["id"]: r for r in payload["rows"] if r["split"] in SOURCE_SPLITS}
++    observed = body["observations"]
++    require(isinstance(observed, list) and 1 <= len(observed) <= 4096
++            and len(observed) == len(rows), "incomplete/no baseline outcome coverage")
++    results = {}
++    family = manifest["family"]
++    for item in observed:
++        core = {"id", "split", "decision_record_digest", "observation_sha256",
++                "production_runtime_receipt_digest", "decision_at_unix_micros", "generation"}
++        extra = {"drive_q24", "prediction_q24"} if family == "heads" else {
++            "disposition", "selected_option"}
++        require(isinstance(item, dict) and set(item) == core | extra,
++                "baseline decision row has missing/unexpected fields")
++        cid = item["id"]
++        require(cid in rows and cid not in results,
++                "unknown or duplicated baseline decision ID")
++        cohort_row = cohort_rows[cid]
++        require(item["split"] == rows[cid]["split"] == cohort_row["split"]
++                and item["decision_record_digest"] == cohort_row["decision_record_digest"]
++                and item["observation_sha256"] == cohort_row["observation_sha256"],
++                "baseline decision doesn't match original Ledger/source observation")
++        require(check_sha(item["production_runtime_receipt_digest"])
++                and type(item["generation"]) is int
++                and item["generation"] == body["no_change"]["generation"],
++                "missing real per-event runtime/selected generation binding")
++        at = item["decision_at_unix_micros"]
++        require(check_time(at)
++                and cohort_row["observed_at_unix_micros"] <= at
++                <= cohort_row["terminal_at_unix_micros"],
++                "baseline decision cannot occur outside observed decision/outcome interval")
++        if family == "heads":
++            width = len(rows[cid]["target_q24"]) // 2
++            for key in ("drive_q24", "prediction_q24"):
++                vec = item[key]
++                require(isinstance(vec, list) and len(vec) == width and width > 0
++                        and all(type(x) is int and abs(x) <= 8 * Q24 for x in vec),
++                        "baseline Q24 output dimensions/ranges differ from selected Cell")
++        else:
++            disposition = item["disposition"]
++            require(disposition in ("selected", "abstained", "slow_path"),
++                    "unrecognized production behavior disposition")
++            choice = item["selected_option"]
++            require((disposition == "selected" and choice in rows[cid]["option_order"])
++                    or (disposition != "selected" and choice is None),
++                    "baseline production choice/abstention is inconsistent")
++        results[cid] = item
++    require(set(results) == set(rows), "baseline omitted a calibration/holdout/future event")
++    return results, signature_sha
++
++
++def _selected_accuracy(bench, rows, family):
++    scores = {}
++    for split in WINDOWS:
++        examples = [r for r in rows if r["split"] == split]
++        require(examples, "missing paired true holdout/future cases")
++        selected, correct, abstained, slow = 0, 0, 0, 0
++        for row in examples:
++            obs = bench[row["id"]]
++            if family != "heads":
++                if obs["disposition"] == "selected":
++                    selected += 1
++                    correct += int(obs["selected_option"] == row["gold"])
++                elif obs["disposition"] == "abstained":
++                    abstained += 1
++                else:
++                    slow += 1
++        if family == "heads":
++            pairs = [(bench[row["id"]]["drive_q24"] +
++                      bench[row["id"]]["prediction_q24"], row["target_q24"])
++                     for row in examples]
++            mse = statistics.mean(((x - y) / Q24) ** 2
++                                  for pred, target in pairs for x,y in zip(pred,target))
++            scores[split] = {"count": len(examples), "mse": mse,
++                             "accuracy": None, "brier_multiclass": None,
++                             "ece10": None, "calibration_verified": False}
++        else:
++            scores[split] = {"count": len(examples), "selected": selected,
++                             "abstained": abstained, "slow_path": slow,
++                             "selective_accuracy": correct / selected if selected else None,
++                             "correct_decision_coverage": correct / len(examples),
++                             "decision_coverage": selected / len(examples),
++                             "brier_multiclass": None, "ece10": None,
++                             "calibration_verified": False}
++    return scores
++
++
++def _paired_deltas(rows, baseline, arm_receipts, family):
++    out = {}
++    for arm in ARMS[family]:
++        trial = {v["id"]: v for v in arm_receipts[arm]["observations"]}
++        out[arm] = {}
++        for window in WINDOWS:
++            eligible = [r for r in rows if r["split"] == window]
++            improved, harmed, unchanged = 0, 0, 0
++            for r in eligible:
++                current = baseline[r["id"]]
++                candidate = trial[r["id"]]
++                if family == "heads":
++                    x = current["drive_q24"] + current["prediction_q24"]
++                    y = candidate["drive_q24"] + candidate["prediction_q24"]
++                    gold = r["target_q24"]
++                    before = sum((a - c)**2 for a,c in zip(x,gold))
++                    after = sum((a - c)**2 for a,c in zip(y,gold))
++                    new_win, harm = after < before, after > before
++                else:
++                    # A model's answer is not the production policy. This is
++                    # only a paired accuracy proxy on independently sealed labels.
++                    options = r["option_order"]
++                    probs = checked_probabilities(candidate["probabilities"], len(options))
++                    model_choice = options[max(range(len(options)), key=probs.__getitem__)]
++                    if current["disposition"] != "selected":
++                        # Abstentions/slow-path are reported separately, not
++                        # misclassified as wrong predictions.
++                        continue
++                    old_right = current["selected_option"] == r["gold"]
++                    new_right = model_choice == r["gold"]
++                    new_win, harm = (not old_right and new_right), (old_right and not new_right)
++                improved += int(new_win)
++                harmed += int(harm)
++                unchanged += int(not new_win and not harm)
++            paired_n = improved + harmed + unchanged
++            out[arm][window] = {
++                "paired_count": paired_n,
++                "candidate_better_count": improved,
++                "candidate_worse_count": harmed,
++                "candidate_equal_count": unchanged,
++                "paired_net_accuracy_proxy": ((improved - harmed) / paired_n)
++                    if family != "heads" and paired_n else None,
++                "paired_mean_mse_delta": None,
++                "baseline_abstentions_or_slow_path_excluded": len(eligible) - paired_n
++                    if family != "heads" else 0,
++            }
++            if family == "heads":
++                out[arm][window]["paired_mean_mse_delta"] = statistics.mean(
++                    (sum((a-b)**2 for a,b in zip(
++                        trial[r["id"]]["drive_q24"] + trial[r["id"]]["prediction_q24"],
++                        r["target_q24"])) -
++                     sum((a-b)**2 for a,b in zip(
++                        baseline[r["id"]]["drive_q24"] + baseline[r["id"]]["prediction_q24"],
++                        r["target_q24"]))) / (len(r["target_q24"]) * Q24**2)
++                    for r in eligible)
++    return out
++
++
++def compare_to_production(cohort_path: Path, sealed_path: Path, trust_path: Path,
++                          trust_sha: str, manifest_path: Path, baseline_path: Path,
++                          arm_paths: dict[str, Path]):
++    # This verifies role signatures over complete cohort and source membership,
++    # but not native LedgerWriter current state or host clock truth.
++    verify(cohort_path, sealed_path, trust_path, trust_sha)
++    cohort = read_pinned(cohort_path)
++    trust = read_pinned(trust_path)
++    sealed = read_sealed(sealed_path)
++    for path in [manifest_path, baseline_path, *arm_paths.values()]:
++        read_pinned(path)
++    manifest, rows = load_inputs(manifest_path, sealed_path, role="evaluator")
++    require(manifest["family"] == cohort["payload"]["family"],
++            "real Ledger cohort differs from the model experiment family")
++    require(manifest["dataset_sha256"] == sha_file(sealed_path)
++            and manifest["blind_dataset_sha256"] == hashlib.sha256(
++                canonical_jsonl(blind_rows(rows, manifest["family"]))).hexdigest(),
++            "trial manifest not tied to sealed and blinded original bytes")
++    packet = read_pinned(baseline_path)
++    owner_observed, signature_sha = _check_baseline_receipt(
++        packet, cohort, sealed, manifest_path, manifest, trust, cohort_path)
++    require(set(arm_paths) == set(ARMS[manifest["family"]]),
++            "all external A/B trial arms required (no cherry-picked candidate)")
++    test_baseline_arm = ARMS[manifest["family"]][0]
++    external_comparison = compare(
++        manifest, rows, arm_paths, sha_file(arm_paths[test_baseline_arm]))
++    trial_receipts = {arm: read_pinned(path) for arm,path in arm_paths.items()}
++    baseline_metrics = _selected_accuracy(owner_observed, sealed, manifest["family"])
++    paired = _paired_deltas(sealed, owner_observed, trial_receipts, manifest["family"])
++    return {
++        "schema": REPORT_SCHEMA,
++        "status": "signed-claims-and-paired-diagnostic-only",
++        "family": manifest["family"],
++        "cohort_sha256": sha_file(cohort_path),
++        "baseline_receipt_sha256": sha_file(baseline_path),
++        "baseline_owner_signature_message_sha256": signature_sha,
++        "trial_manifest_sha256": sha_file(manifest_path),
++        "frozen_plan_digest": cohort["payload"]["frozen_plan_digest"],
++        "production_no_change": {
++            "kind": cohort["payload"]["no_change"]["kind"],
++            "selected_snapshot_digest": sha_bytes(canonical(cohort["payload"]["no_change"])),
++            "measured": baseline_metrics,
++        },
++        "external_arm_comparison": external_comparison,
++        "production_baseline_paired_proxies": paired,
++        "caveat": "Signatures establish attribution of imported claims, not physical owner status or causal utility; paired accuracy/MSE is not NDU gain. No automatic promotion.",
++        "actual_native_ledger_reopened_and_revalidated_here": False,
++        "production_baseline_executed_by_this_process": False,
++        "independent_future_calendar_attestation_verified_here": False,
++        "ndu_net_gain_verified": False,
++        "selection_authorized": False,
++        "production_promotion_authorized": False,
++    }
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--cohort", required=True, type=Path)
++    parser.add_argument("--sealed", required=True, type=Path)
++    parser.add_argument("--trusted-issuers", required=True, type=Path)
++    parser.add_argument("--trust-sha256", required=True)
++    parser.add_argument("--trial-manifest", required=True, type=Path)
++    parser.add_argument("--production-baseline", required=True, type=Path)
++    parser.add_argument("--arm-receipt", action="append", default=[],
++                        help="arm=/absolute/file.json; all family arms required")
++    parser.add_argument("--output", required=True, type=Path)
++    args = parser.parse_args()
++    try:
++        pairs = [entry.split("=", 1) for entry in args.arm_receipt]
++        require(all(len(x) == 2 for x in pairs) and len(set(x[0] for x in pairs)) == len(pairs),
++                "duplicate or malformed arm=path")
++        require(args.output.is_absolute() and not args.output.exists(),
++                "diagnostic receipt path must be new and absolute")
++        result = compare_to_production(args.cohort, args.sealed, args.trusted_issuers,
++                                       args.trust_sha256, args.trial_manifest,
++                                       args.production_baseline,
++                                       {arm: Path(path) for arm,path in pairs})
++        write_new(args.output, result)
++    except (InvalidCohort, InvalidTrial, OSError, ValueError, TypeError, KeyError,
++            UnicodeError, ZeroDivisionError) as exc:
++        parser.exit(2, f"blocked: {exc}\n")
++
++
++if __name__ == "__main__":
++    main()
