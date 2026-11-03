@@ -1,0 +1,2350 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+info: syncing channel updates for 1.95.0-x86_64-unknown-linux-gnu
+info: latest update on 2026-04-16 for version 1.95.0 (59807616e 2026-04-14)
+info: downloading 3 components
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+From https://github.com/openai-oss-forks/tungstenite-rs
+ * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/crossterm`
+From https://github.com/openai-oss-forks/crossterm
+ * [new ref]         45fecb9508105988f42fe6ff0441783ed3717f92 -> refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+From https://github.com/openai-oss-forks/tokio-tungstenite
+ * [new ref]         0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186 -> refs/commit/0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Updating[0m git repository `https://github.com/dzbarsky/rules_rust`
+From https://github.com/dzbarsky/rules_rust
+ * [new ref]             b56cbaa8465e74127f1ea216f813cd377295ad81 -> refs/commit/b56cbaa8465e74127f1ea216f813cd377295ad81
+[1m[92m    Updating[0m git repository `https://github.com/helix-editor/nucleo.git`
+From https://github.com/helix-editor/nucleo
+ * [new ref]         4253de9faabb4e5c6d81d946a5e35a90f87347ee -> refs/commit/4253de9faabb4e5c6d81d946a5e35a90f87347ee
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m actix-codec v0.5.2
+[1m[92m  Downloaded[0m base64-simd v0.8.0
+[1m[92m  Downloaded[0m bytemuck v1.25.0
+[1m[92m  Downloaded[0m colorchoice v1.0.4
+[1m[92m  Downloaded[0m dyn-clone v1.0.20
+[1m[92m  Downloaded[0m embedded-io v0.6.1
+[1m[92m  Downloaded[0m endian-type v0.2.0
+[1m[92m  Downloaded[0m gethostname v1.1.0
+[1m[92m  Downloaded[0m getrandom v0.4.2
+[1m[92m  Downloaded[0m idna_adapter v1.2.1
+[1m[92m  Downloaded[0m i18n-embed-fl v0.9.4
+[1m[92m  Downloaded[0m local-waker v0.1.4
+[1m[92m  Downloaded[0m num_threads v0.1.7
+[1m[92m  Downloaded[0m oid-registry v0.8.1
+[1m[92m  Downloaded[0m kem v0.3.0-pre.0
+[1m[92m  Downloaded[0m outref v0.5.2
+[1m[92m  Downloaded[0m piper v0.2.4
+[1m[92m  Downloaded[0m predicates-tree v1.0.12
+[1m[92m  Downloaded[0m protoc-bin-vendored v3.2.0
+[1m[92m  Downloaded[0m prost-types v0.14.3
+[1m[92m  Downloaded[0m ref-cast v1.0.25
+[1m[92m  Downloaded[0m ref-cast-impl v1.0.25
+[1m[92m  Downloaded[0m scrypt v0.11.0
+[1m[92m  Downloaded[0m sentry-debug-images v0.46.1
+[1m[92m  Downloaded[0m serde_urlencoded v0.7.1
+[1m[92m  Downloaded[0m signal-hook-registry v1.4.8
+[1m[92m  Downloaded[0m subtle v2.6.1
+[1m[92m  Downloaded[0m take_mut v0.2.2
+[1m[92m  Downloaded[0m sys-locale v0.3.2
+[1m[92m  Downloaded[0m tracing-appender v0.2.4
+[1m[92m  Downloaded[0m unic-langid v0.9.6
+[1m[92m  Downloaded[0m untrusted v0.9.0
+[1m[92m  Downloaded[0m want v0.3.1
+[1m[92m  Downloaded[0m windows-result v0.2.0
+[1m[92m  Downloaded[0m yansi v1.0.1
+[1m[92m  Downloaded[0m zeroize_derive v1.4.3
+[1m[92m  Downloaded[0m zbus_names v3.0.0
+[1m[92m  Downloaded[0m zerofrom-derive v0.1.6
+[1m[92m  Downloaded[0m xmlparser v0.13.6
+[1m[92m  Downloaded[0m zerovec-derive v0.11.3
+[1m[92m  Downloaded[0m zmij v1.0.19
+[1m[92m  Downloaded[0m zvariant_utils v2.1.0
+[1m[92m  Downloaded[0m zstd v0.13.4
+[1m[92m  Downloaded[0m libdbus-sys v0.2.7
+[1m[92m  Downloaded[0m x25519-dalek v2.0.1
+[1m[92m  Downloaded[0m tracing-core v0.1.36
+[1m[92m  Downloaded[0m yasna v0.5.2
+[1m[92m  Downloaded[0m zstd-safe v7.4.0
+[1m[92m  Downloaded[0m gix-trace v0.1.18
+[1m[92m  Downloaded[0m unicode-xid v0.2.6
+[1m[92m  Downloaded[0m which v8.0.0
+[1m[92m  Downloaded[0m typenum v1.20.0
+[1m[92m  Downloaded[0m zlib-rs v0.6.3
+[1m[92m  Downloaded[0m termcolor v1.4.1
+[1m[92m  Downloaded[0m tokio v1.52.3
+[1m[92m  Downloaded[0m hashbrown v0.16.1
+[1m[92m  Downloaded[0m ring v0.17.14
+[1m[92m  Downloaded[0m zerofrom v0.1.6
+[1m[92m  Downloaded[0m windows_x86_64_gnu v0.52.6
+[1m[92m  Downloaded[0m winnow v1.0.4
+[1m[92m  Downloaded[0m winnow v0.7.14
+[1m[92m  Downloaded[0m zerovec v0.11.6
+[1m[92m  Downloaded[0m signature v2.2.0
+[1m[92m  Downloaded[0m zerotrie v0.2.4
+[1m[92m  Downloaded[0m serde_html_form v0.3.2
+[1m[92m  Downloaded[0m x509-parser v0.18.1
+[1m[92m  Downloaded[0m tokio-util v0.7.18
+[1m[92m  Downloaded[0m zbus v4.4.0
+[1m[92m  Downloaded[0m zerocopy v0.8.37
+[1m[92m  Downloaded[0m sha1 v0.10.6
+[1m[92m  Downloaded[0m lock_api v0.4.14
+[1m[92m  Downloaded[0m primeorder v0.13.6
+[1m[92m  Downloaded[0m pkcs8 v0.10.2
+[1m[92m  Downloaded[0m pbkdf2 v0.13.0
+[1m[92m  Downloaded[0m pagable_derive v0.4.1
+[1m[92m  Downloaded[0m hkdf v0.13.0
+[1m[92m  Downloaded[0m pin-project-internal v1.1.10
+[1m[92m  Downloaded[0m num-traits v0.2.19
+[1m[92m  Downloaded[0m tracing-opentelemetry v0.32.1
+[1m[92m  Downloaded[0m serde_with v3.17.0
+[1m[92m  Downloaded[0m num-conv v0.2.0
+[1m[92m  Downloaded[0m aws-lc-sys v0.45.0
+[1m[92m  Downloaded[0m pretty_assertions v1.4.1
+[1m[92m  Downloaded[0m headers v0.4.1
+[1m[92m  Downloaded[0m starlark_derive v0.14.2
+[1m[92m  Downloaded[0m sha3 v0.10.9
+[1m[92m  Downloaded[0m self_cell v1.2.2
+[1m[92m  Downloaded[0m rust-embed v8.11.0
+[1m[92m  Downloaded[0m object v0.37.3
+[1m[92m  Downloaded[0m pxfm v0.1.27
+[1m[92m  Downloaded[0m protoc-bin-vendored-macos-aarch_64 v3.2.0
+[1m[92m  Downloaded[0m percent-encoding v2.3.2
+[1m[92m  Downloaded[0m parking v2.2.1
+[1m[92m  Downloaded[0m opaque-debug v0.3.1
+[1m[92m  Downloaded[0m rama-http-types v0.3.0-alpha.4
+[1m[92m  Downloaded[0m protoc-bin-vendored-macos-x86_64 v3.2.0
+[1m[92m  Downloaded[0m tracing v0.1.44
+[1m[92m  Downloaded[0m tokio-test v0.4.5
+[1m[92m  Downloaded[0m static_assertions v1.1.0
+[1m[92m  Downloaded[0m ppv-lite86 v0.2.21
+[1m[92m  Downloaded[0m pagable v0.4.1
+[1m[92m  Downloaded[0m tree-sitter-bash v0.25.1
+[1m[92m  Downloaded[0m zune-jpeg v0.5.12
+[1m[92m  Downloaded[0m polling v3.11.0
+[1m[92m  Downloaded[0m zvariant v4.2.0
+[1m[92m  Downloaded[0m log v0.4.29
+[1m[92m  Downloaded[0m indenter v0.3.4
+[1m[92m  Downloaded[0m png v0.18.0
+[1m[92m  Downloaded[0m typed-path v0.12.4
+[1m[92m  Downloaded[0m tar v0.4.45
+[1m[92m  Downloaded[0m lsp-types v0.97.0
+[1m[92m  Downloaded[0m logos v0.15.1
+[1m[92m  Downloaded[0m include_dir_macros v0.7.4
+[1m[92m  Downloaded[0m gix-worktree-stream v0.30.0
+[1m[92m  Downloaded[0m unicode-width v0.2.1
+[1m[92m  Downloaded[0m gix-traverse v0.55.0
+[1m[92m  Downloaded[0m zopfli v0.8.3
+[1m[92m  Downloaded[0m zvariant_derive v4.2.0
+[1m[92m  Downloaded[0m zune-core v0.5.1
+[1m[92m  Downloaded[0m rmcp v3.1.3
+[1m[92m  Downloaded[0m regex-automata v0.4.13
+[1m[92m  Downloaded[0m zlib-rs v0.5.5
+[1m[92m  Downloaded[0m time-core v0.1.8
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-aarch_64 v3.2.0
+[1m[92m  Downloaded[0m rama-http-headers v0.3.0-alpha.4
+[1m[92m  Downloaded[0m prettyplease v0.2.37
+[1m[92m  Downloaded[0m walkdir v2.5.0
+[1m[92m  Downloaded[0m vcpkg v0.2.15
+[1m[92m  Downloaded[0m tracing-attributes v0.1.31
+[1m[92m  Downloaded[0m protoc-bin-vendored-win32 v3.2.0
+[1m[92m  Downloaded[0m starlark v0.14.2
+[1m[92m  Downloaded[0m num-bigint v0.4.6
+[1m[92m  Downloaded[0m num v0.4.3
+[1m[92m  Downloaded[0m radix_trie v0.2.1
+[1m[92m  Downloaded[0m zeroize v1.8.2
+[1m[92m  Downloaded[0m unicode-width v0.1.14
+[1m[92m  Downloaded[0m toml v0.5.11
+[1m[92m  Downloaded[0m tempfile v3.27.0
+[1m[92m  Downloaded[0m syn v3.0.3
+[1m[92m  Downloaded[0m zstd-sys v2.1.2+zstd.1.5.7
+[1m[92m  Downloaded[0m predicates v3.1.3
+[1m[92m  Downloaded[0m poly1305 v0.8.0
+[1m[92m  Downloaded[0m wiremock v0.6.5
+[1m[92m  Downloaded[0m windows-core v0.58.0
+[1m[92m  Downloaded[0m webpki-roots v1.0.10
+[1m[92m  Downloaded[0m time v0.3.47
+[1m[92m  Downloaded[0m simd-adler32 v0.3.8
+[1m[92m  Downloaded[0m yoke v0.8.2
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-ppcle_64 v3.2.0
+[1m[92m  Downloaded[0m whoami v2.1.2
+[1m[92m  Downloaded[0m tree-sitter-powershell v0.26.4
+[1m[92m  Downloaded[0m tree-sitter v0.25.10
+[1m[92m  Downloaded[0m syn v2.0.117
+[1m[92m  Downloaded[0m rfc6979 v0.4.0
+[1m[92m  Downloaded[0m powerfmt v0.2.0
+[1m[92m  Downloaded[0m logos-codegen v0.15.1
+[1m[92m  Downloaded[0m yoke-derive v0.8.2
+[1m[92m  Downloaded[0m windows-interface v0.58.0
+[1m[92m  Downloaded[0m webpki-root-certs v1.0.10
+[1m[92m  Downloaded[0m ureq v3.1.4
+[1m[92m  Downloaded[0m tracing-subscriber v0.3.22
+[1m[92m  Downloaded[0m syn v1.0.109
+[1m[92m  Downloaded[0m rustls v0.23.46
+[1m[92m  Downloaded[0m rustix v1.1.4
+[1m[92m  Downloaded[0m oauth2 v5.0.0
+[1m[92m  Downloaded[0m nu-ansi-term v0.50.3
+[1m[92m  Downloaded[0m zbus_macros v4.4.0
+[1m[92m  Downloaded[0m writeable v0.6.2
+[1m[92m  Downloaded[0m windows-targets v0.52.6
+[1m[92m  Downloaded[0m windows-implement v0.58.0
+[1m[92m  Downloaded[0m url v2.5.8
+[1m[92m  Downloaded[0m universal-hash v0.5.1
+[1m[92m  Downloaded[0m unicode-segmentation v1.12.0
+[1m[92m  Downloaded[0m unicode-normalization v0.1.25
+[1m[92m  Downloaded[0m tracing-log v0.2.0
+[1m[92m  Downloaded[0m tower-http v0.6.8
+[1m[92m  Downloaded[0m tonic v0.14.3
+[1m[92m  Downloaded[0m sqlx v0.9.0
+[1m[92m  Downloaded[0m similar v2.7.0
+[1m[92m  Downloaded[0m serde_with_macros v3.17.0
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-s390_64 v3.2.0
+[1m[92m  Downloaded[0m regex-syntax v0.8.8
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-x86_64 v3.2.0
+[1m[92m  Downloaded[0m pkg-config v0.3.32
+[1m[92m  Downloaded[0m pem-rfc7468 v0.7.0
+[1m[92m  Downloaded[0m pem v3.0.6
+[1m[92m  Downloaded[0m pbkdf2 v0.12.2
+[1m[92m  Downloaded[0m paste v1.0.15
+[1m[92m  Downloaded[0m parking_lot v0.12.5
+[1m[92m  Downloaded[0m openssl-probe v0.1.6
+[1m[92m  Downloaded[0m openssl-macros v0.1.1
+[1m[92m  Downloaded[0m num-complex v0.4.6
+[1m[92m  Downloaded[0m lru v0.18.2
+[1m[92m  Downloaded[0m lock_free_hashtable v0.1.4
+[1m[92m  Downloaded[0m linktime-proc-macro v0.1.0
+[1m[92m  Downloaded[0m hashbrown v0.15.5
+[1m[92m  Downloaded[0m gix-worktree v0.50.0
+[1m[92m  Downloaded[0m xdg-home v1.3.0
+[1m[92m  Downloaded[0m windows-strings v0.1.0
+[1m[92m  Downloaded[0m wildmatch v2.6.1
+[1m[92m  Downloaded[0m webbrowser v1.2.4
+[1m[92m  Downloaded[0m vsimd v0.8.0
+[1m[92m  Downloaded[0m uuid v1.20.0
+[1m[92m  Downloaded[0m utf8parse v0.2.2
+[1m[92m  Downloaded[0m untrusted v0.7.1
+[1m[92m  Downloaded[0m unic-langid-impl v0.9.6
+[1m[92m  Downloaded[0m ts-rs-macros v11.1.0
+[1m[92m  Downloaded[0m toml v0.9.11+spec-1.1.0
+[1m[92m  Downloaded[0m starlark_syntax v0.14.2
+[1m[92m  Downloaded[0m proc-macro-crate v3.4.0
+[1m[92m  Downloaded[0m libc v0.2.186
+[1m[92m  Downloaded[0m wildcard v0.3.0
+[1m[92m  Downloaded[0m weezl v0.1.12
+[1m[92m  Downloaded[0m ureq-proto v0.5.3
+[1m[92m  Downloaded[0m unicode-ident v1.0.22
+[1m[92m  Downloaded[0m unicode-bidi v0.3.18
+[1m[92m  Downloaded[0m unicase v2.9.0
+[1m[92m  Downloaded[0m ts-rs v11.1.0
+[1m[92m  Downloaded[0m triomphe v0.1.15
+[1m[92m  Downloaded[0m toml_edit v0.24.0+spec-1.1.0
+[1m[92m  Downloaded[0m tokio-rustls v0.26.4
+[1m[92m  Downloaded[0m libsqlite3-sys v0.37.0
+[1m[92m  Downloaded[0m tokio-graceful v0.2.2
+[1m[92m  Downloaded[0m sqlx-postgres v0.9.0
+[1m[92m  Downloaded[0m serde_json v1.0.149
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-x86_32 v3.2.0
+[1m[92m  Downloaded[0m jiff v0.2.23
+[1m[92m  Downloaded[0m wait-timeout v0.2.1
+[1m[92m  Downloaded[0m version_check v0.9.5
+[1m[92m  Downloaded[0m utf8_iter v1.0.4
+[1m[92m  Downloaded[0m utf-8 v0.7.6
+[1m[92m  Downloaded[0m urlencoding v2.1.3
+[1m[92m  Downloaded[0m unicode-properties v0.1.4
+[1m[92m  Downloaded[0m uname v0.1.1
+[1m[92m  Downloaded[0m typeid v1.0.3
+[1m[92m  Downloaded[0m tower v0.5.3
+[1m[92m  Downloaded[0m toml_datetime v0.7.5+spec-1.1.0
+[1m[92m  Downloaded[0m tokio-stream v0.1.18
+[1m[92m  Downloaded[0m time-macros v0.2.27
+[1m[92m  Downloaded[0m thiserror-impl v2.0.18
+[1m[92m  Downloaded[0m thiserror v2.0.18
+[1m[92m  Downloaded[0m serial2 v0.2.33
+[1m[92m  Downloaded[0m hashbrown v0.17.1
+[1m[92m  Downloaded[0m unicode-bom v2.0.3
+[1m[92m  Downloaded[0m unarray v0.1.4
+[1m[92m  Downloaded[0m type-map v0.5.1
+[1m[92m  Downloaded[0m tree-sitter-language v0.1.7
+[1m[92m  Downloaded[0m tracing-test-macro v0.2.5
+[1m[92m  Downloaded[0m tower-layer v0.3.3
+[1m[92m  Downloaded[0m tonic-prost-build v0.14.3
+[1m[92m  Downloaded[0m toml_edit v0.23.10+spec-1.0.0
+[1m[92m  Downloaded[0m tinyvec v1.10.0
+[1m[92m  Downloaded[0m tiny_http v0.12.0
+[1m[92m  Downloaded[0m thiserror v1.0.69
+[1m[92m  Downloaded[0m sqlx-core v0.9.0
+[1m[92m  Downloaded[0m socket2 v0.5.10
+[1m[92m  Downloaded[0m sha1 v0.11.0
+[1m[92m  Downloaded[0m rama-http v0.3.0-alpha.4
+[1m[92m  Downloaded[0m try-lock v0.2.5
+[1m[92m  Downloaded[0m tracing-test v0.2.5
+[1m[92m  Downloaded[0m tonic-prost v0.14.3
+[1m[92m  Downloaded[0m toml_writer v1.0.6+spec-1.1.0
+[1m[92m  Downloaded[0m toml_parser v1.1.3+spec-1.1.0
+[1m[92m  Downloaded[0m tokio-macros v2.7.0
+[1m[92m  Downloaded[0m tinyvec_macros v0.1.1
+[1m[92m  Downloaded[0m thiserror-no-std v2.0.2
+[1m[92m  Downloaded[0m thiserror-impl v1.0.69
+[1m[92m  Downloaded[0m tagptr v0.2.0
+[1m[92m  Downloaded[0m strong_hash v0.1.0
+[1m[92m  Downloaded[0m sqlx-sqlite v0.9.0
+[1m[92m  Downloaded[0m sqlx-macros-core v0.9.0
+[1m[92m  Downloaded[0m socket2 v0.6.3
+[1m[92m  Downloaded[0m reqwest v0.12.28
+[1m[92m  Downloaded[0m radix_trie v0.3.0
+[1m[92m  Downloaded[0m imara-diff v0.2.0
+[1m[92m  Downloaded[0m hickory-proto v0.25.2
+[1m[92m  Downloaded[0m tower-service v0.3.3
+[1m[92m  Downloaded[0m tonic-build v0.14.3
+[1m[92m  Downloaded[0m tokio-native-tls v0.3.1
+[1m[92m  Downloaded[0m tinystr v0.8.3
+[1m[92m  Downloaded[0m thread_local v1.1.9
+[1m[92m  Downloaded[0m thiserror-impl-no-std v2.0.2
+[1m[92m  Downloaded[0m textwrap v0.11.0
+[1m[92m  Downloaded[0m termtree v0.5.1
+[1m[92m  Downloaded[0m sync_wrapper v1.0.2
+[1m[92m  Downloaded[0m strum_macros v0.28.0
+[1m[92m  Downloaded[0m strum_macros v0.27.2
+[1m[92m  Downloaded[0m strsim v0.10.0
+[1m[92m  Downloaded[0m stringprep v0.1.5
+[1m[92m  Downloaded[0m sse-stream v0.2.5
+[1m[92m  Downloaded[0m spki v0.7.3
+[1m[92m  Downloaded[0m sorted_vector_map v0.2.1
+[1m[92m  Downloaded[0m smallvec v1.15.1
+[1m[92m  Downloaded[0m sha1-checked v0.10.0
+[1m[92m  Downloaded[0m rama-http-core v0.3.0-alpha.4
+[1m[92m  Downloaded[0m quick-xml v0.41.0
+[1m[92m  Downloaded[0m hex v0.4.3
+[1m[92m  Downloaded[0m heck v0.5.0
+[1m[92m  Downloaded[0m strsim v0.11.1
+[1m[92m  Downloaded[0m static_interner v0.1.2
+[1m[92m  Downloaded[0m stable_deref_trait v1.2.1
+[1m[92m  Downloaded[0m sqlx-mysql v0.9.0
+[1m[92m  Downloaded[0m sqlx-macros v0.9.0
+[1m[92m  Downloaded[0m slab v0.4.12
+[1m[92m  Downloaded[0m simple_asn1 v0.6.4
+[1m[92m  Downloaded[0m sharded-slab v0.1.7
+[1m[92m  Downloaded[0m sha2 v0.11.0
+[1m[92m  Downloaded[0m self_cell v0.10.3
+[1m[92m  Downloaded[0m regex v1.12.3
+[1m[92m  Downloaded[0m rama-net v0.3.0-alpha.4
+[1m[92m  Downloaded[0m quinn-proto v0.11.14
+[1m[92m  Downloaded[0m psl v2.1.184
+[1m[92m  Downloaded[0m hashbrown v0.14.5
+[1m[92m  Downloaded[0m hash32 v0.2.1
+[1m[92m  Downloaded[0m synstructure v0.13.2
+[1m[92m  Downloaded[0m strum v0.27.2
+[1m[92m  Downloaded[0m strong_hash_derive v0.1.0
+[1m[92m  Downloaded[0m streaming-iterator v0.1.9
+[1m[92m  Downloaded[0m spin v0.9.8
+[1m[92m  Downloaded[0m smol_str v0.3.5
+[1m[92m  Downloaded[0m serde_ignored v0.1.14
+[1m[92m  Downloaded[0m schemafy_core v0.5.2
+[1m[92m  Downloaded[0m reqwest v0.13.4
+[1m[92m  Downloaded[0m rayon v1.11.0
+[1m[92m  Downloaded[0m proptest v1.9.0
+[1m[92m  Downloaded[0m petgraph v0.8.3
+[1m[92m  Downloaded[0m nonempty v0.12.0
+[1m[92m  Downloaded[0m impl-more v0.1.9
+[1m[92m  Downloaded[0m hostname v0.4.2
+[1m[92m  Downloaded[0m starlark_map v0.14.2
+[1m[92m  Downloaded[0m shlex v1.3.0
+[1m[92m  Downloaded[0m shell-words v1.1.1
+[1m[92m  Downloaded[0m sha2 v0.10.9
+[1m[92m  Downloaded[0m serde_core v1.0.228
+[1m[92m  Downloaded[0m serde v1.0.228
+[1m[92m  Downloaded[0m seccompiler v0.5.0
+[1m[92m  Downloaded[0m schemars v1.2.1
+[1m[92m  Downloaded[0m schemafy v0.5.2
+[1m[92m  Downloaded[0m rustyline v14.0.0
+[1m[92m  Downloaded[0m rand v0.10.1
+[1m[92m  Downloaded[0m process-wrap v9.0.1
+[1m[92m  Downloaded[0m polyval v0.6.2
+[1m[92m  Downloaded[0m parking_lot_core v0.9.12
+[1m[92m  Downloaded[0m litrs v1.0.0
+[1m[92m  Downloaded[0m gix-merge v0.14.0
+[1m[92m  Downloaded[0m serde_path_to_error v0.1.20
+[1m[92m  Downloaded[0m serde_derive_internals v0.29.1
+[1m[92m  Downloaded[0m serde_derive v1.0.228
+[1m[92m  Downloaded[0m sentry-types v0.46.1
+[1m[92m  Downloaded[0m sentry-tracing v0.46.1
+[1m[92m  Downloaded[0m sentry-core v0.46.1
+[1m[92m  Downloaded[0m sentry v0.46.1
+[1m[92m  Downloaded[0m secret-service v4.0.0
+[1m[92m  Downloaded[0m schemars v0.9.0
+[1m[92m  Downloaded[0m schemars v0.8.22
+[1m[92m  Downloaded[0m ryu v1.0.22
+[1m[92m  Downloaded[0m rustls-webpki v0.103.16
+[1m[92m  Downloaded[0m regex-lite v0.1.8
+[1m[92m  Downloaded[0m rayon-core v1.13.0
+[1m[92m  Downloaded[0m rand_core v0.10.1
+[1m[92m  Downloaded[0m rand v0.9.3
+[1m[92m  Downloaded[0m rand v0.8.6
+[1m[92m  Downloaded[0m rama-utils v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-socks5 v0.3.0-alpha.4
+[1m[92m  Downloaded[0m publicsuffix v2.3.0
+[1m[92m  Downloaded[0m pastey v0.2.1
+[1m[92m  Downloaded[0m num_cpus v1.17.0
+[1m[92m  Downloaded[0m num-integer v0.1.46
+[1m[92m  Downloaded[0m hashlink v0.11.0
+[1m[92m  Downloaded[0m serde_spanned v1.1.1
+[1m[92m  Downloaded[0m serde_repr v0.1.20
+[1m[92m  Downloaded[0m sequence_trie v0.3.6
+[1m[92m  Downloaded[0m sentry-panic v0.46.1
+[1m[92m  Downloaded[0m sentry-contexts v0.46.1
+[1m[92m  Downloaded[0m sentry-backtrace v0.46.1
+[1m[92m  Downloaded[0m sentry-actix v0.46.1
+[1m[92m  Downloaded[0m semver v1.0.27
+[1m[92m  Downloaded[0m sec1 v0.7.3
+[1m[92m  Downloaded[0m schemars_derive v1.2.1
+[1m[92m  Downloaded[0m schemars_derive v0.8.22
+[1m[92m  Downloaded[0m same-file v1.0.6
+[1m[92m  Downloaded[0m rustversion v1.0.22
+[1m[92m  Downloaded[0m rustls-pki-types v1.14.0
+[1m[92m  Downloaded[0m rustc-demangle v0.1.27
+[1m[92m  Downloaded[0m rcgen v0.14.7
+[1m[92m  Downloaded[0m rama-macros v0.3.0-alpha.4
+[1m[92m  Downloaded[0m quinn v0.11.9
+[1m[92m  Downloaded[0m portable-atomic v1.13.1
+[1m[92m  Downloaded[0m once_cell v1.21.4
+[1m[92m  Downloaded[0m lzma-rust2 v0.21.0
+[1m[92m  Downloaded[0m lru-slab v0.1.2
+[1m[92m  Downloaded[0m logos-derive v0.15.1
+[1m[92m  Downloaded[0m group v0.13.0
+[1m[92m  Downloaded[0m secrecy v0.10.3
+[1m[92m  Downloaded[0m scopeguard v1.2.0
+[1m[92m  Downloaded[0m schemafy_lib v0.5.2
+[1m[92m  Downloaded[0m rustls-native-certs v0.8.3
+[1m[92m  Downloaded[0m rusticata-macros v4.1.0
+[1m[92m  Downloaded[0m rustc_version v0.4.1
+[1m[92m  Downloaded[0m rustc-hash v1.1.0
+[1m[92m  Downloaded[0m rust-embed-utils v8.11.0
+[1m[92m  Downloaded[0m rust-embed-impl v8.11.0
+[1m[92m  Downloaded[0m rmcp-macros v3.1.3
+[1m[92m  Downloaded[0m rand_xorshift v0.4.0
+[1m[92m  Downloaded[0m rand_core v0.6.4
+[1m[92m  Downloaded[0m rand_chacha v0.9.0
+[1m[92m  Downloaded[0m rama-unix v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-tcp v0.3.0-alpha.4
+[1m[92m  Downloaded[0m p256 v0.13.2
+[1m[92m  Downloaded[0m openssl v0.10.75
+[1m[92m  Downloaded[0m num-iter v0.1.45
+[1m[92m  Downloaded[0m litemap v0.8.1
+[1m[92m  Downloaded[0m salsa20 v0.10.2
+[1m[92m  Downloaded[0m rustc-hash v2.1.1
+[1m[92m  Downloaded[0m resolv-conf v0.7.6
+[1m[92m  Downloaded[0m rand_core v0.9.5
+[1m[92m  Downloaded[0m rama-tls-rustls v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-core v0.3.0-alpha.4
+[1m[92m  Downloaded[0m pin-project v1.1.10
+[1m[92m  Downloaded[0m linux-keyutils v0.2.4
+[1m[92m  Downloaded[0m include_dir v0.7.4
+[1m[92m  Downloaded[0m hash32 v0.3.1
+[1m[92m  Downloaded[0m h2 v0.4.16
+[1m[92m  Downloaded[0m granit-parser v2.1.0
+[1m[92m  Downloaded[0m rama-udp v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-http-backend v0.3.0-alpha.4
+[1m[92m  Downloaded[0m prodash v31.0.0
+[1m[92m  Downloaded[0m home v0.5.12
+[1m[92m  Downloaded[0m hickory-resolver v0.25.2
+[1m[92m  Downloaded[0m heapless v0.8.0
+[1m[92m  Downloaded[0m rand_chacha v0.3.1
+[1m[92m  Downloaded[0m rama-error v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-dns v0.3.0-alpha.4
+[1m[92m  Downloaded[0m quote v1.0.45
+[1m[92m  Downloaded[0m quinn-udp v0.5.14
+[1m[92m  Downloaded[0m quickcheck v1.1.0
+[1m[92m  Downloaded[0m quick-error v2.0.1
+[1m[92m  Downloaded[0m psl-types v2.0.11
+[1m[92m  Downloaded[0m opentelemetry_sdk v0.31.0
+[1m[92m  Downloaded[0m nix v0.30.1
+[1m[92m  Downloaded[0m nix v0.29.0
+[1m[92m  Downloaded[0m nix v0.28.0
+[1m[92m  Downloaded[0m moka v0.12.13
+[1m[92m  Downloaded[0m image v0.25.9
+[1m[92m  Downloaded[0m hmac v0.13.0
+[1m[92m  Downloaded[0m headers-core v0.3.0
+[1m[92m  Downloaded[0m prost-build v0.14.3
+[1m[92m  Downloaded[0m prost v0.14.3
+[1m[92m  Downloaded[0m proc-macro2 v1.0.106
+[1m[92m  Downloaded[0m proc-macro-error2 v2.0.1
+[1m[92m  Downloaded[0m moxcms v0.7.11
+[1m[92m  Downloaded[0m itertools v0.14.0
+[1m[92m  Downloaded[0m iri-string v0.7.10
+[1m[92m  Downloaded[0m imara-diff v0.1.8
+[1m[92m  Downloaded[0m idna v1.1.0
+[1m[92m  Downloaded[0m icu_properties_data v2.2.0
+[1m[92m  Downloaded[0m hyper v1.8.1
+[1m[92m  Downloaded[0m gix-validate v0.11.0
+[1m[92m  Downloaded[0m prost-derive v0.14.3
+[1m[92m  Downloaded[0m proc-macro-error-attr2 v2.0.0
+[1m[92m  Downloaded[0m postcard v1.1.3
+[1m[92m  Downloaded[0m opentelemetry-semantic-conventions v0.31.0
+[1m[92m  Downloaded[0m opentelemetry-proto v0.31.0
+[1m[92m  Downloaded[0m opentelemetry v0.31.0
+[1m[92m  Downloaded[0m openssl-sys v0.9.111
+[1m[92m  Downloaded[0m nom v7.1.3
+[1m[92m  Downloaded[0m mio v1.2.0
+[1m[92m  Downloaded[0m miniz_oxide v0.8.9
+[1m[92m  Downloaded[0m minimal-lexical v0.2.1
+[1m[92m  Downloaded[0m memchr v2.8.1
+[1m[92m  Downloaded[0m keyring v3.6.3
+[1m[92m  Downloaded[0m jsonptr v0.7.1
+[1m[92m  Downloaded[0m jiff-static v0.2.23
+[1m[92m  Downloaded[0m indexmap v2.14.0
+[1m[92m  Downloaded[0m icu_locale_data v2.2.0
+[1m[92m  Downloaded[0m icu_collections v2.2.0
+[1m[92m  Downloaded[0m http v1.4.0
+[1m[92m  Downloaded[0m heapless v0.7.17
+[1m[92m  Downloaded[0m gix-utils v0.3.1
+[1m[92m  Downloaded[0m gix-url v0.35.2
+[1m[92m  Downloaded[0m predicates-core v1.0.9
+[1m[92m  Downloaded[0m potential_utf v0.1.4
+[1m[92m  Downloaded[0m portable-pty v0.9.0
+[1m[92m  Downloaded[0m opentelemetry-otlp v0.31.0
+[1m[92m  Downloaded[0m opentelemetry-http v0.31.0
+[1m[92m  Downloaded[0m opentelemetry-appender-tracing v0.31.1
+[1m[92m  Downloaded[0m ml-kem v0.2.3
+[1m[92m  Downloaded[0m memmap2 v0.9.10
+[1m[92m  Downloaded[0m matchit v0.9.1
+[1m[92m  Downloaded[0m matchit v0.8.4
+[1m[92m  Downloaded[0m link-section v0.17.2
+[1m[92m  Downloaded[0m language-tags v0.3.2
+[1m[92m  Downloaded[0m landlock v0.4.4
+[1m[92m  Downloaded[0m jsonwebtoken v9.3.1
+[1m[92m  Downloaded[0m indexmap v1.9.3
+[1m[92m  Downloaded[0m ignore v0.4.25
+[1m[92m  Downloaded[0m icu_provider v2.2.0
+[1m[92m  Downloaded[0m icu_properties v2.2.0
+[1m[92m  Downloaded[0m icu_plurals v2.2.0
+[1m[92m  Downloaded[0m icu_normalizer_data v2.2.0
+[1m[92m  Downloaded[0m icu_normalizer v2.2.0
+[1m[92m  Downloaded[0m icu_locale_core v2.2.0
+[1m[92m  Downloaded[0m icu_locale v2.2.0
+[1m[92m  Downloaded[0m icu_decimal v2.2.0
+[1m[92m  Downloaded[0m hyper-util v0.1.20
+[1m[92m  Downloaded[0m hybrid-array v0.4.12
+[1m[92m  Downloaded[0m http v0.2.12
+[1m[92m  Downloaded[0m hkdf v0.12.4
+[1m[92m  Downloaded[0m glob v0.3.3
+[1m[92m  Downloaded[0m gix-pack v0.68.0
+[1m[92m  Downloaded[0m pin-utils v0.1.0
+[1m[92m  Downloaded[0m pin-project-lite v0.2.16
+[1m[92m  Downloaded[0m os_info v3.14.0
+[1m[92m  Downloaded[0m ordered-stream v0.2.0
+[1m[92m  Downloaded[0m native-tls v0.2.14
+[1m[92m  Downloaded[0m mime_guess v2.0.5
+[1m[92m  Downloaded[0m memoffset v0.9.1
+[1m[92m  Downloaded[0m md-5 v0.11.0
+[1m[92m  Downloaded[0m maybe-async v0.2.10
+[1m[92m  Downloaded[0m matchers v0.2.0
+[1m[92m  Downloaded[0m maplit v1.0.2
+[1m[92m  Downloaded[0m lazy_static v1.5.0
+[1m[92m  Downloaded[0m kstring v2.0.2
+[1m[92m  Downloaded[0m jobserver v0.1.34
+[1m[92m  Downloaded[0m itoa v1.0.17
+[1m[92m  Downloaded[0m ipnet v2.11.0
+[1m[92m  Downloaded[0m image-webp v0.2.4
+[1m[92m  Downloaded[0m icu_decimal_data v2.2.0
+[1m[92m  Downloaded[0m iana-time-zone v0.1.65
+[1m[92m  Downloaded[0m hyper-timeout v0.5.2
+[1m[92m  Downloaded[0m hybrid-array v0.2.3
+[1m[92m  Downloaded[0m globset v0.4.18
+[1m[92m  Downloaded[0m gix-config v0.54.0
+[1m[92m  Downloaded[0m option-ext v0.2.0
+[1m[92m  Downloaded[0m openssl-probe v0.2.1
+[1m[92m  Downloaded[0m nibble_vec v0.1.0
+[1m[92m  Downloaded[0m multimap v0.10.1
+[1m[92m  Downloaded[0m mime v0.3.17
+[1m[92m  Downloaded[0m md5 v0.8.0
+[1m[92m  Downloaded[0m linux-raw-sys v0.12.1
+[1m[92m  Downloaded[0m is_terminal_polyfill v1.70.2
+[1m[92m  Downloaded[0m io_tee v0.1.1
+[1m[92m  Downloaded[0m io-close v0.3.7
+[1m[92m  Downloaded[0m intl_pluralrules v7.0.2
+[1m[92m  Downloaded[0m intl-memoizer v0.5.3
+[1m[92m  Downloaded[0m inout v0.2.5
+[1m[92m  Downloaded[0m i18n-embed v0.15.4
+[1m[92m  Downloaded[0m gix-error v0.2.1
+[1m[92m  Downloaded[0m gix-date v0.15.1
+[1m[92m  Downloaded[0m gix-attributes v0.31.0
+[1m[92m  Downloaded[0m keccak v0.1.6
+[1m[92m  Downloaded[0m gix v0.81.0
+[1m[92m  Downloaded[0m gimli v0.32.3
+[1m[92m  Downloaded[0m num-rational v0.4.2
+[1m[92m  Downloaded[0m nom v8.0.0
+[1m[92m  Downloaded[0m inventory v0.3.24
+[1m[92m  Downloaded[0m inout v0.1.4
+[1m[92m  Downloaded[0m httpdate v1.0.3
+[1m[92m  Downloaded[0m gix-worktree-state v0.28.0
+[1m[92m  Downloaded[0m gix-transport v0.55.1
+[1m[92m  Downloaded[0m gix-dir v0.23.0
+[1m[92m  Downloaded[0m gix-blame v0.11.0
+[1m[92m  Downloaded[0m ident_case v1.0.1
+[1m[92m  Downloaded[0m icu_plurals_data v2.2.0
+[1m[92m  Downloaded[0m http-body v0.4.6
+[1m[92m  Downloaded[0m windows v0.58.0
+[1m[92m  Downloaded[0m hashbrown v0.12.3
+[1m[92m  Downloaded[0m gix-filter v0.28.0
+[1m[92m  Downloaded[0m gix-features v0.46.2
+[1m[92m  Downloaded[0m gix-discover v0.49.0
+[1m[92m  Downloaded[0m gix-diff v0.61.0
+[1m[92m  Downloaded[0m gix-config-value v0.17.1
+[1m[92m  Downloaded[0m gix-commitgraph v0.35.0
+[1m[92m  Downloaded[0m gix-chunk v0.7.0
+[1m[92m  Downloaded[0m gix-archive v0.30.0
+[1m[92m  Downloaded[0m gif v0.14.1
+[1m[92m  Downloaded[0m ghash v0.5.1
+[1m[92m  Downloaded[0m futures-intrusive v0.5.0
+[1m[92m  Downloaded[0m flume v0.12.0
+[1m[92m  Downloaded[0m flate2 v1.1.8
+[1m[92m  Downloaded[0m fancy-regex v0.16.2
+[1m[92m  Downloaded[0m hyper-tls v0.6.0
+[1m[92m  Downloaded[0m httparse v1.10.1
+[1m[92m  Downloaded[0m http-range-header v0.4.2
+[1m[92m  Downloaded[0m http-body-util v0.1.3
+[1m[92m  Downloaded[0m http-body v1.0.1
+[1m[92m  Downloaded[0m hmac v0.12.1
+[1m[92m  Downloaded[0m gix-ref v0.61.0
+[1m[92m  Downloaded[0m gix-protocol v0.59.0
+[1m[92m  Downloaded[0m gix-path v0.11.2
+[1m[92m  Downloaded[0m gix-odb v0.78.0
+[1m[92m  Downloaded[0m gix-object v0.58.0
+[1m[92m  Downloaded[0m gix-index v0.49.0
+[1m[92m  Downloaded[0m gix-hash v0.23.0
+[1m[92m  Downloaded[0m gix-actor v0.40.0
+[1m[92m  Downloaded[0m futures-lite v2.6.1
+[1m[92m  Downloaded[0m futures-io v0.3.32
+[1m[92m  Downloaded[0m futures-core v0.3.32
+[1m[92m  Downloaded[0m futures-channel v0.3.32
+[1m[92m  Downloaded[0m futures v0.3.31
+[1m[92m  Downloaded[0m fs_extra v1.3.0
+[1m[92m  Downloaded[0m foreign-types-shared v0.1.1
+[1m[92m  Downloaded[0m foreign-types v0.3.2
+[1m[92m  Downloaded[0m foldhash v0.2.0
+[1m[92m  Downloaded[0m foldhash v0.1.5
+[1m[92m  Downloaded[0m fluent-uri v0.1.4
+[1m[92m  Downloaded[0m fluent-bundle v0.15.3
+[1m[92m  Downloaded[0m fluent v0.16.1
+[1m[92m  Downloaded[0m fixedbitset v0.5.7
+[1m[92m  Downloaded[0m fixed_decimal v0.7.2
+[1m[92m  Downloaded[0m findshlibs v0.10.2
+[1m[92m  Downloaded[0m find-crate v0.6.3
+[1m[92m  Downloaded[0m encoding_rs v0.8.35
+[1m[92m  Downloaded[0m age v0.11.2
+[1m[92m  Downloaded[0m i18n-embed-impl v0.8.4
+[1m[92m  Downloaded[0m hyper-rustls v0.27.7
+[1m[92m  Downloaded[0m gix-tempfile v21.0.2
+[1m[92m  Downloaded[0m gix-submodule v0.28.0
+[1m[92m  Downloaded[0m gix-status v0.28.0
+[1m[92m  Downloaded[0m gix-shallow v0.10.0
+[1m[92m  Downloaded[0m gix-sec v0.13.2
+[1m[92m  Downloaded[0m gix-revwalk v0.29.0
+[1m[92m  Downloaded[0m gix-revision v0.43.0
+[1m[92m  Downloaded[0m gix-refspec v0.39.0
+[1m[92m  Downloaded[0m gix-quote v0.7.0
+[1m[92m  Downloaded[0m gix-pathspec v0.16.1
+[1m[92m  Downloaded[0m gix-packetline v0.21.2
+[1m[92m  Downloaded[0m gix-negotiate v0.29.0
+[1m[92m  Downloaded[0m gix-lock v21.0.2
+[1m[92m  Downloaded[0m gix-ignore v0.19.1
+[1m[92m  Downloaded[0m gix-hashtable v0.13.0
+[1m[92m  Downloaded[0m gix-glob v0.24.0
+[1m[92m  Downloaded[0m gix-fs v0.19.2
+[1m[92m  Downloaded[0m gix-command v0.8.0
+[1m[92m  Downloaded[0m gix-bitmap v0.3.0
+[1m[92m  Downloaded[0m futures-util v0.3.32
+[1m[92m  Downloaded[0m futures-macro v0.3.32
+[1m[92m  Downloaded[0m futures-executor v0.3.32
+[1m[92m  Downloaded[0m form_urlencoded v1.2.2
+[1m[92m  Downloaded[0m fnv v1.0.7
+[1m[92m  Downloaded[0m fluent-syntax v0.11.1
+[1m[92m  Downloaded[0m fluent-langneg v0.13.1
+[1m[92m  Downloaded[0m find-msvc-tools v0.1.9
+[1m[92m  Downloaded[0m filetime v0.2.27
+[1m[92m  Downloaded[0m filedescriptor v0.8.3
+[1m[92m  Downloaded[0m ff v0.13.1
+[1m[92m  Downloaded[0m fdeflate v0.3.7
+[1m[92m  Downloaded[0m fd-lock v4.0.4
+[1m[92m  Downloaded[0m fastrand v2.3.0
+[1m[92m  Downloaded[0m eventsource-stream v0.2.3
+[1m[92m  Downloaded[0m curve25519-dalek v4.1.3
+[1m[92m  Downloaded[0m csv v1.4.0
+[1m[92m  Downloaded[0m chrono v0.4.43
+[1m[92m  Downloaded[0m bzip2-sys v0.1.13+1.0.8
+[1m[92m  Downloaded[0m getrandom v0.3.4
+[1m[92m  Downloaded[0m getrandom v0.2.17
+[1m[92m  Downloaded[0m generic-array v0.14.7
+[1m[92m  Downloaded[0m fxhash v0.2.1
+[1m[92m  Downloaded[0m futures-task v0.3.32
+[1m[92m  Downloaded[0m futures-sink v0.3.32
+[1m[92m  Downloaded[0m faster-hex v0.10.0
+[1m[92m  Downloaded[0m derive_more-impl v2.1.1
+[1m[92m  Downloaded[0m derive_more-impl v1.0.0
+[1m[92m  Downloaded[0m derive_more v2.1.1
+[1m[92m  Downloaded[0m der-parser v10.0.0
+[1m[92m  Downloaded[0m der v0.7.10
+[1m[92m  Downloaded[0m deadpool v0.12.3
+[1m[92m  Downloaded[0m dbus v0.9.10
+[1m[92m  Downloaded[0m darling_core v0.24.0
+[1m[92m  Downloaded[0m darling_core v0.21.3
+[1m[92m  Downloaded[0m darling v0.24.0
+[1m[92m  Downloaded[0m crypto-bigint v0.5.5
+[1m[92m  Downloaded[0m crossbeam-epoch v0.9.20
+[1m[92m  Downloaded[0m crossbeam-channel v0.5.15
+[1m[92m  Downloaded[0m const_format v0.2.35
+[1m[92m  Downloaded[0m const-oid v0.10.2
+[1m[92m  Downloaded[0m clatter v2.2.0
+[1m[92m  Downloaded[0m clap_builder v4.5.58
+[1m[92m  Downloaded[0m clap v4.5.58
+[1m[92m  Downloaded[0m chardetng v0.1.17
+[1m[92m  Downloaded[0m chacha20poly1305 v0.10.1
+[1m[92m  Downloaded[0m chacha20 v0.10.0
+[1m[92m  Downloaded[0m cc v1.2.55
+[1m[92m  Downloaded[0m bytes v1.11.1
+[1m[92m  Downloaded[0m bstr v1.12.1
+[1m[92m  Downloaded[0m blake3 v1.8.2
+[1m[92m  Downloaded[0m aws-lc-rs v1.18.1
+[1m[92m  Downloaded[0m aho-corasick v1.1.4
+[1m[92m  Downloaded[0m event-listener-strategy v0.5.4
+[1m[92m  Downloaded[0m event-listener v5.4.1
+[1m[92m  Downloaded[0m errno v0.3.14
+[1m[92m  Downloaded[0m erased-serde v0.4.10
+[1m[92m  Downloaded[0m erased-serde v0.3.31
+[1m[92m  Downloaded[0m equivalent v1.0.2
+[1m[92m  Downloaded[0m env_logger v0.11.9
+[1m[92m  Downloaded[0m env_home v0.1.0
+[1m[92m  Downloaded[0m env_filter v1.0.0
+[1m[92m  Downloaded[0m enumflags2_derive v0.7.12
+[1m[92m  Downloaded[0m enumflags2 v0.7.12
+[1m[92m  Downloaded[0m enum-as-inner v0.6.1
+[1m[92m  Downloaded[0m elliptic-curve v0.13.8
+[1m[92m  Downloaded[0m ed25519-dalek v2.2.0
+[1m[92m  Downloaded[0m digest v0.11.3
+[1m[92m  Downloaded[0m diff v0.1.13
+[1m[92m  Downloaded[0m derive_more v1.0.0
+[1m[92m  Downloaded[0m derivative v2.2.0
+[1m[92m  Downloaded[0m deranged v0.5.5
+[1m[92m  Downloaded[0m debugserver-types v0.5.0
+[1m[92m  Downloaded[0m data-encoding v2.10.0
+[1m[92m  Downloaded[0m darling v0.21.3
+[1m[92m  Downloaded[0m ctutils v0.4.4
+[1m[92m  Downloaded[0m ctr v0.9.2
+[1m[92m  Downloaded[0m ctor v1.0.6
+[1m[92m  Downloaded[0m csv-core v0.1.13
+[1m[92m  Downloaded[0m crypto_box v0.9.1
+[1m[92m  Downloaded[0m crypto-common v0.1.7
+[1m[92m  Downloaded[0m crossbeam-utils v0.8.21
+[1m[92m  Downloaded[0m crossbeam-deque v0.8.6
+[1m[92m  Downloaded[0m crc32fast v1.5.0
+[1m[92m  Downloaded[0m crc-catalog v2.4.0
+[1m[92m  Downloaded[0m cpufeatures v0.3.0
+[1m[92m  Downloaded[0m cookie_store v0.22.1
+[1m[92m  Downloaded[0m cookie v0.18.1
+[1m[92m  Downloaded[0m convert_case v0.10.0
+[1m[92m  Downloaded[0m constant_time_eq v0.4.2
+[1m[92m  Downloaded[0m const-oid v0.9.6
+[1m[92m  Downloaded[0m const-hex v1.17.0
+[1m[92m  Downloaded[0m concurrent-queue v2.5.0
+[1m[92m  Downloaded[0m cmov v0.5.3
+[1m[92m  Downloaded[0m cmake v0.1.57
+[1m[92m  Downloaded[0m clru v0.6.3
+[1m[92m  Downloaded[0m clap_derive v4.5.55
+[1m[92m  Downloaded[0m cipher v0.5.2
+[1m[92m  Downloaded[0m cipher v0.4.4
+[1m[92m  Downloaded[0m chacha20 v0.9.1
+[1m[92m  Downloaded[0m cfg_aliases v0.2.1
+[1m[92m  Downloaded[0m cbc v0.1.2
+[1m[92m  Downloaded[0m bzip2 v0.6.1
+[1m[92m  Downloaded[0m bytes-utils v0.1.4
+[1m[92m  Downloaded[0m byteorder v1.5.0
+[1m[92m  Downloaded[0m bumpalo v3.19.1
+[1m[92m  Downloaded[0m borsh v1.6.0
+[1m[92m  Downloaded[0m base64 v0.23.0
+[1m[92m  Downloaded[0m base64 v0.22.1
+[1m[92m  Downloaded[0m axum v0.8.8
+[1m[92m  Downloaded[0m aws-smithy-types v1.4.7
+[1m[92m  Downloaded[0m aws-smithy-runtime-api v1.12.0
+[1m[92m  Downloaded[0m aws-smithy-runtime v1.9.5
+[1m[92m  Downloaded[0m aws-smithy-http-client v1.1.12
+[1m[92m  Downloaded[0m aws-sigv4 v1.3.7
+[1m[92m  Downloaded[0m aws-sdk-sts v1.95.0
+[1m[92m  Downloaded[0m aws-sdk-ssooidc v1.93.0
+[1m[92m  Downloaded[0m aws-sdk-sso v1.91.0
+[1m[92m  Downloaded[0m aws-runtime v1.5.17
+[1m[92m  Downloaded[0m aws-config v1.8.12
+[1m[92m  Downloaded[0m asn1-rs v0.7.1
+[1m[92m  Downloaded[0m arc-swap v1.9.0
+[1m[92m  Downloaded[0m annotate-snippets v0.12.5
+[1m[92m  Downloaded[0m aes-gcm v0.10.3
+[1m[92m  Downloaded[0m aes v0.9.4
+[1m[92m  Downloaded[0m aes v0.8.4
+[1m[92m  Downloaded[0m actix-http v3.11.2
+[1m[92m  Downloaded[0m endian-type v0.1.2
+[1m[92m  Downloaded[0m endi v1.1.1
+[1m[92m  Downloaded[0m encoding_rs_io v0.1.8
+[1m[92m  Downloaded[0m embedded-io v0.4.0
+[1m[92m  Downloaded[0m dirs-sys-next v0.1.2
+[1m[92m  Downloaded[0m dirs-sys v0.5.0
+[1m[92m  Downloaded[0m dirs v6.0.0
+[1m[92m  Downloaded[0m digest v0.10.7
+[1m[92m  Downloaded[0m difflib v0.4.0
+[1m[92m  Downloaded[0m deflate64 v0.1.10
+[1m[92m  Downloaded[0m debugid v0.8.0
+[1m[92m  Downloaded[0m dbus-secret-service v4.1.0
+[1m[92m  Downloaded[0m dashmap v6.1.0
+[1m[92m  Downloaded[0m darling_macro v0.24.0
+[1m[92m  Downloaded[0m darling_macro v0.21.3
+[1m[92m  Downloaded[0m curve25519-dalek-derive v0.1.1
+[1m[92m  Downloaded[0m crypto_secretbox v0.1.1
+[1m[92m  Downloaded[0m crypto-common v0.2.2
+[1m[92m  Downloaded[0m crossbeam-queue v0.3.12
+[1m[92m  Downloaded[0m critical-section v1.2.0
+[1m[92m  Downloaded[0m crc v3.4.0
+[1m[92m  Downloaded[0m cpufeatures v0.2.17
+[1m[92m  Downloaded[0m cpubits v0.1.1
+[1m[92m  Downloaded[0m cookie-factory v0.3.3
+[1m[92m  Downloaded[0m convert_case v0.6.0
+[1m[92m  Downloaded[0m const_format_proc_macros v0.2.34
+[1m[92m  Downloaded[0m color_quant v1.1.0
+[1m[92m  Downloaded[0m cmp_any v0.8.1
+[1m[92m  Downloaded[0m bitflags v2.13.1
+[1m[92m  Downloaded[0m aws-types v1.3.11
+[1m[92m  Downloaded[0m aws-smithy-json v0.61.9
+[1m[92m  Downloaded[0m aws-sdk-signin v1.2.0
+[1m[92m  Downloaded[0m async-trait v0.1.89
+[1m[92m  Downloaded[0m async-task v4.7.1
+[1m[92m  Downloaded[0m async-lock v3.4.2
+[1m[92m  Downloaded[0m async-io v2.6.0
+[1m[92m  Downloaded[0m async-fs v2.2.0
+[1m[92m  Downloaded[0m async-channel v2.5.0
+[1m[92m  Downloaded[0m ascii v1.1.0
+[1m[92m  Downloaded[0m anyhow v1.0.103
+[1m[92m  Downloaded[0m anstream v0.6.21
+[1m[92m  Downloaded[0m annotate-snippets v0.9.2
+[1m[92m  Downloaded[0m allocator-api2 v0.2.21
+[1m[92m  Downloaded[0m allocative v0.3.6
+[1m[92m  Downloaded[0m ahash v0.8.12
+[1m[92m  Downloaded[0m addr2line v0.25.1
+[1m[92m  Downloaded[0m either v1.15.0
+[1m[92m  Downloaded[0m ed25519 v2.2.3
+[1m[92m  Downloaded[0m ecdsa v0.16.9
+[1m[92m  Downloaded[0m dupe_derive v0.9.1
+[1m[92m  Downloaded[0m dupe v0.9.1
+[1m[92m  Downloaded[0m dunce v1.0.5
+[1m[92m  Downloaded[0m downcast-rs v1.2.1
+[1m[92m  Downloaded[0m dotenvy v0.15.7
+[1m[92m  Downloaded[0m displaydoc v0.2.5
+[1m[92m  Downloaded[0m display_container v0.9.0
+[1m[92m  Downloaded[0m dirs-next v2.0.0
+[1m[92m  Downloaded[0m deadpool-runtime v0.1.4
+[1m[92m  Downloaded[0m constant_time_eq v0.3.1
+[1m[92m  Downloaded[0m cobs v0.3.0
+[1m[92m  Downloaded[0m clap_lex v1.0.0
+[1m[92m  Downloaded[0m chunked_transfer v1.5.0
+[1m[92m  Downloaded[0m cfg-if v1.0.4
+[1m[92m  Downloaded[0m bytestring v1.5.0
+[1m[92m  Downloaded[0m bytemuck_derive v1.10.2
+[1m[92m  Downloaded[0m block-padding v0.3.3
+[1m[92m  Downloaded[0m bitflags v1.3.2
+[1m[92m  Downloaded[0m bit-vec v0.8.0
+[1m[92m  Downloaded[0m bit-set v0.8.0
+[1m[92m  Downloaded[0m base64 v0.21.7
+[1m[92m  Downloaded[0m backtrace v0.3.76
+[1m[92m  Downloaded[0m aws-smithy-xml v0.60.13
+[1m[92m  Downloaded[0m aws-smithy-http v0.62.6
+[1m[92m  Downloaded[0m aws-smithy-async v1.2.14
+[1m[92m  Downloaded[0m aws-credential-types v1.2.11
+[1m[92m  Downloaded[0m autocfg v1.5.0
+[1m[92m  Downloaded[0m atomic v0.5.3
+[1m[92m  Downloaded[0m atoi v2.0.0
+[1m[92m  Downloaded[0m async-executor v1.13.3
+[1m[92m  Downloaded[0m assert_cmd v2.1.2
+[1m[92m  Downloaded[0m assert-json-diff v2.0.2
+[1m[92m  Downloaded[0m asn1-rs-impl v0.2.0
+[1m[92m  Downloaded[0m arrayvec v0.7.6
+[1m[92m  Downloaded[0m arrayref v0.3.9
+[1m[92m  Downloaded[0m anstyle-parse v0.2.7
+[1m[92m  Downloaded[0m allocative_derive v0.3.6
+[1m[92m  Downloaded[0m age-core v0.11.0
+[1m[92m  Downloaded[0m aead v0.5.2
+[1m[92m  Downloaded[0m adler2 v2.0.1
+[1m[92m  Downloaded[0m actix-web v4.12.1
+[1m[92m  Downloaded[0m document-features v0.2.12
+[1m[92m  Downloaded[0m dns-lookup v3.0.1
+[1m[92m  Downloaded[0m byteorder-lite v0.1.0
+[1m[92m  Downloaded[0m blocking v1.6.2
+[1m[92m  Downloaded[0m block-buffer v0.10.4
+[1m[92m  Downloaded[0m blake2 v0.10.6
+[1m[92m  Downloaded[0m beef v0.5.2
+[1m[92m  Downloaded[0m axum-core v0.5.6
+[1m[92m  Downloaded[0m async-broadcast v0.7.2
+[1m[92m  Downloaded[0m asn1-rs-derive v0.6.0
+[1m[92m  Downloaded[0m arraydeque v0.5.1
+[1m[92m  Downloaded[0m cfg_aliases v0.1.1
+[1m[92m  Downloaded[0m block-buffer v0.12.0
+[1m[92m  Downloaded[0m bech32 v0.9.1
+[1m[92m  Downloaded[0m base16ct v0.2.0
+[1m[92m  Downloaded[0m aws-smithy-query v0.60.9
+[1m[92m  Downloaded[0m aws-smithy-observability v0.1.5
+[1m[92m  Downloaded[0m anstyle-query v1.1.5
+[1m[92m  Downloaded[0m base64ct v1.8.3
+[1m[92m  Downloaded[0m actix-service v2.0.3
+[1m[92m  Downloaded[0m actix-server v2.6.0
+[1m[92m  Downloaded[0m actix-rt v2.11.0
+[1m[92m  Downloaded[0m actix-router v0.5.3
+[1m[92m  Downloaded[0m Inflector v0.11.4
+[1m[92m  Downloaded[0m aws-smithy-runtime-api-macros v1.0.0
+[1m[92m  Downloaded[0m atomic-waker v1.1.2
+[1m[92m  Downloaded[0m asynk-strim v0.1.5
+[1m[92m  Downloaded[0m anstyle v1.0.13
+[1m[92m  Downloaded[0m actix-utils v3.0.1
+[1m[92m   Compiling[0m proc-macro2 v1.0.106
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m quote v1.0.45
+[1m[92m   Compiling[0m unicode-ident v1.0.22
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m syn v2.0.117
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m libc v0.2.186
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m serde v1.0.228
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m serde_derive v1.0.228
+[1m[92m   Compiling[0m serde_core v1.0.228
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m memchr v2.8.1
+[1m[92m   Compiling[0m zeroize_derive v1.4.3
+[1m[92m   Compiling[0m zeroize v1.8.2
+[1m[92m   Compiling[0m smallvec v1.15.1
+[1m[92m   Compiling[0m version_check v0.9.5
+[1m[92m   Compiling[0m itoa v1.0.17
+[1m[92m   Compiling[0m getrandom v0.2.17
+[1m[92m   Compiling[0m scopeguard v1.2.0
+[1m[92m   Compiling[0m typenum v1.20.0
+[1m[92m   Compiling[0m pin-project-lite v0.2.16
+[1m[92m   Compiling[0m parking_lot_core v0.9.12
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m portable-atomic v1.13.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.13.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m lock_api v0.4.14
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m critical-section v1.2.0
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m subtle v2.6.1
+[1m[92m   Compiling[0m generic-array v0.14.7
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m parking_lot v0.12.5
+[1m[92m   Compiling[0m rand_core v0.6.4
+[1m[92m   Compiling[0m futures-core v0.3.32
+[1m[92m   Compiling[0m crypto-common v0.1.7
+[1m[92m   Compiling[0m log v0.4.29
+[1m[92m   Compiling[0m bytes v1.11.1
+[1m[92m   Compiling[0m jobserver v0.1.34
+[1m[92m   Compiling[0m thiserror-impl v2.0.18
+[1m[92m   Compiling[0m shlex v1.3.0
+[1m[92m   Compiling[0m find-msvc-tools v0.1.9
+[1m[92m   Compiling[0m cc v1.2.55
+[1m[92m   Compiling[0m thiserror v2.0.18
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m synstructure v0.13.2
+[1m[92m   Compiling[0m const-oid v0.9.6
+[1m[92m   Compiling[0m regex-syntax v0.8.8
+[1m[92m   Compiling[0m cpufeatures v0.2.17
+[1m[92m   Compiling[0m block-buffer v0.10.4
+[1m[92m   Compiling[0m digest v0.10.7
+[1m[92m   Compiling[0m zerofrom-derive v0.1.6
+[1m[92m   Compiling[0m displaydoc v0.2.5
+[1m[92m   Compiling[0m stable_deref_trait v1.2.1
+[1m[92m   Compiling[0m futures-io v0.3.32
+[1m[92m   Compiling[0m yoke-derive v0.8.2
+[1m[92m   Compiling[0m aho-corasick v1.1.4
+[1m[92m   Compiling[0m zerovec-derive v0.11.3
+[1m[92m   Compiling[0m regex-automata v0.4.13
+[1m[92m   Compiling[0m futures-task v0.3.32
+[1m[92m   Compiling[0m futures-sink v0.3.32
+[1m[92m   Compiling[0m autocfg v1.5.0
+[1m[92m   Compiling[0m errno v0.3.14
+[1m[92m   Compiling[0m socket2 v0.6.3
+[1m[92m   Compiling[0m tracing-attributes v0.1.31
+[1m[92m   Compiling[0m allocator-api2 v0.2.21
+[1m[92m   Compiling[0m foldhash v0.2.0
+[1m[92m   Compiling[0m slab v0.4.12
+[1m[92m   Compiling[0m signal-hook-registry v1.4.8
+[1m[92m   Compiling[0m mio v1.2.0
+[1m[92m   Compiling[0m tokio-macros v2.7.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tokio v1.52.3
+[1m[92m   Compiling[0m futures-channel v0.3.32
+[1m[92m   Compiling[0m futures-macro v0.3.32
+[1m[92m   Compiling[0m zmij v1.0.19
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m futures-util v0.3.32
+[1m[92m   Compiling[0m tracing-core v0.1.36
+[1m[92m   Compiling[0m tracing v0.1.44
+[1m[92m   Compiling[0m pkg-config v0.3.32
+[1m[92m   Compiling[0m bitflags v2.13.1
+[1m[92m   Compiling[0m percent-encoding v2.3.2
+[1m[92m   Compiling[0m fnv v1.0.7
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m http v1.4.0
+[1m[92m   Compiling[0m serde_json v1.0.149
+[1m[92m   Compiling[0m fastrand v2.3.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m getrandom v0.3.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m zerofrom v0.1.6
+[1m[92m   Compiling[0m time-core v0.1.8
+[1m[92m   Compiling[0m powerfmt v0.2.0
+[1m[92m   Compiling[0m num-conv v0.2.0
+[1m[92m   Compiling[0m time-macros v0.2.27
+[1m[92m   Compiling[0m deranged v0.5.5
+[1m[92m   Compiling[0m yoke v0.8.2
+[1m[92m   Compiling[0m http-body v1.0.1
+[1m[92m   Compiling[0m zerovec v0.11.6
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m tinystr v0.8.3
+[1m[92m   Compiling[0m utf8_iter v1.0.4
+[1m[92m   Compiling[0m num_threads v0.1.7
+[1m[92m   Compiling[0m time v0.3.47
+[1m[92m   Compiling[0m indexmap v2.14.0
+[1m[92m   Compiling[0m http-body-util v0.1.3
+[1m[92m   Compiling[0m dunce v1.0.5
+[1m[92m   Compiling[0m form_urlencoded v1.2.2
+[1m[92m   Compiling[0m zerocopy v0.8.37
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tokio-util v0.7.18
+[1m[92m   Compiling[0m icu_normalizer_data v2.2.0
+[1m[92m   Compiling[0m icu_properties_data v2.2.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.2.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.2.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m base64 v0.22.1
+[1m[92m   Compiling[0m untrusted v0.9.0
+[1m[92m   Compiling[0m writeable v0.6.2
+[1m[92m   Compiling[0m either v1.15.0
+[1m[92m   Compiling[0m ppv-lite86 v0.2.21
+[1m[92m   Compiling[0m cmake v0.1.57
+[1m[92m   Compiling[0m ipnet v2.11.0
+[1m[92m   Compiling[0m fs_extra v1.3.0
+[1m[92m   Compiling[0m litemap v0.8.1
+[1m[92m   Compiling[0m crossbeam-utils v0.8.21
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m icu_locale_core v2.2.0
+[1m[92m   Compiling[0m aws-lc-sys v0.45.0
+[1m[92m   Compiling[0m potential_utf v0.1.4
+[1m[92m   Compiling[0m zerotrie v0.2.4
+[1m[92m   Compiling[0m sha2 v0.10.9
+[1m[92m   Compiling[0m icu_provider v2.2.0
+[1m[92m   Compiling[0m icu_collections v2.2.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m ring v0.17.14
+[1m[92m   Compiling[0m atomic-waker v1.1.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m bstr v1.12.1
+[1m[92m   Compiling[0m sync_wrapper v1.0.2
+[1m[92m   Compiling[0m aws-lc-rs v1.18.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m httpdate v1.0.3
+[1m[92m   Compiling[0m pin-utils v0.1.0
+[1m[92m   Compiling[0m num-integer v0.1.46
+[1m[92m   Compiling[0m rustls-pki-types v1.14.0
+[1m[92m   Compiling[0m semver v1.0.27
+[1m[92m   Compiling[0m untrusted v0.7.1
+[1m[92m   Compiling[0m rustc_version v0.4.1
+[1m[92m   Compiling[0m icu_normalizer v2.2.0
+[1m[92m   Compiling[0m icu_properties v2.2.0
+[1m[92m   Compiling[0m httparse v1.10.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m idna_adapter v1.2.1
+[1m[92m   Compiling[0m uuid v1.20.0
+[1m[92m   Compiling[0m winnow v1.0.4
+[1m[92m   Compiling[0m ryu v1.0.22
+[1m[92m   Compiling[0m toml_parser v1.1.3+spec-1.1.0
+[1m[92m   Compiling[0m idna v1.1.0
+[1m[92m   Compiling[0m tinyvec_macros v0.1.1
+[1m[92m   Compiling[0m crc32fast v1.5.0
+[1m[92m   Compiling[0m rustls v0.23.46
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tinyvec v1.10.0
+[1m[92m   Compiling[0m rustls-webpki v0.103.16
+[1m[92m   Compiling[0m sha1 v0.10.6
+[1m[92m   Compiling[0m try-lock v0.2.5
+[1m[92m   Compiling[0m hex v0.4.3
+[1m[92m   Compiling[0m want v0.3.1
+[1m[92m   Compiling[0m url v2.5.8
+[1m[92m   Compiling[0m toml_datetime v0.7.5+spec-1.1.0
+[1m[92m   Compiling[0m byteorder v1.5.0
+[1m[92m   Compiling[0m winnow v0.7.14
+[1m[92m   Compiling[0m h2 v0.4.16
+[1m[92m   Compiling[0m rand_core v0.9.5
+[1m[92m   Compiling[0m tower-service v0.3.3
+[1m[92m   Compiling[0m rand_chacha v0.9.0
+[1m[92m   Compiling[0m rand v0.9.3
+[1m[92m   Compiling[0m futures-executor v0.3.32
+[1m[92m   Compiling[0m mime v0.3.17
+[1m[92m   Compiling[0m hyper v1.8.1
+[1m[92m   Compiling[0m hashbrown v0.16.1
+[1m[92m   Compiling[0m regex v1.12.3
+[1m[92m   Compiling[0m hyper-util v0.1.20
+[1m[92m   Compiling[0m openssl-probe v0.2.1
+[1m[92m   Compiling[0m rustls-native-certs v0.8.3
+[1m[92m   Compiling[0m tokio-rustls v0.26.4
+[1m[92m   Compiling[0m tower-layer v0.3.3
+[1m[92m   Compiling[0m vcpkg v0.2.15
+[1m[92m   Compiling[0m lazy_static v1.5.0
+[1m[92m   Compiling[0m rustix v1.1.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tower v0.5.3
+[1m[92m   Compiling[0m toml_edit v0.23.10+spec-1.0.0
+[1m[92m   Compiling[0m webpki-roots v1.0.10
+[1m[92m   Compiling[0m linux-raw-sys v0.12.1
+[1m[92m   Compiling[0m psl-types v2.0.11
+[1m[92m   Compiling[0m proc-macro-crate v3.4.0
+[1m[92m   Compiling[0m futures v0.3.31
+[1m[92m   Compiling[0m getrandom v0.4.2
+[1m[92m   Compiling[0m rand_core v0.10.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m spin v0.9.8
+[1m[92m   Compiling[0m async-trait v0.1.89
+[1m[92m   Compiling[0m anyhow v1.0.103
+[1m[92m   Compiling[0m unicode-xid v0.2.6
+[1m[92m   Compiling[0m heck v0.5.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.103` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m crossbeam-epoch v0.9.20
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.20` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m hyper-rustls v0.27.7
+[1m[92m   Compiling[0m openssl-sys v0.9.111
+[1m[92m   Compiling[0m num-bigint v0.4.6
+[1m[92m   Compiling[0m itertools v0.14.0
+[1m[92m   Compiling[0m same-file v1.0.6
+[1m[92m   Compiling[0m walkdir v2.5.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.111` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m nibble_vec v0.1.0
+[1m[92m   Compiling[0m strsim v0.11.1
+[1m[92m   Compiling[0m unicase v2.9.0
+[1m[92m   Compiling[0m iana-time-zone v0.1.65
+[1m[92m   Compiling[0m mime_guess v2.0.5
+[1m[92m   Compiling[0m const_format_proc_macros v0.2.34
+[1m[92m   Compiling[0m ahash v0.8.12
+[1m[92m   Compiling[0m iri-string v0.7.10
+[1m[92m   Compiling[0m simd-adler32 v0.3.8
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m const_format v0.2.35
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m rama-macros v0.3.0-alpha.4
+[1m[92m   Compiling[0m wildcard v0.3.0
+[1m[92m   Compiling[0m smol_str v0.3.5
+[1m[92m   Compiling[0m openssl v0.10.75
+[1m[92m   Compiling[0m foreign-types-shared v0.1.1
+[1m[92m   Compiling[0m cpufeatures v0.3.0
+[1m[92m   Compiling[0m foreign-types v0.3.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.75` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m rama-utils v0.3.0-alpha.4
+[1m[92m   Compiling[0m flume v0.12.0
+[1m[92m   Compiling[0m tokio-graceful v0.2.2
+[1m[92m   Compiling[0m asynk-strim v0.1.5
+[1m[92m   Compiling[0m encoding_rs v0.8.35
+[1m[92m   Compiling[0m openssl-macros v0.1.1
+[1m[92m   Compiling[0m serde_derive_internals v0.29.1
+[1m[92m   Compiling[0m data-encoding v2.10.0
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m native-tls v0.2.14
+[1m[92m   Compiling[0m rama-error v0.3.0-alpha.4
+[1m[92m   Compiling[0m crc-catalog v2.4.0
+[1m[92m   Compiling[0m crc v3.4.0
+[1m[92m   Compiling[0m rama-core v0.3.0-alpha.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.14` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m miniz_oxide v0.8.9
+[1m[92m   Compiling[0m tokio-stream v0.1.18
+[1m[92m   Compiling[0m cookie v0.18.1
+[1m[92m   Compiling[0m nom v8.0.0
+[1m[92m   Compiling[0m endian-type v0.2.0
+[1m[92m   Compiling[0m openssl-probe v0.1.6
+[1m[92m   Compiling[0m minimal-lexical v0.2.1
+[1m[92m   Compiling[0m nom v7.1.3
+[1m[92m   Compiling[0m radix_trie v0.3.0
+[1m[92m   Compiling[0m rama-http-types v0.3.0-alpha.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m psl v2.1.184
+[1m[92m   Compiling[0m rayon-core v1.13.0
+[1m[92m   Compiling[0m md5 v0.8.0
+[1m[92m   Compiling[0m syn v1.0.109
+[1m[92m   Compiling[0m dyn-clone v1.0.20
+[1m[92m   Compiling[0m anstyle v1.0.13
+[1m[92m   Compiling[0m litrs v1.0.0
+[1m[92m   Compiling[0m document-features v0.2.12
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m rama-net v0.3.0-alpha.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tokio-native-tls v0.3.1
+[1m[92m   Compiling[0m tower-http v0.6.8
+[1m[92m   Compiling[0m chrono v0.4.43
+[1m[92m   Compiling[0m crossbeam-deque v0.8.6
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m publicsuffix v2.3.0
+[1m[92m   Compiling[0m parking v2.2.1
+[1m[92m   Compiling[0m static_assertions v1.1.0
+[1m[92m   Compiling[0m gix-trace v0.1.18
+[1m[92m   Compiling[0m schemars v0.8.22
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m cookie_store v0.22.1
+[1m[92m   Compiling[0m hyper-tls v0.6.0
+[1m[92m   Compiling[0m schemars_derive v0.8.22
+[1m[92m   Compiling[0m serde_urlencoded v0.7.1
+[1m[92m   Compiling[0m gix-validate v0.11.0
+[1m[92m   Compiling[0m zstd-sys v2.1.2+zstd.1.5.7
+[1m[92m   Compiling[0m opentelemetry v0.31.0
+[1m[92m   Compiling[0m serde_repr v0.1.20
+[1m[92m   Compiling[0m option-ext v0.2.0
+[1m[92m   Compiling[0m ref-cast v1.0.25
+[1m[92m   Compiling[0m unicode-segmentation v1.12.0
+[1m[92m   Compiling[0m ident_case v1.0.1
+[1m[92m   Compiling[0m termcolor v1.4.1
+[1m[92m   Compiling[0m ts-rs-macros v11.1.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.25` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m dirs-sys v0.5.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m gix-path v0.11.2
+[1m[92m   Compiling[0m reqwest v0.12.28
+[1m[92m   Compiling[0m chacha20 v0.10.0
+[1m[92m   Compiling[0m sharded-slab v0.1.7
+[1m[92m   Compiling[0m unicode-normalization v0.1.25
+[1m[92m   Compiling[0m crossbeam-channel v0.5.15
+[1m[92m   Compiling[0m tracing-log v0.2.0
+[1m[92m   Compiling[0m memoffset v0.9.1
+[1m[92m   Compiling[0m matchers v0.2.0
+[1m[92m   Compiling[0m thread_local v1.1.9
+[1m[92m   Compiling[0m ref-cast-impl v1.0.25
+[1m[92m   Compiling[0m utf8parse v0.2.2
+[1m[92m   Compiling[0m zlib-rs v0.5.5
+[1m[92m   Compiling[0m nu-ansi-term v0.50.3
+[1m[92m   Compiling[0m tracing-subscriber v0.3.22
+[1m[92m   Compiling[0m flate2 v1.1.8
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m gix-utils v0.3.1
+[1m[92m   Compiling[0m rand v0.10.1
+[1m[92m   Compiling[0m dirs v6.0.0
+[1m[92m   Compiling[0m ts-rs v11.1.0
+[1m[92m   Compiling[0m env_filter v1.0.0
+[1m[92m   Compiling[0m heapless v0.7.17
+[1m[92m   Compiling[0m bytemuck_derive v1.10.2
+[1m[92m   Compiling[0m enumflags2_derive v0.7.12
+[1m[92m   Compiling[0m cfg_aliases v0.1.1
+[1m[92m   Compiling[0m zstd-safe v7.4.0
+[1m[92m   Compiling[0m bumpalo v3.19.1
+[1m[92m   Compiling[0m typeid v1.0.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@7.4.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m nix v0.28.0
+[1m[92m   Compiling[0m enumflags2 v0.7.12
+[1m[92m   Compiling[0m bytemuck v1.25.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m env_logger v0.11.9
+[1m[92m   Compiling[0m codex-utils-absolute-path v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/absolute-path)
+[1m[92m   Compiling[0m rusticata-macros v4.1.0
+[1m[92m   Compiling[0m enum-as-inner v0.6.1
+[1m[92m   Compiling[0m hash32 v0.2.1
+[1m[92m   Compiling[0m logos-codegen v0.15.1
+[1m[92m   Compiling[0m asn1-rs-derive v0.6.0
+[1m[92m   Compiling[0m blake3 v1.8.2
+[1m[92m   Compiling[0m arrayvec v0.7.6
+[1m[92m   Compiling[0m dupe_derive v0.9.1
+[1m[92m   Compiling[0m asn1-rs-impl v0.2.0
+[1m[92m   Compiling[0m regex-lite v0.1.8
+[1m[92m   Compiling[0m erased-serde v0.4.10
+[1m[92m   Compiling[0m atomic v0.5.3
+[1m[92m   Compiling[0m link-section v0.17.2
+[1m[92m   Compiling[0m allocative v0.3.6
+[1m[92m   Compiling[0m linktime-proc-macro v0.1.0
+[1m[92m   Compiling[0m tagptr v0.2.0
+[1m[92m   Compiling[0m bit-vec v0.8.0
+[1m[92m   Compiling[0m bit-set v0.8.0
+[1m[92m   Compiling[0m moka v0.12.13
+[1m[92m   Compiling[0m ctor v1.0.6
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m lock_free_hashtable v0.1.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m asn1-rs v0.7.1
+[1m[92m   Compiling[0m dupe v0.9.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m hickory-proto v0.25.2
+[1m[92m   Compiling[0m quickcheck v1.1.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m anstyle-parse v0.2.7
+[1m[92m   Compiling[0m cobs v0.3.0
+[1m[92m   Compiling[0m prodash v31.0.0
+[1m[92m   Compiling[0m strong_hash_derive v0.1.0
+[1m[92m   Compiling[0m allocative_derive v0.3.6
+[1m[92m   Compiling[0m resolv-conf v0.7.6
+[1m[92m   Compiling[0m hashbrown v0.14.5
+[1m[92m   Compiling[0m unicode-width v0.1.14
+[1m[92m   Compiling[0m arrayref v0.3.9
+[1m[92m   Compiling[0m rama-http-headers v0.3.0-alpha.4
+[1m[92m   Compiling[0m anstyle-query v1.1.5
+[1m[92m   Compiling[0m constant_time_eq v0.3.1
+[1m[92m   Compiling[0m oid-registry v0.8.1
+[1m[92m   Compiling[0m zlib-rs v0.6.3
+[1m[92m   Compiling[0m is_terminal_polyfill v1.70.2
+[1m[92m   Compiling[0m beef v0.5.2
+[1m[92m   Compiling[0m colorchoice v1.0.4
+[1m[92m   Compiling[0m anstream v0.6.21
+[1m[92m   Compiling[0m gix-features v0.46.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m dashmap v6.1.0
+[1m[92m   Compiling[0m hickory-resolver v0.25.2
+[1m[92m   Compiling[0m strong_hash v0.1.0
+[1m[92m   Compiling[0m postcard v1.1.3
+[1m[92m   Compiling[0m sorted_vector_map v0.2.1
+[1m[92m   Compiling[0m zstd v0.13.4
+[1m[92m   Compiling[0m static_interner v0.1.2
+[1m[92m   Compiling[0m fancy-regex v0.16.2
+[1m[92m   Compiling[0m convert_case v0.6.0
+[1m[92m   Compiling[0m Inflector v0.11.4
+[1m[92m   Compiling[0m schemafy_core v0.5.2
+[1m[92m   Compiling[0m codex-utils-rustls-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/rustls-provider)
+[1m[92m   Compiling[0m concurrent-queue v2.5.0
+[1m[92m   Compiling[0m triomphe v0.1.15
+[1m[92m   Compiling[0m csv-core v0.1.13
+[1m[92m   Compiling[0m pagable_derive v0.4.1
+[1m[92m   Compiling[0m inventory v0.3.24
+[1m[92m   Compiling[0m starlark_map v0.14.2
+[1m[92m   Compiling[0m take_mut v0.2.2
+[1m[92m   Compiling[0m heapless v0.8.0
+[1m[92m   Compiling[0m sequence_trie v0.3.6
+[1m[92m   Compiling[0m bitflags v1.3.2
+[1m[92m   Compiling[0m clap_lex v1.0.0
+[1m[92m   Compiling[0m urlencoding v2.1.3
+[1m[92m   Compiling[0m clap_builder v4.5.58
+[1m[92m   Compiling[0m fluent-uri v0.1.4
+[1m[92m   Compiling[0m pagable v0.4.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m csv v1.4.0
+[1m[92m   Compiling[0m schemafy_lib v0.5.2
+[1m[92m   Compiling[0m derive_more-impl v1.0.0
+[1m[92m   Compiling[0m rama-dns v0.3.0-alpha.4
+[1m[92m   Compiling[0m logos-derive v0.15.1
+[1m[92m   Compiling[0m der-parser v10.0.0
+[1m[92m   Compiling[0m tracing-opentelemetry v0.32.1
+[1m[92m   Compiling[0m darling_core v0.21.3
+[1m[92m   Compiling[0m clap_derive v4.5.55
+[1m[92m   Compiling[0m hash32 v0.3.1
+[1m[92m   Compiling[0m fxhash v0.2.1
+[1m[92m   Compiling[0m serde_html_form v0.3.2
+[1m[92m   Compiling[0m pem v3.0.6
+[1m[92m   Compiling[0m matchit v0.9.1
+[1m[92m   Compiling[0m http-range-header v0.4.2
+[1m[92m   Compiling[0m endian-type v0.1.2
+[1m[92m   Compiling[0m paste v1.0.15
+[1m[92m   Compiling[0m icu_locale_data v2.2.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_data@2.2.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m radix_trie v0.2.1
+[1m[92m   Compiling[0m rama-http v0.3.0-alpha.4
+[1m[92m   Compiling[0m clap v4.5.58
+[1m[92m   Compiling[0m darling_macro v0.21.3
+[1m[92m   Compiling[0m codex-http-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/http-client)
+[1m[92m   Compiling[0m x509-parser v0.18.1
+[1m[92m   Compiling[0m logos v0.15.1
+[1m[92m   Compiling[0m rama-tcp v0.3.0-alpha.4
+[1m[92m   Compiling[0m derive_more v1.0.0
+[1m[92m   Compiling[0m schemafy v0.5.2
+[1m[92m   Compiling[0m lsp-types v0.97.0
+[1m[92m   Compiling[0m annotate-snippets v0.9.2
+[1m[92m   Compiling[0m derivative v2.2.0
+[1m[92m   Compiling[0m tokio-test v0.4.5
+[1m[92m   Compiling[0m fdeflate v0.3.7
+[1m[92m   Compiling[0m fd-lock v4.0.4
+[1m[92m   Compiling[0m globset v0.4.18
+[1m[92m   Compiling[0m gix-error v0.2.1
+[1m[92m   Compiling[0m yasna v0.5.2
+[1m[92m   Compiling[0m pxfm v0.1.27
+[1m[92m   Compiling[0m home v0.5.12
+[1m[92m   Compiling[0m indenter v0.3.4
+[1m[92m   Compiling[0m thiserror v1.0.69
+[1m[92m   Compiling[0m color_quant v1.1.0
+[1m[92m   Compiling[0m weezl v0.1.12
+[1m[92m   Compiling[0m zune-core v0.5.1
+[1m[92m   Compiling[0m icu_decimal_data v2.2.0
+[1m[92m   Compiling[0m byteorder-lite v0.1.0
+[1m[92m   Compiling[0m starlark v0.14.2
+[1m[92m   Compiling[0m quick-error v2.0.1
+[1m[92m   Compiling[0m image-webp v0.2.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark@0.14.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.2.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m zune-jpeg v0.5.12
+[1m[92m   Compiling[0m gif v0.14.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m display_container v0.9.0
+[1m[92m   Compiling[0m rustyline v14.0.0
+[1m[92m   Compiling[0m moxcms v0.7.11
+[1m[92m   Compiling[0m rcgen v0.14.7
+[1m[92m   Compiling[0m png v0.18.0
+[1m[92m   Compiling[0m rama-http-core v0.3.0-alpha.4
+[1m[92m   Compiling[0m starlark_syntax v0.14.2
+[1m[92m   Compiling[0m debugserver-types v0.5.0
+[1m[92m   Compiling[0m darling v0.21.3
+[1m[92m   Compiling[0m faster-hex v0.10.0
+[1m[92m   Compiling[0m event-listener v5.4.1
+[1m[92m   Compiling[0m textwrap v0.11.0
+[1m[92m   Compiling[0m starlark_derive v0.14.2
+[1m[92m   Compiling[0m codex-utils-home-dir v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/home-dir)
+[1m[92m   Compiling[0m rama-unix v0.3.0-alpha.4
+[1m[92m   Compiling[0m rama-udp v0.3.0-alpha.4
+[1m[92m   Compiling[0m lru v0.18.2
+[1m[92m   Compiling[0m erased-serde v0.3.31
+[1m[92m   Compiling[0m thiserror-impl v1.0.69
+[1m[92m   Compiling[0m maplit v1.0.2
+[1m[92m   Compiling[0m strsim v0.10.0
+[1m[92m   Compiling[0m cmp_any v0.8.1
+[1m[92m   Compiling[0m codex-utils-cache v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cache)
+[1m[92m   Compiling[0m rama-socks5 v0.3.0-alpha.4
+[1m[92m   Compiling[0m rama-http-backend v0.3.0-alpha.4
+[1m[92m   Compiling[0m icu_locale v2.2.0
+[1m[92m   Compiling[0m serde_with_macros v3.17.0
+[1m[92m   Compiling[0m image v0.25.9
+[1m[92m   Compiling[0m rama-tls-rustls v0.3.0-alpha.4
+[1m[92m   Compiling[0m strum_macros v0.27.2
+[1m[92m   Compiling[0m fixed_decimal v0.7.2
+[1m[92m   Compiling[0m multimap v0.10.1
+[1m[92m   Compiling[0m codex-execpolicy v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/execpolicy)
+[1m[92m   Compiling[0m icu_decimal v2.2.0
+[1m[92m   Compiling[0m strum v0.27.2
+[1m[92m   Compiling[0m codex-network-proxy v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/network-proxy)
+[1m[92m   Compiling[0m codex-utils-image v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/image)
+[1m[92m   Compiling[0m serde_with v3.17.0
+[1m[92m   Compiling[0m codex-utils-path-uri v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/path-uri)
+[1m[92m   Compiling[0m codex-utils-string v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/string)
+[1m[92m   Compiling[0m codex-extension-items v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/items)
+[1m[92m   Compiling[0m landlock v0.4.4
+[1m[92m   Compiling[0m codex-utils-redacted-string v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/redacted-string)
+[1m[92m   Compiling[0m chardetng v0.1.17
+[1m[92m   Compiling[0m strum_macros v0.28.0
+[1m[92m   Compiling[0m sha1-checked v0.10.0
+[1m[92m   Compiling[0m codex-async-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/async-utils)
+[1m[92m   Compiling[0m quick-xml v0.41.0
+[1m[92m   Compiling[0m seccompiler v0.5.0
+[1m[92m   Compiling[0m sys-locale v0.3.2
+[1m[92m   Compiling[0m wildmatch v2.6.1
+[1m[92m   Compiling[0m codex-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/protocol)
+[1m[92m   Compiling[0m gix-hash v0.23.0
+[1m[92m   Compiling[0m block-padding v0.3.3
+[1m[92m   Compiling[0m jiff v0.2.23
+[1m[92m   Compiling[0m cfg_aliases v0.2.1
+[1m[92m   Compiling[0m gix-date v0.15.1
+[1m[92m   Compiling[0m inout v0.1.4
+[1m[92m   Compiling[0m event-listener-strategy v0.5.4
+[1m[92m   Compiling[0m prost-derive v0.14.3
+[1m[92m   Compiling[0m cipher v0.4.4
+[1m[92m   Compiling[0m gix-actor v0.40.0
+[1m[92m   Compiling[0m gix-hashtable v0.13.0
+[1m[92m   Compiling[0m gix-object v0.58.0
+[1m[92m   Compiling[0m memmap2 v0.9.10
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m async-channel v2.5.0
+[1m[92m   Compiling[0m headers-core v0.3.0
+[1m[92m   Compiling[0m hmac v0.12.1
+[1m[92m   Compiling[0m pin-project-internal v1.1.10
+[1m[92m   Compiling[0m pin-project v1.1.10
+[1m[92m   Compiling[0m headers v0.4.1
+[1m[92m   Compiling[0m gix-fs v0.19.2
+[1m[92m   Compiling[0m rand_chacha v0.3.1
+[1m[92m   Compiling[0m rustversion v1.0.22
+[1m[92m   Compiling[0m utf-8 v0.7.6
+[1m[92m   Compiling[0m tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.22` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m rand v0.8.6
+[1m[92m   Compiling[0m gix-chunk v0.7.0
+[1m[92m   Compiling[0m shell-words v1.1.1
+[1m[92m   Compiling[0m nonempty v0.12.0
+[1m[92m   Compiling[0m tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+[1m[92m   Compiling[0m gix-tempfile v21.0.2
+[1m[92m   Compiling[0m hyper-timeout v0.5.2
+[1m[92m   Compiling[0m universal-hash v0.5.1
+[1m[92m   Compiling[0m opaque-debug v0.3.1
+[1m[92m   Compiling[0m tonic v0.14.3
+[1m[92m   Compiling[0m gix-lock v21.0.2
+[1m[92m   Compiling[0m arc-swap v1.9.0
+[1m[92m   Compiling[0m prost v0.14.3
+[1m[92m   Compiling[0m nix v0.30.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.30.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tonic-prost v0.14.3
+[1m[92m   Compiling[0m codex-websocket-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/websocket-client)
+[1m[92m   Compiling[0m gix-commitgraph v0.35.0
+[1m[92m   Compiling[0m gix-quote v0.7.0
+[1m[92m   Compiling[0m eventsource-stream v0.2.3
+[1m[92m   Compiling[0m curve25519-dalek v4.1.3
+[1m[92m   Compiling[0m gix-sec v0.13.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m codex-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-client)
+[1m[92m   Compiling[0m gix-revwalk v0.29.0
+[1m[92m   Compiling[0m gix-ref v0.61.0
+[1m[92m   Compiling[0m filedescriptor v0.8.3
+[1m[92m   Compiling[0m aead v0.5.2
+[1m[92m   Compiling[0m serial2 v0.2.33
+[1m[92m   Compiling[0m curve25519-dalek-derive v0.1.1
+[1m[92m   Compiling[0m downcast-rs v1.2.1
+[1m[92m   Compiling[0m portable-pty v0.9.0
+[1m[92m   Compiling[0m codex-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-api)
+[1m[92m   Compiling[0m gix-command v0.8.0
+[1m[92m   Compiling[0m unic-langid-impl v0.9.6
+[1m[92m   Compiling[0m gix-packetline v0.21.2
+[1m[92m   Compiling[0m gix-glob v0.24.0
+[1m[92m   Compiling[0m gix-url v0.35.2
+[1m[92m   Compiling[0m opentelemetry_sdk v0.31.0
+[1m[92m   Compiling[0m clru v0.6.3
+[1m[92m   Compiling[0m const-hex v1.17.0
+[1m[92m   Compiling[0m base64ct v1.8.3
+[1m[92m   Compiling[0m pem-rfc7468 v0.7.0
+[1m[92m   Compiling[0m opentelemetry-proto v0.31.0
+[1m[92m   Compiling[0m gix-pack v0.68.0
+[1m[92m   Compiling[0m gix-transport v0.55.1
+[1m[92m   Compiling[0m unic-langid v0.9.6
+[1m[92m   Compiling[0m codex-utils-pty v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/pty)
+[1m[92m   Compiling[0m gix-revision v0.43.0
+[1m[92m   Compiling[0m gix-shallow v0.10.0
+[1m[92m   Compiling[0m opentelemetry-http v0.31.0
+[1m[92m   Compiling[0m gix-config-value v0.17.1
+[1m[92m   Compiling[0m http v0.2.12
+[1m[92m   Compiling[0m maybe-async v0.2.10
+[1m[92m   Compiling[0m unicode-bom v2.0.3
+[1m[92m   Compiling[0m vsimd v0.8.0
+[1m[92m   Compiling[0m outref v0.5.2
+[1m[92m   Compiling[0m rustc-hash v2.1.1
+[1m[92m   Compiling[0m tree-sitter-language v0.1.7
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.7` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m type-map v0.5.1
+[1m[92m   Compiling[0m base64-simd v0.8.0
+[1m[92m   Compiling[0m gix-config v0.54.0
+[1m[92m   Compiling[0m gix-protocol v0.59.0
+[1m[92m   Compiling[0m http-body v0.4.6
+[1m[92m   Compiling[0m opentelemetry-otlp v0.31.0
+[1m[92m   Compiling[0m gix-refspec v0.39.0
+[1m[92m   Compiling[0m gix-odb v0.78.0
+[1m[92m   Compiling[0m der v0.7.10
+[1m[92m   Compiling[0m gix-discover v0.49.0
+[1m[92m   Compiling[0m os_info v3.14.0
+[1m[92m   Compiling[0m gix-traverse v0.55.0
+[1m[92m   Compiling[0m gix-diff v0.61.0
+[1m[92m   Compiling[0m aes v0.8.4
+[1m[92m   Compiling[0m codex-file-system v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-system)
+[1m[92m   Compiling[0m opentelemetry-appender-tracing v0.31.1
+[1m[92m   Compiling[0m gethostname v1.1.0
+[1m[92m   Compiling[0m bytes-utils v0.1.4
+[1m[92m   Compiling[0m opentelemetry-semantic-conventions v0.31.0
+[1m[92m   Compiling[0m codex-otel v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/otel)
+[1m[92m   Compiling[0m aws-smithy-types v1.4.7
+[1m[92m   Compiling[0m gix v0.81.0
+[1m[92m   Compiling[0m spki v0.7.3
+[1m[92m   Compiling[0m self_cell v1.2.2
+[1m[92m   Compiling[0m similar v2.7.0
+[1m[92m   Compiling[0m codex-git-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/git-utils)
+[1m[92m   Compiling[0m self_cell v0.10.3
+[1m[92m   Compiling[0m pkcs8 v0.10.2
+[1m[92m   Compiling[0m fluent-syntax v0.11.1
+[1m[92m   Compiling[0m futures-lite v2.6.1
+[1m[92m   Compiling[0m serde_path_to_error v0.1.20
+[1m[92m   Compiling[0m zvariant_utils v2.1.0
+[1m[92m   Compiling[0m rustc-hash v1.1.0
+[1m[92m   Compiling[0m windows_x86_64_gnu v0.52.6
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m x25519-dalek v2.0.1
+[1m[92m   Compiling[0m rust-embed-utils v8.11.0
+[1m[92m   Compiling[0m aws-smithy-async v1.2.14
+[1m[92m   Compiling[0m serde_spanned v1.1.1
+[1m[92m   Compiling[0m aws-smithy-runtime-api-macros v1.0.0
+[1m[92m   Compiling[0m toml_writer v1.0.6+spec-1.1.0
+[1m[92m   Compiling[0m async-task v4.7.1
+[1m[92m   Compiling[0m aws-smithy-runtime-api v1.12.0
+[1m[92m   Compiling[0m toml v0.9.11+spec-1.1.0
+[1m[92m   Compiling[0m rust-embed-impl v8.11.0
+[1m[92m   Compiling[0m zvariant_derive v4.2.0
+[1m[92m   Compiling[0m poly1305 v0.8.0
+[1m[92m   Compiling[0m nix v0.29.0
+[1m[92m   Compiling[0m codex-utils-path v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/path-utils)
+[1m[92m   Compiling[0m toml v0.5.11
+[1m[92m   Compiling[0m piper v0.2.4
+[1m[92m   Compiling[0m async-io v2.6.0
+[1m[92m   Compiling[0m endi v1.1.1
+[1m[92m   Compiling[0m zvariant v4.2.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#async-io@2.6.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m blocking v1.6.2
+[1m[92m   Compiling[0m find-crate v0.6.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.29.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m windows-targets v0.52.6
+[1m[92m   Compiling[0m i18n-config v0.4.8 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/i18n-config-0.4.8)
+[1m[33mwarning[0m[1m: hiding a lifetime that's elided elsewhere is confusing[0m
+   [1m[94m--> [0mthird_party/i18n-config-0.4.8/src/lib.rs:144:9
+    [1m[94m|[0m
+[1m[94m144[0m [1m[94m|[0m         &self,
+    [1m[94m|[0m         [1m[33m^^^^^[0m [1m[33mthe lifetime is elided here[0m
+[1m[94m145[0m [1m[94m|[0m     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                          [1m[33m^^[0m [1m[33m^^^^^[0m   [1m[33m^^[0m [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33m|[0m  [1m[33m|[0m
+    [1m[94m|[0m                          [1m[33m|[0m  [1m[33mthe same lifetime is hidden here[0m
+    [1m[94m|[0m                          [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mhelp[0m: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    [1m[94m= [0m[1mnote[0m: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+[1m[96mhelp[0m: use `'_` for type paths
+    [1m[94m|[0m
+[1m[94m145[0m [1m[94m| [0m    ) -> Result<Option<(&'_ Crate[92m<'_>[0m, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                                  [92m++++[0m
+
+[1m[33mwarning[0m[1m: hiding a lifetime that's elided elsewhere is confusing[0m
+   [1m[94m--> [0mthird_party/i18n-config-0.4.8/src/lib.rs:155:26
+    [1m[94m|[0m
+[1m[94m155[0m [1m[94m|[0m     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                          [1m[33m^^^^^[0m                     [1m[33m^^[0m [1m[33m^^^^^[0m   [1m[33m^^[0m [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33m|[0m  [1m[33m|[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33m|[0m  [1m[33mthe same lifetime is hidden here[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33mthe lifetime is elided here[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mhelp[0m: the same lifetime is referred to in inconsistent ways, making the signature confusing
+[1m[96mhelp[0m: use `'_` for type paths
+    [1m[94m|[0m
+[1m[94m155[0m [1m[94m| [0m    pub fn active_config(&self) -> Result<Option<(&'_ Crate[92m<'_>[0m, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                                                            [92m++++[0m
+
+[1m[33mwarning[0m: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+[1m[92m   Compiling[0m intl-memoizer v0.5.3
+[1m[92m   Compiling[0m intl_pluralrules v7.0.2
+[1m[92m   Compiling[0m fluent-langneg v0.13.1
+[1m[92m   Compiling[0m hkdf v0.12.4
+[1m[92m   Compiling[0m salsa20 v0.10.2
+[1m[92m   Compiling[0m async-lock v3.4.2
+[1m[92m   Compiling[0m tree-sitter v0.25.10
+[1m[92m   Compiling[0m polling v3.11.0
+[1m[92m   Compiling[0m signature v2.2.0
+[1m[92m   Compiling[0m tree-sitter-bash v0.25.1
+[1m[92m   Compiling[0m tree-sitter-powershell v0.26.4
+[1m[92m   Compiling[0m env_home v0.1.0
+[1m[92m   Compiling[0m glob v0.3.3
+[1m[92m   Compiling[0m which v8.0.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m async-fs v2.2.0
+[1m[92m   Compiling[0m fluent-bundle v0.15.3
+[1m[92m   Compiling[0m i18n-embed-impl v0.8.4
+[1m[92m   Compiling[0m windows-result v0.2.0
+[1m[92m   Compiling[0m codex-features v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/features)
+[1m[92m   Compiling[0m zbus_names v3.0.0
+[1m[92m   Compiling[0m async-executor v1.13.3
+[1m[92m   Compiling[0m toml_edit v0.24.0+spec-1.1.0
+[1m[92m   Compiling[0m zbus_macros v4.4.0
+[1m[92m   Compiling[0m codex-model-provider-info v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider-info)
+[1m[92m   Compiling[0m async-broadcast v0.7.2
+[1m[92m   Compiling[0m num-rational v0.4.2
+[1m[92m   Compiling[0m num-iter v0.1.45
+[1m[92m   Compiling[0m num-complex v0.4.6
+[1m[92m   Compiling[0m dns-lookup v3.0.1
+[1m[92m   Compiling[0m ordered-stream v0.2.0
+[1m[92m   Compiling[0m serde_ignored v0.1.14
+[1m[92m   Compiling[0m xdg-home v1.3.0
+[1m[92m   Compiling[0m streaming-iterator v0.1.9
+[1m[92m   Compiling[0m zbus v4.4.0
+[1m[92m   Compiling[0m codex-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/config)
+[1m[92m   Compiling[0m num v0.4.3
+[1m[92m   Compiling[0m windows-strings v0.1.0
+[1m[92m   Compiling[0m fluent v0.16.1
+[1m[92m   Compiling[0m rust-embed v8.11.0
+[1m[92m   Compiling[0m chacha20 v0.9.1
+[1m[92m   Compiling[0m cbc v0.1.2
+[1m[92m   Compiling[0m windows-interface v0.58.0
+[1m[92m   Compiling[0m windows-implement v0.58.0
+[1m[92m   Compiling[0m proc-macro-error-attr2 v2.0.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m proc-macro-error2 v2.0.1
+[1m[92m   Compiling[0m windows-core v0.58.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m secret-service v4.0.0
+[1m[92m   Compiling[0m chacha20poly1305 v0.10.1
+[1m[92m   Compiling[0m i18n-embed v0.15.4
+[1m[92m   Compiling[0m codex-shell-command v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-command)
+[1m[92m   Compiling[0m polyval v0.6.2
+[1m[92m   Compiling[0m pbkdf2 v0.12.2
+[1m[92m   Compiling[0m cookie-factory v0.3.3
+[1m[92m   Compiling[0m linux-keyutils v0.2.4
+[1m[92m   Compiling[0m secrecy v0.10.3
+[1m[92m   Compiling[0m dirs-sys-next v0.1.2
+[1m[92m   Compiling[0m base64 v0.21.7
+[1m[92m   Compiling[0m io_tee v0.1.1
+[1m[92m   Compiling[0m codex-windows-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/windows-sandbox-rs)
+[1m[92m   Compiling[0m keccak v0.1.6
+[1m[92m   Compiling[0m sha3 v0.10.9
+[1m[92m   Compiling[0m age-core v0.11.0
+[1m[92m   Compiling[0m dirs-next v2.0.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m keyring v3.6.3
+[1m[92m   Compiling[0m scrypt v0.11.0
+[1m[92m   Compiling[0m ghash v0.5.1
+[1m[92m   Compiling[0m i18n-embed-fl v0.9.4
+[1m[92m   Compiling[0m windows v0.58.0
+[1m[92m   Compiling[0m aws-smithy-http v0.62.6
+[1m[92m   Compiling[0m aws-credential-types v1.2.11
+[1m[92m   Compiling[0m ctr v0.9.2
+[1m[92m   Compiling[0m tracing-appender v0.2.4
+[1m[92m   Compiling[0m thiserror-impl-no-std v2.0.2
+[1m[92m   Compiling[0m aws-types v1.3.11
+[1m[92m   Compiling[0m kem v0.3.0-pre.0
+[1m[92m   Compiling[0m hybrid-array v0.2.3
+[1m[92m   Compiling[0m hybrid-array v0.4.12
+[1m[92m   Compiling[0m bech32 v0.9.1
+[1m[92m   Compiling[0m age v0.11.2
+[1m[92m   Compiling[0m ml-kem v0.2.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.3.11` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m thiserror-no-std v2.0.2
+[1m[92m   Compiling[0m aes-gcm v0.10.3
+[1m[92m   Compiling[0m codex-keyring-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/keyring-store)
+[1m[92m   Compiling[0m ed25519 v2.2.3
+[1m[92m   Compiling[0m aws-smithy-observability v0.1.5
+[1m[92m   Compiling[0m aws-smithy-http-client v1.1.12
+[1m[92m   Compiling[0m libsqlite3-sys v0.37.0
+[1m[92m   Compiling[0m axum-core v0.5.6
+[1m[92m   Compiling[0m hashlink v0.11.0
+[1m[92m   Compiling[0m debugid v0.8.0
+[1m[92m   Compiling[0m matchit v0.8.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m axum v0.8.8
+[1m[92m   Compiling[0m sentry-types v0.46.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m aws-smithy-runtime v1.9.5
+[1m[92m   Compiling[0m ed25519-dalek v2.2.0
+[1m[92m   Compiling[0m codex-secrets v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/secrets)
+[1m[92m   Compiling[0m clatter v2.2.0
+[1m[92m   Compiling[0m codex-sandboxing v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/sandboxing)
+[1m[92m   Compiling[0m aws-sigv4 v1.3.7
+[1m[92m   Compiling[0m codex-exec-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server-protocol)
+[1m[92m   Compiling[0m crypto_secretbox v0.1.1
+[1m[92m   Compiling[0m simple_asn1 v0.6.4
+[1m[92m   Compiling[0m blake2 v0.10.6
+[1m[92m   Compiling[0m ff v0.13.1
+[1m[92m   Compiling[0m syn v3.0.3
+[1m[92m   Compiling[0m object v0.37.3
+[1m[92m   Compiling[0m base16ct v0.2.0
+[1m[92m   Compiling[0m chunked_transfer v1.5.0
+[1m[92m   Compiling[0m ascii v1.1.0
+[1m[92m   Compiling[0m prettyplease v0.2.37
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tiny_http v0.12.0
+[1m[92m   Compiling[0m sec1 v0.7.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m darling_core v0.24.0
+[1m[92m   Compiling[0m group v0.13.0
+[1m[92m   Compiling[0m crypto_box v0.9.1
+[1m[92m   Compiling[0m jsonwebtoken v9.3.1
+[1m[92m   Compiling[0m codex-exec-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server)
+[1m[92m   Compiling[0m aws-runtime v1.5.17
+[1m[92m   Compiling[0m sentry-core v0.46.1
+[1m[92m   Compiling[0m crypto-common v0.2.2
+[1m[92m   Compiling[0m crossbeam-queue v0.3.12
+[1m[92m   Compiling[0m aws-smithy-json v0.61.9
+[1m[92m   Compiling[0m futures-intrusive v0.5.0
+[1m[92m   Compiling[0m webbrowser v1.2.4
+[1m[92m   Compiling[0m crypto-bigint v0.5.5
+[1m[92m   Compiling[0m gimli v0.32.3
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m addr2line v0.25.1
+[1m[92m   Compiling[0m sqlx-core v0.9.0
+[1m[92m   Compiling[0m elliptic-curve v0.13.8
+[1m[92m   Compiling[0m codex-agent-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-identity)
+[1m[92m   Compiling[0m darling_macro v0.24.0
+[1m[92m   Compiling[0m atoi v2.0.0
+[1m[92m   Compiling[0m codex-workload-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/workload-identity)
+[1m[92m   Compiling[0m codex-terminal-detection v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/terminal-detection)
+[1m[92m   Compiling[0m findshlibs v0.10.2
+[1m[92m   Compiling[0m rustc-demangle v0.1.27
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m codex-utils-template v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/template)
+[1m[92m   Compiling[0m cmov v0.5.3
+[1m[92m   Compiling[0m ctutils v0.4.4
+[1m[92m   Compiling[0m codex-login v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/login)
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m backtrace v0.3.76
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m prost-types v0.14.3
+[1m[92m   Compiling[0m sqlx-sqlite v0.9.0
+[1m[92m   Compiling[0m darling v0.24.0
+[1m[92m   Compiling[0m block-buffer v0.12.0
+[1m[92m   Compiling[0m rfc6979 v0.4.0
+[1m[92m   Compiling[0m schemars_derive v1.2.1
+[1m[92m   Compiling[0m sentry-contexts v0.46.1
+[1m[92m   Compiling[0m dotenvy v0.15.7
+[1m[92m   Compiling[0m xmlparser v0.13.6
+[1m[92m   Compiling[0m rmcp v3.1.3
+[1m[92m   Compiling[0m const-oid v0.10.2
+[1m[92m   Compiling[0m digest v0.11.3
+[1m[92m   Compiling[0m prost-build v0.14.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m aws-smithy-xml v0.60.13
+[1m[92m   Compiling[0m sqlx-macros-core v0.9.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m schemars v1.2.1
+[1m[92m   Compiling[0m ecdsa v0.16.9
+[1m[92m   Compiling[0m rmcp-macros v3.1.3
+[1m[92m   Compiling[0m sentry-backtrace v0.46.1
+[1m[92m   Compiling[0m tonic-build v0.14.3
+[1m[92m   Compiling[0m primeorder v0.13.6
+[1m[92m   Compiling[0m codex-utils-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/plugins)
+[1m[92m   Compiling[0m oauth2 v5.0.0
+[1m[92m   Compiling[0m aws-smithy-query v0.60.9
+[1m[92m   Compiling[0m process-wrap v9.0.1
+[1m[92m   Compiling[0m codex-utils-output-truncation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/output-truncation)
+[1m[92m   Compiling[0m reqwest v0.13.4
+[1m[92m   Compiling[0m sse-stream v0.2.5
+[1m[92m   Compiling[0m hostname v0.4.2
+[1m[92m   Compiling[0m uname v0.1.1
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-x86_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-aarch_64 v3.2.0
+[1m[92m   Compiling[0m base64 v0.23.0
+[1m[92m   Compiling[0m pastey v0.2.1
+[1m[92m   Compiling[0m protoc-bin-vendored-macos-aarch_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-macos-x86_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-ppcle_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-x86_32 v3.2.0
+[1m[92m   Compiling[0m predicates-core v1.0.9
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-s390_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-win32 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored v3.2.0
+[1m[92m   Compiling[0m aws-sdk-sts v1.95.0
+[1m[92m   Compiling[0m codex-plugin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/plugin)
+[1m[92m   Compiling[0m p256 v0.13.2
+[1m[92m   Compiling[0m tonic-prost-build v0.14.3
+[1m[92m   Compiling[0m sentry-panic v0.46.1
+[1m[92m   Compiling[0m sentry-debug-images v0.46.1
+[1m[92m   Compiling[0m sqlx-macros v0.9.0
+[1m[92m   Compiling[0m aws-sdk-ssooidc v1.93.0
+[1m[92m   Compiling[0m aws-sdk-signin v1.2.0
+[1m[92m   Compiling[0m aws-sdk-sso v1.91.0
+[1m[92m   Compiling[0m rayon v1.11.0
+[1m[92m   Compiling[0m nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+[1m[92m   Compiling[0m termtree v0.5.1
+[1m[92m   Compiling[0m difflib v0.4.0
+[1m[92m   Compiling[0m assert_cmd v2.1.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.1.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m predicates v3.1.3
+[1m[92m   Compiling[0m predicates-tree v1.0.12
+[1m[92m   Compiling[0m nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+[1m[92m   Compiling[0m aws-config v1.8.12
+[1m[92m   Compiling[0m sqlx v0.9.0
+[1m[92m   Compiling[0m sentry v0.46.1
+[1m[92m   Compiling[0m codex-code-mode-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode-protocol)
+[1m[92m   Compiling[0m codex-history v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/history)
+[1m[92m   Compiling[0m ignore v0.4.25
+[1m[92m   Compiling[0m bzip2-sys v0.1.13+1.0.8
+[1m[92m   Compiling[0m wait-timeout v0.2.1
+[1m[92m   Compiling[0m arraydeque v0.5.1
+[1m[92m   Compiling[0m codex-collaboration-mode-templates v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/collaboration-mode-templates)
+[1m[92m   Compiling[0m unicode-width v0.2.1
+[1m[92m   Compiling[0m annotate-snippets v0.12.5
+[1m[92m   Compiling[0m codex-models-manager v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/models-manager)
+[1m[92m   Compiling[0m granit-parser v2.1.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bzip2-sys@0.1.13+1.0.8` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m codex-file-search v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-search)
+[1m[92m   Compiling[0m codex-state v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/state)
+[1m[92m   Compiling[0m codex-feedback v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/feedback)
+[1m[92m   Compiling[0m codex-aws-auth v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/aws-auth)
+[1m[92m   Compiling[0m codex-hepta-contracts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-contracts)
+[1m[92m   Compiling[0m inout v0.2.5
+[1m[92m   Compiling[0m codex-response-debug-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/response-debug-context)
+[1m[92m   Compiling[0m encoding_rs_io v0.1.8
+[1m[92m   Compiling[0m runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+[1m[92m   Compiling[0m codex-utils-cargo-bin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cargo-bin)
+[1m[92m   Compiling[0m codex-install-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/install-context)
+[1m[92m   Compiling[0m serde-saphyr v2.1.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/serde-saphyr-2.1.0)
+[1m[33mwarning[0m[1m: variable does not need to be mutable[0m
+    [1m[94m--> [0mthird_party/serde-saphyr-2.1.0/src/de/deserializer.rs:1142:41
+     [1m[94m|[0m
+[1m[94m1142[0m [1m[94m|[0m     fn deserialize_any<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
+     [1m[94m|[0m                                         [1m[94m----[0m[1m[33m^^^^[0m
+     [1m[94m|[0m                                         [1m[94m|[0m
+     [1m[94m|[0m                                         [1m[94mhelp: remove this `mut`[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m: `serde-saphyr` (lib) generated 1 warning (run `cargo fix --lib -p serde-saphyr` to apply 1 suggestion)
+[1m[92m   Compiling[0m codex-model-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider)
+[1m[92m   Compiling[0m cipher v0.5.2
+[1m[92m   Compiling[0m codex-rollout v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout)
+[1m[92m   Compiling[0m codex-connectors v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/connectors)
+[1m[92m   Compiling[0m hmac v0.13.0
+[1m[92m   Compiling[0m sha2 v0.11.0
+[1m[92m   Compiling[0m num_cpus v1.17.0
+[1m[92m   Compiling[0m codex-experimental-api-macros v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-experimental-api-macros)
+[1m[92m   Compiling[0m include_dir_macros v0.7.4
+[1m[92m   Compiling[0m deadpool-runtime v0.1.4
+[1m[92m   Compiling[0m codex-app-server-protocol-noop-macros v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol-noop-macros)
+[1m[92m   Compiling[0m codex-skills v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/skills)
+[1m[92m   Compiling[0m cpubits v0.1.1
+[1m[92m   Compiling[0m aes v0.9.4
+[1m[92m   Compiling[0m codex-app-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol)
+[1m[92m   Compiling[0m deadpool v0.12.3
+[1m[92m   Compiling[0m include_dir v0.7.4
+[1m[92m   Compiling[0m lzma-rust2 v0.21.0
+[1m[92m   Compiling[0m pbkdf2 v0.13.0
+[1m[92m   Compiling[0m bzip2 v0.6.1
+[1m[92m   Compiling[0m codex-code-mode v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode)
+[1m[92m   Compiling[0m codex-utils-yaml v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/yaml)
+[1m[92m   Compiling[0m codex-rmcp-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rmcp-client)
+[1m[92m   Compiling[0m sha1 v0.11.0
+[1m[92m   Compiling[0m codex-exec-server-test-support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server/tests/support)
+[1m[92m   Compiling[0m zopfli v0.8.3
+[1m[92m   Compiling[0m assert-json-diff v2.0.2
+[1m[92m   Compiling[0m filetime v0.2.27
+[1m[92m   Compiling[0m codex-diagnostics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/diagnostics)
+[1m[92m   Compiling[0m tracing-test-macro v0.2.5
+[1m[92m   Compiling[0m jsonptr v0.7.1
+[1m[92m   Compiling[0m deflate64 v0.1.10
+[1m[92m   Compiling[0m diff v0.1.13
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m typed-path v0.12.4
+[1m[92m   Compiling[0m yansi v1.0.1
+[1m[92m   Compiling[0m pretty_assertions v1.4.1
+[1m[92m   Compiling[0m zip v9.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/zip-9.0.0)
+[1m[92m   Compiling[0m codex-tools v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/tools)
+[1m[92m   Compiling[0m tracing-test v0.2.5
+[1m[92m   Compiling[0m codex-mcp v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-mcp)
+[1m[92m   Compiling[0m tar v0.4.45
+[1m[92m   Compiling[0m wiremock v0.6.5
+[1m[92m   Compiling[0m codex-analytics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/analytics)
+[1m[92m   Compiling[0m codex-hooks v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hooks)
+[1m[92m   Compiling[0m codex-core-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core-plugins)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 14m 29s
+────────────
+[32;1m Nextest run[0m ID [1mdb76b478-a3c0-4678-9903-bf34b0e712ea[0m with nextest profile: [1mlocal[0m
+[32;1m    Starting[0m [1m420[0m tests across [1m1[0m binary
+[32;1m        PASS[0m [   0.016s] (  1/420) [35;1mcodex-core-plugins[0m [36mapp_mcp_routing::tests[0m[36m::[0m[34;1mapp_mcp_routing_preserves_apps_and_removes_conflicting_mcp_with_apps_route[0m
+[32;1m        PASS[0m [   0.016s] (  2/420) [35;1mcodex-core-plugins[0m [36mapp_mcp_routing::tests[0m[36m::[0m[34;1mapps_route_available_tracks_auth_mode[0m
+[32;1m        PASS[0m [   0.016s] (  3/420) [35;1mcodex-core-plugins[0m [36mapp_mcp_routing::tests[0m[36m::[0m[34;1mapp_mcp_routing_clears_apps_when_apps_route_is_unavailable[0m
+[32;1m        PASS[0m [   0.016s] (  4/420) [35;1mcodex-core-plugins[0m [36mapp_mcp_routing::tests[0m[36m::[0m[34;1mapp_mcp_routing_preserves_mcp_conflicts_when_plugin_is_inactive[0m
+[32;1m        PASS[0m [   0.016s] (  5/420) [35;1mcodex-core-plugins[0m [36martifact_operation::tests[0m[36m::[0m[34;1mrejects_untrusted_mismatched_or_invalid_markers[0m
+[32;1m        PASS[0m [   0.016s] (  6/420) [35;1mcodex-core-plugins[0m [36mcommand_migration::tests[0m[36m::[0m[34;1mcommand_skill_names_must_fit_codex_skill_loader_limit[0m
+[32;1m        PASS[0m [   0.016s] (  7/420) [35;1mcodex-core-plugins[0m [36martifact_operation::tests[0m[36m::[0m[34;1mrecognizes_supported_artifact_markers[0m
+[32;1m        PASS[0m [   0.017s] (  8/420) [35;1mcodex-core-plugins[0m [36mcommand_migration::tests[0m[36m::[0m[34;1mcommand_slug_collisions_are_skipped[0m
+[32;1m        PASS[0m [   0.015s] (  9/420) [35;1mcodex-core-plugins[0m [36mcommand_migration::tests[0m[36m::[0m[34;1mcommands_without_description_are_skipped[0m
+[32;1m        PASS[0m [   0.015s] ( 10/420) [35;1mcodex-core-plugins[0m [36mcommand_migration::tests[0m[36m::[0m[34;1mcommands_with_provider_runtime_expansion_are_skipped[0m
+[32;1m        PASS[0m [   0.016s] ( 11/420) [35;1mcodex-core-plugins[0m [36mcommand_migration::tests[0m[36m::[0m[34;1mcommands_with_overlong_descriptions_are_preserved[0m
+[32;1m        PASS[0m [   0.016s] ( 12/420) [35;1mcodex-core-plugins[0m [36mcommand_migration::tests[0m[36m::[0m[34;1mcommands_can_derive_descriptions_from_source_names[0m
+[32;1m        PASS[0m [   0.138s] ( 13/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mdoes_not_advertise_skills_when_skill_loading_fails[0m
+[32;1m        PASS[0m [   0.140s] ( 14/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mclear_cache_invalidates_cached_tool_suggest_metadata[0m
+[32;1m        PASS[0m [   0.145s] ( 15/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mdeduplicates_and_reprojects_cached_configured_marketplace_plugin[0m
+[32;1m        PASS[0m [   0.022s] ( 16/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mdoes_not_read_local_plugins_for_loaded_apps[0m
+[32;1m        PASS[0m [   0.037s] ( 17/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mdoes_not_expand_local_plugins_by_installed_apps[0m
+[32;1m        PASS[0m [   0.039s] ( 18/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mdoes_not_expand_local_sales_apps[0m
+[32;1m        PASS[0m [   0.029s] ( 19/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mincludes_openai_api_curated_when_remote_enabled_without_auth[0m
+[32;1m        PASS[0m [   0.151s] ( 20/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mdoes_not_reload_marketplace_per_plugin[0m
+[32;1m        PASS[0m [   0.146s] ( 21/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mignores_missing_marketplace_plugin[0m
+[32;1m        PASS[0m [   0.028s] ( 22/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1momits_installed_curated_plugins[0m
+[32;1m        PASS[0m [   0.151s] ( 23/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mnormalizes_description[0m
+[32;1m        PASS[0m [   0.150s] ( 24/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1momits_not_available_curated_plugins[0m
+[32;1m        PASS[0m [   0.490s] ( 25/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mcached_remote_discovery_requires_installed_cache_and_filters_candidates[0m
+[32;1m        PASS[0m [   0.029s] ( 26/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mreturns_api_curated_fallback_plugins_for_direct_provider_auth[0m
+[32;1m        PASS[0m [   0.145s] ( 27/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mreprojects_cached_skill_availability_for_current_config[0m
+[32;1m        PASS[0m [   0.015s] ( 28/420) [35;1mcodex-core-plugins[0m [36mexecutor_hooks::tests[0m[36m::[0m[34;1mdiscovers_allowlisted_executor_plugin_hook_sources[0m
+[32;1m        PASS[0m [   0.016s] ( 29/420) [35;1mcodex-core-plugins[0m [36mexecutor_hooks::tests[0m[36m::[0m[34;1mignores_file_backed_executor_plugin_hooks[0m
+[32;1m        PASS[0m [   0.017s] ( 30/420) [35;1mcodex-core-plugins[0m [36mexecutor_hooks::tests[0m[36m::[0m[34;1mignores_unallowlisted_executor_plugin_hooks[0m
+[32;1m        PASS[0m [   0.016s] ( 31/420) [35;1mcodex-core-plugins[0m [36mexecutor_hooks::tests[0m[36m::[0m[34;1mpreserves_allowlisted_executor_plugin_hook_options[0m
+[32;1m        PASS[0m [   0.020s] ( 32/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1magent_plugin_codex_mcp_overlay_only_forwards_matching_stdio_server_env_vars[0m
+[32;1m        PASS[0m [   0.255s] ( 33/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1momits_openai_curated_but_keeps_configured_marketplaces_for_remote_codex_auth[0m
+[32;1m        PASS[0m [   0.019s] ( 34/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1magent_plugin_codex_mcp_overlay_supports_inline_legacy_servers_without_portable_env[0m
+[32;1m        PASS[0m [   0.016s] ( 35/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1magent_plugin_mcp_rejects_config_symlink_outside_plugin_root[0m
+[32;1m        PASS[0m [   0.015s] ( 36/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1magent_plugin_mcp_rejects_present_nonregular_config[0m
+[32;1m        PASS[0m [   0.016s] ( 37/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1magent_plugin_overlay_apps_are_not_runtime_active[0m
+[32;1m        PASS[0m [   0.019s] ( 38/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mconfigured_plugins_from_stack_merges_user_layers[0m
+[32;1m        PASS[0m [   0.014s] ( 39/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mcurated_plugin_cache_version_preserves_non_git_sha_versions[0m
+[32;1m        PASS[0m [   0.152s] ( 40/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mreturns_microsoft_fallback_plugins[0m
+[32;1m        PASS[0m [   0.015s] ( 41/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mcurated_plugin_cache_version_shortens_full_git_sha[0m
+[32;1m        PASS[0m [   0.023s] ( 42/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mhooks_only_scope_shares_plugin_resolution_without_loading_other_capabilities[0m
+[32;1m        PASS[0m [   0.019s] ( 43/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1minstalled_agent_plugin_uses_isolated_data_root_for_stdio_mcp[0m
+[32;1m        PASS[0m [   0.016s] ( 44/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mlegacy_manifest_can_point_at_root_mcp_json[0m
+[32;1m        PASS[0m [   0.017s] ( 45/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mload_plugin_hooks_discovers_default_hooks_file[0m
+[32;1m        PASS[0m [   0.015s] ( 46/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mload_plugin_hooks_manifest_paths_replace_default_hooks_file[0m
+[32;1m        PASS[0m [   0.015s] ( 47/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mload_plugin_hooks_reports_invalid_hook_file[0m
+[32;1m        PASS[0m [   0.016s] ( 48/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mload_plugin_hooks_supports_inline_manifest_hook_list[0m
+[32;1m        PASS[0m [   0.016s] ( 49/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mload_plugin_hooks_supports_manifest_hook_path[0m
+[32;1m        PASS[0m [   0.016s] ( 50/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mload_plugin_hooks_supports_inline_manifest_hooks[0m
+[32;1m        PASS[0m [   0.027s] ( 51/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1magent_plugin_read_and_tool_suggestions_use_portable_capabilities_only[0m
+[32;1m        PASS[0m [   0.259s] ( 52/420) [35;1mcodex-core-plugins[0m [36mdiscoverable::tests[0m[36m::[0m[34;1mreturns_fallback_plugins_when_remote_disabled_for_codex_auth[0m
+[32;1m        PASS[0m [   0.090s] ( 53/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mmaterialize_git_source_rejects_sha_that_resolves_to_hostile_default_branch[0m
+[32;1m        PASS[0m [   0.097s] ( 54/420) [35;1mcodex-core-plugins[0m [36mloader::tests[0m[36m::[0m[34;1mmaterialize_git_subdir_uses_sparse_checkout[0m
+[32;1m        PASS[0m [   0.016s] ( 55/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mbuild_remote_installed_plugin_marketplaces_from_cache_filters_by_marketplace_name[0m
+[32;1m        PASS[0m [   0.016s] ( 56/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mbuild_remote_installed_plugin_marketplaces_from_cache_uses_remote_metadata[0m
+[32;1m        PASS[0m [   0.016s] ( 57/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mcapability_index_filters_inactive_and_zero_capability_plugins[0m
+[32;1m        PASS[0m [   0.024s] ( 58/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mcapability_summary_sanitizes_plugin_descriptions_to_one_line[0m
+[32;1m        PASS[0m [   0.018s] ( 59/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mcapability_summary_telemetry_metadata_resolves_persisted_remote_identity[0m
+[32;1m        PASS[0m [   0.016s] ( 60/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mcapability_summary_telemetry_metadata_uses_local_identity[0m
+[32;1m        PASS[0m [   0.137s] ( 61/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mapi_curated_plugin_does_not_suppress_remote_curated_conflict_for_chatgpt[0m
+[32;1m        PASS[0m [   0.030s] ( 62/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mcapability_summary_truncates_overlong_plugin_descriptions[0m
+[32;1m        PASS[0m [   0.016s] ( 63/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mcurated_plugin_ids_from_config_keys_reads_latest_codex_home_user_config[0m
+[32;1m        PASS[0m [   0.126s] ( 64/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mcurated_repo_sync_stays_deferred_for_remote_chatgpt_catalog[0m
+[32;1m        PASS[0m [   0.137s] ( 65/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1meffective_apps_dedupes_connector_ids_across_plugins[0m
+[32;1m        PASS[0m [   0.102s] ( 66/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mfeatured_plugin_ids_for_config_defaults_query_param_to_codex[0m
+[32;1m        PASS[0m [   0.130s] ( 67/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1meffective_apps_preserves_app_config_order[0m
+[32;1m        PASS[0m [   0.018s] ( 68/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_openai_curated_plugin_uses_short_sha_cache_version[0m
+[32;1m        PASS[0m [   0.015s] ( 69/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_plugin_ignores_command_migration_errors[0m
+[32;1m        PASS[0m [   0.013s] ( 70/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_plugin_ignores_invalid_commands_manifest_field[0m
+[32;1m        PASS[0m [   0.017s] ( 71/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_plugin_materializes_default_command_skills[0m
+[32;1m        PASS[0m [   0.069s] ( 72/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_plugin_supports_git_subdir_marketplace_sources[0m
+[32;1m        PASS[0m [   0.166s] ( 73/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mfeatured_plugin_ids_for_config_uses_restriction_product_query_param[0m
+[32;1m        PASS[0m [   0.016s] ( 74/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_plugin_updates_config_with_relative_path_and_plugin_key[0m
+[32;1m        PASS[0m [   0.015s] ( 75/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_plugin_uses_manifest_version_for_non_curated_plugins[0m
+[32;1m        PASS[0m [   0.058s] ( 76/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_plugin_supports_relative_git_subdir_marketplace_sources[0m
+[32;1m        PASS[0m [   0.021s] ( 77/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstalled_agent_plugin_telemetry_metadata_uses_portable_capabilities[0m
+[32;1m        PASS[0m [   0.022s] ( 78/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstall_plugin_writes_marketplace_manifest_fallback_when_missing_plugin_json[0m
+[32;1m        PASS[0m [   0.015s] ( 79/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstalled_plugin_telemetry_metadata_accepts_authoritative_remote_identity[0m
+[32;1m        PASS[0m [   0.015s] ( 80/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstalled_plugin_telemetry_metadata_collects_capabilities[0m
+[32;1m        PASS[0m [   0.014s] ( 81/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstalled_plugin_telemetry_metadata_prefers_remote_snapshot_identity[0m
+[32;1m        PASS[0m [   0.013s] ( 82/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1minstalled_plugin_telemetry_metadata_resolves_persisted_remote_identity[0m
+[32;1m        PASS[0m [   0.018s] ( 83/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_can_skip_openai_curated_before_loading[0m
+[32;1m        PASS[0m [   0.017s] ( 84/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_excludes_plugins_with_explicit_empty_products[0m
+[32;1m        PASS[0m [   0.018s] ( 85/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_ignores_installed_roots_missing_from_config[0m
+[32;1m        PASS[0m [   0.020s] ( 86/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_includes_enabled_state[0m
+[32;1m        PASS[0m [   0.019s] ( 87/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_includes_installed_marketplace_roots[0m
+[32;1m        PASS[0m [   0.701s] ( 88/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mbackground_remote_installed_bundle_sync_stays_deduped[0m
+[32;1m        PASS[0m [   0.021s] ( 89/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_marks_configured_plugin_uninstalled_when_cache_is_missing[0m
+[32;1m        PASS[0m [   0.024s] ( 90/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_installed_git_source_reads_metadata_from_cache_without_cloning[0m
+[32;1m        PASS[0m [   0.017s] ( 91/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_returns_empty_when_feature_disabled[0m
+[32;1m        PASS[0m [   0.103s] ( 92/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_includes_curated_repo_marketplace[0m
+[32;1m        PASS[0m [   0.020s] ( 93/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_skips_missing_api_curated_manifest[0m
+[32;1m        PASS[0m [   0.022s] ( 94/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_uses_api_curated_manifest_when_selected[0m
+[32;1m        PASS[0m [   0.029s] ( 95/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_uses_config_when_known_registry_is_malformed[0m
+[32;1m        PASS[0m [   0.692s] ( 96/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mconfigured_marketplace_upgrade_invalidates_cached_tool_suggest_metadata[0m
+[32;1m        PASS[0m [   0.018s] ( 97/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugin_skills_dedupes_overlapping_manifest_roots[0m
+[32;1m        PASS[0m [   0.025s] ( 98/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_uses_first_duplicate_plugin_entry[0m
+[32;1m        PASS[0m [   0.025s] ( 99/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_applies_plugin_mcp_server_policy[0m
+[32;1m        PASS[0m [   0.024s] (100/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_ignores_invalid_manifest_skills_shape[0m
+[32;1m        PASS[0m [   0.016s] (101/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_ignores_project_config_files[0m
+[32;1m        PASS[0m [   0.154s] (102/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_selects_curated_catalog_only_from_authentication[0m
+[32;1m        PASS[0m [   0.025s] (103/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_ignores_unknown_disabled_skill_names[0m
+[32;1m        PASS[0m [   0.133s] (104/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mlist_marketplaces_uses_chatgpt_curated_manifest_for_bedrock_with_chatgpt_auth[0m
+[32;1m        PASS[0m [   0.022s] (105/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_loads_manifest_mcp_server_objects[0m
+[32;1m        PASS[0m [   0.027s] (106/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_preserves_disabled_plugins_without_effective_contributions[0m
+[32;1m        PASS[0m [   0.021s] (107/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_rejects_invalid_plugin_keys[0m
+[32;1m        PASS[0m [   0.023s] (108/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_resolves_disabled_skill_names_against_loaded_plugin_skills[0m
+[32;1m        PASS[0m [   0.023s] (109/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_returns_empty_when_feature_disabled[0m
+[32;1m        PASS[0m [   0.017s] (110/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mloaded_plugins_cache_invalidation_rejects_stale_load_completion[0m
+[32;1m        PASS[0m [   0.137s] (111/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_ignores_manifest_component_paths_without_dot_slash[0m
+[32;1m        PASS[0m [   0.021s] (112/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mmarketplace_policy_projection_disables_installed_plugin_and_invalidates_cache[0m
+[32;1m        PASS[0m [   0.015s] (113/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mmarketplace_source_refresh_notifies_only_after_installed_cache_changes[0m
+[32;1m        PASS[0m [   0.143s] (114/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_loads_default_skills_and_mcp_servers[0m
+[32;1m        PASS[0m [   0.048s] (115/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mmarketplace_policy_filters_discovered_marketplaces_by_configured_name[0m
+[32;1m        PASS[0m [   0.026s] (116/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mnon_curated_plugin_cache_refresh_preserves_manual_priority[0m
+[32;1m        PASS[0m [   0.025s] (117/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_auth_projection_hides_apps_without_chatgpt_auth[0m
+[32;1m        PASS[0m [   0.025s] (118/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_auth_projection_hides_dual_surface_mcp_with_agent_identity_apps_route[0m
+[32;1m        PASS[0m [   0.146s] (119/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_auth_projection_hides_matching_mcp_with_chatgpt_apps_route[0m
+[32;1m        PASS[0m [   0.138s] (120/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_auth_projection_keeps_non_conflicting_mcp_with_chatgpt_apps_route[0m
+[32;1m        PASS[0m [   0.253s] (121/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mnon_chatgpt_auth_rejects_cached_remote_curated_plugins_after_auth_switch[0m
+[32;1m        PASS[0m [   0.021s] (122/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_cache_ignores_unrelated_session_overrides[0m
+[32;1m        PASS[0m [   0.017s] (123/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_capability_summary_uses_manifest_mcp_server_objects[0m
+[32;1m        PASS[0m [   0.140s] (124/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_auth_projection_preserves_duplicate_connector_declaration_names[0m
+[32;1m        PASS[0m [   0.144s] (125/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_auth_projection_reprojects_cached_plugins_when_auth_changes[0m
+[32;1m        PASS[0m [   0.024s] (126/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_hooks_for_layer_stack_loads_configured_plugin_hooks[0m
+[32;1m        PASS[0m [   0.014s] (127/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_install_error_preserves_store_io_sub_error_type[0m
+[32;1m        PASS[0m [   0.018s] (128/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_read_rejects_marketplace_blocked_by_requirements[0m
+[32;1m        PASS[0m [   0.016s] (129/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_telemetry_ignores_local_marketplace_sidecars[0m
+[32;1m        PASS[0m [   0.017s] (130/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_telemetry_metadata_uses_default_mcp_config_path[0m
+[32;1m        PASS[0m [   0.139s] (131/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugin_hooks_for_layer_stack_follow_auth_mode_and_provider[0m
+[32;1m        PASS[0m [   0.024s] (132/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mread_plugin_for_config_does_not_fallback_from_invalid_plugin_manifest[0m
+[32;1m        PASS[0m [   0.620s] (133/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mload_plugins_uses_manifest_configured_component_paths[0m
+[32;1m        PASS[0m [   0.026s] (134/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mread_plugin_for_config_installed_git_source_reads_from_cache_without_cloning[0m
+[32;1m        PASS[0m [   0.023s] (135/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mread_plugin_for_config_returns_plugins_disabled_when_feature_disabled[0m
+[32;1m        PASS[0m [   0.139s] (136/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mread_plugin_for_config_filters_mcp_servers_for_codex_backend_auth[0m
+[32;1m        PASS[0m [   0.240s] (137/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugins_for_config_discards_in_flight_load_after_account_change[0m
+[32;1m        PASS[0m [   0.243s] (138/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mplugins_manager_reads_auth_mode_from_auth_manager[0m
+[32;1m        PASS[0m [   0.023s] (139/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mread_plugin_for_config_uninstalled_git_source_requires_install_without_cloning[0m
+[32;1m        PASS[0m [   0.024s] (140/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mread_plugin_for_config_uses_marketplace_manifest_fallback_paths_for_local_source[0m
+[32;1m        PASS[0m [   0.026s] (141/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mread_plugin_for_config_uses_user_layer_skill_settings_only[0m
+[32;1m        PASS[0m [   0.240s] (142/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrecommended_plugins_mode_caches_explicit_false[0m
+[32;1m        PASS[0m [   0.250s] (143/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrecommended_plugin_candidates_filter_installed_and_disabled_plugins[0m
+[32;1m        PASS[0m [   0.014s] (144/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mreconciliation_fences_refresh_publication_and_recovers_after_cancellation[0m
+[32;1m        PASS[0m [   0.014s] (145/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_curated_plugin_cache_leaves_api_curated_plugin_when_api_manifest_missing[0m
+[32;1m        PASS[0m [   0.014s] (146/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_curated_plugin_cache_migrates_full_sha_cache_version_to_short_version[0m
+[32;1m        PASS[0m [   0.014s] (147/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_curated_plugin_cache_reinstalls_missing_api_curated_plugin[0m
+[32;1m        PASS[0m [   0.014s] (148/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_curated_plugin_cache_reinstalls_missing_configured_plugin_with_current_short_version[0m
+[32;1m        PASS[0m [   0.012s] (149/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_curated_plugin_cache_removes_cache_for_plugin_removed_from_marketplace[0m
+[32;1m        PASS[0m [   0.344s] (150/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrecommended_plugins_mode_deduplicates_concurrent_cache_misses[0m
+[32;1m        PASS[0m [   0.016s] (151/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_curated_plugin_cache_replaces_existing_local_version_with_short_sha_version[0m
+[32;1m        PASS[0m [   0.017s] (152/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_curated_plugin_cache_returns_false_when_configured_plugins_are_current[0m
+[32;1m        PASS[0m [   0.018s] (153/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_non_curated_plugin_cache_continues_after_plugin_error[0m
+[32;1m        PASS[0m [   0.351s] (154/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrecommended_plugins_mode_retries_after_fetch_failure[0m
+[32;1m        PASS[0m [   0.020s] (155/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_non_curated_plugin_cache_force_reinstalls_current_local_version[0m
+[32;1m        PASS[0m [   0.018s] (156/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_non_curated_plugin_cache_ignores_invalid_unconfigured_plugin_versions[0m
+[32;1m        PASS[0m [   0.019s] (157/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_non_curated_plugin_cache_reinstalls_missing_configured_plugin_with_manifest_version[0m
+[32;1m        PASS[0m [   0.020s] (158/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_non_curated_plugin_cache_replaces_existing_local_version_with_manifest_version[0m
+[32;1m        PASS[0m [   0.022s] (159/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_non_curated_plugin_cache_returns_false_when_configured_plugins_are_current[0m
+[32;1m        PASS[0m [   0.031s] (160/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mremote_installed_cache_ignores_plugins_missing_local_cache[0m
+[32;1m        PASS[0m [   0.099s] (161/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mrefresh_non_curated_plugin_cache_refreshes_configured_git_source[0m
+[32;1m        PASS[0m [   0.254s] (162/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mreconcile_remote_installed_plugins_rejects_incomplete_snapshot_without_cleanup[0m
+[32;1m        PASS[0m [   0.016s] (163/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mremote_installed_plugins_cache_refresh_coalesces_materializations[0m
+[32;1m        PASS[0m [   0.145s] (164/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mremote_global_catalog_ignores_local_curated_plugins[0m
+[32;1m        PASS[0m [   0.156s] (165/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mremote_installed_cache_prefers_local_curated_conflicts_when_remote_plugin_disabled[0m
+[32;1m        PASS[0m [   0.159s] (166/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mremote_installed_plugin_preserves_configured_mcp_server_policy[0m
+[32;1m        PASS[0m [   0.022s] (167/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mstrict_install_requires_allowed_local_marketplace_to_be_added_first[0m
+[32;1m        PASS[0m [   0.019s] (168/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1muninstall_plugin_removes_cache_and_config_entry[0m
+[32;1m        PASS[0m [   0.016s] (169/420) [35;1mcodex-core-plugins[0m [36mmanifest::agent_plugin_manifest_tests[0m[36m::[0m[34;1maccepts_dotted_names_and_ignores_extensions[0m
+[32;1m        PASS[0m [   0.016s] (170/420) [35;1mcodex-core-plugins[0m [36mmanifest::agent_plugin_manifest_tests[0m[36m::[0m[34;1mdoes_not_invent_optional_metadata[0m
+[32;1m        PASS[0m [   0.015s] (171/420) [35;1mcodex-core-plugins[0m [36mmanifest::agent_plugin_manifest_tests[0m[36m::[0m[34;1minline_openai_extension_precedes_legacy_overlay[0m
+[32;1m        PASS[0m [   0.016s] (172/420) [35;1mcodex-core-plugins[0m [36mmanifest::agent_plugin_manifest_tests[0m[36m::[0m[34;1mlegacy_codex_overlay_keeps_portable_components_fixed[0m
+[32;1m        PASS[0m [   0.016s] (173/420) [35;1mcodex-core-plugins[0m [36mmanifest::agent_plugin_manifest_tests[0m[36m::[0m[34;1mnormalizes_empty_optional_metadata[0m
+[32;1m        PASS[0m [   0.016s] (174/420) [35;1mcodex-core-plugins[0m [36mmanifest::agent_plugin_manifest_tests[0m[36m::[0m[34;1mrejects_overlong_name_and_wrong_metadata_types[0m
+[32;1m        PASS[0m [   0.015s] (175/420) [35;1mcodex-core-plugins[0m [36mmanifest::agent_plugin_manifest_tests[0m[36m::[0m[34;1muses_portable_metadata_and_fixed_components[0m
+[32;1m        PASS[0m [   0.017s] (176/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1mhost_and_executor_sources_parse_the_same_manifest[0m
+[32;1m        PASS[0m [   0.016s] (177/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1mplugin_interface_accepts_legacy_default_prompt_string[0m
+[32;1m        PASS[0m [   0.015s] (178/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1mplugin_interface_ignores_invalid_default_prompt_shape[0m
+[32;1m        PASS[0m [   0.016s] (179/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1mplugin_interface_normalizes_default_prompt_array[0m
+[32;1m        PASS[0m [   0.015s] (180/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1mplugin_interface_reads_dark_logo_path[0m
+[32;1m        PASS[0m [   0.015s] (181/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1mplugin_manifest_reads_keywords[0m
+[32;1m        PASS[0m [   0.015s] (182/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1mplugin_manifest_reads_trimmed_version[0m
+[32;1m        PASS[0m [   0.015s] (183/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1mplugin_manifest_uses_alternate_discoverable_path[0m
+[32;1m        PASS[0m [   0.015s] (184/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1muri_manifest_resolves_resources_below_foreign_root[0m
+[32;1m        PASS[0m [   0.014s] (185/420) [35;1mcodex-core-plugins[0m [36mmanifest::tests[0m[36m::[0m[34;1muri_manifest_uses_the_root_path_convention[0m
+[32;1m        PASS[0m [   0.015s] (186/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_installable_marketplace_plugin_rejects_disallowed_product[0m
+[32;1m        PASS[0m [   0.012s] (187/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_installable_marketplace_plugin_rejects_explicit_empty_products[0m
+[32;1m        PASS[0m [   0.278s] (188/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mremote_plugin_caches_refresh_warms_recommended_plugins_cache[0m
+[32;1m        PASS[0m [   0.016s] (189/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_allows_missing_products_field[0m
+[32;1m        PASS[0m [   0.016s] (190/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_builds_manifest_fallback_from_entry[0m
+[32;1m        PASS[0m [   0.014s] (191/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_finds_repo_marketplace_plugin[0m
+[32;1m        PASS[0m [   0.016s] (192/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_normalizes_github_shorthand_with_dot_git_suffix[0m
+[32;1m        PASS[0m [   0.016s] (193/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_omits_interface_asset_paths_for_git_sources[0m
+[32;1m        PASS[0m [   0.017s] (194/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_normalizes_relative_git_source_urls_to_marketplace_root[0m
+[32;1m        PASS[0m [   0.016s] (195/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_reports_missing_plugin[0m
+[32;1m        PASS[0m [   0.016s] (196/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_skips_root_equivalent_git_subdir_paths[0m
+[32;1m        PASS[0m [   0.018s] (197/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_skips_invalid_local_paths[0m
+[32;1m        PASS[0m [   0.016s] (198/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_skips_unsafe_npm_sources[0m
+[32;1m        PASS[0m [   0.016s] (199/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_supports_alternate_layout_and_string_local_source[0m
+[32;1m        PASS[0m [   0.015s] (200/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_supports_cur_layout_and_bare_local_source[0m
+[32;1m        PASS[0m [   0.015s] (201/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_supports_git_subdir_sources[0m
+[32;1m        PASS[0m [   0.015s] (202/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_supports_npm_registry_version_selectors[0m
+[32;1m        PASS[0m [   0.015s] (203/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_supports_npm_sources[0m
+[32;1m        PASS[0m [   0.015s] (204/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_supports_npm_sources_without_optional_fields[0m
+[32;1m        PASS[0m [   0.016s] (205/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mfind_marketplace_plugin_uses_first_duplicate_entry[0m
+[32;1m        PASS[0m [   0.016s] (206/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_dedupes_multiple_roots_in_same_repo[0m
+[32;1m        PASS[0m [   0.015s] (207/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_ignores_legacy_top_level_policy_fields[0m
+[32;1m        PASS[0m [   0.015s] (208/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_includes_plugins_without_discoverable_manifest[0m
+[32;1m        PASS[0m [   0.016s] (209/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_ignores_plugin_interface_assets_without_dot_slash[0m
+[32;1m        PASS[0m [   0.016s] (210/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_keeps_distinct_entries_for_same_name[0m
+[32;1m        PASS[0m [   0.014s] (211/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_prefers_first_supported_manifest_layout[0m
+[32;1m        PASS[0m [   0.015s] (212/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_keeps_remote_and_local_plugin_sources[0m
+[32;1m        PASS[0m [   0.015s] (213/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_reads_marketplace_display_name[0m
+[32;1m        PASS[0m [   0.017s] (214/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_reports_marketplace_load_errors[0m
+[32;1m        PASS[0m [   0.017s] (215/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_resolves_plugin_interface_paths_to_absolute[0m
+[32;1m        PASS[0m [   0.392s] (216/420) [35;1mcodex-core-plugins[0m [36mmanager::tests[0m[36m::[0m[34;1mskill_roots_resolve_remote_plugin_identity_from_authoritative_source[0m
+[32;1m        PASS[0m [   0.018s] (217/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_returns_home_and_repo_marketplaces[0m
+[32;1m        PASS[0m [   0.015s] (218/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_skips_invalid_plugins_but_keeps_marketplace[0m
+[32;1m        PASS[0m [   0.016s] (219/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_skips_plugins_with_invalid_names_but_keeps_marketplace[0m
+[32;1m        PASS[0m [   0.016s] (220/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_supports_explicit_api_marketplace_manifest_path[0m
+[32;1m        PASS[0m [   0.013s] (221/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mnormalize_relative_git_plugin_source_url_rejects_parent_traversal[0m
+[32;1m        PASS[0m [   0.017s] (222/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_supports_alternate_manifest_layout[0m
+[32;1m        PASS[0m [   0.016s] (223/420) [35;1mcodex-core-plugins[0m [36mmarketplace::tests[0m[36m::[0m[34;1mlist_marketplaces_supports_repo_root_local_plugin_sources[0m
+[32;1m        PASS[0m [   0.013s] (224/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mexplicit_ref_overrides_source_ref[0m
+[32;1m        PASS[0m [   0.013s] (225/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mfile_url_source_is_rejected[0m
+[32;1m        PASS[0m [   0.015s] (226/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::metadata::tests[0m[36m::[0m[34;1minstalled_marketplace_root_for_source_propagates_config_read_errors[0m
+[32;1m        PASS[0m [   0.015s] (227/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::metadata::tests[0m[36m::[0m[34;1minstalled_marketplace_root_for_source_uses_local_source_root[0m
+[32;1m        PASS[0m [   0.015s] (228/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mgithub_shorthand_and_git_url_normalize_to_same_source[0m
+[32;1m        PASS[0m [   0.014s] (229/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mgithub_url_with_trailing_slash_normalizes_without_extra_path_segment[0m
+[32;1m        PASS[0m [   0.015s] (230/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mgit_url_parses_fragment_ref[0m
+[32;1m        PASS[0m [   0.015s] (231/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mgithub_shorthand_parses_ref_suffix[0m
+[32;1m        PASS[0m [   0.015s] (232/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mnon_git_sources_reject_sparse_checkout[0m
+[32;1m        PASS[0m [   0.015s] (233/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mlocal_path_source_parses[0m
+[32;1m        PASS[0m [   0.015s] (234/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mnon_git_sources_reject_ref_override[0m
+[32;1m        PASS[0m [   0.015s] (235/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mlocal_file_source_is_rejected[0m
+[32;1m        PASS[0m [   0.015s] (236/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mwindows_absolute_paths_look_like_local_paths_on_every_host[0m
+[32;1m        PASS[0m [   0.015s] (237/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mssh_url_parses_as_git_url[0m
+[32;1m        PASS[0m [   0.015s] (238/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::source::tests[0m[36m::[0m[34;1mnon_github_https_source_parses_as_git_url[0m
+[32;1m        PASS[0m [   0.017s] (239/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::tests[0m[36m::[0m[34;1madd_marketplace_sync_installs_local_directory_source_and_updates_config[0m
+[32;1m        PASS[0m [   0.016s] (240/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::tests[0m[36m::[0m[34;1madd_marketplace_sync_rejects_sparse_checkout_for_local_directory_source[0m
+[32;1m        PASS[0m [   0.014s] (241/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::tests[0m[36m::[0m[34;1mdenied_git_marketplace_does_not_clone_or_create_install_root[0m
+[32;1m        PASS[0m [   0.018s] (242/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::tests[0m[36m::[0m[34;1madd_marketplace_sync_installs_marketplace_and_updates_config[0m
+[32;1m        PASS[0m [   0.018s] (243/420) [35;1mcodex-core-plugins[0m [36mmarketplace_add::tests[0m[36m::[0m[34;1madd_marketplace_sync_treats_existing_local_directory_source_as_already_added[0m
+[32;1m        PASS[0m [   0.015s] (244/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mbare_relative_local_config_source_is_not_parsed_as_git_shorthand[0m
+[32;1m        PASS[0m [   0.015s] (245/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mblocked_configured_source_is_not_installable[0m
+[32;1m        PASS[0m [   0.015s] (246/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mblocked_or_reserved_upgrade_is_rejected_before_marketplace_installation[0m
+[32;1m        PASS[0m [   0.018s] (247/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mallowlisted_sources_cannot_claim_reserved_marketplace_names[0m
+[32;1m        PASS[0m [   0.014s] (248/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mexact_git_rule_matches_url_and_ref[0m
+[32;1m        PASS[0m [   0.014s] (249/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mexact_local_rule_rejects_other_directories[0m
+[32;1m        PASS[0m [   0.016s] (250/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mcurated_marketplace_requires_its_expected_name[0m
+[32;1m        PASS[0m [   0.023s] (251/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mgit_host_pattern_matches_https_and_ssh_sources[0m
+[32;1m        PASS[0m [   0.016s] (252/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mgit_rule_without_ref_allows_any_ref_for_the_same_repository[0m
+[32;1m        PASS[0m [   0.016s] (253/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1minvalid_active_rule_fails_closed_even_when_another_rule_matches[0m
+[32;1m        PASS[0m [   0.016s] (254/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1minvalid_allowed_source_shapes_fail_closed[0m
+[32;1m        PASS[0m [   0.018s] (255/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mmanaged_bundled_config_is_retained_only_at_its_owned_path[0m
+[32;1m        PASS[0m [   0.016s] (256/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mmanaged_bundled_source_is_bound_to_its_expected_name[0m
+[32;1m        PASS[0m [   0.015s] (257/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mrestriction_flag_controls_empty_allowlist[0m
+[32;1m        PASS[0m [   0.016s] (258/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mprojected_user_config_removes_blocked_marketplaces_and_plugins[0m
+[32;1m        PASS[0m [   0.017s] (259/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1mstrict_install_validates_configured_name_source_and_root[0m
+[32;1m        PASS[0m [   0.015s] (260/420) [35;1mcodex-core-plugins[0m [36mmarketplace_remove::tests[0m[36m::[0m[34;1mremove_marketplace_sync_keeps_installed_root_when_config_removal_fails[0m
+[32;1m        PASS[0m [   0.014s] (261/420) [35;1mcodex-core-plugins[0m [36mmarketplace_remove::tests[0m[36m::[0m[34;1mremove_marketplace_sync_rejects_case_mismatched_configured_name[0m
+[32;1m        PASS[0m [   0.015s] (262/420) [35;1mcodex-core-plugins[0m [36mmarketplace_policy::tests[0m[36m::[0m[34;1msymlinked_marketplaces_cannot_borrow_managed_provenance[0m
+[32;1m        PASS[0m [   0.015s] (263/420) [35;1mcodex-core-plugins[0m [36mmarketplace_remove::tests[0m[36m::[0m[34;1mremove_marketplace_sync_rejects_unknown_marketplace[0m
+[32;1m        PASS[0m [   0.014s] (264/420) [35;1mcodex-core-plugins[0m [36mmarketplace_remove::tests[0m[36m::[0m[34;1mremove_marketplace_sync_removes_file_installed_root[0m
+[32;1m        PASS[0m [   0.014s] (265/420) [35;1mcodex-core-plugins[0m [36mmarketplace_remove::tests[0m[36m::[0m[34;1mremove_marketplace_sync_removes_inline_config_entry[0m
+[32;1m        PASS[0m [   0.014s] (266/420) [35;1mcodex-core-plugins[0m [36mmarketplace_remove::tests[0m[36m::[0m[34;1mremove_marketplace_sync_removes_config_and_installed_root[0m
+[32;1m        PASS[0m [   0.013s] (267/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::git::tests[0m[36m::[0m[34;1mleaves_non_verbatim_path_without_rewrite[0m
+[32;1m        PASS[0m [   0.013s] (268/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::git::tests[0m[36m::[0m[34;1mstrips_windows_verbatim_disk_prefix_for_git[0m
+[32;1m        PASS[0m [   0.015s] (269/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::git::tests[0m[36m::[0m[34;1mfull_git_sha_ref_is_already_a_remote_revision[0m
+[32;1m        PASS[0m [   0.014s] (270/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::git::tests[0m[36m::[0m[34;1mgit_command_uses_path_lookup_with_stable_noninteractive_env[0m
+[32;1m        PASS[0m [   0.015s] (271/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::git::tests[0m[36m::[0m[34;1mstrips_windows_verbatim_unc_prefix_for_git[0m
+[32;1m        PASS[0m [   0.016s] (272/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::tests[0m[36m::[0m[34;1mreadback_ignores_unrelated_malformed_marketplace[0m
+[32;1m        PASS[0m [   0.018s] (273/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::tests[0m[36m::[0m[34;1mstale_activation_restores_newer_concurrently_installed_marketplace[0m
+[32;1m        PASS[0m [   0.118s] (274/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::tests[0m[36m::[0m[34;1mup_to_date_fast_path_validates_marketplace_name[0m
+[32;1m        PASS[0m [   0.016s] (275/420) [35;1mcodex-core-plugins[0m [36mnpm_source::tests[0m[36m::[0m[34;1mmaterialize_npm_plugin_source_uses_packed_package_root[0m
+[32;1m        PASS[0m [   0.011s] (276/420) [35;1mcodex-core-plugins[0m [36mplugin_bundle_archive::tests[0m[36m::[0m[34;1minvalid_portable_manifest_is_rejected_before_packing[0m
+[32;1m        PASS[0m [   0.017s] (277/420) [35;1mcodex-core-plugins[0m [36mplugin_bundle_archive::tests[0m[36m::[0m[34;1mportable_root_manifest_can_be_packed_and_unpacked[0m
+[32;1m        PASS[0m [   0.017s] (278/420) [35;1mcodex-core-plugins[0m [36mplugin_metrics_sidecar::tests[0m[36m::[0m[34;1mmalformed_oversized_and_nonzero_outputs_are_ignored_and_cleaned_up[0m
+[32;1m        PASS[0m [   0.011s] (279/420) [35;1mcodex-core-plugins[0m [36mplugin_metrics_sidecar::tests[0m[36m::[0m[34;1mreserved_output_env_is_absent_without_sidecar_and_cannot_be_overridden[0m
+[32;1m        PASS[0m [   0.011s] (280/420) [35;1mcodex-core-plugins[0m [36mplugin_metrics_sidecar::tests[0m[36m::[0m[34;1msidecar_is_created_in_system_temp_with_private_permissions[0m
+[32;1m        PASS[0m [   0.011s] (281/420) [35;1mcodex-core-plugins[0m [36mplugin_metrics_sidecar::tests[0m[36m::[0m[34;1msidecar_keeps_valid_rows_and_first_duplicate_then_cleans_up[0m
+[32;1m        PASS[0m [   0.011s] (282/420) [35;1mcodex-core-plugins[0m [36mplugin_metrics_sidecar::tests[0m[36m::[0m[34;1msidecar_reads_the_original_file_after_path_replacement[0m
+[32;1m        PASS[0m [   0.014s] (283/420) [35;1mcodex-core-plugins[0m [36mprovider::tests[0m[36m::[0m[34;1mmalformed_preferred_manifest_does_not_fall_through_to_alternate[0m
+[32;1m        PASS[0m [   0.011s] (284/420) [35;1mcodex-core-plugins[0m [36mprovider::tests[0m[36m::[0m[34;1mplugin_root_resolution_accepts_foreign_executor_file_uri[0m
+[32;1m        PASS[0m [   0.011s] (285/420) [35;1mcodex-core-plugins[0m [36mprovider::tests[0m[36m::[0m[34;1mplugin_root_resolution_uses_supplied_executor_file_system[0m
+[32;1m        PASS[0m [   0.012s] (286/420) [35;1mcodex-core-plugins[0m [36mprovider::tests[0m[36m::[0m[34;1mroot_agent_plugin_manifest_is_not_an_executor_plugin[0m
+[32;1m        PASS[0m [   0.012s] (287/420) [35;1mcodex-core-plugins[0m [36mprovider::tests[0m[36m::[0m[34;1mstandalone_capability_root_is_not_a_plugin[0m
+[32;1m        PASS[0m [   0.011s] (288/420) [35;1mcodex-core-plugins[0m [36mprovider::tests[0m[36m::[0m[34;1munavailable_environment_does_not_fall_back_to_host_filesystem[0m
+[32;1m        PASS[0m [   0.010s] (289/420) [35;1mcodex-core-plugins[0m [36mremote::catalog_cache::tests[0m[36m::[0m[34;1mcatalog_cache_freshness_honors_ttl[0m
+[32;1m        PASS[0m [   0.010s] (290/420) [35;1mcodex-core-plugins[0m [36mremote::catalog_cache::tests[0m[36m::[0m[34;1mcatalog_cache_paths_are_isolated_by_scope[0m
+[32;1m        PASS[0m [   0.011s] (291/420) [35;1mcodex-core-plugins[0m [36mremote::catalog_cache::tests[0m[36m::[0m[34;1mglobal_catalog_cache_reuses_legacy_cache_file[0m
+[32;1m        PASS[0m [   0.012s] (292/420) [35;1mcodex-core-plugins[0m [36mremote::catalog_cache::tests[0m[36m::[0m[34;1mheader_auth_does_not_cache_private_catalogs_without_a_stable_identity[0m
+[32;1m        PASS[0m [   0.012s] (293/420) [35;1mcodex-core-plugins[0m [36mremote::remote_installed_plugin_sync::tests[0m[36m::[0m[34;1mstale_remote_plugin_cleanup_removes_stale_marketplace_caches_and_keeps_canonical_cache[0m
+[32;1m        PASS[0m [   0.013s] (294/420) [35;1mcodex-core-plugins[0m [36mremote::remote_installed_plugin_sync::tests[0m[36m::[0m[34;1mstale_remote_plugin_cleanup_skips_cache_mutations_in_progress[0m
+[32;1m        PASS[0m [   0.412s] (295/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::tests[0m[36m::[0m[34;1mautomatic_marketplace_git_ignores_inherited_repository_configuration[0m
+[32;1m        PASS[0m [   0.445s] (296/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::tests[0m[36m::[0m[34;1mone_upgrade_failure_does_not_block_another_marketplace[0m
+[32;1m        PASS[0m [   0.438s] (297/420) [35;1mcodex-core-plugins[0m [36mmarketplace_upgrade::tests[0m[36m::[0m[34;1mupgrade_uses_validated_source_for_git_operations[0m
+[32;1m        PASS[0m [   0.221s] (298/420) [35;1mcodex-core-plugins[0m [36mremote::remote_installed_plugin_sync::tests[0m[36m::[0m[34;1msync_all_scopes_paginates_and_reconciles_each_marketplace[0m
+[32;1m        PASS[0m [   0.235s] (299/420) [35;1mcodex-core-plugins[0m [36mremote::remote_installed_plugin_sync::tests[0m[36m::[0m[34;1msync_same_version_backfills_metadata_and_missing_version_requires_materialization[0m
+[32;1m        PASS[0m [   0.239s] (300/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_forwards_parameters_and_converts_results[0m
+[32;1m        PASS[0m [   0.290s] (301/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_forwards_each_supported_scope[0m
+[32;1m        PASS[0m [   0.259s] (302/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_omits_optional_scope_and_page_token[0m
+[32;1m        PASS[0m [   0.249s] (303/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_preserves_order_and_canonical_marketplaces[0m
+[32;1m        PASS[0m [   0.015s] (304/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_rejects_api_key_authentication[0m
+[32;1m        PASS[0m [   0.015s] (305/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_requires_chatgpt_authentication[0m
+[32;1m        PASS[0m [   0.018s] (306/420) [35;1mcodex-core-plugins[0m [36mremote::share::tests[0m[36m::[0m[34;1marchive_plugin_for_upload_places_manifest_at_archive_root[0m
+[32;1m        PASS[0m [   0.241s] (307/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_preserves_response_decode_errors[0m
+[32;1m        PASS[0m [   0.018s] (308/420) [35;1mcodex-core-plugins[0m [36mremote::share::tests[0m[36m::[0m[34;1marchive_plugin_for_upload_rejects_archives_over_limit[0m
+[32;1m        PASS[0m [   0.250s] (309/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_preserves_upstream_http_errors[0m
+[32;1m        PASS[0m [   0.036s] (310/420) [35;1mcodex-core-plugins[0m [36mremote::share::tests[0m[36m::[0m[34;1marchive_plugin_for_upload_round_trips_through_plugin_bundle_archive_with_long_paths[0m
+[32;1m        PASS[0m [   0.248s] (311/420) [35;1mcodex-core-plugins[0m [36mremote::search::tests[0m[36m::[0m[34;1msearch_remote_plugins_redacts_sensitive_parameters_from_transport_errors[0m
+[32;1m        PASS[0m [   0.243s] (312/420) [35;1mcodex-core-plugins[0m [36mremote::share::tests[0m[36m::[0m[34;1mdelete_remote_plugin_share_deletes_workspace_plugin[0m
+[32;1m        PASS[0m [   0.281s] (313/420) [35;1mcodex-core-plugins[0m [36mremote::share::tests[0m[36m::[0m[34;1mlist_remote_plugin_shares_fetches_created_workspace_plugins[0m
+[32;1m        PASS[0m [   0.285s] (314/420) [35;1mcodex-core-plugins[0m [36mremote::share::tests[0m[36m::[0m[34;1msave_remote_plugin_share_creates_workspace_plugin[0m
+[32;1m        PASS[0m [   0.015s] (315/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mbuild_remote_marketplace_preserves_directory_order_and_appends_installed_only_plugins[0m
+[32;1m        PASS[0m [   0.014s] (316/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1minstallation_interstitial_requirement_is_preserved_across_remote_summary_paths[0m
+[32;1m        PASS[0m [   0.014s] (317/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1minstallation_policy_source_is_preserved_across_remote_summary_paths[0m
+[32;1m        PASS[0m [   0.015s] (318/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mmissing_installation_interstitial_requirement_deserializes_to_none[0m
+[32;1m        PASS[0m [   0.015s] (319/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mplan_eligibility_is_preserved_across_remote_summary_paths[0m
+[32;1m        PASS[0m [   0.016s] (320/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mrecommended_plugins_accept_codex_suggestion_items[0m
+[32;1m        PASS[0m [   0.015s] (321/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mrecommended_plugins_are_validated_deduplicated_sorted_and_capped[0m
+[32;1m        PASS[0m [   0.015s] (322/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mrecommended_plugins_bound_model_visible_fields[0m
+[32;1m        PASS[0m [   0.282s] (323/420) [35;1mcodex-core-plugins[0m [36mremote::share::tests[0m[36m::[0m[34;1msave_remote_plugin_share_updates_existing_workspace_plugin[0m
+[32;1m        PASS[0m [   0.014s] (324/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mrecommended_plugins_enabled_flag_selects_endpoint_or_legacy_mode[0m
+[32;1m        PASS[0m [   0.128s] (325/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mcached_remote_plugin_catalog_scopes_returns_existing_scopes[0m
+[32;1m        PASS[0m [   0.014s] (326/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mrecommended_plugins_ignore_invalid_remote_plugin_ids[0m
+[32;1m        PASS[0m [   0.015s] (327/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mrecommended_plugins_require_remote_install_identity[0m
+[32;1m        PASS[0m [   0.016s] (328/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mremote_plugin_interface_maps_dark_logo_url[0m
+[32;1m        PASS[0m [   0.248s] (329/420) [35;1mcodex-core-plugins[0m [36mremote::share::tests[0m[36m::[0m[34;1mupdate_remote_plugin_share_targets_updates_targets[0m
+[32;1m        PASS[0m [   0.015s] (330/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mscheduled_task_metadata_distinguishes_unavailable_from_empty[0m
+[32;1m        PASS[0m [   0.015s] (331/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1munknown_installation_policy_source_maps_to_none[0m
+[32;1m        PASS[0m [   0.015s] (332/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1munknown_plugin_disabled_reason_preserves_remote_catalog_compatibility[0m
+[32;1m        PASS[0m [   0.014s] (333/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mworkspace_share_context_preserves_publish_capability[0m
+[32;1m        PASS[0m [   0.134s] (334/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mbundle_download_routes_the_backend_supplied_url[0m
+[32;1m        PASS[0m [   0.246s] (335/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mrecommended_plugins_requests_codex_suggestions_endpoint[0m
+[32;1m        PASS[0m [   0.015s] (336/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mdownload_size_limit_rejects_oversized_bundle[0m
+[32;1m        PASS[0m [   0.017s] (337/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mextraction_preserves_executable_permissions[0m
+[32;1m        PASS[0m [   0.263s] (338/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mremote_installed_plugins_paginate_across_all_scopes_without_download_urls[0m
+[32;1m        PASS[0m [   0.243s] (339/420) [35;1mcodex-core-plugins[0m [36mremote::tests[0m[36m::[0m[34;1mremote_plugin_list_routes_the_complete_query_url[0m
+[32;1m        PASS[0m [   0.016s] (340/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mextraction_rejects_tar_path_traversal[0m
+[32;1m        PASS[0m [   0.015s] (341/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mextraction_rejects_total_size_over_limit[0m
+[32;1m        PASS[0m [   0.020s] (342/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mextraction_supports_gnu_long_name_entries[0m
+[32;1m        PASS[0m [   0.014s] (343/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mfind_extracted_plugin_root_uses_local_manifest_discovery[0m
+[32;1m        PASS[0m [   0.016s] (344/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mfind_extracted_plugin_root_rejects_nested_plugin_root[0m
+[32;1m        PASS[0m [   0.018s] (345/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1minstall_persists_remote_plugin_install_metadata[0m
+[32;1m        PASS[0m [   0.016s] (346/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1minstall_rejects_invalid_tar_gz_bundle[0m
+[32;1m        PASS[0m [   0.017s] (347/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1minstall_rejects_bundle_without_standard_plugin_root[0m
+[32;1m        PASS[0m [   0.019s] (348/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1minstall_preserves_non_global_bundle_manifest_metadata[0m
+[32;1m        PASS[0m [   0.015s] (349/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mremote_version_normalization_preserves_portable_root_manifest[0m
+[32;1m        PASS[0m [   0.015s] (350/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mvalidate_remote_plugin_bundle_rejects_invalid_release_version[0m
+[32;1m        PASS[0m [   0.015s] (351/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mvalidate_remote_plugin_bundle_rejects_missing_release_version[0m
+[32;1m        PASS[0m [   0.015s] (352/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mvalidate_remote_plugin_bundle_rejects_missing_download_url[0m
+[32;1m        PASS[0m [   0.014s] (353/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mvalidate_remote_plugin_bundle_rejects_unsupported_download_url_scheme[0m
+[32;1m        PASS[0m [   0.015s] (354/420) [35;1mcodex-core-plugins[0m [36mremote_bundle::tests[0m[36m::[0m[34;1mvalidate_remote_plugin_bundle_uses_detail_name_for_local_plugin_id[0m
+[32;1m        PASS[0m [   0.015s] (355/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1monly_emits_safe_normalized_relative_script_paths[0m
+[32;1m        PASS[0m [   0.019s] (356/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1mallows_measurement_names_reused_across_operations[0m
+[32;1m        PASS[0m [   0.026s] (357/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1minvalid_manifest_disables_metrics_without_disabling_attribution[0m
+[32;1m        PASS[0m [   0.015s] (358/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1mrecognizes_windows_executor_plugin_cache_root[0m
+[32;1m        PASS[0m [   0.018s] (359/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1mrejects_ambiguous_commands_overlaps_and_symlink_escapes[0m
+[32;1m        PASS[0m [   0.019s] (360/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1mresolves_local_attribution_for_safe_interpreters_and_wrappers[0m
+[32;1m        PASS[0m [   0.019s] (361/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1mresolves_manifest_operation_for_exact_attributed_script[0m
+[32;1m        PASS[0m [   0.017s] (362/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1mresolves_primary_runtime_scripts_from_the_installed_plugin_cache[0m
+[32;1m        PASS[0m [   0.021s] (363/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1mresolves_relocated_script_through_executor_filesystem[0m
+[32;1m        PASS[0m [   0.023s] (364/420) [35;1mcodex-core-plugins[0m [36mscript_attribution::tests[0m[36m::[0m[34;1mtrusted_roots_require_verified_curated_or_remote_cache[0m
+[32;1m        PASS[0m [   0.017s] (365/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mapple_git_without_developer_tools_is_unavailable[0m
+[32;1m        PASS[0m [   0.014s] (366/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mcurated_plugins_repo_path_uses_codex_home_tmp_dir[0m
+[32;1m        PASS[0m [   0.018s] (367/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mextract_zipball_strips_privilege_bits_and_preserves_regular_unix_permissions[0m
+[32;1m        PASS[0m [   0.014s] (368/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mgit_command_sanitizes_ambient_repository_environment[0m
+[32;1m        PASS[0m [   0.067s] (369/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mextract_zipball_preserves_compressed_payloads[0m
+[32;1m        PASS[0m [   0.117s] (370/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mbackup_archive_routes_metadata_and_backend_supplied_download_urls[0m
+[32;1m        PASS[0m [   0.066s] (371/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mordinary_clone_rejects_tracked_embedded_bare_repository[0m
+[32;1m        PASS[0m [   0.011s] (372/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mread_curated_plugins_sha_reads_trimmed_sha_file[0m
+[32;1m        PASS[0m [   0.012s] (373/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mread_extracted_backup_archive_git_sha_reads_head_ref_from_extracted_repo[0m
+[32;1m        PASS[0m [   0.012s] (374/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mread_extracted_backup_archive_git_sha_rejects_non_refs_head_target[0m
+[32;1m        PASS[0m [   0.131s] (375/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mgithub_http_routes_repository_ref_and_zipball_urls[0m
+[32;1m        PASS[0m [   0.012s] (376/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mread_extracted_backup_archive_git_sha_rejects_path_traversal_ref[0m
+[32;1m        PASS[0m [   0.012s] (377/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mremove_stale_curated_repo_temp_dirs_removes_only_matching_directories[0m
+[32;1m        PASS[0m [   0.125s] (378/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mpretrust_git_sync_ignores_repository_local_transport_config[0m
+[32;1m        PASS[0m [   0.121s] (379/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_falls_back_to_http_when_git_is_unavailable[0m
+[32;1m        PASS[0m [   0.216s] (380/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_falls_back_to_export_archive_when_no_snapshot_exists[0m
+[32;1m        PASS[0m [   0.139s] (381/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_skips_archive_download_when_sha_matches[0m
+[32;1m        PASS[0m [   0.248s] (382/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_falls_back_to_http_when_git_sync_fails[0m
+[32;1m        PASS[0m [   0.121s] (383/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_skips_export_archive_when_snapshot_exists[0m
+[32;1m        PASS[0m [   0.120s] (384/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_uses_http_without_git_transport[0m
+[32;1m        PASS[0m [   0.318s] (385/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_via_git_cleans_up_staged_dir_on_fetch_failure[0m
+[32;1m        PASS[0m [   0.115s] (386/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_via_http_cleans_up_staged_dir_on_extract_failure[0m
+[32;1m        PASS[0m [   0.012s] (387/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mactive_plugin_version_compares_semver_versions_semantically[0m
+[32;1m        PASS[0m [   0.012s] (388/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mactive_plugin_version_prefers_default_local_version_when_multiple_versions_exist[0m
+[32;1m        PASS[0m [   0.012s] (389/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mactive_plugin_version_reads_version_directory_name[0m
+[32;1m        PASS[0m [   0.012s] (390/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mactive_plugin_version_returns_latest_version_when_default_is_missing[0m
+[32;1m        PASS[0m [   0.012s] (391/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1magent_plugin_blank_version_uses_default_version[0m
+[32;1m        PASS[0m [   0.011s] (392/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1magent_plugin_data_root_is_stable_and_unambiguous[0m
+[32;1m        PASS[0m [   0.013s] (393/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1magent_plugin_install_does_not_migrate_commands[0m
+[32;1m        PASS[0m [   0.013s] (394/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1magent_plugin_install_skips_symlinked_executable[0m
+[32;1m        PASS[0m [   0.013s] (395/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1magent_plugin_install_skips_symlinked_skill_file[0m
+[32;1m        PASS[0m [   0.013s] (396/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_accepts_manifest_mcp_server_objects[0m
+[32;1m        PASS[0m [   0.013s] (397/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_copies_plugin_into_default_marketplace[0m
+[32;1m        PASS[0m [   0.013s] (398/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_prefers_on_disk_manifest_version_over_fallback[0m
+[32;1m        PASS[0m [   0.012s] (399/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_rejects_blank_manifest_version[0m
+[32;1m        PASS[0m [   0.012s] (400/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_rejects_manifest_names_that_do_not_match_marketplace_plugin_name[0m
+[32;1m        PASS[0m [   0.011s] (401/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_rejects_manifest_names_with_path_separators[0m
+[32;1m        PASS[0m [   0.010s] (402/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_rejects_marketplace_names_with_path_separators[0m
+[32;1m        PASS[0m [   0.011s] (403/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_rejects_symlinked_manifest_directory[0m
+[32;1m        PASS[0m [   0.012s] (404/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_rejects_symlinked_manifest_that_hides_lower_precedence_mcp_server[0m
+[32;1m        PASS[0m [   0.013s] (405/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_stages_fallback_manifest_when_source_has_no_manifest[0m
+[32;1m        PASS[0m [   0.620s] (406/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_via_git_preserves_existing_snapshot_on_validation_failure[0m
+[32;1m        PASS[0m [   0.016s] (407/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_uses_manifest_name_for_destination_and_key[0m
+[32;1m        PASS[0m [   0.019s] (408/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_with_new_version_keeps_existing_plugin_root_and_prunes_old_versions[0m
+[32;1m        PASS[0m [   0.017s] (409/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1minstall_with_version_uses_requested_cache_version[0m
+[32;1m        PASS[0m [   0.013s] (410/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mold_plugin_version_would_stay_active_for_local_or_later_versions[0m
+[32;1m        PASS[0m [   0.011s] (411/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mplugin_data_root_derives_path_from_key[0m
+[32;1m        PASS[0m [   0.010s] (412/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mplugin_root_derives_path_from_key_and_version[0m
+[32;1m        PASS[0m [   0.011s] (413/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mplugin_root_rejects_path_separators_in_key_segments[0m
+[32;1m        PASS[0m [   0.014s] (414/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mremote_plugin_install_metadata_follows_installed_cache_lifecycle[0m
+[32;1m        PASS[0m [   0.013s] (415/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mremote_plugin_install_metadata_rejects_unsupported_schema_version[0m
+[32;1m        PASS[0m [   0.010s] (416/420) [35;1mcodex-core-plugins[0m [36mstore::tests[0m[36m::[0m[34;1mtry_new_rejects_relative_codex_home[0m
+[32;1m        PASS[0m [   0.011s] (417/420) [35;1mcodex-core-plugins[0m [36mtoggles::tests[0m[36m::[0m[34;1mcollect_plugin_enabled_candidates_uses_last_write_for_same_plugin[0m
+[32;1m        PASS[0m [   0.012s] (418/420) [35;1mcodex-core-plugins[0m [36mtoggles::tests[0m[36m::[0m[34;1mcollect_plugin_enabled_candidates_tracks_direct_and_table_writes[0m
+[32;1m        PASS[0m [   1.318s] (419/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1msync_openai_plugins_repo_via_git_succeeds_with_local_rewritten_remote[0m
+[32;1m        PASS[0m [   2.627s] (420/420) [35;1mcodex-core-plugins[0m [36mstartup_sync::tests[0m[36m::[0m[34;1mconcurrent_syncs_serialize_fetches_without_skipping_remote_checks[0m
+────────────
+[32;1m     Summary[0m [   7.985s] [1m420[0m tests run: [1m420[0m [32;1mpassed[0m, [1m0[0m [33;1mskipped[0m

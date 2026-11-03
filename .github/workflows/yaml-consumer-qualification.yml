@@ -1,0 +1,116 @@
+name: YAML consumer compatibility qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/yaml-consumer-qualification.yml
+      - qualification/yaml-safe-compatibility/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/utils/yaml/**
+      - codex-rs/third_party/serde-saphyr-2.1.0/**
+      - codex-rs/skills/**
+      - codex-rs/ext/skills/**
+      - codex-rs/core-plugins/**
+      - codex-rs/external-agent-migration/**
+      - MODULE.bazel.lock
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: yaml-compatibility-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-consumer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - codex-utils-yaml
+          - codex-skills
+          - codex-skills-extension
+          - codex-core-plugins
+          - codex-external-agent-migration
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install original Linux native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.151
+      - name: Run complete native consumer package with repository defaults
+        env:
+          YAML_PACKAGE: ${{ matrix.package }}
+        run: python3 qualification/yaml-safe-compatibility/run_qualification.py native --package "$YAML_PACKAGE" --out "$RUNNER_TEMP/yaml-native"
+      - name: Retain exact input and original command results
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: yaml-native-${{ matrix.package }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/yaml-native
+          if-no-files-found: error
+          retention-days: 7
+
+  dependency-graph:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Resolve actual complete Cargo graph
+        run: python3 qualification/yaml-safe-compatibility/run_qualification.py graph --out "$RUNNER_TEMP/yaml-graph"
+      - name: Retain graph qualification
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: yaml-graph-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/yaml-graph
+          if-no-files-found: error
+          retention-days: 7
+
+  bazel-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: yaml-compatibility-lock
+      - name: Generate and check the real Bazel lock and build the utility test
+        run: python3 qualification/yaml-safe-compatibility/run_qualification.py bazel --out "$RUNNER_TEMP/yaml-bazel"
+      - name: Retain generated lock and diagnostics
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: yaml-bazel-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/yaml-bazel
+          if-no-files-found: error
+          retention-days: 7

@@ -1,0 +1,117 @@
+{
+  "schema": "yaml-hosted-evidence-index-v1",
+  "artifacts": [
+    {
+      "id": 13250504069,
+      "name": "yaml-graph-b201d976.zip",
+      "bytes": 607918,
+      "sha256": "148529c35f0fd4cbcbd10801dcde80d2859086b470126ef7fe0be30e194d6949",
+      "run_id": 41676913822,
+      "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+      "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+      "receipt": "graph/RECEIPT.json",
+      "receipt_sha256": "8ce001f54e86d1ab0ef1262871effe08c0fcd6ab38d926cc1a5554887ae58a2e"
+    },
+    {
+      "id": 13251436229,
+      "name": "yaml-native-codex-utils-yaml-b201d976.zip",
+      "bytes": 6623,
+      "sha256": "1368d9686bc084e51cf85b4aa97cbcf7e58c5c9db739393e5b7c78f65647593c",
+      "run_id": 41676913822,
+      "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+      "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+      "receipt": "native-utils/RECEIPT.json",
+      "receipt_sha256": "980a2cb7f94ecd0e3a652d69351bcb4fbfe22e03449d8b5c5b5dedc476fe6da1"
+    },
+    {
+      "id": 13251546547,
+      "name": "yaml-bazel-b201d976.zip",
+      "bytes": 231695,
+      "sha256": "bbc67f1d0c8351bfdcfbede5688b2809f51adc8e97006ba443c6705c3895ee15",
+      "run_id": 41676913822,
+      "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+      "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+      "receipt": "bazel/RECEIPT.json",
+      "receipt_sha256": "8a83ed31e08f4e82c25acaef7e4b3d92043468f7ff08397394e0ec6dffb01b57"
+    },
+    {
+      "id": 13249944903,
+      "name": "yaml-native-codex-skills-b201d976.zip",
+      "bytes": 14651,
+      "sha256": "d5e6cc86d757b993420003664db41c43c8b414804b2dd8f3d2bfa07701ce38ec",
+      "run_id": 41676913822,
+      "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+      "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+      "receipt": "native-skills/RECEIPT.json",
+      "receipt_sha256": "e78383db4abadb72ac6f90f51d0a0f286b90e2e5b0feb561cdbf5588ec4191f4",
+      "test_summary": [
+        "     Summary [   0.116s] 49 tests run: 49 passed, 0 skipped"
+      ]
+    },
+    {
+      "id": 13251017891,
+      "name": "yaml-native-codex-skills-extension-b201d976.zip",
+      "bytes": 26588,
+      "sha256": "da350dc56c3ab6095968c1dfbadaefb16dade0272df90acac4138661914f4b9e",
+      "run_id": 41676913822,
+      "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+      "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+      "receipt": "native-skills-extension/RECEIPT.json",
+      "receipt_sha256": "b51e9452a0a9440e90f02986d66b720133781ffc74d75b468853b24f32048300",
+      "test_summary": [
+        "     Summary [   0.944s] 175 tests run: 175 passed, 0 skipped"
+      ]
+    },
+    {
+      "id": 13250893670,
+      "name": "yaml-native-codex-core-plugins-b201d976.zip",
+      "bytes": 32285,
+      "sha256": "fe9e1bdd00389f29f7072a60ce1b6cc3d2410b6a387dd5e8d3d2b2b39a397621",
+      "run_id": 41676913822,
+      "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+      "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+      "receipt": "native-core-plugins/RECEIPT.json",
+      "receipt_sha256": "23ee5781a538a90f6356a5b90a84848827ca91ca9c1e83989754986fe3aefa34",
+      "test_summary": [
+        "     Summary [   7.985s] 420 tests run: 420 passed, 0 skipped"
+      ]
+    },
+    {
+      "id": 13252846112,
+      "name": "yaml-native-codex-external-agent-migration-b201d976.zip",
+      "bytes": 26692,
+      "sha256": "8c90e0ff9a649e163d51092e21dcbf3444c0deaa1f71bfe3a6ce5849f94b9d37",
+      "run_id": 41676913822,
+      "source_commit": "b201d976572f24136a46128169fc627857e45f2b",
+      "source_tree": "0092ca25ea4df77bfeee663f06cf9876a50a1625",
+      "receipt": "native-external-agent-migration/RECEIPT.json",
+      "receipt_sha256": "664ce648d83553b44f816e4fb9b9b8d27060cbdf8104c9ce1258e0aff8ea270e",
+      "test_summary": [
+        "     Summary [   2.749s] 166 tests run: 166 passed, 0 skipped"
+      ]
+    }
+  ],
+  "generated_lock": {
+    "path": "MODULE.bazel.lock",
+    "sha256": "5a6fbcf975d99e97e5562677643f3960e34929d423d22e788c6d41a43247ae26",
+    "bytes": 1664673,
+    "origin_artifact": 13251546547,
+    "original_command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "independent_check": [
+      "just",
+      "bazel-lock-check"
+    ],
+    "generated_exact_bytes_copied": true
+  },
+  "omitted_reproducible_output": {
+    "cargo-metadata-all-features.stdout": {
+      "bytes": 8156923,
+      "sha256": "60c4633d48cded5e1f0f5d3906529ace1d33db612e74ec97121b73a17e968969",
+      "artifact_id": 13250504069
+    }
+  },
+  "scope": "All seven custom qualification jobs passed on b201d976: complete five native packages (820 tests, zero skipped), full all-features Cargo graph and original Bazel generation/check/utility test. Source inputs remained unchanged for the 75 original measured inputs. Final-head original CI and a check of the committed lock before regeneration remain required. No global or production acceptance."
+}
