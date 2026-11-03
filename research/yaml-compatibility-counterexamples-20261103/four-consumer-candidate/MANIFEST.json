@@ -1,0 +1,62 @@
+{
+  "schema": "yaml-four-consumer-candidate-source-v1",
+  "official_crate_sha256": "3f4dc2714fc5632417a6e979602d7044bad8f2880c63fc7217087180acec31b6",
+  "official_vcs": "38f420228cd783db25343cbe71ab90e806f0de30",
+  "changed_files": [
+    {
+      "path": "src/de/cfg.rs",
+      "old_sha256": "b877c37523431b98f5d322a5500c80620ce44e22b564ad9c2d95decaa78e0393",
+      "new_sha256": "24f29e5c0235a91a727414e1184007490be9c483db01a97adb1be8288cde91e6",
+      "bytes": 3917
+    },
+    {
+      "path": "src/de/deserializer.rs",
+      "old_sha256": "69a9fcd2c2e24fe64fa67f601cdf91684d01ffb6c7c00cd832d8e9468ed245eb",
+      "new_sha256": "83689c15720ab7a34d0baad1448788d9c82c59173d27669c0a7739117966a585",
+      "bytes": 138136
+    },
+    {
+      "path": "src/de/legacy_scalars.rs",
+      "old_sha256": null,
+      "new_sha256": "cb2253e86056dfee7cc1e07901c298fb991ae4404b4dc492be54689e0991a3c2",
+      "bytes": 5753
+    },
+    {
+      "path": "src/de/live_events.rs",
+      "old_sha256": "982d820f6fb25640c034b93384d36b40c0011d736da90b39ff51e93353016f35",
+      "new_sha256": "bf42654ed55477e2900f4a696dab466b509073a19f4bb6ae973f530d7a465d67",
+      "bytes": 70195
+    },
+    {
+      "path": "src/de/mod.rs",
+      "old_sha256": "b728961ecb65d8e1b2baa68e6f6b009cb82ea391ea93b8348208767bd9461313",
+      "new_sha256": "b17906d81cb39ea3484e155a8503c209a03cbc68057267021084d2f54260e5a9",
+      "bytes": 3258
+    },
+    {
+      "path": "src/de/options.rs",
+      "old_sha256": "08f561f903052111b2114e3f7739d37c036d049fae8348246d0513732e876c16",
+      "new_sha256": "0993c72d29c3628450ecec4d3cd09923f2f9c3834b98bb494528556378e9f535",
+      "bytes": 46174
+    },
+    {
+      "path": "src/de/tags.rs",
+      "old_sha256": "e93aefa221a3ac91454095f62533ebfc73271ee01dcafc7ababfc6c468daca44",
+      "new_sha256": "acb457cdea3baeb2a4f0c2487fbeafee9bd182ac45b1ff3b2f9bb7bb7f29125f",
+      "bytes": 16521
+    }
+  ],
+  "patch_sha256": "e6cbecceb8b7604a3b4b9a3be6b3a3420089fea5b586a245ba35a26b2241cd22",
+  "adapter_sha256": "0c3499c58fe87998aa0984c9a9a5bd976bc3be93309d9a526b4ceb2d80cb73e2",
+  "official_resource_budgets_unchanged": true,
+  "limited_typed_targets": [
+    "Any",
+    "Bool",
+    "U32",
+    "String",
+    "Option<String>",
+    "Vec",
+    "Map"
+  ],
+  "production_accepted": false
+}

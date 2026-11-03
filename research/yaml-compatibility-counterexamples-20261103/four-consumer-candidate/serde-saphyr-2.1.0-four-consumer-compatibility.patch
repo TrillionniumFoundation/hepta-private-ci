@@ -1,0 +1,516 @@
+--- a/src/de/cfg.rs
++++ b/src/de/cfg.rs
+@@ -23,6 +23,9 @@
+     pub(crate) ignore_binary_tag_for_string: bool,
+     /// Do not take into String type that looks like number or boolean (require quoting)
+     pub(crate) no_schema: bool,
++    pub(crate) legacy_string_semantics: bool,
++    pub(crate) legacy_serde_yaml_scalars: bool,
++    pub(crate) legacy_serde_yaml_node_tags: bool,
+     /// Reject tags other than standard string tags on Rust struct field names.
+     pub(crate) reject_tagged_field_names: bool,
+     /// Effective handling of non-finite floats in `deserialize_any`, with the legacy
+@@ -49,6 +52,9 @@
+             angle_conversions: options.angle_conversions,
+             ignore_binary_tag_for_string: options.ignore_binary_tag_for_string,
+             no_schema: options.no_schema,
++            legacy_string_semantics: options.legacy_string_semantics,
++            legacy_serde_yaml_scalars: options.legacy_serde_yaml_scalars,
++            legacy_serde_yaml_node_tags: options.legacy_serde_yaml_node_tags,
+             reject_tagged_field_names: options.reject_tagged_field_names,
+             non_finite_float_policy: match options.non_finite_float_policy {
+                 NonFiniteFloatPolicy::Default if options.reject_non_finite_typeless_float => {
+--- a/src/de/deserializer.rs
++++ b/src/de/deserializer.rs
+@@ -570,6 +570,20 @@
+         Ok((view.effective, view.tag, view.location))
+     }
+ 
++    fn legacy_scalar<V: Visitor<'de>>(
++        &mut self,
++        target: super::legacy_scalars::Target,
++        visitor: V,
++    ) -> Result<V::Value, Error> {
++        let raw_tag = match self.ev.peek()? {
++            Some(Ev::Scalar { raw_tag, .. }) => raw_tag.as_deref().map(str::to_owned),
++            Some(other) => return Err(Error::unexpected("scalar").with_location(other.location())),
++            None => return Err(eof_with_loc(self.ev)),
++        };
++        let view = self.take_scalar_view()?;
++        super::legacy_scalars::visit(view.effective, raw_tag.as_deref(), view.style, view.location, target, visitor)
++    }
++
+     fn take_scalar_view(&mut self) -> Result<ScalarView<'de>, Error> {
+         match self.ev.next()? {
+             Some(Ev::Scalar {
+@@ -908,6 +922,9 @@
+     /// Flow: We inspect the next event; scalars are parsed with the heuristic above; containers
+     /// delegate to `deserialize_seq`/`deserialize_map`.
+     fn deserialize_any<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
++        if self.cfg.legacy_serde_yaml_scalars && matches!(self.ev.peek()?, Some(Ev::Scalar { .. })) {
++            return self.legacy_scalar(super::legacy_scalars::Target::Any, visitor);
++        }
+         // Only Serde's generic Content buffer needs tagged nodes represented as
+         // synthetic maps. General untyped visitors discard YAML tags, while other
+         // private Serde visitors may attach their own meaning to the original map.
+@@ -1085,6 +1102,9 @@
+     /// Caller: Serde when target expects `bool`.
+     /// Flow: scalar text → `Visitor::visit_bool`.
+     fn deserialize_bool<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
++        if self.cfg.legacy_serde_yaml_scalars {
++            return self.legacy_scalar(super::legacy_scalars::Target::Bool, visitor);
++        }
+         let (s, tag, location) = self.take_scalar_cow_event()?;
+         self.validate_scalar_tag(tag, SfTag::Bool, "boolean", location)?;
+         let s = s.as_ref();
+@@ -1153,6 +1173,9 @@
+     }
+     /// Parse an unsigned 32-bit integer.
+     fn deserialize_u32<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
++        if self.cfg.legacy_serde_yaml_scalars {
++            return self.legacy_scalar(super::legacy_scalars::Target::U32, visitor);
++        }
+         let (s, tag, location) = self.take_scalar_cow_event()?;
+         self.validate_scalar_tag(tag, SfTag::Int, "u32", location)?;
+         let v: u32 =
+@@ -1239,6 +1262,32 @@
+     /// When the target type requires `&str`, that fallback produces a helpful error suggesting
+     /// `String` or `Cow<str>`, with a [`TransformReason`] describing why borrowing was impossible.
+     fn deserialize_str<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
++        if self.cfg.legacy_string_semantics {
++            match self.ev.peek()? {
++                None => return Err(eof_with_loc(self.ev)),
++                // Upstream represents a document with no node using an untagged,
++                // synthetic Null event. A real empty scalar has SfTag::None.
++                Some(Ev::Scalar { tag: SfTag::Null, raw_tag: None, value, .. }) if value.is_empty() => {
++                    return Err(eof_with_loc(self.ev));
++                }
++                Some(_) => {},
++            }
++            let view = self.take_scalar_view()?;
++            // granit-parser denotes a missing scalar after an explicit document
++            // marker with a zero-length source span and the sentinel "~". Keep
++            // the original event for all budget/replay accounting, but preserve
++            // its empty decoded string for the legacy typed target.
++            if self.cfg.legacy_serde_yaml_node_tags && view.tag == SfTag::None
++                && matches!(view.style, ScalarStyle::Plain) && view.raw == "~"
++                && view.location.span().is_empty()
++            {
++                return visitor.visit_borrowed_str("");
++            }
++            return match view.effective {
++                Cow::Borrowed(value) => visitor.visit_borrowed_str(value),
++                Cow::Owned(value) => visitor.visit_string(value),
++            };
++        }
+         let view = match self.peek_scalar_view()? {
+             Some(view) => {
+                 // Check for null - not valid for string deserialization. A deliberately
+@@ -1329,6 +1378,9 @@
+     ///
+     /// **From/To:** scalar text (or base64-decoded bytes) → `Visitor::visit_string`.
+     fn deserialize_string<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
++        if self.cfg.legacy_string_semantics {
++            return self.deserialize_str(visitor);
++        }
+         // Reject YAML null when deserializing into String. Allow quoted forms.
+         let view = if let Some(view) = self.peek_scalar_view()? {
+             // If explicitly tagged as null, or plain null-like, this is not a valid String.
+@@ -1471,6 +1523,34 @@
+                 None => return Err(eof_with_loc(self.ev)),
+             }
+             return visitor.visit_none();
++        }
++
++        if self.cfg.legacy_string_semantics {
++            let is_none = match self.ev.peek()? {
++                None => true,
++                Some(Ev::Scalar { value, raw_tag, style, location, .. })
++                    if matches!(style, ScalarStyle::Plain) =>
++                {
++                    let explicit_null = matches!(value.as_ref(), "null" | "Null" | "NULL" | "~");
++                    match raw_tag.as_deref() {
++                        None => value.is_empty() || explicit_null,
++                        Some("tag:yaml.org,2002:null") => {
++                            if !explicit_null {
++                                return Err(Error::InvalidScalar { ty: "null", location: *location });
++                            }
++                            true
++                        }
++                        Some(_) => false,
++                    }
++                }
++                Some(_) => false,
++            };
++            return if is_none {
++                let _ = self.ev.next()?;
++                visitor.visit_none()
++            } else {
++                visitor.visit_some(self)
++            };
+         }
+ 
+         if let Some((value, tag, style, _location)) = self.peek_effective_scalar()?
+@@ -1626,6 +1706,20 @@
+     /// `!!binary` scalar as a byte *sequence* view when the caller expects a
+     /// sequence of u8.
+     fn deserialize_seq<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
++        if self.cfg.legacy_serde_yaml_node_tags {
++            let empty = match self.ev.peek()? {
++                None => true,
++                Some(Ev::Scalar { value, style, tag, location, .. }) => {
++                    matches!(style, ScalarStyle::Plain) && (value.is_empty()
++                        || (*tag == SfTag::None && value == "~" && location.span().is_empty()))
++                },
++                Some(_) => false,
++            };
++            if empty {
++                let _ = self.ev.next()?;
++                return visitor.visit_seq(serde_core::de::value::SeqDeserializer::<_, Error>::new(std::iter::empty::<u8>()));
++            }
++        }
+         if let Some((_, SfTag::Binary, _, _)) = self.peek_effective_scalar()? {
+             let (scalar, data_location) = match self.ev.next()? {
+                 Some(Ev::Scalar {
+@@ -1818,6 +1912,20 @@
+     /// Caller: Serde field visitors for maps and for Rust structs
+     /// (which Serde also requests via `deserialize_map`).
+     fn deserialize_map<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
++        if self.cfg.legacy_serde_yaml_node_tags {
++            let empty = match self.ev.peek()? {
++                None => true,
++                Some(Ev::Scalar { value, style, tag, location, .. }) => {
++                    matches!(style, ScalarStyle::Plain) && (value.is_empty()
++                        || (*tag == SfTag::None && value == "~" && location.span().is_empty()))
++                },
++                Some(_) => false,
++            };
++            if empty {
++                let _ = self.ev.next()?;
++                return visitor.visit_map(serde_core::de::value::MapDeserializer::<_, Error>::new(std::iter::empty::<(u8, u8)>()));
++            }
++        }
+         // Same-line separator comments on the parent field belong to this mapping node.
+         // `Commented<Container>` consumes those comments before this point; a plain map
+         // must not reattach them to the first child key.
+--- /dev/null
++++ b/src/de/legacy_scalars.rs
+@@ -0,0 +1,148 @@
++// Scalar-resolution helpers adapted from serde_yaml 0.9.34+deprecated src/de.rs.
++// SPDX-License-Identifier: MIT OR Apache-2.0
++// The scanner, alias replay and budget traversal remain serde-saphyr/granit-parser.
++use std::borrow::Cow;
++use std::num::ParseIntError;
++use serde_core::de::Visitor;
++use granit_parser::ScalarStyle;
++use super::{Error, Location};
++#[derive(Clone, Copy)]
++pub(super) enum Target { Any, Bool, U32 }
++fn boolean(s:&str)->Option<bool>{match s{"true"|"True"|"TRUE"=>Some(true),"false"|"False"|"FALSE"=>Some(false),_=>None}}
++fn null(s:&str)->bool{matches!(s,"null"|"Null"|"NULL"|"~")}
++fn string<'de,V:Visitor<'de>>(s:Cow<'de,str>,v:V)->Result<V::Value,Error>{match s{Cow::Borrowed(s)=>v.visit_borrowed_str(s),Cow::Owned(s)=>v.visit_string(s)}}
++fn integer<'de,V:Visitor<'de>>(s:&str,v:V)->Result<Result<V::Value,Error>,V>{
++ if let Some(n)=parse_unsigned_int(s,u64::from_str_radix){return Ok(v.visit_u64(n));}
++ if let Some(n)=parse_negative_int(s,i64::from_str_radix){return Ok(v.visit_i64(n));}
++ if let Some(n)=parse_unsigned_int(s,u128::from_str_radix){return Ok(v.visit_u128(n));}
++ if let Some(n)=parse_negative_int(s,i128::from_str_radix){return Ok(v.visit_i128(n));}
++ Err(v)
++}
++pub(super) fn visit<'de,V:Visitor<'de>>(s:Cow<'de,str>,tag:Option<&str>,style:ScalarStyle,location:Location,target:Target,v:V)->Result<V::Value,Error>{
++ let error=|ty|Error::InvalidScalar{ty,location};
++ match target {
++  Target::Bool|Target::U32=>{
++   let expected=match target{Target::Bool=>"tag:yaml.org,2002:bool",_=>"tag:yaml.org,2002:int"};
++   if !(matches!(style,ScalarStyle::Plain)||(matches!(style,ScalarStyle::Literal)&&tag==Some(expected))){return Err(error("legacy scalar style"));}
++   return match target {
++    Target::Bool=>v.visit_bool(boolean(&s).ok_or_else(||error("boolean"))?),
++    Target::U32=>v.visit_u64(parse_unsigned_int(&s,u64::from_str_radix).ok_or_else(||error("u32"))?),
++    Target::Any=>unreachable!(),
++   };
++  }
++  Target::Any=>{}
++ }
++ match tag {
++  Some("tag:yaml.org,2002:bool")=>return v.visit_bool(boolean(&s).ok_or_else(||error("boolean"))?),
++  Some("tag:yaml.org,2002:int")=>return integer(&s,v).unwrap_or_else(|_|Err(error("integer"))),
++  Some("tag:yaml.org,2002:float")=>return v.visit_f64(parse_f64(&s).ok_or_else(||error("floating point"))?),
++  Some("tag:yaml.org,2002:null")=>{if !null(&s){return Err(error("null"));}return v.visit_unit();}
++  Some(tag) if !tag.starts_with('!')=>return string(s,v),
++  _=>{}
++ }
++ if !matches!(style,ScalarStyle::Plain){return string(s,v);}
++ if s.is_empty()||null(&s){return v.visit_unit();}
++ if let Some(b)=boolean(&s){return v.visit_bool(b);}
++ let v=match integer(&s,v){Ok(result)=>return result,Err(v)=>v};
++ if !digits_but_not_number(&s){if let Some(n)=parse_f64(&s){return v.visit_f64(n);}}
++ string(s,v)
++}
++fn parse_unsigned_int<T>(
++    scalar: &str,
++    from_str_radix: fn(&str, radix: u32) -> Result<T, ParseIntError>,
++) -> Option<T> {
++    let unpositive = scalar.strip_prefix('+').unwrap_or(scalar);
++    if let Some(rest) = unpositive.strip_prefix("0x") {
++        if rest.starts_with(['+', '-']) {
++            return None;
++        }
++        if let Ok(int) = from_str_radix(rest, 16) {
++            return Some(int);
++        }
++    }
++    if let Some(rest) = unpositive.strip_prefix("0o") {
++        if rest.starts_with(['+', '-']) {
++            return None;
++        }
++        if let Ok(int) = from_str_radix(rest, 8) {
++            return Some(int);
++        }
++    }
++    if let Some(rest) = unpositive.strip_prefix("0b") {
++        if rest.starts_with(['+', '-']) {
++            return None;
++        }
++        if let Ok(int) = from_str_radix(rest, 2) {
++            return Some(int);
++        }
++    }
++    if unpositive.starts_with(['+', '-']) {
++        return None;
++    }
++    if digits_but_not_number(scalar) {
++        return None;
++    }
++    from_str_radix(unpositive, 10).ok()
++}
++
++fn parse_negative_int<T>(
++    scalar: &str,
++    from_str_radix: fn(&str, radix: u32) -> Result<T, ParseIntError>,
++) -> Option<T> {
++    if let Some(rest) = scalar.strip_prefix("-0x") {
++        let negative = format!("-{}", rest);
++        if let Ok(int) = from_str_radix(&negative, 16) {
++            return Some(int);
++        }
++    }
++    if let Some(rest) = scalar.strip_prefix("-0o") {
++        let negative = format!("-{}", rest);
++        if let Ok(int) = from_str_radix(&negative, 8) {
++            return Some(int);
++        }
++    }
++    if let Some(rest) = scalar.strip_prefix("-0b") {
++        let negative = format!("-{}", rest);
++        if let Ok(int) = from_str_radix(&negative, 2) {
++            return Some(int);
++        }
++    }
++    if digits_but_not_number(scalar) {
++        return None;
++    }
++    from_str_radix(scalar, 10).ok()
++}
++
++pub(crate) fn parse_f64(scalar: &str) -> Option<f64> {
++    let unpositive = if let Some(unpositive) = scalar.strip_prefix('+') {
++        if unpositive.starts_with(['+', '-']) {
++            return None;
++        }
++        unpositive
++    } else {
++        scalar
++    };
++    if let ".inf" | ".Inf" | ".INF" = unpositive {
++        return Some(f64::INFINITY);
++    }
++    if let "-.inf" | "-.Inf" | "-.INF" = scalar {
++        return Some(f64::NEG_INFINITY);
++    }
++    if let ".nan" | ".NaN" | ".NAN" = scalar {
++        return Some(f64::NAN.copysign(1.0));
++    }
++    if let Ok(float) = unpositive.parse::<f64>() {
++        if float.is_finite() {
++            return Some(float);
++        }
++    }
++    None
++}
++
++pub(crate) fn digits_but_not_number(scalar: &str) -> bool {
++    // Leading zero(s) followed by numeric characters is a string according to
++    // the YAML 1.2 spec. https://yaml.org/spec/1.2/spec.html#id2761292
++    let scalar = scalar.strip_prefix(['-', '+']).unwrap_or(scalar);
++    scalar.len() > 1 && scalar.starts_with('0') && scalar[1..].bytes().all(|b| b.is_ascii_digit())
++}
++
+--- a/src/de/live_events.rs
++++ b/src/de/live_events.rs
+@@ -309,6 +309,8 @@
+ 
+     /// Whether robotics-only angle tags are supported in strict mode.
+     angle_conversions: bool,
++    preserve_local_application_tags: bool,
++    legacy_serde_yaml_node_tags: bool,
+ 
+     /// Structural context used to constrain YAML 1.1 key-only tags in strict mode.
+     tag_context: SmallVec<[TagContextFrame; 16]>,
+@@ -375,6 +377,8 @@
+         let reject_unsupported_tags = options.reject_unsupported_tags;
+         let preserve_original_tags = options.reject_tagged_field_names;
+         let angle_conversions = options.angle_conversions;
++        let preserve_local_application_tags = options.preserve_local_application_tags;
++        let legacy_serde_yaml_node_tags = options.legacy_serde_yaml_node_tags;
+         let require_indent = options.require_indent;
+         #[cfg(feature = "properties")]
+         let property_interpolation = PropertyInterpolation::new(
+@@ -444,6 +448,8 @@
+             reject_unsupported_tags,
+             preserve_original_tags,
+             angle_conversions,
++            preserve_local_application_tags,
++            legacy_serde_yaml_node_tags,
+             tag_context: SmallVec::new(),
+ 
+             require_indent,
+@@ -474,6 +480,8 @@
+         let reject_unsupported_tags = options.reject_unsupported_tags;
+         let preserve_original_tags = options.reject_tagged_field_names;
+         let angle_conversions = options.angle_conversions;
++        let preserve_local_application_tags = options.preserve_local_application_tags;
++        let legacy_serde_yaml_node_tags = options.legacy_serde_yaml_node_tags;
+         let require_indent = options.require_indent;
+         #[cfg(feature = "properties")]
+         let property_interpolation = PropertyInterpolation::new(
+@@ -541,6 +549,8 @@
+             reject_unsupported_tags,
+             preserve_original_tags,
+             angle_conversions,
++            preserve_local_application_tags,
++            legacy_serde_yaml_node_tags,
+             tag_context: SmallVec::new(),
+ 
+             require_indent,
+@@ -573,7 +583,7 @@
+         position: NodePosition,
+         location: Location,
+     ) -> Result<(), Error> {
+-        if tag_kind
++        if !self.legacy_serde_yaml_node_tags && tag_kind
+             .requires()
+             .is_some_and(|required| required != node_kind)
+         {
+@@ -1009,7 +1019,7 @@
+                     #[cfg(feature = "include")]
+                     let mut anchor_id = anchor_id;
+ 
+-                    let tag_s = SfTag::from_optional_cow(&tag);
++                    let tag_s = SfTag::from_optional_cow_with_local_policy(&tag, self.preserve_local_application_tags);
+ 
+                     #[cfg(feature = "include")]
+                     if tag_s == SfTag::Include && self.parser.has_resolver() {
+@@ -1077,7 +1087,7 @@
+                 Event::SequenceStart(_style, anchor_id, tag) => {
+                     #[cfg(feature = "include")]
+                     let mut anchor_id = anchor_id;
+-                    let tag_s = SfTag::from_optional_cow(&tag);
++                    let tag_s = SfTag::from_optional_cow_with_local_policy(&tag, self.preserve_local_application_tags);
+                     self.validate_container_tag(
+                         tag_s,
+                         || tag.as_deref().map_or_else(String::new, Tag::original),
+@@ -1150,7 +1160,7 @@
+                 }
+ 
+                 Event::MappingStart(_style, anchor_id, tag) => {
+-                    let tag_s = SfTag::from_optional_cow(&tag);
++                    let tag_s = SfTag::from_optional_cow_with_local_policy(&tag, self.preserve_local_application_tags);
+                     self.validate_container_tag(
+                         tag_s,
+                         || tag.as_deref().map_or_else(String::new, Tag::original),
+--- a/src/de/mod.rs
++++ b/src/de/mod.rs
+@@ -71,6 +71,7 @@
+ mod deserializer;
+ mod events;
+ mod key_nodes;
++mod legacy_scalars;
+ mod spanned_deser;
+ mod tagged_deser;
+ #[cfg(test)]
+--- a/src/de/options.rs
++++ b/src/de/options.rs
+@@ -364,6 +364,28 @@
+     /// are rejected for boolean targets and are not inferred as booleans.
+     /// Default: false (accept YAML 1.1 boolean forms).
+     pub strict_booleans: bool,
++    /// Preserve resolved local application tags such as `!int` or `!include`
++    /// without interpreting their names as aliases for built-in YAML types.
++    /// Genuine global core tags such as `!!int` retain their existing behavior.
++    /// The non-specific `!` tag is unchanged. Default: false.
++    #[cfg_attr(feature = "serde_derived_types", serde(default))]
++    pub preserve_local_application_tags: bool,
++    /// Retain serde_yaml 0.9 typed String and Option scalar handling.
++    /// Strings preserve decoded text irrespective of scalar tags. Only untagged
++    /// plain nulls and valid plain global !!null scalars become Option::None.
++    /// Default: false. This does not claim complete YAML grammar compatibility.
++    #[cfg_attr(feature = "serde_derived_types", serde(default))]
++    pub legacy_string_semantics: bool,
++    /// Retain serde_yaml 0.9 scalar inference plus the typed bool and u32
++    /// conversion rules needed by the compatibility consumers. Default: false.
++    /// This does not change the scanner, aliases, budgets, or other typed targets.
++    #[cfg_attr(feature = "serde_derived_types", serde(default))]
++    pub legacy_serde_yaml_scalars: bool,
++    /// Ignore tag/node-kind mismatch in the legacy compatibility traversal and
++    /// accept empty documents as empty sequences or maps. Default: false.
++    /// Actual target type checks and all event/depth/alias budgets still apply.
++    #[cfg_attr(feature = "serde_derived_types", serde(default))]
++    pub legacy_serde_yaml_node_tags: bool,
+     /// When a field marked with the `!!binary` tag is deserialized into a `String`,
+     /// `serde-saphyr` normally expects the value to be base64-encoded UTF-8.
+     /// If you want to treat the value as a plain string and ignore the `!!binary` tag,
+@@ -746,6 +768,10 @@
+             leading_zero_numbers_as_strings: false,
+             underscored_numbers_as_strings: false,
+             strict_booleans: false,
++            preserve_local_application_tags: false,
++            legacy_string_semantics: false,
++            legacy_serde_yaml_scalars: false,
++            legacy_serde_yaml_node_tags: false,
+             angle_conversions: false,
+             ignore_binary_tag_for_string: false,
+             no_schema: false,
+@@ -799,6 +825,10 @@
+                 &self.underscored_numbers_as_strings,
+             )
+             .field("strict_booleans", &self.strict_booleans)
++            .field("preserve_local_application_tags", &self.preserve_local_application_tags)
++            .field("legacy_string_semantics", &self.legacy_string_semantics)
++            .field("legacy_serde_yaml_scalars", &self.legacy_serde_yaml_scalars)
++            .field("legacy_serde_yaml_node_tags", &self.legacy_serde_yaml_node_tags)
+             .field(
+                 "ignore_binary_tag_for_string",
+                 &self.ignore_binary_tag_for_string,
+--- a/src/de/tags.rs
++++ b/src/de/tags.rs
+@@ -163,6 +163,21 @@
+ }
+ 
+ impl SfTag {
++    /// Classify resolved local application tags independently of core-like names.
++    pub(crate) fn from_optional_cow_with_local_policy(
++        tag: &Option<Cow<Tag>>,
++        preserve_local_application_tags: bool,
++    ) -> SfTag {
++        if preserve_local_application_tags
++            && tag.as_ref().is_some_and(|tag| {
++                tag.suffix_in_namespace("!").is_some_and(|suffix| !suffix.is_empty())
++            })
++        {
++            return SfTag::Other;
++        }
++        Self::from_optional_cow(tag)
++    }
++
+     /// Return the node kind required by this tag, if it has one.
+     ///
+     /// Unknown and non-specific tags have no intrinsic kind requirement. Their
