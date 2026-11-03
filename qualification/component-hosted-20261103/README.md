@@ -1,0 +1,12 @@
+# Original hosted component evidence
+
+This inactive checkpoint preserves six original GitHub Actions artifacts byte for byte. It changes no production source, workflow or acceptance policy. Every chunk is at most 384,000 bytes, below the unchanged repository blob budget; concatenate only in the recorded order and verify the original ZIP and every member hash.
+
+## Qualified component sources
+
+- Operator source `b049d994619da7fe59896bce0dfd7eb850024c01`, run 41690661437: macOS ARM64 and Linux x64 each executed the unchanged 24 Rust tests with zero failures, ignored or filtered cases. Each artifact binds 50 immutable Git inputs. The original Clippy selector still selects the complete Rust test binary, and its Rustc and Clippy actions retain the original RBE execution platform. The outer test retains fresh local execution. Actual logs report Darwin/Linux sandbox executions; Linux's selected platform metadata still names RBE, so that label alone is not evidence of remote execution.
+- AWS source `d548852a3f7af29a9853d8acb0e6d457f8bb1a79`, run 41685242479: macOS, Linux and Windows each passed 5 original AWS consumer and 8 DPoP compatibility cases, with no skipped tests. Each native artifact's 121 inputs exactly match Git bytes, including Windows without a line-ending exception. The Bazel artifact binds 326 inputs, checks the already committed lock before regeneration, regenerates the identical lock, builds the real AWS target and runs its original test. Rust 1.95.0 and lock SHA-256 `c909dc974d03c61c3c7846271cfadd0d2275ba5c82a25cb1d826d4ae2eb7c6c4` apply to this historical source.
+
+The newer combined dependency graph changes inputs and Rust versions. These successes do not certify that later graph, the complete blocking CI, production activation, or the remaining research/performance obligations. All branches remain Draft and HOLD_NO_GO / DENY_ALL.
+
+Run `python3 restore.py /path/to/output` to restore and hash-check the six original archives. This never executes recovered source. For the additional independent Operator checks, copy `operator/download-verification.json` into the restored `operator` directory and run `python3 verify_operator.py --artifacts /path/to/output/operator --repository /path/to/repository`; the repository must contain the immutable source commits. The original AWS verification program is retained at `qualification/aws-dpop/verify_artifacts.py` in its source commit. The root independent receipts and original downloads are included alongside the archive manifest.

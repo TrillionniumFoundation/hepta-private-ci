@@ -1,0 +1,137 @@
+{
+  "commit": "d548852a3f7af29a9853d8acb0e6d457f8bb1a79",
+  "unique_immutable_inputs": 326,
+  "unexpected_source_differences": 0,
+  "results": [
+    {
+      "artifact_id": 13254548696,
+      "source_inputs": 121,
+      "exact_git_bytes": 121,
+      "exact_crlf_checkout_transform": [],
+      "kind": "native",
+      "tests": [
+        5,
+        8
+      ],
+      "zero_skipped": true,
+      "rustc": [
+        "rustc 1.95.0 (59807616e 2026-04-14)",
+        "binary: rustc",
+        "commit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860",
+        "commit-date: 2026-04-14",
+        "host: x86_64-pc-windows-msvc",
+        "release: 1.95.0",
+        "LLVM version: 22.1.2"
+      ]
+    },
+    {
+      "artifact_id": 13254623249,
+      "source_inputs": 121,
+      "exact_git_bytes": 121,
+      "exact_crlf_checkout_transform": [],
+      "kind": "native",
+      "tests": [
+        5,
+        8
+      ],
+      "zero_skipped": true,
+      "rustc": [
+        "rustc 1.95.0 (59807616e 2026-04-14)",
+        "binary: rustc",
+        "commit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860",
+        "commit-date: 2026-04-14",
+        "host: aarch64-apple-darwin",
+        "release: 1.95.0",
+        "LLVM version: 22.1.2"
+      ]
+    },
+    {
+      "artifact_id": 13254922767,
+      "source_inputs": 121,
+      "exact_git_bytes": 121,
+      "exact_crlf_checkout_transform": [],
+      "kind": "native",
+      "tests": [
+        5,
+        8
+      ],
+      "zero_skipped": true,
+      "rustc": [
+        "rustc 1.95.0 (59807616e 2026-04-14)",
+        "binary: rustc",
+        "commit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860",
+        "commit-date: 2026-04-14",
+        "host: x86_64-unknown-linux-gnu",
+        "release: 1.95.0",
+        "LLVM version: 22.1.2"
+      ]
+    },
+    {
+      "artifact_id": 13255087523,
+      "source_inputs": 326,
+      "exact_git_bytes": 326,
+      "exact_crlf_checkout_transform": [],
+      "kind": "bazel",
+      "steps": [
+        {
+          "name": "committed-lock-check",
+          "command": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 16.324206113815308
+        },
+        {
+          "name": "lock-update",
+          "command": [
+            "just",
+            "bazel-lock-update"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 14.547706127166748
+        },
+        {
+          "name": "lock-check",
+          "command": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 2.8564107418060303
+        },
+        {
+          "name": "aws-config-build",
+          "command": [
+            "./.github/scripts/run_bazel_with_buildbuddy.py",
+            "build",
+            "@crates//:aws-config"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 141.64191198349
+        },
+        {
+          "name": "aws-auth-test",
+          "command": [
+            "./.github/scripts/run_bazel_with_buildbuddy.py",
+            "test",
+            "//codex-rs/aws-auth:aws-auth-unit-tests"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 21.78546714782715
+        },
+        {
+          "name": "generated-target",
+          "command": [
+            "./.github/scripts/run_bazel_with_buildbuddy.py",
+            "query",
+            "deps(@crates//:aws-config, 5)",
+            "--output=build"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 4.250410556793213
+        }
+      ],
+      "generated_lock_bytes": 1668385,
+      "generated_lock_sha256": "c909dc974d03c61c3c7846271cfadd0d2275ba5c82a25cb1d826d4ae2eb7c6c4"
+    }
+  ]
+}
