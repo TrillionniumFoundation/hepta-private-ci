@@ -1,8 +1,9 @@
-"""Exercise actual process deadlines; no mocked process or fabricated test success."""
+"""Exercise real process deadlines and strict process-state observation."""
 
 from __future__ import annotations
 
 import contextlib
+import errno
 import hashlib
 import io
 import json
@@ -17,6 +18,14 @@ import unittest
 from unittest.mock import patch
 
 import hepta_ci_exec as executor
+
+
+def process_state(stat: Path) -> str | None:
+    """A vanished procfs task is gone; all other read failures remain errors."""
+    try:
+        return stat.read_text().rsplit(")", 1)[1].split()[0]
+    except (FileNotFoundError, ProcessLookupError):
+        return None
 
 
 class CommandDeadlineTests(unittest.TestCase):
@@ -80,11 +89,7 @@ class CommandDeadlineTests(unittest.TestCase):
         # longer execute or retain a pipe after process-group cancellation.
         for _ in range(100):
             stat = Path(f"/proc/{child_pid}/stat")
-            try:
-                state = stat.read_text().rsplit(")", 1)[1].split()[0]
-            except FileNotFoundError:
-                break
-            if state == "Z":
+            if process_state(stat) in (None, "Z"):
                 break
             time.sleep(0.01)
         else:
@@ -188,6 +193,40 @@ class CommandDeadlineTests(unittest.TestCase):
         self.assertTrue(record["timed_out"])
         self.assertEqual(record["before"], record["after"])
         self.assertEqual(record["exit_code"], 124)
+
+
+class ProcessStateObservationTests(unittest.TestCase):
+    def test_process_disappearance_during_open_or_read_is_gone(self):
+        for error in (
+            FileNotFoundError(errno.ENOENT, "task disappeared before open"),
+            ProcessLookupError(errno.ESRCH, "task disappeared during read"),
+        ):
+            with (
+                self.subTest(error=error),
+                patch.object(Path, "read_text", side_effect=error),
+            ):
+                self.assertIsNone(process_state(Path("/proc/123/stat")))
+
+    def test_permission_and_other_io_failures_are_not_process_exit(self):
+        for error in (
+            PermissionError(errno.EACCES, "permission denied"),
+            OSError(errno.EIO, "failed stat read"),
+        ):
+            with (
+                self.subTest(error=error),
+                patch.object(Path, "read_text", side_effect=error),
+            ):
+                with self.assertRaises(type(error)) as caught:
+                    process_state(Path("/proc/123/stat"))
+                self.assertIs(caught.exception, error)
+
+    def test_live_and_zombie_states_remain_distinct_observations(self):
+        with tempfile.TemporaryDirectory() as directory:
+            stat = Path(directory) / "stat"
+            for state in ("R", "S", "Z"):
+                with self.subTest(state=state):
+                    stat.write_text(f"123 (task with ) parentheses) {state} 1 2 3\n")
+                    self.assertEqual(process_state(stat), state)
 
 
 if __name__ == "__main__":
