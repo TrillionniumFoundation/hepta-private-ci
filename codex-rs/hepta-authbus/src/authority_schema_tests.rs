@@ -26,7 +26,13 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
             // handle closes. Each mutation and owner reopen remains real and
             // isolated, without repeating all migration DDL for every trigger.
             std::fs::copy(&fixture_path, &path).unwrap();
-            std::fs::File::open(&path).unwrap().sync_all().unwrap();
+            std::fs::OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&path)
+                .unwrap()
+                .sync_all()
+                .unwrap();
             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
             // These identifiers come from the freshly migrated reference.
             // Quote and escape them before forming identifier-only DDL; no

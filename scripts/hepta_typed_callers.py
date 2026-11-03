@@ -33,6 +33,9 @@ def _end(code: str, start: int, opening: str, closing: str) -> int:
 
 
 def _declared_aliases(code: str, target: str) -> set[str]:
+    # Both patterns require this literal; absent names need no regex scan.
+    if target not in code:
+        return set()
     aliases = set(re.findall(rf"\b{re.escape(target)}\s+as\s+(\w+)", code))
     aliases.update(
         re.findall(rf"\btype\s+(\w+)\s*=\s*(?:\w+::)*{re.escape(target)}\s*;", code)
@@ -44,24 +47,35 @@ def _normalize_aliases(
     code: str, target: str, aliases: frozenset[str] = frozenset()
 ) -> str:
     aliases = aliases | _declared_aliases(code, target)
+    present = [alias for alias in aliases if alias in code]
+    if (
+        len(present) > 1
+        and re.fullmatch(r"\w+", target)
+        and all(re.fullmatch(r"\w+", alias) for alias in aliases)
+    ):
+        # Whole identifiers cannot introduce another distinct alias on replacement.
+        names = "|".join(re.escape(alias) for alias in sorted(present))
+        return re.sub(rf"\b(?:{names})\b", target, code)
     for alias in aliases:
-        code = re.sub(rf"\b{re.escape(alias)}\b", target, code)
+        if alias in code:
+            code = re.sub(rf"\b{re.escape(alias)}\b", target, code)
     return code
 
 
 def authority_fields(source_index: dict[str, str], target: str) -> AuthorityFields:
     """Keep typed fields across split impl modules; no variable-name allowlist."""
     aliases = {target}
-    while True:
+    pending = {target}
+    while pending:
         discovered = {
             alias
             for code in source_index.values()
-            for name in aliases
+            for name in pending
             for alias in _declared_aliases(code, name)
         }
-        if discovered <= aliases:
-            break
-        aliases.update(discovered)
+        # The source index is fixed: only newly discovered names need a scan.
+        pending = discovered - aliases
+        aliases.update(pending)
     fields = AuthorityFields(frozenset(aliases - {target}))
     for code in source_index.values():
         code = _normalize_aliases(code, target, fields.aliases)
@@ -172,7 +186,10 @@ def has_authority_call(
     # in a parent module. A typed variable/impl must name either the authority
     # or an indexed field owner. Avoid parsing unrelated crates' homonyms.
     type_names = {target, *(owner for owner, _ in fields)}
-    if not any(re.search(rf"\b{re.escape(name)}\b", code) for name in type_names):
+    if not any(
+        name in code and re.search(rf"\b{re.escape(name)}\b", code)
+        for name in type_names
+    ):
         return False
     qualified = rf"\b{re.escape(target)}\s*::\s*{re.escape(method)}\s*\("
     found = bool(re.search(qualified, code))

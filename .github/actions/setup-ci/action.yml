@@ -71,6 +71,9 @@ runs:
           echo "TEMP=$tmp"
           echo "TMP=$tmp"
         } >> "$GITHUB_ENV"
+        if [[ "$RUNNER_OS" != "Windows" ]]; then
+          echo "TMPDIR=$tmp" >> "$GITHUB_ENV"
+        fi
 
     - name: Prefer the Git CLI for Cargo git dependencies
       shell: bash

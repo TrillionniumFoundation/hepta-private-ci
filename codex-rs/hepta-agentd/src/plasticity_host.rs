@@ -565,7 +565,7 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
                 input,
                 kind,
                 evidence_digest,
-                None,
+                /*signal*/ None,
                 artifact_registry_head_digest,
                 qualification_evidence_head_digest,
                 now,

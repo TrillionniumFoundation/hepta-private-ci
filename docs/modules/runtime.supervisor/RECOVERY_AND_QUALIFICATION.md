@@ -32,6 +32,14 @@ The restart counter is persisted in the agent run root as `supervisor-restart-bu
 
 The restart-attempt count therefore survives supervisord process restart. The exact pending retry timer is intentionally not a durable command queue: a supervisord crash may lose a future retry deadline and therefore perform **fewer** automatic restarts, but it must not gain an additional attempt. Target-host SIGKILL/fault-injection evidence is still required before claiming this behavior is deployment-qualified.
 
+The native Matrix recovery path reads and validates its window before process
+adoption can charge another attempt. Because that companion window has no durable
+next-eligible timestamp, recovery reapplies the complete backoff for its charged
+attempt. Exhausted windows remain visibly degraded. Clock normalization and
+companion publication retain the separate canonical main-process budget,
+including its pending intent. A committed release name that differs from an
+in-flight target lease does not clear an already charged Matrix window.
+
 ## 2. Signed production mutation effect boundary
 
 `apply_production_grant()` has a strict semantic boundary:
@@ -88,12 +96,26 @@ The tool publishes `supervisor-signed-intent-recovery.json`. The directive is di
 On recovery, supervisord:
 
 - refuses to infer target success;
+- clears pending automatic main restart state while retaining its charged attempts;
 - fences/kills an adopted main child and Matrix companion if either is still present;
-- remains fail-closed while an ambiguous adopted process is still present;
-- only when no ambiguous process remains, persists the intent as terminal `Aborted` and clears pending automatic main restart state;
+- remains reachable but not production-ready while an ambiguous adopted process is still present;
+- only after both process exits are observed and their leases are absent, persists the matching release transaction (if present) and intent as terminal `Aborted`;
 - then permits normal supervisor recovery to continue.
 
-If startup still reports `signed_intent_recovery_required`, verify that the fenced child actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
+An accepted abort retains the original durable intent digest while termination is
+pending, so the same exact directive survives another daemon restart. The live
+mutation status reports `RecoveryRequired` during that interval. A kill request
+alone cannot remove the Matrix lease or publish `Aborted`; the daemon must observe
+exit or exact adoption must confirm the child is missing. Reopening an already
+aborted intent retains that terminal status and cannot resume its old automatic
+restart.
+
+Rejected process identity proof is not evidence of exit. For an unresolved signed
+intent, main and Matrix leases remain quarantined after rejected adoption until a
+later recovery proves absence or precisely adopts the child and observes its exit.
+An exact abort directive does not grant authority to signal an unverified PID.
+
+If readiness still reports `signed_intent_recovery_required`, verify that the fenced children actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
 
 `Aborted` means “this grant is terminal and must not be resumed or inferred successful.” It does **not** assert that the source release remained active. A subsequent desired release state must go through a fresh independently authorized transition.
 
@@ -158,6 +180,7 @@ Repository-controlled verification for this change includes at least:
 - `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
 - `tests/restart_budget.rs` for real supervisor crash/restart scheduling behavior inside one daemon lifetime;
 - `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
+- `src/signed_abort_recovery_tests.rs` for both-child exit fencing, retained restart charges, stale directives, and the crash cut between transaction and intent terminal publication;
 - the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
 
 These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.

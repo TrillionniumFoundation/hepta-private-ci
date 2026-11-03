@@ -184,6 +184,14 @@ stream_max_retries = 0
             server.uri()
         ),
     )?;
+    // Unlike the rendering-only fixture's /tmp/project, this cwd exists for
+    // the real filesystem helper throughout app-server startup and shutdown.
+    app.config.cwd = codex_home.path().abs();
+    app.launch_cwd = app.config.cwd.to_path_buf();
+    app.config.workspace_roots = vec![app.config.cwd.clone()];
+    app.config
+        .permissions
+        .set_workspace_roots(app.config.workspace_roots.clone());
     app.config.codex_home = codex_home.path().to_path_buf().abs();
     app.config.sqlite = codex_state::SqliteConfig::new_for_testing(codex_home.path().abs());
     app.config.model = Some(CURRENT_MODEL.to_string());
@@ -402,6 +410,14 @@ goals = true
             server.uri()
         ),
     )?;
+    // Keep the real helper's cwd and workspace permissions bound to the
+    // retained fixture directory, including threads started by safety retry.
+    app.config.cwd = codex_home.path().abs();
+    app.launch_cwd = app.config.cwd.to_path_buf();
+    app.config.workspace_roots = vec![app.config.cwd.clone()];
+    app.config
+        .permissions
+        .set_workspace_roots(app.config.workspace_roots.clone());
     app.config.codex_home = codex_home.path().to_path_buf().abs();
     app.config.sqlite = codex_state::SqliteConfig::new_for_testing(codex_home.path().abs());
     app.config.model = Some(CURRENT_MODEL.to_string());

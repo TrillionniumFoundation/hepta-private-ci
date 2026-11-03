@@ -17,10 +17,6 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
         .unwrap()
 }
 
-fn directory(root: &std::path::Path) -> std::fs::File {
-    std::fs::File::open(root).unwrap()
-}
-
 fn writer(
     root: &std::path::Path,
     fixture: &Fixture,

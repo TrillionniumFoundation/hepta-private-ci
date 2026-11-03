@@ -42,9 +42,9 @@ impl CognitiveRetrievalLearningSink {
             request_id,
             observation,
             &[],
-            false,
-            None,
-            None,
+            /*context_exposed*/ false,
+            /*published_context_digest*/ None,
+            /*downstream_policy_digest*/ None,
             ProbabilityQ32::ONE,
         )
     }
@@ -67,7 +67,7 @@ impl CognitiveRetrievalLearningSink {
             delivered_candidates,
             context_exposed,
             published_context_digest,
-            None,
+            /*downstream_policy_digest*/ None,
             ProbabilityQ32::ONE,
         )
     }

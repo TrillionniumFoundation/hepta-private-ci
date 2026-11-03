@@ -1829,17 +1829,21 @@ mod tests {
 
     #[test]
     fn embedding_runtime_sqlite_home_constraint_is_exact() {
-        let required = AbsolutePathBuf::from_absolute_path("/tmp/hepta-private-sqlite")
-            .expect("absolute required SQLite home");
+        let root = AbsolutePathBuf::current_dir().expect("absolute working directory");
+        let required = root.join("hepta-private-sqlite");
+        let redirected = root.join("hepta-shared-sqlite");
         enforce_required_sqlite_home(Some(&required), required.as_path())
             .expect("the exact private SQLite root must be accepted");
 
-        let error =
-            enforce_required_sqlite_home(Some(&required), Path::new("/tmp/hepta-shared-sqlite"))
-                .expect_err("a redirected SQLite root must fail closed");
+        let error = enforce_required_sqlite_home(Some(&required), redirected.as_path())
+            .expect_err("a redirected SQLite root must fail closed");
         assert_eq!(ErrorKind::InvalidInput, error.kind());
         assert_eq!(
-            "embedding runtime requires SQLite home /tmp/hepta-private-sqlite, but configuration resolved /tmp/hepta-shared-sqlite",
+            format!(
+                "embedding runtime requires SQLite home {}, but configuration resolved {}",
+                required.display(),
+                redirected.display()
+            ),
             error.to_string()
         );
     }

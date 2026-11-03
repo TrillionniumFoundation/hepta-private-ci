@@ -53,7 +53,11 @@ mod allow;
 #[cfg(target_os = "windows")]
 mod audit;
 #[cfg(target_os = "windows")]
+mod backend_selection;
+#[cfg(target_os = "windows")]
 mod cap;
+#[cfg(target_os = "windows")]
+mod capture;
 #[cfg(target_os = "windows")]
 mod deny_read_acl;
 #[cfg(target_os = "windows")]
@@ -163,6 +167,10 @@ pub use cap::workspace_write_cap_sid_for_root;
 pub use cap::workspace_write_root_contains_path;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_write_root_overlaps_path;
+#[cfg(target_os = "windows")]
+pub use capture::run_windows_sandbox_capture_for_level;
+#[cfg(target_os = "windows")]
+pub use capture::run_windows_sandbox_capture_with_filesystem_overrides;
 #[cfg(target_os = "windows")]
 pub use conpty::ConptyInstance;
 #[cfg(target_os = "windows")]
@@ -334,8 +342,6 @@ pub use windows_impl::CaptureResult;
 #[cfg(target_os = "windows")]
 pub use windows_impl::run_windows_sandbox_capture;
 #[cfg(target_os = "windows")]
-pub use windows_impl::run_windows_sandbox_capture_with_filesystem_overrides;
-#[cfg(target_os = "windows")]
 pub use windows_impl::run_windows_sandbox_legacy_preflight;
 #[cfg(target_os = "windows")]
 pub use winutil::quote_windows_arg;
@@ -376,6 +382,7 @@ mod windows_impl {
     use super::spawn_prep::prepare_legacy_session_security;
     use super::spawn_prep::prepare_legacy_spawn_context;
     use super::spawn_prep::root_capability_sids;
+    use crate::capture::run_windows_sandbox_capture_with_filesystem_overrides;
     use anyhow::Result;
     use codex_protocol::models::PermissionProfile;
     use codex_utils_absolute_path::AbsolutePathBuf;
@@ -505,7 +512,7 @@ mod windows_impl {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn run_windows_sandbox_capture_with_filesystem_overrides(
+    pub(crate) fn run_windows_sandbox_capture_legacy(
         permission_profile: &PermissionProfile,
         workspace_roots: &[AbsolutePathBuf],
         codex_home: &Path,

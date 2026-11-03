@@ -285,3 +285,7 @@ fn digest_state(state: &ControlState, intent: &ControlIntent) -> Digest32 {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "organ_registry_lifecycle_tests.rs"]
+mod organ_registry_lifecycle_tests;

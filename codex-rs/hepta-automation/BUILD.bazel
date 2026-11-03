@@ -6,6 +6,7 @@ codex_rust_crate(
     name = "hepta-automation",
     compile_data = glob(["migrations/**"]),
     crate_name = "codex_hepta_automation",
+    integration_compile_data_extra = glob(["migrations/**"]),
 )
 
 # Keep structural qualification out of the product library's feature set.

@@ -147,7 +147,7 @@ impl Outbox {
         intent_id: &StableId,
         owner_generation: Generation,
     ) -> Result<&OutboxIntent, OperationError> {
-        self.claim_until(intent_id, owner_generation, 1, u64::MAX)
+        self.claim_until(intent_id, owner_generation, /*attempt*/ 1, u64::MAX)
     }
 
     /// Claim or take over an expired outbox lease.
@@ -330,7 +330,7 @@ impl Outbox {
             intent_id,
             owner_generation,
             attempt,
-            0,
+            /*now_unix_ms*/ 0,
             acknowledgement_digest,
         )
     }

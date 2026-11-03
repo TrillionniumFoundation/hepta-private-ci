@@ -2,6 +2,8 @@
 
 use anyhow::Context as _;
 use anyhow::ensure;
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use codex_arg0::Arg0PathEntryGuard;
 use codex_utils_cargo_bin::CargoBinError;
 use ctor::ctor;
@@ -108,6 +110,17 @@ pub fn test_path_buf_with_windows(unix_path: &str, windows_path: Option<&str>) -
 
 pub fn test_path_buf(unix_path: &str) -> PathBuf {
     test_path_buf_with_windows(unix_path, /*windows_path*/ None)
+}
+
+/// Builds a nested PowerShell command without shell-sensitive quote nesting.
+pub fn powershell_encoded_command(script: &str) -> String {
+    let encoded = BASE64_STANDARD.encode(
+        script
+            .encode_utf16()
+            .flat_map(u16::to_le_bytes)
+            .collect::<Vec<u8>>(),
+    );
+    format!("powershell.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand {encoded}")
 }
 
 pub fn test_absolute_path_with_windows(

@@ -1,3 +1,4 @@
+import os
 import subprocess
 import tempfile
 import unittest
@@ -88,6 +89,14 @@ class CargoWorkspaceManifestPolicyTest(unittest.TestCase):
 
 class CargoFeatureSemanticsTests(unittest.TestCase):
     def setUp(self):
+        # These fixtures have only local path dependencies. Sharing the user's
+        # package cache makes even --offline lockfile creation wait behind an
+        # unrelated Cargo download; the fixture must not own that global lock.
+        cargo_home = tempfile.TemporaryDirectory(prefix="hepta-manifest-cargo-")
+        self.addCleanup(cargo_home.cleanup)
+        environment = patch.dict(os.environ, {"CARGO_HOME": cargo_home.name})
+        environment.start()
+        self.addCleanup(environment.stop)
         directory = tempfile.TemporaryDirectory(prefix="hepta-manifest-policy-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)

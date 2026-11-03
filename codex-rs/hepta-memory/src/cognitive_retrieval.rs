@@ -733,7 +733,7 @@ impl CognitiveStore {
         generations: &mut RetrievalGenerations,
         now: i64,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
-        self.relation_channel_tx(transaction, seeds, generations, now, None)
+        self.relation_channel_tx(transaction, seeds, generations, now, /*semantic*/ None)
             .await
     }
 

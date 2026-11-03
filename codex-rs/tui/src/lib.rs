@@ -528,12 +528,22 @@ pub(crate) async fn start_app_server_for_picker(
 pub(crate) async fn start_embedded_app_server_for_picker(
     config: &Config,
 ) -> color_eyre::Result<AppServerSession> {
+    // core_test_support installs real helper dispatch in this test executable
+    // and retains its Linux sandbox alias for the lifetime of the process.
+    #[cfg(target_os = "linux")]
+    let codex_linux_sandbox_exe = Some(core_test_support::find_codex_linux_sandbox_exe()?);
+    #[cfg(not(target_os = "linux"))]
+    let codex_linux_sandbox_exe = None;
+    let runtime_paths =
+        ExecServerRuntimePaths::new(std::env::current_exe()?, codex_linux_sandbox_exe)?;
+    let environment_manager =
+        EnvironmentManager::create_for_tests(/*exec_server_url*/ None, Some(runtime_paths)).await;
     let state_db = init_state_db_for_app_server_target(config, &AppServerTarget::Embedded).await?;
     start_app_server_for_picker(
         config,
         &AppServerTarget::Embedded,
         state_db,
-        Arc::new(EnvironmentManager::default_for_tests()),
+        Arc::new(environment_manager),
     )
     .await
 }

@@ -156,7 +156,15 @@ impl SparseJournal {
         } else {
             validate_exact_header(&mut file, &header, HEADER, *MAGIC)?;
         }
-        Self::recover_frames(file, config, scope, max_records, policy, None, HEADER)
+        Self::recover_frames(
+            file,
+            config,
+            scope,
+            max_records,
+            policy,
+            /*seed*/ None,
+            HEADER,
+        )
     }
 
     /// Open or create a successor segment seeded from the exact final checkpoint

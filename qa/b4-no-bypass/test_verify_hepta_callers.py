@@ -140,6 +140,92 @@ class CallerProofTests(unittest.TestCase):
         self.assertEqual(stripped.count("{"), stripped.count("}"))
         self.assertIn("Gate::enter", stripped)
 
+    def test_raw_cfg_test_field_preserves_registered_caller(self) -> None:
+        for visibility in ("", "pub ", "pub(crate) ", "pub(in crate) "):
+            for comma in ("", ","):
+                with self.subTest(visibility=visibility, comma=comma):
+                    root = self.make_fixture()
+                    before = MODULE.verify(root, root / "CALLERS.toml")
+                    caller = root / "codex-rs/caller/src/lib.rs"
+                    suffix = caller.read_text(encoding="utf-8")
+                    source = (
+                        "struct Store {\n"
+                        "    #[cfg(all(test, unix))]\n"
+                        "    #[allow(dead_code)]\n"
+                        f"    {visibility}r#type: Pair<u8, u8>{comma}\n"
+                        "}\n" + suffix
+                    )
+                    caller.write_text(source, encoding="utf-8")
+                    self.assertEqual(MODULE.verify(root, root / "CALLERS.toml"), before)
+                    stripped = MODULE._strip_cfg_test_items(source)
+                    self.assertEqual(stripped[-len(suffix):], suffix)
+                    self.assertEqual(stripped.count("\n"), source.count("\n"))
+                    self.assertEqual(stripped.count("{"), stripped.count("}"))
+                    self.assertNotIn("r#type", stripped)
+
+    def test_raw_cfg_test_field_cannot_hide_unregistered_caller(self) -> None:
+        root = self.make_fixture()
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        (extra / "lib.rs").write_text(
+            "struct Store { #[cfg(test)] r#type: u8, }\n"
+            "fn bypass() { Gate::enter(); }\n",
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(
+            MODULE.VerificationFailure,
+            r"caller set mismatch; missing=\[\], unexpected=\['codex-rs/extra/src/lib.rs'\]",
+        ):
+            MODULE.verify(root, root / "CALLERS.toml")
+
+    def test_raw_cfg_test_initializer_preserves_live_entry(self) -> None:
+        root = self.make_fixture()
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        source = (
+            "fn bypass() { let _ = Store {\n"
+            "    #[cfg(test)] r#async: Pair::new(1, 2),\n"
+            "    live: { Gate::enter(); 1 },\n"
+            "}; }\n"
+        )
+        (extra / "lib.rs").write_text(source, encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "unexpected"):
+            MODULE.verify(root, root / "CALLERS.toml")
+        stripped = MODULE._strip_cfg_test_items(source)
+        self.assertIn("live: { Gate::enter(); 1 },", stripped)
+        self.assertNotIn("r#async", stripped)
+        self.assertEqual(stripped.count("{"), stripped.count("}"))
+
+    def test_raw_cfg_test_field_cannot_hide_forbidden_marker(self) -> None:
+        root = self.make_fixture()
+        caller = root / "codex-rs/caller/src/lib.rs"
+        with caller.open("a", encoding="utf-8") as handle:
+            handle.write(
+                "struct Store { #[cfg(test)] r#type: u8 }\n"
+                "fn forbidden() { Gate::bypass(); }\n"
+            )
+        with self.assertRaisesRegex(
+            MODULE.VerificationFailure, "forbidden marker present: 'Gate::bypass'"
+        ):
+            MODULE.verify(root, root / "CALLERS.toml")
+
+    def test_raw_test_initializer_does_not_manufacture_product_caller(self) -> None:
+        root = self.make_fixture()
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        (extra / "lib.rs").write_text(
+            "fn harmless() { let _ = Store {\n"
+            "    #[cfg(test)] r#type: { Gate::enter(); 1 },\n"
+            "    live: 1,\n"
+            "}; }\n",
+            encoding="utf-8",
+        )
+        receipt = MODULE.verify(root, root / "CALLERS.toml")
+        self.assertEqual(
+            receipt["boundaries"][0]["productCallers"],
+            ["codex-rs/caller/src/lib.rs"],
+        )
+
     def test_cfg_production_alternatives_remain_visible(self) -> None:
         for condition in ("not(test)", "any(test, unix)", "all(not(test), unix)"):
             with self.subTest(condition=condition):

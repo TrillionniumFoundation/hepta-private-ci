@@ -25,8 +25,10 @@ use codex_hepta_supervisor::SpawnedProcess;
 use codex_hepta_supervisor::Supervisor;
 use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::SupervisorError;
+use codex_hepta_supervisor::TickReport;
 use codex_hepta_supervisor::read_signed_intent;
 use codex_hepta_supervisor::write_signed_intent_recovery_directive;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -153,30 +155,49 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (first, report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
-    );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(first.production_recovery_required(&fleet.agent_id)?);
+    drop(first);
 
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
-        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
-    assert!(report.faults.is_empty());
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        NoProcessDriver,
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(!recovered.production_recovery_required(&fleet.agent_id)?);
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         .expect("terminal intent");
-    assert_eq!(terminal.status, SignedIntentStatus::Aborted);
-    assert_eq!(terminal.target_release, "target-release");
+    let expected = SignedSupervisorIntent::new(
+        intent.grant_sha256,
+        intent.agent_id,
+        intent.transition,
+        intent.source_release,
+        intent.target_release,
+        intent.expected_control_revision,
+        intent.expected_lifecycle_generation,
+        intent.authority_epoch,
+        SignedIntentStatus::Aborted,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    assert_eq!(terminal, expected);
+    drop(recovered);
+    let (reopened, report) =
+        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    assert_eq!(report, TickReport::default());
+    assert!(!reopened.production_recovery_required(&fleet.agent_id)?);
     Ok(())
 }

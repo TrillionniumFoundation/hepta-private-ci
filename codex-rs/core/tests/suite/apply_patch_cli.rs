@@ -1,8 +1,7 @@
 use anyhow::Result;
-use base64::Engine;
-use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use codex_core::StartThreadOptions;
 use codex_core::TurnInputRequest;
+use core_test_support::powershell_encoded_command;
 use core_test_support::responses::ev_apply_patch_custom_tool_call;
 use core_test_support::responses::ev_apply_patch_exec_command_call_via_heredoc;
 use core_test_support::responses::ev_exec_command_call;
@@ -1425,15 +1424,7 @@ async fn apply_patch_cli_can_use_exec_command_output_as_patch_input() -> Result<
                         // read command wrapped in quotes, and suppress progress records so the
                         // shell tool only returns the file contents back to apply_patch.
                         let script = "$ProgressPreference = 'SilentlyContinue'; [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false); [System.IO.File]::ReadAllText('source.txt', [System.Text.UTF8Encoding]::new($false))";
-                        let encoded = BASE64_STANDARD.encode(
-                            script
-                                .encode_utf16()
-                                .flat_map(u16::to_le_bytes)
-                                .collect::<Vec<u8>>(),
-                        );
-                        format!(
-                            "powershell.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand {encoded}"
-                        )
+                        powershell_encoded_command(script)
                     } else {
                         "cat source.txt".to_string()
                     };

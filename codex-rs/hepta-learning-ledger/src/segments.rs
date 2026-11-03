@@ -82,7 +82,7 @@ impl SegmentedLedger {
         let owner = LockedFile::acquire(owner_lock)?;
         let mut active = LockedFile::acquire(first_segment)?;
         let predecessor = empty_anchor();
-        segment_codec::initialize(&mut active, binding, limits, 0, predecessor)?;
+        segment_codec::initialize(&mut active, binding, limits, /*index*/ 0, predecessor)?;
         Ok(Self {
             _owner: owner,
             active,

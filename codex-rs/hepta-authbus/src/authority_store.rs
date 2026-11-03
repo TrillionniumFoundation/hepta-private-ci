@@ -115,7 +115,7 @@ impl AuthBusAuthorityStore {
         .bind(spec.action.as_str())
         .bind(spec.scope_digest.as_array().as_slice())
         .bind(effect_text(spec.effect))
-        .bind(u64_bytes(1).as_slice())
+        .bind(u64_bytes(/*value*/ 1).as_slice())
         .bind(u64_bytes(spec.not_before_ms).as_slice())
         .bind(u64_bytes(spec.expires_at_ms).as_slice())
         .execute(&mut *tx)

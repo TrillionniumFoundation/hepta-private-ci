@@ -242,7 +242,11 @@ impl ArtifactOwnerVerifierV1 {
         signed_head: &SignedCurrentArtifactHeadV1,
         requirement: &RegistryHeadRequirementV1,
     ) -> Result<VerifiedCurrentRegistryViewV1, ArtifactOwnerHostError> {
-        let verified = self.verify_signed_head(signed_head, requirement, true)?;
+        let verified = self.verify_signed_head(
+            signed_head,
+            requirement,
+            /*require_current_signer*/ true,
+        )?;
         if snapshot_receipt.binding != signed_head.binding
             || snapshot_receipt.head_digest != signed_head.witness.head_digest
         {
@@ -286,7 +290,7 @@ impl ArtifactOwnerVerifierV1 {
             lease.authority_epoch,
             lease.issued_at,
             now,
-            true,
+            /*require_current*/ true,
         )?;
         verify_signature(
             &signer.verifying_key,
@@ -378,7 +382,7 @@ impl LearningArtifactOwnerHost {
         lease: SignedArtifactWriterLeaseV1,
         now: u64,
     ) -> Result<Self, ArtifactOwnerHostError> {
-        Self::open_internal(root, trust, lease, None, now)
+        Self::open_internal(root, trust, lease, /*required_current_head*/ None, now)
     }
 
     /// Open with an independently retained signed current-head floor.
@@ -666,9 +670,11 @@ impl LearningArtifactOwnerHost {
             }
             Some(_) | None => return Err(ArtifactOwnerHostError::CurrentHeadConflict),
         };
-        let verified = self
-            .verifier
-            .verify_signed_head(signed, &requirement, true)?;
+        let verified = self.verifier.verify_signed_head(
+            signed,
+            &requirement,
+            /*require_current_signer*/ true,
+        )?;
         let encoded = encode_head_witness(&signed.witness, signed.binding)?;
         let expected_receipt = RegistryHeadWitnessReceipt {
             binding: signed.binding,
@@ -1044,9 +1050,11 @@ impl LearningArtifactOwnerHost {
                 minimum_authority_epoch: minimum_epoch,
                 now: candidate.witness.issued_at,
             };
-            let verified =
-                self.verifier
-                    .verify_signed_head(&candidate, &historical_requirement, false)?;
+            let verified = self.verifier.verify_signed_head(
+                &candidate,
+                &historical_requirement,
+                /*require_current_signer*/ false,
+            )?;
             predecessor = candidate.witness.head_digest;
             minimum_generation = candidate
                 .witness
@@ -1075,7 +1083,7 @@ impl LearningArtifactOwnerHost {
             latest.signed.witness.authority_epoch,
             latest.signed.witness.issued_at,
             now,
-            true,
+            /*require_current*/ true,
         )?;
         if now > latest.signed.witness.expires_at {
             return Err(ArtifactOwnerHostError::CurrentHeadExpired);
@@ -1139,8 +1147,11 @@ impl LearningArtifactOwnerHost {
             minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
             now: anchor.witness.issued_at,
         };
-        self.verifier
-            .verify_signed_head(anchor, &requirement, false)?;
+        self.verifier.verify_signed_head(
+            anchor,
+            &requirement,
+            /*require_current_signer*/ false,
+        )?;
         let path = self.signed_head_record_path(anchor);
         if !path.is_file()
             || read_small_record(&path, MAX_SMALL_RECORD_BYTES)? != encode_signed_head(anchor)

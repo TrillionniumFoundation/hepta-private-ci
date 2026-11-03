@@ -1,4 +1,5 @@
 #![cfg(unix)]
+#![allow(clippy::expect_used)]
 
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
