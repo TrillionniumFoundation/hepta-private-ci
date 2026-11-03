@@ -21,6 +21,103 @@ use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
 
+#[test]
+fn extract_zipball_preserves_compressed_payloads() {
+    for method in [
+        zip::CompressionMethod::Stored,
+        zip::CompressionMethod::Deflated,
+        zip::CompressionMethod::Bzip2,
+        zip::CompressionMethod::Zstd,
+        zip::CompressionMethod::Xz,
+    ] {
+        let payload = b"curated plugin archive compression compatibility\n";
+        let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        let options = SimpleFileOptions::default().compression_method(method);
+        writer
+            .start_file("repository/nested/plugin.txt", options)
+            .expect("start compressed archive entry");
+        writer.write_all(payload).expect("write compressed payload");
+        let bytes = writer
+            .finish()
+            .expect("finish compressed archive")
+            .into_inner();
+        let destination = tempdir().expect("extraction directory");
+
+        extract_zipball_to_dir(&bytes, destination.path()).expect("extract compressed archive");
+
+        assert_eq!(
+            std::fs::read(destination.path().join("nested/plugin.txt"))
+                .expect("extracted compressed payload"),
+            payload,
+            "compression method {method:?}",
+        );
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn extract_zipball_strips_privilege_bits_and_preserves_regular_unix_permissions() {
+    use std::os::unix::fs::PermissionsExt;
+
+    for mode in [
+        0o4755_u32, 0o2755, 0o1755, 0o755, 0o4644, 0o2644, 0o1644, 0o644,
+    ] {
+        let normal_mode = mode & 0o777;
+        let payload = b"plugin fixture\n";
+        let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        let options = SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored)
+            .unix_permissions(normal_mode);
+        writer
+            .start_file("repository/plugin.txt", options)
+            .expect("start archive entry");
+        writer.write_all(payload).expect("write archive entry");
+        let mut bytes = writer.finish().expect("finish archive").into_inner();
+
+        // Writer APIs may sanitize special bits. Put them directly in the ZIP
+        // central directory so the regression exercises untrusted metadata.
+        let central = bytes
+            .windows(/*size*/ 4)
+            .position(|signature| signature == b"PK\x01\x02")
+            .expect("central directory");
+        let attributes_range = central + 38..central + 42;
+        let attributes = u32::from_le_bytes(
+            bytes[attributes_range.clone()]
+                .try_into()
+                .expect("external attributes"),
+        ) | ((mode & 0o7000) << 16);
+        bytes[attributes_range].copy_from_slice(&attributes.to_le_bytes());
+        let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
+        let archived_header = archive
+            .by_index(/*file_number*/ 0)
+            .expect("read fixture entry")
+            .central_header_start() as usize;
+        // Verify the raw metadata: ZipFile::unix_mode() also sanitizes special
+        // bits in newer ZIP releases, so it cannot prove the fixture has them.
+        let archived_mode = u32::from_le_bytes(
+            bytes[archived_header + 38..archived_header + 42]
+                .try_into()
+                .expect("archived external attributes"),
+        ) >> 16;
+        assert_eq!(archived_mode & 0o7777, mode);
+
+        let destination = tempdir().expect("extraction directory");
+        extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
+        let output = destination.path().join("plugin.txt");
+        assert_eq!(
+            (
+                std::fs::read(&output).expect("extracted payload"),
+                std::fs::metadata(&output)
+                    .expect("extracted metadata")
+                    .permissions()
+                    .mode()
+                    & 0o7777,
+            ),
+            (payload.to_vec(), normal_mode),
+        );
+    }
+}
+
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
     let server = MockServer::start().await;
