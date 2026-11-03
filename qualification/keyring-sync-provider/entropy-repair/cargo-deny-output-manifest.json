@@ -4,11 +4,24 @@
     "sha256": "3f065ce619e0b3bb2e2cf392a5cb2282270e795ac6378aa2d3d3e4dea1c3d6db"
   },
   "gzip": {
-    "path": "qualification/keyring-sync-provider/entropy-repair/cargo-deny.log.gz",
     "bytes": 707828,
-    "sha256": "847073551b031fd285981d5464d310ed5ea8e588f6134b82ddb7526bb17e1fe0"
+    "sha256": "847073551b031fd285981d5464d310ed5ea8e588f6134b82ddb7526bb17e1fe0",
+    "original_path": "qualification/keyring-sync-provider/entropy-repair/cargo-deny.log.gz",
+    "parts_directory": "cargo-deny-parts",
+    "parts": [
+      {
+        "path": "part-000.bin",
+        "bytes": 384000,
+        "sha256": "ff23a0c67edcdd543fed80ad0234027a547912b60700c81f55db053ce39e8a38"
+      },
+      {
+        "path": "part-001.bin",
+        "bytes": 323828,
+        "sha256": "9343855a6f774ef1aa979345080054e259ddf62a209d73c7038d11b5f920f179"
+      }
+    ]
   },
-  "reproduce": "gzip -dc cargo-deny.log.gz > cargo-deny.log",
+  "reproduce": "python3 restore_audit.py --output /tmp/cargo-deny.log.gz; gzip -dc /tmp/cargo-deny.log.gz > /tmp/cargo-deny.log",
   "policy_unchanged": true,
   "remaining_errors": [
     "RUSTSEC-2024-0449",

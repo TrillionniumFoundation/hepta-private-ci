@@ -1,0 +1,97 @@
+name: hepta AWS P-256 qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-aws-p256-qualification.yml
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/aws-auth/**
+      - codex-rs/third_party/aws-config-1.8.12/**
+      - qualification/aws-dpop/**
+      - MODULE.bazel
+      - MODULE.bazel.lock
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-aws-p256-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    if: github.head_ref == 'fix/private-ci-aws-p256-20261103-gpt6'
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, macos-15, windows-latest]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    env:
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - name: Preserve exact Git bytes on Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.96.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.151
+      - name: Run original AWS consumer and actual DPoP module qualification
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/aws-p256-target
+        shell: bash
+        run: python3 qualification/aws-dpop/run_native.py --output "${RUNNER_TEMP}/aws-p256-native"
+      - name: Retain actual native qualification
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: aws-p256-native-${{ matrix.runner }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/aws-p256-native
+          if-no-files-found: error
+          retention-days: 7
+
+  bazel:
+    if: github.head_ref == 'fix/private-ci-aws-p256-20261103-gpt6'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: aws-p256-qualification
+      - name: Generate the real Bazel lock and test its AWS consumer
+        shell: bash
+        run: |
+          python3 qualification/aws-dpop/run_bazel.py --output "$RUNNER_TEMP/aws-p256-bazel"
+      - name: Retain actual generated lock and Bazel results
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: aws-p256-bazel-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/aws-p256-bazel
+          if-no-files-found: error
+          retention-days: 7

@@ -1,0 +1,36 @@
+{
+  "commands": [
+    {
+      "command": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "/workspace/scratch/1f1d02319616/private-ci-fleet-work-20261103/qualification/fleet-macos-permissions/probe.rs"
+      ],
+      "exit": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/workspace/scratch/1f1d02319616/recovered-tools-20261103/bin/actionlint",
+        "-shellcheck=",
+        "-pyflakes=",
+        ".github/workflows/hepta-fleet-macos-qualification.yml"
+      ],
+      "exit": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "probe_linux_compile_exit": 0,
+  "runtime_executed": false,
+  "probe_sha256": "e0aa6a94cfa7408bb53c6956ed613eab71d1c5e9e2b25878154ac052af05f06a",
+  "receipt_scope": "No macOS behavior inferred from Linux compilation."
+}

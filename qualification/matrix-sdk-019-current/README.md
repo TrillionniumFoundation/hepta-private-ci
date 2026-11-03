@@ -29,7 +29,7 @@ to remove Hepta's authoritative inbox, outbox, cursor or authorization state.
 ## Source provenance and observed local checks
 
 `official-packages.json` retains checksum-verified official package sources.
-`vendor-member-provenance.json` accounts for all 951 official members: 630 exact
+`vendor-member-provenance.json.gz` accounts for all 951 official members: 630 exact
 original bytes, 315 repository-formatting-only files, and six functional patch
 files. Each formatting difference was independently replayed on the official
 member with the same Rust 1.96 formatter and repository configuration. The
@@ -115,3 +115,19 @@ collected, its actually generated MODULE.bazel.lock adopted and rechecked, and
 the original full platform CI passed. Real paired-host Fleet qualification is an
 additional deployment gate; isolated Synapse is not a substitute. The dependency
 graph check and historical source provenance alone do not close those gates.
+
+## Restoring bounded evidence archives
+
+The two original hosted rounds and the complete cargo-deny log remain byte-for-byte
+recoverable. Archives larger than the existing 512000-byte blob limit are stored
+in at most 384000-byte parts, with original and per-part hashes in
+`artifact-parts.json`. No blob-policy exception is added. Reassemble outside the
+checkout (the destination files must not already exist):
+
+```bash
+python3 qualification/matrix-sdk-019-current/reassemble_artifacts.py --output /tmp/matrix-original-artifacts
+```
+
+The evidence manifests retain each original logical archive filename, size and
+digest. This representation change does not alter the tested source or erase the
+owner compilation and Bazel analysis failures.
