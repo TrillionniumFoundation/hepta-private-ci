@@ -1,0 +1,88 @@
+name: Hepta operator acceptance native signature verification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-operator-acceptance/**"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - ".github/workflows/hepta-operator-acceptance-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-operator-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  native:
+    name: Original operator controls and independent OpenSSH oracle (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install original repository runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Record actual source, compiler and independent OpenSSH executable
+        run: |
+          $evidence = "$env:RUNNER_TEMP/operator-native"
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne "${{ github.event.pull_request.head.sha || github.sha }}") { throw "source identity mismatch" }
+          git rev-parse HEAD "HEAD^{tree}" | Tee-Object "$evidence/source.txt"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $oracle = if ($IsWindows) { "$env:SystemRoot/System32/OpenSSH/ssh-keygen.exe" } else { "/usr/bin/ssh-keygen" }
+          if (-not (Test-Path -LiteralPath $oracle -PathType Leaf)) { throw "independent native OpenSSH oracle is required" }
+          Get-FileHash -Algorithm SHA256 -LiteralPath $oracle | ConvertTo-Json | Set-Content "$evidence/openssh.json"
+          Set-Location codex-rs
+          rustc --version --verbose | Tee-Object "$evidence/toolchain.txt"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (Test-Path target/nextest/local/junit.xml) { Remove-Item target/nextest/local/junit.xml }
+      - name: Run all original operator controls and actual OpenSSH compatibility checks
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-operator-acceptance --lib --no-tests fail --retries 0 2>&1 | Tee-Object "$env:RUNNER_TEMP/operator-native/tests.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Retain fresh JUnit and verify unchanged source
+        if: always()
+        run: |
+          $evidence = "$env:RUNNER_TEMP/operator-native"
+          if (Test-Path codex-rs/target/nextest/local/junit.xml) {
+            Copy-Item codex-rs/target/nextest/local/junit.xml "$evidence/junit.xml"
+            Get-FileHash -Algorithm SHA256 -LiteralPath "$evidence/junit.xml" | ConvertTo-Json | Set-Content "$evidence/junit-sha256.json"
+          }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git status --porcelain | Set-Content "$evidence/status.txt"
+          Set-Location codex-rs
+          cargo fmt --package codex-hepta-operator-acceptance -- --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve original native evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: operator-native-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/operator-native
+          if-no-files-found: error
+          retention-days: 14

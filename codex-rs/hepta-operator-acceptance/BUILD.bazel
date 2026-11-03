@@ -32,6 +32,9 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    # Retain the independent, installed OpenSSH oracle on the native host.
+    # The remote compiler image intentionally does not carry ssh-keygen.
+    tags = ["no-remote"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
