@@ -1,0 +1,139 @@
+diff --git a/.github/workflows/ui-product-foundation.yml b/.github/workflows/ui-product-foundation.yml
+index 8f1884b1df..1b16483e60 100644
+--- a/.github/workflows/ui-product-foundation.yml
++++ b/.github/workflows/ui-product-foundation.yml
+@@ -136,6 +136,7 @@ jobs:
+           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
+           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
+           node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
++          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs
+           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+       - id: default_build
+         name: Build canonical strict-CSP no-threads artifact
+diff --git a/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs b/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
+index b28c7b1b8d..b2dafe76be 100644
+--- a/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
++++ b/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs
+@@ -3,6 +3,7 @@ import {test,expect} from '@playwright/test';
+ import {readFile,writeFile} from 'node:fs/promises';
+ import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
+ import {createHash} from 'node:crypto';
++import {readProductStatusPixels} from '../tools/product-status-pixels.mjs';
+ import {execFileSync} from 'node:child_process';
+ import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
+ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async({page},testInfo)=>{
+@@ -17,6 +18,8 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  expect(gateway.sourceTree).toBe(execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim());
+  expect(hash(await readFile(binary))).toBe(gateway.binarySha256);
+  const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway};
++ await writeFile(testInfo.outputPath('binding.json'),JSON.stringify(binding,null,2)+'\n');
++ await writeFile(testInfo.outputPath('ui-build-manifest.json'),manifestBytes);
+  const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[];const pendingFonts=new Set();
+  const font=request=>/\.(?:ttf|otf)(?:[?#]|$)/i.test(request.url());
+  page.on('request',request=>{if(font(request))pendingFonts.add(request);});
+@@ -44,15 +47,19 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  expect(legacyReply.status()).toBe(503);
+  await settle();
+  const screenshot=testInfo.outputPath('owner-not-attached.png');await page.screenshot({path:screenshot,caret:'initial'});
+- const text=await readScreenshotText(screenshot,{language:'eng'});
+- expect(text).toMatch(/not attached/i);expect(text).toMatch(/not current write authority/i);expect(text).toMatch(/runtime unavailable\s*\(Transport\)/i);
++ const observation=await readProductStatusPixels(screenshot,'notAttached');
++ await writeFile(testInfo.outputPath('owner-not-attached-ocr.json'),JSON.stringify(observation,null,2)+'\n');
++ expect(observation.passed).toBe(true);const text=observation.text;
+  expect(requests.map(item=>({method:item.method,path:new URL(item.url).pathname}))).toEqual([
+   {method:'GET',path:'/api/hepta/owner-status'},{method:'GET',path:'/api/hepta/runtime'},
+  ]);
+  const ownerCount=()=>requests.filter(item=>new URL(item.url).pathname==='/api/hepta/owner-status').length;
+- async function observedText(name){
++ async function observedText(name,state){
+   await settle();const path=testInfo.outputPath(name+'.png');await page.screenshot({path,caret:'initial'});
+-  return {path,text:await readScreenshotText(path,{language:'eng'})};
++  if(!state)return {path,text:await readScreenshotText(path,{language:'eng'})};
++  const observation=await readProductStatusPixels(path,state);
++  await writeFile(testInfo.outputPath(name+'-ocr.json'),JSON.stringify(observation,null,2)+'\n');
++  return {path,...observation};
+  }
+  const pendingReleases=new Set();
+  async function holdOwner(name){
+@@ -79,9 +86,9 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  await page.mouse.click(refresh.x,refresh.y);await timeoutHold.ready;
+  for(let index=0;index<3;index++)await page.mouse.click(refresh.x,refresh.y);
+  await settle();expect(ownerCount()).toBe(beforeTimeout+1);
+- await expect.poll(async()=> (await observedText('timed-out')).text,{timeout:15000,intervals:[250]}).toMatch(/TimedOut/i);
++ await expect.poll(async()=> (await observedText('timed-out','timedOut')).passed,{timeout:15000,intervals:[250]}).toBe(true);
+  await timeoutHold.finish();
+- expect((await observedText('late-after-timeout')).text).toMatch(/TimedOut/i);
++ expect((await observedText('late-after-timeout','timedOut')).passed).toBe(true);
+  // Navigating away cancels the pending read; reopening does not start another
+  // scan and an old reply cannot populate the new view.
+  const navigationHold=await holdOwner('navigation-cancel');const beforeNavigation=ownerCount();
+@@ -91,7 +98,7 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  const chatTabs=await screenshotConversationTabs((await observedText('chat-after-cancel')).path,page.viewportSize(),{recordOcr:true});
+  await page.mouse.click(chatTabs.Console.x,chatTabs.Console.y);await settle();
+  await navigationHold.finish();expect(ownerCount()).toBe(beforeNavigation+1);
+- expect((await observedText('late-after-navigation')).text).toMatch(/No owner observation has been requested/i);
++ expect((await observedText('late-after-navigation','noObservation')).passed).toBe(true);
+  // Deterministic browser-lifecycle injection through the pinned SDK listener.
+  // This covers routing/cancellation, not a physical OS backgrounding claim.
+  const backgroundHold=await holdOwner('synthetic-persisted-pagehide');const beforeBackground=ownerCount();
+@@ -99,7 +106,7 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
+  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true})));
+  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
+  await backgroundHold.finish();expect(ownerCount()).toBe(beforeBackground+1);
+- expect((await observedText('late-after-background')).text).toMatch(/No owner observation has been requested/i);
++ expect((await observedText('late-after-background','noObservation')).passed).toBe(true);
+  }finally{for(const release of pendingReleases)release();await page.unrouteAll({behavior:'ignoreErrors'});}
+  // An expected 503 is preserved as a transport observation; unrelated console
+  // exceptions, missing assets, Rust panics and cross-origin faults still fail.
+diff --git a/apps/hepta-control-ui/test/product-status-pixels.test.mjs b/apps/hepta-control-ui/test/product-status-pixels.test.mjs
+new file mode 100644
+index 0000000000..253fdf2b1f
+--- /dev/null
++++ b/apps/hepta-control-ui/test/product-status-pixels.test.mjs
+@@ -0,0 +1,17 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {productStatusTextMatches} from '../tools/product-status-pixels.mjs';
++const warning='This is not current write authority. Chat and commands remain unavailable.';
++const state='Production owner: not attached. No lease observation is available. Read-only runtime unavailable (Transport).';
++test('NotAttached requires exact visible owner, legacy transport and both authority limits',()=>{
++ assert.equal(productStatusTextMatches(state+' '+warning,'notAttached'),true);
++ for(const text of [state,state+' Chat and commands remain unavailable.',state+' This is not current write authority.',(state+' '+warning).replace('not attached','jot attached'),(state+' '+warning).replace('(Transport)','(NotConnected)'),(state+' '+warning).replace('No lease observation is available.','')])assert.equal(productStatusTextMatches(text,'notAttached'),false);
++});
++test('timeout and cancelled-state observations cannot substitute for each other',()=>{
++ assert.equal(productStatusTextMatches('Production owner observation unavailable (TimedOut). '+warning,'timedOut'),true);
++ assert.equal(productStatusTextMatches('No owner observation has been requested '+warning,'noObservation'),true);
++ assert.equal(productStatusTextMatches(state+' '+warning,'timedOut'),false);
++ assert.equal(productStatusTextMatches('Production owner: not attached. No lease observation is available. Read-only runtime unavailable (TimedOut). '+warning,'timedOut'),false);
++ assert.equal(productStatusTextMatches('TimedOut '+warning,'noObservation'),false);
++ assert.throws(()=>productStatusTextMatches(state,'invented'),/Unknown/);
++});
+diff --git a/apps/hepta-control-ui/tools/product-status-pixels.mjs b/apps/hepta-control-ui/tools/product-status-pixels.mjs
+new file mode 100644
+index 0000000000..100d805522
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/product-status-pixels.mjs
+@@ -0,0 +1,23 @@
++// Fixed OCR observations of one immutable rendered image; no text substitution.
++import assert from 'node:assert/strict';
++import {readFile} from 'node:fs/promises';
++import {createHash} from 'node:crypto';
++import {readScreenshotText} from './verify-robrix-pixels.mjs';
++const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
++export function productStatusTextMatches(text,state){
++ const common=[/not current write authority/i,/commands remain unavailable/i];
++ const specific={
++  notAttached:[/Production owner:\s*not attached/i,/No lease observation is available/i,/runtime unavailable\s*\(Transport\)/i],
++  timedOut:[/Production owner observation unavailable\s*\(TimedOut\)/i],
++  noObservation:[/No owner observation has been requested/i],
++ };
++ assert.ok(Object.hasOwn(specific,state),'Unknown product status observation');
++ return [...common,...specific[state]].every(pattern=>pattern.test(text));
++}
++export async function readProductStatusPixels(path,state){
++ const png=await readFile(path),original=await readScreenshotText(path,{language:'eng'});
++ const block=productStatusTextMatches(original,state)?null:await readScreenshotText(path,{language:'eng',layout:'block'});
++ const text=block===null?original:original+'\n'+block;
++ assert.equal(sha(await readFile(path)),sha(png),'Status PNG changed during OCR');
++ return {state,sourcePngSha256:sha(png),original,block,text,passed:productStatusTextMatches(text,state)};
++}

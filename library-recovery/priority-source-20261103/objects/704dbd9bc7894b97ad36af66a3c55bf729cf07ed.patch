@@ -1,0 +1,2059 @@
+diff --git a/apps/hepta-control-ui/package.json b/apps/hepta-control-ui/package.json
+index b67627c83..a8f70c84a 100644
+--- a/apps/hepta-control-ui/package.json
++++ b/apps/hepta-control-ui/package.json
+@@ -22,7 +22,8 @@
+     "start": "node tools/serve-robrix.mjs",
+     "test:robrix": "playwright test --config=playwright.robrix.config.mjs",
+     "desktop": "python3 tools/run-desktop.py",
+-    "prepare:fonts": "python3 tools/prepare-fonts.py"
++    "prepare:fonts": "python3 tools/prepare-fonts.py",
++    "product": "python3 tools/run-product.py"
+   },
+   "devDependencies": {
+     "@axe-core/playwright": "4.13.0",
+diff --git a/apps/hepta-control-ui/rust/core/src/lib.rs b/apps/hepta-control-ui/rust/core/src/lib.rs
+index f0658c699..059da659f 100644
+--- a/apps/hepta-control-ui/rust/core/src/lib.rs
++++ b/apps/hepta-control-ui/rust/core/src/lib.rs
+@@ -14,3 +14,6 @@ pub mod projection;
+ pub mod recovery;
+ pub mod scheduler;
+ pub mod theme;
++
++/// Read-only runtime status projection; no business authority.
++pub mod runtime_view;
+diff --git a/apps/hepta-control-ui/rust/core/src/runtime_view.rs b/apps/hepta-control-ui/rust/core/src/runtime_view.rs
+new file mode 100644
+index 000000000..55d713dd8
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/core/src/runtime_view.rs
+@@ -0,0 +1,176 @@
++//! Bounded read-only projection of the existing runtime status endpoint.
++//! This state never admits a chat owner, signs text, or grants operation authority.
++
++use serde::Deserialize;
++
++/// JSON has no provider-wide encoded-size guarantee. Oversize is unavailable,
++/// never truncated. This accommodates maximal escaped ordinary platform paths.
++pub const MAX_RUNTIME_JSON_BYTES: usize = 256 * 1024;
++
++#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub struct RuntimeSnapshot {
++    schema: String,
++    product: String,
++    status: String,
++    state_root: String,
++    state: RuntimeState,
++    authority: RuntimeAuthority,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct RuntimeState {
++    adapter: String,
++    schema_version: i64,
++    outcome_generation: i64,
++    preference_generation: i64,
++    runtime_snapshot_version: u64,
++    runtime_snapshot_generation: u64,
++    integrity_binding_present: bool,
++    integrity_verification: String,
++    open_mode: String,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct RuntimeAuthority {
++    telegram: bool,
++    outbound: bool,
++    model_invocation: bool,
++    operator_mutation: bool,
++    enforce: bool,
++    promotion: bool,
++    retirement: bool,
++    automatic_transition: bool,
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum RuntimeUnavailable {
++    NotConnected,
++    Transport,
++    TimedOut,
++    Oversize,
++    InvalidStatus,
++    CounterExhausted,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub enum RuntimeReadState {
++    Unavailable(RuntimeUnavailable),
++    Loading,
++    Ready(Box<RuntimeSnapshot>),
++}
++
++#[derive(Debug)]
++pub struct RuntimeReader {
++    next: u64,
++    active: Option<u64>,
++    state: RuntimeReadState,
++}
++
++impl Default for RuntimeReader {
++    fn default() -> Self {
++        Self {
++            next: 0,
++            active: None,
++            state: RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected),
++        }
++    }
++}
++
++impl RuntimeReader {
++    pub fn state(&self) -> &RuntimeReadState {
++        &self.state
++    }
++
++    pub fn begin(&mut self) -> Option<u64> {
++        if self.active.is_some() {
++            return None;
++        }
++        let Some(next) = self.next.checked_add(1) else {
++            self.state = RuntimeReadState::Unavailable(RuntimeUnavailable::CounterExhausted);
++            return None;
++        };
++        self.next = next;
++        self.active = Some(next);
++        self.state = RuntimeReadState::Loading;
++        Some(next)
++    }
++
++    pub fn complete(&mut self, ticket: u64, status: u16, bytes: &[u8]) -> bool {
++        if self.active != Some(ticket) {
++            return false;
++        }
++        self.active = None;
++        self.state = match parse_snapshot(status, bytes) {
++            Ok(snapshot) => RuntimeReadState::Ready(Box::new(snapshot)),
++            Err(reason) => RuntimeReadState::Unavailable(reason),
++        };
++        true
++    }
++
++    pub fn fail(&mut self, ticket: u64, reason: RuntimeUnavailable) -> bool {
++        if self.active != Some(ticket) {
++            return false;
++        }
++        self.active = None;
++        self.state = RuntimeReadState::Unavailable(reason);
++        true
++    }
++
++    pub fn disconnect(&mut self) -> Option<u64> {
++        self.state = RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected);
++        self.active.take()
++    }
++}
++
++fn parse_snapshot(status: u16, bytes: &[u8]) -> Result<RuntimeSnapshot, RuntimeUnavailable> {
++    if bytes.len() > MAX_RUNTIME_JSON_BYTES {
++        return Err(RuntimeUnavailable::Oversize);
++    }
++    if status != 200 {
++        return Err(RuntimeUnavailable::Transport);
++    }
++    let value: RuntimeSnapshot =
++        serde_json::from_slice(bytes).map_err(|_| RuntimeUnavailable::InvalidStatus)?;
++    let a = &value.authority;
++    if value.schema != "hepta_vnext_live_runtime_status_v1"
++        || value.product != "hepta"
++        || value.status != "ready"
++        || value.state.schema_version != 5
++        || value.state.outcome_generation < 0
++        || value.state.preference_generation < 0
++        || a.telegram
++        || a.outbound
++        || a.model_invocation
++        || a.operator_mutation
++        || a.enforce
++        || a.promotion
++        || a.retirement
++        || a.automatic_transition
++    {
++        return Err(RuntimeUnavailable::InvalidStatus);
++    }
++    Ok(value)
++}
++
++impl RuntimeReadState {
++    pub fn display_text(&self) -> String {
++        match self {
++            Self::Loading => "Read-only runtime: checking current status…\nNo chat or operation authority is provided by this view.".to_owned(),
++            Self::Unavailable(reason) => format!("Read-only runtime unavailable ({reason:?}).\nNo current status is shown. Chat and operation commands remain unavailable."),
++            Self::Ready(value) => format!(
++                "Read-only runtime: {}\nStorage schema: {} · snapshot version: {} · generation: {}\nOutcomes generation: {} · preferences generation: {}\nAdapter: {:?}\nIntegrity reported: {:?} · binding present: {}\nOpen mode: {:?}\nStorage root: {:?}\nAll effect gates reported closed. This observation does not grant chat or operation authority.",
++                value.status, value.state.schema_version, value.state.runtime_snapshot_version, value.state.runtime_snapshot_generation,
++                value.state.outcome_generation, value.state.preference_generation,
++                value.state.adapter, value.state.integrity_verification, value.state.integrity_binding_present,
++                value.state.open_mode, value.state_root
++            ),
++        }
++    }
++}
++
++#[cfg(test)]
++#[path = "runtime_view_tests.rs"]
++mod tests;
+diff --git a/apps/hepta-control-ui/rust/core/src/runtime_view_tests.rs b/apps/hepta-control-ui/rust/core/src/runtime_view_tests.rs
+new file mode 100644
+index 000000000..67087a126
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/core/src/runtime_view_tests.rs
+@@ -0,0 +1,107 @@
++use super::*;
++
++fn payload() -> serde_json::Value {
++    serde_json::json!({
++        "schema":"hepta_vnext_live_runtime_status_v1","product":"hepta","status":"ready",
++        "state_root":"/existing/runtime",
++        "state":{"adapter":"sqlite-schema-v5","schema_version":5,"outcome_generation":1,
++            "preference_generation":2,"runtime_snapshot_version":1,"runtime_snapshot_generation":3,
++            "integrity_binding_present":true,"integrity_verification":"owner-verified",
++            "open_mode":"immutable-query-only-open-existing"},
++        "authority":{"telegram":false,"outbound":false,"model_invocation":false,
++            "operator_mutation":false,"enforce":false,"promotion":false,"retirement":false,
++            "automatic_transition":false}
++    })
++}
++
++#[test]
++fn repeated_start_and_late_reply_cannot_replace_newer_status() {
++    let mut reader = RuntimeReader::default();
++    let first = reader.begin().expect("first request");
++    assert_eq!(reader.begin(), None);
++    assert_eq!(reader.disconnect(), Some(first));
++    let second = reader.begin().expect("second request");
++    let body = serde_json::to_vec(&payload()).expect("fixture");
++    assert!(!reader.complete(first, 200, &body));
++    assert_eq!(reader.state(), &RuntimeReadState::Loading);
++    assert!(reader.complete(second, 200, &body));
++    let ready = reader.state().clone();
++    assert!(!reader.fail(first, RuntimeUnavailable::Transport));
++    assert_eq!(reader.state(), &ready);
++}
++
++#[test]
++fn timeout_and_disconnect_never_leave_old_success_displayed_as_current() {
++    let mut reader = RuntimeReader::default();
++    let body = serde_json::to_vec(&payload()).expect("fixture");
++    let first = reader.begin().expect("request");
++    assert!(reader.complete(first, 200, &body));
++    let second = reader.begin().expect("refresh");
++    assert!(reader.fail(second, RuntimeUnavailable::TimedOut));
++    assert_eq!(
++        reader.state(),
++        &RuntimeReadState::Unavailable(RuntimeUnavailable::TimedOut)
++    );
++    assert!(!reader.complete(second, 200, &body));
++    reader.disconnect();
++    assert_eq!(
++        reader.state(),
++        &RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected)
++    );
++}
++
++#[test]
++fn malformed_http_schema_and_authority_are_unavailable_without_truncation() {
++    assert_eq!(
++        parse_snapshot(503, b"{}"),
++        Err(RuntimeUnavailable::Transport)
++    );
++    assert_eq!(
++        parse_snapshot(200, b"{"),
++        Err(RuntimeUnavailable::InvalidStatus)
++    );
++    let mut changed = payload();
++    changed["authority"]["outbound"] = true.into();
++    assert_eq!(
++        parse_snapshot(200, &serde_json::to_vec(&changed).expect("fixture")),
++        Err(RuntimeUnavailable::InvalidStatus)
++    );
++    changed = payload();
++    changed["state"]["schema_version"] = 6.into();
++    assert_eq!(
++        parse_snapshot(200, &serde_json::to_vec(&changed).expect("fixture")),
++        Err(RuntimeUnavailable::InvalidStatus)
++    );
++    assert_eq!(
++        parse_snapshot(200, &vec![b' '; MAX_RUNTIME_JSON_BYTES + 1]),
++        Err(RuntimeUnavailable::Oversize)
++    );
++}
++
++#[test]
++fn long_escaped_path_is_preserved_above_wire_v2_limit_within_json_bound() {
++    let mut value = payload();
++    // JSON and wire-v2 have different envelopes/limits. No module collection
++    // exists in this DTO; the path is its variable-size production field.
++    let path = format!("/{}", "漢\\\n".repeat(8192));
++    value["state_root"] = path.clone().into();
++    let bytes = serde_json::to_vec(&value).expect("fixture");
++    assert!(bytes.len() > 32 * 1024 && bytes.len() < MAX_RUNTIME_JSON_BYTES);
++    let result = parse_snapshot(200, &bytes).expect("bounded complete DTO");
++    assert_eq!(result.state_root, path);
++    let text = RuntimeReadState::Ready(Box::new(result)).display_text();
++    assert!(text.contains(&format!("{path:?}")));
++}
++
++#[test]
++fn request_counter_exhaustion_does_not_reuse_a_ticket() {
++    let mut reader = RuntimeReader {
++        next: u64::MAX,
++        ..RuntimeReader::default()
++    };
++    assert_eq!(reader.begin(), None);
++    assert_eq!(
++        reader.state(),
++        &RuntimeReadState::Unavailable(RuntimeUnavailable::CounterExhausted)
++    );
++}
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+index ff9b13fa1..cbfb35e42 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+@@ -5,6 +5,8 @@
+ use crate::ime_router::ImeRouter;
+ #[cfg(feature = "native-host")]
+ use crate::native_host::render::RendererHost as NativeRenderer;
++#[cfg(target_arch = "wasm32")]
++use crate::runtime_status::RuntimeClient;
+ use hepta_control_core::chat::ChatWorkspace;
+ use makepad_widgets::*;
+ app_main!(App, font_set: International, font_assets: [MATH_VIEW_FONT_ASSET], configure: |cx| {
+@@ -46,6 +48,9 @@ pub struct App {
+     workspace: ChatWorkspace,
+     #[rust]
+     ime_router: ImeRouter,
++    #[cfg(target_arch = "wasm32")]
++    #[rust]
++    runtime_status: RuntimeClient,
+     #[cfg(feature = "native-host")]
+     #[rust]
+     native_host: NativeRenderer,
+@@ -117,6 +122,15 @@ impl AppMain for App {
+         crate::visual_theme::apply_tree(cx, &self.ui);
+         self.ime_router
+             .dispatch(cx, &self.ui, event, &mut self.workspace);
++        #[cfg(target_arch = "wasm32")]
++        self.runtime_status.handle_event(
++            cx,
++            &self.ui,
++            event,
++            self.workspace.tab == hepta_control_core::chat::WorkspaceTab::Console
++                && !self.workspace.navigation_open,
++            self.workspace.presentation_epoch(),
++        );
+         #[cfg(feature = "native-host")]
+         if matches!(event, Event::Draw(_)) {
+             self.native_host.after_draw(cx, &self.ui);
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+index 273755366..0f6c7bab7 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+@@ -6,6 +6,8 @@ pub mod app;
+ mod native_status;
+ #[cfg(feature = "ui")]
+ pub mod robrix;
++#[cfg(feature = "ui")]
++mod runtime_status;
+ 
+ #[cfg(any(feature = "ui", test))]
+ mod ime_pointer_gate;
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+index cefd2fe71..71157ba3a 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+@@ -34,10 +34,10 @@ script_mod! {
+    home_tab := DockTab {name: "Chat" kind: @room_screen template: @PermanentTab}
+    console_tab := DockTab {name: "Console" kind: @console_screen template: @PermanentTab}
+    room_screen := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
+-   console_screen := View {
++   console_screen := ScrollYView {
+     flow: Down padding: 24 spacing: 12
+     Label {text: "Console" draw_text.color: COLOR_TEXT}
+-    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Runtime controls are not yet composed into this Robrix host. No operation is dispatched from this view." draw_text.color: COLOR_TEXT}
++    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable." draw_text.color: COLOR_TEXT}
+    }
+   }
+  }
+@@ -96,8 +96,8 @@ script_mod! {
+       back_to_chat := mod.widgets.AuroraButton {text: "Back to conversation"}
+       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
+      }
+-     console_page := View {flow: Down padding: 16
+-      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Console controls are awaiting composition. No runtime operation is dispatched here."}
++     console_page := ScrollYView {flow: Down padding: 16
++      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable."}
+      }
+     }
+    }
+@@ -116,6 +116,13 @@ impl Widget for MainConversationUI {
+         self.view.handle_event(cx, event, scope);
+     }
+     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
++        let status = cx
++            .global::<crate::runtime_status::RuntimeDisplay>()
++            .text
++            .clone();
++        self.view
++            .label(cx, ids!(console_status))
++            .set_text(cx, &status);
+         // This child is created lazily by the outer layout Dock. Select here,
+         // before its first draw, so a cached Console stays Console on resize.
+         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
+@@ -314,6 +321,13 @@ impl Widget for HomeScreen {
+             } else {
+                 id!(chat_page)
+             };
++            let status = cx
++                .global::<crate::runtime_status::RuntimeDisplay>()
++                .text
++                .clone();
++            self.view
++                .label(cx, ids!(mobile_console_status))
++                .set_text(cx, &status);
+             self.view
+                 .page_flip(cx, ids!(mobile_pages))
+                 .set_active_page(cx, page);
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs b/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs
+new file mode 100644
+index 000000000..f50f3c441
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs
+@@ -0,0 +1,154 @@
++//! Read-only runtime observations stay separate from chat owner admission.
++use hepta_control_core::runtime_view::RuntimeReadState;
++use hepta_control_core::runtime_view::RuntimeUnavailable;
++
++pub(crate) struct RuntimeDisplay {
++    pub(crate) text: String,
++}
++impl Default for RuntimeDisplay {
++    fn default() -> Self {
++        Self {
++            text: RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected).display_text(),
++        }
++    }
++}
++
++#[cfg(target_arch = "wasm32")]
++mod web {
++    use super::RuntimeDisplay;
++    use hepta_control_core::runtime_view::MAX_RUNTIME_JSON_BYTES;
++    use hepta_control_core::runtime_view::RuntimeReader;
++    use hepta_control_core::runtime_view::RuntimeUnavailable;
++    use makepad_widgets::*;
++
++    #[derive(Default)]
++    pub(crate) struct RuntimeClient {
++        reader: RuntimeReader,
++        active: Option<(u64, LiveId)>,
++        deadline: Timer,
++        refresh: Timer,
++        visible: bool,
++        background: bool,
++        closed: bool,
++        epoch: Option<u64>,
++    }
++
++    impl RuntimeClient {
++        pub(crate) fn handle_event(
++            &mut self,
++            cx: &mut Cx,
++            ui: &WidgetRef,
++            event: &Event,
++            requested_visible: bool,
++            epoch: u64,
++        ) {
++            match event {
++                Event::Shutdown => self.closed = true,
++                Event::Background => self.background = true,
++                Event::Foreground => self.background = false,
++                _ => {}
++            }
++            let visible = requested_visible && !self.background && !self.closed;
++            if !visible || self.epoch != Some(epoch) {
++                self.cancel(cx);
++                self.visible = false;
++                self.epoch = Some(epoch);
++                self.publish(cx, ui);
++            }
++            if !visible {
++                return;
++            }
++            if !self.visible {
++                self.visible = true;
++                self.start(cx, ui);
++            }
++            if self.refresh.is_event(event).is_some() {
++                self.refresh = Timer::default();
++                self.start(cx, ui);
++            }
++            if self.deadline.is_event(event).is_some()
++                && let Some((ticket, request)) = self.active.take()
++            {
++                let _ = cx.net.http_cancel(request);
++                self.reader.fail(ticket, RuntimeUnavailable::TimedOut);
++                self.deadline = Timer::default();
++                self.refresh = cx.start_timeout(15.0);
++                self.publish(cx, ui);
++            }
++            if let (Some((ticket, request)), Event::NetworkResponses(responses)) =
++                (self.active, event)
++            {
++                for response in responses {
++                    let completed = match response {
++                        NetworkResponse::HttpResponse {
++                            request_id,
++                            response,
++                        } if *request_id == request => self.reader.complete(
++                            ticket,
++                            response.status_code,
++                            response.body.as_deref().unwrap_or(&[]),
++                        ),
++                        NetworkResponse::HttpError { request_id, .. } if *request_id == request => {
++                            self.reader.fail(ticket, RuntimeUnavailable::Transport)
++                        }
++                        _ => false,
++                    };
++                    if completed {
++                        self.active = None;
++                        cx.stop_timer(self.deadline);
++                        self.deadline = Timer::default();
++                        self.refresh = cx.start_timeout(15.0);
++                        self.publish(cx, ui);
++                        break;
++                    }
++                }
++            }
++        }
++
++        fn start(&mut self, cx: &mut Cx, ui: &WidgetRef) {
++            let Some(ticket) = self.reader.begin() else {
++                return;
++            };
++            let request_id = LiveId(id!(hepta_read_only_runtime_status).0 ^ ticket);
++            let mut request = HttpRequest::new("/api/hepta/runtime".to_owned(), Default::default());
++            request.max_response_body_bytes = MAX_RUNTIME_JSON_BYTES as u64;
++            request.set_header("Accept".to_owned(), "application/json".to_owned());
++            match cx.net.http_start(request_id, request) {
++                Ok(()) => {
++                    self.active = Some((ticket, request_id));
++                    self.deadline = cx.start_timeout(5.0);
++                }
++                Err(_) => {
++                    self.reader.fail(ticket, RuntimeUnavailable::Transport);
++                    self.refresh = cx.start_timeout(15.0);
++                }
++            }
++            self.publish(cx, ui);
++        }
++
++        fn cancel(&mut self, cx: &mut Cx) {
++            if let Some((_, request)) = self.active.take() {
++                let _ = cx.net.http_cancel(request);
++            }
++            self.reader.disconnect();
++            cx.stop_timer(self.deadline);
++            cx.stop_timer(self.refresh);
++            self.deadline = Timer::default();
++            self.refresh = Timer::default();
++        }
++
++        fn publish(&self, cx: &mut Cx, ui: &WidgetRef) {
++            let text = self.reader.state().display_text();
++            if cx.global::<RuntimeDisplay>().text != text {
++                cx.global::<RuntimeDisplay>().text = text.clone();
++                ui.label(cx, ids!(console_status)).set_text(cx, &text);
++                ui.label(cx, ids!(mobile_console_status))
++                    .set_text(cx, &text);
++                ui.redraw(cx);
++            }
++        }
++    }
++}
++
++#[cfg(target_arch = "wasm32")]
++pub(crate) use web::RuntimeClient;
+diff --git a/apps/hepta-control-ui/test/test_run_product.py b/apps/hepta-control-ui/test/test_run_product.py
+new file mode 100644
+index 000000000..91f4b5ec3
+--- /dev/null
++++ b/apps/hepta-control-ui/test/test_run_product.py
+@@ -0,0 +1,113 @@
++import hashlib
++import importlib.util
++import json
++import os
++import subprocess
++import sys
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++
++ROOT = Path(__file__).resolve().parents[1]
++SPEC = importlib.util.spec_from_file_location(
++    "run_product", ROOT / "tools/run-product.py"
++)
++product = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(product)
++
++
++@unittest.skipUnless(
++    os.name == "posix", "Product bundle launcher currently requires Unix anchoring"
++)
++class ProductLaunchTests(unittest.TestCase):
++    def setUp(self):
++        temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(temporary.cleanup)
++        self.root = Path(temporary.name).resolve()
++        (self.root / "dist").mkdir()
++        self.manifest = self.root / "dist/build-manifest.json"
++        self.value = {
++            "schema": "hepta.robrix-ui.build.v1",
++            "browserRuntime": "rust-makepad-wasm",
++            "fixtures": False,
++            "sourceIdentity": {"sha256": "a" * 64},
++        }
++        self.manifest.write_text(json.dumps(self.value))
++
++    def test_digest_is_derived_from_exact_current_build_bytes(self):
++        with patch.object(
++            product.subprocess, "check_output", return_value="a" * 64 + "\n"
++        ):
++            args = product.bundle_arguments(self.root)
++        self.assertEqual(
++            args,
++            [
++                "--ui-bundle",
++                str((self.root / "dist").resolve()),
++                "--ui-manifest-sha256",
++                hashlib.sha256(self.manifest.read_bytes()).hexdigest(),
++            ],
++        )
++
++    def test_stale_source_or_fixture_artifact_cannot_be_selected(self):
++        with patch.object(product.subprocess, "check_output", return_value="b" * 64):
++            with self.assertRaisesRegex(ValueError, "stale"):
++                product.bundle_arguments(self.root)
++        self.value["fixtures"] = True
++        self.manifest.write_text(json.dumps(self.value))
++        with patch.object(
++            product.subprocess,
++            "check_output",
++            side_effect=AssertionError("must not execute stale fixture"),
++        ):
++            with self.assertRaisesRegex(ValueError, "production"):
++                product.bundle_arguments(self.root)
++
++    def test_oversize_manifest_fails_before_source_tool_execution(self):
++        self.manifest.write_bytes(b" " * (product.MAX_MANIFEST_BYTES + 1))
++        with patch.object(
++            product.subprocess,
++            "check_output",
++            side_effect=AssertionError("must not execute"),
++        ):
++            with self.assertRaisesRegex(ValueError, "bound"):
++                product.bundle_arguments(self.root)
++
++    def test_fifo_manifest_fails_within_deadline_instead_of_blocking_launch(self):
++        self.manifest.unlink()
++        os.mkfifo(self.manifest)
++        script = "import importlib.util, pathlib, sys; s=importlib.util.spec_from_file_location('p',sys.argv[1]); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); m.bundle_arguments(pathlib.Path(sys.argv[2]))"
++        result = subprocess.run(
++            [
++                sys.executable,
++                "-c",
++                script,
++                str(ROOT / "tools/run-product.py"),
++                str(self.root),
++            ],
++            capture_output=True,
++            text=True,
++            timeout=3,
++            check=False,
++        )
++        self.assertNotEqual(result.returncode, 0)
++        self.assertIn("not a regular file", result.stderr)
++
++    def test_symlink_manifest_and_ancestor_are_rejected(self):
++        self.manifest.rename(self.root / "original.json")
++        self.manifest.symlink_to(self.root / "original.json")
++        with patch.object(product.subprocess, "check_output", return_value="a" * 64):
++            with self.assertRaises(OSError):
++                product.bundle_arguments(self.root)
++        self.manifest.unlink()
++        (self.root / "dist").rename(self.root / "real-dist")
++        (self.root / "real-dist/build-manifest.json").write_bytes(
++            (self.root / "original.json").read_bytes()
++        )
++        (self.root / "dist").symlink_to(
++            self.root / "real-dist", target_is_directory=True
++        )
++        with patch.object(product.subprocess, "check_output", return_value="a" * 64):
++            with self.assertRaises(OSError):
++                product.bundle_arguments(self.root)
+diff --git a/apps/hepta-control-ui/tools/robrix-source-identity.mjs b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+index 19888f48f..e4eb31052 100644
+--- a/apps/hepta-control-ui/tools/robrix-source-identity.mjs
++++ b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+@@ -18,6 +18,6 @@ export async function robrixSourceIdentity(root){
+  await walk(join(root,'rust/robrix-ui/resources'));
+  await add(join(root,'rust/robrix-ui/UPSTREAM.json'));
+  await add(join(root,'rust/robrix-ui/build.rs'));
+- for(const name of ['build.mjs','build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py','owned-artifact-lease.mjs','artifact-lock.py','serve-robrix.mjs'])await add(join(root,'tools',name));
++ for(const name of ['build.mjs','build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py','run-product.py','owned-artifact-lease.mjs','artifact-lock.py','serve-robrix.mjs'])await add(join(root,'tools',name));
+  return {sha256:sha(JSON.stringify(files)),files};
+ }
+diff --git a/apps/hepta-control-ui/tools/run-product.py b/apps/hepta-control-ui/tools/run-product.py
+new file mode 100644
+index 000000000..e7898b11d
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/run-product.py
+@@ -0,0 +1,117 @@
++"""Launch the existing read-only product gateway with its owned Rust UI build.
++
++The manifest digest is derived from the actual build, not supplied as a receipt
++or treated as signing authority. This does not create runtime state or keys.
++"""
++
++import argparse
++import hashlib
++import json
++import os
++import stat
++from pathlib import Path
++import subprocess
++
++ROOT = Path(__file__).resolve().parents[1]
++MAX_MANIFEST_BYTES = 2 * 1024 * 1024
++
++
++def bundle_arguments(root):
++    manifest_path = root / "dist/build-manifest.json"
++    if os.name != "posix":
++        raise ValueError(
++            "Product UI bundle launch needs a reviewed anchored reader on this platform"
++        )
++    # Walk from a pinned directory descriptor; reject symlink ancestors and a
++    # FIFO/device final entry before reading. No canonicalize/open fallback.
++    directory = os.open("/", os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
++    try:
++        if not manifest_path.is_absolute() or ".." in manifest_path.parts:
++            raise ValueError("Manifest path must be normalized and absolute")
++        for part in manifest_path.parts[1:-1]:
++            child = os.open(
++                part,
++                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
++                dir_fd=directory,
++            )
++            os.close(directory)
++            directory = child
++        descriptor = os.open(
++            manifest_path.name,
++            os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC,
++            dir_fd=directory,
++        )
++        with os.fdopen(descriptor, "rb") as source:
++            metadata = os.fstat(source.fileno())
++            if not stat.S_ISREG(metadata.st_mode):
++                raise ValueError("UI manifest is not a regular file")
++            if metadata.st_size > MAX_MANIFEST_BYTES:
++                raise ValueError("UI manifest exceeds the supported bound")
++            data = source.read(MAX_MANIFEST_BYTES + 1)
++    finally:
++        os.close(directory)
++    if len(data) > MAX_MANIFEST_BYTES:
++        raise ValueError("UI manifest exceeds the supported bound")
++    manifest = json.loads(data)
++    if (
++        manifest.get("schema") != "hepta.robrix-ui.build.v1"
++        or manifest.get("browserRuntime") != "rust-makepad-wasm"
++        or manifest.get("fixtures") is not False
++    ):
++        raise ValueError("Build the production Rust UI before launching the product")
++    script = """
++import {robrixSourceIdentity} from './tools/robrix-source-identity.mjs';
++console.log((await robrixSourceIdentity(process.cwd())).sha256);
++"""
++    current = subprocess.check_output(
++        ["node", "--input-type=module", "-e", script], cwd=root, text=True
++    ).strip()
++    if current != manifest.get("sourceIdentity", {}).get("sha256"):
++        raise ValueError("UI build is stale; rebuild the current source")
++    return [
++        "--ui-bundle",
++        str((root / "dist").resolve(strict=True)),
++        "--ui-manifest-sha256",
++        hashlib.sha256(data).hexdigest(),
++    ]
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument(
++        "--hepta", type=Path, required=True, help="Built product hepta executable"
++    )
++    parser.add_argument(
++        "--state-root",
++        type=Path,
++        required=True,
++        help="Existing read-only runtime state",
++    )
++    parser.add_argument("--listen", default="127.0.0.1:7373")
++    parser.add_argument(
++        "--no-build", action="store_true", help="Verify and reuse a current build"
++    )
++    args = parser.parse_args()
++    executable = args.hepta.resolve(strict=True)
++    state = args.state_root.resolve(strict=True)
++    if not executable.is_file() or not state.is_dir():
++        parser.error("Supply a built executable and an existing state directory")
++    if not args.no_build:
++        subprocess.run(["node", "tools/build.mjs"], cwd=ROOT, check=True)
++    bundle = bundle_arguments(ROOT)
++    subprocess.run(
++        [
++            str(executable),
++            "--serve-ui",
++            "--listen",
++            args.listen,
++            "--state-root",
++            str(state),
++            *bundle,
++        ],
++        check=True,
++    )
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index d6ca3388c..b25559684 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -4051,7 +4051,10 @@ dependencies = [
+  "codex-hepta-runtime",
+  "codex-hepta-wire",
+  "pretty_assertions",
++ "rustix 1.1.4",
++ "serde",
+  "serde_json",
++ "sha2 0.10.9",
+  "tokio",
+ ]
+ 
+diff --git a/codex-rs/hepta-native-gateway/Cargo.toml b/codex-rs/hepta-native-gateway/Cargo.toml
+index ecad366f0..5aaa2763c 100644
+--- a/codex-rs/hepta-native-gateway/Cargo.toml
++++ b/codex-rs/hepta-native-gateway/Cargo.toml
+@@ -17,7 +17,9 @@ workspace = true
+ anyhow = { workspace = true }
+ codex-hepta-paths = { workspace = true }
+ codex-hepta-runtime = { workspace = true }
++serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
++sha2 = { workspace = true }
+ tokio = { workspace = true, features = [
+     "io-util",
+     "macros",
+@@ -27,6 +29,9 @@ tokio = { workspace = true, features = [
+     "time",
+ ] }
+ 
++[target.'cfg(unix)'.dependencies]
++rustix = { workspace = true, features = ["fs"] }
++
+ [dev-dependencies]
+ codex-hepta-wire = { path = "../hepta-wire" }
+ pretty_assertions = { workspace = true }
+diff --git a/codex-rs/hepta-native-gateway/src/http_origin.rs b/codex-rs/hepta-native-gateway/src/http_origin.rs
+new file mode 100644
+index 000000000..193ff7685
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/http_origin.rs
+@@ -0,0 +1,119 @@
++//! Browser-origin checks for the shared loopback HTTP boundary.
++//! These reject DNS rebinding/cross-origin reads; they are not user authentication.
++
++use std::net::IpAddr;
++use std::net::SocketAddr;
++
++#[derive(Eq, PartialEq)]
++struct Authority {
++    host: String,
++    port: u16,
++}
++
++fn authority(value: &str) -> Option<Authority> {
++    if value.is_empty() || !value.is_ascii() || value.bytes().any(|byte| byte.is_ascii_whitespace())
++    {
++        return None;
++    }
++    if value.starts_with('[') {
++        let end = value.find(']')?;
++        let host = value.get(1..end)?.parse::<std::net::Ipv6Addr>().ok()?;
++        let rest = value.get(end + 1..)?;
++        let port = if rest.is_empty() {
++            80
++        } else {
++            port(rest.strip_prefix(':')?)?
++        };
++        return Some(Authority {
++            host: host.to_string(),
++            port,
++        });
++    }
++    let (host, port) = match value.rsplit_once(':') {
++        Some((host, encoded)) => (host, port(encoded)?),
++        None => (value, 80),
++    };
++    let host = if host.eq_ignore_ascii_case("localhost") {
++        "localhost".to_owned()
++    } else {
++        host.parse::<std::net::Ipv4Addr>().ok()?.to_string()
++    };
++    Some(Authority { host, port })
++}
++
++fn port(value: &str) -> Option<u16> {
++    if value.is_empty() || !value.bytes().all(|byte| byte.is_ascii_digit()) {
++        return None;
++    }
++    value.parse().ok().filter(|port| *port != 0)
++}
++
++pub(crate) fn allowed(request: &[u8], local: SocketAddr) -> bool {
++    if !local.ip().is_loopback() {
++        return false;
++    }
++    let Ok(text) = std::str::from_utf8(request) else {
++        return false;
++    };
++    let mut lines = text.split("\r\n");
++    let Some(first) = lines.next() else {
++        return false;
++    };
++    let fields = first.split_whitespace().collect::<Vec<_>>();
++    if fields.len() != 3 || !matches!(fields[2], "HTTP/1.0" | "HTTP/1.1") {
++        return false;
++    }
++    let mut host = None;
++    let mut origin = None;
++    for line in lines {
++        if line.is_empty() {
++            break;
++        }
++        if line.starts_with([' ', '\t']) {
++            return false;
++        }
++        let Some((name, value)) = line.split_once(':') else {
++            return false;
++        };
++        if name.is_empty()
++            || !name
++                .bytes()
++                .all(|byte| byte.is_ascii_alphanumeric() || b"!#$%&'*+-.^_`|~".contains(&byte))
++            || value
++                .bytes()
++                .any(|byte| (byte < 0x20 && byte != b'\t') || byte == 0x7f)
++        {
++            return false;
++        }
++        if name.eq_ignore_ascii_case("host") {
++            if host.replace(value.trim()).is_some() {
++                return false;
++            }
++        } else if name.eq_ignore_ascii_case("origin") && origin.replace(value.trim()).is_some() {
++            return false;
++        }
++    }
++    // Retain legacy direct HTTP/1.0 clients without granting browsers an omitted-Host path.
++    let Some(host) = host else {
++        return fields[2] == "HTTP/1.0" && origin.is_none();
++    };
++    let Some(host) = authority(host) else {
++        return false;
++    };
++    let is_bound_host =
++        host.host == "localhost" || host.host.parse::<IpAddr>().ok() == Some(local.ip());
++    if !local.ip().is_loopback() || host.port != local.port() || !is_bound_host {
++        return false;
++    }
++    match origin {
++        None => true,
++        Some(value) => value
++            .strip_prefix("http://")
++            .and_then(authority)
++            .is_some_and(|value| value == host),
++    }
++}
++
++#[cfg(test)]
++#[path = "http_origin_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-native-gateway/src/http_origin_tests.rs b/codex-rs/hepta-native-gateway/src/http_origin_tests.rs
+new file mode 100644
+index 000000000..bf8db4f65
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/http_origin_tests.rs
+@@ -0,0 +1,42 @@
++use super::*;
++
++#[test]
++fn expected_loopback_host_and_same_origin_are_admitted() {
++    let address: SocketAddr = "127.0.0.1:7373".parse().expect("fixture");
++    for host in ["127.0.0.1:7373", "localhost:7373", "LOCALHOST:7373"] {
++        let request = format!(
++            "GET /api/hepta/runtime HTTP/1.1\r\nHost: {host}\r\nOrigin: http://{host}\r\n\r\n"
++        );
++        assert!(allowed(request.as_bytes(), address));
++    }
++    assert!(allowed(b"GET /healthz HTTP/1.0\r\n\r\n", address));
++    assert!(allowed(
++        b"GET / HTTP/1.1\r\nHost: [::1]:7373\r\nOrigin: http://[::1]:7373\r\n\r\n",
++        "[::1]:7373".parse().expect("fixture")
++    ));
++}
++
++#[test]
++fn rebinding_cross_origin_ambiguous_and_opaque_hosts_are_rejected() {
++    let address: SocketAddr = "127.0.0.1:7373".parse().expect("fixture");
++    for headers in [
++        "Host: attacker.example:7373",
++        "Host: 127.0.0.2:7373",
++        "Host: localhost",
++        "Host: localhost:0",
++        "Host: localhost:+7373",
++        "Host: localhost:7373\r\nHost: localhost:7373",
++        "Host: localhost:7373\r\nOrigin: https://attacker.example",
++        "Host: localhost:7373\r\nOrigin: null",
++        "Host: localhost:7373\r\nOrigin: http://127.0.0.1:7373",
++        "Host: localhost:7373\r\nOrigin: http://localhost:7373/",
++        "Host: localhost:7373\r\nOrigin: http://localhost:7373\r\nOrigin: http://localhost:7373",
++        "Host: localhost:7373\r\n Origin: http://attacker.example",
++        "Host : localhost:7373",
++        "",
++        "Host: localhost:7373\nOrigin: http://attacker.example",
++    ] {
++        let request = format!("GET /api/hepta/runtime HTTP/1.1\r\n{headers}\r\n\r\n");
++        assert!(!allowed(request.as_bytes(), address), "{headers:?}");
++    }
++}
+diff --git a/codex-rs/hepta-native-gateway/src/lib.rs b/codex-rs/hepta-native-gateway/src/lib.rs
+index 990e07d87..e6cd938a9 100644
+--- a/codex-rs/hepta-native-gateway/src/lib.rs
++++ b/codex-rs/hepta-native-gateway/src/lib.rs
+@@ -7,6 +7,7 @@
+ 
+ use std::env;
+ use std::net::SocketAddr;
++use std::path::PathBuf;
+ use std::sync::Arc;
+ use std::time::Duration;
+ 
+@@ -19,6 +20,12 @@ use tokio::io::AsyncWriteExt;
+ use tokio::net::TcpListener;
+ use tokio::net::TcpStream;
+ 
++mod http_origin;
++mod ui_bundle;
++
++use ui_bundle::UiBundle;
++pub use ui_bundle::UiBundleOptions;
++
+ pub const DEFAULT_LISTEN_ADDR: &str = "127.0.0.1:7373";
+ pub const CANARY_LISTEN_ADDR: &str = "127.0.0.1:17373";
+ pub const LIVE_SHELL_CONTRACT_ARG: &str = "--hepta-vnext-live-shell-contract-v1";
+@@ -52,6 +59,7 @@ const CLOSED_EFFECT_ENV_VARS: &[&str] = &[
+ pub struct NativeGatewayOptions {
+     pub listen_addr: SocketAddr,
+     pub state_root: HeptaStateRoot,
++    pub ui_bundle: Option<UiBundleOptions>,
+ }
+ 
+ impl NativeGatewayOptions {
+@@ -59,6 +67,8 @@ impl NativeGatewayOptions {
+         let mut listen_addr = DEFAULT_LISTEN_ADDR.to_string();
+         let mut state_root = default_root;
+         let mut positional_listen_seen = false;
++        let mut ui_directory = None;
++        let mut ui_manifest_sha256 = None;
+         let mut index = 0;
+         while index < raw_args.len() {
+             match raw_args[index].as_str() {
+@@ -69,6 +79,23 @@ impl NativeGatewayOptions {
+                         .context("--listen requires HOST:PORT")?
+                         .clone();
+                 }
++                "--ui-bundle" => {
++                    index += 1;
++                    ui_directory = Some(PathBuf::from(
++                        raw_args
++                            .get(index)
++                            .context("--ui-bundle requires an absolute directory")?,
++                    ));
++                }
++                "--ui-manifest-sha256" => {
++                    index += 1;
++                    ui_manifest_sha256 = Some(
++                        raw_args
++                            .get(index)
++                            .context("--ui-manifest-sha256 requires a digest")?
++                            .clone(),
++                    );
++                }
+                 "--state-root" => {
+                     index += 1;
+                     let value = raw_args.get(index).context("--state-root requires PATH")?;
+@@ -87,9 +114,18 @@ impl NativeGatewayOptions {
+             .parse::<SocketAddr>()
+             .with_context(|| format!("parse loopback listen address {listen_addr}"))?;
+         validate_loopback(listen_addr)?;
++        let ui_bundle = match (ui_directory, ui_manifest_sha256) {
++            (None, None) => None,
++            (Some(directory), Some(manifest_sha256)) => Some(UiBundleOptions {
++                directory,
++                manifest_sha256,
++            }),
++            _ => anyhow::bail!("--ui-bundle and --ui-manifest-sha256 must be supplied together"),
++        };
+         Ok(Self {
+             listen_addr,
+             state_root,
++            ui_bundle,
+         })
+     }
+ }
+@@ -135,6 +171,15 @@ pub fn run_serve_ui_if_requested(raw_args: &[String]) -> Result<bool> {
+ 
+ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
+     validate_closed_effect_environment()?;
++    let ui = options
++        .ui_bundle
++        .as_ref()
++        .map(UiBundle::load)
++        .transpose()?
++        .map(Arc::new);
++    if let Some(ui) = &ui {
++        eprintln!("Rust UI artifact source identity {}", ui.source_identity);
++    }
+     let runtime = Arc::new(HeptaRuntime::open_existing(options.state_root).await?);
+     let listener = TcpListener::bind(options.listen_addr)
+         .await
+@@ -153,8 +198,9 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
+                     continue;
+                 }
+                 let runtime = Arc::clone(&runtime);
++                let ui = ui.clone();
+                 tokio::spawn(async move {
+-                    if let Err(error) = serve_connection(stream, runtime).await {
++                    if let Err(error) = serve_connection(stream, runtime, ui).await {
+                         eprintln!("hepta loopback request failed: {error:#}");
+                     }
+                 });
+@@ -227,21 +273,57 @@ fn runtime_representation(request: &str) -> RuntimeRepresentation {
+     RuntimeRepresentation::Json
+ }
+ 
+-async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> Result<()> {
++async fn serve_connection(
++    mut stream: TcpStream,
++    runtime: Arc<HeptaRuntime>,
++    ui: Option<Arc<UiBundle>>,
++) -> Result<()> {
+     let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
+         .await
+         .context("loopback request timed out")??;
+-    let response = route_request(&request, &runtime)?;
+-    tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
++    if !http_origin::allowed(&request, stream.local_addr()?) {
++        let rejected = response(
++            "403 Forbidden",
++            "application/json; charset=utf-8",
++            br#"{"error":"loopback Host/Origin boundary rejected request"}"#,
++        );
++        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&rejected))
++            .await
++            .context("rejected response timed out")?
++            .context("write rejected response")?;
++    } else if let Some(asset) = ui.as_ref().and_then(|ui| ui_response(&request, ui)) {
++        tokio::time::timeout(RESPONSE_TIMEOUT, async {
++            stream.write_all(&asset.headers).await?;
++            stream.write_all(&asset.body).await
++        })
+         .await
+-        .context("loopback response timed out")?
+-        .context("write loopback response")?;
++        .context("UI response timed out")?
++        .context("write UI response")?;
++    } else {
++        let response = route_request(&request, &runtime)?;
++        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
++            .await
++            .context("loopback response timed out")?
++            .context("write loopback response")?;
++    }
+     tokio::time::timeout(RESPONSE_TIMEOUT, stream.shutdown())
+         .await
+         .context("loopback shutdown timed out")?
+         .context("close loopback response")
+ }
+ 
++fn ui_response(request: &[u8], ui: &UiBundle) -> Option<ui_bundle::UiResponse> {
++    let text = std::str::from_utf8(request).ok()?;
++    let mut fields = text.lines().next()?.split_whitespace();
++    let method = fields.next()?;
++    let target = fields.next()?;
++    let version = fields.next()?;
++    if method != "GET" || !matches!(version, "HTTP/1.0" | "HTTP/1.1") || fields.next().is_some() {
++        return None;
++    }
++    ui.response(target)
++}
++
+ async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
+     let mut bytes = Vec::with_capacity(2048);
+     let mut buffer = [0_u8; 2048];
+@@ -328,9 +410,9 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
+             )),
+         },
+         "/" => Ok(response(
+-            "200 OK",
+-            "text/html; charset=utf-8",
+-            CONTROL_SHELL.as_bytes(),
++            "503 Service Unavailable",
++            "application/json; charset=utf-8",
++            br#"{"error":"Rust UI bundle unavailable; configure the owned build artifact"}"#,
+         )),
+         _ => Ok(response(
+             "404 Not Found",
+@@ -351,19 +433,6 @@ fn response(status: &str, content_type: &str, body: &[u8]) -> Vec<u8> {
+     response
+ }
+ 
+-const CONTROL_SHELL: &str = r#"<!doctype html>
+-<html lang="en">
+-<meta charset="utf-8">
+-<meta name="viewport" content="width=device-width, initial-scale=1">
+-<title>Hepta vNext</title>
+-<style>body{font:16px system-ui;margin:3rem;max-width:58rem}pre{padding:1rem;background:#111;color:#eee;overflow:auto}</style>
+-<h1>Hepta vNext live shell</h1>
+-<p>Loopback-only, read-only internal canary surface.</p>
+-<pre id="status">loading…</pre>
+-<script>fetch('/api/hepta/runtime').then(r=>r.json()).then(v=>status.textContent=JSON.stringify(v,null,2)).catch(e=>status.textContent=String(e))</script>
+-</html>
+-"#;
+-
+ #[cfg(test)]
+ #[path = "organ_request_tests.rs"]
+ mod organ_request_tests;
+@@ -493,13 +562,13 @@ mod tests {
+         let server = tokio::spawn(async move {
+             let (stream, peer) = listener.accept().await?;
+             assert!(peer.ip().is_loopback());
+-            serve_connection(stream, runtime).await
++            serve_connection(stream, runtime, /*ui*/ None).await
+         });
+ 
+         let mut client = TcpStream::connect(address).await?;
+         client
+             .write_all(
+-                b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n",
++                format!("GET /api/hepta/runtime HTTP/1.1\r\nHost: {address}\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n").as_bytes(),
+             )
+             .await?;
+         let mut response = Vec::new();
+diff --git a/codex-rs/hepta-native-gateway/src/organ_request_tests.rs b/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
+index 48740c3c5..1f1208d22 100644
+--- a/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
++++ b/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
+@@ -40,11 +40,11 @@ async fn loopback_http_request_reaches_the_read_only_status_organ() -> Result<()
+     let address = listener.local_addr()?;
+     let server = tokio::spawn(async move {
+         let (stream, _) = listener.accept().await?;
+-        serve_connection(stream, runtime).await
++        serve_connection(stream, runtime, /*ui*/ None).await
+     });
+     let mut client = TcpStream::connect(address).await?;
+     client
+-        .write_all(b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\n\r\n")
++        .write_all(format!("GET /api/hepta/runtime HTTP/1.1\r\nHost: {address}\r\n\r\n").as_bytes())
+         .await?;
+     let mut bytes = Vec::new();
+     tokio::time::timeout(RESPONSE_TIMEOUT, client.read_to_end(&mut bytes)).await??;
+diff --git a/codex-rs/hepta-native-gateway/src/ui_bundle.rs b/codex-rs/hepta-native-gateway/src/ui_bundle.rs
+new file mode 100644
+index 000000000..124df8889
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/ui_bundle.rs
+@@ -0,0 +1,222 @@
++//! Immutable, bounded Rust UI assets selected by an explicit manifest digest.
++//! The digest is artifact integrity, never signer or business authority.
++
++use std::collections::BTreeMap;
++use std::path::PathBuf;
++use std::sync::Arc;
++
++use anyhow::Context;
++use anyhow::Result;
++use anyhow::ensure;
++use serde::Deserialize;
++use sha2::Digest;
++use sha2::Sha256;
++
++#[path = "ui_bundle_reader.rs"]
++mod reader;
++
++const MAX_MANIFEST_BYTES: usize = 2 * 1024 * 1024;
++const MAX_ASSETS: usize = 128;
++const MAX_ASSET_BYTES: usize = 64 * 1024 * 1024;
++const MAX_BUNDLE_BYTES: usize = 128 * 1024 * 1024;
++const CSP: &str = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
++
++/// Explicit selection of a complete, immutable UI build result.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct UiBundleOptions {
++    pub directory: PathBuf,
++    pub manifest_sha256: String,
++}
++
++#[derive(Deserialize)]
++#[serde(rename_all = "camelCase")]
++struct Manifest {
++    schema: String,
++    browser_runtime: String,
++    fixtures: bool,
++    threads: bool,
++    automatic_crash_upload: bool,
++    source_identity: SourceIdentity,
++    files: BTreeMap<String, AssetInput>,
++}
++
++#[derive(Deserialize)]
++struct SourceIdentity {
++    sha256: String,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct AssetInput {
++    bytes: usize,
++    sha256: String,
++}
++
++struct Asset {
++    bytes: Arc<[u8]>,
++    mime: &'static str,
++}
++
++pub(crate) struct UiBundle {
++    assets: BTreeMap<String, Asset>,
++    pub(crate) source_identity: String,
++}
++
++pub(crate) struct UiResponse {
++    pub(crate) headers: Vec<u8>,
++    pub(crate) body: Arc<[u8]>,
++}
++
++impl UiBundle {
++    pub(crate) fn load(options: &UiBundleOptions) -> Result<Self> {
++        ensure!(
++            canonical_digest(&options.manifest_sha256),
++            "invalid UI manifest SHA256"
++        );
++        let directory = reader::Directory::open(&options.directory)?;
++        let bytes = directory.read("build-manifest.json", MAX_MANIFEST_BYTES)?;
++        ensure!(
++            digest(&bytes) == options.manifest_sha256,
++            "UI manifest digest differs from selected artifact"
++        );
++        let manifest: Manifest =
++            serde_json::from_slice(&bytes).context("parse UI build manifest")?;
++        ensure!(
++            manifest.schema == "hepta.robrix-ui.build.v1"
++                && manifest.browser_runtime == "rust-makepad-wasm",
++            "unsupported UI build schema/runtime"
++        );
++        ensure!(
++            !manifest.fixtures && !manifest.threads && !manifest.automatic_crash_upload,
++            "UI build has unsupported fixture/thread/upload behavior"
++        );
++        ensure!(
++            canonical_digest(&manifest.source_identity.sha256),
++            "invalid UI source identity"
++        );
++        ensure!(
++            !manifest.files.is_empty() && manifest.files.len() <= MAX_ASSETS,
++            "UI asset count exceeds bound"
++        );
++        for required in ["index.html", "bootstrap.js", "input-platform.css"] {
++            ensure!(
++                manifest.files.contains_key(required),
++                "UI build missing required entry {required}"
++            );
++        }
++        ensure!(
++            manifest.files.keys().any(|path| path.ends_with(".wasm")),
++            "UI build missing WASM"
++        );
++        let mut total = bytes.len();
++        for input in manifest.files.values() {
++            ensure!(
++                input.bytes <= MAX_ASSET_BYTES && canonical_digest(&input.sha256),
++                "invalid UI asset size/digest"
++            );
++            total = total
++                .checked_add(input.bytes)
++                .context("UI asset size overflow")?;
++            ensure!(total <= MAX_BUNDLE_BYTES, "UI bundle exceeds memory bound");
++        }
++        let mut assets = BTreeMap::new();
++        for (path, input) in manifest.files {
++            ensure!(
++                valid_asset_path(&path) && path != "build-manifest.json",
++                "invalid or reserved UI asset path"
++            );
++            let bytes = directory.read(&path, input.bytes)?;
++            ensure!(
++                bytes.len() == input.bytes && digest(&bytes) == input.sha256,
++                "UI asset differs from selected manifest: {path}"
++            );
++            assets.insert(
++                path.clone(),
++                Asset {
++                    bytes: bytes.into(),
++                    mime: mime(&path)?,
++                },
++            );
++        }
++        assets.insert(
++            "build-manifest.json".to_owned(),
++            Asset {
++                bytes: bytes.into(),
++                mime: "application/json",
++            },
++        );
++        Ok(Self {
++            assets,
++            source_identity: manifest.source_identity.sha256,
++        })
++    }
++
++    pub(crate) fn response(&self, target: &str) -> Option<UiResponse> {
++        let path = target.split('?').next()?;
++        let relative = if path == "/" {
++            "index.html"
++        } else {
++            path.strip_prefix('/')?
++        };
++        if !valid_asset_path(relative) {
++            return None;
++        }
++        let asset = self.assets.get(relative)?;
++        let headers = format!(
++            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\nCache-Control: no-store\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: no-referrer\r\nContent-Security-Policy: {CSP}\r\n\r\n",
++            asset.mime, asset.bytes.len()
++        ).into_bytes();
++        Some(UiResponse {
++            headers,
++            body: Arc::clone(&asset.bytes),
++        })
++    }
++}
++
++fn canonical_digest(value: &str) -> bool {
++    value.len() == 64
++        && value
++            .bytes()
++            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
++}
++
++fn digest(bytes: &[u8]) -> String {
++    format!("{:x}", Sha256::digest(bytes))
++}
++
++fn valid_asset_path(path: &str) -> bool {
++    !path.is_empty()
++        && path.len() <= 512
++        && path.split('/').count() <= 16
++        && path.split('/').all(|part| {
++            !part.is_empty()
++                && part != "."
++                && part != ".."
++                && part
++                    .bytes()
++                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
++        })
++        && path != "healthz"
++        && path != "api"
++        && !path.starts_with("api/")
++}
++
++fn mime(path: &str) -> Result<&'static str> {
++    Ok(match path.rsplit('.').next() {
++        Some("html") => "text/html; charset=utf-8",
++        Some("js") => "text/javascript; charset=utf-8",
++        Some("css") => "text/css; charset=utf-8",
++        Some("wasm") => "application/wasm",
++        Some("ttf") => "font/ttf",
++        Some("otf") => "font/otf",
++        Some("png") => "image/png",
++        Some("svg") => "image/svg+xml",
++        Some("json") => "application/json",
++        Some("txt" | "md") => "text/plain; charset=utf-8",
++        _ => anyhow::bail!("unsupported UI asset type"),
++    })
++}
++
++#[cfg(test)]
++#[path = "ui_bundle_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-native-gateway/src/ui_bundle_reader.rs b/codex-rs/hepta-native-gateway/src/ui_bundle_reader.rs
+new file mode 100644
+index 000000000..b6b5a31e8
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/ui_bundle_reader.rs
+@@ -0,0 +1,113 @@
++//! Descriptor-relative reads follow the existing exec-server no-follow pattern.
++//! No pathname reopen or canonicalize-then-open fallback is used after anchoring.
++
++use std::path::Path;
++
++use anyhow::Result;
++
++#[cfg(unix)]
++use std::fs::File;
++#[cfg(unix)]
++use std::io::Read;
++#[cfg(unix)]
++use std::path::Component;
++
++#[cfg(unix)]
++use anyhow::Context;
++#[cfg(unix)]
++use anyhow::ensure;
++#[cfg(unix)]
++use rustix::fs::Mode;
++#[cfg(unix)]
++use rustix::fs::OFlags;
++
++pub(super) struct Directory {
++    #[cfg(unix)]
++    file: File,
++}
++
++impl Directory {
++    #[cfg(unix)]
++    pub(super) fn open(path: &Path) -> Result<Self> {
++        ensure!(path.is_absolute(), "UI bundle directory must be absolute");
++        let flags = OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC;
++        let mut file = File::from(rustix::fs::open("/", flags, Mode::empty())?);
++        for component in path.components() {
++            match component {
++                Component::RootDir => {}
++                Component::Normal(name) => {
++                    file = File::from(
++                        rustix::fs::openat(&file, name, flags, Mode::empty())
++                            .context("open UI bundle directory without following links")?,
++                    );
++                }
++                Component::CurDir | Component::ParentDir | Component::Prefix(_) => {
++                    anyhow::bail!("UI bundle directory must be normalized");
++                }
++            }
++        }
++        Ok(Self { file })
++    }
++
++    #[cfg(not(unix))]
++    pub(super) fn open(_path: &Path) -> Result<Self> {
++        anyhow::bail!(
++            "UI bundle serving is unsupported until this platform has a reviewed anchored reader; read-only health/runtime APIs remain available without a bundle"
++        )
++    }
++
++    #[cfg(unix)]
++    pub(super) fn read(&self, relative: &str, limit: usize) -> Result<Vec<u8>> {
++        ensure!(
++            super::valid_asset_path(relative),
++            "invalid UI relative path"
++        );
++        let mut directory = self.file.try_clone()?;
++        let mut components = relative.split('/').peekable();
++        while let Some(name) = components.next() {
++            if components.peek().is_some() {
++                directory = File::from(
++                    rustix::fs::openat(
++                        &directory,
++                        name,
++                        OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
++                        Mode::empty(),
++                    )
++                    .context("open anchored UI asset directory")?,
++                );
++                continue;
++            }
++            // NONBLOCK prevents a FIFO/device replacement from blocking before fstat.
++            let file = File::from(
++                rustix::fs::openat(
++                    &directory,
++                    name,
++                    OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC,
++                    Mode::empty(),
++                )
++                .context("open anchored UI asset")?,
++            );
++            let metadata = file.metadata()?;
++            ensure!(metadata.is_file(), "UI resource is not a regular file");
++            ensure!(
++                metadata.len() <= u64::try_from(limit)?,
++                "UI resource exceeds byte bound"
++            );
++            let mut bytes = Vec::new();
++            file.take(
++                u64::try_from(limit)?
++                    .checked_add(1)
++                    .context("UI read bound overflow")?,
++            )
++            .read_to_end(&mut bytes)?;
++            ensure!(bytes.len() <= limit, "UI resource grew beyond byte bound");
++            return Ok(bytes);
++        }
++        anyhow::bail!("UI resource path is empty")
++    }
++
++    #[cfg(not(unix))]
++    pub(super) fn read(&self, _relative: &str, _limit: usize) -> Result<Vec<u8>> {
++        anyhow::bail!("UI bundle serving is unsupported on this platform")
++    }
++}
+diff --git a/codex-rs/hepta-native-gateway/src/ui_bundle_tests.rs b/codex-rs/hepta-native-gateway/src/ui_bundle_tests.rs
+new file mode 100644
+index 000000000..81e0c4678
+--- /dev/null
++++ b/codex-rs/hepta-native-gateway/src/ui_bundle_tests.rs
+@@ -0,0 +1,410 @@
++use super::*;
++use std::fs;
++use std::path::Path;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::Ordering;
++
++static NEXT: AtomicU64 = AtomicU64::new(0);
++
++struct Fixture(PathBuf);
++impl Fixture {
++    fn new() -> Result<Self> {
++        let base = std::env::temp_dir().canonicalize()?;
++        for _ in 0..100 {
++            let path = base.join(format!(
++                "hepta-ui-bundle-{}-{}",
++                std::process::id(),
++                NEXT.fetch_add(1, Ordering::Relaxed)
++            ));
++            match fs::create_dir(&path) {
++                Ok(()) => return Ok(Self(path)),
++                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
++                Err(error) => return Err(error.into()),
++            }
++        }
++        anyhow::bail!("cannot create isolated fixture")
++    }
++
++    fn bundle(&self) -> Result<UiBundleOptions> {
++        let mut files = serde_json::Map::new();
++        for (name, bytes) in [
++            ("index.html", b"<canvas></canvas>".as_slice()),
++            ("bootstrap.js", b"// fixture".as_slice()),
++            ("input-platform.css", b"canvas{}".as_slice()),
++            ("app.wasm", b"\0asm\x01\0\0\0".as_slice()),
++        ] {
++            fs::write(self.0.join(name), bytes)?;
++            files.insert(
++                name.to_owned(),
++                serde_json::json!({"bytes":bytes.len(),"sha256":digest(bytes)}),
++            );
++        }
++        self.manifest(&serde_json::json!({
++            "schema":"hepta.robrix-ui.build.v1", "browserRuntime":"rust-makepad-wasm",
++            "fixtures":false,"threads":false,"automaticCrashUpload":false,
++            "sourceIdentity":{"sha256":"a".repeat(64)},"files":files
++        }))
++    }
++
++    fn manifest(&self, value: &serde_json::Value) -> Result<UiBundleOptions> {
++        let bytes = serde_json::to_vec(value)?;
++        fs::write(self.0.join("build-manifest.json"), &bytes)?;
++        Ok(UiBundleOptions {
++            directory: self.0.clone(),
++            manifest_sha256: digest(&bytes),
++        })
++    }
++}
++impl Drop for Fixture {
++    fn drop(&mut self) {
++        let _ = fs::remove_dir_all(&self.0);
++    }
++}
++
++#[cfg(unix)]
++#[test]
++fn verified_snapshot_survives_asset_replacement_without_copying_bodies() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let options = fixture.bundle()?;
++    let bundle = UiBundle::load(&options)?;
++    let first = bundle.response("/").context("entry")?;
++    fs::write(fixture.0.join("replacement"), "changed")?;
++    fs::rename(fixture.0.join("replacement"), fixture.0.join("index.html"))?;
++    let second = bundle.response("/index.html").context("entry")?;
++    assert!(Arc::ptr_eq(&first.body, &second.body));
++    assert_eq!(&*second.body, b"<canvas></canvas>");
++    assert!(UiBundle::load(&options).is_err());
++    assert!(std::str::from_utf8(&first.headers)?.contains("Content-Security-Policy:"));
++    assert!(bundle.response("/build-manifest.json").is_some());
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn malformed_requests_never_escape_the_selected_asset_map() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let bundle = UiBundle::load(&fixture.bundle()?)?;
++    for target in [
++        "/../index.html",
++        "/%2e%2e/index.html",
++        "/x%2findex.html",
++        "//index.html",
++        "/x\\index.html",
++        "/api/hepta/runtime",
++        "/healthz",
++        "/unlisted.js",
++    ] {
++        assert!(bundle.response(target).is_none(), "{target}");
++    }
++    for request in [
++        b"POST / HTTP/1.1\r\n\r\n".as_slice(),
++        b"GET / BAD\r\n\r\n",
++        b"GET / HTTP/1.1 extra\r\n\r\n",
++    ] {
++        assert!(crate::ui_response(request, &bundle).is_none());
++    }
++    assert!(crate::ui_response(b"GET / HTTP/1.1\r\n\r\n", &bundle).is_some());
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn manifest_selection_and_resource_failures_are_closed() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let options = fixture.bundle()?;
++    let mut wrong = options;
++    wrong.manifest_sha256 = "0".repeat(64);
++    assert!(UiBundle::load(&wrong).is_err());
++    let original: serde_json::Value =
++        serde_json::from_slice(&fs::read(fixture.0.join("build-manifest.json"))?)?;
++    for field in ["fixtures", "threads", "automaticCrashUpload"] {
++        let mut changed = original.clone();
++        changed[field] = true.into();
++        assert!(UiBundle::load(&fixture.manifest(&changed)?).is_err());
++    }
++    for path in ["../escape.js", "api/hepta/runtime", "build-manifest.json"] {
++        let mut changed = original.clone();
++        changed["files"][path] = serde_json::json!({"bytes":0,"sha256":digest(b"")});
++        assert!(UiBundle::load(&fixture.manifest(&changed)?).is_err());
++    }
++    let options = fixture.manifest(&original)?;
++    fs::remove_file(fixture.0.join("bootstrap.js"))?;
++    assert!(UiBundle::load(&options).is_err());
++    fs::write(fixture.0.join("bootstrap.js"), "too many fixture bytes")?;
++    assert!(UiBundle::load(&options).is_err());
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn anchored_reader_rejects_symlink_ancestors_and_final_files() -> Result<()> {
++    use std::os::unix::fs::symlink;
++    let fixture = Fixture::new()?;
++    fs::create_dir(fixture.0.join("real"))?;
++    fs::write(fixture.0.join("real/file.txt"), "safe")?;
++    symlink("real", fixture.0.join("link"))?;
++    let directory = reader::Directory::open(&fixture.0)?;
++    assert!(reader::Directory::open(&fixture.0.join("link")).is_err());
++    assert!(directory.read("link/file.txt", 4).is_err());
++    symlink("real/file.txt", fixture.0.join("file.txt"))?;
++    assert!(directory.read("file.txt", 4).is_err());
++    assert_eq!(directory.read("real/file.txt", 4)?, b"safe");
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn pinned_directory_survives_path_rename_and_replacement() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let original = fixture.0.join("bundle");
++    fs::create_dir(&original)?;
++    fs::write(original.join("data.txt"), "original")?;
++    let directory = reader::Directory::open(&original)?;
++    fs::rename(&original, fixture.0.join("moved"))?;
++    fs::create_dir(&original)?;
++    fs::write(original.join("data.txt"), "replacement")?;
++    assert_eq!(directory.read("data.txt", 32)?, b"original");
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn nonregular_and_oversize_resources_fail_before_unbounded_read() -> Result<()> {
++    let fixture = Fixture::new()?;
++    fs::write(fixture.0.join("large.txt"), b"12345")?;
++    let directory = reader::Directory::open(&fixture.0)?;
++    assert!(directory.read("large.txt", 4).is_err());
++    assert!(directory.read("large.txt", 0).is_err());
++    rustix::fs::mkfifoat(
++        rustix::fs::CWD,
++        fixture.0.join("pipe.txt"),
++        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
++    )?;
++    assert!(directory.read("pipe.txt", 16).is_err());
++    assert!(
++        reader::Directory::open(Path::new("/dev"))?
++            .read("null", 16)
++            .is_err()
++    );
++    Ok(())
++}
++
++#[test]
++fn bundle_arguments_are_paired_without_changing_api_only_startup() -> Result<()> {
++    let root =
++        codex_hepta_paths::HeptaStateRoot::parse(std::env::temp_dir().join("hepta-ui-args"))?;
++    assert!(
++        crate::NativeGatewayOptions::from_args(&[], root.clone())?
++            .ui_bundle
++            .is_none()
++    );
++    assert!(
++        crate::NativeGatewayOptions::from_args(
++            &["--ui-bundle".to_owned(), "/bundle".to_owned()],
++            root.clone()
++        )
++        .is_err()
++    );
++    assert!(
++        crate::NativeGatewayOptions::from_args(
++            &["--ui-manifest-sha256".to_owned(), "a".repeat(64)],
++            root
++        )
++        .is_err()
++    );
++    Ok(())
++}
++
++#[cfg(unix)]
++#[test]
++fn manifest_count_aggregate_and_entry_limits_reject_before_asset_reads() -> Result<()> {
++    let fixture = Fixture::new()?;
++    fixture.bundle()?;
++    let original: serde_json::Value =
++        serde_json::from_slice(&fs::read(fixture.0.join("build-manifest.json"))?)?;
++    let mut count = original.clone();
++    for index in 0..MAX_ASSETS {
++        count["files"][format!("extra-{index}.js")] =
++            serde_json::json!({"bytes":0,"sha256":digest(b"")});
++    }
++    let error = UiBundle::load(&fixture.manifest(&count)?)
++        .err()
++        .context("must reject count")?;
++    assert!(error.to_string().contains("count exceeds"));
++    let mut aggregate = original.clone();
++    for index in 0..3 {
++        aggregate["files"][format!("large-{index}.js")] =
++            serde_json::json!({"bytes":MAX_ASSET_BYTES,"sha256":digest(b"")});
++    }
++    let error = UiBundle::load(&fixture.manifest(&aggregate)?)
++        .err()
++        .context("must reject aggregate")?;
++    assert!(error.to_string().contains("memory bound"));
++    let mut entry = original;
++    entry["files"]
++        .as_object_mut()
++        .context("fixture files")?
++        .remove("index.html");
++    let error = UiBundle::load(&fixture.manifest(&entry)?)
++        .err()
++        .context("must reject entry")?;
++    assert!(error.to_string().contains("missing required entry"));
++    let oversized = vec![b' '; MAX_MANIFEST_BYTES + 1];
++    fs::write(fixture.0.join("build-manifest.json"), &oversized)?;
++    let options = UiBundleOptions {
++        directory: fixture.0.clone(),
++        manifest_sha256: digest(&oversized),
++    };
++    let error = UiBundle::load(&options)
++        .err()
++        .context("must reject oversized manifest")?;
++    assert!(error.to_string().contains("byte bound"));
++    Ok(())
++}
++
++#[cfg(unix)]
++#[derive(Debug)]
++struct SocketAdapter;
++#[cfg(unix)]
++impl codex_hepta_runtime::RuntimeStateAdapter for SocketAdapter {
++    fn status(&self) -> codex_hepta_runtime::RuntimeStateStatus {
++        codex_hepta_runtime::RuntimeStateStatus {
++            adapter: "ui-socket-fixture",
++            schema_version: 5,
++            outcome_generation: 1,
++            preference_generation: 2,
++            runtime_snapshot_version: 1,
++            runtime_snapshot_generation: 3,
++            integrity_binding_present: true,
++            integrity_verification: "fixture-only",
++            open_mode: "read-only-test",
++        }
++    }
++}
++
++#[cfg(unix)]
++async fn exchange(
++    ui: Option<Arc<UiBundle>>,
++    packet: impl FnOnce(std::net::SocketAddr) -> String,
++) -> Result<Vec<u8>> {
++    use tokio::io::AsyncReadExt;
++    use tokio::io::AsyncWriteExt;
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
++    let address = listener.local_addr()?;
++    let root = codex_hepta_paths::HeptaStateRoot::parse(
++        std::env::temp_dir().join("hepta-ui-socket-fixture"),
++    )?;
++    let runtime = Arc::new(codex_hepta_runtime::HeptaRuntime::from_adapter(
++        root,
++        Arc::new(SocketAdapter),
++    ));
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await?;
++        crate::serve_connection(stream, runtime, ui).await
++    });
++    let mut client = tokio::net::TcpStream::connect(address).await?;
++    client.write_all(packet(address).as_bytes()).await?;
++    let mut response = Vec::new();
++    tokio::time::timeout(crate::RESPONSE_TIMEOUT, client.read_to_end(&mut response)).await??;
++    server.await??;
++    Ok(response)
++}
++
++#[cfg(unix)]
++fn http_parts(response: &[u8]) -> Result<(&str, &[u8])> {
++    let offset = response
++        .windows(4)
++        .position(|bytes| bytes == b"\r\n\r\n")
++        .context("HTTP headers")?
++        + 4;
++    let headers = std::str::from_utf8(&response[..offset])?;
++    let length: usize = headers
++        .lines()
++        .find_map(|line| line.strip_prefix("Content-Length: "))
++        .context("HTTP length")?
++        .parse()?;
++    assert_eq!(response[offset..].len(), length);
++    Ok((headers, &response[offset..]))
++}
++
++#[cfg(unix)]
++#[tokio::test]
++async fn real_ui_socket_serves_selected_bytes_and_preserves_read_only_apis() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let ui = Arc::new(UiBundle::load(&fixture.bundle()?)?);
++    for (path, content_type, expected) in [
++        (
++            "/",
++            "text/html; charset=utf-8",
++            b"<canvas></canvas>".as_slice(),
++        ),
++        (
++            "/app.wasm",
++            "application/wasm",
++            b"\0asm\x01\0\0\0".as_slice(),
++        ),
++    ] {
++        let response = exchange(Some(Arc::clone(&ui)), |address| {
++            format!("GET {path} HTTP/1.1\r\nHost: {address}\r\n\r\n")
++        })
++        .await?;
++        let (headers, body) = http_parts(&response)?;
++        assert!(headers.starts_with("HTTP/1.1 200 OK"));
++        assert!(headers.contains(&format!("Content-Type: {content_type}\r\n")));
++        assert!(headers.contains("Content-Security-Policy:"));
++        assert_eq!(body, expected);
++    }
++    for path in ["/healthz", "/api/hepta/runtime"] {
++        let response = exchange(Some(Arc::clone(&ui)), |address| {
++            format!("GET {path} HTTP/1.1\r\nHost: {address}\r\n\r\n")
++        })
++        .await?;
++        let (headers, body) = http_parts(&response)?;
++        assert!(headers.starts_with("HTTP/1.1 200 OK"));
++        let value: serde_json::Value = serde_json::from_slice(body)?;
++        assert_eq!(value["product"], "hepta");
++    }
++    let wire = exchange(Some(Arc::clone(&ui)), |address| format!("GET /api/hepta/runtime HTTP/1.1\r\nHost: {address}\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n")).await?;
++    let (headers, body) = http_parts(&wire)?;
++    assert!(headers.contains("application/x-hepta-wire; version=2"));
++    let _ = codex_hepta_wire::WireEnvelopeV2::decode(body)?;
++    for (method, path, expected) in [("POST", "/", "405"), ("GET", "/unlisted.js", "404")] {
++        let response = exchange(Some(Arc::clone(&ui)), |address| {
++            format!("{method} {path} HTTP/1.1\r\nHost: {address}\r\n\r\n")
++        })
++        .await?;
++        assert!(
++            http_parts(&response)?
++                .0
++                .starts_with(&format!("HTTP/1.1 {expected}"))
++        );
++    }
++    let missing = exchange(/*ui*/ None, |address| {
++        format!("GET / HTTP/1.1\r\nHost: {address}\r\n\r\n")
++    })
++    .await?;
++    assert!(http_parts(&missing)?.0.starts_with("HTTP/1.1 503"));
++    Ok(())
++}
++
++#[cfg(unix)]
++#[tokio::test]
++async fn rebinding_and_cross_origin_are_denied_before_ui_or_runtime_dispatch() -> Result<()> {
++    let fixture = Fixture::new()?;
++    let ui = Arc::new(UiBundle::load(&fixture.bundle()?)?);
++    for path in ["/", "/app.wasm", "/healthz", "/api/hepta/runtime"] {
++        let response = exchange(Some(Arc::clone(&ui)), |_| {
++            format!("GET {path} HTTP/1.1\r\nHost: attacker.example\r\n\r\n")
++        })
++        .await?;
++        assert!(http_parts(&response)?.0.starts_with("HTTP/1.1 403"));
++        let response = exchange(Some(Arc::clone(&ui)), |address| {
++            format!(
++                "GET {path} HTTP/1.1\r\nHost: {address}\r\nOrigin: https://attacker.example\r\n\r\n"
++            )
++        })
++        .await?;
++        assert!(http_parts(&response)?.0.starts_with("HTTP/1.1 403"));
++    }
++    Ok(())
++}

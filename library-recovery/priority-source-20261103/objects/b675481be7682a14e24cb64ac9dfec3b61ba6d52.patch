@@ -1,0 +1,351 @@
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+@@ -112,6 +112,7 @@
+             return;
+         }
+         crate::visual_theme::apply_tree(cx, &self.ui);
++        crate::editor_input::clear_changed_epoch(cx, &self.ui, &mut self.workspace);
+         self.ui
+             .handle_event(cx, event, &mut Scope::with_data(&mut self.workspace));
+         #[cfg(feature = "native-host")]
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/editor_input.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/editor_input.rs
+@@ -0,0 +1,92 @@
++//! Shared, bounded editor selection across the cached desktop/compact hosts.
++use crate::editor_memory::EditorMemory;
++use crate::presentation::RoomKey;
++use hepta_control_core::chat::ChatWorkspace;
++use makepad_widgets::text::selection::Selection;
++use makepad_widgets::*;
++
++struct ActiveEditor {
++    room: RoomKey,
++    renderer: WidgetUid,
++    input: TextInputRef,
++}
++
++#[derive(Default)]
++struct EditorInputs {
++    epoch: Option<u64>,
++    memory: EditorMemory<Selection>,
++    active: Option<ActiveEditor>,
++}
++
++pub(crate) fn activate(
++    cx: &mut Cx,
++    renderer: WidgetUid,
++    input: TextInputRef,
++    workspace: &ChatWorkspace,
++) {
++    let room = RoomKey {
++        epoch: workspace.presentation_epoch(),
++        local_id: workspace.active_id(),
++    };
++    let state = cx.global::<EditorInputs>();
++    state.memory.bind(room.epoch);
++    if state.active.as_ref().is_some_and(|active| {
++        active.room == room && active.renderer == renderer
++    }) {
++        return;
++    }
++    if let Some(previous) = state.active.take()
++        && previous.room.epoch == room.epoch
++        && !previous.input.is_composing()
++        && let Some((_, draft)) = workspace.drafts().find(|(id, _)| *id == previous.room.local_id)
++        && previous.input.text() == draft.text
++    {
++        state.memory.remember(previous.room, &draft.text, previous.input.selection());
++    }
++    let selection = state.memory.restore(room, &workspace.draft().text);
++    state.active = Some(ActiveEditor {
++        room,
++        renderer,
++        input: input.clone(),
++    });
++    // Never clone the SDK's unbounded private undo history into a room cache.
++    input.restore_state(cx, TextInputState::default());
++    input.set_text(cx, &workspace.draft().text);
++    if let Some(selection) = selection {
++        input.set_selection(cx, selection);
++    }
++    input.set_submit_on_enter(true);
++}
++
++/// Clear previous-epoch editor data before dispatching the next UI event.
++pub(crate) fn clear_changed_epoch(cx: &mut Cx, root: &WidgetRef, workspace: &mut ChatWorkspace) {
++    let epoch = workspace.presentation_epoch();
++    let state = cx.global::<EditorInputs>();
++    let changed_epoch = state.epoch.is_some_and(|previous| previous != epoch);
++    state.epoch = Some(epoch);
++    if changed_epoch {
++        let previous = state.active.take();
++        state.memory.bind(epoch);
++        cx.set_key_focus(Area::Empty);
++        // The previous composer can be hidden behind Console/navigation.
++        if let Some(previous) = previous {
++            previous.input.restore_state(cx, TextInputState::default());
++        }
++        // Clear reachable fields now. The sidebar also clears its search state
++        // before drawing after an epoch change, including a previously hidden one.
++        let mut stack = vec![root.clone()];
++        for _ in 0..4096 {
++            let Some(widget) = stack.pop() else {
++                break;
++            };
++            if widget.borrow::<TextInput>().is_some() {
++                widget.as_text_input().restore_state(cx, TextInputState::default());
++            }
++            widget.children(&mut |_, child| stack.push(child));
++        }
++    }
++}
++
++#[cfg(test)]
++#[path = "editor_input_tests.rs"]
++mod tests;
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/editor_input_tests.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/editor_input_tests.rs
+@@ -0,0 +1,76 @@
++use super::*;
++use makepad_widgets::text::selection::Cursor;
++
++fn field(cx: &mut Cx) -> WidgetRef {
++    cx.with_vm(|vm| {
++        makepad_widgets::script_mod(vm);
++        let value = vm.eval(makepad_widgets::makepad_script::script! {
++            use mod.prelude.widgets.*
++            TextInput {}
++        });
++        WidgetRef::script_from_value(vm, value)
++    })
++}
++
++fn selection(anchor: usize, cursor: usize) -> Selection {
++    Selection {
++        anchor: Cursor { index: anchor, prefer_next_row: false },
++        cursor: Cursor { index: cursor, prefer_next_row: true },
++    }
++}
++
++#[test]
++fn cached_renderers_and_room_return_preserve_unicode_selection() {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let desktop = field(&mut cx);
++    let compact = field(&mut cx);
++    let mut workspace = ChatWorkspace::default();
++    workspace.edit("a中文🚀z".into());
++    activate(&mut cx, desktop.widget_uid(), desktop.as_text_input(), &workspace);
++    let expected = selection(7, 1);
++    desktop.as_text_input().set_selection(&mut cx, expected);
++    activate(&mut cx, compact.widget_uid(), compact.as_text_input(), &workspace);
++    assert_eq!(compact.as_text_input().text(), "a中文🚀z");
++    assert_eq!((compact.as_text_input().selection().anchor, compact.as_text_input().selection().cursor), (expected.anchor, expected.cursor));
++    workspace.new_draft();
++    workspace.edit("second".into());
++    activate(&mut cx, compact.widget_uid(), compact.as_text_input(), &workspace);
++    compact.as_text_input().set_selection(&mut cx, selection(2, 4));
++    workspace.select(0);
++    activate(&mut cx, compact.widget_uid(), compact.as_text_input(), &workspace);
++    assert_eq!((compact.as_text_input().selection().anchor, compact.as_text_input().selection().cursor), (expected.anchor, expected.cursor));
++    activate(&mut cx, desktop.widget_uid(), desktop.as_text_input(), &workspace);
++    assert_eq!((desktop.as_text_input().selection().anchor, desktop.as_text_input().selection().cursor), (expected.anchor, expected.cursor));
++}
++
++#[test]
++fn changed_text_does_not_restore_a_previous_revision_selection() {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let input = field(&mut cx);
++    let mut workspace = ChatWorkspace::default();
++    workspace.edit("private old text".into());
++    activate(&mut cx, input.widget_uid(), input.as_text_input(), &workspace);
++    input.as_text_input().set_selection(&mut cx, selection(0, 7));
++    workspace.new_draft();
++    activate(&mut cx, input.widget_uid(), input.as_text_input(), &workspace);
++    workspace.select(0);
++    workspace.edit("new".into());
++    activate(&mut cx, input.widget_uid(), input.as_text_input(), &workspace);
++    assert_eq!(input.as_text_input().text(), "new");
++    assert!(input.as_text_input().selected_text().is_empty());
++}
++
++#[test]
++fn revocation_clears_cached_field_and_editor_memory_before_events() {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let root = field(&mut cx);
++    let mut workspace = ChatWorkspace::default();
++    clear_changed_epoch(&mut cx, &root, &mut workspace);
++    workspace.edit("private".into());
++    activate(&mut cx, root.widget_uid(), root.as_text_input(), &workspace);
++    workspace.disconnect_owner();
++    clear_changed_epoch(&mut cx, &root, &mut workspace);
++    assert_eq!(root.as_text_input().text(), "");
++    assert!(cx.global::<EditorInputs>().active.is_none());
++    assert!(!workspace.composing);
++}
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/editor_memory.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/editor_memory.rs
+@@ -0,0 +1,59 @@
++//! Bounded cursor/selection memory; draft text remains owned by ChatWorkspace.
++//! SDK undo histories are intentionally not retained: they have no size bound.
++use crate::presentation::RoomKey;
++use hepta_control_core::chat::{MAX_DRAFT_BYTES, MAX_LOCAL_DRAFTS};
++use std::collections::HashMap;
++
++pub(crate) struct EditorMemory<S> {
++    epoch: Option<u64>,
++    entries: HashMap<RoomKey, (String, S)>,
++}
++
++impl<S> Default for EditorMemory<S> {
++    fn default() -> Self {
++        Self {
++            epoch: None,
++            entries: HashMap::new(),
++        }
++    }
++}
++
++impl<S: Copy> EditorMemory<S> {
++    /// Account/session changes discard all previously retained editor state.
++    pub(crate) fn bind(&mut self, epoch: u64) {
++        if self.epoch != Some(epoch) {
++            self.entries.clear();
++            self.epoch = Some(epoch);
++        }
++    }
++
++    pub(crate) fn remember(&mut self, key: RoomKey, text: &str, selection: S) {
++        if self.epoch != Some(key.epoch)
++            || text.len() > MAX_DRAFT_BYTES
++            || text.contains('\0')
++            || (!self.entries.contains_key(&key) && self.entries.len() >= MAX_LOCAL_DRAFTS)
++        {
++            return;
++        }
++        self.entries.insert(key, (text.to_owned(), selection));
++    }
++
++    /// A changed draft cannot inherit a caret from an older text revision.
++    pub(crate) fn restore(&mut self, key: RoomKey, text: &str) -> Option<S> {
++        if self.epoch != Some(key.epoch) {
++            return None;
++        }
++        match self.entries.get(&key) {
++            Some((saved, selection)) if saved == text => Some(*selection),
++            Some(_) => {
++                self.entries.remove(&key);
++                None
++            }
++            None => None,
++        }
++    }
++}
++
++#[cfg(test)]
++#[path = "editor_memory_tests.rs"]
++mod tests;
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/editor_memory_tests.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/editor_memory_tests.rs
+@@ -0,0 +1,56 @@
++use super::*;
++
++fn key(epoch: u64, local_id: u64) -> RoomKey {
++    RoomKey { epoch, local_id }
++}
++
++#[test]
++fn room_round_trip_keeps_independent_selection_for_exact_unicode_text() {
++    let mut memory = EditorMemory::default();
++    memory.bind(1);
++    memory.remember(key(1, 0), "a中文🚀z", (1, 7));
++    memory.remember(key(1, 1), "second", (6, 2));
++    assert_eq!(memory.restore(key(1, 0), "a中文🚀z"), Some((1, 7)));
++    assert_eq!(memory.restore(key(1, 1), "second"), Some((6, 2)));
++    assert_eq!(memory.restore(key(1, 0), "a中文🚀z"), Some((1, 7)));
++}
++
++#[test]
++fn changed_text_discards_selection_even_if_the_old_text_returns() {
++    let mut memory = EditorMemory::default();
++    memory.bind(1);
++    memory.remember(key(1, 0), "old", (0, 3));
++    assert_eq!(memory.restore(key(1, 0), "new"), None);
++    assert_eq!(memory.restore(key(1, 0), "old"), None);
++}
++
++#[test]
++fn account_change_and_late_old_widget_cannot_restore_private_state() {
++    let mut memory = EditorMemory::default();
++    memory.bind(1);
++    memory.remember(key(1, 0), "private", (0, 7));
++    memory.bind(2);
++    memory.remember(key(1, 0), "private", (0, 7));
++    assert_eq!(memory.restore(key(1, 0), "private"), None);
++    assert_eq!(memory.restore(key(2, 0), "private"), None);
++    memory.remember(key(2, 0), "other", (2, 2));
++    memory.bind(3);
++    assert_eq!(memory.restore(key(3, 0), "other"), None);
++    assert!(memory.entries.is_empty());
++}
++
++#[test]
++fn capacity_and_text_limits_do_not_evict_existing_rooms() {
++    let mut memory = EditorMemory::default();
++    memory.bind(1);
++    for id in 0..MAX_LOCAL_DRAFTS as u64 {
++        memory.remember(key(1, id), "draft", (1, 2));
++    }
++    memory.remember(key(1, MAX_LOCAL_DRAFTS as u64), "overflow", (0, 1));
++    assert_eq!(memory.entries.len(), MAX_LOCAL_DRAFTS);
++    memory.remember(key(1, 0), &"x".repeat(MAX_DRAFT_BYTES + 1), (0, 1));
++    memory.remember(key(1, 0), "bad\0input", (0, 1));
++    assert_eq!(memory.restore(key(1, 0), "draft"), Some((1, 2)));
++    memory.remember(key(1, 0), "changed", (2, 3));
++    assert_eq!(memory.restore(key(1, 0), "changed"), Some((2, 3)));
++}
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+@@ -8,6 +8,10 @@
+ pub mod robrix;
+ 
+ pub mod presentation;
++#[cfg(any(feature = "ui", test))]
++mod editor_memory;
++#[cfg(feature = "ui")]
++mod editor_input;
+ 
+ #[cfg(feature = "ui")]
+ pub mod visual_theme;
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs
+@@ -388,6 +388,13 @@
+                 local_id: workspace.active_id(),
+             };
+             let widget_id = self.widget_uid();
++            let input = self.view.text_input(cx, ids!(message_input));
++            crate::editor_input::activate(
++                cx,
++                widget_id,
++                input,
++                workspace,
++            );
+             let switch_view = cx.global::<RoomViewMemory>().last_widget != Some(widget_id);
+             if self.active_key != Some(key) || switch_view {
+                 let list = self.view.portal_list(cx, ids!(list));
+@@ -408,15 +415,10 @@
+                     list.set_first_id_and_scroll(0, 0.0);
+                     list.set_tail_range(true);
+                 }
+-                let input = self.view.text_input(cx, ids!(message_input));
+-                // The upstream save/restore boundary carries undo state. A fresh state here
+-                // prevents previous-room/principal undo from revealing another draft.
++                // Principal changes never preserve focus into a previous account's field.
+                 if self.active_key.is_some_and(|old| old.epoch != key.epoch) {
+                     cx.set_key_focus(Area::Empty);
+                 }
+-                input.restore_state(cx, TextInputState::default());
+-                input.set_text(cx, &workspace.draft().text);
+-                input.set_submit_on_enter(true);
+                 self.active_key = Some(key);
+             }
+             let input = self.view.text_input(cx, ids!(message_input));

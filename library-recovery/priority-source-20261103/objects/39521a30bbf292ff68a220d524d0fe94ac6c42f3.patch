@@ -1,0 +1,420 @@
+diff --git a/codex-rs/hepta-agentd/src/automation.rs b/codex-rs/hepta-agentd/src/automation.rs
+index 36251dc..e879196 100644
+--- a/codex-rs/hepta-agentd/src/automation.rs
++++ b/codex-rs/hepta-agentd/src/automation.rs
+@@ -289,6 +289,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
+     tick_interval: Duration,
+ ) -> Result<(), AgentdError> {
+     let mut retry_budget = DispatchRetryBudget::default();
++    let mut uncertainty_scan = scheduler.store().uncertain_dispatch_scan();
+     loop {
+         tokio::select! {
+             biased;
+@@ -317,9 +318,14 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
+         // Reconcile one durable historical occurrence before admitting new
+         // work. This is bounded to one item/turn-page chain per tick and does
+         // not prevent an overlap-allowed scheduler from also making progress.
+-        if let Err(error) =
+-            automation_recovery::reconcile_one(scheduler.store(), &state, state.identity(), now_ms)
+-                .await
++        if let Err(error) = automation_recovery::reconcile_one(
++            scheduler.store(),
++            &state,
++            state.identity(),
++            now_ms,
++            &mut uncertainty_scan,
++        )
++        .await
+         {
+             return stop_after_recovery_error(error, &state, &cancellation).await;
+         }
+diff --git a/codex-rs/hepta-agentd/src/automation_recovery.rs b/codex-rs/hepta-agentd/src/automation_recovery.rs
+index ce4ec66..2b57931 100644
+--- a/codex-rs/hepta-agentd/src/automation_recovery.rs
++++ b/codex-rs/hepta-agentd/src/automation_recovery.rs
+@@ -27,6 +27,7 @@ use codex_hepta_automation::AutomationOccurrenceTerminalState;
+ use codex_hepta_automation::AutomationOccurrenceWork;
+ use codex_hepta_automation::AutomationQueueReceipt;
+ use codex_hepta_automation::AutomationStore;
++use codex_hepta_automation::AutomationUncertainDispatchScan;
+ use codex_hepta_contracts::Sha256Digest;
+ use codex_protocol::user_input::user_input_payload_sha256;
+ use codex_utils_absolute_path::AbsolutePathBuf;
+@@ -65,8 +66,9 @@ pub(crate) async fn reconcile_one(
+     state: &AgentdState,
+     identity: &AgentdIdentity,
+     now_ms: u64,
++    uncertainty_scan: &mut AutomationUncertainDispatchScan,
+ ) -> Result<bool, AgentdError> {
+-    if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
++    if reconcile_one_unknown_dispatch(store, state, identity, now_ms, uncertainty_scan).await? {
+         return Ok(true);
+     }
+     let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
+@@ -87,8 +89,9 @@ async fn reconcile_one_unknown_dispatch(
+     state: &AgentdState,
+     identity: &AgentdIdentity,
+     now_ms: u64,
++    uncertainty_scan: &mut AutomationUncertainDispatchScan,
+ ) -> Result<bool, AgentdError> {
+-    let Some(uncertain) = store.uncertain_dispatches(1).await?.into_iter().next() else {
++    let Some(uncertain) = store.next_uncertain_dispatch(uncertainty_scan).await? else {
+         return Ok(false);
+     };
+     let task = store
+diff --git a/codex-rs/hepta-automation/src/lib.rs b/codex-rs/hepta-automation/src/lib.rs
+index 0f67ee6..290b060 100644
+--- a/codex-rs/hepta-automation/src/lib.rs
++++ b/codex-rs/hepta-automation/src/lib.rs
+@@ -101,6 +101,7 @@ pub use scheduler::AutomationFuture;
+ pub use scheduler::AutomationScheduler;
+ pub use scheduler::AutomationTurnQueue;
+ pub use store::AutomationStore;
++pub use store::AutomationUncertainDispatchScan;
+ pub use taskflow::TASKFLOW_COMPOSED_CALLER;
+ pub use taskflow::TASKFLOW_EXTERNAL_EFFECTS;
+ pub use taskflow::TASKFLOW_NAMESPACE;
+diff --git a/codex-rs/hepta-automation/src/store.rs b/codex-rs/hepta-automation/src/store.rs
+index 1871e54..f99d1d3 100644
+--- a/codex-rs/hepta-automation/src/store.rs
++++ b/codex-rs/hepta-automation/src/store.rs
+@@ -1,6 +1,7 @@
+ use std::fs;
+ use std::path::Path;
+ use std::path::PathBuf;
++use std::sync::Arc;
+ use std::time::Instant;
+ 
+ use codex_hepta_contracts::AgentId;
+@@ -25,6 +26,10 @@ use crate::model::client_message_id;
+ use crate::taskflow::TaskFlowError;
+ use crate::taskflow::verify_taskflow_store;
+ 
++#[path = "uncertain_dispatch_scan.rs"]
++mod uncertain_dispatch_scan;
++pub use uncertain_dispatch_scan::AutomationUncertainDispatchScan;
++
+ const AUTOMATION_DB_FILENAME: &str = "automation_1.sqlite3";
+ const MAX_TASK_PAGE: usize = 1_024;
+ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
+@@ -35,6 +40,7 @@ pub struct AutomationStore {
+     owner_agent_id: AgentId,
+     path: PathBuf,
+     timer_epoch: i64,
++    uncertainty_scan_identity: Arc<()>,
+ }
+ 
+ impl AutomationStore {
+@@ -91,6 +97,7 @@ impl AutomationStore {
+             owner_agent_id,
+             path,
+             timer_epoch,
++            uncertainty_scan_identity: Arc::new(()),
+         })
+     }
+ 
+diff --git a/codex-rs/hepta-automation/src/uncertain_dispatch_scan.rs b/codex-rs/hepta-automation/src/uncertain_dispatch_scan.rs
+new file mode 100644
+index 0000000..5bf9df1
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/uncertain_dispatch_scan.rs
+@@ -0,0 +1,125 @@
++//! Read-only bounded round-robin discovery of unknown queue admissions.
++
++use super::*;
++
++/// Process-local scheduling position for one live store instance and its clones.
++/// This non-serializable cursor is not effect authority or provider evidence.
++/// A fresh open needs a fresh cursor, including reopening the same database.
++/// Row deletion/reuse or rollback can defer work until the next finite scan,
++/// but cannot change its durable uncertainty or authorize another admission.
++#[derive(Debug)]
++pub struct AutomationUncertainDispatchScan {
++    store_identity: Arc<()>,
++    after: i64,
++    through: Option<i64>,
++}
++
++impl AutomationStore {
++    /// Start a bounded unknown-dispatch scan. Keep one cursor per observer.
++    pub fn uncertain_dispatch_scan(&self) -> AutomationUncertainDispatchScan {
++        AutomationUncertainDispatchScan {
++            store_identity: Arc::clone(&self.uncertainty_scan_identity),
++            after: 0,
++            through: None,
++        }
++    }
++
++    /// Inspect at most 64 physical outcome rows and return at most one current
++    /// unknown dispatch without changing evidence. Submitted/other-owner rows
++    /// consume the same scan budget; LIMIT is applied before the joins/filter.
++    /// An empty result can mean a filtered page or the end of this scan; keep
++    /// calling on later ticks. Exhaustion starts a new scan on the next call. Newly inserted work cannot extend the captured high-water.
++    /// Progress is committed locally before the caller awaits its observation;
++    /// cancellation cannot remove or settle that durable occurrence.
++    pub async fn next_uncertain_dispatch(
++        &self,
++        scan: &mut AutomationUncertainDispatchScan,
++    ) -> Result<Option<AutomationDispatchUncertainty>, AutomationError> {
++        if !Arc::ptr_eq(&scan.store_identity, &self.uncertainty_scan_identity) {
++            return Err(AutomationError::AccessDenied);
++        }
++        let mut tx = self.pool.begin().await.map_err(unavailable)?;
++        let through = match scan.through {
++            Some(through) => Some(through),
++            None => {
++                let first = sqlx::query_scalar::<_, i64>(
++                    "SELECT rowid FROM automation_dispatch_outcomes ORDER BY rowid LIMIT 1",
++                )
++                .fetch_optional(&mut *tx)
++                .await
++                .map_err(unavailable)?;
++                if first.is_some_and(|rowid| rowid <= 0) {
++                    return Err(AutomationError::Corrupt);
++                }
++                sqlx::query_scalar::<_, i64>(
++                    "SELECT rowid FROM automation_dispatch_outcomes ORDER BY rowid DESC LIMIT 1",
++                )
++                .fetch_optional(&mut *tx)
++                .await
++                .map_err(unavailable)?
++            }
++        };
++        let Some(through) = through else {
++            tx.commit().await.map_err(unavailable)?;
++            scan.after = 0;
++            scan.through = None;
++            return Ok(None);
++        };
++        let rows = sqlx::query(
++            "SELECT o.*, t.owner_agent_id, r.scheduled_for_ms FROM (
++                 SELECT rowid AS scan_rowid, task_id, occurrence,
++                        client_user_message_id, observed_at_ms, outcome
++                 FROM automation_dispatch_outcomes NOT INDEXED
++                 WHERE rowid > ? AND rowid <= ? ORDER BY rowid LIMIT 64
++             ) o
++             LEFT JOIN automation_runs r
++               ON r.task_id = o.task_id AND r.occurrence = o.occurrence
++             LEFT JOIN automation_tasks t ON t.task_id = o.task_id
++             ORDER BY o.scan_rowid",
++        )
++        .bind(scan.after)
++        .bind(through)
++        .fetch_all(&mut *tx)
++        .await
++        .map_err(unavailable)?;
++        let mut last_scanned = scan.after;
++        let mut next = None;
++        for row in &rows {
++            let rowid: i64 = row.try_get("scan_rowid").map_err(unavailable)?;
++            if rowid <= last_scanned || rowid > through {
++                return Err(AutomationError::Corrupt);
++            }
++            last_scanned = rowid;
++            let owner: String = row.try_get("owner_agent_id").map_err(unavailable)?;
++            let scheduled_for_ms = to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?;
++            let outcome: String = row.try_get("outcome").map_err(unavailable)?;
++            if owner != self.owner_agent_id.as_str() || outcome != "uncertain" {
++                continue;
++            }
++            next = Some(AutomationDispatchUncertainty {
++                task_id: parse_task_id(row, "task_id")?,
++                occurrence: to_u64(row.try_get("occurrence").map_err(unavailable)?)?,
++                scheduled_for_ms,
++                client_user_message_id: row
++                    .try_get("client_user_message_id")
++                    .map_err(unavailable)?,
++                observed_at_ms: to_u64(row.try_get("observed_at_ms").map_err(unavailable)?)?,
++            });
++            break;
++        }
++        tx.commit().await.map_err(unavailable)?;
++        // No local cursor mutation precedes successful snapshot completion.
++        if rows.is_empty() || last_scanned == through {
++            scan.after = 0;
++            scan.through = None;
++        } else {
++            scan.after = last_scanned;
++            scan.through = Some(through);
++        }
++        Ok(next)
++    }
++}
++
++#[cfg(test)]
++#[path = "uncertain_dispatch_scan_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-automation/src/uncertain_dispatch_scan_tests.rs b/codex-rs/hepta-automation/src/uncertain_dispatch_scan_tests.rs
+new file mode 100644
+index 0000000..225c6fb
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/uncertain_dispatch_scan_tests.rs
+@@ -0,0 +1,168 @@
++use super::*;
++use crate::AutomationSchedule;
++use crate::AutomationTaskDraft;
++use pretty_assertions::assert_eq;
++
++async fn unknown(store: &AutomationStore) -> AutomationDispatchUncertainty {
++    let task = AutomationTaskDraft::new(
++        "019153a4-3088-7e03-a56a-9b1964f75ddd",
++        "preserve this exact uncertain effect",
++        AutomationSchedule::Once,
++        /*first_run_at_ms*/ 100,
++        /*created_at_ms*/ 1,
++    );
++    store.create_task(&task).await.expect("create task");
++    let lease = store
++        .claim_due(
++            /*now_ms*/ 100, /*generation*/ 1, /*lease_duration_ms*/ 60_000,
++        )
++        .await
++        .expect("claim")
++        .expect("due occurrence");
++    assert_eq!(lease.task.task_id, task.task_id);
++    let occurrence = store
++        .materialize_occurrence(&lease, /*now_ms*/ 100)
++        .await
++        .expect("occurrence");
++    store
++        .prepare_occurrence_taskflow(
++            &occurrence,
++            &lease,
++            /*now_ms*/ 100,
++            /*lease_duration_ms*/ 60_000,
++        )
++        .await
++        .expect("step");
++    store
++        .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 101)
++        .await
++        .expect("unknown dispatch");
++    store
++        .uncertain_dispatches(/*limit*/ 1_024)
++        .await
++        .expect("read evidence")
++        .into_iter()
++        .find(|uncertain| uncertain.task_id == task.task_id)
++        .expect("exact unknown identity")
++}
++
++#[tokio::test]
++async fn timeout_priority_advances_without_rewriting_unknown_evidence() {
++    let (_temp, layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let first = unknown(&store).await;
++    let second = unknown(&store).await;
++    let before = store
++        .uncertain_dispatches(/*limit*/ 1_024)
++        .await
++        .expect("before");
++    let mut scan = store.uncertain_dispatch_scan();
++    assert_eq!(
++        store
++            .next_uncertain_dispatch(&mut scan)
++            .await
++            .expect("first"),
++        Some(first.clone())
++    );
++    // Simulate the caller's failed/timed-out read-only observation. No owner
++    // receipt or original evidence timestamp is changed to rotate priority.
++    assert_eq!(
++        store
++            .next_uncertain_dispatch(&mut scan)
++            .await
++            .expect("second"),
++        Some(second)
++    );
++    assert_eq!(
++        store
++            .next_uncertain_dispatch(&mut scan)
++            .await
++            .expect("wrap"),
++        Some(first)
++    );
++    assert_eq!(
++        store
++            .uncertain_dispatches(/*limit*/ 1_024)
++            .await
++            .expect("after"),
++        before
++    );
++    store.close().await;
++    let reopened = AutomationStore::open(&layout).await.expect("reopen");
++    assert_eq!(
++        reopened
++            .uncertain_dispatches(/*limit*/ 1_024)
++            .await
++            .expect("durable"),
++        before
++    );
++    assert_eq!(
++        reopened.next_uncertain_dispatch(&mut scan).await,
++        Err(AutomationError::AccessDenied)
++    );
++    reopened.close().await;
++}
++
++#[tokio::test]
++async fn high_water_closes_even_when_new_unknown_work_keeps_arriving() {
++    let (_temp, _layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let first = unknown(&store).await;
++    let second = unknown(&store).await;
++    let mut scan = store.uncertain_dispatch_scan();
++    assert_eq!(
++        store
++            .next_uncertain_dispatch(&mut scan)
++            .await
++            .expect("first"),
++        Some(first.clone())
++    );
++    let _later = unknown(&store).await;
++    assert_eq!(
++        store
++            .next_uncertain_dispatch(&mut scan)
++            .await
++            .expect("second"),
++        Some(second)
++    );
++    assert_eq!(
++        store
++            .next_uncertain_dispatch(&mut scan)
++            .await
++            .expect("finite wrap"),
++        Some(first)
++    );
++    store.close().await;
++}
++
++#[tokio::test]
++async fn store_clones_share_scan_identity_but_distinct_opens_do_not() {
++    let (_temp, _layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let expected = unknown(&store).await;
++    let mut scan = store.uncertain_dispatch_scan();
++    let clone = store.clone();
++    assert_eq!(
++        clone
++            .next_uncertain_dispatch(&mut scan)
++            .await
++            .expect("same instance"),
++        Some(expected)
++    );
++    let (_other_temp, _other_layout, other, _other_fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    assert_eq!(
++        other.next_uncertain_dispatch(&mut scan).await,
++        Err(AutomationError::AccessDenied)
++    );
++    // Rejection must not move or reset the legitimate cursor.
++    assert!(
++        clone
++            .next_uncertain_dispatch(&mut scan)
++            .await
++            .expect("original owner remains usable")
++            .is_some()
++    );
++    other.close().await;
++    store.close().await;
++}

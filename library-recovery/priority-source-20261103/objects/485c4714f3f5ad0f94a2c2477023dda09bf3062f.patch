@@ -1,0 +1,33 @@
+--- a/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
++++ b/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
+@@ -271,6 +271,7 @@
+ }
+ 
+ impl CognitiveExtension {
++    #[cfg(test)]
+     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+         Self::new_with_mutation(runtime, None, false)
+     }
+--- a/codex-rs/ext/hepta-memory/src/cognitive/federation.rs
++++ b/codex-rs/ext/hepta-memory/src/cognitive/federation.rs
+@@ -14,7 +14,6 @@
+ use codex_extension_api::ModelProviderPolicyError;
+ use codex_extension_api::ModelProviderPolicyFuture;
+ use codex_extension_api::ModelProviderRequestKind;
+-use codex_extension_api::ModelProviderSha256Digest;
+ use codex_extension_api::TurnInputContext;
+ use codex_extension_api::TurnInputContributor;
+ use codex_hepta_contracts::AgentId;
+@@ -859,12 +858,6 @@
+             content_sha256.as_str().as_bytes(),
+         ],
+     ))
+-}
+-
+-fn api_digest(
+-    digest: &Sha256Digest,
+-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
+-    ModelProviderSha256Digest::parse(digest.as_str())
+ }
+ 
+ fn final_use_capability_window_current(

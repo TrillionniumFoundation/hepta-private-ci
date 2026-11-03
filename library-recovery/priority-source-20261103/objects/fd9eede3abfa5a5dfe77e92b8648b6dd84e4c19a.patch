@@ -1,0 +1,1743 @@
+diff --git a/.github/workflows/hepta-architecture-convergence.yml b/.github/workflows/hepta-architecture-convergence.yml
+index 5b99a50b1..f2136fd48 100644
+--- a/.github/workflows/hepta-architecture-convergence.yml
++++ b/.github/workflows/hepta-architecture-convergence.yml
+@@ -188,7 +188,8 @@ jobs:
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-owned-client.json" --minimum-tests 3 -- just test --locked -p codex-app-server-client --lib -E 'test(remote::shutdown_lifetime_tests)'
+-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-observation.json" --minimum-tests 12 -- just test --locked -p codex-hepta-agentd --lib -E 'test(automation_recovery::observation_policy_tests) | test(automation::service_tests::observation_stall_tests)'
++          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-frontiers.json" --minimum-tests 11 -- just test --locked -p codex-hepta-automation --lib -E 'test(pending_occurrence_scan) | test(uncertain_dispatch_scan)'
++          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-observation.json" --minimum-tests 14 -- just test --locked -p codex-hepta-agentd --lib -E 'test(automation_recovery::observation_policy_tests) | test(automation::service_tests::observation_stall_tests)'
+       - name: Module lifecycle generations and migration rollback
+         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+         run: |
+diff --git a/codex-rs/hepta-agentd/src/automation.rs b/codex-rs/hepta-agentd/src/automation.rs
+index 81d7898d5..179bf119d 100644
+--- a/codex-rs/hepta-agentd/src/automation.rs
++++ b/codex-rs/hepta-agentd/src/automation.rs
+@@ -265,7 +265,7 @@ where
+     C: Fn() -> Result<u64, AutomationError> + Send + Sync + 'static,
+ {
+     let mut retry_budget = DispatchRetryBudget::default();
+-    let mut uncertainty_scan = scheduler.store().uncertain_dispatch_scan();
++    let mut recovery_scan = automation_recovery::RecoveryScan::new(scheduler.store());
+     loop {
+         tokio::select! {
+             biased;
+@@ -299,7 +299,7 @@ where
+             &state,
+             state.identity(),
+             now_ms,
+-            &mut uncertainty_scan,
++            &mut recovery_scan,
+             &cancellation,
+             &clock,
+         )
+diff --git a/codex-rs/hepta-agentd/src/automation_frontier_fairness_tests.rs b/codex-rs/hepta-agentd/src/automation_frontier_fairness_tests.rs
+new file mode 100644
+index 000000000..fbf4f515d
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/automation_frontier_fairness_tests.rs
+@@ -0,0 +1,302 @@
++//! Actual typed-peer/store regressions for both historical recovery classes.
++use super::*;
++use codex_hepta_automation::AutomationOccurrenceState;
++use codex_hepta_automation::TaskFlowFence;
++
++#[derive(Clone, Copy)]
++enum UnknownTraffic {
++    None,
++    Continuous,
++}
++
++#[derive(Debug, Eq, PartialEq)]
++enum ObservedClass {
++    Unknown,
++    Oldest,
++    Younger,
++}
++
++async fn add_unknown(fixture: &Fixture, now_ms: u64) {
++    let draft = AutomationTaskDraft::new(
++        "019153a4-3088-7e03-a56a-9b1964f7aaaa",
++        "new unknown admission must never be replayed",
++        AutomationSchedule::Once,
++        now_ms,
++        /*created_at_ms*/ 1,
++    );
++    fixture
++        .store
++        .create_task(&draft)
++        .await
++        .expect("new unknown task");
++    let lease = fixture
++        .store
++        .claim_due(
++            now_ms,
++            fixture.identity.spawn_generation,
++            /*lease_duration_ms*/ 60_000,
++        )
++        .await
++        .expect("claim")
++        .expect("due");
++    assert_eq!(lease.task.task_id, draft.task_id);
++    let occurrence = fixture
++        .store
++        .materialize_occurrence(&lease, now_ms)
++        .await
++        .expect("occurrence");
++    fixture
++        .store
++        .prepare_occurrence_taskflow(
++            &occurrence,
++            &lease,
++            now_ms,
++            /*lease_duration_ms*/ 60_000,
++        )
++        .await
++        .expect("outbox");
++    fixture
++        .store
++        .record_dispatch_uncertain(&lease, now_ms)
++        .await
++        .expect("unknown before observation");
++}
++
++async fn exercise_history_fairness(traffic: UnknownTraffic) {
++    let fixture = historical_turn_fixture(&[
++        HistoricalTurnSeed {
++            thread_id: "019153a4-3088-7e03-a56a-9b1964f75ddd",
++            turn_id: "stalled-oldest",
++        },
++        HistoricalTurnSeed {
++            thread_id: "019153a4-3088-7e03-a56a-9b1964f75dde",
++            turn_id: "younger-terminal",
++        },
++    ])
++    .await;
++    let work = fixture
++        .store
++        .pending_occurrence_work(/*limit*/ 10)
++        .await
++        .expect("two historical rows");
++    assert_eq!(work.len(), 2);
++    for item in &work {
++        fixture
++            .store
++            .ensure_admitted_taskflow_uncertainty(item, /*now_ms*/ 100_000)
++            .await
++            .expect("preexisting durable uncertainty");
++    }
++    let oldest = work
++        .iter()
++        .find(|item| item.occurrence.turn_id.as_deref() == Some("stalled-oldest"))
++        .expect("oldest");
++    let younger = work
++        .iter()
++        .find(|item| item.occurrence.turn_id.as_deref() == Some("younger-terminal"))
++        .expect("younger");
++    let before = fixture
++        .store
++        .automation_occurrence(oldest.occurrence.task_id, oldest.occurrence.occurrence)
++        .await
++        .expect("old snapshot")
++        .expect("exists");
++    let before_run = fixture
++        .store
++        .taskflow_run(&oldest.occurrence.taskflow_run_id)
++        .await
++        .expect("old run")
++        .expect("exists");
++    let fence = TaskFlowFence {
++        owner_agent_id: before_run.owner_agent_id.clone(),
++        owner_id: before_run.owner_id.clone().expect("historical owner"),
++        owner_epoch: before_run.owner_epoch.expect("epoch"),
++        generation: before_run.generation.expect("generation"),
++        fencing_token: before_run.fencing_token.clone().expect("token"),
++    };
++    let before_step = fixture
++        .store
++        .read_taskflow_step(
++            &before_run.run_id,
++            "codex_turn",
++            oldest.occurrence.step_attempt,
++            &fence,
++        )
++        .await
++        .expect("step snapshot");
++    let socket = &fixture.identity.app_server_socket;
++    tokio::fs::create_dir_all(socket.parent().expect("parent"))
++        .await
++        .expect("socket directory");
++    let listener = UnixListener::bind(socket).expect("actual UDS required; no skip");
++    let home = fixture.identity.home_root.to_string_lossy().into_owned();
++    let expected = match traffic {
++        UnknownTraffic::None => vec![ObservedClass::Oldest, ObservedClass::Younger],
++        UnknownTraffic::Continuous => vec![
++            ObservedClass::Unknown,
++            ObservedClass::Oldest,
++            ObservedClass::Unknown,
++            ObservedClass::Younger,
++        ],
++    };
++    let passes = expected.len();
++    let observed = Arc::new(Mutex::new(Vec::new()));
++    let server_observed = Arc::clone(&observed);
++    let server = tokio::spawn(async move {
++        for _ in 0..passes {
++            let (stream, _) = listener
++                .accept()
++                .await
++                .expect("actual observation connection");
++            let mut websocket = tokio_tungstenite::accept_async(stream)
++                .await
++                .expect("WebSocket handshake");
++            while let Some(frame) = websocket.next().await {
++                match frame.expect("frame") {
++                    Message::Text(text) => {
++                        let request: serde_json::Value = serde_json::from_str(&text).expect("RPC");
++                        match request["method"].as_str() {
++                            Some("initialize") => websocket.send(Message::Text(serde_json::json!({
++                                "id":request["id"], "result":{"userAgent":"frontier-fairness/1","codexHome":home}
++                            }).to_string().into())).await.expect("initialize"),
++                            Some("initialized") => {},
++                            Some("thread/queue/reconcile") => {
++                                let params: ThreadQueueReconcileParams = serde_json::from_value(request["params"].clone()).expect("typed queue read");
++                                assert_eq!(params.mode, ThreadQueueReconcileMode::ReconcileOnly);
++                                assert_eq!(params.expected_payload_sha256, crate::automation_recovery::input_digest(&params.input).expect("wire digest"));
++                                server_observed.lock().expect("trace").push(ObservedClass::Unknown);
++                                // Every unknown keeps withholding its response while later
++                                // independent unknown arrivals keep this class nonempty.
++                            }
++                            Some("thread/turns/list") => {
++                                let params: codex_app_server_protocol::ThreadTurnsListParams = serde_json::from_value(request["params"].clone()).expect("typed history read");
++                                if params.thread_id == "019153a4-3088-7e03-a56a-9b1964f75ddd" {
++                                    server_observed.lock().expect("trace").push(ObservedClass::Oldest);
++                                    // The oldest historical occurrence never responds.
++                                } else {
++                                    assert_eq!(params.thread_id, "019153a4-3088-7e03-a56a-9b1964f75dde");
++                                    server_observed.lock().expect("trace").push(ObservedClass::Younger);
++                                    let response = codex_app_server_protocol::ThreadTurnsListResponse {
++                                        data: vec![codex_app_server_protocol::Turn {
++                                            id: "younger-terminal".to_string(), items: Vec::new(),
++                                            items_view: codex_app_server_protocol::TurnItemsView::NotLoaded,
++                                            status: codex_app_server_protocol::TurnStatus::Completed,
++                                            error: None, started_at: None, completed_at: None, duration_ms: None,
++                                        }], next_cursor: None, backwards_cursor: None,
++                                    };
++                                    websocket.send(Message::Text(serde_json::json!({"id":request["id"],"result":response}).to_string().into())).await.expect("terminal historical receipt");
++                                }
++                            }
++                            method => panic!("recovery must never enqueue/replay: {method:?}"),
++                        }
++                    }
++                    Message::Close(_) => break,
++                    Message::Ping(bytes) => {
++                        websocket.send(Message::Pong(bytes)).await.expect("pong")
++                    }
++                    _ => {}
++                }
++            }
++        }
++    });
++    let mut scan = crate::automation_recovery::RecoveryScan::new(&fixture.store);
++    let stop = CancellationToken::new();
++    let mut expected_unknown = Vec::new();
++    for index in 0..passes {
++        let now_ms = 100_000 + u64::try_from(index).expect("fixture index");
++        if matches!(traffic, UnknownTraffic::Continuous) {
++            add_unknown(&fixture, now_ms).await;
++            expected_unknown = fixture
++                .store
++                .uncertain_dispatches(/*limit*/ 32)
++                .await
++                .expect("unchanged unknown evidence");
++        }
++        let result = timeout(
++            Duration::from_secs(18),
++            crate::automation_recovery::reconcile_one(
++                &fixture.store,
++                &fixture.state,
++                &fixture.identity,
++                now_ms,
++                &mut scan,
++                &stop,
++                &move || Ok(now_ms),
++            ),
++        )
++        .await
++        .expect("bounded observation and cleanup")
++        .expect("recovery pass");
++        if index + 1 == passes {
++            assert!(matches!(
++                result,
++                crate::automation_recovery::RecoveryPass::Observed
++            ));
++        } else {
++            assert!(matches!(
++                result,
++                crate::automation_recovery::RecoveryPass::Deferred
++            ));
++        }
++    }
++    timeout(Duration::from_secs(2), server)
++        .await
++        .expect("peer drains")
++        .expect("server join");
++    assert_eq!(*observed.lock().expect("trace"), expected);
++    let younger_after = fixture
++        .store
++        .automation_occurrence(younger.occurrence.task_id, younger.occurrence.occurrence)
++        .await
++        .expect("younger outcome")
++        .expect("retained");
++    assert_eq!(younger_after.state, AutomationOccurrenceState::Succeeded);
++    assert_eq!(
++        fixture
++            .store
++            .automation_occurrence(oldest.occurrence.task_id, oldest.occurrence.occurrence)
++            .await
++            .expect("old uncertainty"),
++        Some(before)
++    );
++    assert_eq!(
++        fixture
++            .store
++            .taskflow_run(&before_run.run_id)
++            .await
++            .expect("old run retained"),
++        Some(before_run.clone())
++    );
++    assert_eq!(
++        fixture
++            .store
++            .read_taskflow_step(
++                &before_run.run_id,
++                "codex_turn",
++                oldest.occurrence.step_attempt,
++                &fence
++            )
++            .await
++            .expect("old step retained"),
++        before_step
++    );
++    assert_eq!(
++        fixture
++            .store
++            .uncertain_dispatches(/*limit*/ 32)
++            .await
++            .expect("unknown retained"),
++        expected_unknown
++    );
++    fixture.store.close().await;
++}
++
++#[tokio::test]
++async fn stalled_oldest_history_does_not_block_younger_terminal_observation() {
++    exercise_history_fairness(UnknownTraffic::None).await;
++}
++
++#[tokio::test]
++async fn continuous_unknown_arrivals_do_not_starve_pending_terminal_observation() {
++    exercise_history_fairness(UnknownTraffic::Continuous).await;
++}
+diff --git a/codex-rs/hepta-agentd/src/automation_history_observation_tests.rs b/codex-rs/hepta-agentd/src/automation_history_observation_tests.rs
+index 752468dc2..c9adeaf7f 100644
+--- a/codex-rs/hepta-agentd/src/automation_history_observation_tests.rs
++++ b/codex-rs/hepta-agentd/src/automation_history_observation_tests.rs
+@@ -1,68 +1,84 @@
+ //! Real history pagination and expired recovery-lease transport regressions.
+ use super::*;
+ 
+-async fn historical_turn_fixture() -> Fixture {
++struct HistoricalTurnSeed {
++    thread_id: &'static str,
++    turn_id: &'static str,
++}
++
++async fn historical_turn_fixture(seeds: &[HistoricalTurnSeed]) -> Fixture {
+     let fixture = fixture().await;
+     ready(&fixture).await;
+-    let draft = AutomationTaskDraft::new(
+-        "019153a4-3088-7e03-a56a-9b1964f75ddd",
+-        "historical terminal observation",
+-        AutomationSchedule::Once,
+-        1_000,
+-        1,
+-    );
+-    fixture.store.create_task(&draft).await.expect("task");
+-    let lease = fixture
+-        .store
+-        .claim_due(1_000, 1, 1_000)
+-        .await
+-        .expect("claim")
+-        .expect("due");
+-    let occurrence = fixture
+-        .store
+-        .materialize_occurrence(&lease, 1_000)
+-        .await
+-        .expect("occurrence");
+-    fixture
+-        .store
+-        .prepare_occurrence_taskflow(&occurrence, &lease, 1_000, 1_000)
+-        .await
+-        .expect("outbox");
+-    fixture
+-        .store
+-        .record_dispatch_uncertain(&lease, 1_000)
+-        .await
+-        .expect("unknown before admission");
+-    fixture
+-        .store
+-        .record_occurrence_admitted(
+-            &lease,
+-            &AutomationQueueReceipt {
+-                queued_submission_id: "historical-queue".to_string(),
+-                client_user_message_id: lease.client_user_message_id.clone(),
++    for (index, seed) in seeds.iter().enumerate() {
++        let now_ms = 1_000 + u64::try_from(index).expect("bounded fixture index");
++        let draft = AutomationTaskDraft::new(
++            seed.thread_id,
++            "historical terminal observation",
++            AutomationSchedule::Once,
++            now_ms,
++            1,
++        );
++        fixture.store.create_task(&draft).await.expect("task");
++        let lease = fixture
++            .store
++            .claim_due(
++                now_ms, /*generation*/ 1, /*lease_duration_ms*/ 1_000,
++            )
++            .await
++            .expect("claim")
++            .expect("due");
++        let occurrence = fixture
++            .store
++            .materialize_occurrence(&lease, now_ms)
++            .await
++            .expect("occurrence");
++        fixture
++            .store
++            .prepare_occurrence_taskflow(
++                &occurrence,
++                &lease,
++                now_ms,
++                /*lease_duration_ms*/ 1_000,
++            )
++            .await
++            .expect("outbox");
++        fixture
++            .store
++            .record_dispatch_uncertain(&lease, now_ms)
++            .await
++            .expect("unknown before admission");
++        fixture
++            .store
++            .record_occurrence_admitted(
++                &lease,
++                &AutomationQueueReceipt {
++                    queued_submission_id: format!("historical-queue:{index}"),
++                    client_user_message_id: lease.client_user_message_id.clone(),
++                },
++                now_ms + 1,
++            )
++            .await
++            .expect("admitted");
++        let digest = crate::automation_recovery::input_digest(&[
++            codex_app_server_protocol::UserInput::Text {
++                text: draft.prompt.clone(),
++                text_elements: Vec::new(),
+             },
+-            1_001,
+-        )
+-        .await
+-        .expect("admitted");
+-    let digest =
+-        crate::automation_recovery::input_digest(&[codex_app_server_protocol::UserInput::Text {
+-            text: draft.prompt.clone(),
+-            text_elements: Vec::new(),
+-        }])
++        ])
+         .expect("wire digest");
+-    fixture
+-        .store
+-        .record_occurrence_turn(
+-            draft.task_id,
+-            lease.occurrence,
+-            &lease.client_user_message_id,
+-            "historical-turn",
+-            &digest,
+-            1_002,
+-        )
+-        .await
+-        .expect("known turn");
++        fixture
++            .store
++            .record_occurrence_turn(
++                draft.task_id,
++                lease.occurrence,
++                &lease.client_user_message_id,
++                seed.turn_id,
++                &digest,
++                now_ms + 2,
++            )
++            .await
++            .expect("known turn");
++    }
+     for (generation, state) in [
+         (2, AgentLifecycle::Draining),
+         (3, AgentLifecycle::Stopped),
+@@ -128,7 +144,11 @@ async fn exercise_turn_history_transport(scenario: HistoryScenario) {
+     use sqlx::Connection;
+     use sqlx::Row;
+     use std::sync::atomic::AtomicU64;
+-    let fixture = historical_turn_fixture().await;
++    let fixture = historical_turn_fixture(&[HistoricalTurnSeed {
++        thread_id: "019153a4-3088-7e03-a56a-9b1964f75ddd",
++        turn_id: "historical-turn",
++    }])
++    .await;
+     let work = fixture
+         .store
+         .pending_occurrence_work(1)
+@@ -219,7 +239,7 @@ async fn exercise_turn_history_transport(scenario: HistoryScenario) {
+     let state = Arc::clone(&fixture.state);
+     let identity = fixture.identity.clone();
+     let task = tokio::spawn(async move {
+-        let mut scan = store.uncertain_dispatch_scan();
++        let mut scan = crate::automation_recovery::RecoveryScan::new(&store);
+         crate::automation_recovery::reconcile_one(
+             &store,
+             &state,
+@@ -359,7 +379,7 @@ async fn exercise_turn_history_transport(scenario: HistoryScenario) {
+             }
+             history_requests
+         });
+-        let mut scan = fixture.store.uncertain_dispatch_scan();
++        let mut scan = crate::automation_recovery::RecoveryScan::new(&fixture.store);
+         let resumed = timeout(
+             Duration::from_secs(18),
+             crate::automation_recovery::reconcile_one(
+@@ -426,3 +446,6 @@ async fn actual_later_history_page_deadline_persists_only_observed_continuation(
+ async fn actual_delayed_terminal_history_uses_refreshed_recovery_claim_time() {
+     exercise_turn_history_transport(HistoryScenario::DelayedTerminal).await;
+ }
++
++#[path = "automation_frontier_fairness_tests.rs"]
++mod frontier_fairness_tests;
+diff --git a/codex-rs/hepta-agentd/src/automation_recovery.rs b/codex-rs/hepta-agentd/src/automation_recovery.rs
+index 3551ab96a..ac43c4069 100644
+--- a/codex-rs/hepta-agentd/src/automation_recovery.rs
++++ b/codex-rs/hepta-agentd/src/automation_recovery.rs
+@@ -24,6 +24,7 @@ use codex_app_server_protocol::TurnStatus;
+ use codex_app_server_protocol::UserInput;
+ use codex_hepta_automation::AutomationOccurrenceTerminalState;
+ use codex_hepta_automation::AutomationOccurrenceWork;
++use codex_hepta_automation::AutomationPendingOccurrenceScan;
+ use codex_hepta_automation::AutomationQueueReceipt;
+ use codex_hepta_automation::AutomationStore;
+ use codex_hepta_automation::AutomationUncertainDispatchScan;
+@@ -99,26 +100,57 @@ enum TurnLookup {
+     Exhausted,
+ }
+ 
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++enum RecoveryClass {
++    UnknownAdmission,
++    PendingOccurrence,
++}
++
++impl RecoveryClass {
++    fn other(self) -> Self {
++        match self {
++            Self::UnknownAdmission => Self::PendingOccurrence,
++            Self::PendingOccurrence => Self::UnknownAdmission,
++        }
++    }
++}
++
++/// Scheduling progress only. Each class retains its own finite physical scan;
++/// no cursor value authorizes admission or alters historical effect evidence.
++pub(crate) struct RecoveryScan {
++    uncertainty: AutomationUncertainDispatchScan,
++    pending: AutomationPendingOccurrenceScan,
++    next: RecoveryClass,
++}
++
++impl RecoveryScan {
++    pub(crate) fn new(store: &AutomationStore) -> Self {
++        Self {
++            uncertainty: store.uncertain_dispatch_scan(),
++            pending: store.pending_occurrence_scan(),
++            next: RecoveryClass::UnknownAdmission,
++        }
++    }
++
++    fn take_order(&mut self) -> [RecoveryClass; 2] {
++        let first = self.next;
++        self.next = first.other();
++        [first, self.next]
++    }
++}
++
+ pub(crate) async fn reconcile_one(
+     store: &AutomationStore,
+     state: &AgentdState,
+     identity: &AgentdIdentity,
+     now_ms: u64,
+-    uncertainty_scan: &mut AutomationUncertainDispatchScan,
++    scan: &mut RecoveryScan,
+     cancellation: &CancellationToken,
+     clock: &RecoveryClock,
+ ) -> Result<RecoveryPass, AgentdError> {
+     state.refresh_generation()?;
+-    let result = reconcile_one_inner(
+-        store,
+-        state,
+-        identity,
+-        now_ms,
+-        uncertainty_scan,
+-        cancellation,
+-        clock,
+-    )
+-    .await;
++    let result =
++        reconcile_one_inner(store, state, identity, now_ms, scan, cancellation, clock).await;
+     // A timeout/cancellation must not hide a changed owning generation.
+     state.refresh_generation()?;
+     match result {
+@@ -135,27 +167,39 @@ async fn reconcile_one_inner(
+     state: &AgentdState,
+     identity: &AgentdIdentity,
+     now_ms: u64,
+-    uncertainty_scan: &mut AutomationUncertainDispatchScan,
++    scan: &mut RecoveryScan,
+     cancellation: &CancellationToken,
+     clock: &RecoveryClock,
+ ) -> Result<bool, RecoveryError> {
+-    if reconcile_one_unknown_dispatch(
+-        store,
+-        state,
+-        identity,
+-        uncertainty_scan,
+-        cancellation,
+-        clock,
+-    )
+-    .await?
+-    {
+-        return Ok(true);
++    // Alternate priority before any await, so timeout/cancellation never pins
++    // the next pass to the same class. At most two bounded metadata pages and
++    // one historical observation are attempted per pass.
++    for class in scan.take_order() {
++        match class {
++            RecoveryClass::UnknownAdmission => {
++                if reconcile_one_unknown_dispatch(
++                    store,
++                    state,
++                    identity,
++                    &mut scan.uncertainty,
++                    cancellation,
++                    clock,
++                )
++                .await?
++                {
++                    return Ok(true);
++                }
++            }
++            RecoveryClass::PendingOccurrence => {
++                if let Some(work) = store.next_pending_occurrence(&mut scan.pending).await? {
++                    reconcile_work(store, state, identity, work, now_ms, cancellation, clock)
++                        .await?;
++                    return Ok(true);
++                }
++            }
++        }
+     }
+-    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
+-        return Ok(false);
+-    };
+-    reconcile_work(store, state, identity, work, now_ms, cancellation, clock).await?;
+-    Ok(true)
++    Ok(false)
+ }
+ 
+ async fn reconcile_one_unknown_dispatch(
+@@ -510,10 +554,8 @@ async fn pending_exact(
+     occurrence: u64,
+ ) -> Result<AutomationOccurrenceWork, AgentdError> {
+     store
+-        .pending_occurrence_work(1024)
++        .pending_occurrence_work_for(task_id, occurrence)
+         .await?
+-        .into_iter()
+-        .find(|work| work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence)
+         .ok_or_else(|| {
+             AgentdError::Protocol(
+                 "automation occurrence is not in the recovery frontier".to_string(),
+diff --git a/codex-rs/hepta-automation/src/lib.rs b/codex-rs/hepta-automation/src/lib.rs
+index dd272b82d..2a10238e2 100644
+--- a/codex-rs/hepta-automation/src/lib.rs
++++ b/codex-rs/hepta-automation/src/lib.rs
+@@ -87,6 +87,7 @@ pub use schedule_v2::AutomationTimezoneTransitionV1;
+ pub use scheduler::AutomationFuture;
+ pub use scheduler::AutomationScheduler;
+ pub use scheduler::AutomationTurnQueue;
++pub use store::AutomationPendingOccurrenceScan;
+ pub use store::AutomationStore;
+ pub use store::AutomationUncertainDispatchScan;
+ pub use taskflow::TASKFLOW_COMPOSED_CALLER;
+diff --git a/codex-rs/hepta-automation/src/lifecycle.rs b/codex-rs/hepta-automation/src/lifecycle.rs
+index 4fd34632b..dc70459ed 100644
+--- a/codex-rs/hepta-automation/src/lifecycle.rs
++++ b/codex-rs/hepta-automation/src/lifecycle.rs
+@@ -6,6 +6,7 @@
+ //! revision and deterministic occurrence identity, then keeps queue admission
+ //! distinct from terminal execution.
+ 
++use codex_hepta_contracts::AgentId;
+ use codex_hepta_contracts::Sha256Digest;
+ use serde::Deserialize;
+ use serde::Serialize;
+@@ -1019,32 +1020,37 @@ impl AutomationStore {
+         .fetch_all(self.taskflow_pool())
+         .await
+         .map_err(unavailable)?;
+-        let mut work = Vec::with_capacity(rows.len());
+-        for row in rows {
+-            let occurrence = occurrence_from_row(&row, self.taskflow_owner_agent_id().as_str())?;
+-            let thread_id: String = row
+-                .try_get("thread_id")
+-                .map_err(|_| AutomationError::Corrupt)?;
+-            let prompt: String = row
+-                .try_get("prompt")
+-                .map_err(|_| AutomationError::Corrupt)?;
+-            work.push(AutomationOccurrenceWork {
+-                admission: AutomationAdmission {
+-                    agent_id: self.taskflow_owner_agent_id().clone(),
+-                    task_id: occurrence.task_id,
+-                    occurrence: occurrence.occurrence,
+-                    scheduled_for_ms: occurrence.scheduled_for_ms,
+-                    thread_id,
+-                    prompt,
+-                    client_user_message_id: occurrence.client_user_message_id.clone(),
+-                },
+-                occurrence,
+-            });
+-        }
+-        Ok(work)
++        rows.iter()
++            .map(|row| occurrence_work_from_row(row, self.taskflow_owner_agent_id()))
++            .collect()
+     }
+ }
+ 
++pub(crate) fn occurrence_work_from_row(
++    row: &sqlx::sqlite::SqliteRow,
++    owner: &AgentId,
++) -> Result<AutomationOccurrenceWork, AutomationError> {
++    let occurrence = occurrence_from_row(row, owner.as_str())?;
++    let thread_id = row
++        .try_get("thread_id")
++        .map_err(|_| AutomationError::Corrupt)?;
++    let prompt = row
++        .try_get("prompt")
++        .map_err(|_| AutomationError::Corrupt)?;
++    Ok(AutomationOccurrenceWork {
++        admission: AutomationAdmission {
++            agent_id: owner.clone(),
++            task_id: occurrence.task_id,
++            occurrence: occurrence.occurrence,
++            scheduled_for_ms: occurrence.scheduled_for_ms,
++            thread_id,
++            prompt,
++            client_user_message_id: occurrence.client_user_message_id.clone(),
++        },
++        occurrence,
++    })
++}
++
+ pub fn deterministic_occurrence_id(
+     owner_agent_id: &str,
+     task_id: AutomationTaskId,
+diff --git a/codex-rs/hepta-automation/src/pending_occurrence_scan.rs b/codex-rs/hepta-automation/src/pending_occurrence_scan.rs
+new file mode 100644
+index 000000000..9e2791d7f
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/pending_occurrence_scan.rs
+@@ -0,0 +1,152 @@
++//! Bounded read-only discovery and exact lookup of admitted recovery work.
++
++use super::recovery_scan::RecoveryScanCursor;
++use super::recovery_scan::RecoveryScanTable;
++use super::*;
++use crate::AutomationOccurrenceWork;
++
++macro_rules! pending_occurrence_window_sql {
++    () => {
++        "SELECT rowid AS scan_rowid, task_id, occurrence, owner_agent_id, state
++             FROM automation_occurrence_lifecycle NOT INDEXED
++             WHERE rowid > ? AND rowid <= ? ORDER BY rowid LIMIT 64"
++    };
++}
++
++const PENDING_OCCURRENCE_WINDOW_SQL: &str = pending_occurrence_window_sql!();
++#[cfg(test)]
++const PENDING_OCCURRENCE_EXPLAIN_SQL: &str =
++    concat!("EXPLAIN QUERY PLAN ", pending_occurrence_window_sql!());
++const PENDING_OCCURRENCE_LOOKUP_SQL: &str =
++    "SELECT o.*, t.thread_id, t.prompt, t.owner_agent_id AS task_owner
++         FROM automation_occurrence_lifecycle o
++         LEFT JOIN automation_tasks t ON t.task_id = o.task_id
++         WHERE o.task_id = ? AND o.occurrence = ? AND o.owner_agent_id = ?
++           AND o.state IN ('admitted', 'running', 'indeterminate')";
++
++/// A non-serializable scheduling position bound to one live store and its clones.
++/// Restart creates a fresh scan; this cursor grants no authority to replay effects.
++#[derive(Debug)]
++pub struct AutomationPendingOccurrenceScan {
++    cursor: RecoveryScanCursor,
++}
++
++impl AutomationStore {
++    /// Start a finite read-only scan for this live observer/store identity.
++    pub fn pending_occurrence_scan(&self) -> AutomationPendingOccurrenceScan {
++        AutomationPendingOccurrenceScan {
++            cursor: RecoveryScanCursor::for_store(self),
++        }
++    }
++
++    /// Inspect at most 64 physical lifecycle rows, then hydrate at most one
++    /// eligible owned row in the same snapshot. An empty page is not evidence
++    /// that all historical work is absent. No business timestamps are changed.
++    /// The row-count bound is not a hard byte, I/O or elapsed-time bound.
++    pub async fn next_pending_occurrence(
++        &self,
++        scan: &mut AutomationPendingOccurrenceScan,
++    ) -> Result<Option<AutomationOccurrenceWork>, AutomationError> {
++        scan.cursor.verify_store(self)?;
++        let mut tx = self.pool.begin().await.map_err(unavailable)?;
++        let through = scan
++            .cursor
++            .high_water(&mut tx, RecoveryScanTable::Occurrences)
++            .await?;
++        let Some(through) = through else {
++            tx.commit().await.map_err(unavailable)?;
++            scan.cursor.reset();
++            return Ok(None);
++        };
++        let rows = sqlx::query(PENDING_OCCURRENCE_WINDOW_SQL)
++            .bind(scan.cursor.after)
++            .bind(through)
++            .fetch_all(&mut *tx)
++            .await
++            .map_err(unavailable)?;
++        let mut last_scanned = scan.cursor.after;
++        let mut selected = None;
++        for row in &rows {
++            let rowid: i64 = row
++                .try_get("scan_rowid")
++                .map_err(|_| AutomationError::Corrupt)?;
++            if rowid <= last_scanned || rowid > through {
++                return Err(AutomationError::Corrupt);
++            }
++            last_scanned = rowid;
++            let owner: String = row
++                .try_get("owner_agent_id")
++                .map_err(|_| AutomationError::Corrupt)?;
++            let state: String = row.try_get("state").map_err(|_| AutomationError::Corrupt)?;
++            if owner != self.owner_agent_id.as_str()
++                || !matches!(state.as_str(), "admitted" | "running" | "indeterminate")
++            {
++                continue;
++            }
++            let task_id = parse_task_id(row, "task_id")?;
++            let occurrence = to_u64(
++                row.try_get("occurrence")
++                    .map_err(|_| AutomationError::Corrupt)?,
++            )?;
++            selected = Some(
++                load_pending_work(&mut tx, &self.owner_agent_id, task_id, occurrence)
++                    .await?
++                    .ok_or(AutomationError::Corrupt)?,
++            );
++            break;
++        }
++        tx.commit().await.map_err(unavailable)?;
++        if rows.is_empty() {
++            scan.cursor.reset();
++        } else {
++            scan.cursor.advance(last_scanned, through);
++        }
++        Ok(selected)
++    }
++
++    /// Resolve one known occurrence directly, without a bounded-frontier search
++    /// that could mistake a younger identity beyond the first page for absence.
++    pub async fn pending_occurrence_work_for(
++        &self,
++        task_id: AutomationTaskId,
++        occurrence: u64,
++    ) -> Result<Option<AutomationOccurrenceWork>, AutomationError> {
++        let mut tx = self.pool.begin().await.map_err(unavailable)?;
++        let work = load_pending_work(&mut tx, &self.owner_agent_id, task_id, occurrence).await?;
++        tx.commit().await.map_err(unavailable)?;
++        Ok(work)
++    }
++}
++
++async fn load_pending_work(
++    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
++    owner: &AgentId,
++    task_id: AutomationTaskId,
++    occurrence: u64,
++) -> Result<Option<AutomationOccurrenceWork>, AutomationError> {
++    let row = sqlx::query(PENDING_OCCURRENCE_LOOKUP_SQL)
++        .bind(task_id.to_string())
++        .bind(to_i64(occurrence)?)
++        .bind(owner.as_str())
++        .fetch_optional(&mut **tx)
++        .await
++        .map_err(unavailable)?;
++    row.map(|row| {
++        let task_owner: String = row
++            .try_get("task_owner")
++            .map_err(|_| AutomationError::Corrupt)?;
++        if task_owner != owner.as_str() {
++            return Err(AutomationError::AccessDenied);
++        }
++        crate::lifecycle::occurrence_work_from_row(&row, owner)
++    })
++    .transpose()
++}
++
++#[cfg(test)]
++#[path = "pending_occurrence_scan_tests.rs"]
++mod tests;
++
++#[cfg(test)]
++#[path = "pending_occurrence_scan_query_tests.rs"]
++mod query_tests;
+diff --git a/codex-rs/hepta-automation/src/pending_occurrence_scan_query_tests.rs b/codex-rs/hepta-automation/src/pending_occurrence_scan_query_tests.rs
+new file mode 100644
+index 000000000..0264875e7
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/pending_occurrence_scan_query_tests.rs
+@@ -0,0 +1,113 @@
++//! Exact production SQL work probes, separate from durable owner-integrity tests.
++use super::*;
++use codex_state::SqliteConfig;
++use codex_utils_absolute_path::AbsolutePathBuf;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++
++#[tokio::test]
++async fn physical_window_and_point_lookup_do_not_scan_the_retained_frontier() {
++    let mut measured = Vec::new();
++    for retained in [100_i64, 1_000, 10_000] {
++        for state in ["running", "succeeded"] {
++            let directory = tempfile::tempdir().expect("private query probe");
++            let sqlite = SqliteConfig::from_sqlite_home(
++                AbsolutePathBuf::try_from(directory.path().to_path_buf())
++                    .expect("absolute probe root"),
++            );
++            let pool = sqlite
++                .open_durable_evidence_pool(&directory.path().join("query-probe.sqlite3"))
++                .await
++                .expect("query probe through owner SQLite shim");
++            let mut connection = pool.acquire().await.expect("probe connection");
++            // Preserve actual PK/index shape and all columns used by the SQL.
++            // No occurrence parsing is performed on these synthetic probe rows.
++            sqlx::raw_sql("CREATE TABLE automation_tasks (task_id TEXT PRIMARY KEY, owner_agent_id TEXT, thread_id TEXT, prompt TEXT);
++                CREATE TABLE automation_occurrence_lifecycle (task_id TEXT, occurrence INTEGER, owner_agent_id TEXT, state TEXT, recovery_phase TEXT, updated_at_ms INTEGER, PRIMARY KEY(task_id, occurrence));
++                CREATE INDEX automation_occurrence_recovery_idx ON automation_occurrence_lifecycle(owner_agent_id, recovery_phase, updated_at_ms, task_id, occurrence);
++                CREATE INDEX automation_occurrence_task_state_idx ON automation_occurrence_lifecycle(task_id, state, occurrence);")
++                .execute(&mut *connection).await.expect("query schema");
++            sqlx::query("WITH RECURSIVE seq(i) AS (SELECT 1 UNION ALL SELECT i + 1 FROM seq WHERE i < ?) INSERT INTO automation_tasks SELECT printf('task-%06d', i), 'owner', 'thread', 'prompt' FROM seq")
++                .bind(retained).execute(&mut *connection).await.expect("retained tasks");
++            sqlx::query("INSERT INTO automation_occurrence_lifecycle SELECT task_id, 1, owner_agent_id, ?, 'awaiting_terminal', 1 FROM automation_tasks")
++                .bind(state).execute(&mut *connection).await.expect("retained metadata");
++            let plan = sqlx::query(PENDING_OCCURRENCE_EXPLAIN_SQL)
++                .bind(0_i64)
++                .bind(retained)
++                .fetch_all(&mut *connection)
++                .await
++                .expect("query plan");
++            let details: Vec<String> = plan.iter().map(|row| row.get("detail")).collect();
++            assert!(
++                details
++                    .iter()
++                    .any(|line| line.contains("INTEGER PRIMARY KEY")),
++                "{details:?}"
++            );
++            assert!(
++                details.iter().all(|line| !line.contains("TEMP B-TREE")),
++                "{details:?}"
++            );
++            let operations = Arc::new(AtomicUsize::new(0));
++            let observed = Arc::clone(&operations);
++            connection
++                .lock_handle()
++                .await
++                .expect("SQLite handle")
++                .set_progress_handler(
++                    /*num_ops*/ 1,
++                    move || observed.fetch_add(1, Ordering::SeqCst) < 8_192,
++                );
++            let (first_sql, last_sql) = RecoveryScanTable::Occurrences.endpoint_queries();
++            let first: i64 = sqlx::query_scalar(first_sql)
++                .fetch_one(&mut *connection)
++                .await
++                .expect("constant first endpoint");
++            let last: i64 = sqlx::query_scalar(last_sql)
++                .fetch_one(&mut *connection)
++                .await
++                .expect("constant last endpoint");
++            assert_eq!(first, 1);
++            assert_eq!(last, retained);
++            let rows = sqlx::query(PENDING_OCCURRENCE_WINDOW_SQL)
++                .bind(0_i64)
++                .bind(last)
++                .fetch_all(&mut *connection)
++                .await
++                .expect("bounded physical work before filtering");
++            assert_eq!(rows.len(), 64);
++            assert_eq!(rows.last().expect("window").get::<i64, _>("scan_rowid"), 64);
++            let selected = sqlx::query(PENDING_OCCURRENCE_LOOKUP_SQL)
++                .bind("task-000001")
++                .bind(1_i64)
++                .bind("owner")
++                .fetch_optional(&mut *connection)
++                .await
++                .expect("unique point lookup");
++            assert_eq!(selected.is_some(), state == "running");
++            connection
++                .lock_handle()
++                .await
++                .expect("handle")
++                .set_progress_handler(/*num_ops*/ 0, || true);
++            let count = operations.load(Ordering::SeqCst);
++            assert!(count < 8_192, "unbounded work at {retained}: {count}");
++            measured.push((state, retained, count));
++            drop(connection);
++            pool.close().await;
++        }
++    }
++    for state in ["running", "succeeded"] {
++        let counts: Vec<usize> = measured
++            .iter()
++            .filter(|entry| entry.0 == state)
++            .map(|entry| entry.2)
++            .collect();
++        let low = *counts.iter().min().expect("measurements");
++        let high = *counts.iter().max().expect("measurements");
++        assert!(
++            high - low <= 64,
++            "frontier length must not grow scan work: {measured:?}"
++        );
++    }
++}
+diff --git a/codex-rs/hepta-automation/src/pending_occurrence_scan_tests.rs b/codex-rs/hepta-automation/src/pending_occurrence_scan_tests.rs
+new file mode 100644
+index 000000000..a35377904
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/pending_occurrence_scan_tests.rs
+@@ -0,0 +1,448 @@
++use super::*;
++use crate::AutomationOccurrenceTerminalState;
++use pretty_assertions::assert_eq;
++
++async fn admitted(store: &AutomationStore, now_ms: u64) -> AutomationOccurrenceWork {
++    let task = AutomationTaskDraft::new(
++        "019153a4-3088-7e03-a56a-9b1964f75ddd",
++        "retained historical admission",
++        AutomationSchedule::Once,
++        now_ms,
++        /*created_at_ms*/ 1,
++    );
++    store.create_task(&task).await.expect("task");
++    let lease = store
++        .claim_due(
++            now_ms, /*generation*/ 1, /*lease_duration_ms*/ 60_000,
++        )
++        .await
++        .expect("claim")
++        .expect("due");
++    let occurrence = store
++        .materialize_occurrence(&lease, now_ms)
++        .await
++        .expect("occurrence");
++    store
++        .prepare_occurrence_taskflow(
++            &occurrence,
++            &lease,
++            now_ms,
++            /*lease_duration_ms*/ 60_000,
++        )
++        .await
++        .expect("outbox");
++    store
++        .record_dispatch_uncertain(&lease, now_ms)
++        .await
++        .expect("unknown before contact");
++    store
++        .record_occurrence_admitted(
++            &lease,
++            &AutomationQueueReceipt {
++                queued_submission_id: format!("existing:{}", task.task_id),
++                client_user_message_id: lease.client_user_message_id.clone(),
++            },
++            now_ms + 1,
++        )
++        .await
++        .expect("admitted");
++    store
++        .pending_occurrence_work_for(task.task_id, lease.occurrence)
++        .await
++        .expect("exact pending")
++        .expect("work")
++}
++
++#[tokio::test]
++async fn pending_scan_rotates_without_touching_evidence_and_reopen_needs_new_cursor() {
++    let (_temp, layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let first = admitted(&store, /*now_ms*/ 100).await;
++    let second = admitted(&store, /*now_ms*/ 200).await;
++    let before = store
++        .pending_occurrence_work(/*limit*/ 10)
++        .await
++        .expect("snapshot");
++    let mut scan = store.pending_occurrence_scan();
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("first"),
++        Some(first.clone())
++    );
++    assert_eq!(
++        store
++            .clone()
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("same live owner clone"),
++        Some(second)
++    );
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("finite wrap"),
++        Some(first.clone())
++    );
++    assert_eq!(
++        store
++            .pending_occurrence_work(/*limit*/ 10)
++            .await
++            .expect("after"),
++        before
++    );
++    let saved_position = format!("{scan:?}");
++    store.close().await;
++    assert!(store.next_pending_occurrence(&mut scan).await.is_err());
++    assert_eq!(
++        format!("{scan:?}"),
++        saved_position,
++        "failed snapshot must not advance progress"
++    );
++    let reopened = AutomationStore::open(&layout).await.expect("reopen");
++    assert_eq!(
++        reopened.next_pending_occurrence(&mut scan).await,
++        Err(AutomationError::AccessDenied)
++    );
++    let mut restarted = reopened.pending_occurrence_scan();
++    assert_eq!(
++        reopened
++            .next_pending_occurrence(&mut restarted)
++            .await
++            .expect("fresh cursor"),
++        Some(first)
++    );
++    assert_eq!(
++        reopened
++            .pending_occurrence_work(/*limit*/ 10)
++            .await
++            .expect("retained evidence"),
++        before
++    );
++    reopened.close().await;
++}
++
++#[tokio::test]
++async fn pending_high_water_closes_while_new_work_arrives() {
++    let (_temp, _layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let first = admitted(&store, /*now_ms*/ 100).await;
++    let second = admitted(&store, /*now_ms*/ 200).await;
++    let mut scan = store.pending_occurrence_scan();
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("first"),
++        Some(first.clone())
++    );
++    let third = admitted(&store, /*now_ms*/ 300).await;
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("captured endpoint"),
++        Some(second.clone())
++    );
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("new finite epoch"),
++        Some(first)
++    );
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("second"),
++        Some(second)
++    );
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("new work eventually visible"),
++        Some(third)
++    );
++    store.close().await;
++}
++
++#[tokio::test]
++async fn exact_pending_lookup_reaches_beyond_1024_older_occurrences() {
++    let (_temp, _layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    for index in 0..1_024 {
++        admitted(&store, 100 + index).await;
++    }
++    let target = admitted(&store, /*now_ms*/ 2_000).await;
++    let first_page = store
++        .pending_occurrence_work(/*limit*/ 1_024)
++        .await
++        .expect("legacy bounded list");
++    assert_eq!(first_page.len(), 1_024);
++    assert!(
++        !first_page
++            .iter()
++            .any(|work| work.occurrence.task_id == target.occurrence.task_id)
++    );
++    assert_eq!(
++        store
++            .pending_occurrence_work_for(target.occurrence.task_id, target.occurrence.occurrence)
++            .await
++            .expect("exact identity"),
++        Some(target)
++    );
++    assert_eq!(
++        store
++            .pending_occurrence_work(/*limit*/ 1_024)
++            .await
++            .expect("unchanged frontier"),
++        first_page
++    );
++    store.close().await;
++}
++
++#[tokio::test]
++async fn exact_pending_lookup_excludes_terminal_and_unadmitted_claims() {
++    let (_temp, _layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let work = admitted(&store, /*now_ms*/ 100).await;
++    let digest = Sha256Digest::for_bytes(b"actual terminal observation fixture");
++    store
++        .ensure_admitted_taskflow_uncertainty(&work, /*now_ms*/ 102)
++        .await
++        .expect("uncertainty");
++    store
++        .reconcile_occurrence_taskflow_terminal_with_recovery(
++            &work,
++            AutomationOccurrenceTerminalState::Succeeded,
++            &digest,
++            /*now_ms*/ 103,
++            /*recovery_generation*/ 1,
++            /*recovery_lease_ms*/ 30_000,
++        )
++        .await
++        .expect("terminal TaskFlow");
++    store
++        .complete_occurrence(
++            work.occurrence.task_id,
++            work.occurrence.occurrence,
++            AutomationOccurrenceTerminalState::Succeeded,
++            &digest,
++            /*completed_at_ms*/ 103,
++        )
++        .await
++        .expect("terminal occurrence");
++    assert_eq!(
++        store
++            .pending_occurrence_work_for(work.occurrence.task_id, work.occurrence.occurrence)
++            .await
++            .expect("terminal excluded"),
++        None
++    );
++    let task = AutomationTaskDraft::new(
++        "019153a4-3088-7e03-a56a-9b1964f75ddd",
++        "unadmitted",
++        AutomationSchedule::Once,
++        /*first_run_at_ms*/ 200,
++        /*created_at_ms*/ 1,
++    );
++    store.create_task(&task).await.expect("task");
++    let lease = store
++        .claim_due(
++            /*now_ms*/ 200, /*generation*/ 1, /*lease_duration_ms*/ 60_000,
++        )
++        .await
++        .expect("claim")
++        .expect("due");
++    store
++        .materialize_occurrence(&lease, /*now_ms*/ 200)
++        .await
++        .expect("claimed occurrence");
++    assert_eq!(
++        store
++            .pending_occurrence_work_for(task.task_id, lease.occurrence)
++            .await
++            .expect("claim excluded"),
++        None
++    );
++    // More than one complete physical page may contain no eligible work.
++    // Such a page must still advance, rather than falsely ending discovery.
++    for offset in 0..63 {
++        let now_ms = 300 + offset;
++        let draft = AutomationTaskDraft::new(
++            "019153a4-3088-7e03-a56a-9b1964f75ddd",
++            "unadmitted physical history",
++            AutomationSchedule::Once,
++            now_ms,
++            /*created_at_ms*/ 1,
++        );
++        store.create_task(&draft).await.expect("history task");
++        let lease = store
++            .claim_due(
++                now_ms, /*generation*/ 1, /*lease_duration_ms*/ 60_000,
++            )
++            .await
++            .expect("claim history")
++            .expect("due history");
++        store
++            .materialize_occurrence(&lease, now_ms)
++            .await
++            .expect("unadmitted history");
++    }
++    let younger = admitted(&store, /*now_ms*/ 1_000).await;
++    let before = store
++        .pending_occurrence_work(/*limit*/ 10)
++        .await
++        .expect("before scan");
++    let mut scan = store.pending_occurrence_scan();
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("ineligible page"),
++        None
++    );
++    assert_eq!(
++        store
++            .next_pending_occurrence(&mut scan)
++            .await
++            .expect("later physical page"),
++        Some(younger)
++    );
++    assert_eq!(
++        store
++            .pending_occurrence_work(/*limit*/ 10)
++            .await
++            .expect("after scan"),
++        before
++    );
++    store.close().await;
++}
++
++#[tokio::test]
++async fn pending_scan_rejects_distinct_live_store_and_nonpositive_rowids() {
++    let (_temp, _layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let work = admitted(&store, /*now_ms*/ 100).await;
++    let mut scan = store.pending_occurrence_scan();
++    let (_other_temp, _other_layout, other, _other_fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    assert_eq!(
++        other.next_pending_occurrence(&mut scan).await,
++        Err(AutomationError::AccessDenied)
++    );
++    assert_eq!(
++        other
++            .pending_occurrence_work_for(work.occurrence.task_id, work.occurrence.occurrence)
++            .await
++            .expect("different owner has no such work"),
++        None
++    );
++    sqlx::query("UPDATE automation_occurrence_lifecycle SET rowid = 0 WHERE task_id = ?")
++        .bind(work.occurrence.task_id.to_string())
++        .execute(&store.pool)
++        .await
++        .expect("isolated malformed physical cursor key");
++    assert_eq!(
++        store.next_pending_occurrence(&mut scan).await,
++        Err(AutomationError::Corrupt)
++    );
++    other.close().await;
++    store.close().await;
++}
++
++#[tokio::test]
++async fn exact_pending_lookup_preserves_legitimate_expired_lease_recovery() {
++    let (_temp, _layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let work = admitted(&store, /*now_ms*/ 100).await;
++    let run = store
++        .taskflow_run(&work.occurrence.taskflow_run_id)
++        .await
++        .expect("run")
++        .expect("exists");
++    assert_eq!(run.lease_expires_at_ms, Some(60_100));
++    assert_eq!(
++        store
++            .pending_occurrence_work_for(work.occurrence.task_id, work.occurrence.occurrence)
++            .await
++            .expect("historical eligible identity"),
++        Some(work.clone())
++    );
++    let proof = Sha256Digest::for_bytes(b"trusted late terminal observation");
++    store
++        .ensure_admitted_taskflow_uncertainty(&work, /*now_ms*/ 100_000)
++        .await
++        .expect("historical uncertainty");
++    store
++        .reconcile_occurrence_taskflow_terminal_with_recovery(
++            &work,
++            AutomationOccurrenceTerminalState::Succeeded,
++            &proof,
++            /*now_ms*/ 100_000,
++            /*recovery_generation*/ 2,
++            /*recovery_lease_ms*/ 30_000,
++        )
++        .await
++        .expect("newer owner repairs expired run after historical evidence");
++    store
++        .complete_occurrence(
++            work.occurrence.task_id,
++            work.occurrence.occurrence,
++            AutomationOccurrenceTerminalState::Succeeded,
++            &proof,
++            /*completed_at_ms*/ 100_000,
++        )
++        .await
++        .expect("converged occurrence");
++    assert_eq!(
++        store
++            .pending_occurrence_work_for(work.occurrence.task_id, work.occurrence.occurrence)
++            .await
++            .expect("terminal excluded"),
++        None
++    );
++    store.close().await;
++}
++
++#[tokio::test]
++async fn exact_pending_lookup_rejects_task_owner_substitution() {
++    let (_temp, _layout, store, _fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let work = admitted(&store, /*now_ms*/ 100).await;
++    let mut scan = store.pending_occurrence_scan();
++    let before = format!("{scan:?}");
++    sqlx::query("UPDATE automation_tasks SET owner_agent_id = ? WHERE task_id = ?")
++        .bind("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13")
++        .bind(work.occurrence.task_id.to_string())
++        .execute(&store.pool)
++        .await
++        .expect("isolated malformed task owner");
++    assert_eq!(
++        store
++            .pending_occurrence_work_for(work.occurrence.task_id, work.occurrence.occurrence)
++            .await,
++        Err(AutomationError::AccessDenied)
++    );
++    assert_eq!(
++        store.next_pending_occurrence(&mut scan).await,
++        Err(AutomationError::AccessDenied)
++    );
++    assert_eq!(
++        format!("{scan:?}"),
++        before,
++        "a rejected snapshot cannot consume cursor progress"
++    );
++    assert_eq!(
++        store
++            .automation_occurrence(work.occurrence.task_id, work.occurrence.occurrence)
++            .await
++            .expect("unchanged historical evidence"),
++        Some(work.occurrence)
++    );
++    store.close().await;
++}
+diff --git a/codex-rs/hepta-automation/src/recovery_scan.rs b/codex-rs/hepta-automation/src/recovery_scan.rs
+new file mode 100644
+index 000000000..2f8325d4f
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/recovery_scan.rs
+@@ -0,0 +1,86 @@
++//! Shared process-local row-window bookkeeping, never durable effect authority.
++
++use super::*;
++
++#[derive(Clone, Copy)]
++pub(super) enum RecoveryScanTable {
++    DispatchOutcomes,
++    Occurrences,
++}
++
++impl RecoveryScanTable {
++    pub(super) fn endpoint_queries(self) -> (&'static str, &'static str) {
++        match self {
++            RecoveryScanTable::DispatchOutcomes => (
++                "SELECT rowid FROM automation_dispatch_outcomes ORDER BY rowid LIMIT 1",
++                "SELECT rowid FROM automation_dispatch_outcomes ORDER BY rowid DESC LIMIT 1",
++            ),
++            RecoveryScanTable::Occurrences => (
++                "SELECT rowid FROM automation_occurrence_lifecycle ORDER BY rowid LIMIT 1",
++                "SELECT rowid FROM automation_occurrence_lifecycle ORDER BY rowid DESC LIMIT 1",
++            ),
++        }
++    }
++}
++
++#[derive(Debug)]
++pub(super) struct RecoveryScanCursor {
++    store_identity: Arc<()>,
++    pub(super) after: i64,
++    through: Option<i64>,
++}
++
++impl RecoveryScanCursor {
++    pub(super) fn for_store(store: &AutomationStore) -> Self {
++        Self {
++            store_identity: Arc::clone(&store.uncertainty_scan_identity),
++            after: 0,
++            through: None,
++        }
++    }
++
++    pub(super) fn verify_store(&self, store: &AutomationStore) -> Result<(), AutomationError> {
++        if Arc::ptr_eq(&self.store_identity, &store.uncertainty_scan_identity) {
++            Ok(())
++        } else {
++            Err(AutomationError::AccessDenied)
++        }
++    }
++
++    pub(super) async fn high_water(
++        &self,
++        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
++        table: RecoveryScanTable,
++    ) -> Result<Option<i64>, AutomationError> {
++        if let Some(through) = self.through {
++            return Ok(Some(through));
++        }
++        let (first_query, last_query) = table.endpoint_queries();
++        let first = sqlx::query_scalar::<_, i64>(first_query)
++            .fetch_optional(&mut **tx)
++            .await
++            .map_err(unavailable)?;
++        if first.is_some_and(|rowid| rowid <= 0) {
++            return Err(AutomationError::Corrupt);
++        }
++        sqlx::query_scalar::<_, i64>(last_query)
++            .fetch_optional(&mut **tx)
++            .await
++            .map_err(unavailable)
++    }
++
++    pub(super) fn reset(&mut self) {
++        self.after = 0;
++        self.through = None;
++    }
++
++    // Call only after the read snapshot has committed successfully.
++    pub(super) fn advance(&mut self, last_scanned: i64, through: i64) {
++        if last_scanned == through {
++            self.reset();
++        } else {
++            self.after = last_scanned;
++            self.through = Some(through);
++        }
++    }
++}
+diff --git a/codex-rs/hepta-automation/src/store.rs b/codex-rs/hepta-automation/src/store.rs
+index bdfe4dca6..abbc17bd0 100644
+--- a/codex-rs/hepta-automation/src/store.rs
++++ b/codex-rs/hepta-automation/src/store.rs
+@@ -30,6 +30,12 @@ use crate::taskflow::verify_taskflow_store;
+ mod store_path;
+ use store_path::create_private_directory;
+ 
++#[path = "pending_occurrence_scan.rs"]
++mod pending_occurrence_scan;
++#[path = "recovery_scan.rs"]
++mod recovery_scan;
++pub use pending_occurrence_scan::AutomationPendingOccurrenceScan;
++
+ #[path = "uncertain_dispatch_scan.rs"]
+ mod uncertain_dispatch_scan;
+ pub use uncertain_dispatch_scan::AutomationUncertainDispatchScan;
+diff --git a/codex-rs/hepta-automation/src/uncertain_dispatch_scan.rs b/codex-rs/hepta-automation/src/uncertain_dispatch_scan.rs
+index 5bf9df1bc..5f6efa608 100644
+--- a/codex-rs/hepta-automation/src/uncertain_dispatch_scan.rs
++++ b/codex-rs/hepta-automation/src/uncertain_dispatch_scan.rs
+@@ -1,5 +1,7 @@
+ //! Read-only bounded round-robin discovery of unknown queue admissions.
+ 
++use super::recovery_scan::RecoveryScanCursor;
++use super::recovery_scan::RecoveryScanTable;
+ use super::*;
+ 
+ /// Process-local scheduling position for one live store instance and its clones.
+@@ -9,18 +11,14 @@ use super::*;
+ /// but cannot change its durable uncertainty or authorize another admission.
+ #[derive(Debug)]
+ pub struct AutomationUncertainDispatchScan {
+-    store_identity: Arc<()>,
+-    after: i64,
+-    through: Option<i64>,
++    cursor: RecoveryScanCursor,
+ }
+ 
+ impl AutomationStore {
+     /// Start a bounded unknown-dispatch scan. Keep one cursor per observer.
+     pub fn uncertain_dispatch_scan(&self) -> AutomationUncertainDispatchScan {
+         AutomationUncertainDispatchScan {
+-            store_identity: Arc::clone(&self.uncertainty_scan_identity),
+-            after: 0,
+-            through: None,
++            cursor: RecoveryScanCursor::for_store(self),
+         }
+     }
+ 
+@@ -35,34 +33,15 @@ impl AutomationStore {
+         &self,
+         scan: &mut AutomationUncertainDispatchScan,
+     ) -> Result<Option<AutomationDispatchUncertainty>, AutomationError> {
+-        if !Arc::ptr_eq(&scan.store_identity, &self.uncertainty_scan_identity) {
+-            return Err(AutomationError::AccessDenied);
+-        }
++        scan.cursor.verify_store(self)?;
+         let mut tx = self.pool.begin().await.map_err(unavailable)?;
+-        let through = match scan.through {
+-            Some(through) => Some(through),
+-            None => {
+-                let first = sqlx::query_scalar::<_, i64>(
+-                    "SELECT rowid FROM automation_dispatch_outcomes ORDER BY rowid LIMIT 1",
+-                )
+-                .fetch_optional(&mut *tx)
+-                .await
+-                .map_err(unavailable)?;
+-                if first.is_some_and(|rowid| rowid <= 0) {
+-                    return Err(AutomationError::Corrupt);
+-                }
+-                sqlx::query_scalar::<_, i64>(
+-                    "SELECT rowid FROM automation_dispatch_outcomes ORDER BY rowid DESC LIMIT 1",
+-                )
+-                .fetch_optional(&mut *tx)
+-                .await
+-                .map_err(unavailable)?
+-            }
+-        };
++        let through = scan
++            .cursor
++            .high_water(&mut tx, RecoveryScanTable::DispatchOutcomes)
++            .await?;
+         let Some(through) = through else {
+             tx.commit().await.map_err(unavailable)?;
+-            scan.after = 0;
+-            scan.through = None;
++            scan.cursor.reset();
+             return Ok(None);
+         };
+         let rows = sqlx::query(
+@@ -77,12 +56,12 @@ impl AutomationStore {
+              LEFT JOIN automation_tasks t ON t.task_id = o.task_id
+              ORDER BY o.scan_rowid",
+         )
+-        .bind(scan.after)
++        .bind(scan.cursor.after)
+         .bind(through)
+         .fetch_all(&mut *tx)
+         .await
+         .map_err(unavailable)?;
+-        let mut last_scanned = scan.after;
++        let mut last_scanned = scan.cursor.after;
+         let mut next = None;
+         for row in &rows {
+             let rowid: i64 = row.try_get("scan_rowid").map_err(unavailable)?;
+@@ -109,12 +88,10 @@ impl AutomationStore {
+         }
+         tx.commit().await.map_err(unavailable)?;
+         // No local cursor mutation precedes successful snapshot completion.
+-        if rows.is_empty() || last_scanned == through {
+-            scan.after = 0;
+-            scan.through = None;
++        if rows.is_empty() {
++            scan.cursor.reset();
+         } else {
+-            scan.after = last_scanned;
+-            scan.through = Some(through);
++            scan.cursor.advance(last_scanned, through);
+         }
+         Ok(next)
+     }
+diff --git a/scripts/test_hepta_ci_exec.py b/scripts/test_hepta_ci_exec.py
+index a00150309..c105ee92f 100644
+--- a/scripts/test_hepta_ci_exec.py
++++ b/scripts/test_hepta_ci_exec.py
+@@ -41,9 +41,15 @@ class TaskflowObservationWorkflowTests(unittest.TestCase):
+                 "codex-app-server-client",
+                 "test(remote::shutdown_lifetime_tests)",
+             ),
++            (
++                "taskflow-frontiers",
++                "11",
++                "codex-hepta-automation",
++                "test(pending_occurrence_scan) | test(uncertain_dispatch_scan)",
++            ),
+             (
+                 "taskflow-observation",
+-                "12",
++                "14",
+                 "codex-hepta-agentd",
+                 "test(automation_recovery::observation_policy_tests) | test(automation::service_tests::observation_stall_tests)",
+             ),
+diff --git a/scripts/test_hepta_ci_exec_output.py b/scripts/test_hepta_ci_exec_output.py
+index 98d876ce5..e9f5566e8 100644
+--- a/scripts/test_hepta_ci_exec_output.py
++++ b/scripts/test_hepta_ci_exec_output.py
+@@ -77,7 +77,7 @@ class CommandOutputTests(unittest.TestCase):
+ 
+     def test_taskflow_nextest_minimum_rejects_zero_and_partial_selections(self):
+         # Parser/command-contract fixtures, not claimed native test execution.
+-        for minimum in (3, 12):
++        for minimum in (3, 11, 14):
+             for passed in (0, minimum - 1, minimum):
+                 with self.subTest(minimum=minimum, passed=passed):
+                     self.receipt.unlink(missing_ok=True)

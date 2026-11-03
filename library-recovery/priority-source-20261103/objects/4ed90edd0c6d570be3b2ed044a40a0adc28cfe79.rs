@@ -1,0 +1,740 @@
+//! Minimal loopback-only Hepta live shell.
+//!
+//! The gateway has no outbound, model, Telegram, operator-mutation, Enforce,
+//! promotion, or retirement path. Those remain separate gates.
+
+#![forbid(unsafe_code)]
+
+use std::env;
+use std::net::SocketAddr;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::time::Duration;
+
+use anyhow::Context;
+use anyhow::Result;
+use codex_hepta_paths::HeptaStateRoot;
+use codex_hepta_runtime::HeptaRuntime;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
+use tokio::net::TcpListener;
+use tokio::net::TcpStream;
+
+mod http_origin;
+mod owner_status;
+mod ui_bundle;
+
+pub use owner_status::OwnerLeaseDisposition;
+pub use owner_status::OwnerLeaseObservation;
+pub use owner_status::OwnerObservationFuture;
+pub use owner_status::OwnerReadFailure;
+pub use owner_status::OwnerStatusProvider;
+use ui_bundle::UiBundle;
+pub use ui_bundle::UiBundleOptions;
+
+pub const DEFAULT_LISTEN_ADDR: &str = "127.0.0.1:7373";
+pub const CANARY_LISTEN_ADDR: &str = "127.0.0.1:17373";
+pub const LIVE_SHELL_CONTRACT_ARG: &str = "--hepta-vnext-live-shell-contract-v1";
+pub const LIVE_SHELL_CONTRACT_JSON: &str = r#"{"schema":"hepta_vnext_live_shell_contract_v1","status":"ready","protocol_version":1,"routes":["GET /","GET /api/hepta/runtime","GET /healthz"],"runtime":{"loopback_only":true,"read_only":true,"open_mode":"immutable-query-only-open-existing","schema_version":5,"requires_empty_wal":true,"keyed_integrity_required":true},"authority":{"telegram":false,"outbound":false,"model_invocation":false,"operator_mutation":false,"enforce":false,"promotion":false,"retirement":false,"automatic_transition":false}}"#;
+const MAX_REQUEST_BYTES: usize = 32 * 1024;
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
+const RESPONSE_TIMEOUT: Duration = Duration::from_secs(5);
+
+const CLOSED_EFFECT_ENV_VARS: &[&str] = &[
+    "HEPTA_GATEWAY_ENABLE_TELEGRAM_PLUGIN",
+    "HEPTA_NATIVE_POST_REAL_HANDLER_APPROVED",
+    "HEPTA_NATIVE_POST_REAL_HANDLERS",
+    "HEPTA_NATIVE_TELEGRAM_CODEX_CORE_RUNNER",
+    "HEPTA_NATIVE_TELEGRAM_DELIVERY_APPROVED",
+    "HEPTA_NATIVE_TELEGRAM_HEPTA_KERNEL_RUNNER",
+    "HEPTA_NATIVE_TELEGRAM_IN_PROCESS_MODEL_RUNNER",
+    "HEPTA_NATIVE_TELEGRAM_LIVE_READ",
+    "HEPTA_NATIVE_TELEGRAM_MODEL_TURN",
+    "HEPTA_NATIVE_TELEGRAM_POLL_LOOP",
+    "HEPTA_NATIVE_TELEGRAM_SEND",
+    "HEPTA_OPERATOR_MUTATION_ENABLED",
+    "HEPTA_RUNTIME_MUTATION_CANARY",
+    "HEPTA_TELEGRAM_AUTHORITY_ENABLED",
+    "HEPTA_ENFORCE_ENABLED",
+    "HEPTA_PROMOTION_ENABLED",
+    "HEPTA_OUTBOUND_ENABLED",
+    "HEPTA_RETIREMENT_ENABLED",
+];
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NativeGatewayOptions {
+    pub listen_addr: SocketAddr,
+    pub state_root: HeptaStateRoot,
+    pub ui_bundle: Option<UiBundleOptions>,
+}
+
+impl NativeGatewayOptions {
+    fn from_args(raw_args: &[String], default_root: HeptaStateRoot) -> Result<Self> {
+        let mut listen_addr = DEFAULT_LISTEN_ADDR.to_string();
+        let mut state_root = default_root;
+        let mut positional_listen_seen = false;
+        let mut ui_directory = None;
+        let mut ui_manifest_sha256 = None;
+        let mut index = 0;
+        while index < raw_args.len() {
+            match raw_args[index].as_str() {
+                "--listen" => {
+                    index += 1;
+                    listen_addr = raw_args
+                        .get(index)
+                        .context("--listen requires HOST:PORT")?
+                        .clone();
+                }
+                "--ui-bundle" => {
+                    index += 1;
+                    ui_directory = Some(PathBuf::from(
+                        raw_args
+                            .get(index)
+                            .context("--ui-bundle requires an absolute directory")?,
+                    ));
+                }
+                "--ui-manifest-sha256" => {
+                    index += 1;
+                    ui_manifest_sha256 = Some(
+                        raw_args
+                            .get(index)
+                            .context("--ui-manifest-sha256 requires a digest")?
+                            .clone(),
+                    );
+                }
+                "--state-root" => {
+                    index += 1;
+                    let value = raw_args.get(index).context("--state-root requires PATH")?;
+                    state_root = HeptaStateRoot::parse(value)?;
+                }
+                value if !value.starts_with('-') && !positional_listen_seen => {
+                    listen_addr = value.to_string();
+                    positional_listen_seen = true;
+                }
+                value => anyhow::bail!("unexpected --serve-ui argument: {value}"),
+            }
+            index += 1;
+        }
+
+        let listen_addr = listen_addr
+            .parse::<SocketAddr>()
+            .with_context(|| format!("parse loopback listen address {listen_addr}"))?;
+        validate_loopback(listen_addr)?;
+        let ui_bundle = match (ui_directory, ui_manifest_sha256) {
+            (None, None) => None,
+            (Some(directory), Some(manifest_sha256)) => Some(UiBundleOptions {
+                directory,
+                manifest_sha256,
+            }),
+            _ => anyhow::bail!("--ui-bundle and --ui-manifest-sha256 must be supplied together"),
+        };
+        Ok(Self {
+            listen_addr,
+            state_root,
+            ui_bundle,
+        })
+    }
+}
+
+pub fn parse_serve_ui_args(raw_args: &[String]) -> Result<Option<NativeGatewayOptions>> {
+    if raw_args.first().map(String::as_str) != Some("--serve-ui") {
+        return Ok(None);
+    }
+    let state_root = HeptaStateRoot::from_env()?;
+    NativeGatewayOptions::from_args(&raw_args[1..], state_root).map(Some)
+}
+
+/// Prints the exact, machine-verifiable contract of the vNext live shell.
+///
+/// Release tooling uses this narrow handshake to reject an unrelated or
+/// legacy broad-capability `hepta` executable before assigning closed runtime
+/// claims to its immutable manifest.
+pub fn print_live_shell_contract_if_requested(raw_args: &[String]) -> Result<bool> {
+    if raw_args.first().map(String::as_str) != Some(LIVE_SHELL_CONTRACT_ARG) {
+        return Ok(false);
+    }
+    if raw_args.len() != 1 {
+        anyhow::bail!("{LIVE_SHELL_CONTRACT_ARG} accepts no additional arguments");
+    }
+    println!("{LIVE_SHELL_CONTRACT_JSON}");
+    Ok(true)
+}
+
+/// Runs the live shell when the Hepta binary was invoked with `--serve-ui`.
+/// Returns `false` without constructing a runtime for every other CLI mode.
+pub fn run_serve_ui_if_requested(raw_args: &[String]) -> Result<bool> {
+    let Some(options) = parse_serve_ui_args(raw_args)? else {
+        return Ok(false);
+    };
+    validate_closed_effect_environment()?;
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .context("build Hepta gateway runtime")?;
+    runtime.block_on(run_native_gateway(options))?;
+    Ok(true)
+}
+
+pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
+    run_native_gateway_with_owner_status(options, OwnerStatusProvider::default()).await
+}
+
+/// Attach only an already-owned, weak, read-only observation provider.
+/// The default CLI never constructs a production owner as a side effect.
+pub async fn run_native_gateway_with_owner_status(
+    options: NativeGatewayOptions,
+    owner_status: OwnerStatusProvider,
+) -> Result<()> {
+    validate_closed_effect_environment()?;
+    let ui = options
+        .ui_bundle
+        .as_ref()
+        .map(UiBundle::load)
+        .transpose()?
+        .map(Arc::new);
+    if let Some(ui) = &ui {
+        eprintln!("Rust UI artifact source identity {}", ui.source_identity);
+    }
+    let runtime = match HeptaRuntime::open_existing(options.state_root).await {
+        Ok(runtime) => Some(Arc::new(runtime)),
+        Err(_) if ui.is_some() => {
+            eprintln!(
+                "Legacy runtime unavailable; serving verified UI with closed read-only status"
+            );
+            None
+        }
+        Err(error) => return Err(error),
+    };
+    let listener = TcpListener::bind(options.listen_addr)
+        .await
+        .with_context(|| format!("bind Hepta gateway at {}", options.listen_addr))?;
+    let actual_addr = listener
+        .local_addr()
+        .context("inspect gateway listen address")?;
+    validate_loopback(actual_addr)?;
+    eprintln!("hepta live shell listening on http://{actual_addr}");
+
+    loop {
+        tokio::select! {
+            accepted = listener.accept() => {
+                let (stream, peer) = accepted.context("accept loopback gateway connection")?;
+                if !peer.ip().is_loopback() {
+                    continue;
+                }
+                let runtime = runtime.clone();
+                let ui = ui.clone();
+                let owner_status = owner_status.clone();
+                tokio::spawn(async move {
+                    if let Err(error) = serve_connection(stream, runtime, ui, owner_status).await {
+                        eprintln!("hepta loopback request failed: {error:#}");
+                    }
+                });
+            }
+            signal = tokio::signal::ctrl_c() => {
+                signal.context("wait for gateway shutdown signal")?;
+                return Ok(());
+            }
+        }
+    }
+}
+
+fn validate_loopback(address: SocketAddr) -> Result<()> {
+    if !address.ip().is_loopback() || address.port() == 0 {
+        anyhow::bail!("Hepta live shell requires an explicit non-zero loopback HOST:PORT");
+    }
+    Ok(())
+}
+
+fn validate_closed_effect_environment() -> Result<()> {
+    for name in CLOSED_EFFECT_ENV_VARS {
+        if env::var(name).is_ok_and(|value| truthy(&value)) {
+            anyhow::bail!("{name}=true is not admitted by the vNext live shell");
+        }
+    }
+    Ok(())
+}
+
+fn truthy(value: &str) -> bool {
+    matches!(
+        value.trim().to_ascii_lowercase().as_str(),
+        "1" | "true" | "yes" | "on"
+    )
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RuntimeRepresentation {
+    Json,
+    WireV2,
+    UnsupportedWire,
+}
+
+fn runtime_representation(request: &str) -> RuntimeRepresentation {
+    for line in request.lines().skip(1) {
+        if line.is_empty() {
+            break;
+        }
+        let Some((name, value)) = line.split_once(':') else {
+            continue;
+        };
+        if !name.trim().eq_ignore_ascii_case("accept") {
+            continue;
+        }
+        let mut saw_wire = false;
+        for media_type in value.split(',').map(str::trim) {
+            if media_type.eq_ignore_ascii_case("application/x-hepta-wire; version=2") {
+                return RuntimeRepresentation::WireV2;
+            }
+            if media_type
+                .to_ascii_lowercase()
+                .starts_with("application/x-hepta-wire")
+            {
+                saw_wire = true;
+            }
+        }
+        if saw_wire {
+            return RuntimeRepresentation::UnsupportedWire;
+        }
+    }
+    RuntimeRepresentation::Json
+}
+
+async fn serve_connection(
+    mut stream: TcpStream,
+    runtime: Option<Arc<HeptaRuntime>>,
+    ui: Option<Arc<UiBundle>>,
+    owner_status: OwnerStatusProvider,
+) -> Result<()> {
+    let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
+        .await
+        .context("loopback request timed out")??;
+    if !http_origin::allowed(&request, stream.local_addr()?) {
+        let rejected = response(
+            "403 Forbidden",
+            "application/json; charset=utf-8",
+            br#"{"error":"loopback Host/Origin boundary rejected request"}"#,
+        );
+        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&rejected))
+            .await
+            .context("rejected response timed out")?
+            .context("write rejected response")?;
+    } else if let Some(asset) = ui.as_ref().and_then(|ui| ui_response(&request, ui)) {
+        tokio::time::timeout(RESPONSE_TIMEOUT, async {
+            stream.write_all(&asset.headers).await?;
+            stream.write_all(&asset.body).await
+        })
+        .await
+        .context("UI response timed out")?
+        .context("write UI response")?;
+    } else {
+        let response = if request_target(&request) == Some(("GET", "/api/hepta/owner-status")) {
+            response(
+                "200 OK",
+                "application/json; charset=utf-8",
+                &owner_status.json().await?,
+            )
+        } else if let Some(runtime) = &runtime {
+            route_request(&request, runtime)?
+        } else {
+            route_unavailable(&request)
+        };
+        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
+            .await
+            .context("loopback response timed out")?
+            .context("write loopback response")?;
+    }
+    tokio::time::timeout(RESPONSE_TIMEOUT, stream.shutdown())
+        .await
+        .context("loopback shutdown timed out")?
+        .context("close loopback response")
+}
+
+fn request_target(request: &[u8]) -> Option<(&str, &str)> {
+    let text = std::str::from_utf8(request).ok()?;
+    let mut fields = text.lines().next()?.split_whitespace();
+    let method = fields.next()?;
+    let target = fields.next()?.split('?').next()?;
+    let version = fields.next()?;
+    if fields.next().is_some() || !matches!(version, "HTTP/1.0" | "HTTP/1.1") {
+        return None;
+    }
+    Some((method, target))
+}
+
+fn route_unavailable(request: &[u8]) -> Vec<u8> {
+    let (status, body): (&str, &[u8]) = match request_target(request) {
+        None => ("400 Bad Request", br#"{"error":"bad request"}"#),
+        Some((method, _)) if method != "GET" => (
+            "405 Method Not Allowed",
+            br#"{"error":"live shell is read-only"}"#,
+        ),
+        Some(("GET", "/healthz" | "/api/hepta/runtime")) => (
+            "503 Service Unavailable",
+            br#"{"product":"hepta","status":"unavailable","error":"legacy runtime unavailable"}"#,
+        ),
+        Some(("GET", "/")) => (
+            "503 Service Unavailable",
+            br#"{"error":"verified UI bundle unavailable"}"#,
+        ),
+        Some(_) => ("404 Not Found", br#"{"error":"not found"}"#),
+    };
+    response(status, "application/json; charset=utf-8", body)
+}
+
+fn ui_response(request: &[u8], ui: &UiBundle) -> Option<ui_bundle::UiResponse> {
+    let text = std::str::from_utf8(request).ok()?;
+    let mut fields = text.lines().next()?.split_whitespace();
+    let method = fields.next()?;
+    let target = fields.next()?;
+    let version = fields.next()?;
+    if method != "GET" || !matches!(version, "HTTP/1.0" | "HTTP/1.1") || fields.next().is_some() {
+        return None;
+    }
+    ui.response(target)
+}
+
+async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
+    let mut bytes = Vec::with_capacity(2048);
+    let mut buffer = [0_u8; 2048];
+    loop {
+        if bytes.windows(4).any(|window| window == b"\r\n\r\n") {
+            return Ok(bytes);
+        }
+        let read = stream
+            .read(&mut buffer)
+            .await
+            .context("read loopback request")?;
+        if read == 0 {
+            anyhow::bail!("loopback request ended before complete headers");
+        }
+        bytes.extend_from_slice(&buffer[..read]);
+        if bytes.len() > MAX_REQUEST_BYTES {
+            anyhow::bail!("HTTP request headers exceed {MAX_REQUEST_BYTES} bytes");
+        }
+    }
+}
+
+fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
+    let request = std::str::from_utf8(request).context("HTTP request is not UTF-8")?;
+    let first_line = request
+        .lines()
+        .next()
+        .context("HTTP request line is missing")?;
+    let mut fields = first_line.split_whitespace();
+    let method = fields.next().context("HTTP method is missing")?;
+    let target = fields.next().context("HTTP target is missing")?;
+    let version = fields.next().context("HTTP version is missing")?;
+    if fields.next().is_some() || !matches!(version, "HTTP/1.0" | "HTTP/1.1") {
+        return Ok(response(
+            "400 Bad Request",
+            "application/json; charset=utf-8",
+            br#"{"error":"bad request"}"#,
+        ));
+    }
+    if method != "GET" {
+        return Ok(response(
+            "405 Method Not Allowed",
+            "application/json; charset=utf-8",
+            br#"{"error":"live shell is read-only"}"#,
+        ));
+    }
+    let path = target.split('?').next().unwrap_or(target);
+    match path {
+        "/healthz" => Ok(response(
+            "200 OK",
+            "application/json; charset=utf-8",
+            br#"{"product":"hepta","status":"ok"}"#,
+        )),
+        "/api/hepta/runtime" => match runtime_representation(request) {
+            RuntimeRepresentation::Json => match runtime.status_json() {
+                Ok(body) => Ok(response("200 OK", "application/json; charset=utf-8", &body)),
+                Err(error) => {
+                    eprintln!("Hepta status organ unavailable: {error:#}");
+                    Ok(response(
+                        "503 Service Unavailable",
+                        "application/json; charset=utf-8",
+                        br#"{"error":"runtime status unavailable"}"#,
+                    ))
+                }
+            },
+            RuntimeRepresentation::WireV2 => match runtime.status_wire_v2() {
+                Ok(body) => Ok(response(
+                    "200 OK",
+                    "application/x-hepta-wire; version=2",
+                    &body,
+                )),
+                Err(error) => {
+                    eprintln!("Hepta wire status unavailable: {error:#}");
+                    Ok(response(
+                        "503 Service Unavailable",
+                        "application/json; charset=utf-8",
+                        br#"{"error":"runtime wire status unavailable"}"#,
+                    ))
+                }
+            },
+            RuntimeRepresentation::UnsupportedWire => Ok(response(
+                "406 Not Acceptable",
+                "application/json; charset=utf-8",
+                br#"{"error":"unsupported wire representation"}"#,
+            )),
+        },
+        "/" => Ok(response(
+            "503 Service Unavailable",
+            "application/json; charset=utf-8",
+            br#"{"error":"Rust UI bundle unavailable; configure the owned build artifact"}"#,
+        )),
+        _ => Ok(response(
+            "404 Not Found",
+            "application/json; charset=utf-8",
+            br#"{"error":"not found"}"#,
+        )),
+    }
+}
+
+fn response(status: &str, content_type: &str, body: &[u8]) -> Vec<u8> {
+    let header = format!(
+        "HTTP/1.1 {status}\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\nCache-Control: no-store\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\n\r\n",
+        body.len()
+    );
+    let mut response = Vec::with_capacity(header.len() + body.len());
+    response.extend_from_slice(header.as_bytes());
+    response.extend_from_slice(body);
+    response
+}
+
+#[cfg(test)]
+#[path = "organ_request_tests.rs"]
+mod organ_request_tests;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use codex_hepta_runtime::RuntimeAuthorityStatus;
+    use codex_hepta_runtime::RuntimeStateAdapter;
+    use codex_hepta_runtime::RuntimeStateStatus;
+    use codex_hepta_wire::WireEnvelopeV2;
+    use pretty_assertions::assert_eq;
+
+    #[derive(Debug)]
+    struct FixtureAdapter;
+
+    impl RuntimeStateAdapter for FixtureAdapter {
+        fn status(&self) -> RuntimeStateStatus {
+            RuntimeStateStatus {
+                adapter: "fixture",
+                schema_version: 5,
+                outcome_generation: 0,
+                preference_generation: 0,
+                runtime_snapshot_version: 1,
+                runtime_snapshot_generation: 0,
+                integrity_binding_present: true,
+                integrity_verification: "hmac-sha256-v1-key-id-and-row-macs-verified",
+                open_mode: "immutable-query-only-open-existing",
+            }
+        }
+    }
+
+    fn fixture_root(name: &str) -> Result<HeptaStateRoot> {
+        HeptaStateRoot::parse(std::env::temp_dir().join(name))
+    }
+
+    fn fixture_runtime() -> Result<HeptaRuntime> {
+        Ok(HeptaRuntime::from_adapter(
+            fixture_root("hepta-vnext-gateway-test")?,
+            Arc::new(FixtureAdapter),
+        ))
+    }
+
+    #[test]
+    fn parses_production_default_and_isolated_canary_addresses() -> Result<()> {
+        let root = fixture_root("hepta-state")?;
+        let canary_root = std::env::temp_dir().join("hepta-canary");
+        let production = NativeGatewayOptions::from_args(&[], root.clone())?;
+        assert_eq!(production.listen_addr.to_string(), DEFAULT_LISTEN_ADDR);
+        let canary = NativeGatewayOptions::from_args(
+            &[
+                CANARY_LISTEN_ADDR.to_string(),
+                "--state-root".to_string(),
+                canary_root.to_string_lossy().into_owned(),
+            ],
+            root,
+        )?;
+        assert_eq!(canary.listen_addr.to_string(), CANARY_LISTEN_ADDR);
+        assert_eq!(canary.state_root.as_path(), canary_root);
+        Ok(())
+    }
+
+    #[test]
+    fn rejects_non_loopback_or_ephemeral_address() -> Result<()> {
+        let root = fixture_root("hepta-state")?;
+        assert!(
+            NativeGatewayOptions::from_args(&["0.0.0.0:7373".to_string()], root.clone()).is_err()
+        );
+        assert!(NativeGatewayOptions::from_args(&["127.0.0.1:0".to_string()], root).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn exposes_only_health_shell_and_closed_runtime_status() -> Result<()> {
+        let runtime = fixture_runtime()?;
+        let health = route_request(
+            b"GET /healthz HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            &runtime,
+        )?;
+        assert!(health.starts_with(b"HTTP/1.1 200 OK"));
+        let status = route_request(
+            b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            &runtime,
+        )?;
+        let body_start = status
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("runtime response headers")?
+            + 4;
+        let body = &status[body_start..];
+        let value: serde_json::Value = serde_json::from_slice(body)?;
+        assert_eq!(value["authority"]["outbound"], false);
+        assert_eq!(value["authority"]["operator_mutation"], false);
+        assert_eq!(value["authority"]["enforce"], false);
+        assert_eq!(value["authority"]["promotion"], false);
+        assert_eq!(value["authority"]["retirement"], false);
+        Ok(())
+    }
+
+    #[test]
+    fn explicit_accept_header_returns_hpta_v2_runtime_status() -> Result<()> {
+        let response = route_request(
+            b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n",
+            &fixture_runtime()?,
+        )?;
+        assert!(response.starts_with(b"HTTP/1.1 200 OK"));
+        let body_start = response
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("wire response headers")?
+            + 4;
+        let headers = std::str::from_utf8(&response[..body_start])?;
+        assert!(headers.contains("Content-Type: application/x-hepta-wire; version=2"));
+        let envelope = WireEnvelopeV2::decode(&response[body_start..])?;
+        assert_eq!(envelope.schema().as_str(), "hepta.runtime.status.v1");
+        assert_eq!(envelope.producer().as_str(), "runtime.codex");
+        let value: serde_json::Value = serde_json::from_slice(envelope.payload())?;
+        assert_eq!(value["authority"]["outbound"], false);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn loopback_socket_serves_metadata_bound_v2_status() -> Result<()> {
+        let listener = TcpListener::bind("127.0.0.1:0").await?;
+        let address = listener.local_addr()?;
+        let runtime = Arc::new(fixture_runtime()?);
+        let server = tokio::spawn(async move {
+            let (stream, peer) = listener.accept().await?;
+            assert!(peer.ip().is_loopback());
+            serve_connection(
+                stream,
+                Some(runtime),
+                /*ui*/ None,
+                OwnerStatusProvider::default(),
+            )
+            .await
+        });
+
+        let mut client = TcpStream::connect(address).await?;
+        client
+            .write_all(
+                format!("GET /api/hepta/runtime HTTP/1.1\r\nHost: {address}\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n").as_bytes(),
+            )
+            .await?;
+        let mut response = Vec::new();
+        client.read_to_end(&mut response).await?;
+        server.await??;
+
+        assert!(response.starts_with(b"HTTP/1.1 200 OK"));
+        let body_start = response
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("wire response headers")?
+            + 4;
+        let envelope = WireEnvelopeV2::decode(&response[body_start..])?;
+        assert_eq!(envelope.schema().as_str(), "hepta.runtime.status.v1");
+        let value: serde_json::Value = serde_json::from_slice(envelope.payload())?;
+        assert_eq!(value["status"], "ready");
+        assert_eq!(value["authority"]["outbound"], false);
+        Ok(())
+    }
+
+    #[test]
+    fn unsupported_wire_accept_version_fails_closed() -> Result<()> {
+        let response = route_request(
+            b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=99\r\n\r\n",
+            &fixture_runtime()?,
+        )?;
+        assert!(response.starts_with(b"HTTP/1.1 406 Not Acceptable"));
+        Ok(())
+    }
+
+    #[test]
+    fn rejects_all_post_requests() -> Result<()> {
+        let response = route_request(
+            b"POST /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\n\r\n",
+            &fixture_runtime()?,
+        )?;
+        assert!(response.starts_with(b"HTTP/1.1 405 Method Not Allowed"));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn rejects_headers_larger_than_the_limit_even_with_a_terminator() {
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = tokio::spawn(async move {
+            let (mut stream, _) = listener.accept().await.unwrap();
+            read_request(&mut stream).await
+        });
+
+        let mut client = TcpStream::connect(address).await.unwrap();
+        let mut request = b"GET / HTTP/1.1\r\nX-Large: ".to_vec();
+        request.resize(MAX_REQUEST_BYTES + 1, b'a');
+        request.extend_from_slice(b"\r\n\r\n");
+        client.write_all(&request).await.unwrap();
+
+        let error = server.await.unwrap().unwrap_err();
+        assert!(error.to_string().contains("headers exceed"));
+    }
+
+    #[test]
+    fn truthy_values_are_explicit() {
+        for value in ["1", "true", "TRUE", "yes", "on"] {
+            assert!(truthy(value));
+        }
+        for value in ["", "0", "false", "off", "disabled"] {
+            assert!(!truthy(value));
+        }
+    }
+
+    #[test]
+    fn ip_loopback_classification_matches_socket_policy() {
+        assert!(std::net::IpAddr::from([127, 0, 0, 1]).is_loopback());
+        assert!(!std::net::IpAddr::from([0, 0, 0, 0]).is_loopback());
+        assert_eq!(
+            RuntimeAuthorityStatus::default().automatic_transition,
+            false
+        );
+    }
+
+    #[test]
+    fn live_shell_contract_is_exact_and_all_authority_is_closed() -> Result<()> {
+        let value: serde_json::Value = serde_json::from_str(LIVE_SHELL_CONTRACT_JSON)?;
+        assert_eq!(value["schema"], "hepta_vnext_live_shell_contract_v1");
+        assert_eq!(value["routes"].as_array().map(Vec::len), Some(3));
+        assert_eq!(value["runtime"]["loopback_only"], true);
+        assert_eq!(value["runtime"]["read_only"], true);
+        assert_eq!(value["runtime"]["schema_version"], 5);
+        let authority = value["authority"]
+            .as_object()
+            .context("live shell contract authority object")?;
+        assert_eq!(authority.len(), 8);
+        assert!(authority.values().all(|gate| gate == false));
+        Ok(())
+    }
+}

@@ -1,0 +1,309 @@
+diff --git a/.github/scripts/test_rust_ci_source_integrity.py b/.github/scripts/test_rust_ci_source_integrity.py
+index 0eded703c1..e72dd91192 100644
+--- a/.github/scripts/test_rust_ci_source_integrity.py
++++ b/.github/scripts/test_rust_ci_source_integrity.py
+@@ -2,9 +2,11 @@
+ 
+ import glob
+ import importlib.util
++import json
+ import os
+ from pathlib import Path
+ import subprocess
++import sys
+ import tempfile
+ import unittest
+ 
+@@ -220,5 +222,135 @@ class RustSourceIntegrityTests(unittest.TestCase):
+         self.assertCountEqual(artifacts, [{timing}, {before, after}])
+ 
+ 
++class V8SmokeToolchainTests(unittest.TestCase):
++    """Run the workflow shell with recording executables, not a V8 build."""
++
++    def setUp(self):
++        temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(temporary.cleanup)
++        self.root = Path(temporary.name)
++        self.toolchain = self.root / "rustup with spaces/toolchains/1.96.0-fixture/bin"
++        self.toolchain.mkdir(parents=True)
++        self.env = {
++            **os.environ,
++            "RUSTUP_HOME": str(self.root / "rustup with spaces"),
++            "GITHUB_WORKSPACE": str(self.root),
++            "GITHUB_ENV": str(self.root / "environment"),
++            "RUNNER_TEMP": str(self.root / "temporary"),
++            "RUSTUP_TOOLCHAIN": "1.91.0",
++            "RUSTC": "/not/the/selected/compiler",
++        }
++        workflow = WORKFLOW_COMMANDS.load_workflow(
++            (ROOT / ".github/workflows/v8-canary.yml").read_text()
++        )
++        self.steps = workflow["jobs"]["build"]["steps"]
++
++    def executable(self, name, source):
++        path = self.toolchain / name
++        path.write_text(f"#!{sys.executable}\n{source}")
++        path.chmod(0o755)
++        return path
++
++    def execute(self, name):
++        script = next(step["run"] for step in self.steps if step.get("name") == name)
++        return subprocess.run(
++            ["bash", "-c", script],
++            cwd=self.root,
++            env=self.env,
++            capture_output=True,
++            text=True,
++        )
++
++    def test_installed_pair_selection_rejects_missing_compiler(self):
++        self.executable("cargo", "raise SystemExit(0)\n")
++        result = self.execute("Pin installed Cargo and rustc binaries")
++        self.assertNotEqual(result.returncode, 0)
++        self.assertIn("compiler is missing", result.stderr)
++
++    def test_smoke_pins_nested_compiler_and_keeps_profile_arguments(self):
++        compiler = self.executable("rustc", "print('fixture-rustc-1.96.0')\n")
++        receipt = self.root / "receipt.json"
++        self.executable(
++            "cargo",
++            "import json, os, pathlib, subprocess, sys\n"
++            "os.chdir('nested-dependency')\n"
++            "assert os.environ['RUSTUP_TOOLCHAIN'] == '1.96.0'\n"
++            f"assert os.environ['RUSTC'] == {str(compiler)!r}\n"
++            "version = subprocess.check_output([os.environ['RUSTC']], text=True).strip()\n"
++            f"pathlib.Path({str(receipt)!r}).write_text(json.dumps([sys.argv[1:], version]))\n",
++        )
++        selected = self.execute("Pin installed Cargo and rustc binaries")
++        self.assertEqual(selected.returncode, 0, selected.stdout + selected.stderr)
++        for line in (self.root / "environment").read_text().splitlines():
++            key, value = line.split("=", 1)
++            self.env[key] = value
++        nested = self.root / "codex-rs/nested-dependency"
++        nested.mkdir(parents=True)
++        (nested / "rust-toolchain.toml").write_text('[toolchain]\nchannel = "1.91.0"\n')
++        machine = subprocess.check_output(["uname", "-m"], text=True).strip()
++        target = {
++            ("darwin", "arm64"): "aarch64-apple-darwin",
++            ("darwin", "x86_64"): "x86_64-apple-darwin",
++            ("linux", "aarch64"): "aarch64-unknown-linux-gnu",
++            ("linux", "x86_64"): "x86_64-unknown-linux-gnu",
++        }[(sys.platform, machine)]
++        staged = self.root / "dist" / target
++        staged.mkdir(parents=True)
++        (staged / "librusty_v8_fixture.a.gz").write_bytes(b"recording fixture")
++        (staged / "src_binding_fixture.rs").write_text("// recording fixture\n")
++        self.env["TARGET"] = target
++        for sandbox in ("false", "true"):
++            with self.subTest(sandbox=sandbox):
++                self.env["SANDBOX"] = sandbox
++                result = self.execute("Smoke test staged artifact with Cargo")
++                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++                arguments = ["test", "-p", "codex-v8-poc"]
++                if sandbox == "true":
++                    arguments += ["--features", "sandbox"]
++                self.assertEqual(
++                    json.loads(receipt.read_text()), [arguments, "fixture-rustc-1.96.0"]
++                )
++                self.assertEqual(self.env["RUSTUP_TOOLCHAIN"], "1.91.0")
++
++
++class V8ColdBuildBudgetTests(unittest.TestCase):
++    def test_complete_matrix_has_bounded_runner_specific_budgets(self):
++        workflow = WORKFLOW_COMMANDS.load_workflow(
++            (ROOT / ".github/workflows/v8-canary.yml").read_text()
++        )
++        jobs = workflow["jobs"]
++        self.assertEqual(int(jobs["metadata"]["timeout-minutes"]), 30)
++        build = jobs["build"]
++        self.assertEqual(build["timeout-minutes"], "${{ matrix.timeout_minutes }}")
++        expected = {
++            "ubuntu-24.04-arm": 150,
++            "ubuntu-24.04": 240,
++            "macos-15": 210,
++            "macos-15-intel": 360,
++        }
++        rows = build["strategy"]["matrix"]["include"]
++        self.assertEqual(len(rows), 12)
++        targets = {
++            "x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu",
++            "x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl",
++            "x86_64-apple-darwin", "aarch64-apple-darwin",
++        }
++        self.assertEqual(
++            {(row["target"], row["sandbox"]) for row in rows},
++            {(target, sandbox) for target in targets for sandbox in ("true", "false")},
++        )
++        for row in rows:
++            self.assertEqual(int(row["timeout_minutes"]), expected[row["runner"]])
++        windows = jobs["build-windows-source"]
++        self.assertEqual(int(windows["timeout-minutes"]), 240)
++        self.assertEqual(
++            {row["target"] for row in windows["strategy"]["matrix"]["include"]},
++            {"x86_64-pc-windows-msvc", "aarch64-pc-windows-msvc"},
++        )
++        self.assertEqual(sum(int(row["timeout_minutes"]) for row in rows) + 2 * 240, 3180)
++        self.assertEqual(build["strategy"]["fail-fast"], "false")
++        self.assertEqual(windows["strategy"]["fail-fast"], "false")
++
++
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/.github/workflows/v8-canary.yml b/.github/workflows/v8-canary.yml
+index 9dd0b2f1e5..0fcbc159ae 100644
+--- a/.github/workflows/v8-canary.yml
++++ b/.github/workflows/v8-canary.yml
+@@ -74,7 +74,10 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   build:
+-    timeout-minutes: 30
++    # Cold-run observations: ARM Linux nearly completes at 90m, x64 needs
++    # 150-200m and Intel macOS projects near 280m. Include staging/smoke margin;
++    # these bounded per-runner budgets are provisional, not success receipts.
++    timeout-minutes: ${{ matrix.timeout_minutes }}
+     name: Build ${{ matrix.variant }} ${{ matrix.target }}
+     needs: metadata
+     # Metadata always runs; only relevant changes pay for the large matrix.
+@@ -91,6 +94,7 @@ jobs:
+       matrix:
+         include:
+           - runner: ubuntu-24.04
++            timeout_minutes: 240
+             bazel_config: ci-v8
+             platform: linux_amd64
+             sandbox: false
+@@ -98,6 +102,7 @@ jobs:
+             v8_cpu: x64
+             variant: release
+           - runner: ubuntu-24.04
++            timeout_minutes: 240
+             bazel_config: ci-v8
+             platform: linux_amd64
+             sandbox: true
+@@ -105,6 +110,7 @@ jobs:
+             v8_cpu: x64
+             variant: ptrcomp-sandbox
+           - runner: ubuntu-24.04-arm
++            timeout_minutes: 150
+             bazel_config: ci-v8
+             platform: linux_arm64
+             sandbox: false
+@@ -112,6 +118,7 @@ jobs:
+             v8_cpu: arm64
+             variant: release
+           - runner: ubuntu-24.04-arm
++            timeout_minutes: 150
+             bazel_config: ci-v8
+             platform: linux_arm64
+             sandbox: true
+@@ -119,6 +126,7 @@ jobs:
+             v8_cpu: arm64
+             variant: ptrcomp-sandbox
+           - runner: macos-15-intel
++            timeout_minutes: 360
+             bazel_config: ci-macos
+             platform: macos_amd64
+             sandbox: false
+@@ -126,6 +134,7 @@ jobs:
+             v8_cpu: x64
+             variant: release
+           - runner: macos-15-intel
++            timeout_minutes: 360
+             bazel_config: ci-macos
+             platform: macos_amd64
+             sandbox: true
+@@ -133,6 +142,7 @@ jobs:
+             v8_cpu: x64
+             variant: ptrcomp-sandbox
+           - runner: macos-15
++            timeout_minutes: 210
+             bazel_config: ci-macos
+             platform: macos_arm64
+             sandbox: false
+@@ -140,6 +150,7 @@ jobs:
+             v8_cpu: arm64
+             variant: release
+           - runner: macos-15
++            timeout_minutes: 210
+             bazel_config: ci-macos
+             platform: macos_arm64
+             sandbox: true
+@@ -147,6 +158,7 @@ jobs:
+             v8_cpu: arm64
+             variant: ptrcomp-sandbox
+           - runner: ubuntu-24.04
++            timeout_minutes: 240
+             bazel_config: ci-v8
+             platform: linux_amd64_musl
+             sandbox: false
+@@ -154,6 +166,7 @@ jobs:
+             v8_cpu: x64
+             variant: release
+           - runner: ubuntu-24.04
++            timeout_minutes: 240
+             bazel_config: ci-v8
+             platform: linux_amd64_musl
+             sandbox: true
+@@ -161,6 +174,7 @@ jobs:
+             v8_cpu: x64
+             variant: ptrcomp-sandbox
+           - runner: ubuntu-24.04-arm
++            timeout_minutes: 150
+             bazel_config: ci-v8
+             platform: linux_arm64_musl
+             sandbox: false
+@@ -168,6 +182,7 @@ jobs:
+             v8_cpu: arm64
+             variant: release
+           - runner: ubuntu-24.04-arm
++            timeout_minutes: 150
+             bazel_config: ci-v8
+             platform: linux_arm64_musl
+             sandbox: true
+@@ -194,7 +209,7 @@ jobs:
+         with:
+           toolchain: "1.96.0"
+ 
+-      - name: Pin installed Cargo binary
++      - name: Pin installed Cargo and rustc binaries
+         shell: bash
+         run: |
+           set -euo pipefail
+@@ -204,7 +219,13 @@ jobs:
+             echo "Rust 1.96.0 Cargo binary is not installed under ${rustup_home}." >&2
+             exit 1
+           fi
++          rustc_bin="${cargo_bin%/cargo}/rustc"
++          if [[ ! -x "${rustc_bin}" ]]; then
++            echo "Matching Rust 1.96.0 compiler is missing beside ${cargo_bin}." >&2
++            exit 1
++          fi
+           echo "CARGO_1_96=${cargo_bin}" >> "${GITHUB_ENV}"
++          echo "RUSTC_1_96=${rustc_bin}" >> "${GITHUB_ENV}"
+ 
+       - name: Build Bazel V8 release pair
+         env:
+@@ -319,6 +340,10 @@ jobs:
+ 
+           (
+             cd codex-rs
++            # Cargo's absolute path alone does not pin rustup's rustc proxy
++            # inside dependencies with their own rust-toolchain.toml.
++            RUSTUP_TOOLCHAIN=1.96.0 \
++            RUSTC="${RUSTC_1_96}" \
+             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
+             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
+@@ -336,7 +361,9 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   build-windows-source:
+-    timeout-minutes: 30
++    # Both upstream Windows builds exceeded 90m on a cache miss. There is no
++    # measured completion yet: allow one bounded cold build plus smoke/staging.
++    timeout-minutes: 240
+     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
+     needs: metadata
+     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}

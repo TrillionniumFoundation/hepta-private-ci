@@ -1,0 +1,98 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index d6ca3388c..7ab1cf256 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -5768,6 +5768,7 @@ dependencies = [
+  "codex-otel",
+  "codex-protocol",
+  "codex-utils-absolute-path",
++ "codex-utils-cargo-bin",
+  "codex-utils-pty",
+  "codex-utils-string",
+  "dirs-next",
+diff --git a/codex-rs/windows-sandbox-rs/Cargo.toml b/codex-rs/windows-sandbox-rs/Cargo.toml
+index aa41ed5f0..3886cbd22 100644
+--- a/codex-rs/windows-sandbox-rs/Cargo.toml
++++ b/codex-rs/windows-sandbox-rs/Cargo.toml
+@@ -93,4 +93,5 @@ features = [
+ version = "0.52"
+ 
+ [dev-dependencies]
++codex-utils-cargo-bin = { workspace = true }
+ pretty_assertions = { workspace = true }
+diff --git a/codex-rs/windows-sandbox-rs/src/acl.rs b/codex-rs/windows-sandbox-rs/src/acl.rs
+index f3841d7c9..374e10908 100644
+--- a/codex-rs/windows-sandbox-rs/src/acl.rs
++++ b/codex-rs/windows-sandbox-rs/src/acl.rs
+@@ -54,7 +54,6 @@ use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
+ use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
+ use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
+ use windows_sys::Win32::Storage::FileSystem::SECURITY_IDENTIFICATION;
+-use windows_sys::Win32::Storage::FileSystem::SECURITY_SQOS_PRESENT;
+ use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
+ const SE_KERNEL_OBJECT: u32 = 6;
+ const INHERIT_ONLY_ACE: u8 = 0x08;
+@@ -658,13 +657,13 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
+         let result = if let Err(err) = acl_api_result(path, "SetEntriesInAclW", code2) {
+             Err(err)
+         } else {
+-            // ReOpenFile retains the object's identity. Request WRITE_DAC only
+-            // for repairs; checking an already-complete deny needs no write access.
++            // Retain read-control access while acquiring write-DAC on the same
++            // object. Checking an already-complete deny still needs no write access.
+             let write_handle = ReOpenFile(
+                 file.as_raw_handle() as HANDLE,
+-                WRITE_DAC,
++                READ_CONTROL | WRITE_DAC,
+                 FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+-                FILE_FLAG_BACKUP_SEMANTICS | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION,
++                FILE_FLAG_BACKUP_SEMANTICS,
+             );
+             if write_handle == INVALID_HANDLE_VALUE {
+                 Err(anyhow!(
+diff --git a/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs b/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
+index 4aa967f13..b964e46d6 100644
+--- a/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
+@@ -56,8 +56,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+ use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
+ use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
+-use windows_sys::Win32::Storage::FileSystem::SECURITY_IDENTIFICATION;
+-use windows_sys::Win32::Storage::FileSystem::SECURITY_SQOS_PRESENT;
+ use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
+ use windows_sys::Win32::System::Threading::GetCurrentProcess;
+ use windows_sys::Win32::System::Threading::GetCurrentThread;
+@@ -294,7 +292,7 @@ impl AclSetupFailureFixture {
+                 acl_restore.file.as_raw_handle() as HANDLE,
+                 WRITE_DAC,
+                 FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+-                FILE_FLAG_BACKUP_SEMANTICS | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION,
++                FILE_FLAG_BACKUP_SEMANTICS,
+             )
+         };
+         let reopen_error = if reopened == INVALID_HANDLE_VALUE {
+diff --git a/codex-rs/windows-sandbox-rs/tests/helper_manifest.rs b/codex-rs/windows-sandbox-rs/tests/helper_manifest.rs
+index 0428f906a..350e5036b 100644
+--- a/codex-rs/windows-sandbox-rs/tests/helper_manifest.rs
++++ b/codex-rs/windows-sandbox-rs/tests/helper_manifest.rs
+@@ -4,7 +4,6 @@ use anyhow::Context;
+ use anyhow::Result;
+ use std::io;
+ use std::os::windows::ffi::OsStrExt;
+-use std::path::PathBuf;
+ use windows_sys::Win32::Foundation::FreeLibrary;
+ use windows_sys::Win32::System::LibraryLoader::FindResourceW;
+ use windows_sys::Win32::System::LibraryLoader::LOAD_LIBRARY_AS_DATAFILE;
+@@ -19,10 +18,7 @@ use windows_sys::Win32::UI::WindowsAndMessaging::RT_MANIFEST;
+ /// The setup executable must expose an asInvoker manifest through the Windows resource API.
+ #[test]
+ fn setup_helper_embeds_as_invoker_manifest() -> Result<()> {
+-    let setup_executable = std::env::var_os("CARGO_BIN_EXE_codex-windows-sandbox-setup")
+-        .or_else(|| std::env::var_os("CARGO_BIN_EXE_codex_windows_sandbox_setup"))
+-        .map(PathBuf::from)
+-        .or_else(|| option_env!("CARGO_BIN_EXE_codex-windows-sandbox-setup").map(PathBuf::from))
++    let setup_executable = codex_utils_cargo_bin::cargo_bin("codex-windows-sandbox-setup")
+         .context("locate the Windows sandbox setup executable")?;
+     std::fs::metadata(&setup_executable)
+         .with_context(|| format!("find setup helper {}", setup_executable.display()))?;
