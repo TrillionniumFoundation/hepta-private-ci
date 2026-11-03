@@ -1,0 +1,120 @@
+{
+  "commit": "aaf74551dccf99f2d0d1525d02337cf804233817",
+  "run_id": 41717707968,
+  "unique_exact_git_inputs": 189,
+  "original_artifacts": [
+    {
+      "artifact_id": 13270394401,
+      "bytes": 46592,
+      "sha256": "3400116f04947e40e6f660cc601547127e6145885eae9b4aeaaa29faf6bc7515",
+      "platform": "windows",
+      "exact_git_inputs": 189,
+      "outputs_verified": 15,
+      "source_before_after_equal": true,
+      "original_test_counts": {
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test": {
+          "rust_cases_passed": 1,
+          "wrapper_executed": true
+        },
+        "//codex-rs/exec-server:exec-server-unit-tests": {
+          "rust_cases_passed": 252,
+          "wrapper_executed": true
+        },
+        "//codex-rs/file-system:file-system-unit-tests": {
+          "rust_cases_passed": 0,
+          "wrapper_executed": true
+        }
+      },
+      "native_test_executions": 253,
+      "ignored_or_filtered_cases": 0,
+      "original_clippy_targets": [
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test",
+        "//codex-rs/exec-server:exec-server-unit-tests-bin",
+        "//codex-rs/file-system:file-system-unit-tests-bin"
+      ],
+      "original_command_exits": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "artifact_id": 13271262602,
+      "bytes": 45537,
+      "sha256": "faea4bc6190ef3bdc09e09c4a865f333dd21c11645ecba4cac884c488d064f60",
+      "platform": "macos",
+      "exact_git_inputs": 189,
+      "outputs_verified": 15,
+      "source_before_after_equal": true,
+      "original_test_counts": {
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test": {
+          "rust_cases_passed": 1,
+          "wrapper_executed": true
+        },
+        "//codex-rs/exec-server:exec-server-unit-tests": {
+          "rust_cases_passed": 275,
+          "wrapper_executed": true
+        },
+        "//codex-rs/file-system:file-system-unit-tests": {
+          "rust_cases_passed": 0,
+          "wrapper_executed": true
+        }
+      },
+      "native_test_executions": 276,
+      "ignored_or_filtered_cases": 0,
+      "original_clippy_targets": [
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test",
+        "//codex-rs/exec-server:exec-server-unit-tests-bin",
+        "//codex-rs/file-system:file-system-unit-tests-bin"
+      ],
+      "original_command_exits": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "artifact_id": 13270792583,
+      "bytes": 45525,
+      "sha256": "7b637d90a318e54b10b3507e9b17b5c0416f3656bf119415fe0159d0492ad1f1",
+      "platform": "linux",
+      "exact_git_inputs": 189,
+      "outputs_verified": 17,
+      "source_before_after_equal": true,
+      "original_test_counts": {
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test": {
+          "rust_cases_passed": 1,
+          "wrapper_executed": true
+        },
+        "//codex-rs/exec-server:exec-server-unit-tests": {
+          "rust_cases_passed": 261,
+          "wrapper_executed": true
+        },
+        "//codex-rs/file-system:file-system-unit-tests": {
+          "rust_cases_passed": 0,
+          "wrapper_executed": true
+        }
+      },
+      "native_test_executions": 262,
+      "ignored_or_filtered_cases": 0,
+      "original_clippy_targets": [
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test",
+        "//codex-rs/exec-server:exec-server-unit-tests-bin",
+        "//codex-rs/file-system:file-system-unit-tests-bin"
+      ],
+      "original_command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "native_test_executions": 791,
+  "all_three_original_scopes_qualified": true,
+  "full_repository_ci_qualified": false,
+  "empty_wrapper_counted_as_positive_rust_coverage": false
+}
