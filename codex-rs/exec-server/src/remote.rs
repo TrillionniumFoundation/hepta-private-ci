@@ -1011,6 +1011,38 @@ mod tests {
                 .accept()
                 .await
                 .expect("registry request should connect");
+            // Consume this fixture's complete bounded POST before publishing
+            // response headers, so the client reaches the stalled-body phase.
+            {
+                use tokio::io::AsyncBufReadExt;
+
+                let mut request = tokio::io::BufReader::new((&mut stream).take(4096));
+                let mut headers = Vec::new();
+                while !headers.ends_with(b"\r\n\r\n") {
+                    let bytes_read = request
+                        .read_until(b'\n', &mut headers)
+                        .await
+                        .expect("registry request headers should arrive");
+                    assert_ne!(bytes_read, 0, "registry request headers must be complete");
+                }
+                let headers_text = std::str::from_utf8(&headers)
+                    .expect("registry request headers should be UTF-8");
+                let content_length = headers_text
+                    .lines()
+                    .filter_map(|line| line.split_once(':'))
+                    .find(|(name, _)| name.eq_ignore_ascii_case("content-length"))
+                    .expect("registry POST should declare its body length")
+                    .1
+                    .trim()
+                    .parse::<usize>()
+                    .expect("registry POST content length should be valid");
+                assert!(content_length <= 4096 - headers.len());
+                let mut body = vec![0_u8; content_length];
+                request
+                    .read_exact(&mut body)
+                    .await
+                    .expect("registry POST body should arrive before the response");
+            }
             stream
                 .write_all(
                     b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 256\r\n\r\n{",
@@ -1035,10 +1067,13 @@ mod tests {
             Err(error) => error,
         };
 
-        assert!(matches!(
-            error,
-            ExecServerError::EnvironmentRegistryRequest(error) if error.is_timeout()
-        ));
+        assert!(
+            matches!(
+                &error,
+                ExecServerError::EnvironmentRegistryRequest(error) if error.is_timeout()
+            ),
+            "stalled response body must preserve its timeout classification: {error:?}"
+        );
     }
 
     #[tokio::test]

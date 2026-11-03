@@ -1,0 +1,68 @@
+{
+  "bytes": 24282,
+  "sha256": "3540d9475aab1924598075cbd9291b6f5931111cd50f04a720ea8fa47b117c0b",
+  "members": [
+    {
+      "path": "independent/bounded-post-review.json",
+      "bytes": 3591,
+      "sha256": "43e6bb1caa9c84bcc36251e91588f015fa7ecd6c7b9be6ab0ba376d1be97c3a0"
+    },
+    {
+      "path": "independent/macos-fixture-review.json",
+      "bytes": 2644,
+      "sha256": "6dbe6289821687450bbe2aa6c565b27d3056891a9e126c34e7d28b52a4a8222d"
+    },
+    {
+      "path": "independent/single-read-review.json",
+      "bytes": 2225,
+      "sha256": "15bc3a3948d5f0faf9cadf2b548903cf7f945a6f94e7a0c2643488c706c013ec"
+    },
+    {
+      "path": "local/bounded-request-stalled-body.json",
+      "bytes": 2024,
+      "sha256": "8d36274cc75e1c3c979370768a146f2b06fc38cad9e29f404495460849faa625"
+    },
+    {
+      "path": "local/bounded-request-stalled-body.log",
+      "bytes": 12641,
+      "sha256": "d192de78f50d151b6fa25279014899ff6f2c396a1c2f999f4e7e7b763458b3ea"
+    },
+    {
+      "path": "local/candidate-stalled-body.json",
+      "bytes": 1518,
+      "sha256": "aaa3da81fe5c5c654139b6e21022b01b2feccdc31f7f998b5f7a463eb403ff3a"
+    },
+    {
+      "path": "local/candidate-stalled-body.log",
+      "bytes": 36915,
+      "sha256": "82fde5f2498c2a0dfb175a4f738c7e6899d3147bf4e955dafa85c049920adba1"
+    },
+    {
+      "path": "local/fixture-followup-fmt.json",
+      "bytes": 1836,
+      "sha256": "e825195cdb2174d7c5629f39ae87d1ab88224109d8853aa67b6a770a615e5287"
+    },
+    {
+      "path": "local/fixture-followup-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "local/fixture-followup-scoped-fix.json",
+      "bytes": 1890,
+      "sha256": "08d48a0152319bde89a553ba94ae523eb9ff9f5f0175257b6181f82714e8a10b"
+    },
+    {
+      "path": "local/fixture-followup-scoped-fix.log",
+      "bytes": 23345,
+      "sha256": "59b413a1ef08a9958528fab36e6489c2ffe23ac33793b81fc2e1c5e6039d54bf"
+    },
+    {
+      "path": "local/run_local.py",
+      "bytes": 2375,
+      "sha256": "e5bc1e2b61cf2c30736f5738235e133bc960de72b0cc2f80dca3785bc13d29a8"
+    }
+  ],
+  "scope": "Selected local regression and read-only review; original full native qualification remains required",
+  "review_followup": "After bounded-post review, runner XML validation additionally rejects skipped attribute/elements; reviewed Rust source unchanged."
+}

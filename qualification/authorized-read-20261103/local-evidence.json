@@ -1,0 +1,88 @@
+{
+  "base_commit": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "scope": "Actual local Linux original RPC comparison, complete logs and original Windows negative identity; hosted three-platform qualification pending.",
+  "archive": {
+    "path": "local-evidence.zip",
+    "bytes": 26998,
+    "sha256": "6b0bf5a97a5b68a251fd869832df7b218ec9c8990c89d75c33756343982026a2"
+  },
+  "members": {
+    "baseline-original-rpc.log": {
+      "bytes": 18900,
+      "sha256": "586874f15409c0c2704620e2e3c29c2ae3d847748b27b0d37b23b83ee2a52f8a"
+    },
+    "baseline-receipt.json": {
+      "bytes": 1433,
+      "sha256": "bdb94b21f3c83b0974b443eda0031a71895d2b395a553e6d16c9215fec303cd8"
+    },
+    "baseline-rpc.junit.xml": {
+      "bytes": 708,
+      "sha256": "1adf395d4e810d0562cc658d255f2f8f1527aa4d5f515a45c5a02498c20f9eca"
+    },
+    "baseline-start.json": {
+      "bytes": 961,
+      "sha256": "1d9c085082ef1f3d75f61507a31f016a347a733a5d00708c6e6b6e8f6bf383cd"
+    },
+    "baseline-with-native-prerequisite.json": {
+      "bytes": 1476,
+      "sha256": "1a26db83347be11a34176a5dad13b04f9e6ef11b0e7199a09a779e69f0021db8"
+    },
+    "baseline-with-native-prerequisite.log": {
+      "bytes": 31649,
+      "sha256": "29291bb570d915a2b44828f539a14ec1caab9cf3f034761595caef66e2f67119"
+    },
+    "candidate-original-rpc.json": {
+      "bytes": 1475,
+      "sha256": "91c6508bafd6f2435a4a3e61dc184e918f679e86cd4d6eb3cf36ac8ed69892df"
+    },
+    "candidate-original-rpc.log": {
+      "bytes": 12624,
+      "sha256": "fe652f2e8e117b6b8b5a0eace7e2e3f233cabcac3de9bdc7359b94ff0e3f0224"
+    },
+    "candidate-rpc.junit.xml": {
+      "bytes": 552,
+      "sha256": "d24d39932beccfe8196266e6b62098d5b837ddf3490942a8fb690812b614258b"
+    },
+    "independent-review.json": {
+      "bytes": 1486,
+      "sha256": "f8239ad7b771187065e560e444734b6ed96f575dbddce61c5537ed4cefb690ae"
+    },
+    "local-socket-prerequisites.json": {
+      "bytes": 174,
+      "sha256": "903a9f804ee66d380c8187d625452953657c372446ee148e1c44d5c56c5b052b"
+    },
+    "original-format.json": {
+      "bytes": 1330,
+      "sha256": "bcf2887145bcf03082526f2a6664b044e85c20025c6b2c06c91e5b33a6f61c74"
+    },
+    "original-format.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original-windows-rpc-excerpt.txt": {
+      "bytes": 5727,
+      "sha256": "7355ba548d074c331d1514be00f8809d96049d17c099c144fb4b81a26a3e44e0"
+    },
+    "run_local.py": {
+      "bytes": 2266,
+      "sha256": "01af5e72357bfa923d595f6091173223038cc587205e711b295a066c26298185"
+    },
+    "scoped-clippy.json": {
+      "bytes": 1383,
+      "sha256": "595029483846071a4d5ed525b7fff1f4484b3fa4665592136393aa21fd43717d"
+    },
+    "scoped-clippy.log": {
+      "bytes": 23345,
+      "sha256": "704ce5fdb6a9f9bbc5f97f5983cf01ab655cb256fe51e6e09ad9d8bca9196440"
+    }
+  },
+  "original_windows": {
+    "run": 41685992806,
+    "job": 126096184676,
+    "immutable_commit": "84424d4a35153aa5ab5b1cc778e2e80be6d411e4",
+    "gzip_path": "qualification/v8-allocator-20261103/windows-shard-3-original.log.gz",
+    "gzip_sha256": "e0179e59d4b3db1d33aa1ad6e609a64c006e6d650665671542cf3484b7b6991f",
+    "raw_bytes": 2118755,
+    "raw_sha256": "a3817ccb5611322925b5f9d7eab434faaba1e3434d5ac9962ee27ca346e1b402"
+  }
+}
