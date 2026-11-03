@@ -1,0 +1,299 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4724,
+  "candidate": "80de936f9b738179b87aee0a4d7066e6ca501c8e",
+  "candidate_tree": "c17c3eafc00d3f71efad8e3947903ae19fb1093f",
+  "actual_checkout": "ba74777208c927c653c55966420bd2d435d88e51",
+  "actual_tree": "c17c3eafc00d3f71efad8e3947903ae19fb1093f",
+  "actual_parents": [
+    "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+    "80de936f9b738179b87aee0a4d7066e6ca501c8e"
+  ],
+  "run_id": 41689782827,
+  "job": {
+    "id": 126105011078,
+    "name": "metadata",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 41689782827,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Set up Python",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Fetch exact pull request comparison inputs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Check exact history and original canary selector controls",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Resolve exact v8 crate version",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Detect V8 canary changes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Post Set up Python",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17
+      }
+    ]
+  },
+  "original_failure_run": 41685992750,
+  "original_failure_job": {
+    "id": 126091750418,
+    "name": "metadata",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_id": 41685992750,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Set up Python",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Fetch exact pull request comparison inputs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Resolve exact v8 crate version",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Detect V8 canary changes",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 6
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Post Set up Python",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 13
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15
+      }
+    ]
+  },
+  "unchanged_metadata_timeout_minutes": 30,
+  "hosted_test_results": {
+    "history": 11,
+    "v8_selector": 7,
+    "failed": 0,
+    "ignored": 0
+  },
+  "canary_required": true,
+  "windows_source_required": true,
+  "following_build_jobs": [
+    {
+      "id": 126110917401,
+      "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917411,
+      "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917699,
+      "name": "Build release x86_64-apple-darwin",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917702,
+      "name": "Build ptrcomp-sandbox x86_64-apple-darwin",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917723,
+      "name": "Build release aarch64-unknown-linux-musl",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917733,
+      "name": "Build ptrcomp-sandbox aarch64-unknown-linux-gnu",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917734,
+      "name": "Build ptrcomp-sandbox x86_64-unknown-linux-gnu",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917748,
+      "name": "Build ptrcomp-sandbox aarch64-unknown-linux-musl",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917770,
+      "name": "Build release x86_64-unknown-linux-gnu",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917813,
+      "name": "Build release x86_64-unknown-linux-musl",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917844,
+      "name": "Build ptrcomp-sandbox x86_64-unknown-linux-musl",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917854,
+      "name": "Build release aarch64-apple-darwin",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110917943,
+      "name": "Build release aarch64-unknown-linux-gnu",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    },
+    {
+      "id": 126110918136,
+      "name": "Build ptrcomp-sandbox aarch64-apple-darwin",
+      "status": "queued",
+      "conclusion": null,
+      "run_id": 41689782827,
+      "logs_url": null,
+      "steps": null
+    }
+  ],
+  "scope": "Real original V8 metadata succeeded on the prospective merge with the exact candidate tree; build jobs remain separate and were queued at this observation."
+}
