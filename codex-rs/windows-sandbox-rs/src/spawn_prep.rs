@@ -343,6 +343,14 @@ pub(crate) fn apply_legacy_session_acl_rules(
                     .with_context(|| format!("apply legacy write ACL to {}", p.display()))?;
             }
         }
+        // Mandatory write carveouts are installed before read grants. Every
+        // ACL step must still succeed before any restricted child is started.
+        for p in &deny {
+            for root_sid in deny_root_capabilities_for_path(p, acl_sids.write_root_sids) {
+                add_deny_write_ace(p, root_sid.sid.as_ptr())
+                    .with_context(|| format!("apply legacy deny-write ACL to {}", p.display()))?;
+            }
+        }
         for root_sid in acl_sids.read_root_sids {
             ensure_allow_mask_aces(
                 &root_sid.root,
@@ -355,12 +363,6 @@ pub(crate) fn apply_legacy_session_acl_rules(
                     root_sid.root.display()
                 )
             })?;
-        }
-        for p in &deny {
-            for root_sid in deny_root_capabilities_for_path(p, acl_sids.write_root_sids) {
-                add_deny_write_ace(p, root_sid.sid.as_ptr())
-                    .with_context(|| format!("apply legacy deny-write ACL to {}", p.display()))?;
-            }
         }
         if !additional_deny_read_paths.is_empty() {
             if let Some(readonly_sid) = acl_sids.readonly_sid {

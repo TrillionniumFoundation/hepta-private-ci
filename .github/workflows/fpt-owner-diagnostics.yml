@@ -96,6 +96,43 @@ jobs:
             //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests \
             2>&1 | tee "$output/windows-deletion.log"
 
+      - name: Preserve sandbox results before the Core lifecycle matrix
+        if: ${{ always() && !cancelled() && steps.prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-sandbox-boundaries-${{ github.sha }}
+          path: ${{ runner.temp }}/fpt-owner-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Isolate the original archived and paginated resume regressions
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/fpt-owner-diagnostics"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_sharding_strategy=disabled --test_output=all \
+            --test_arg=agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context \
+            --test_arg=agent::control::tests::resume_agent_from_rollout_reads_archived_rollout_path \
+            --test_arg=--exact --test_arg=--nocapture -- \
+            //codex-rs/core:core-unit-tests \
+            2>&1 | tee "$output/core-resume.log"
+
+      - name: Preserve the original resume results before full Core
+        if: ${{ always() && !cancelled() && steps.prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-core-resume-${{ github.sha }}
+          path: ${{ runner.temp }}/fpt-owner-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Isolate the sanitized parent-history fork lifecycle
         if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
         env:
@@ -170,6 +207,7 @@ jobs:
           from pathlib import Path
           import shutil
           import subprocess
+          import sys
 
           output = Path(os.environ["RUNNER_TEMP"]) / "fpt-owner-diagnostics"
           result = subprocess.run(
@@ -200,6 +238,8 @@ jobs:
                       "bytes": len(data),
                       "sha256": hashlib.sha256(data).hexdigest(),
                   })
+          if not records:
+              raise RuntimeError("no completed native test logs found")
           (output / "native-test-logs.json").write_text(
               json.dumps(records, indent=2) + "\n", encoding="utf-8",
           )

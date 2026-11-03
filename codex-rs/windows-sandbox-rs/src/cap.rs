@@ -98,22 +98,38 @@ fn persist_caps_before_replace(
     Ok(())
 }
 
+fn native_sid_identity(value: &str) -> Result<Vec<u8>> {
+    let sid = crate::token::LocalSid::from_string(value)?;
+    // ConvertStringSidToSidW accepts SDDL aliases as well as numeric strings.
+    // Persisted namespace separation therefore compares actual native SIDs.
+    let size = unsafe { windows_sys::Win32::Security::GetLengthSid(sid.as_ptr()) };
+    anyhow::ensure!(
+        (8..=68).contains(&size),
+        "invalid native capability SID size"
+    );
+    let mut bytes = vec![0; size as usize];
+    let copied = unsafe {
+        windows_sys::Win32::Security::CopySid(size, bytes.as_mut_ptr().cast(), sid.as_ptr())
+    };
+    if copied == 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    Ok(bytes)
+}
+
 fn validate_caps(caps: &CapSids) -> Result<()> {
     let writes = std::iter::once(caps.workspace.as_str())
         .chain(std::iter::once(caps.readonly.as_str()))
         .chain(caps.workspace_by_cwd.values().map(String::as_str))
         .chain(caps.writable_root_by_path.values().map(String::as_str))
-        .collect::<std::collections::HashSet<_>>();
+        .map(native_sid_identity)
+        .collect::<Result<std::collections::HashSet<_>>>()
+        .context("invalid persisted write capability SID")?;
     let mut reads = std::collections::HashSet::new();
-    for sid in writes.iter().copied() {
-        crate::token::LocalSid::from_string(sid)
-            .context("invalid persisted write capability SID")?;
-    }
     for sid in caps.readable_root_by_path.values() {
-        crate::token::LocalSid::from_string(sid)
-            .context("invalid persisted read capability SID")?;
+        let identity = native_sid_identity(sid).context("invalid persisted read capability SID")?;
         anyhow::ensure!(
-            !writes.contains(sid.as_str()) && reads.insert(sid.as_str()),
+            !writes.contains(&identity) && reads.insert(identity),
             "persisted read capability aliases another capability namespace"
         );
     }
@@ -418,6 +434,39 @@ mod tests {
     }
 
     #[test]
+    fn native_sid_aliases_are_refused_across_capability_namespaces() -> anyhow::Result<()> {
+        let numeric = "S-1-5-32-544";
+        let alias = "BA";
+        let numeric_sid = crate::token::LocalSid::from_string(numeric)?;
+        let alias_sid = crate::token::LocalSid::from_string(alias)?;
+        assert_ne!(
+            unsafe {
+                windows_sys::Win32::Security::EqualSid(numeric_sid.as_ptr(), alias_sid.as_ptr())
+            },
+            0,
+            "the regression must use equal native SIDs with different strings"
+        );
+        for cross_write_namespace in [true, false] {
+            let temp = tempfile::tempdir()?;
+            let path = super::cap_sid_file(temp.path());
+            let mut caps = load_or_create_cap_sids(temp.path())?;
+            if cross_write_namespace {
+                caps.workspace = numeric.to_owned();
+            } else {
+                caps.readable_root_by_path
+                    .insert("first-read-root".to_owned(), numeric.to_owned());
+            }
+            caps.readable_root_by_path
+                .insert("aliased-read-root".to_owned(), alias.to_owned());
+            let corrupt = serde_json::to_vec(&caps)?;
+            std::fs::write(&path, &corrupt)?;
+            assert!(load_or_create_cap_sids(temp.path()).is_err());
+            assert_eq!(std::fs::read(&path)?, corrupt);
+        }
+        Ok(())
+    }
+
+    #[test]
     fn interrupted_capability_publication_keeps_prior_map_and_releases_lock() -> anyhow::Result<()>
     {
         const CHILD_ROOT: &str = "HEPTA_CAP_MAP_INTERRUPTION_CHILD_ROOT";
@@ -433,10 +482,15 @@ mod tests {
                 &super::cap_sid_file(&root),
                 &caps,
                 |staged| {
-                    std::fs::write(
-                        root.join("stage-synced"),
+                    let mut ready = tempfile::Builder::new()
+                        .prefix(".cap-ready-")
+                        .tempfile_in(&root)?;
+                    std::io::Write::write_all(
+                        ready.as_file_mut(),
                         staged.to_string_lossy().as_bytes(),
                     )?;
+                    ready.as_file().sync_all()?;
+                    ready.persist(root.join("stage-synced"))?;
                     loop {
                         std::thread::park();
                     }
