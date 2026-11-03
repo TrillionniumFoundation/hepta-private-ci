@@ -479,6 +479,13 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     const RACE_MEMORY: &str = "verified nectarine orchard final-use marker";
     const CORRECTION_MEMORY: &str = "verified kumquat orchard final-use marker";
     const CORRECTED_MEMORY: &str = "corrected kumquat orchard final-use marker";
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)
+    )) {
+        return Ok(());
+    }
 
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![

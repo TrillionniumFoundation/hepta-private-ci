@@ -10,6 +10,14 @@ use std::sync::Arc;
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant() -> Result<()>
 {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant)
+    )) {
+        return Ok(());
+    }
+
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-pq-final-use"),

@@ -288,6 +288,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 #[cfg(test)]
+mod test_process;
+
+#[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
 
