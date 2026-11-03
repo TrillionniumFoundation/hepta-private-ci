@@ -1,0 +1,58 @@
+{
+  "binding": {
+    "complete_inline_paths": 178,
+    "cost_scope_note": {
+      "bytes": 1223,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_terminal_20261030T1418/COST_SCOPE_NOTE.json",
+      "sha256": "ef85a6ee32ed84d54cdab5788776bcf5907ada279316fd3882cef43ebe33e858"
+    },
+    "execution_episode": "execution05_backpressure_20261030",
+    "explicit_later_sidecars_not_self_contained": true,
+    "external_references": {
+      "bytes": 18931,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_terminal_20261030T1418/EXTERNAL_REFERENCES.json",
+      "sha256": "8bad6bad71fa5455b763273fd0de6f183f8325728d6fc8bfe1fcd2738e00ca55"
+    },
+    "full_failure_actual_remote_closure": {
+      "bytes": 9886,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/REMOTE_BYTES_VERIFIED.json",
+      "sha256": "6be3c974c12815cab3740b9c7dfb55a7f3819f2002fc52f31cfb97615c1f63c8"
+    },
+    "full_failure_local_verification": {
+      "bytes": 4234,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/VERIFIED.json",
+      "sha256": "f625cd43f207b47e480ada4ab97c17f0904c4baa98330a8dde07884a5cc24666"
+    },
+    "full_failure_manifest": {
+      "bytes": 863314,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/MANIFEST.json",
+      "sha256": "d80629e0a41c3b08313c8c2d07a08caf3a2f82622529ef8ea0b091316694bf62"
+    },
+    "inline_logical_bytes": 3930884,
+    "label": "terminal_metadata",
+    "public_C4_actual_readback": {
+      "bytes": 1532,
+      "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/EXECUTION05_FAILURE_PUBLICATION_VERIFIED.json",
+      "sha256": "b844cc8f2574ca98116e404288ec6704a817589c61b5a598180de2618082223d"
+    },
+    "published_evidence_commit": "d030ad104ad823aed7ac1849f2a7a50e61c0c601",
+    "remote_operations_here": 0,
+    "schema": "hepta.execution05.terminal-metadata-binding.1",
+    "scientific_completion_claim": false,
+    "scientific_workers_started_here": 0,
+    "selection": {
+      "bytes": 92474,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_terminal_20261030T1418/SELECTION.json",
+      "sha256": "a1729200afa045b01c13dc733253b1c10782f1e34a33a65fcda6cc5c38abf4da"
+    },
+    "source_commit": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+    "terminal_phase": "FAILED"
+  },
+  "cpu_seconds": 0.07889113199999986,
+  "logical_bytes_processed": 3930884,
+  "measurement_scope": "archive construction, compressed hashes, independent stream verification and manifest writes; excludes this receipt write",
+  "nested_in_supervisor_self_cpu_do_not_add_again": true,
+  "physical_archive_bytes": 453972,
+  "schema": "hepta.fullstudy.durable-archive-cost.1",
+  "wall_seconds": 0.0838427300004696
+}
