@@ -21,7 +21,6 @@ jobs:
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
       RUSTUP_TOOLCHAIN: "1.95.0"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/namespace-native-target
     defaults:
       run:
         shell: bash
@@ -30,6 +29,11 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Resolve the build directory on the allocated runner
+        shell: pwsh
+        run: |
+          $target = Join-Path $env:RUNNER_TEMP 'namespace-native-target'
+          "CARGO_TARGET_DIR=$target" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: "1.95.0"
