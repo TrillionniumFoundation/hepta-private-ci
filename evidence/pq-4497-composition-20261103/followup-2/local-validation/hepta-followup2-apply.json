@@ -1,0 +1,35 @@
+{
+  "schema": "hepta-followup2-reviewed-three-path-application-v1",
+  "base_commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "base_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+  "applied_at_utc": "2026-11-03T09:32:14.900625+00:00",
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "baseline_sha256": "e9934646984ebaf4eb26880d3d5ea7fca445ff11e0cb05a239a8a02f2017fe6d",
+      "proposed_sha256": "4ab781703229cfd6c9de8e2047b9e96ce88e24b7d03a1d5a745b80c07b15dca5",
+      "local_path": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-bazel-source-closure/overlay/codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "added_lines": 2,
+      "deleted_lines": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "baseline_sha256": "f03e78fd809f3207e4516e271685127d908fcb15ed76c09d08ca67baf3b7d139",
+      "proposed_sha256": "1c9e8b8c98ed4a31469bf437bd0b676e67d866398b6e2a4c94d8dc17e68e20eb",
+      "local_path": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-bazel-source-closure/overlay/codex-rs/hepta-agentd/BUILD.bazel",
+      "added_lines": 2,
+      "deleted_lines": 0
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+      "baseline_sha256": "113ef8f22ba82482fa507ed787782fa257346b7d514d4bbd0e45e5cb5d15810b",
+      "proposed_sha256": "92df0882cdd16274e374c8056181503338118958162362c2e6e4f61a4fa8fba3",
+      "local_path": "/workspace/scratch/df0a4a720ed8/hepta-pq/effect-good-diagnostic/proposed/codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs"
+    }
+  ],
+  "source_diff_exactly_three_paths": true,
+  "prior_frozen_manifest_and173_blobs_unchanged": true,
+  "rust_compilation_or_tests_executed": false,
+  "provider_effect_133_of134_failure_fixed": false,
+  "remaining_action": "Original required formatter, static path closure and independent followup-2 evidence/manifest; publication waits current CI evidence."
+}

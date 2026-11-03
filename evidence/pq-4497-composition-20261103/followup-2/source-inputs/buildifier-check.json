@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-bazel-source-closure/buildifier-v8.5.1",
+    "-mode=check",
+    "-lint=off",
+    "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-bazel-source-closure/overlay/codex-rs/hepta-infer-worker-host/BUILD.bazel",
+    "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-bazel-source-closure/overlay/codex-rs/hepta-agentd/BUILD.bazel"
+  ],
+  "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source",
+  "exit_code": 0,
+  "elapsed_seconds": 0.016,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "binary_sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+  "same_binary_and_flags_as_repository_formatter_component": true,
+  "dotslash_launcher_used": false,
+  "reason": "Execute the exact hash-pinned binary directly on the two independent overlay inputs; no Rust/Bazel process or worktree rewrite.",
+  "source_worktree_unchanged": true
+}

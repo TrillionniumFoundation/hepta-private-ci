@@ -16,6 +16,8 @@ codex_rust_crate(
         exclude = ["src/bin/**/*.rs"],
     ) + [
         "//codex-rs/hepta-agentd:src/cognitive_process_wire.rs",
+        "//codex-rs/hepta-agentd:src/cognitive_process_learning_auth.rs",
+        "//codex-rs/hepta-agentd:src/cognitive_process_learning_auth_tests.rs",
         "//codex-rs/hepta-agentd:src/cognitive_process_evidence.rs",
         "//codex-rs/hepta-agentd:src/cognitive_process_evaluation.rs",
         "//codex-rs/hepta-agentd:src/cognitive_process_materials.rs",

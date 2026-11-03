@@ -364,7 +364,7 @@ async fn taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurr
         ProviderEffectAckSource::StatusLookup,
     );
     let (good, bad) = tokio::join!(recover(&started, correct), recover(&started, substituted));
-    assert!(good.is_ok());
+    assert!(good.is_ok(), "correct receipt recovery failed: {good:?}");
     assert!(bad.is_err());
     assert_eq!(
         started
