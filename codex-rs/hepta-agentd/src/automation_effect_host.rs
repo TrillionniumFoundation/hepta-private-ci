@@ -910,7 +910,8 @@ mod tests {
             "provider/fixture-v1",
             &intent.run_id,
             &intent.step_id,
-        )?;
+        )
+        .map_err(|error| anyhow::anyhow!("provider fixture binding: {error:?}"))?;
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
         let ack = serde_json::json!({
             "effect_key": provider_key.as_str(),
@@ -940,7 +941,9 @@ mod tests {
             contract_id: "agentd-product-effect-contract".to_string(),
             attestation: None,
         };
-        let contract_digest = unsigned_provider_config.contract_sha256()?;
+        let contract_digest = unsigned_provider_config
+            .contract_sha256()
+            .map_err(anyhow::Error::msg)?;
         let statement = HttpProviderEffectContractAttestation::statement_for(
             "agentd-product-effect-contract",
             &contract_digest,
