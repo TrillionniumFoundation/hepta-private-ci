@@ -67,6 +67,9 @@ pub struct ChatWorkspace {
     draft_principal: Option<String>,
     parked_drafts: BTreeMap<Option<String>, DraftPartition>,
     presentation_epoch: u64,
+    objective_port: Option<Box<dyn crate::objective_ui::ObjectiveUiPort>>,
+    objective_binding: Option<crate::objective_ui::ObjectiveUiBinding>,
+    objective_observation: Option<crate::objective_ui::ObjectiveUiObservation>,
 }
 
 impl Default for ChatWorkspace {
@@ -89,6 +92,9 @@ impl Default for ChatWorkspace {
             draft_principal: None,
             parked_drafts: BTreeMap::new(),
             presentation_epoch: 0,
+            objective_port: None,
+            objective_binding: None,
+            objective_observation: None,
         };
         value.drafts.insert(
             0,
@@ -106,6 +112,31 @@ impl ChatWorkspace {
     /// Both host renderers consume this real adapter availability. A prepared
     /// envelope still requires a configured independent host to dispatch it.
     pub fn owner_status(&self, now_ms: u64) -> &'static str {
+        if let Some(observed) = &self.objective_observation {
+            if observed.binding.room == self.active
+                && observed.binding.presentation_epoch == self.presentation_epoch
+            {
+                if self.owner.current_session(now_ms).is_err() {
+                    return "The original owner session is no longer current.";
+                }
+                if observed.phase == crate::objective_ui::ObjectiveUiPhase::Unknown {
+                    use crate::objective_ui::ObjectiveUiPublication;
+                    match observed.retained_publication {
+                        Some(ObjectiveUiPublication::Compiled) => {
+                            return "The request was admitted; its current runtime outcome is unknown.";
+                        }
+                        Some(ObjectiveUiPublication::Abstained) => {
+                            return "The prior refusal is retained; the current owner observation is unavailable.";
+                        }
+                        Some(ObjectiveUiPublication::Conflict) => {
+                            return "The prior conflict is retained; the current owner observation is unavailable.";
+                        }
+                        None => {}
+                    }
+                }
+                return observed.phase.label();
+            }
+        }
         use crate::chat_owner::ChatCapability;
         use crate::chat_owner::ChatOwnerError;
         use crate::chat_owner::DeliveryState;
@@ -152,6 +183,7 @@ impl ChatWorkspace {
         session: crate::chat_owner::OwnerSession,
         now_ms: u64,
     ) -> Result<(), crate::chat_owner::ChatOwnerError> {
+        self.close_objective_owner();
         let principal = session.scope.principal_id.clone();
         self.authorized.clear();
         self.timelines.clear();
@@ -173,6 +205,7 @@ impl ChatWorkspace {
         self.presentation_epoch
     }
     pub fn disconnect_owner(&mut self) {
+        self.close_objective_owner();
         self.presentation_epoch = self.presentation_epoch.saturating_add(1);
         self.composing = false;
         self.authorized.clear();
@@ -440,9 +473,16 @@ impl ChatWorkspace {
         }
         self.edit(String::new())
     }
-    /// No authenticated chat backend is composed by either current host.
+    /// Only an explicitly installed original owner can queue a request.
+    /// A local-only workspace retains its original refusal behavior.
     /// This method never queues an operation, clears a draft or creates a message.
     pub fn request_send(&mut self) -> bool {
+        if !self.composing && self.objective_port.is_some() {
+            if self.draft().status == ComposeStatus::InputLimit {
+                return false;
+            }
+            return self.request_objective_command(crate::objective_ui::ObjectiveUiCommand::Submit);
+        }
         if !self.composing {
             self.drafts
                 .get_mut(&self.active)
@@ -450,6 +490,145 @@ impl ChatWorkspace {
                 .status = ComposeStatus::TransportUnavailable;
         }
         false
+    }
+
+    /// Install one host-owned port only into its exact existing session and draft.
+    /// The port already contains the independent production capability; this
+    /// presentation check creates no authority and cannot prepare an envelope.
+    pub fn install_objective_owner(
+        &mut self,
+        mut port: Box<dyn crate::objective_ui::ObjectiveUiPort>,
+        now_ms: u64,
+    ) -> Result<(), crate::objective_ui::ObjectiveUiError> {
+        use crate::objective_ui::ObjectiveUiError as E;
+        let binding = port.binding().clone();
+        let session = match self.owner.current_session(now_ms) {
+            Ok(session) => session,
+            Err(_) => {
+                port.close();
+                return Err(E::Unavailable);
+            }
+        };
+        let valid = binding.valid()
+            && binding.owner == session.scope
+            && binding.owner_expires_at_ms == session.expires_at_ms
+            && binding.presentation_epoch == self.presentation_epoch
+            && self
+                .drafts
+                .get(&binding.room)
+                .is_some_and(|draft| binding.matches_draft(&draft.text));
+        if !valid {
+            port.close();
+            return Err(E::Binding);
+        }
+        self.close_objective_owner();
+        if let Some(draft) = self.drafts.get_mut(&binding.room) {
+            if draft.status == ComposeStatus::TransportUnavailable {
+                draft.status = ComposeStatus::LocalDraft;
+            }
+        }
+        self.objective_binding = Some(binding);
+        self.objective_port = Some(port);
+        self.poll_objective_owner();
+        Ok(())
+    }
+
+    pub fn close_objective_owner(&mut self) {
+        if let Some(mut port) = self.objective_port.take() {
+            port.close();
+        }
+        self.objective_observation = None;
+        self.objective_binding = None;
+    }
+
+    /// Consume already received data outside Draw; never block the UI thread.
+    pub fn poll_objective_owner(&mut self) -> bool {
+        let Some(port) = self.objective_port.as_mut() else {
+            return false;
+        };
+        let Some(observed) = port.poll() else {
+            return false;
+        };
+        if self.objective_binding.as_ref() != Some(&observed.binding)
+            || observed.binding != *port.binding()
+            || observed.sequence == 0
+            || observed.binding.presentation_epoch != self.presentation_epoch
+            || self
+                .objective_observation
+                .as_ref()
+                .is_some_and(|old| observed.sequence <= old.sequence)
+        {
+            return false;
+        }
+        self.objective_observation = Some(observed);
+        true
+    }
+
+    pub fn objective_installed(&self) -> bool {
+        self.objective_port.is_some()
+            && self.objective_binding.as_ref().is_some_and(|binding| {
+                binding.room == self.active && binding.presentation_epoch == self.presentation_epoch
+            })
+    }
+
+    pub fn objective_can_submit(&self) -> bool {
+        self.objective_observation.as_ref().is_some_and(|value| {
+            value.binding.room == self.active
+                && value.binding.presentation_epoch == self.presentation_epoch
+                && value.phase == crate::objective_ui::ObjectiveUiPhase::Prepared
+                && value.binding.matches_draft(&self.draft().text)
+                && !self.composing
+        })
+    }
+
+    pub fn objective_can_cancel(&self) -> bool {
+        self.objective_observation.as_ref().is_some_and(|value| {
+            value.binding.room == self.active
+                && value.binding.presentation_epoch == self.presentation_epoch
+                && value.can_cancel
+        })
+    }
+
+    pub fn objective_can_refresh(&self) -> bool {
+        self.objective_observation.as_ref().is_some_and(|value| {
+            value.binding.room == self.active
+                && value.binding.presentation_epoch == self.presentation_epoch
+                && value.can_refresh
+        })
+    }
+
+    pub fn request_objective_cancel(&mut self) -> bool {
+        self.request_objective_command(crate::objective_ui::ObjectiveUiCommand::Cancel)
+    }
+
+    pub fn request_objective_refresh(&mut self) -> bool {
+        self.request_objective_command(crate::objective_ui::ObjectiveUiCommand::Refresh)
+    }
+
+    fn request_objective_command(
+        &mut self,
+        command: crate::objective_ui::ObjectiveUiCommand,
+    ) -> bool {
+        let draft = self.draft().text.clone();
+        let Some(port) = self.objective_port.as_mut() else {
+            return false;
+        };
+        match port.request(command, self.presentation_epoch, self.active, &draft) {
+            Ok(_) => {
+                self.presentation_note = None;
+                if let Some(draft) = self.drafts.get_mut(&self.active) {
+                    if draft.status == ComposeStatus::TransportUnavailable {
+                        draft.status = ComposeStatus::LocalDraft;
+                    }
+                }
+                self.poll_objective_owner();
+                true
+            }
+            Err(error) => {
+                self.presentation_note = Some(error.label().to_string());
+                false
+            }
+        }
     }
 }
 
@@ -467,3 +646,9 @@ mod partition_tests;
 
 #[cfg(feature = "ui-fixtures")]
 pub mod fixtures;
+
+impl Drop for ChatWorkspace {
+    fn drop(&mut self) {
+        self.close_objective_owner();
+    }
+}

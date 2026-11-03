@@ -60,17 +60,19 @@ impl_partial_eq!(UserSigningPubkey);
 #[cfg(test)]
 mod tests {
     use matrix_sdk_test::async_test;
-    use ruma::{DeviceKeyId, encryption::KeyUsage, user_id};
+    use ruma::DeviceKeyId;
+    use ruma::encryption::KeyUsage;
+    use ruma::user_id;
     use serde_json::json;
     use vodozemac::Ed25519Signature;
 
-    use crate::{
-        identities::{
-            manager::testing::{own_key_query, own_key_query_with_user_id},
-            user::testing::get_other_own_identity,
-        },
-        types::{CrossSigningKey, MasterPubkey, SelfSigningPubkey, UserSigningPubkey},
-    };
+    use crate::identities::manager::testing::own_key_query;
+    use crate::identities::manager::testing::own_key_query_with_user_id;
+    use crate::identities::user::testing::get_other_own_identity;
+    use crate::types::CrossSigningKey;
+    use crate::types::MasterPubkey;
+    use crate::types::SelfSigningPubkey;
+    use crate::types::UserSigningPubkey;
 
     #[test]
     fn serialization() {
@@ -147,7 +149,17 @@ mod tests {
         // The last argument is deliberately some usage which is *not* correct for the
         // type.
         test_partial_eq!(MasterPubkey, master_key, master_keys, KeyUsage::SelfSigning);
-        test_partial_eq!(SelfSigningPubkey, self_signing_key, self_signing_keys, KeyUsage::Master);
-        test_partial_eq!(UserSigningPubkey, user_signing_key, user_signing_keys, KeyUsage::Master);
+        test_partial_eq!(
+            SelfSigningPubkey,
+            self_signing_key,
+            self_signing_keys,
+            KeyUsage::Master
+        );
+        test_partial_eq!(
+            UserSigningPubkey,
+            user_signing_key,
+            user_signing_keys,
+            KeyUsage::Master
+        );
     }
 }

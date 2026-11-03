@@ -12,37 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use matrix_sdk_common::locks::RwLock as StdRwLock;
-use ruma::{
-    DeviceId, EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId, RoomId,
-    SecondsSinceUnixEpoch, TransactionId, UInt, UserId,
-    events::{
-        AnyToDeviceEvent, AnyToDeviceEventContent, ToDeviceEvent,
-        key::verification::VerificationMethod,
-    },
-    serde::Raw,
-    uint,
-};
+use ruma::DeviceId;
+use ruma::EventId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::SecondsSinceUnixEpoch;
+use ruma::TransactionId;
+use ruma::UInt;
+use ruma::UserId;
+use ruma::events::AnyToDeviceEvent;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::ToDeviceEvent;
+use ruma::events::key::verification::VerificationMethod;
+use ruma::serde::Raw;
+use ruma::uint;
 use tokio::sync::Mutex;
-use tracing::{Span, debug, info, instrument, trace, warn};
+use tracing::Span;
+use tracing::debug;
+use tracing::info;
+use tracing::instrument;
+use tracing::trace;
+use tracing::warn;
 
-use super::{
-    FlowId, Verification, VerificationResult, VerificationStore,
-    cache::{RequestInfo, VerificationCache},
-    event_enums::{AnyEvent, AnyVerificationContent, OutgoingContent},
-    requests::VerificationRequest,
-    sas::Sas,
-};
-use crate::{
-    DeviceData, OtherUserIdentityData,
-    olm::{PrivateCrossSigningIdentity, StaticAccountData},
-    store::{CryptoStoreError, CryptoStoreWrapper},
-    types::requests::{
-        OutgoingRequest, OutgoingVerificationRequest, RoomMessageRequest, ToDeviceRequest,
-    },
-};
+use super::FlowId;
+use super::Verification;
+use super::VerificationResult;
+use super::VerificationStore;
+use super::cache::RequestInfo;
+use super::cache::VerificationCache;
+use super::event_enums::AnyEvent;
+use super::event_enums::AnyVerificationContent;
+use super::event_enums::OutgoingContent;
+use super::requests::VerificationRequest;
+use super::sas::Sas;
+use crate::DeviceData;
+use crate::OtherUserIdentityData;
+use crate::olm::PrivateCrossSigningIdentity;
+use crate::olm::StaticAccountData;
+use crate::store::CryptoStoreError;
+use crate::store::CryptoStoreWrapper;
+use crate::types::requests::OutgoingRequest;
+use crate::types::requests::OutgoingVerificationRequest;
+use crate::types::requests::RoomMessageRequest;
+use crate::types::requests::ToDeviceRequest;
 
 #[derive(Clone, Debug)]
 pub struct VerificationMachine {
@@ -58,7 +76,11 @@ impl VerificationMachine {
         store: Arc<CryptoStoreWrapper>,
     ) -> Self {
         Self {
-            store: VerificationStore { account, private_identity: identity, inner: store },
+            store: VerificationStore {
+                account,
+                private_identity: identity,
+                inner: store,
+            },
             verifications: VerificationCache::new(),
             requests: Default::default(),
         }
@@ -127,9 +149,12 @@ impl VerificationMachine {
         let (sas, content) = Sas::start(identities, TransactionId::new(), true, None, None);
 
         let request = match content {
-            OutgoingContent::Room(r, c) => {
-                RoomMessageRequest { room_id: r, txn_id: TransactionId::new(), content: c }.into()
+            OutgoingContent::Room(r, c) => RoomMessageRequest {
+                room_id: r,
+                txn_id: TransactionId::new(),
+                content: c,
             }
+            .into(),
             OutgoingContent::ToDevice(c) => {
                 let request = ToDeviceRequest::with_id(
                     device.user_id(),
@@ -152,11 +177,19 @@ impl VerificationMachine {
         user_id: &UserId,
         flow_id: impl AsRef<str>,
     ) -> Option<VerificationRequest> {
-        self.requests.read().get(user_id)?.get(flow_id.as_ref()).cloned()
+        self.requests
+            .read()
+            .get(user_id)?
+            .get(flow_id.as_ref())
+            .cloned()
     }
 
     pub fn get_requests(&self, user_id: &UserId) -> Vec<VerificationRequest> {
-        self.requests.read().get(user_id).map(|v| v.values().cloned().collect()).unwrap_or_default()
+        self.requests
+            .read()
+            .get(user_id)
+            .map(|v| v.values().cloned().collect())
+            .unwrap_or_default()
     }
 
     /// Add a new `VerificationRequest` object to the cache.
@@ -164,7 +197,10 @@ impl VerificationMachine {
     /// flow_id), both the existing and new request will be cancelled.
     fn insert_request(&self, request: VerificationRequest) {
         if let Some(r) = self.get_request(request.other_user(), request.flow_id().as_str()) {
-            debug!(flow_id = r.flow_id().as_str(), "Ignoring known verification request",);
+            debug!(
+                flow_id = r.flow_id().as_str(),
+                "Ignoring known verification request",
+            );
             return;
         }
 
@@ -226,7 +262,8 @@ impl VerificationMachine {
         content: OutgoingContent,
         request_id: Option<RequestInfo>,
     ) {
-        self.verifications.queue_up_content(recipient, recipient_device, content, request_id)
+        self.verifications
+            .queue_up_content(recipient, recipient_device, content, request_id)
     }
 
     pub fn mark_request_as_sent(&self, request_id: &TransactionId) {
@@ -248,7 +285,11 @@ impl VerificationMachine {
             }
             requests.retain(|_, v| !v.is_empty());
 
-            requests.values().flatten().filter_map(|(_, v)| v.cancel_if_timed_out()).collect()
+            requests
+                .values()
+                .flatten()
+                .filter_map(|(_, v)| v.cancel_if_timed_out())
+                .collect()
         };
 
         requests.extend(self.verifications.garbage_collect());
@@ -331,7 +372,9 @@ impl VerificationMachine {
             }
         };
 
-        let Some(content) = event.verification_content() else { return Ok(()) };
+        let Some(content) = event.verification_content() else {
+            return Ok(());
+        };
         match &content {
             AnyVerificationContent::Request(r) => {
                 info!(
@@ -365,8 +408,10 @@ impl VerificationMachine {
                     return Ok(());
                 }
 
-                let Some(device_data) =
-                    self.store.get_device(event.sender(), r.from_device()).await?
+                let Some(device_data) = self
+                    .store
+                    .get_device(event.sender(), r.from_device())
+                    .await?
                 else {
                     warn!(
                         "Could not retrieve the device data for the incoming verification request, \
@@ -409,8 +454,10 @@ impl VerificationMachine {
                 };
 
                 if request.flow_id() == &flow_id {
-                    if let Some(device_data) =
-                        self.store.get_device(event.sender(), c.from_device()).await?
+                    if let Some(device_data) = self
+                        .store
+                        .get_device(event.sender(), c.from_device())
+                        .await?
                     {
                         request.receive_ready(event.sender(), c, device_data);
                     } else {
@@ -430,8 +477,10 @@ impl VerificationMachine {
                 } else if let FlowId::ToDevice(_) = flow_id {
                     // TODO remove this soon, this has been deprecated by
                     // MSC3122 https://github.com/matrix-org/matrix-doc/pull/3122
-                    if let Some(device) =
-                        self.store.get_device(event.sender(), c.from_device()).await?
+                    if let Some(device) = self
+                        .store
+                        .get_device(event.sender(), c.from_device())
+                        .await?
                     {
                         let identities = self.store.get_identities(device).await?;
 
@@ -472,7 +521,9 @@ impl VerificationMachine {
                 );
             }
             AnyVerificationContent::Mac(_) => {
-                let Some(s) = self.get_sas(event.sender(), flow_id.as_str()) else { return Ok(()) };
+                let Some(s) = self.get_sas(event.sender(), flow_id.as_str()) else {
+                    return Ok(());
+                };
 
                 if s.flow_id() != &flow_id {
                     flow_id_mismatch();
@@ -488,7 +539,9 @@ impl VerificationMachine {
                     // send out, e.g. in the case where we are done with our
                     // side of the verification process, but the other side has
                     // not yet sent their "done".
-                    let Some((content, request_id)) = content else { return Ok(()) };
+                    let Some((content, request_id)) = content else {
+                        return Ok(());
+                    };
 
                     self.queue_up_content(
                         s.other_user_id(),
@@ -541,7 +594,12 @@ impl VerificationMachine {
     pub async fn get_own_user_identity_data(
         &self,
     ) -> Result<crate::OwnUserIdentityData, crate::SignatureError> {
-        self.store.private_identity.lock().await.to_public_identity().await
+        self.store
+            .private_identity
+            .lock()
+            .await
+            .to_public_identity()
+            .await
     }
 }
 
@@ -553,18 +611,24 @@ mod tests {
     use ruma::TransactionId;
     use tokio::sync::Mutex;
 
-    use super::{Sas, VerificationMachine};
-    use crate::{
-        Account, VerificationRequest,
-        olm::PrivateCrossSigningIdentity,
-        store::{CryptoStoreWrapper, MemoryStore},
-        verification::{
-            FlowId, VerificationStore,
-            cache::VerificationCache,
-            event_enums::{AcceptContent, KeyContent, MacContent, OutgoingContent},
-            tests::{alice_device_id, alice_id, setup_stores, wrap_any_to_device_content},
-        },
-    };
+    use super::Sas;
+    use super::VerificationMachine;
+    use crate::Account;
+    use crate::VerificationRequest;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::store::CryptoStoreWrapper;
+    use crate::store::MemoryStore;
+    use crate::verification::FlowId;
+    use crate::verification::VerificationStore;
+    use crate::verification::cache::VerificationCache;
+    use crate::verification::event_enums::AcceptContent;
+    use crate::verification::event_enums::KeyContent;
+    use crate::verification::event_enums::MacContent;
+    use crate::verification::event_enums::OutgoingContent;
+    use crate::verification::tests::alice_device_id;
+    use crate::verification::tests::alice_id;
+    use crate::verification::tests::setup_stores;
+    use crate::verification::tests::wrap_any_to_device_content;
 
     async fn verification_machine() -> (VerificationMachine, VerificationStore) {
         let (_account, store, _bob, bob_store) = setup_stores().await;
@@ -581,15 +645,21 @@ mod tests {
     async fn setup_verification_machine() -> (VerificationMachine, Sas) {
         let (machine, bob_store) = verification_machine().await;
 
-        let alice_device =
-            bob_store.get_device(alice_id(), alice_device_id()).await.unwrap().unwrap();
+        let alice_device = bob_store
+            .get_device(alice_id(), alice_device_id())
+            .await
+            .unwrap()
+            .unwrap();
 
         let identities = bob_store.get_identities(alice_device).await.unwrap();
         let (bob_sas, start_content) =
             Sas::start(identities, TransactionId::new(), true, None, None);
 
         machine
-            .receive_any_event(&wrap_any_to_device_content(bob_sas.user_id(), start_content))
+            .receive_any_event(&wrap_any_to_device_content(
+                bob_sas.user_id(),
+                start_content,
+            ))
             .await
             .unwrap();
 
@@ -603,7 +673,11 @@ mod tests {
         let _ = VerificationMachine::new(
             alice.static_data,
             identity,
-            Arc::new(CryptoStoreWrapper::new(alice_id(), alice_device_id(), MemoryStore::new())),
+            Arc::new(CryptoStoreWrapper::new(
+                alice_id(),
+                alice_device_id(),
+                MemoryStore::new(),
+            )),
         );
     }
 
@@ -611,7 +685,9 @@ mod tests {
     async fn test_full_flow() {
         let (alice_machine, bob) = setup_verification_machine().await;
 
-        let alice = alice_machine.get_sas(bob.user_id(), bob.flow_id().as_str()).unwrap();
+        let alice = alice_machine
+            .get_sas(bob.user_id(), bob.flow_id().as_str())
+            .unwrap();
 
         let request = alice.accept().unwrap();
 
@@ -626,7 +702,12 @@ mod tests {
         alice_machine.receive_any_event(&event).await.unwrap();
         assert!(!alice_machine.verifications.outgoing_requests().is_empty());
 
-        let request = alice_machine.verifications.outgoing_requests().first().cloned().unwrap();
+        let request = alice_machine
+            .verifications
+            .outgoing_requests()
+            .first()
+            .cloned()
+            .unwrap();
         let txn_id = request.request_id().to_owned();
         let content = OutgoingContent::try_from(request).unwrap();
         let content = KeyContent::try_from(&content).unwrap().into();
@@ -670,7 +751,9 @@ mod tests {
         use ruma::time::Instant;
 
         let (alice_machine, bob) = setup_verification_machine().await;
-        let alice = alice_machine.get_sas(bob.user_id(), bob.flow_id().as_str()).unwrap();
+        let alice = alice_machine
+            .get_sas(bob.user_id(), bob.flow_id().as_str())
+            .unwrap();
 
         assert!(!alice.timed_out());
         assert!(alice_machine.verifications.outgoing_requests().is_empty());
@@ -691,8 +774,11 @@ mod tests {
     async fn test_double_verification_cancellation() {
         let (machine, bob_store) = verification_machine().await;
 
-        let alice_device =
-            bob_store.get_device(alice_id(), alice_device_id()).await.unwrap().unwrap();
+        let alice_device = bob_store
+            .get_device(alice_id(), alice_device_id())
+            .await
+            .unwrap()
+            .unwrap();
         let identities = bob_store.get_identities(alice_device).await.unwrap();
 
         // Start the first sas verification.
@@ -700,11 +786,16 @@ mod tests {
             Sas::start(identities.clone(), TransactionId::new(), true, None, None);
 
         machine
-            .receive_any_event(&wrap_any_to_device_content(bob_sas.user_id(), start_content))
+            .receive_any_event(&wrap_any_to_device_content(
+                bob_sas.user_id(),
+                start_content,
+            ))
             .await
             .unwrap();
 
-        let alice_sas = machine.get_sas(bob_sas.user_id(), bob_sas.flow_id().as_str()).unwrap();
+        let alice_sas = machine
+            .get_sas(bob_sas.user_id(), bob_sas.flow_id().as_str())
+            .unwrap();
 
         // We're not yet cancelled.
         assert!(!alice_sas.is_cancelled());
@@ -713,11 +804,16 @@ mod tests {
         let (bob_sas, start_content) =
             Sas::start(identities, second_transaction_id.clone(), true, None, None);
         machine
-            .receive_any_event(&wrap_any_to_device_content(bob_sas.user_id(), start_content))
+            .receive_any_event(&wrap_any_to_device_content(
+                bob_sas.user_id(),
+                start_content,
+            ))
             .await
             .unwrap();
 
-        let second_sas = machine.get_sas(bob_sas.user_id(), bob_sas.flow_id().as_str()).unwrap();
+        let second_sas = machine
+            .get_sas(bob_sas.user_id(), bob_sas.flow_id().as_str())
+            .unwrap();
 
         // Make sure we fetched the new one.
         assert_eq!(second_sas.flow_id().as_str(), second_transaction_id);
@@ -749,12 +845,16 @@ mod tests {
         let content: OutgoingContent = request.try_into().unwrap();
 
         machine
-            .receive_any_event(&wrap_any_to_device_content(bob_request.own_user_id(), content))
+            .receive_any_event(&wrap_any_to_device_content(
+                bob_request.own_user_id(),
+                content,
+            ))
             .await
             .unwrap();
 
-        let alice_request =
-            machine.get_request(bob_request.own_user_id(), bob_request.flow_id().as_str()).unwrap();
+        let alice_request = machine
+            .get_request(bob_request.own_user_id(), bob_request.flow_id().as_str())
+            .unwrap();
 
         // We're not yet cancelled.
         assert!(!alice_request.is_cancelled());
@@ -773,12 +873,16 @@ mod tests {
         let content: OutgoingContent = request.try_into().unwrap();
 
         machine
-            .receive_any_event(&wrap_any_to_device_content(bob_request.own_user_id(), content))
+            .receive_any_event(&wrap_any_to_device_content(
+                bob_request.own_user_id(),
+                content,
+            ))
             .await
             .unwrap();
 
-        let second_request =
-            machine.get_request(bob_request.own_user_id(), bob_request.flow_id().as_str()).unwrap();
+        let second_request = machine
+            .get_request(bob_request.own_user_id(), bob_request.flow_id().as_str())
+            .unwrap();
 
         // Make sure we fetched the new one.
         assert_eq!(second_request.flow_id().as_str(), second_transaction_id);
@@ -811,12 +915,16 @@ mod tests {
         let content: OutgoingContent = request.try_into().unwrap();
 
         machine
-            .receive_any_event(&wrap_any_to_device_content(bob_request.own_user_id(), content))
+            .receive_any_event(&wrap_any_to_device_content(
+                bob_request.own_user_id(),
+                content,
+            ))
             .await
             .unwrap();
 
-        let first_request =
-            machine.get_request(bob_request.own_user_id(), bob_request.flow_id().as_str()).unwrap();
+        let first_request = machine
+            .get_request(bob_request.own_user_id(), bob_request.flow_id().as_str())
+            .unwrap();
 
         // We're not yet cancelled.
         assert!(!first_request.is_cancelled());
@@ -835,12 +943,16 @@ mod tests {
         let content: OutgoingContent = request.try_into().unwrap();
 
         machine
-            .receive_any_event(&wrap_any_to_device_content(bob_request.own_user_id(), content))
+            .receive_any_event(&wrap_any_to_device_content(
+                bob_request.own_user_id(),
+                content,
+            ))
             .await
             .unwrap();
 
-        let second_request =
-            machine.get_request(bob_request.own_user_id(), bob_request.flow_id().as_str()).unwrap();
+        let second_request = machine
+            .get_request(bob_request.own_user_id(), bob_request.flow_id().as_str())
+            .unwrap();
 
         // None of the requests are cancelled
         assert!(!first_request.is_cancelled());

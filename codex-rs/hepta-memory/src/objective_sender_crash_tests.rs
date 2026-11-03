@@ -33,15 +33,20 @@ impl ObjectiveSenderCheckpoint for CrashCheckpoint {
         writer: &ObjectiveSenderWriterFence,
     ) -> Result<CognitiveRecoveryAnchor, ObjectiveSenderCheckpointError> {
         let call = self.calls.fetch_add(1, Ordering::SeqCst) + 1;
-        let bytes = serde_json::to_vec(&(current, writer)).unwrap();
+        let bytes = serde_json::to_vec(&(current, writer))
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         let mut file = File::create(
             self.host_root
                 .join(format!("independent-test-cut-{call}.json")),
         )
-        .unwrap();
-        file.write_all(&bytes).unwrap();
-        file.sync_all().unwrap();
-        File::open(&self.host_root).unwrap().sync_all().unwrap();
+        .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        file.write_all(&bytes)
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        file.sync_all()
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        File::open(&self.host_root)
+            .and_then(|directory| directory.sync_all())
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         if call == self.crash_after {
             // No Rust destructors run. SQLite's already-committed request/event
             // survives; the second BEGIN IMMEDIATE snapshot dies with process.
@@ -151,20 +156,19 @@ fn objective_sender_subprocess_fixture() {
     });
 }
 
-fn child(root: &std::path::Path, phase: &str) -> std::process::Output {
-    Command::new(std::env::current_exe().unwrap())
+fn child(root: &std::path::Path, phase: &str) -> std::io::Result<std::process::Output> {
+    Command::new(std::env::current_exe()?)
         .args(["--exact", CHILD_TEST, "--ignored", "--nocapture"])
         .env("HEPTA_OBJECTIVE_SENDER_TEST_ROOT", root)
         .env("HEPTA_OBJECTIVE_SENDER_TEST_PHASE", phase)
         .output()
-        .expect("start original package test subprocess")
 }
 
 #[tokio::test]
 async fn process_death_after_each_committed_cut_recovers_without_new_send_permission() {
     for phase in ["retain", "observation", "cancel"] {
         let temp = TempDir::new().unwrap();
-        let output = child(temp.path(), phase);
+        let output = child(temp.path(), phase).expect("start original package test subprocess");
         assert_eq!(
             output.status.code(),
             Some(CRASH_EXIT),
@@ -277,7 +281,8 @@ async fn a_second_real_process_and_different_lease_still_cannot_send_retained_ru
         .retain_before_send(request())
         .await
         .unwrap();
-    let output = child(fixture.temp.path(), "compete");
+    let output =
+        child(fixture.temp.path(), "compete").expect("start original package test subprocess");
     assert!(
         output.status.success(),
         "{}\n{}",

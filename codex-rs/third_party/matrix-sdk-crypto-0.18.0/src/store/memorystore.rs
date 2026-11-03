@@ -12,51 +12,68 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    collections::{BTreeMap, HashMap, HashSet},
-    convert::Infallible,
-    sync::Arc,
-};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::convert::Infallible;
+use std::sync::Arc;
 
 use async_trait::async_trait;
-use matrix_sdk_common::{
-    cross_process_lock::{
-        CrossProcessLockGeneration,
-        memory_store_helper::{Lease, try_take_leased_lock},
-    },
-    locks::RwLock as StdRwLock,
-};
-use ruma::{
-    DeviceId, OwnedDeviceId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId, TransactionId,
-    UserId, events::secret::request::SecretName,
-};
-use tokio::sync::{Mutex, RwLock};
+use matrix_sdk_common::cross_process_lock::CrossProcessLockGeneration;
+use matrix_sdk_common::cross_process_lock::memory_store_helper::Lease;
+use matrix_sdk_common::cross_process_lock::memory_store_helper::try_take_leased_lock;
+use matrix_sdk_common::locks::RwLock as StdRwLock;
+use ruma::DeviceId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedRoomId;
+use ruma::OwnedTransactionId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::secret::request::SecretName;
+use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 use tracing::warn;
 use vodozemac::Curve25519PublicKey;
 use zeroize::Zeroizing;
 
-use super::{
-    Account, CryptoStore, InboundGroupSession, Session,
-    caches::DeviceStore,
-    types::{
-        BackupKeys, Changes, DehydratedDeviceKey, PendingChanges, RoomKeyCounts, RoomSettings,
-        StoredRoomKeyBundleData, TrackedUser,
-    },
-};
-use crate::{
-    gossiping::{GossipRequest, SecretInfo},
-    identities::{DeviceData, UserIdentityData},
-    olm::{
-        OutboundGroupSession, PickledAccount, PickledInboundGroupSession, PickledSession,
-        PrivateCrossSigningIdentity, SenderDataType, StaticAccountData,
-    },
-    store::types::{RoomKeyWithheldEntry, RoomPendingKeyBundleDetails},
-};
+use super::Account;
+use super::CryptoStore;
+use super::InboundGroupSession;
+use super::Session;
+use super::caches::DeviceStore;
+use super::types::BackupKeys;
+use super::types::Changes;
+use super::types::DehydratedDeviceKey;
+use super::types::PendingChanges;
+use super::types::RoomKeyCounts;
+use super::types::RoomSettings;
+use super::types::StoredRoomKeyBundleData;
+use super::types::TrackedUser;
+use crate::gossiping::GossipRequest;
+use crate::gossiping::SecretInfo;
+use crate::identities::DeviceData;
+use crate::identities::UserIdentityData;
+use crate::olm::OutboundGroupSession;
+use crate::olm::PickledAccount;
+use crate::olm::PickledInboundGroupSession;
+use crate::olm::PickledSession;
+use crate::olm::PrivateCrossSigningIdentity;
+use crate::olm::SenderDataType;
+use crate::olm::StaticAccountData;
+use crate::store::types::RoomKeyWithheldEntry;
+use crate::store::types::RoomPendingKeyBundleDetails;
 
 fn encode_key_info(info: &SecretInfo) -> String {
     match info {
         SecretInfo::KeyRequest(info) => {
-            format!("{}{}{}", info.room_id(), info.algorithm(), info.session_id())
+            format!(
+                "{}{}{}",
+                info.room_id(),
+                info.algorithm(),
+                info.session_id()
+            )
         }
         SecretInfo::SecretRequest(i) => i.as_ref().to_owned(),
     }
@@ -144,7 +161,9 @@ impl MemoryStore {
         let mut session_store = self.sessions.write();
 
         for (session_id, pickle) in sessions {
-            let entry = session_store.entry(pickle.sender_key.to_base64()).or_default();
+            let entry = session_store
+                .entry(pickle.sender_key.to_base64())
+                .or_default();
 
             // insert or replace if exists
             entry.insert(
@@ -260,7 +279,8 @@ impl CryptoStore for MemoryStore {
         }
         self.save_sessions(pickled_session);
 
-        self.save_inbound_group_sessions(changes.inbound_group_sessions, None).await?;
+        self.save_inbound_group_sessions(changes.inbound_group_sessions, None)
+            .await?;
         self.save_outbound_group_sessions(changes.outbound_group_sessions);
         self.save_private_identity(changes.private_identity);
 
@@ -270,7 +290,12 @@ impl CryptoStore for MemoryStore {
 
         {
             let mut identities = self.identities.write();
-            for identity in changes.identities.new.into_iter().chain(changes.identities.changed) {
+            for identity in changes
+                .identities
+                .new
+                .into_iter()
+                .chain(changes.identities.changed)
+            {
                 identities.insert(
                     identity.user_id().to_owned(),
                     serde_json::to_string(&identity)
@@ -282,7 +307,10 @@ impl CryptoStore for MemoryStore {
         {
             let mut olm_hashes = self.olm_hashes.write();
             for hash in changes.message_hashes {
-                olm_hashes.entry(hash.sender_key.to_owned()).or_default().insert(hash.hash.clone());
+                olm_hashes
+                    .entry(hash.sender_key.to_owned())
+                    .or_default()
+                    .insert(hash.hash.clone());
             }
         }
 
@@ -315,7 +343,10 @@ impl CryptoStore for MemoryStore {
         {
             let mut secret_inbox = self.secret_inbox.write();
             for secret in changes.secrets {
-                secret_inbox.entry(secret.secret_name.to_string()).or_default().push(secret.secret);
+                secret_inbox
+                    .entry(secret.secret_name.to_string())
+                    .or_default()
+                    .push(secret.secret);
             }
         }
 
@@ -507,7 +538,12 @@ impl CryptoStore for MemoryStore {
             0
         };
 
-        let total = self.inbound_group_sessions.read().values().map(HashMap::len).sum();
+        let total = self
+            .inbound_group_sessions
+            .read()
+            .values()
+            .map(HashMap::len)
+            .sum();
         Ok(RoomKeyCounts { total, backed_up })
     }
 
@@ -615,11 +651,15 @@ impl CryptoStore for MemoryStore {
                 // Save it back
                 let updated_pickle = session.pickle().await;
 
-                self.inbound_group_sessions.write().entry(room_id.to_owned()).or_default().insert(
-                    session_id.to_owned(),
-                    serde_json::to_string(&updated_pickle)
-                        .expect("Pickle serialization should work"),
-                );
+                self.inbound_group_sessions
+                    .write()
+                    .entry(room_id.to_owned())
+                    .or_default()
+                    .insert(
+                        session_id.to_owned(),
+                        serde_json::to_string(&updated_pickle)
+                            .expect("Pickle serialization should work"),
+                    );
             }
         }
 
@@ -662,10 +702,18 @@ impl CryptoStore for MemoryStore {
     }
 
     async fn save_tracked_users(&self, tracked_users: &[(&UserId, bool)]) -> Result<()> {
-        self.tracked_users.write().extend(tracked_users.iter().map(|(user_id, dirty)| {
-            let user_id: OwnedUserId = user_id.to_owned().into();
-            (user_id.clone(), TrackedUser { user_id, dirty: *dirty })
-        }));
+        self.tracked_users
+            .write()
+            .extend(tracked_users.iter().map(|(user_id, dirty)| {
+                let user_id: OwnedUserId = user_id.to_owned().into();
+                (
+                    user_id.clone(),
+                    TrackedUser {
+                        user_id,
+                        dirty: *dirty,
+                    },
+                )
+            }));
         Ok(())
     }
 
@@ -685,8 +733,9 @@ impl CryptoStore for MemoryStore {
     }
 
     async fn get_own_device(&self) -> Result<DeviceData> {
-        let account =
-            self.get_static_account().expect("Expect account to exist when getting own device");
+        let account = self
+            .get_static_account()
+            .expect("Expect account to exist when getting own device");
 
         Ok(self
             .devices
@@ -759,7 +808,12 @@ impl CryptoStore for MemoryStore {
         &self,
         secret_name: &SecretName,
     ) -> Result<Vec<Zeroizing<String>>> {
-        Ok(self.secret_inbox.write().entry(secret_name.to_string()).or_default().to_owned())
+        Ok(self
+            .secret_inbox
+            .write()
+            .entry(secret_name.to_string())
+            .or_default()
+            .to_owned())
     }
 
     async fn delete_secrets_from_inbox(&self, secret_name: &SecretName) -> Result<()> {
@@ -779,7 +833,9 @@ impl CryptoStore for MemoryStore {
     ) -> Result<Option<StoredRoomKeyBundleData>> {
         let guard = self.room_key_bundles.read();
 
-        let result = guard.get(room_id).and_then(|bundles| bundles.get(user_id).cloned());
+        let result = guard
+            .get(room_id)
+            .and_then(|bundles| bundles.get(user_id).cloned());
 
         Ok(result)
     }
@@ -792,7 +848,12 @@ impl CryptoStore for MemoryStore {
     }
 
     async fn get_all_rooms_pending_key_bundles(&self) -> Result<Vec<RoomPendingKeyBundleDetails>> {
-        Ok(self.rooms_pending_key_bundle.read().values().cloned().collect())
+        Ok(self
+            .rooms_pending_key_bundle
+            .read()
+            .values()
+            .cloned()
+            .collect())
     }
 
     async fn has_downloaded_all_room_keys(&self, room_id: &RoomId) -> Result<bool> {
@@ -820,7 +881,12 @@ impl CryptoStore for MemoryStore {
         key: &str,
         holder: &str,
     ) -> Result<Option<CrossProcessLockGeneration>> {
-        Ok(try_take_leased_lock(&mut self.leases.write(), lease_duration_ms, key, holder))
+        Ok(try_take_leased_lock(
+            &mut self.leases.write(),
+            lease_duration_ms,
+            key,
+            holder,
+        ))
     }
 
     async fn get_size(&self) -> Result<Option<usize>> {
@@ -833,23 +899,26 @@ mod tests {
     use std::collections::HashMap;
 
     use matrix_sdk_test::async_test;
-    use ruma::{RoomId, room_id, user_id};
-    use vodozemac::{Curve25519PublicKey, Ed25519PublicKey};
+    use ruma::RoomId;
+    use ruma::room_id;
+    use ruma::user_id;
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Ed25519PublicKey;
 
     use super::SessionId;
-    use crate::{
-        DeviceData,
-        identities::device::testing::get_device,
-        olm::{
-            Account, InboundGroupSession, OlmMessageHash, PrivateCrossSigningIdentity, SenderData,
-            tests::get_account_and_session_test_helper,
-        },
-        store::{
-            CryptoStore,
-            memorystore::MemoryStore,
-            types::{Changes, DeviceChanges, PendingChanges},
-        },
-    };
+    use crate::DeviceData;
+    use crate::identities::device::testing::get_device;
+    use crate::olm::Account;
+    use crate::olm::InboundGroupSession;
+    use crate::olm::OlmMessageHash;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::olm::SenderData;
+    use crate::olm::tests::get_account_and_session_test_helper;
+    use crate::store::CryptoStore;
+    use crate::store::memorystore::MemoryStore;
+    use crate::store::types::Changes;
+    use crate::store::types::DeviceChanges;
+    use crate::store::types::PendingChanges;
 
     #[async_test]
     async fn test_session_store() {
@@ -861,19 +930,34 @@ mod tests {
 
         store
             .save_changes(Changes {
-                devices: DeviceChanges { new: vec![own_device], ..Default::default() },
+                devices: DeviceChanges {
+                    new: vec![own_device],
+                    ..Default::default()
+                },
                 ..Default::default()
             })
             .await
             .unwrap();
-        store.save_pending_changes(PendingChanges { account: Some(account) }).await.unwrap();
-
         store
-            .save_changes(Changes { sessions: (vec![session.clone()]), ..Default::default() })
+            .save_pending_changes(PendingChanges {
+                account: Some(account),
+            })
             .await
             .unwrap();
 
-        let sessions = store.get_sessions(&session.sender_key.to_base64()).await.unwrap().unwrap();
+        store
+            .save_changes(Changes {
+                sessions: (vec![session.clone()]),
+                ..Default::default()
+            })
+            .await
+            .unwrap();
+
+        let sessions = store
+            .get_sessions(&session.sender_key.to_base64())
+            .await
+            .unwrap()
+            .unwrap();
 
         let loaded_session = &sessions[0];
 
@@ -886,7 +970,9 @@ mod tests {
         let room_id = room_id!("!test:localhost");
         let curve_key = "Nn0L2hkcCMFKqynTjyGsJbth7QrVmX3lbrksMkrGOAw";
 
-        let (outbound, _) = account.create_group_session_pair_with_defaults(room_id).await;
+        let (outbound, _) = account
+            .create_group_session_pair_with_defaults(room_id)
+            .await;
         let inbound = InboundGroupSession::new(
             Curve25519PublicKey::from_base64(curve_key).unwrap(),
             Ed25519PublicKey::from_base64("ee3Ek+J2LkkPmjGPGLhMxiKnhiX//xcqaVL4RP6EypE").unwrap(),
@@ -901,10 +987,16 @@ mod tests {
         .unwrap();
 
         let store = MemoryStore::new();
-        store.save_inbound_group_sessions(vec![inbound.clone()], None).await.unwrap();
+        store
+            .save_inbound_group_sessions(vec![inbound.clone()], None)
+            .await
+            .unwrap();
 
-        let loaded_session =
-            store.get_inbound_group_session(room_id, outbound.session_id()).await.unwrap().unwrap();
+        let loaded_session = store
+            .get_inbound_group_session(room_id, outbound.session_id())
+            .await
+            .unwrap()
+            .unwrap();
         assert_eq!(inbound, loaded_session);
     }
 
@@ -988,10 +1080,16 @@ mod tests {
         let (store, sessions) = store_with_sessions(4, room_id).await;
         mark_backed_up(&store, room_id, "older_bkp", &sessions).await;
         // Sanity: they are backed up in order number 1
-        assert_eq!(backed_up_tos(&store).await[sessions[0].session_id()], "older_bkp");
+        assert_eq!(
+            backed_up_tos(&store).await[sessions[0].session_id()],
+            "older_bkp"
+        );
         mark_backed_up(&store, room_id, "newer_bkp", &sessions).await;
         // Sanity: they are backed up in order number 2
-        assert_eq!(backed_up_tos(&store).await[sessions[0].session_id()], "newer_bkp");
+        assert_eq!(
+            backed_up_tos(&store).await[sessions[0].session_id()],
+            "newer_bkp"
+        );
 
         // When I ask to back up some to the older version
         mark_backed_up(&store, room_id, "older_bkp", &sessions[..2]).await;
@@ -1039,7 +1137,12 @@ mod tests {
         // Then I am told to back up all of them
         assert_eq!(
             to_backup,
-            &[sessions[0].clone(), sessions[1].clone(), sessions[2].clone(), sessions[3].clone()]
+            &[
+                sessions[0].clone(),
+                sessions[1].clone(),
+                sessions[2].clone(),
+                sessions[3].clone()
+            ]
         );
     }
 
@@ -1076,14 +1179,20 @@ mod tests {
         // Given an outbound session
         let (account, _) = get_account_and_session_test_helper();
         let room_id = room_id!("!test:localhost");
-        let (outbound, _) = account.create_group_session_pair_with_defaults(room_id).await;
+        let (outbound, _) = account
+            .create_group_session_pair_with_defaults(room_id)
+            .await;
 
         // When we save it to the store
         let store = MemoryStore::new();
         store.save_outbound_group_sessions(vec![outbound.clone()]);
 
         // Then we can get it out again
-        let loaded_session = store.get_outbound_group_session(room_id).await.unwrap().unwrap();
+        let loaded_session = store
+            .get_outbound_group_session(room_id)
+            .await
+            .unwrap()
+            .unwrap();
         assert_eq!(
             serde_json::to_string(&outbound.pickle().await).unwrap(),
             serde_json::to_string(&loaded_session.pickle().await).unwrap()
@@ -1097,17 +1206,27 @@ mod tests {
         let user2 = user_id!("@user2:s");
         let user3 = user_id!("@user3:s");
         let store = MemoryStore::new();
-        store.save_tracked_users(&[(user1, true), (user2, true)]).await.unwrap();
+        store
+            .save_tracked_users(&[(user1, true), (user2, true)])
+            .await
+            .unwrap();
 
         // When we mark one as clean and add another
-        store.save_tracked_users(&[(user2, false), (user3, false)]).await.unwrap();
+        store
+            .save_tracked_users(&[(user2, false), (user3, false)])
+            .await
+            .unwrap();
 
         // Then we can get them out again and their dirty flags are correct
-        let loaded_tracked_users =
-            store.load_tracked_users().await.expect("failed to load tracked users");
+        let loaded_tracked_users = store
+            .load_tracked_users()
+            .await
+            .expect("failed to load tracked users");
 
         let tracked_contains = |user_id, dirty| {
-            loaded_tracked_users.iter().any(|u| u.user_id == user_id && u.dirty == dirty)
+            loaded_tracked_users
+                .iter()
+                .any(|u| u.user_id == user_id && u.dirty == dirty)
         };
 
         assert!(tracked_contains(user1, true));
@@ -1126,8 +1245,11 @@ mod tests {
         store.save_private_identity(Some(private_identity.clone()));
 
         // Then we can get it out again
-        let loaded_identity =
-            store.load_identity().await.expect("failed to load private identity").unwrap();
+        let loaded_identity = store
+            .load_identity()
+            .await
+            .expect("failed to load private identity")
+            .unwrap();
 
         assert_eq!(loaded_identity.user_id(), user_id!("@u:s"));
     }
@@ -1139,8 +1261,11 @@ mod tests {
 
         store.save_devices(vec![device.clone()]);
 
-        let loaded_device =
-            store.get_device(device.user_id(), device.device_id()).await.unwrap().unwrap();
+        let loaded_device = store
+            .get_device(device.user_id(), device.device_id())
+            .await
+            .unwrap()
+            .unwrap();
 
         assert_eq!(device, loaded_device);
 
@@ -1154,15 +1279,23 @@ mod tests {
         assert_eq!(&device, loaded_device);
 
         store.delete_devices(vec![device.clone()]);
-        assert!(store.get_device(device.user_id(), device.device_id()).await.unwrap().is_none());
+        assert!(
+            store
+                .get_device(device.user_id(), device.device_id())
+                .await
+                .unwrap()
+                .is_none()
+        );
     }
 
     #[async_test]
     async fn test_message_hash() {
         let store = MemoryStore::new();
 
-        let hash =
-            OlmMessageHash { sender_key: "test_sender".to_owned(), hash: "test_hash".to_owned() };
+        let hash = OlmMessageHash {
+            sender_key: "test_sender".to_owned(),
+            hash: "test_hash".to_owned(),
+        };
 
         let mut changes = Changes::default();
         changes.message_hashes.push(hash.clone());
@@ -1192,7 +1325,10 @@ mod tests {
         let (store, _) = store_with_sessions(4, room_id).await;
 
         // When we count keys
-        let key_counts = store.inbound_group_session_counts(Some("bkp")).await.unwrap();
+        let key_counts = store
+            .inbound_group_session_counts(Some("bkp"))
+            .await
+            .unwrap();
 
         // Then the answer equals the number of sessions we created
         assert_eq!(key_counts.total, 4);
@@ -1208,7 +1344,10 @@ mod tests {
         mark_backed_up(&store, room_id, "bkp", &sessions[..2]).await;
 
         // When we count keys
-        let key_counts = store.inbound_group_session_counts(Some("bkp")).await.unwrap();
+        let key_counts = store
+            .inbound_group_session_counts(Some("bkp"))
+            .await
+            .unwrap();
 
         // Then the answer equals the number of sessions we created
         assert_eq!(key_counts.total, 5);
@@ -1239,7 +1378,10 @@ mod tests {
         mark_backed_up(&store, room_id, "bkp2", &sessions[3..]).await;
 
         // When we count keys for bkp2
-        let key_counts = store.inbound_group_session_counts(Some("bkp2")).await.unwrap();
+        let key_counts = store
+            .inbound_group_session_counts(Some("bkp2"))
+            .await
+            .unwrap();
 
         // Then the backed_up count reflects how many were backed up in bkp2 only
         assert_eq!(key_counts.backed_up, 1);
@@ -1276,7 +1418,10 @@ mod tests {
         sessions.sort_by_key(|s| s.session_id().to_owned());
 
         let store = MemoryStore::new();
-        store.save_inbound_group_sessions(sessions.clone(), None).await.unwrap();
+        store
+            .save_inbound_group_sessions(sessions.clone(), None)
+            .await
+            .unwrap();
 
         (store, sessions)
     }
@@ -1284,7 +1429,9 @@ mod tests {
     // Create a new InboundGroupSession
     async fn new_session(account: &Account, room_id: &RoomId) -> InboundGroupSession {
         let curve_key = "Nn0L2hkcCMFKqynTjyGsJbth7QrVmX3lbrksMkrGOAw";
-        let (outbound, _) = account.create_group_session_pair_with_defaults(room_id).await;
+        let (outbound, _) = account
+            .create_group_session_pair_with_defaults(room_id)
+            .await;
 
         InboundGroupSession::new(
             Curve25519PublicKey::from_base64(curve_key).unwrap(),
@@ -1311,7 +1458,9 @@ mod tests {
             .map(|(s, o)| {
                 (
                     s.session_id().to_owned(),
-                    o.as_ref().map(|v| v.as_str().to_owned()).unwrap_or("".to_owned()),
+                    o.as_ref()
+                        .map(|v| v.as_str().to_owned())
+                        .unwrap_or("".to_owned()),
                 )
             })
             .collect()
@@ -1320,36 +1469,48 @@ mod tests {
 
 #[cfg(test)]
 mod integration_tests {
-    use std::{
-        collections::HashMap,
-        sync::{Arc, Mutex, OnceLock},
-    };
+    use std::collections::HashMap;
+    use std::sync::Arc;
+    use std::sync::Mutex;
+    use std::sync::OnceLock;
 
     use async_trait::async_trait;
     use matrix_sdk_common::cross_process_lock::CrossProcessLockGeneration;
-    use ruma::{
-        DeviceId, OwnedDeviceId, RoomId, TransactionId, UserId, events::secret::request::SecretName,
-    };
+    use ruma::DeviceId;
+    use ruma::OwnedDeviceId;
+    use ruma::RoomId;
+    use ruma::TransactionId;
+    use ruma::UserId;
+    use ruma::events::secret::request::SecretName;
     use vodozemac::Curve25519PublicKey;
     use zeroize::Zeroizing;
 
     use super::MemoryStore;
-    use crate::{
-        Account, DeviceData, GossipRequest, SecretInfo, Session, UserIdentityData,
-        cryptostore_integration_tests, cryptostore_integration_tests_time,
-        olm::{
-            InboundGroupSession, OlmMessageHash, OutboundGroupSession, PrivateCrossSigningIdentity,
-            SenderDataType, StaticAccountData,
-        },
-        store::{
-            CryptoStore,
-            types::{
-                BackupKeys, Changes, DehydratedDeviceKey, PendingChanges, RoomKeyCounts,
-                RoomKeyWithheldEntry, RoomPendingKeyBundleDetails, RoomSettings,
-                StoredRoomKeyBundleData, TrackedUser,
-            },
-        },
-    };
+    use crate::Account;
+    use crate::DeviceData;
+    use crate::GossipRequest;
+    use crate::SecretInfo;
+    use crate::Session;
+    use crate::UserIdentityData;
+    use crate::cryptostore_integration_tests;
+    use crate::cryptostore_integration_tests_time;
+    use crate::olm::InboundGroupSession;
+    use crate::olm::OlmMessageHash;
+    use crate::olm::OutboundGroupSession;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::olm::SenderDataType;
+    use crate::olm::StaticAccountData;
+    use crate::store::CryptoStore;
+    use crate::store::types::BackupKeys;
+    use crate::store::types::Changes;
+    use crate::store::types::DehydratedDeviceKey;
+    use crate::store::types::PendingChanges;
+    use crate::store::types::RoomKeyCounts;
+    use crate::store::types::RoomKeyWithheldEntry;
+    use crate::store::types::RoomPendingKeyBundleDetails;
+    use crate::store::types::RoomSettings;
+    use crate::store::types::StoredRoomKeyBundleData;
+    use crate::store::types::TrackedUser;
 
     /// Holds on to a MemoryStore during a test, and moves it back into STORES
     /// when this is dropped
@@ -1390,7 +1551,10 @@ mod integration_tests {
             stores.insert(name.to_owned(), new_store.clone());
             new_store
         } else {
-            stores.entry(name.to_owned()).or_insert_with(PersistentMemoryStore::new).clone()
+            stores
+                .entry(name.to_owned())
+                .or_insert_with(PersistentMemoryStore::new)
+                .clone()
         }
     }
 
@@ -1429,7 +1593,9 @@ mod integration_tests {
             sessions: Vec<InboundGroupSession>,
             backed_up_to_version: Option<&str>,
         ) -> Result<(), Self::Error> {
-            self.0.save_inbound_group_sessions(sessions, backed_up_to_version).await
+            self.0
+                .save_inbound_group_sessions(sessions, backed_up_to_version)
+                .await
         }
 
         async fn get_sessions(
@@ -1504,7 +1670,9 @@ mod integration_tests {
             backup_version: &str,
             limit: usize,
         ) -> Result<Vec<InboundGroupSession>, Self::Error> {
-            self.0.inbound_group_sessions_for_backup(backup_version, limit).await
+            self.0
+                .inbound_group_sessions_for_backup(backup_version, limit)
+                .await
         }
 
         async fn mark_inbound_group_sessions_as_backed_up(
@@ -1634,7 +1802,9 @@ mod integration_tests {
             room_id: &RoomId,
             user_id: &UserId,
         ) -> crate::store::Result<Option<StoredRoomKeyBundleData>, Self::Error> {
-            self.0.get_received_room_key_bundle_data(room_id, user_id).await
+            self.0
+                .get_received_room_key_bundle_data(room_id, user_id)
+                .await
         }
 
         async fn has_downloaded_all_room_keys(
@@ -1648,7 +1818,9 @@ mod integration_tests {
             &self,
             room_id: &RoomId,
         ) -> Result<Option<RoomPendingKeyBundleDetails>, Self::Error> {
-            self.0.get_pending_key_bundle_details_for_room(room_id).await
+            self.0
+                .get_pending_key_bundle_details_for_room(room_id)
+                .await
         }
 
         async fn get_all_rooms_pending_key_bundles(
@@ -1675,7 +1847,9 @@ mod integration_tests {
             key: &str,
             holder: &str,
         ) -> Result<Option<CrossProcessLockGeneration>, Self::Error> {
-            self.0.try_take_leased_lock(lease_duration_ms, key, holder).await
+            self.0
+                .try_take_leased_lock(lease_duration_ms, key, holder)
+                .await
         }
 
         async fn next_batch_token(&self) -> Result<Option<String>, Self::Error> {

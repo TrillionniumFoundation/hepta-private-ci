@@ -16,20 +16,26 @@
 
 use std::collections::BTreeMap;
 
-use ruma::{OwnedDeviceId, RoomId, events::AnyToDeviceEventContent, serde::JsonCastable};
-use serde::{Deserialize, Serialize};
+use ruma::OwnedDeviceId;
+use ruma::RoomId;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::serde::JsonCastable;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
-use vodozemac::{Curve25519PublicKey, megolm::MegolmMessage, olm::OlmMessage};
+use vodozemac::Curve25519PublicKey;
+use vodozemac::megolm::MegolmMessage;
+use vodozemac::olm::OlmMessage;
 
 use super::Event;
-use crate::types::{
-    EventEncryptionAlgorithm, deserialize_curve_key,
-    events::{
-        EventType, ToDeviceEvent,
-        room_key_request::{self, SupportedKeyInfo},
-    },
-    serde_curve_key_option, serialize_curve_key,
-};
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::deserialize_curve_key;
+use crate::types::events::EventType;
+use crate::types::events::ToDeviceEvent;
+use crate::types::events::room_key_request::SupportedKeyInfo;
+use crate::types::events::room_key_request::{self};
+use crate::types::serde_curve_key_option;
+use crate::types::serialize_curve_key;
 
 /// An m.room.encrypted room event.
 pub type EncryptedEvent = Event<RoomEncryptedEventContent>;
@@ -151,20 +157,34 @@ pub struct OlmV2Curve25519AesSha2Content {
     pub ciphertext: OlmMessage,
 
     /// The Curve25519 key of the sender.
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     pub sender_key: Curve25519PublicKey,
 
     /// The unique ID of this content.
-    #[serde(default, skip_serializing_if = "Option::is_none", rename = "org.matrix.msgid")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        rename = "org.matrix.msgid"
+    )]
     pub message_id: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 struct OlmHelper {
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     sender_key: Curve25519PublicKey,
     ciphertext: BTreeMap<String, OlmMessage>,
-    #[serde(default, skip_serializing_if = "Option::is_none", rename = "org.matrix.msgid")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        rename = "org.matrix.msgid"
+    )]
     message_id: Option<String>,
 }
 
@@ -318,7 +338,11 @@ pub struct MegolmV1AesSha2Content {
     pub ciphertext: MegolmMessage,
 
     /// The Curve25519 key of the sender.
-    #[serde(default, with = "serde_curve_key_option", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        with = "serde_curve_key_option",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub sender_key: Option<Curve25519PublicKey>,
 
     /// The ID of the sending device.
@@ -441,13 +465,15 @@ scheme_serialization!(
 pub(crate) mod tests {
     use assert_matches::assert_matches;
     use assert_matches2::assert_let;
-    use serde_json::{Value, json};
+    use serde_json::Value;
+    use serde_json::json;
     use vodozemac::Curve25519PublicKey;
 
-    use super::{
-        EncryptedEvent, EncryptedToDeviceEvent, OlmV1Curve25519AesSha2Content,
-        RoomEventEncryptionScheme, ToDeviceEncryptedEventContent,
-    };
+    use super::EncryptedEvent;
+    use super::EncryptedToDeviceEvent;
+    use super::OlmV1Curve25519AesSha2Content;
+    use super::RoomEventEncryptionScheme;
+    use super::ToDeviceEncryptedEventContent;
 
     pub fn json() -> Value {
         json!({
@@ -505,7 +531,10 @@ pub(crate) mod tests {
         let json = json();
         let event: EncryptedEvent = serde_json::from_value(json.clone())?;
 
-        assert_matches!(event.content.scheme, RoomEventEncryptionScheme::MegolmV1AesSha2(_));
+        assert_matches!(
+            event.content.scheme,
+            RoomEventEncryptionScheme::MegolmV1AesSha2(_)
+        );
         assert!(event.content.relates_to.is_some());
         let serialized = serde_json::to_value(event)?;
         assert_eq!(json, serialized);
@@ -564,7 +593,10 @@ pub(crate) mod tests {
 
         let event: EncryptedEvent = serde_json::from_value(json.clone())?;
 
-        assert_matches!(event.content.scheme, RoomEventEncryptionScheme::MegolmV1AesSha2(_));
+        assert_matches!(
+            event.content.scheme,
+            RoomEventEncryptionScheme::MegolmV1AesSha2(_)
+        );
         assert!(event.content.relates_to.is_some());
         let serialized = serde_json::to_value(event)?;
         assert_eq!(json, serialized);

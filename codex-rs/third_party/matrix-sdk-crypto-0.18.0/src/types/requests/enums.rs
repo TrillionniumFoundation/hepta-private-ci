@@ -14,28 +14,24 @@
 
 use std::sync::Arc;
 
-use ruma::{
-    TransactionId,
-    api::client::{
-        backup::add_backup_keys::v3::Response as KeysBackupResponse,
-        keys::{
-            claim_keys::v3::{Request as KeysClaimRequest, Response as KeysClaimResponse},
-            get_keys::v3::Response as KeysQueryResponse,
-            upload_keys::v3::{Request as KeysUploadRequest, Response as KeysUploadResponse},
-            upload_signatures::v3::{
-                Request as SignatureUploadRequest, Response as SignatureUploadResponse,
-            },
-            upload_signing_keys::v3::Response as SigningKeysUploadResponse,
-        },
-        message::send_message_event::v3::Response as RoomMessageResponse,
-        to_device::send_event_to_device::v3::Response as ToDeviceResponse,
-    },
-};
+use ruma::TransactionId;
+use ruma::api::client::backup::add_backup_keys::v3::Response as KeysBackupResponse;
+use ruma::api::client::keys::claim_keys::v3::Request as KeysClaimRequest;
+use ruma::api::client::keys::claim_keys::v3::Response as KeysClaimResponse;
+use ruma::api::client::keys::get_keys::v3::Response as KeysQueryResponse;
+use ruma::api::client::keys::upload_keys::v3::Request as KeysUploadRequest;
+use ruma::api::client::keys::upload_keys::v3::Response as KeysUploadResponse;
+use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+use ruma::api::client::keys::upload_signatures::v3::Response as SignatureUploadResponse;
+use ruma::api::client::keys::upload_signing_keys::v3::Response as SigningKeysUploadResponse;
+use ruma::api::client::message::send_message_event::v3::Response as RoomMessageResponse;
+use ruma::api::client::to_device::send_event_to_device::v3::Response as ToDeviceResponse;
 
-use super::{
-    KeysQueryRequest, OutgoingRequest, OutgoingVerificationRequest, RoomMessageRequest,
-    ToDeviceRequest,
-};
+use super::KeysQueryRequest;
+use super::OutgoingRequest;
+use super::OutgoingVerificationRequest;
+use super::RoomMessageRequest;
+use super::ToDeviceRequest;
 
 /// Enum over the different outgoing requests we can have.
 #[derive(Debug)]
@@ -109,19 +105,28 @@ impl From<SignatureUploadRequest> for AnyOutgoingRequest {
 
 impl From<OutgoingVerificationRequest> for OutgoingRequest {
     fn from(r: OutgoingVerificationRequest) -> Self {
-        Self { request_id: r.request_id().to_owned(), request: Arc::new(r.into()) }
+        Self {
+            request_id: r.request_id().to_owned(),
+            request: Arc::new(r.into()),
+        }
     }
 }
 
 impl From<SignatureUploadRequest> for OutgoingRequest {
     fn from(r: SignatureUploadRequest) -> Self {
-        Self { request_id: TransactionId::new(), request: Arc::new(r.into()) }
+        Self {
+            request_id: TransactionId::new(),
+            request: Arc::new(r.into()),
+        }
     }
 }
 
 impl From<KeysUploadRequest> for OutgoingRequest {
     fn from(r: KeysUploadRequest) -> Self {
-        Self { request_id: TransactionId::new(), request: Arc::new(r.into()) }
+        Self {
+            request_id: TransactionId::new(),
+            request: Arc::new(r.into()),
+        }
     }
 }
 

@@ -75,6 +75,18 @@ pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
 pub use client::AgentdClient;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectiveClient;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectiveClientError;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectiveHistory;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectivePeer;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectiveWindow;
+#[cfg(target_os = "linux")]
+pub use client::ObjectiveClientMode;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -282,3 +294,12 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+#[cfg(all(target_os = "linux", feature = "desktop-objective-ui"))]
+mod desktop_objective_ui;
+#[cfg(all(target_os = "linux", feature = "desktop-objective-ui"))]
+pub use desktop_objective_ui::AgentdObjectiveUiError;
+#[cfg(all(target_os = "linux", feature = "desktop-objective-ui"))]
+pub use desktop_objective_ui::AgentdObjectiveUiInputs;
+#[cfg(all(target_os = "linux", feature = "desktop-objective-ui"))]
+pub use desktop_objective_ui::install_original_objective_ui;

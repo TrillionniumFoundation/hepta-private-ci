@@ -14,7 +14,8 @@
 
 use ruma::TransactionId;
 
-use super::{RoomMessageRequest, ToDeviceRequest};
+use super::RoomMessageRequest;
+use super::ToDeviceRequest;
 
 /// An enum over the different outgoing verification based requests.
 #[derive(Clone, Debug)]

@@ -1587,11 +1587,17 @@ macro_rules! cryptostore_integration_tests_time {
                 assert_eq!(acquired0, Some(1)); // first generation
 
                 // Should extend the lease automatically (same holder).
-                let acquired2 = store.try_take_leased_lock(300, "key", "alice").await.unwrap();
+                let acquired2 = store
+                    .try_take_leased_lock(300, "key", "alice")
+                    .await
+                    .unwrap();
                 assert_eq!(acquired2, Some(1)); // same lock generation
 
                 // Should extend the lease automatically (same holder + time is ok).
-                let acquired3 = store.try_take_leased_lock(300, "key", "alice").await.unwrap();
+                let acquired3 = store
+                    .try_take_leased_lock(300, "key", "alice")
+                    .await
+                    .unwrap();
                 assert_eq!(acquired3, Some(1)); // same lock generation
 
                 // Another attempt at taking the lock should fail, because it's taken.
@@ -1629,7 +1635,10 @@ macro_rules! cryptostore_integration_tests_time {
                 assert_eq!(acquired8, Some(4)); // new lock generation!
 
                 // It blocks the other user.
-                let acquired9 = store.try_take_leased_lock(300, "key", "alice").await.unwrap();
+                let acquired9 = store
+                    .try_take_leased_lock(300, "key", "alice")
+                    .await
+                    .unwrap();
                 assert!(acquired9.is_none()); // not acquired
 
                 // We can hold onto our lease.

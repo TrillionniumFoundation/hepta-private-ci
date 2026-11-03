@@ -4,15 +4,19 @@ use assert_matches2::assert_matches;
 use matrix_sdk_test::async_test;
 use ruma::room_id;
 
-use crate::{
-    OlmMachine, SetRoomSettingsError, machine::tests, store::types::RoomSettings,
-    types::EventEncryptionAlgorithm,
-};
+use crate::OlmMachine;
+use crate::SetRoomSettingsError;
+use crate::machine::tests;
+use crate::store::types::RoomSettings;
+use crate::types::EventEncryptionAlgorithm;
 
 #[async_test]
 async fn test_room_settings_returns_none_for_unknown_room() {
     let machine = OlmMachine::new(tests::user_id(), tests::alice_device_id()).await;
-    let settings = machine.room_settings(room_id!("!test2:localhost")).await.unwrap();
+    let settings = machine
+        .room_settings(room_id!("!test2:localhost"))
+        .await
+        .unwrap();
     assert!(settings.is_none());
 }
 
@@ -31,7 +35,10 @@ async fn test_stores_and_returns_room_settings() {
     };
 
     machine.set_room_settings(room_id, &settings).await.unwrap();
-    assert_eq!(machine.room_settings(room_id).await.unwrap(), Some(settings));
+    assert_eq!(
+        machine.room_settings(room_id).await.unwrap(),
+        Some(settings)
+    );
 }
 
 #[async_test]
@@ -61,7 +68,10 @@ async fn test_set_room_settings_rejects_changes() {
     machine
         .set_room_settings(
             room_id,
-            &RoomSettings { session_rotation_period_messages: Some(100), ..Default::default() },
+            &RoomSettings {
+                session_rotation_period_messages: Some(100),
+                ..Default::default()
+            },
         )
         .await
         .unwrap();
@@ -70,7 +80,10 @@ async fn test_set_room_settings_rejects_changes() {
     let err = machine
         .set_room_settings(
             room_id,
-            &RoomSettings { session_rotation_period_messages: Some(1000), ..Default::default() },
+            &RoomSettings {
+                session_rotation_period_messages: Some(1000),
+                ..Default::default()
+            },
         )
         .await
         .unwrap_err();
@@ -87,7 +100,10 @@ async fn test_set_room_settings_accepts_noop_changes() {
     machine
         .set_room_settings(
             room_id,
-            &RoomSettings { session_rotation_period_messages: Some(100), ..Default::default() },
+            &RoomSettings {
+                session_rotation_period_messages: Some(100),
+                ..Default::default()
+            },
         )
         .await
         .unwrap();
@@ -96,7 +112,10 @@ async fn test_set_room_settings_accepts_noop_changes() {
     machine
         .set_room_settings(
             room_id,
-            &RoomSettings { session_rotation_period_messages: Some(100), ..Default::default() },
+            &RoomSettings {
+                session_rotation_period_messages: Some(100),
+                ..Default::default()
+            },
         )
         .await
         .unwrap();

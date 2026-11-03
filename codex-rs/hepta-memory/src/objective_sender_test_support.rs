@@ -1,3 +1,5 @@
+#![cfg(test)]
+
 //! Test-only host fixtures. None is a production authority or checkpoint provider.
 
 use super::*;

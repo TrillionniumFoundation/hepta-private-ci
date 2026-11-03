@@ -12,16 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use ruma::{
-    CanonicalJsonValue, DeviceKeyAlgorithm, DeviceKeyId, UserId, canonical_json::to_canonical_value,
-};
+use ruma::CanonicalJsonValue;
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::UserId;
+use ruma::canonical_json::to_canonical_value;
 use serde::Serialize;
-use vodozemac::{Ed25519PublicKey, Ed25519SecretKey, Ed25519Signature, olm::Account};
+use vodozemac::Ed25519PublicKey;
+use vodozemac::Ed25519SecretKey;
+use vodozemac::Ed25519Signature;
+use vodozemac::olm::Account;
 
-use crate::{
-    error::SignatureError,
-    types::{CrossSigningKey, DeviceKeys, Signature, Signatures, SignedKey},
-};
+use crate::error::SignatureError;
+use crate::types::CrossSigningKey;
+use crate::types::DeviceKeys;
+use crate::types::Signature;
+use crate::types::Signatures;
+use crate::types::SignedKey;
 
 fn to_signable_json(mut value: CanonicalJsonValue) -> Result<String, SignatureError> {
     let json_object = value.as_object_mut().ok_or(SignatureError::NotAnObject)?;
@@ -122,7 +129,13 @@ impl VerifyJson for Ed25519PublicKey {
         }
 
         let canonicalized = signed_object.to_canonical_json()?;
-        verify_signature(*self, user_id, key_id, signed_object.signatures(), &canonicalized)
+        verify_signature(
+            *self,
+            user_id,
+            key_id,
+            signed_object.signatures(),
+            &canonicalized,
+        )
     }
 
     fn verify_canonicalized_json(
@@ -200,7 +213,10 @@ impl SignedJsonObject for crate::types::MegolmV1AuthData {
 
 #[cfg(test)]
 mod tests {
-    use ruma::{DeviceKeyAlgorithm, DeviceKeyId, device_id, user_id};
+    use ruma::DeviceKeyAlgorithm;
+    use ruma::DeviceKeyId;
+    use ruma::device_id;
+    use ruma::user_id;
     use serde_json::json;
     use vodozemac::Ed25519PublicKey;
 

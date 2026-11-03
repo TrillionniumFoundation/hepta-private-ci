@@ -17,37 +17,45 @@
 //! This module defines the data structures used by the crypto store to
 //! represent objects that are persisted in the database.
 
-use std::{
-    collections::{BTreeMap, HashMap, HashSet},
-    time::Duration,
-};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::time::Duration;
 
 use rand::Rng;
-use ruma::{
-    MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedRoomId, OwnedUserId,
-    events::secret::request::SecretName,
-};
-use serde::{Deserialize, Serialize};
-use vodozemac::{Curve25519PublicKey, base64_encode};
-use zeroize::{Zeroize, ZeroizeOnDrop, Zeroizing};
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedDeviceId;
+use ruma::OwnedRoomId;
+use ruma::OwnedUserId;
+use ruma::events::secret::request::SecretName;
+use serde::Deserialize;
+use serde::Serialize;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::base64_encode;
+use zeroize::Zeroize;
+use zeroize::ZeroizeOnDrop;
+use zeroize::Zeroizing;
 
-use super::{DehydrationError, GossipRequest};
+use super::DehydrationError;
+use super::GossipRequest;
+use crate::Account;
+use crate::Device;
+use crate::DeviceData;
+use crate::GossippedSecret;
+use crate::Session;
+use crate::UserIdentity;
+use crate::UserIdentityData;
+use crate::olm::InboundGroupSession;
+use crate::olm::OlmMessageHash;
+use crate::olm::OutboundGroupSession;
+use crate::olm::PrivateCrossSigningIdentity;
+use crate::olm::SenderData;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::events::room_key_bundle::RoomKeyBundleContent;
+use crate::types::events::room_key_withheld::RoomKeyWithheldContent;
+use crate::types::events::room_key_withheld::RoomKeyWithheldEvent;
 #[cfg(feature = "experimental-push-secrets")]
 use crate::types::events::secret_push::SecretPushContent;
-use crate::{
-    Account, Device, DeviceData, GossippedSecret, Session, UserIdentity, UserIdentityData,
-    olm::{
-        InboundGroupSession, OlmMessageHash, OutboundGroupSession, PrivateCrossSigningIdentity,
-        SenderData,
-    },
-    types::{
-        EventEncryptionAlgorithm,
-        events::{
-            room_key_bundle::RoomKeyBundleContent,
-            room_key_withheld::{RoomKeyWithheldContent, RoomKeyWithheldEvent},
-        },
-    },
-};
 
 /// Aggregated changes to be saved in the database.
 ///
@@ -115,20 +123,28 @@ pub struct SecretsInboxItem {
 #[cfg(not(tarpaulin_include))]
 impl std::fmt::Debug for SecretsInboxItem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_tuple("SecretsInboxItem").field(&self.secret_name).finish()
+        f.debug_tuple("SecretsInboxItem")
+            .field(&self.secret_name)
+            .finish()
     }
 }
 
 impl From<GossippedSecret> for SecretsInboxItem {
     fn from(secret: GossippedSecret) -> Self {
-        Self { secret_name: secret.secret_name, secret: secret.event.content.secret.clone().into() }
+        Self {
+            secret_name: secret.secret_name,
+            secret: secret.event.content.secret.clone().into(),
+        }
     }
 }
 
 #[cfg(feature = "experimental-push-secrets")]
 impl From<SecretPushContent> for SecretsInboxItem {
     fn from(secret: SecretPushContent) -> Self {
-        Self { secret_name: secret.name.clone(), secret: secret.secret.clone().into() }
+        Self {
+            secret_name: secret.name.clone(),
+            secret: secret.secret.clone().into(),
+        }
     }
 }
 
@@ -374,7 +390,9 @@ impl DehydratedDeviceKey {
 
 impl From<&[u8; 32]> for DehydratedDeviceKey {
     fn from(value: &[u8; 32]) -> Self {
-        DehydratedDeviceKey { inner: Box::new(*value) }
+        DehydratedDeviceKey {
+            inner: Box::new(*value),
+        }
     }
 }
 
@@ -556,7 +574,10 @@ pub struct RoomKeyWithheldEntry {
 
 impl From<RoomKeyWithheldEvent> for RoomKeyWithheldEntry {
     fn from(value: RoomKeyWithheldEvent) -> Self {
-        Self { sender: value.sender, content: value.content }
+        Self {
+            sender: value.sender,
+            content: value.content,
+        }
     }
 }
 
@@ -581,11 +602,19 @@ pub struct RoomKeyBundleInfo {
 
 impl From<&StoredRoomKeyBundleData> for RoomKeyBundleInfo {
     fn from(value: &StoredRoomKeyBundleData) -> Self {
-        let StoredRoomKeyBundleData { sender_user, sender_data: _, bundle_data, sender_key } =
-            value;
+        let StoredRoomKeyBundleData {
+            sender_user,
+            sender_data: _,
+            bundle_data,
+            sender_key,
+        } = value;
         let sender_key = *sender_key;
 
-        Self { sender: sender_user.clone(), room_id: bundle_data.room_id.clone(), sender_key }
+        Self {
+            sender: sender_user.clone(),
+            room_id: bundle_data.room_id.clone(),
+            sender_key,
+        }
     }
 }
 

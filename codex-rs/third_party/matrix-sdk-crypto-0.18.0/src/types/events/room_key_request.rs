@@ -16,16 +16,21 @@
 
 use std::collections::BTreeMap;
 
-use ruma::{
-    OwnedDeviceId, OwnedRoomId, OwnedTransactionId, RoomId, events::AnyToDeviceEventContent,
-    serde::JsonCastable,
-};
-use serde::{Deserialize, Serialize};
+use ruma::OwnedDeviceId;
+use ruma::OwnedRoomId;
+use ruma::OwnedTransactionId;
+use ruma::RoomId;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::serde::JsonCastable;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use vodozemac::Curve25519PublicKey;
 
-use super::{EventType, ToDeviceEvent};
-use crate::types::{EventEncryptionAlgorithm, serde_curve_key_option};
+use super::EventType;
+use super::ToDeviceEvent;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::serde_curve_key_option;
 
 /// The `m.room_key_request` to-device event.
 pub type RoomKeyRequestEvent = ToDeviceEvent<RoomKeyRequestContent>;
@@ -62,7 +67,11 @@ impl RoomKeyRequestContent {
         requesting_device_id: OwnedDeviceId,
         request_id: OwnedTransactionId,
     ) -> Self {
-        Self { action: Action::Request(info), requesting_device_id, request_id }
+        Self {
+            action: Action::Request(info),
+            requesting_device_id,
+            request_id,
+        }
     }
 }
 
@@ -209,7 +218,11 @@ pub struct MegolmV1AesSha2Content {
     pub room_id: OwnedRoomId,
 
     /// The Curve25519 key of the device which initiated the session originally.
-    #[serde(default, with = "serde_curve_key_option", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        with = "serde_curve_key_option",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub sender_key: Option<Curve25519PublicKey>,
 
     /// The ID of the session that the key is for.
@@ -263,7 +276,10 @@ impl Serialize for RequestedKeyInfo {
             }
         };
 
-        let helper = RequestedKeyInfoHelper { algorithm: self.algorithm(), other };
+        let helper = RequestedKeyInfoHelper {
+            algorithm: self.algorithm(),
+            other,
+        };
 
         helper.serialize(serializer)
     }
@@ -292,9 +308,12 @@ impl TryFrom<RequestedKeyInfoHelper> for RequestedKeyInfo {
 #[cfg(test)]
 mod tests {
     use assert_matches::assert_matches;
-    use serde_json::{Value, json};
+    use serde_json::Value;
+    use serde_json::json;
 
-    use super::{Action, RequestedKeyInfo, RoomKeyRequestEvent};
+    use super::Action;
+    use super::RequestedKeyInfo;
+    use super::RoomKeyRequestEvent;
 
     pub fn json() -> Value {
         json!({

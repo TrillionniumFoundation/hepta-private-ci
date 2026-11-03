@@ -16,12 +16,12 @@
 //!
 //! [MSC4388]: https://github.com/matrix-org/matrix-spec-proposals/pull/4388
 
-use std::{
-    io::{Cursor, Read},
-    str::{self},
-};
+use std::io::Cursor;
+use std::io::Read;
+use std::str::{self};
 
-use byteorder::{BigEndian, ReadBytesExt};
+use byteorder::BigEndian;
+use byteorder::ReadBytesExt;
 use url::Url;
 use vodozemac::Curve25519PublicKey;
 
@@ -143,9 +143,17 @@ impl QrCodeData {
             reader.read_exact(&mut base_url)?;
             let base_url = Url::parse(str::from_utf8(&base_url)?)?;
 
-            Ok(Self { public_key, rendezvous_id, base_url, intent })
+            Ok(Self {
+                public_key,
+                rendezvous_id,
+                base_url,
+                intent,
+            })
         } else {
-            Err(LoginQrCodeDecodeError::InvalidType { expected: TYPE, got: qr_type })
+            Err(LoginQrCodeDecodeError::InvalidType {
+                expected: TYPE,
+                got: qr_type,
+            })
         }
     }
 
@@ -290,7 +298,9 @@ mod test {
             .expect("We should be able to parse the QR code data");
 
         assert_let!(
-            crate::types::qr_login::QrCodeData { inner: QrCodeDataInner::Msc4388(data) } = data
+            crate::types::qr_login::QrCodeData {
+                inner: QrCodeDataInner::Msc4388(data)
+            } = data
         );
 
         assert_eq!(

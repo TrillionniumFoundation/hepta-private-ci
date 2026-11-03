@@ -1,26 +1,40 @@
-use std::{future, ops::Deref, sync::Arc};
+use std::future;
+use std::ops::Deref;
+use std::sync::Arc;
 
 use futures_core::Stream;
 use futures_util::StreamExt;
-use matrix_sdk_common::cross_process_lock::{CrossProcessLock, CrossProcessLockConfig};
-use ruma::{DeviceId, OwnedDeviceId, OwnedUserId, UserId};
-use tokio::sync::{Mutex, broadcast};
-use tokio_stream::wrappers::{BroadcastStream, errors::BroadcastStreamRecvError};
-use tracing::{debug, trace, warn};
+use matrix_sdk_common::cross_process_lock::CrossProcessLock;
+use matrix_sdk_common::cross_process_lock::CrossProcessLockConfig;
+use ruma::DeviceId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
+use ruma::UserId;
+use tokio::sync::Mutex;
+use tokio::sync::broadcast;
+use tokio_stream::wrappers::BroadcastStream;
+use tokio_stream::wrappers::errors::BroadcastStreamRecvError;
+use tracing::debug;
+use tracing::trace;
+use tracing::warn;
 
-use super::{
-    DeviceChanges, IdentityChanges, LockableCryptoStore, caches::SessionStore,
-    types::RoomKeyBundleInfo,
-};
-use crate::{
-    CryptoStoreError, OwnUserIdentityData, Session, UserIdentityData,
-    olm::InboundGroupSession,
-    store,
-    store::{
-        Changes, DynCryptoStore, IntoCryptoStore, RoomKeyInfo, RoomKeyWithheldInfo,
-        types::SecretsInboxItem,
-    },
-};
+use super::DeviceChanges;
+use super::IdentityChanges;
+use super::LockableCryptoStore;
+use super::caches::SessionStore;
+use super::types::RoomKeyBundleInfo;
+use crate::CryptoStoreError;
+use crate::OwnUserIdentityData;
+use crate::Session;
+use crate::UserIdentityData;
+use crate::olm::InboundGroupSession;
+use crate::store;
+use crate::store::Changes;
+use crate::store::DynCryptoStore;
+use crate::store::IntoCryptoStore;
+use crate::store::RoomKeyInfo;
+use crate::store::RoomKeyWithheldInfo;
+use crate::store::types::SecretsInboxItem;
 
 /// A wrapper for crypto store implementations that adds update notifiers.
 ///
@@ -90,18 +104,23 @@ impl CryptoStoreWrapper {
     ///
     /// * `changes` - The set of changes that should be stored.
     pub async fn save_changes(&self, changes: Changes) -> store::Result<()> {
-        let room_key_updates: Vec<_> =
-            changes.inbound_group_sessions.iter().map(RoomKeyInfo::from).collect();
+        let room_key_updates: Vec<_> = changes
+            .inbound_group_sessions
+            .iter()
+            .map(RoomKeyInfo::from)
+            .collect();
 
         let withheld_session_updates: Vec<_> = changes
             .withheld_session_info
             .iter()
             .flat_map(|(room_id, session_map)| {
-                session_map.iter().map(|(session_id, withheld_event)| RoomKeyWithheldInfo {
-                    room_id: room_id.to_owned(),
-                    session_id: session_id.to_owned(),
-                    withheld_event: withheld_event.clone(),
-                })
+                session_map
+                    .iter()
+                    .map(|(session_id, withheld_event)| RoomKeyWithheldInfo {
+                        room_id: room_id.to_owned(),
+                        session_id: session_id.to_owned(),
+                        withheld_event: withheld_event.clone(),
+                    })
             })
             .collect();
 
@@ -119,8 +138,11 @@ impl CryptoStoreWrapper {
         let secrets = changes.secrets.to_owned();
         let devices = changes.devices.to_owned();
         let identities = changes.identities.to_owned();
-        let room_key_bundle_updates: Vec<_> =
-            changes.received_room_key_bundles.iter().map(RoomKeyBundleInfo::from).collect();
+        let room_key_bundle_updates: Vec<_> = changes
+            .received_room_key_bundles
+            .iter()
+            .map(RoomKeyBundleInfo::from)
+            .collect();
 
         if devices
             .changed
@@ -142,8 +164,11 @@ impl CryptoStoreWrapper {
 
         // If we updated our own public identity, log it for debugging purposes
         if tracing::level_enabled!(tracing::Level::DEBUG) {
-            for updated_identity in
-                identities.new.iter().chain(identities.changed.iter()).filter_map(|id| id.own())
+            for updated_identity in identities
+                .new
+                .iter()
+                .chain(identities.changed.iter())
+                .filter_map(|id| id.own())
             {
                 let master_key = updated_identity.master_key().get_first_key();
                 let user_signing_key = updated_identity.user_signing_key().get_first_key();
@@ -166,7 +191,9 @@ impl CryptoStoreWrapper {
         }
 
         if !withheld_session_updates.is_empty() {
-            let _ = self.room_keys_withheld_received_sender.send(withheld_session_updates);
+            let _ = self
+                .room_keys_withheld_received_sender
+                .send(withheld_session_updates);
         }
 
         for secret in secrets {
@@ -181,8 +208,11 @@ impl CryptoStoreWrapper {
             // Mapping the devices and user identities from the read-only variant to one's
             // that contain side-effects requires our own identity. This is
             // guaranteed to be up-to-date since we just persisted it.
-            let maybe_own_identity =
-                self.store.get_user_identity(&self.user_id).await?.and_then(|i| i.into_own());
+            let maybe_own_identity = self
+                .store
+                .get_user_identity(&self.user_id)
+                .await?
+                .and_then(|i| i.into_own());
 
             // If our identity was not verified before the change and is now, that means
             // this could impact the verification chain of other known
@@ -211,7 +241,9 @@ impl CryptoStoreWrapper {
                 }
             }
 
-            let _ = self.identities_broadcaster.send((maybe_own_identity, identities, devices));
+            let _ = self
+                .identities_broadcaster
+                .send((maybe_own_identity, identities, devices));
         }
 
         Ok(())
@@ -240,8 +272,10 @@ impl CryptoStoreWrapper {
         }
 
         if !updated_identities.is_empty() {
-            let identity_changes =
-                IdentityChanges { changed: updated_identities, ..Default::default() };
+            let identity_changes = IdentityChanges {
+                changed: updated_identities,
+                ..Default::default()
+            };
             self.store
                 .save_changes(Changes {
                     identities: identity_changes.clone(),
@@ -303,7 +337,9 @@ impl CryptoStoreWrapper {
         backed_up_to_version: Option<&str>,
     ) -> store::Result<()> {
         let room_key_updates: Vec<_> = sessions.iter().map(RoomKeyInfo::from).collect();
-        self.store.save_inbound_group_sessions(sessions, backed_up_to_version).await?;
+        self.store
+            .save_inbound_group_sessions(sessions, backed_up_to_version)
+            .await?;
 
         if !room_key_updates.is_empty() {
             // Ignore the result. It can only fail if there are no listeners.
@@ -447,7 +483,10 @@ mod test {
         first
             .store()
             .save_changes(Changes {
-                devices: DeviceChanges { changed: vec![device_data], ..Default::default() },
+                devices: DeviceChanges {
+                    changed: vec![device_data],
+                    ..Default::default()
+                },
                 ..Default::default()
             })
             .await
@@ -455,7 +494,14 @@ mod test {
 
         // Then the session is no longer in the cache
         assert!(
-            first.store().inner.store.sessions.get(&sender_key).await.is_none(),
+            first
+                .store()
+                .inner
+                .store
+                .sessions
+                .get(&sender_key)
+                .await
+                .is_none(),
             "The session should no longer be in the cache after our own device keys changed"
         );
     }

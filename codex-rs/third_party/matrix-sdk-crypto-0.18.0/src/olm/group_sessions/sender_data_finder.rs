@@ -15,11 +15,17 @@
 use ruma::UserId;
 use vodozemac::Curve25519PublicKey;
 
-use super::{InboundGroupSession, SenderData};
-use crate::{
-    CryptoStoreError, Device, DeviceData, MegolmError, OlmError, SignatureError,
-    error::MismatchedIdentityKeysError, store::Store, types::events::olm_v1::DecryptedRoomKeyEvent,
-};
+use super::InboundGroupSession;
+use super::SenderData;
+use crate::CryptoStoreError;
+use crate::Device;
+use crate::DeviceData;
+use crate::MegolmError;
+use crate::OlmError;
+use crate::SignatureError;
+use crate::error::MismatchedIdentityKeysError;
+use crate::store::Store;
+use crate::types::events::olm_v1::DecryptedRoomKeyEvent;
 
 /// Temporary struct that is used to look up [`SenderData`] based on the
 /// information supplied in
@@ -160,7 +166,9 @@ impl<'a> SenderDataFinder<'a> {
         session: &'a InboundGroupSession,
     ) -> Result<SenderData, SessionDeviceCheckError> {
         let finder = Self { store, session };
-        finder.search_for_device(sender_curve_key, sender_user_id).await
+        finder
+            .search_for_device(sender_curve_key, sender_user_id)
+            .await
     }
 
     /// Step A (start - we have a to-device message containing a room key)
@@ -181,7 +189,9 @@ impl<'a> SenderDataFinder<'a> {
             Ok(self.have_device_data(sender_device_data).await?)
         } else {
             // No: look for the device in the store
-            Ok(self.search_for_device(sender_curve_key, &room_key_event.sender).await?)
+            Ok(self
+                .search_for_device(sender_curve_key, &room_key_event.sender)
+                .await?)
         }
     }
 
@@ -193,8 +203,10 @@ impl<'a> SenderDataFinder<'a> {
     ) -> Result<SenderData, SessionDeviceCheckError> {
         // Does the locally-cached (in the store) devices list contain a device with the
         // curve key of the sender of the to-device message?
-        if let Some(sender_device) =
-            self.store.get_device_from_curve_key(sender_user_id, sender_curve_key).await?
+        if let Some(sender_device) = self
+            .store
+            .get_device_from_curve_key(sender_user_id, sender_curve_key)
+            .await?
         {
             // Yes: use the device to continue
             self.have_device(sender_device)
@@ -231,7 +243,10 @@ impl<'a> SenderDataFinder<'a> {
         if !device_is_owner {
             // Step E (the device does not own the session)
             // Give up: something is wrong with the session.
-            Ok(SenderData::UnknownDevice { legacy_session: false, owner_check_failed: true })
+            Ok(SenderData::UnknownDevice {
+                legacy_session: false,
+                owner_check_failed: true,
+            })
         } else {
             // Steps F, G, and H: we have a device, which may or may not be signed by the
             // sender.
@@ -326,36 +341,47 @@ impl From<SessionDeviceKeysCheckError> for OlmError {
 
 #[cfg(test)]
 mod tests {
-    use std::{ops::Deref as _, sync::Arc};
+    use std::ops::Deref as _;
+    use std::sync::Arc;
 
     use assert_matches2::assert_let;
     use matrix_sdk_test::async_test;
-    use ruma::{DeviceId, OwnedUserId, RoomId, UserId, device_id, room_id, user_id};
+    use ruma::DeviceId;
+    use ruma::OwnedUserId;
+    use ruma::RoomId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::room_id;
+    use ruma::user_id;
     use tokio::sync::Mutex;
-    use vodozemac::{Curve25519PublicKey, Ed25519PublicKey, megolm::SessionKey};
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Ed25519PublicKey;
+    use vodozemac::megolm::SessionKey;
 
     use super::SenderDataFinder;
-    use crate::{
-        Account, Device, OtherUserIdentityData, OwnUserIdentityData, UserIdentityData,
-        error::MismatchedIdentityKeysError,
-        machine::test_helpers::{
-            create_signed_device_of_unverified_user, create_unsigned_device,
-            sign_user_identity_data,
-        },
-        olm::{
-            InboundGroupSession, KnownSenderData, PrivateCrossSigningIdentity, SenderData,
-            group_sessions::sender_data_finder::SessionDeviceKeysCheckError,
-        },
-        store::{CryptoStoreWrapper, MemoryStore, Store, types::Changes},
-        types::{
-            EventEncryptionAlgorithm,
-            events::{
-                olm_v1::DecryptedRoomKeyEvent,
-                room_key::{MegolmV1AesSha2Content, RoomKeyContent},
-            },
-        },
-        verification::VerificationMachine,
-    };
+    use crate::Account;
+    use crate::Device;
+    use crate::OtherUserIdentityData;
+    use crate::OwnUserIdentityData;
+    use crate::UserIdentityData;
+    use crate::error::MismatchedIdentityKeysError;
+    use crate::machine::test_helpers::create_signed_device_of_unverified_user;
+    use crate::machine::test_helpers::create_unsigned_device;
+    use crate::machine::test_helpers::sign_user_identity_data;
+    use crate::olm::InboundGroupSession;
+    use crate::olm::KnownSenderData;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::olm::SenderData;
+    use crate::olm::group_sessions::sender_data_finder::SessionDeviceKeysCheckError;
+    use crate::store::CryptoStoreWrapper;
+    use crate::store::MemoryStore;
+    use crate::store::Store;
+    use crate::store::types::Changes;
+    use crate::types::EventEncryptionAlgorithm;
+    use crate::types::events::olm_v1::DecryptedRoomKeyEvent;
+    use crate::types::events::room_key::MegolmV1AesSha2Content;
+    use crate::types::events::room_key::RoomKeyContent;
+    use crate::verification::VerificationMachine;
 
     impl<'a> SenderDataFinder<'a> {
         fn new(store: &'a Store, session: &'a InboundGroupSession) -> Self {
@@ -377,7 +403,12 @@ mod tests {
             .unwrap();
 
         // Then we get back no useful information at all
-        assert_let!(SenderData::UnknownDevice { legacy_session, owner_check_failed } = sender_data);
+        assert_let!(
+            SenderData::UnknownDevice {
+                legacy_session,
+                owner_check_failed
+            } = sender_data
+        );
 
         assert!(!legacy_session);
         assert!(!owner_check_failed);
@@ -386,9 +417,12 @@ mod tests {
     #[async_test]
     async fn test_if_the_todevice_event_contains_device_info_it_is_captured() {
         // Given that the signed device keys are in the event
-        let setup =
-            TestSetup::new(TestOptions::new().device_is_signed().event_contains_device_keys())
-                .await;
+        let setup = TestSetup::new(
+            TestOptions::new()
+                .device_is_signed()
+                .event_contains_device_keys(),
+        )
+        .await;
         let finder = SenderDataFinder::new(&setup.store, &setup.session);
 
         // When we try to find sender data
@@ -398,7 +432,12 @@ mod tests {
             .unwrap();
 
         // Then we get back the device keys that were in the event
-        assert_let!(SenderData::DeviceInfo { device_keys, legacy_session } = sender_data);
+        assert_let!(
+            SenderData::DeviceInfo {
+                device_keys,
+                legacy_session
+            } = sender_data
+        );
         assert_eq!(&device_keys, setup.sender_device.as_device_keys());
         assert!(!legacy_session);
     }
@@ -407,8 +446,12 @@ mod tests {
     async fn test_picks_up_device_info_from_the_store_if_missing_from_the_todevice_event() {
         // Given that the device keys are not in the event but the device is in the
         // store
-        let setup =
-            TestSetup::new(TestOptions::new().store_contains_device().device_is_signed()).await;
+        let setup = TestSetup::new(
+            TestOptions::new()
+                .store_contains_device()
+                .device_is_signed(),
+        )
+        .await;
         let finder = SenderDataFinder::new(&setup.store, &setup.session);
 
         // When we try to find sender data
@@ -418,7 +461,12 @@ mod tests {
             .unwrap();
 
         // Then we get back the device keys that were in the store
-        assert_let!(SenderData::DeviceInfo { device_keys, legacy_session } = sender_data);
+        assert_let!(
+            SenderData::DeviceInfo {
+                device_keys,
+                legacy_session
+            } = sender_data
+        );
         assert_eq!(&device_keys, setup.sender_device.as_device_keys());
         assert!(!legacy_session);
     }
@@ -438,7 +486,12 @@ mod tests {
 
         // Then we store the device info even though it is useless, in case we want to
         // check it matches up later.
-        assert_let!(SenderData::DeviceInfo { device_keys, legacy_session } = sender_data);
+        assert_let!(
+            SenderData::DeviceInfo {
+                device_keys,
+                legacy_session
+            } = sender_data
+        );
         assert_eq!(&device_keys, setup.sender_device.as_device_keys());
         assert!(!legacy_session);
     }
@@ -464,8 +517,11 @@ mod tests {
 
         // Then we get back the information about the sender
         assert_let!(
-            SenderData::SenderUnverified(KnownSenderData { user_id, device_id, master_key }) =
-                sender_data
+            SenderData::SenderUnverified(KnownSenderData {
+                user_id,
+                device_id,
+                master_key
+            }) = sender_data
         );
         assert_eq!(user_id, setup.sender.user_id);
         assert_eq!(device_id.unwrap(), setup.sender_device.device_id());
@@ -492,8 +548,11 @@ mod tests {
 
         // Then we get back the information about the sender
         assert_let!(
-            SenderData::SenderUnverified(KnownSenderData { user_id, device_id, master_key }) =
-                sender_data
+            SenderData::SenderUnverified(KnownSenderData {
+                user_id,
+                device_id,
+                master_key
+            }) = sender_data
         );
         assert_eq!(user_id, setup.sender.user_id);
         assert_eq!(device_id.unwrap(), setup.sender_device.device_id());
@@ -521,8 +580,11 @@ mod tests {
 
         // Then we get back the information about the sender
         assert_let!(
-            SenderData::SenderUnverified(KnownSenderData { user_id, device_id, master_key }) =
-                sender_data
+            SenderData::SenderUnverified(KnownSenderData {
+                user_id,
+                device_id,
+                master_key
+            }) = sender_data
         );
         assert_eq!(user_id, setup.sender.user_id);
         assert_eq!(device_id.unwrap(), setup.sender_device.device_id());
@@ -549,8 +611,11 @@ mod tests {
 
         // Then we get back the information about the sender
         assert_let!(
-            SenderData::SenderUnverified(KnownSenderData { user_id, device_id, master_key }) =
-                sender_data
+            SenderData::SenderUnverified(KnownSenderData {
+                user_id,
+                device_id,
+                master_key
+            }) = sender_data
         );
         assert_eq!(user_id, setup.sender.user_id);
         assert_eq!(device_id.unwrap(), setup.sender_device.device_id());
@@ -573,14 +638,24 @@ mod tests {
 
         // When we try to find sender data
         assert_let!(
-            Err(e) =
-                finder.have_event(setup.sender_device_curve_key(), &setup.room_key_event).await
+            Err(e) = finder
+                .have_event(setup.sender_device_curve_key(), &setup.room_key_event)
+                .await
         );
 
         assert_let!(SessionDeviceKeysCheckError::MismatchedIdentityKeys(e) = e);
 
-        let key_ed25519 =
-            Box::new(setup.session.signing_keys().iter().next().unwrap().1.ed25519().unwrap());
+        let key_ed25519 = Box::new(
+            setup
+                .session
+                .signing_keys()
+                .iter()
+                .next()
+                .unwrap()
+                .1
+                .ed25519()
+                .unwrap(),
+        );
         let key_curve25519 = Box::new(setup.session.sender_key());
 
         let device_ed25519 = setup.sender_device.ed25519_key().map(Box::new);
@@ -618,7 +693,12 @@ mod tests {
             .unwrap();
 
         // Then we fail to find useful sender data
-        assert_let!(SenderData::UnknownDevice { legacy_session, owner_check_failed } = sender_data);
+        assert_let!(
+            SenderData::UnknownDevice {
+                legacy_session,
+                owner_check_failed
+            } = sender_data
+        );
         assert!(!legacy_session);
 
         // And report that the owner_check_failed
@@ -648,8 +728,11 @@ mod tests {
 
         // Then we get back the information about the sender
         assert_let!(
-            SenderData::SenderVerified(KnownSenderData { user_id, device_id, master_key }) =
-                sender_data
+            SenderData::SenderVerified(KnownSenderData {
+                user_id,
+                device_id,
+                master_key
+            }) = sender_data
         );
         assert_eq!(user_id, setup.sender.user_id);
         assert_eq!(device_id.unwrap(), setup.sender_device.device_id());
@@ -679,8 +762,11 @@ mod tests {
 
         // Then we get back the information about the sender
         assert_let!(
-            SenderData::SenderVerified(KnownSenderData { user_id, device_id, master_key }) =
-                sender_data
+            SenderData::SenderVerified(KnownSenderData {
+                user_id,
+                device_id,
+                master_key
+            }) = sender_data
         );
         assert_eq!(user_id, setup.sender.user_id);
         assert_eq!(device_id.unwrap(), setup.sender_device.device_id());
@@ -690,18 +776,27 @@ mod tests {
     #[async_test]
     async fn test_can_add_user_sender_data_based_on_a_provided_device() {
         // Given the device is not in the store or the event
-        let setup =
-            TestSetup::new(TestOptions::new().store_contains_sender_identity().device_is_signed())
-                .await;
+        let setup = TestSetup::new(
+            TestOptions::new()
+                .store_contains_sender_identity()
+                .device_is_signed(),
+        )
+        .await;
         let finder = SenderDataFinder::new(&setup.store, &setup.session);
 
         // When we supply the device keys directly while asking for the sender data
-        let sender_data = finder.have_device_data(setup.sender_device.inner.clone()).await.unwrap();
+        let sender_data = finder
+            .have_device_data(setup.sender_device.inner.clone())
+            .await
+            .unwrap();
 
         // Then it is found using the device we supplied
         assert_let!(
-            SenderData::SenderUnverified(KnownSenderData { user_id, device_id, master_key }) =
-                sender_data
+            SenderData::SenderUnverified(KnownSenderData {
+                user_id,
+                device_id,
+                master_key
+            }) = sender_data
         );
         assert_eq!(user_id, setup.sender.user_id);
         assert_eq!(device_id.unwrap(), setup.sender_device.device_id());
@@ -836,7 +931,13 @@ mod tests {
                 session.mark_as_imported();
             }
 
-            Self { sender, sender_device, store, room_key_event, session }
+            Self {
+                sender,
+                sender_device,
+                store,
+                room_key_event,
+                session,
+            }
         }
 
         fn sender_device_curve_key(&self) -> Curve25519PublicKey {
@@ -844,7 +945,11 @@ mod tests {
         }
 
         fn sender_master_key(&self) -> Ed25519PublicKey {
-            self.sender.user_identity.master_key().get_first_key().unwrap()
+            self.sender
+                .user_identity
+                .master_key()
+                .get_first_key()
+                .unwrap()
         }
     }
 
@@ -913,23 +1018,39 @@ mod tests {
         ) -> Self {
             let account = Account::with_device_id(user_id, device_id);
             let user_id = user_id.to_owned();
-            let private_identity =
-                Arc::new(Mutex::new(PrivateCrossSigningIdentity::for_account(&account)));
+            let private_identity = Arc::new(Mutex::new(PrivateCrossSigningIdentity::for_account(
+                &account,
+            )));
 
             let user_identity =
                 create_user_identity(&*private_identity.lock().await, is_me, is_verified, signer)
                     .await;
 
-            Self { user_id, account, private_identity, user_identity }
+            Self {
+                user_id,
+                account,
+                private_identity,
+                user_identity,
+            }
         }
 
         async fn own() -> Self {
-            Self::new(user_id!("@myself:s.co"), device_id!("OWNDEVICEID"), true, true, None).await
+            Self::new(
+                user_id!("@myself:s.co"),
+                device_id!("OWNDEVICEID"),
+                true,
+                true,
+                None,
+            )
+            .await
         }
 
         async fn other(me: &TestUser, options: &TestOptions) -> Self {
-            let user_id =
-                if options.sender_is_ourself { &me.user_id } else { user_id!("@other:s.co") };
+            let user_id = if options.sender_is_ourself {
+                &me.user_id
+            } else {
+                user_id!("@other:s.co")
+            };
 
             Self::new(
                 user_id,

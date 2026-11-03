@@ -27,7 +27,9 @@ mod msc_4388;
 
 pub use msc_4108::Msc4108IntentData;
 use url::Url;
-use vodozemac::{Curve25519PublicKey, base64_decode, base64_encode};
+use vodozemac::Curve25519PublicKey;
+use vodozemac::base64_decode;
+use vodozemac::base64_encode;
 
 /// Error type for the decoding of the [`QrCodeData`].
 #[derive(Debug, Error)]

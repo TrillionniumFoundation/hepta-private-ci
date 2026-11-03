@@ -25,23 +25,30 @@
 //! 3. Types containing secrets implement the [`Zeroize`] and [`ZeroizeOnDrop`]
 //!    traits to clear out any memory containing secret key material.
 
-use std::{
-    borrow::Borrow,
-    collections::{
-        BTreeMap,
-        btree_map::{IntoIter, Iter},
-    },
-};
+use std::borrow::Borrow;
+use std::collections::BTreeMap;
+use std::collections::btree_map::IntoIter;
+use std::collections::btree_map::Iter;
 
 use as_variant::as_variant;
 use matrix_sdk_common::deserialized_responses::PrivOwnedStr;
-use ruma::{
-    DeviceKeyAlgorithm, DeviceKeyId, OwnedDeviceKeyId, OwnedUserId, RoomId, UserId,
-    serde::StringEnum,
-};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use vodozemac::{Curve25519PublicKey, Ed25519PublicKey, Ed25519Signature, KeyError};
-use zeroize::{Zeroize, ZeroizeOnDrop};
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::OwnedDeviceKeyId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::UserId;
+use ruma::serde::StringEnum;
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde::Serializer;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::Ed25519PublicKey;
+use vodozemac::Ed25519Signature;
+use vodozemac::KeyError;
+use zeroize::Zeroize;
+use zeroize::ZeroizeOnDrop;
 
 mod backup;
 mod cross_signing;
@@ -52,7 +59,10 @@ pub mod qr_login;
 pub mod requests;
 pub mod room_history;
 
-pub use self::{backup::*, cross_signing::*, device_keys::*, one_time_keys::*};
+pub use self::backup::*;
+pub use self::cross_signing::*;
+pub use self::device_keys::*;
+pub use self::one_time_keys::*;
 use crate::store::types::BackupDecryptionKey;
 
 macro_rules! from_base64 {
@@ -130,7 +140,10 @@ pub struct MegolmBackupV1Curve25519AesSha2Secrets {
     /// The private half of the backup key, can be used to access and decrypt
     /// room keys in the backup. Also called the recovery key in the
     /// [spec](https://spec.matrix.org/v1.10/client-server-api/#recovery-key).
-    #[serde(serialize_with = "backup_key_to_base64", deserialize_with = "backup_key_from_base64")]
+    #[serde(
+        serialize_with = "backup_key_to_base64",
+        deserialize_with = "backup_key_from_base64"
+    )]
     pub key: BackupDecryptionKey,
     /// The backup version that is tied to the above backup key.
     pub backup_version: String,
@@ -231,7 +244,10 @@ impl Signatures {
         key_id: OwnedDeviceKeyId,
         signature: Ed25519Signature,
     ) -> Option<Result<Signature, InvalidSignature>> {
-        self.0.entry(signer).or_default().insert(key_id, Ok(signature.into()))
+        self.0
+            .entry(signer)
+            .or_default()
+            .insert(key_id, Ok(signature.into()))
     }
 
     /// Try to find an Ed25519 signature from the given signer with the given
@@ -271,7 +287,10 @@ impl Default for Signatures {
 }
 
 impl IntoIterator for Signatures {
-    type Item = (OwnedUserId, BTreeMap<OwnedDeviceKeyId, Result<Signature, InvalidSignature>>);
+    type Item = (
+        OwnedUserId,
+        BTreeMap<OwnedDeviceKeyId, Result<Signature, InvalidSignature>>,
+    );
 
     type IntoIter =
         IntoIter<OwnedUserId, BTreeMap<OwnedDeviceKeyId, Result<Signature, InvalidSignature>>>;
@@ -462,8 +481,11 @@ impl<T: Ord + Serialize> Serialize for SigningKeys<T> {
     where
         S: Serializer,
     {
-        let keys: BTreeMap<&T, String> =
-            self.0.iter().map(|(key_id, key)| (key_id, key.to_base64())).collect();
+        let keys: BTreeMap<&T, String> = self
+            .0
+            .iter()
+            .map(|(key_id, key)| (key_id, key.to_base64()))
+            .collect();
 
         keys.serialize(serializer)
     }
@@ -505,8 +527,10 @@ where
     D: Deserializer<'de>,
 {
     let keys: Vec<String> = Deserialize::deserialize(de)?;
-    let keys: Result<Vec<Curve25519PublicKey>, KeyError> =
-        keys.iter().map(|k| Curve25519PublicKey::from_base64(k)).collect();
+    let keys: Result<Vec<Curve25519PublicKey>, KeyError> = keys
+        .iter()
+        .map(|k| Curve25519PublicKey::from_base64(k))
+        .collect();
 
     keys.map_err(serde::de::Error::custom)
 }
@@ -523,7 +547,11 @@ where
 }
 
 mod serde_curve_key_option {
-    use super::{Curve25519PublicKey, Deserialize, Deserializer, Serialize, Serializer};
+    use super::Curve25519PublicKey;
+    use super::Deserialize;
+    use super::Deserializer;
+    use super::Serialize;
+    use super::Serializer;
 
     pub(crate) fn deserialize<'de, D>(de: D) -> Result<Option<Curve25519PublicKey>, D::Error>
     where
@@ -558,8 +586,11 @@ pub trait RoomKeyExport {
 
 #[cfg(test)]
 mod test {
-    use insta::{assert_debug_snapshot, assert_json_snapshot, with_settings};
-    use ruma::{device_id, owned_user_id};
+    use insta::assert_debug_snapshot;
+    use insta::assert_json_snapshot;
+    use insta::with_settings;
+    use ruma::device_id;
+    use ruma::owned_user_id;
     use serde_json::json;
     use similar_asserts::assert_eq;
 
@@ -586,12 +617,17 @@ mod test {
         let serialized = serde_json::to_value(&deserialized)
             .expect("We should be able to serialize a secrets bundle");
 
-        assert_eq!(json, serialized, "A serialization cycle should yield the same result");
+        assert_eq!(
+            json, serialized,
+            "A serialization cycle should yield the same result"
+        );
     }
 
     #[test]
     fn snapshot_backup_decryption_key() {
-        let decryption_key = BackupDecryptionKey { inner: Box::new([1u8; 32]) };
+        let decryption_key = BackupDecryptionKey {
+            inner: Box::new([1u8; 32]),
+        };
         assert_json_snapshot!(decryption_key);
 
         // should not log the key !
@@ -609,14 +645,18 @@ mod test {
                             DeviceKeyAlgorithm::Ed25519,
                             device_id!("ABCDEFGH"),
                         ),
-                        Ok(Signature::from(Ed25519Signature::from_slice(&[0u8; 64]).unwrap())),
+                        Ok(Signature::from(
+                            Ed25519Signature::from_slice(&[0u8; 64]).unwrap(),
+                        )),
                     ),
                     (
                         DeviceKeyId::from_parts(
                             DeviceKeyAlgorithm::Curve25519,
                             device_id!("IJKLMNOP"),
                         ),
-                        Ok(Signature::from(Ed25519Signature::from_slice(&[1u8; 64]).unwrap())),
+                        Ok(Signature::from(
+                            Ed25519Signature::from_slice(&[1u8; 64]).unwrap(),
+                        )),
                     ),
                 ]),
             ),
@@ -624,7 +664,9 @@ mod test {
                 owned_user_id!("@bob:localhost"),
                 BTreeMap::from([(
                     DeviceKeyId::from_parts(DeviceKeyAlgorithm::Ed25519, device_id!("ABCDEFGH")),
-                    Err(InvalidSignature { source: "SOME+B64+SOME+B64+SOME+B64+==".to_owned() }),
+                    Err(InvalidSignature {
+                        source: "SOME+B64+SOME+B64+SOME+B64+==".to_owned(),
+                    }),
                 )]),
             ),
         ]));

@@ -12,50 +12,68 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{ops::Add, sync::Arc, time::Duration};
+use std::ops::Add;
+use std::sync::Arc;
+use std::time::Duration;
 
 use as_variant::as_variant;
-use eyeball::{ObservableWriteGuard, SharedObservable, WeakObservable};
+use eyeball::ObservableWriteGuard;
+use eyeball::SharedObservable;
+use eyeball::WeakObservable;
 use futures_core::Stream;
 use futures_util::StreamExt;
 #[cfg(feature = "qrcode")]
 use matrix_sdk_qrcode::QrVerificationData;
-use ruma::{
-    DeviceId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId, RoomId, TransactionId,
-    UserId,
-    events::{
-        AnyMessageLikeEventContent, AnyToDeviceEventContent,
-        key::verification::{
-            VerificationMethod,
-            cancel::CancelCode,
-            ready::{KeyVerificationReadyEventContent, ToDeviceKeyVerificationReadyEventContent},
-            request::ToDeviceKeyVerificationRequestEventContent,
-            start::StartMethod,
-        },
-        relation::Reference,
-        room::message::KeyVerificationRequestEventContent,
-    },
-    time::Instant,
-    to_device::DeviceIdOrAllDevices,
-};
+use ruma::DeviceId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::AnyMessageLikeEventContent;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::key::verification::VerificationMethod;
+use ruma::events::key::verification::cancel::CancelCode;
+use ruma::events::key::verification::ready::KeyVerificationReadyEventContent;
+use ruma::events::key::verification::ready::ToDeviceKeyVerificationReadyEventContent;
+use ruma::events::key::verification::request::ToDeviceKeyVerificationRequestEventContent;
+use ruma::events::key::verification::start::StartMethod;
+use ruma::events::relation::Reference;
+use ruma::events::room::message::KeyVerificationRequestEventContent;
+use ruma::time::Instant;
+use ruma::to_device::DeviceIdOrAllDevices;
 #[cfg(feature = "qrcode")]
 use tracing::debug;
-use tracing::{info, trace, warn};
+use tracing::info;
+use tracing::trace;
+use tracing::warn;
 
+use super::CancelInfo;
+use super::Cancelled;
+use super::FlowId;
+use super::Verification;
+use super::VerificationStore;
+use super::cache::VerificationCache;
+use super::event_enums::CancelContent;
+use super::event_enums::DoneContent;
+use super::event_enums::OutgoingContent;
+use super::event_enums::ReadyContent;
+use super::event_enums::RequestContent;
+use super::event_enums::StartContent;
 #[cfg(feature = "qrcode")]
-use super::qrcode::{QrVerification, QrVerificationState, ScanError};
-use super::{
-    CancelInfo, Cancelled, FlowId, Verification, VerificationStore,
-    cache::VerificationCache,
-    event_enums::{
-        CancelContent, DoneContent, OutgoingContent, ReadyContent, RequestContent, StartContent,
-    },
-};
-use crate::{
-    CryptoStoreError, DeviceData, Sas,
-    olm::StaticAccountData,
-    types::requests::{OutgoingVerificationRequest, RoomMessageRequest, ToDeviceRequest},
-};
+use super::qrcode::QrVerification;
+#[cfg(feature = "qrcode")]
+use super::qrcode::QrVerificationState;
+#[cfg(feature = "qrcode")]
+use super::qrcode::ScanError;
+use crate::CryptoStoreError;
+use crate::DeviceData;
+use crate::Sas;
+use crate::olm::StaticAccountData;
+use crate::types::requests::OutgoingVerificationRequest;
+use crate::types::requests::RoomMessageRequest;
+use crate::types::requests::ToDeviceRequest;
 
 const SUPPORTED_METHODS: &[VerificationMethod] = &[
     VerificationMethod::SasV1,
@@ -116,9 +134,9 @@ pub enum VerificationRequestState {
 impl From<&InnerRequest> for VerificationRequestState {
     fn from(value: &InnerRequest) -> Self {
         match value {
-            InnerRequest::Created(s) => {
-                Self::Created { our_methods: s.state.our_methods.to_owned() }
-            }
+            InnerRequest::Created(s) => Self::Created {
+                our_methods: s.state.our_methods.to_owned(),
+            },
             InnerRequest::Requested(s) => Self::Requested {
                 their_methods: s.state.their_methods.to_owned(),
                 other_device_data: s.state.other_device_data.to_owned(),
@@ -403,8 +421,9 @@ impl VerificationRequest {
     pub async fn generate_qr_code(&self) -> Result<Option<QrVerification>, CryptoStoreError> {
         let inner = self.inner.get();
 
-        let ret = if let Some((state, verification)) =
-            inner.generate_qr_code(self.we_started, self.inner.clone().into()).await?
+        let ret = if let Some((state, verification)) = inner
+            .generate_qr_code(self.we_started, self.inner.clone().into())
+            .await?
         {
             let mut inner = self.inner.write();
             ObservableWriteGuard::set(&mut inner, InnerRequest::Transitioned(state));
@@ -433,8 +452,14 @@ impl VerificationRequest {
 
         let (new_state, qr_verification) = match inner {
             InnerRequest::Ready(r) => {
-                scan_qr_code(data, &r, &r.state, self.we_started, self.inner.to_owned().into())
-                    .await?
+                scan_qr_code(
+                    data,
+                    &r,
+                    &r.state,
+                    self.we_started,
+                    self.inner.to_owned().into(),
+                )
+                .await?
             }
             InnerRequest::Transitioned(r) => {
                 scan_qr_code(
@@ -454,7 +479,10 @@ impl VerificationRequest {
         // scanned code.
         if self
             .verification_cache
-            .get_qr(qr_verification.other_user_id(), qr_verification.flow_id().as_str())
+            .get_qr(
+                qr_verification.other_user_id(),
+                qr_verification.flow_id().as_str(),
+            )
             .is_some()
         {
             self.verification_cache.replace_qr(qr_verification.clone());
@@ -522,9 +550,12 @@ impl VerificationRequest {
                 TransactionId::new(),
             )
             .into(),
-            OutgoingContent::Room(room_id, content) => {
-                RoomMessageRequest { room_id, txn_id: TransactionId::new(), content }.into()
+            OutgoingContent::Room(room_id, content) => RoomMessageRequest {
+                room_id,
+                txn_id: TransactionId::new(),
+                content,
             }
+            .into(),
         };
 
         Some(request)
@@ -585,15 +616,19 @@ impl VerificationRequest {
                     .into()
                 }
             }
-            OutgoingContent::Room(room_id, content) => {
-                RoomMessageRequest { room_id, txn_id: TransactionId::new(), content }.into()
+            OutgoingContent::Room(room_id, content) => RoomMessageRequest {
+                room_id,
+                txn_id: TransactionId::new(),
+                content,
             }
+            .into(),
         });
 
         drop(guard);
 
-        if let Some(verification) =
-            self.verification_cache.get(self.other_user(), self.flow_id().as_str())
+        if let Some(verification) = self
+            .verification_cache
+            .get(self.other_user(), self.flow_id().as_str())
         {
             match verification {
                 Verification::SasV1(s) => s.cancel_with_code(cancel_code),
@@ -654,7 +689,9 @@ impl VerificationRequest {
         let cancelled = Cancelled::new(true, code);
         let cancel_content = cancelled.as_content(self.flow_id());
 
-        let OutgoingContent::ToDevice(c) = cancel_content else { return None };
+        let OutgoingContent::ToDevice(c) = cancel_content else {
+            return None;
+        };
         let recip_devices: Vec<OwnedDeviceId> = self
             .recipient_devices
             .iter()
@@ -671,7 +708,12 @@ impl VerificationRequest {
         }
 
         let recipient = self.other_user();
-        Some(ToDeviceRequest::for_recipients(recipient, recip_devices, &c, TransactionId::new()))
+        Some(ToDeviceRequest::for_recipients(
+            recipient,
+            recip_devices,
+            &c,
+            TransactionId::new(),
+        ))
     }
 
     pub(crate) fn receive_ready(
@@ -691,7 +733,8 @@ impl VerificationRequest {
                 if let Some(request) =
                     self.cancel_for_other_devices(CancelCode::Accepted, Some(content.from_device()))
                 {
-                    self.verification_cache.add_verification_request(request.into());
+                    self.verification_cache
+                        .add_verification_request(request.into());
                 }
             }
             InnerRequest::Requested(s) => {
@@ -797,7 +840,8 @@ impl VerificationRequest {
             && let Some(request) =
                 self.cancel_for_other_devices(content.cancel_code().to_owned(), None)
         {
-            self.verification_cache.add_verification_request(request.into());
+            self.verification_cache
+                .add_verification_request(request.into());
         }
     }
 
@@ -835,9 +879,12 @@ impl VerificationRequest {
                 TransactionId::new(),
             )
             .into(),
-            OutgoingContent::Room(room_id, content) => {
-                RoomMessageRequest { room_id, txn_id: TransactionId::new(), content }.into()
+            OutgoingContent::Room(room_id, content) => RoomMessageRequest {
+                room_id,
+                txn_id: TransactionId::new(),
+                content,
             }
+            .into(),
         };
 
         let mut guard = self.inner.write();
@@ -855,8 +902,9 @@ impl VerificationRequest {
 
         Ok(match &inner {
             InnerRequest::Ready(s) => {
-                if let Some((new_state, sas, content)) =
-                    s.start_sas(self.we_started, self.inner.clone().into()).await?
+                if let Some((new_state, sas, content)) = s
+                    .start_sas(self.we_started, self.inner.clone().into())
+                    .await?
                 {
                     self.start_sas_helper(new_state, sas, content, other_device_id)
                 } else {
@@ -864,8 +912,9 @@ impl VerificationRequest {
                 }
             }
             InnerRequest::Transitioned(s) => {
-                if let Some((new_state, sas, content)) =
-                    s.start_sas(self.we_started, self.inner.clone().into()).await?
+                if let Some((new_state, sas, content)) = s
+                    .start_sas(self.we_started, self.inner.clone().into())
+                    .await?
                 {
                     self.start_sas_helper(new_state, sas, content, other_device_id)
                 } else {
@@ -925,7 +974,9 @@ impl InnerRequest {
     }
 
     fn accept(&self, methods: Vec<VerificationMethod>) -> Option<(InnerRequest, OutgoingContent)> {
-        let InnerRequest::Requested(s) = self else { return None };
+        let InnerRequest::Requested(s) = self else {
+            return None;
+        };
         let (state, content) = s.clone().accept(methods);
 
         Some((InnerRequest::Ready(state), content))
@@ -1120,7 +1171,9 @@ impl RequestState<Requested> {
             verification_cache: self.verification_cache,
             store: self.store,
             other_user_id: self.other_user_id,
-            state: Passive { other_device_id: content.from_device().to_owned() },
+            state: Passive {
+                other_device_id: content.from_device().to_owned(),
+            },
         }
     }
 
@@ -1221,13 +1274,20 @@ async fn generate_qr_code<T: Clone>(
 
     // If we didn't state that we support showing QR codes or if the other
     // side doesn't support scanning QR codes bail early.
-    if !state.our_methods.contains(&VerificationMethod::QrCodeShowV1)
-        || !state.their_methods.contains(&VerificationMethod::QrCodeScanV1)
+    if !state
+        .our_methods
+        .contains(&VerificationMethod::QrCodeShowV1)
+        || !state
+            .their_methods
+            .contains(&VerificationMethod::QrCodeScanV1)
     {
         return Ok(None);
     }
 
-    let identities = request_state.store.get_identities(state.other_device_data.clone()).await?;
+    let identities = request_state
+        .store
+        .get_identities(state.other_device_data.clone())
+        .await?;
 
     let verification = if let Some(identity) = &identities.identity_being_verified {
         match &identity {
@@ -1335,7 +1395,9 @@ async fn generate_qr_code<T: Clone>(
             },
         };
 
-        request_state.verification_cache.insert_qr(verification.to_owned());
+        request_state
+            .verification_cache
+            .insert_qr(verification.to_owned());
 
         Ok(Some((new_state, verification)))
     } else {
@@ -1359,7 +1421,10 @@ async fn receive_start<T: Clone>(
     );
 
     let other_device_data = state.other_device_data.clone();
-    let identities = request_state.store.get_identities(other_device_data.clone()).await?;
+    let identities = request_state
+        .store
+        .get_identities(other_device_data.clone())
+        .await?;
     let own_user_id = &request_state.store.account.user_id;
     let own_device_id = &request_state.store.account.device_id;
 
@@ -1447,8 +1512,9 @@ async fn receive_start<T: Clone>(
         }
         #[cfg(feature = "qrcode")]
         StartMethod::ReciprocateV1(_) => {
-            if let Some(qr_verification) =
-                request_state.verification_cache.get_qr(sender, content.flow_id())
+            if let Some(qr_verification) = request_state
+                .verification_cache
+                .get_qr(sender, content.flow_id())
             {
                 if let Some(request) = qr_verification.receive_reciprocation(content) {
                     request_state.verification_cache.add_request(request.into())
@@ -1483,12 +1549,20 @@ async fn start_sas<T: Clone>(
         return Ok(None);
     }
 
-    let identities = request_state.store.get_identities(state.other_device_data.clone()).await?;
+    let identities = request_state
+        .store
+        .get_identities(state.other_device_data.clone())
+        .await?;
 
     let (state, sas, content) = match request_state.flow_id.as_ref() {
         FlowId::ToDevice(t) => {
-            let (sas, content) =
-                Sas::start(identities, t.to_owned(), we_started, Some(request_handle), None);
+            let (sas, content) = Sas::start(
+                identities,
+                t.to_owned(),
+                we_started,
+                Some(request_handle),
+                None,
+            );
 
             let state = Transitioned {
                 ready: state.to_owned(),
@@ -1543,7 +1617,15 @@ impl RequestState<Ready> {
         we_started: bool,
         request_handle: RequestHandle,
     ) -> Result<Option<RequestState<Transitioned>>, CryptoStoreError> {
-        receive_start(sender, content, we_started, request_handle, self, &self.state).await
+        receive_start(
+            sender,
+            content,
+            we_started,
+            request_handle,
+            self,
+            &self.state,
+        )
+        .await
     }
 
     async fn start_sas(
@@ -1599,7 +1681,15 @@ impl RequestState<Transitioned> {
         we_started: bool,
         request_handle: RequestHandle,
     ) -> Result<Option<RequestState<Transitioned>>, CryptoStoreError> {
-        receive_start(sender, content, we_started, request_handle, self, &self.state.ready).await
+        receive_start(
+            sender,
+            content,
+            we_started,
+            request_handle,
+            self,
+            &self.state.ready,
+        )
+        .await
     }
 
     async fn start_sas(
@@ -1631,24 +1721,30 @@ mod tests {
     #[cfg(feature = "qrcode")]
     use matrix_sdk_qrcode::QrVerificationData;
     use matrix_sdk_test::async_test;
-    use ruma::{
-        UserId, event_id, events::key::verification::VerificationMethod, owned_event_id,
-        owned_room_id, room_id, to_device::DeviceIdOrAllDevices,
-    };
+    use ruma::UserId;
+    use ruma::event_id;
+    use ruma::events::key::verification::VerificationMethod;
+    use ruma::owned_event_id;
+    use ruma::owned_room_id;
+    use ruma::room_id;
+    use ruma::to_device::DeviceIdOrAllDevices;
 
     use super::VerificationRequest;
-    use crate::{
-        DeviceData, VerificationRequestState,
-        types::requests::OutgoingVerificationRequest,
-        verification::{
-            FlowId, Verification, VerificationStore,
-            cache::VerificationCache,
-            event_enums::{
-                CancelContent, OutgoingContent, ReadyContent, RequestContent, StartContent,
-            },
-            tests::{alice_id, bob_id, setup_stores},
-        },
-    };
+    use crate::DeviceData;
+    use crate::VerificationRequestState;
+    use crate::types::requests::OutgoingVerificationRequest;
+    use crate::verification::FlowId;
+    use crate::verification::Verification;
+    use crate::verification::VerificationStore;
+    use crate::verification::cache::VerificationCache;
+    use crate::verification::event_enums::CancelContent;
+    use crate::verification::event_enums::OutgoingContent;
+    use crate::verification::event_enums::ReadyContent;
+    use crate::verification::event_enums::RequestContent;
+    use crate::verification::event_enums::StartContent;
+    use crate::verification::tests::alice_id;
+    use crate::verification::tests::bob_id;
+    use crate::verification::tests::setup_stores;
 
     #[async_test]
     async fn test_request_accepting() {
@@ -1678,7 +1774,10 @@ mod tests {
             None,
         );
 
-        assert_matches!(bob_request.state(), VerificationRequestState::Created { .. });
+        assert_matches!(
+            bob_request.state(),
+            VerificationRequestState::Created { .. }
+        );
         assert!(bob_request.time_remaining() <= Duration::from_secs(600)); // 10 minutes
         assert!(bob_request.time_remaining() > Duration::from_secs(540)); // 9 minutes
 
@@ -1692,7 +1791,10 @@ mod tests {
             bob_device_data,
         );
 
-        assert_matches!(alice_request.state(), VerificationRequestState::Requested { .. });
+        assert_matches!(
+            alice_request.state(),
+            VerificationRequestState::Requested { .. }
+        );
 
         let content: OutgoingContent = alice_request.accept().unwrap().try_into().unwrap();
         let content = ReadyContent::try_from(&content).unwrap();
@@ -1700,7 +1802,10 @@ mod tests {
         bob_request.receive_ready(alice_id(), &content, alice_device_data);
 
         assert_matches!(bob_request.state(), VerificationRequestState::Ready { .. });
-        assert_matches!(alice_request.state(), VerificationRequestState::Ready { .. });
+        assert_matches!(
+            alice_request.state(),
+            VerificationRequestState::Ready { .. }
+        );
         assert!(bob_request.is_ready());
         assert!(alice_request.is_ready());
     }
@@ -1725,8 +1830,13 @@ mod tests {
             );
 
             assert_eq!(to_device_request.messages.len(), 1);
-            let device_ids: Vec<&DeviceIdOrAllDevices> =
-                to_device_request.messages.values().next().unwrap().keys().collect();
+            let device_ids: Vec<&DeviceIdOrAllDevices> = to_device_request
+                .messages
+                .values()
+                .next()
+                .unwrap()
+                .keys()
+                .collect();
             assert_eq!(device_ids.len(), 1);
 
             assert_let!(DeviceIdOrAllDevices::DeviceId(device_id) = &device_ids[0]);
@@ -1738,8 +1848,14 @@ mod tests {
 
         bob_request.receive_cancel(alice_id(), &content);
 
-        assert_matches!(bob_request.state(), VerificationRequestState::Cancelled { .. });
-        assert_matches!(alice_request.state(), VerificationRequestState::Cancelled { .. });
+        assert_matches!(
+            bob_request.state(),
+            VerificationRequestState::Cancelled { .. }
+        );
+        assert_matches!(
+            alice_request.state(),
+            VerificationRequestState::Cancelled { .. }
+        );
     }
 
     #[async_test]
@@ -1780,16 +1896,26 @@ mod tests {
             bob_device_data.clone(),
         );
 
-        do_accept_request(&alice_request, alice_device_data.clone(), &bob_request, None);
+        do_accept_request(
+            &alice_request,
+            alice_device_data.clone(),
+            &bob_request,
+            None,
+        );
 
         let (bob_sas, request) = bob_request.start_sas().await.unwrap().unwrap();
 
         let content: OutgoingContent = request.try_into().unwrap();
         let content = StartContent::try_from(&content).unwrap();
         let flow_id = content.flow_id().to_owned();
-        alice_request.receive_start(bob_device_data.user_id(), &content).await.unwrap();
-        let alice_sas =
-            alice_request.verification_cache.get_sas(bob_device_data.user_id(), &flow_id).unwrap();
+        alice_request
+            .receive_start(bob_device_data.user_id(), &content)
+            .await
+            .unwrap();
+        let alice_sas = alice_request
+            .verification_cache
+            .get_sas(bob_device_data.user_id(), &flow_id)
+            .unwrap();
 
         assert_let!(
             VerificationRequestState::Transitioned {
@@ -1823,16 +1949,26 @@ mod tests {
         // Set up the pair of verification requests
         let bob_request = build_test_request(&bob_store, alice_id(), None);
         let alice_request = build_incoming_verification_request(&alice_store, &bob_request).await;
-        do_accept_request(&alice_request, alice_device_data.clone(), &bob_request, None);
+        do_accept_request(
+            &alice_request,
+            alice_device_data.clone(),
+            &bob_request,
+            None,
+        );
 
         let (bob_sas, request) = bob_request.start_sas().await.unwrap().unwrap();
 
         let content: OutgoingContent = request.try_into().unwrap();
         let content = StartContent::try_from(&content).unwrap();
         let flow_id = content.flow_id().to_owned();
-        alice_request.receive_start(bob_device_data.user_id(), &content).await.unwrap();
-        let alice_sas =
-            alice_request.verification_cache.get_sas(bob_device_data.user_id(), &flow_id).unwrap();
+        alice_request
+            .receive_start(bob_device_data.user_id(), &content)
+            .await
+            .unwrap();
+        let alice_sas = alice_request
+            .verification_cache
+            .get_sas(bob_device_data.user_id(), &flow_id)
+            .unwrap();
 
         assert_let!(
             VerificationRequestState::Transitioned {
@@ -1870,14 +2006,20 @@ mod tests {
         let bob_request = build_test_request(
             &bob_store,
             alice_id(),
-            Some(vec![VerificationMethod::QrCodeScanV1, VerificationMethod::QrCodeShowV1]),
+            Some(vec![
+                VerificationMethod::QrCodeScanV1,
+                VerificationMethod::QrCodeShowV1,
+            ]),
         );
         let alice_request = build_incoming_verification_request(&alice_store, &bob_request).await;
         do_accept_request(
             &alice_request,
             alice_device_data.clone(),
             &bob_request,
-            Some(vec![VerificationMethod::QrCodeScanV1, VerificationMethod::QrCodeShowV1]),
+            Some(vec![
+                VerificationMethod::QrCodeScanV1,
+                VerificationMethod::QrCodeShowV1,
+            ]),
         );
 
         // Each side can start its own QR verification flow by generating QR code
@@ -1908,7 +2050,11 @@ mod tests {
         // Now only Alice scans Bob's code
         let bob_qr_code = bob_verification.unwrap().to_bytes().unwrap();
         let bob_qr_code = QrVerificationData::from_bytes(bob_qr_code).unwrap();
-        let _ = alice_request.scan_qr_code(bob_qr_code).await.unwrap().unwrap();
+        let _ = alice_request
+            .scan_qr_code(bob_qr_code)
+            .await
+            .unwrap()
+            .unwrap();
 
         assert_let!(
             VerificationRequestState::Transitioned {
@@ -1975,7 +2121,10 @@ mod tests {
         // Bob receives the SAS start
         let content: OutgoingContent = request.try_into().unwrap();
         let content = StartContent::try_from(&content).unwrap();
-        bob_request.receive_start(alice_id(), &content).await.unwrap();
+        bob_request
+            .receive_start(alice_id(), &content)
+            .await
+            .unwrap();
 
         // Bob should now have transitioned to SAS...
         assert_let!(
@@ -2023,7 +2172,11 @@ mod tests {
         // Now Alice scans Bob's code
         let bob_qr_code = bob_verification.to_bytes().unwrap();
         let bob_qr_code = QrVerificationData::from_bytes(bob_qr_code).unwrap();
-        let _ = alice_request.scan_qr_code(bob_qr_code).await.unwrap().unwrap();
+        let _ = alice_request
+            .scan_qr_code(bob_qr_code)
+            .await
+            .unwrap()
+            .unwrap();
 
         assert_let!(
             VerificationRequestState::Transitioned {
@@ -2049,7 +2202,10 @@ mod tests {
         // Alice receives the SAS start
         let content: OutgoingContent = request.try_into().unwrap();
         let content = StartContent::try_from(&content).unwrap();
-        alice_request.receive_start(bob_id(), &content).await.unwrap();
+        alice_request
+            .receive_start(bob_id(), &content)
+            .await
+            .unwrap();
 
         // ... which should mean that her Qr is cancelled
         assert!(alice_qr.is_cancelled());

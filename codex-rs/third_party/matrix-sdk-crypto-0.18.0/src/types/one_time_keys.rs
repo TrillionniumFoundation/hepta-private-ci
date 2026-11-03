@@ -20,25 +20,38 @@
 
 use std::collections::BTreeMap;
 
-use ruma::{OneTimeKeyAlgorithm, serde::Raw};
-use serde::{Deserialize, Deserializer, Serialize};
-use serde_json::{Value, value::to_raw_value};
+use ruma::OneTimeKeyAlgorithm;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde_json::Value;
+use serde_json::value::to_raw_value;
 use vodozemac::Curve25519PublicKey;
 
-use super::{Signatures, deserialize_curve_key, serialize_curve_key};
+use super::Signatures;
+use super::deserialize_curve_key;
+use super::serialize_curve_key;
 
 /// A key for the SignedCurve25519 algorithm
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SignedKey {
     /// The Curve25519 key that can be used to establish Olm sessions.
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     key: Curve25519PublicKey,
 
     /// Signatures for the key object.
     signatures: Signatures,
 
     /// Is the key considered to be a fallback key.
-    #[serde(default, skip_serializing_if = "Option::is_none", deserialize_with = "double_option")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "double_option"
+    )]
     fallback: Option<Option<bool>>,
 
     #[serde(flatten)]
@@ -56,7 +69,12 @@ where
 impl SignedKey {
     /// Creates a new `SignedKey` with the given key and signatures.
     pub fn new(key: Curve25519PublicKey) -> Self {
-        Self { key, signatures: Signatures::new(), fallback: None, other: BTreeMap::new() }
+        Self {
+            key,
+            signatures: Signatures::new(),
+            fallback: None,
+            other: BTreeMap::new(),
+        }
     }
 
     /// Creates a new `SignedKey`, that represents a fallback key, with the
@@ -87,7 +105,9 @@ impl SignedKey {
 
     /// Is the key considered to be a fallback key.
     pub fn fallback(&self) -> bool {
-        self.fallback.map(|f| f.unwrap_or_default()).unwrap_or_default()
+        self.fallback
+            .map(|f| f.unwrap_or_default())
+            .unwrap_or_default()
     }
 
     /// Serialize the one-time key into a Raw version.
@@ -117,7 +137,9 @@ impl OneTimeKey {
                 let key: SignedKey = key.deserialize_as_unchecked()?;
                 Ok(OneTimeKey::SignedKey(key))
             }
-            _ => Err(serde::de::Error::custom(format!("Unsupported key algorithm {algorithm}"))),
+            _ => Err(serde::de::Error::custom(format!(
+                "Unsupported key algorithm {algorithm}"
+            ))),
         }
     }
 }
@@ -133,11 +155,16 @@ impl OneTimeKey {
 
 #[cfg(test)]
 mod tests {
-    use ruma::{DeviceKeyAlgorithm, DeviceKeyId, device_id, user_id};
+    use ruma::DeviceKeyAlgorithm;
+    use ruma::DeviceKeyId;
+    use ruma::device_id;
+    use ruma::user_id;
     use serde_json::json;
-    use vodozemac::{Curve25519PublicKey, Ed25519Signature};
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Ed25519Signature;
 
-    use crate::types::{Signature, SignedKey};
+    use crate::types::Signature;
+    use crate::types::SignedKey;
 
     #[test]
     fn serialization() {

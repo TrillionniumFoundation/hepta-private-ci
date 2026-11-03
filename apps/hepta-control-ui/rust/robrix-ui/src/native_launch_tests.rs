@@ -1,5 +1,6 @@
 use super::*;
-use crate::native_presentation::{OwnedComposition, tests::Client};
+use crate::native_presentation::OwnedComposition;
+use crate::native_presentation::tests::Client;
 use hepta_control_core::chat::ChatWorkspace;
 
 fn mode(exits: &Rc<Cell<usize>>) -> LaunchMode {

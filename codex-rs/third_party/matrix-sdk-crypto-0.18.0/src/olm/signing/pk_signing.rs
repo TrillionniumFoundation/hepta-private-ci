@@ -12,25 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use ruma::{
-    CanonicalJsonValue, DeviceKeyAlgorithm, DeviceKeyId, OwnedUserId,
-    canonical_json::to_canonical_value, encryption::KeyUsage,
-};
-use serde::{Deserialize, Serialize};
+use ruma::CanonicalJsonValue;
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::OwnedUserId;
+use ruma::canonical_json::to_canonical_value;
+use ruma::encryption::KeyUsage;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Error as JsonError;
 use thiserror::Error;
-use vodozemac::{DecodeError, Ed25519PublicKey, Ed25519SecretKey, Ed25519Signature, KeyError};
+use vodozemac::DecodeError;
+use vodozemac::Ed25519PublicKey;
+use vodozemac::Ed25519SecretKey;
+use vodozemac::Ed25519Signature;
+use vodozemac::KeyError;
 use zeroize::Zeroize;
 
-use crate::{
-    OtherUserIdentityData,
-    error::SignatureError,
-    olm::utility::SignJson,
-    types::{
-        CrossSigningKey, DeviceKeys, MasterPubkey, SelfSigningPubkey, Signatures, SigningKeys,
-        UserSigningPubkey,
-    },
-};
+use crate::OtherUserIdentityData;
+use crate::error::SignatureError;
+use crate::olm::utility::SignJson;
+use crate::types::CrossSigningKey;
+use crate::types::DeviceKeys;
+use crate::types::MasterPubkey;
+use crate::types::SelfSigningPubkey;
+use crate::types::Signatures;
+use crate::types::SigningKeys;
+use crate::types::UserSigningPubkey;
 
 /// Error type reporting failures in the signing operations.
 #[derive(Debug, Error)]
@@ -57,7 +65,9 @@ pub struct Signing {
 #[cfg(not(tarpaulin_include))]
 impl std::fmt::Debug for Signing {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Signing").field("public_key", &self.public_key.to_base64()).finish()
+        f.debug_struct("Signing")
+            .field("public_key", &self.public_key.to_base64())
+            .finish()
     }
 }
 
@@ -188,7 +198,10 @@ impl MasterSigning {
 
     pub fn sign_subkey(&self, subkey: &mut CrossSigningKey) {
         let json_subkey = to_canonical_value(&subkey).expect("Can't serialize cross signing key");
-        let signature = self.inner.sign_json(json_subkey).expect("Can't sign cross signing keys");
+        let signature = self
+            .inner
+            .sign_json(json_subkey)
+            .expect("Can't sign cross signing keys");
 
         subkey.signatures.add_signature(
             self.public_key.user_id().to_owned(),
@@ -262,7 +275,10 @@ impl UserSigning {
     pub fn from_pickle(pickle: PickledUserSigning) -> Result<Self, SigningError> {
         let inner = Signing::from_pickle(pickle.pickle)?;
 
-        Ok(Self { inner, public_key: pickle.public_key })
+        Ok(Self {
+            inner,
+            public_key: pickle.public_key,
+        })
     }
 }
 
@@ -310,7 +326,10 @@ impl SelfSigning {
     pub(crate) fn from_pickle(pickle: PickledSelfSigning) -> Result<Self, SigningError> {
         let inner = Signing::from_pickle(pickle.pickle)?;
 
-        Ok(Self { inner, public_key: pickle.public_key })
+        Ok(Self {
+            inner,
+            public_key: pickle.public_key,
+        })
     }
 }
 
@@ -346,7 +365,10 @@ impl Signing {
     fn new_helper(secret_key: Ed25519SecretKey) -> Self {
         let public_key = secret_key.public_key();
 
-        Signing { inner: secret_key, public_key }
+        Signing {
+            inner: secret_key,
+            public_key,
+        }
     }
 
     pub fn from_base64(key: &str) -> Result<Self, KeyError> {

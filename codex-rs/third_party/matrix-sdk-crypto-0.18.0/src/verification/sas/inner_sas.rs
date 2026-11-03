@@ -15,31 +15,38 @@
 use std::sync::Arc;
 
 use as_variant::as_variant;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::key::verification::ShortAuthenticationString;
+use ruma::events::key::verification::cancel::CancelCode;
 #[cfg(test)]
 use ruma::time::Instant;
-use ruma::{
-    TransactionId, UserId,
-    events::key::verification::{ShortAuthenticationString, cancel::CancelCode},
-};
 use tracing::trace;
 
-use super::{
-    FlowId,
-    sas_state::{
-        Accepted, Confirmed, Created, Done, KeyReceived, KeySent, KeysExchanged, MacReceived,
-        SasState, Started, WaitingForDone, WeAccepted,
-    },
-};
-use crate::{
-    OwnUserIdentityData,
-    identities::{DeviceData, UserIdentityData},
-    olm::StaticAccountData,
-    verification::{
-        Cancelled, Emoji,
-        cache::RequestInfo,
-        event_enums::{AnyVerificationContent, OutgoingContent, OwnedAcceptContent, StartContent},
-    },
-};
+use super::FlowId;
+use super::sas_state::Accepted;
+use super::sas_state::Confirmed;
+use super::sas_state::Created;
+use super::sas_state::Done;
+use super::sas_state::KeyReceived;
+use super::sas_state::KeySent;
+use super::sas_state::KeysExchanged;
+use super::sas_state::MacReceived;
+use super::sas_state::SasState;
+use super::sas_state::Started;
+use super::sas_state::WaitingForDone;
+use super::sas_state::WeAccepted;
+use crate::OwnUserIdentityData;
+use crate::identities::DeviceData;
+use crate::identities::UserIdentityData;
+use crate::olm::StaticAccountData;
+use crate::verification::Cancelled;
+use crate::verification::Emoji;
+use crate::verification::cache::RequestInfo;
+use crate::verification::event_enums::AnyVerificationContent;
+use crate::verification::event_enums::OutgoingContent;
+use crate::verification::event_enums::OwnedAcceptContent;
+use crate::verification::event_enums::StartContent;
 
 #[derive(Clone, Debug)]
 pub enum InnerSas {
@@ -184,7 +191,9 @@ impl InnerSas {
         self,
         methods: Vec<ShortAuthenticationString>,
     ) -> Option<(InnerSas, OwnedAcceptContent)> {
-        let InnerSas::Started(s) = self else { return None };
+        let InnerSas::Started(s) = self else {
+            return None;
+        };
         let sas = s.into_we_accepted(methods);
         let content = sas.as_content();
 
@@ -315,7 +324,10 @@ impl InnerSas {
                 InnerSas::WeAccepted(s) => match s.into_key_received(sender, c) {
                     Ok(s) => {
                         let (content, request_info) = s.as_content();
-                        (InnerSas::KeyReceived(s), Some((content, Some(request_info))))
+                        (
+                            InnerSas::KeyReceived(s),
+                            Some((content, Some(request_info))),
+                        )
                     }
                     Err(s) => {
                         let content = s.as_content();
@@ -371,9 +383,9 @@ impl InnerSas {
     pub fn mark_request_as_sent(self, request_id: &TransactionId) -> Option<Self> {
         match self {
             InnerSas::Accepted(s) => s.into_key_sent(request_id).map(InnerSas::KeySent),
-            InnerSas::KeyReceived(s) => {
-                s.into_keys_exchanged(request_id).map(InnerSas::KeysExchanged)
-            }
+            InnerSas::KeyReceived(s) => s
+                .into_keys_exchanged(request_id)
+                .map(InnerSas::KeysExchanged),
             InnerSas::Created(_)
             | InnerSas::WeAccepted(_)
             | InnerSas::Started(_)
@@ -400,7 +412,10 @@ impl InnerSas {
     }
 
     pub fn have_we_confirmed(&self) -> bool {
-        matches!(self, InnerSas::Confirmed(_) | InnerSas::WaitingForDone(_) | InnerSas::Done(_))
+        matches!(
+            self,
+            InnerSas::Confirmed(_) | InnerSas::WaitingForDone(_) | InnerSas::Done(_)
+        )
     }
 
     pub fn timed_out(&self) -> bool {

@@ -51,4 +51,5 @@ mod backup;
 mod decryption;
 
 pub use backup::MegolmV1BackupKey;
-pub use decryption::{DecodeError, DecryptionError};
+pub use decryption::DecodeError;
+pub use decryption::DecryptionError;

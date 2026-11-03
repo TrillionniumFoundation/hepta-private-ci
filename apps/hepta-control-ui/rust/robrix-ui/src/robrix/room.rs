@@ -118,6 +118,11 @@ script_mod! {
     empty_state := Label {width: Fill height: Fit padding: 24 flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Your conversation starts here. Write a local draft below."}
     timeline := mod.widgets.Timeline {}
     jump_to_latest := mod.widgets.AuroraButton {visible: false text: "Jump to latest"}
+    objective_controls := View {
+     visible: false width: Fill height: Fit flow: Right spacing: 8 padding: Inset{left:20,right:20,top:4,bottom:4}
+     objective_cancel := mod.widgets.AuroraButton {text:"Cancel request"}
+     objective_refresh := mod.widgets.AuroraButton {text:"Refresh request"}
+    }
     room_input_bar := mod.widgets.RoomInputBar {}
    }
   }
@@ -377,6 +382,30 @@ impl Widget for RoomScreen {
                 apply(PresentationCommand::Edit(text));
                 self.view.redraw(cx);
             }
+            if self
+                .view
+                .button(cx, ids!(send_message_button))
+                .clicked(actions)
+            {
+                apply(PresentationCommand::RequestSend);
+                self.view.redraw(cx);
+            }
+            if self
+                .view
+                .button(cx, ids!(objective_cancel))
+                .clicked(actions)
+            {
+                apply(PresentationCommand::RequestObjectiveCancel);
+                self.view.redraw(cx);
+            }
+            if self
+                .view
+                .button(cx, ids!(objective_refresh))
+                .clicked(actions)
+            {
+                apply(PresentationCommand::RequestObjectiveRefresh);
+                self.view.redraw(cx);
+            }
             if input.returned(actions).is_some() && !input.is_composing() {
                 apply(PresentationCommand::RequestSend);
                 self.view.redraw(cx);
@@ -437,6 +466,18 @@ impl Widget for RoomScreen {
             self.view
                 .label(cx, ids!(presentation_note))
                 .set_text(cx, presentation.presentation_note.unwrap_or(""));
+            self.view
+                .widget(cx, ids!(objective_controls))
+                .set_visible(cx, presentation.composer.objective_installed);
+            self.view
+                .button(cx, ids!(send_message_button))
+                .set_enabled(cx, presentation.composer.objective_can_submit);
+            self.view
+                .button(cx, ids!(objective_cancel))
+                .set_visible(cx, presentation.composer.objective_can_cancel);
+            self.view
+                .button(cx, ids!(objective_refresh))
+                .set_visible(cx, presentation.composer.objective_can_refresh);
             let status = match presentation.composer.status {
                 ComposeStatus::InputLimit => {
                     "Draft exceeds the input limit or contains an unsupported NUL. Last valid text retained."

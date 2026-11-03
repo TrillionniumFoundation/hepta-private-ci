@@ -16,8 +16,10 @@
 //!
 //! [MSC4268]: https://github.com/matrix-org/matrix-spec-proposals/pull/4268
 
-use ruma::{OwnedRoomId, events::room::EncryptedFile};
-use serde::{Deserialize, Serialize};
+use ruma::OwnedRoomId;
+use ruma::events::room::EncryptedFile;
+use serde::Deserialize;
+use serde::Serialize;
 
 use super::EventType;
 

@@ -12,41 +12,67 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    collections::{BTreeMap, BTreeSet, HashMap, HashSet},
-    ops::Deref,
-    sync::Arc,
-    time::Duration,
-};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::ops::Deref;
+use std::sync::Arc;
+use std::time::Duration;
 
 use futures_util::future::join_all;
 use itertools::Itertools;
-use matrix_sdk_common::{executor::spawn, failures_cache::FailuresCache};
-use ruma::{
-    OwnedDeviceId, OwnedServerName, OwnedTransactionId, OwnedUserId, ServerName, TransactionId,
-    UserId, api::client::keys::get_keys::v3::Response as KeysQueryResponse, serde::Raw,
-};
+use matrix_sdk_common::executor::spawn;
+use matrix_sdk_common::failures_cache::FailuresCache;
+use ruma::OwnedDeviceId;
+use ruma::OwnedServerName;
+use ruma::OwnedTransactionId;
+use ruma::OwnedUserId;
+use ruma::ServerName;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::api::client::keys::get_keys::v3::Response as KeysQueryResponse;
+use ruma::serde::Raw;
 use tokio::sync::Mutex;
-use tracing::{Level, debug, enabled, info, instrument, trace, warn};
+use tracing::Level;
+use tracing::debug;
+use tracing::enabled;
+use tracing::info;
+use tracing::instrument;
+use tracing::trace;
+use tracing::warn;
 
-use crate::{
-    CryptoStoreError, LocalTrust, OwnUserIdentity, SignatureError, UserIdentity,
-    error::OlmResult,
-    identities::{DeviceData, OtherUserIdentityData, OwnUserIdentityData, UserIdentityData},
-    olm::{
-        InboundGroupSession, PrivateCrossSigningIdentity, SenderDataFinder, SenderDataType,
-        sender_data_finder::SessionDeviceCheckError,
-    },
-    store::{
-        KeyQueryManager, Result as StoreResult, Store,
-        caches::{SequenceNumber, StoreCache, StoreCacheGuard},
-        types::{Changes, DeviceChanges, IdentityChanges, UserKeyQueryResult},
-    },
-    types::{
-        CrossSigningKey, DeviceKeys, MasterPubkey, SelfSigningPubkey, UserSigningPubkey,
-        requests::KeysQueryRequest,
-    },
-};
+use crate::CryptoStoreError;
+use crate::LocalTrust;
+use crate::OwnUserIdentity;
+use crate::SignatureError;
+use crate::UserIdentity;
+use crate::error::OlmResult;
+use crate::identities::DeviceData;
+use crate::identities::OtherUserIdentityData;
+use crate::identities::OwnUserIdentityData;
+use crate::identities::UserIdentityData;
+use crate::olm::InboundGroupSession;
+use crate::olm::PrivateCrossSigningIdentity;
+use crate::olm::SenderDataFinder;
+use crate::olm::SenderDataType;
+use crate::olm::sender_data_finder::SessionDeviceCheckError;
+use crate::store::KeyQueryManager;
+use crate::store::Result as StoreResult;
+use crate::store::Store;
+use crate::store::caches::SequenceNumber;
+use crate::store::caches::StoreCache;
+use crate::store::caches::StoreCacheGuard;
+use crate::store::types::Changes;
+use crate::store::types::DeviceChanges;
+use crate::store::types::IdentityChanges;
+use crate::store::types::UserKeyQueryResult;
+use crate::types::CrossSigningKey;
+use crate::types::DeviceKeys;
+use crate::types::MasterPubkey;
+use crate::types::SelfSigningPubkey;
+use crate::types::UserSigningPubkey;
+use crate::types::requests::KeysQueryRequest;
 
 enum DeviceChange {
     New(DeviceData),
@@ -156,7 +182,9 @@ impl IdentityManager {
         self.failures.extend(failed_servers);
         self.failures.remove(successful_servers);
 
-        let devices = self.handle_devices_from_key_query(response.device_keys.clone()).await?;
+        let devices = self
+            .handle_devices_from_key_query(response.device_keys.clone())
+            .await?;
         let (identities, cross_signing_identity) = self.handle_cross_signing_keys(response).await?;
 
         let changes = Changes {
@@ -184,7 +212,8 @@ impl IdentityManager {
         // are not processed at the same time as /keys/query responses (assuming
         // that the application does not call `OlmMachine::receive_sync_changes`
         // at the same time as `OlmMachine::mark_request_as_sent`).
-        self.update_sender_data_from_device_changes(&devices).await?;
+        self.update_sender_data_from_device_changes(&devices)
+            .await?;
 
         // if this request is one of those we expected to be in flight, pass the
         // sequence number back to the store so that it can mark devices up to
@@ -224,8 +253,9 @@ impl IdentityManager {
         store: Store,
         device_keys: DeviceKeys,
     ) -> StoreResult<DeviceChange> {
-        let old_device =
-            store.get_device_data(&device_keys.user_id, &device_keys.device_id).await?;
+        let old_device = store
+            .get_device_data(&device_keys.user_id, &device_keys.device_id)
+            .await?;
 
         if let Some(mut device) = old_device {
             match device.update_device(&device_keys) {
@@ -301,31 +331,36 @@ impl IdentityManager {
 
         let current_devices: HashSet<OwnedDeviceId> = device_map.keys().cloned().collect();
 
-        let tasks = device_map.into_iter().filter_map(|(device_id, device_keys)| match device_keys
-            .deserialize_as::<DeviceKeys>(
-        ) {
-            Ok(device_keys) => {
-                if user_id != device_keys.user_id || device_id != device_keys.device_id {
-                    warn!(
-                        ?user_id,
-                        ?device_id,
-                        device_key_user = ?device_keys.user_id,
-                        device_key_device_id = ?device_keys.device_id,
-                        "Mismatch in the device keys payload",
-                    );
-                    None
-                } else {
-                    Some(spawn(Self::update_or_create_device(store.clone(), device_keys)))
+        let tasks = device_map
+            .into_iter()
+            .filter_map(|(device_id, device_keys)| {
+                match device_keys.deserialize_as::<DeviceKeys>() {
+                    Ok(device_keys) => {
+                        if user_id != device_keys.user_id || device_id != device_keys.device_id {
+                            warn!(
+                                ?user_id,
+                                ?device_id,
+                                device_key_user = ?device_keys.user_id,
+                                device_key_device_id = ?device_keys.device_id,
+                                "Mismatch in the device keys payload",
+                            );
+                            None
+                        } else {
+                            Some(spawn(Self::update_or_create_device(
+                                store.clone(),
+                                device_keys,
+                            )))
+                        }
+                    }
+                    Err(e) => {
+                        warn!(
+                            ?user_id, ?device_id, error = ?e,
+                            "Device keys failed to deserialize",
+                        );
+                        None
+                    }
                 }
-            }
-            Err(e) => {
-                warn!(
-                    ?user_id, ?device_id, error = ?e,
-                    "Device keys failed to deserialize",
-                );
-                None
-            }
-        });
+            });
 
         let results = join_all(tasks).await;
 
@@ -383,9 +418,15 @@ impl IdentityManager {
     ) -> StoreResult<DeviceChanges> {
         let mut changes = DeviceChanges::default();
 
-        let tasks = device_keys_map.into_iter().map(|(user_id, device_keys_map)| {
-            spawn(Self::update_user_devices(self.store.clone(), user_id, device_keys_map))
-        });
+        let tasks = device_keys_map
+            .into_iter()
+            .map(|(user_id, device_keys_map)| {
+                spawn(Self::update_user_devices(
+                    self.store.clone(),
+                    user_id,
+                    device_keys_map,
+                ))
+            });
 
         let results = join_all(tasks).await;
 
@@ -676,9 +717,16 @@ impl IdentityManager {
         maybe_verified_own_identity: Option<&OwnUserIdentity>,
         key_set_info: KeySetInfo,
     ) -> StoreResult<()> {
-        let KeySetInfo { user_id, master_key, self_signing } = key_set_info;
+        let KeySetInfo {
+            user_id,
+            master_key,
+            self_signing,
+        } = key_set_info;
         if master_key.user_id() != user_id || self_signing.user_id() != user_id {
-            warn!(?user_id, "User ID mismatch in one of the cross signing keys");
+            warn!(
+                ?user_id,
+                "User ID mismatch in one of the cross signing keys"
+            );
         } else if let Some(i) = self.store.get_user_identity(&user_id).await? {
             // an identity we knew about before, which is being updated
             match self
@@ -769,7 +817,11 @@ impl IdentityManager {
                 continue;
             };
 
-            let key_set_info = KeySetInfo { user_id: user_id.clone(), master_key, self_signing };
+            let key_set_info = KeySetInfo {
+                user_id: user_id.clone(),
+                master_key,
+                self_signing,
+            };
 
             self.update_or_create_identity(
                 response,
@@ -813,7 +865,10 @@ impl IdentityManager {
 
         // We assume that there aren't too many users here; if we find a usecase that
         // requires lots of users to be up-to-date we may need to rethink this.
-        (TransactionId::new(), KeysQueryRequest::new(users.into_iter().map(|u| u.to_owned())))
+        (
+            TransactionId::new(),
+            KeysQueryRequest::new(users.into_iter().map(|u| u.to_owned())),
+        )
     }
 
     /// Get a list of key query requests needed.
@@ -844,7 +899,9 @@ impl IdentityManager {
             let (users, sequence_number) = key_query_manager.users_for_key_query().await;
 
             if users.is_empty() && !key_query_manager.tracked_users().contains(self.user_id()) {
-                key_query_manager.mark_user_as_changed(self.user_id()).await?;
+                key_query_manager
+                    .mark_user_as_changed(self.user_id())
+                    .await?;
                 key_query_manager.users_for_key_query().await
             } else {
                 (users, sequence_number)
@@ -858,7 +915,9 @@ impl IdentityManager {
             // a TTL cache, remembers users for which a previous `/key/query` request has
             // failed. We don't retry a `/keys/query` for such users for a
             // certain amount of time.
-            let users = users.into_iter().filter(|u| !self.failures.contains(u.server_name()));
+            let users = users
+                .into_iter()
+                .filter(|u| !self.failures.contains(u.server_name()));
 
             // We don't want to create a single `/keys/query` request with an infinite
             // amount of users. Some servers will likely bail out after a
@@ -884,7 +943,10 @@ impl IdentityManager {
             // `receive_keys_query_response()` method to figure out if the user can be
             // marked as up-to-date/non-dirty.
             let request_ids = requests.keys().cloned().collect();
-            let request_details = KeysQueryRequestDetails { sequence_number, request_ids };
+            let request_details = KeysQueryRequestDetails {
+                sequence_number,
+                request_ids,
+            };
 
             *self.keys_query_request_details.lock().await = Some(request_details);
 
@@ -904,7 +966,11 @@ impl IdentityManager {
         cache: &StoreCache,
         users: impl Iterator<Item = &UserId>,
     ) -> StoreResult<()> {
-        self.key_query_manager.synced(cache).await?.mark_tracked_users_as_changed(users).await
+        self.key_query_manager
+            .synced(cache)
+            .await?
+            .mark_tracked_users_as_changed(users)
+            .await
     }
 
     /// See the docs for [`OlmMachine::update_tracked_users()`].
@@ -913,7 +979,11 @@ impl IdentityManager {
         users: impl IntoIterator<Item = &UserId>,
     ) -> StoreResult<()> {
         let cache = self.store.cache().await?;
-        self.key_query_manager.synced(&cache).await?.update_tracked_users(users.into_iter()).await
+        self.key_query_manager
+            .synced(&cache)
+            .await?
+            .update_tracked_users(users.into_iter())
+            .await
     }
 
     /// Retrieve a list of a user's current devices, so we can encrypt a message
@@ -936,7 +1006,10 @@ impl IdentityManager {
 
         for user_id in users {
             // First of all, check the store for this user.
-            let devices = self.store.get_device_data_for_user_filtered(user_id).await?;
+            let devices = self
+                .store
+                .get_device_data_for_user_filtered(user_id)
+                .await?;
 
             // Now, look for users who have no devices at all.
             //
@@ -1039,9 +1112,12 @@ impl IdentityManager {
             .wait_if_user_key_query_pending(cache, timeout_duration, user_id)
             .await?
         {
-            UserKeyQueryResult::WasPending => {
-                Ok(Some((user_id, self.store.get_device_data_for_user_filtered(user_id).await?)))
-            }
+            UserKeyQueryResult::WasPending => Ok(Some((
+                user_id,
+                self.store
+                    .get_device_data_for_user_filtered(user_id)
+                    .await?,
+            ))),
             _ => Ok(None),
         }
     }
@@ -1053,7 +1129,11 @@ impl IdentityManager {
         &self,
         device_changes: &DeviceChanges,
     ) -> Result<(), CryptoStoreError> {
-        for device in device_changes.new.iter().chain(device_changes.changed.iter()) {
+        for device in device_changes
+            .new
+            .iter()
+            .chain(device_changes.changed.iter())
+        {
             // 1. Look for InboundGroupSessions from the device whose sender_data is
             //    UnknownDevice. For such sessions, we now have the device, and can update
             //    the sender_data accordingly.
@@ -1094,7 +1174,9 @@ impl IdentityManager {
     ) -> Result<(), CryptoStoreError> {
         const IGS_BATCH_SIZE: usize = 50;
 
-        let Some(curve_key) = device.curve25519_key() else { return Ok(()) };
+        let Some(curve_key) = device.curve25519_key() else {
+            return Ok(());
+        };
 
         let mut last_session_id: Option<String> = None;
         loop {
@@ -1165,7 +1247,9 @@ impl IdentityManager {
             .synced(&store_cache)
             .await?
             .mark_tracked_users_as_changed(
-                tracked_users.iter().map(|tracked_user| tracked_user.user_id.as_ref()),
+                tracked_users
+                    .iter()
+                    .map(|tracked_user| tracked_user.user_id.as_ref()),
             )
             .await?;
 
@@ -1182,25 +1266,38 @@ fn debug_log_keys_query_response(
 ) {
     #[allow(unknown_lints, clippy::unwrap_or_default)] // false positive
     let changed_devices = devices.changed.iter().fold(BTreeMap::new(), |mut acc, d| {
-        acc.entry(d.user_id()).or_insert_with(BTreeSet::new).insert(d.device_id());
+        acc.entry(d.user_id())
+            .or_insert_with(BTreeSet::new)
+            .insert(d.device_id());
         acc
     });
 
     #[allow(unknown_lints, clippy::unwrap_or_default)] // false positive
     let new_devices = devices.new.iter().fold(BTreeMap::new(), |mut acc, d| {
-        acc.entry(d.user_id()).or_insert_with(BTreeSet::new).insert(d.device_id());
+        acc.entry(d.user_id())
+            .or_insert_with(BTreeSet::new)
+            .insert(d.device_id());
         acc
     });
 
     #[allow(unknown_lints, clippy::unwrap_or_default)] // false positive
     let deleted_devices = devices.deleted.iter().fold(BTreeMap::new(), |mut acc, d| {
-        acc.entry(d.user_id()).or_insert_with(BTreeSet::new).insert(d.device_id());
+        acc.entry(d.user_id())
+            .or_insert_with(BTreeSet::new)
+            .insert(d.device_id());
         acc
     });
 
-    let new_identities = identities.new.iter().map(|i| i.user_id()).collect::<BTreeSet<_>>();
-    let changed_identities =
-        identities.changed.iter().map(|i| i.user_id()).collect::<BTreeSet<_>>();
+    let new_identities = identities
+        .new
+        .iter()
+        .map(|i| i.user_id())
+        .collect::<BTreeSet<_>>();
+    let changed_identities = identities
+        .changed
+        .iter()
+        .map(|i| i.user_id())
+        .collect::<BTreeSet<_>>();
 
     debug!(
         ?request_id,
@@ -1219,20 +1316,24 @@ pub(crate) mod testing {
     use std::sync::Arc;
 
     use matrix_sdk_test::ruma_response_from_json;
-    use ruma::{
-        DeviceId, UserId, api::client::keys::get_keys::v3::Response as KeyQueryResponse, device_id,
-        user_id,
-    };
+    use ruma::DeviceId;
+    use ruma::UserId;
+    use ruma::api::client::keys::get_keys::v3::Response as KeyQueryResponse;
+    use ruma::device_id;
+    use ruma::user_id;
     use serde_json::json;
     use tokio::sync::Mutex;
 
-    use crate::{
-        identities::IdentityManager,
-        olm::{Account, PrivateCrossSigningIdentity},
-        store::{CryptoStoreWrapper, MemoryStore, Store, types::PendingChanges},
-        types::{DeviceKeys, requests::UploadSigningKeysRequest},
-        verification::VerificationMachine,
-    };
+    use crate::identities::IdentityManager;
+    use crate::olm::Account;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::store::CryptoStoreWrapper;
+    use crate::store::MemoryStore;
+    use crate::store::Store;
+    use crate::store::types::PendingChanges;
+    use crate::types::DeviceKeys;
+    use crate::types::requests::UploadSigningKeysRequest;
+    use crate::verification::VerificationMachine;
 
     pub fn user_id() -> &'static UserId {
         user_id!("@example:localhost")
@@ -1255,11 +1356,20 @@ pub(crate) mod testing {
         let user_id = user_id.to_owned();
         let account = Account::with_device_id(&user_id, device_id);
         let static_account = account.static_data().clone();
-        let store = Arc::new(CryptoStoreWrapper::new(&user_id, device_id, MemoryStore::new()));
+        let store = Arc::new(CryptoStoreWrapper::new(
+            &user_id,
+            device_id,
+            MemoryStore::new(),
+        ));
         let verification =
             VerificationMachine::new(static_account.clone(), identity.clone(), store.clone());
         let store = Store::new(static_account, identity, store, verification);
-        store.save_pending_changes(PendingChanges { account: Some(account) }).await.unwrap();
+        store
+            .save_pending_changes(PendingChanges {
+                account: Some(account),
+            })
+            .await
+            .unwrap();
         IdentityManager::new(store)
     }
 
@@ -1523,23 +1633,30 @@ pub(crate) mod tests {
     use std::ops::Deref;
 
     use futures_util::pin_mut;
-    use matrix_sdk_test::{async_test, ruma_response_from_json, test_json};
-    use ruma::{
-        TransactionId, api::client::keys::get_keys::v3::Response as KeysQueryResponse, device_id,
-        user_id,
-    };
+    use matrix_sdk_test::async_test;
+    use matrix_sdk_test::ruma_response_from_json;
+    use matrix_sdk_test::test_json;
+    use ruma::TransactionId;
+    use ruma::api::client::keys::get_keys::v3::Response as KeysQueryResponse;
+    use ruma::device_id;
+    use ruma::user_id;
     use serde_json::json;
-    use stream_assert::{assert_closed, assert_pending, assert_ready};
+    use stream_assert::assert_closed;
+    use stream_assert::assert_pending;
+    use stream_assert::assert_ready;
 
-    use super::testing::{
-        device_id, key_query, manager_test_helper, other_key_query, other_user_id, user_id,
-    };
-    use crate::{
-        CrossSigningKeyExport, OlmMachine,
-        identities::manager::testing::{other_key_query_cross_signed, own_key_query},
-        olm::PrivateCrossSigningIdentity,
-        store::types::Changes,
-    };
+    use super::testing::device_id;
+    use super::testing::key_query;
+    use super::testing::manager_test_helper;
+    use super::testing::other_key_query;
+    use super::testing::other_user_id;
+    use super::testing::user_id;
+    use crate::CrossSigningKeyExport;
+    use crate::OlmMachine;
+    use crate::identities::manager::testing::other_key_query_cross_signed;
+    use crate::identities::manager::testing::own_key_query;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::store::types::Changes;
 
     fn key_query_with_failures() -> KeysQueryResponse {
         let response = json!({
@@ -1564,9 +1681,15 @@ pub(crate) mod tests {
         let cache = manager.store.cache().await.unwrap();
         let key_query_manager = manager.key_query_manager.synced(&cache).await.unwrap();
 
-        assert!(key_query_manager.tracked_users().is_empty(), "No users are initially tracked");
+        assert!(
+            key_query_manager.tracked_users().is_empty(),
+            "No users are initially tracked"
+        );
 
-        manager.receive_device_changes(&cache, [alice].iter().map(Deref::deref)).await.unwrap();
+        manager
+            .receive_device_changes(&cache, [alice].iter().map(Deref::deref))
+            .await
+            .unwrap();
 
         assert!(
             !key_query_manager.tracked_users().contains(alice),
@@ -1574,7 +1697,11 @@ pub(crate) mod tests {
         );
 
         assert!(
-            !key_query_manager.users_for_key_query().await.0.contains(alice),
+            !key_query_manager
+                .users_for_key_query()
+                .await
+                .0
+                .contains(alice),
             "The user we don't track doesn't end up in the `/keys/query` request"
         );
     }
@@ -1583,7 +1710,15 @@ pub(crate) mod tests {
     async fn test_manager_creation() {
         let manager = manager_test_helper(user_id(), device_id()).await;
         let cache = manager.store.cache().await.unwrap();
-        assert!(manager.key_query_manager.synced(&cache).await.unwrap().tracked_users().is_empty())
+        assert!(
+            manager
+                .key_query_manager
+                .synced(&cache)
+                .await
+                .unwrap()
+                .tracked_users()
+                .is_empty()
+        )
     }
 
     #[async_test]
@@ -1607,7 +1742,12 @@ pub(crate) mod tests {
             .await
             .unwrap()
             .unwrap();
-        let identity = manager.store.get_user_identity(other_user).await.unwrap().unwrap();
+        let identity = manager
+            .store
+            .get_user_identity(other_user)
+            .await
+            .unwrap()
+            .unwrap();
         let identity = identity.other().unwrap();
 
         assert!(identity.is_device_signed(&device));
@@ -1625,8 +1765,15 @@ pub(crate) mod tests {
         let identity_request = private_identity.as_upload_request().await;
         drop(private_identity);
 
-        let device_keys =
-            manager.store.cache().await.unwrap().account().await.unwrap().device_keys();
+        let device_keys = manager
+            .store
+            .cache()
+            .await
+            .unwrap()
+            .account()
+            .await
+            .unwrap()
+            .device_keys();
         manager
             .receive_keys_query_response(
                 &TransactionId::new(),
@@ -1647,8 +1794,11 @@ pub(crate) mod tests {
         let devices = manager.store.get_user_devices(our_user).await.unwrap();
         assert_eq!(devices.devices().count(), 1);
 
-        let device =
-            manager.store.get_device_data(our_user, device_id!(device_id())).await.unwrap();
+        let device = manager
+            .store
+            .get_device_data(our_user, device_id!(device_id()))
+            .await
+            .unwrap();
 
         assert!(device.is_some());
     }
@@ -1683,9 +1833,17 @@ pub(crate) mod tests {
         });
 
         let response = ruma_response_from_json(&response);
-        manager.receive_keys_query_response(&TransactionId::new(), &response).await.unwrap();
+        manager
+            .receive_keys_query_response(&TransactionId::new(), &response)
+            .await
+            .unwrap();
 
-        let identity = manager.store.get_user_identity(user_id).await.unwrap().unwrap();
+        let identity = manager
+            .store
+            .get_user_identity(user_id)
+            .await
+            .unwrap()
+            .unwrap();
         let identity = identity.own().unwrap();
         assert!(identity.is_verified());
 
@@ -1744,7 +1902,13 @@ pub(crate) mod tests {
 
         let cache = manager.store.cache().await.unwrap();
         assert!(
-            manager.key_query_manager.synced(&cache).await.unwrap().tracked_users().is_empty(),
+            manager
+                .key_query_manager
+                .synced(&cache)
+                .await
+                .unwrap()
+                .tracked_users()
+                .is_empty(),
             "No users are initially tracked"
         );
 
@@ -1773,28 +1937,51 @@ pub(crate) mod tests {
         manager.update_tracked_users([alice]).await.unwrap();
 
         // alice should be in the list of key queries
-        let (reqid, req) = manager.users_for_key_query().await.unwrap().pop_first().unwrap();
+        let (reqid, req) = manager
+            .users_for_key_query()
+            .await
+            .unwrap()
+            .pop_first()
+            .unwrap();
         assert!(req.device_keys.contains_key(alice));
 
         // another invalidation turns up
         {
             let cache = manager.store.cache().await.unwrap();
-            manager.receive_device_changes(&cache, [alice].into_iter()).await.unwrap();
+            manager
+                .receive_device_changes(&cache, [alice].into_iter())
+                .await
+                .unwrap();
         }
 
         // the response from the query arrives
-        manager.receive_keys_query_response(&reqid, &other_key_query()).await.unwrap();
+        manager
+            .receive_keys_query_response(&reqid, &other_key_query())
+            .await
+            .unwrap();
 
         // alice should *still* be in the list of key queries
-        let (reqid, req) = manager.users_for_key_query().await.unwrap().pop_first().unwrap();
+        let (reqid, req) = manager
+            .users_for_key_query()
+            .await
+            .unwrap()
+            .pop_first()
+            .unwrap();
         assert!(req.device_keys.contains_key(alice));
 
         // another key query response
-        manager.receive_keys_query_response(&reqid, &other_key_query()).await.unwrap();
+        manager
+            .receive_keys_query_response(&reqid, &other_key_query())
+            .await
+            .unwrap();
 
         // finally alice should not be in the list
         let queries = manager.users_for_key_query().await.unwrap();
-        assert!(!queries.iter().any(|(_, r)| r.device_keys.contains_key(alice)));
+        assert!(
+            !queries
+                .iter()
+                .any(|(_, r)| r.device_keys.contains_key(alice))
+        );
     }
 
     #[async_test]
@@ -1805,7 +1992,10 @@ pub(crate) mod tests {
         {
             let cache = manager.store.cache().await.unwrap();
             let key_query_manager = manager.key_query_manager.synced(&cache).await.unwrap();
-            assert!(key_query_manager.tracked_users().is_empty(), "No users are initially tracked");
+            assert!(
+                key_query_manager.tracked_users().is_empty(),
+                "No users are initially tracked"
+            );
 
             key_query_manager.mark_user_as_changed(alice).await.unwrap();
 
@@ -1815,12 +2005,20 @@ pub(crate) mod tests {
             );
         }
 
-        let (reqid, req) = manager.users_for_key_query().await.unwrap().pop_first().unwrap();
+        let (reqid, req) = manager
+            .users_for_key_query()
+            .await
+            .unwrap()
+            .pop_first()
+            .unwrap();
         assert!(req.device_keys.contains_key(alice));
 
         // a failure should stop us querying for the user's keys.
         let response = key_query_with_failures();
-        manager.receive_keys_query_response(&reqid, &response).await.unwrap();
+        manager
+            .receive_keys_query_response(&reqid, &response)
+            .await
+            .unwrap();
         assert!(manager.failures.contains(alice.server_name()));
         assert!(
             !manager
@@ -1832,7 +2030,9 @@ pub(crate) mod tests {
         );
 
         // clearing the failure flag should make the user reappear in the query list.
-        manager.failures.remove([alice.server_name().to_owned()].iter());
+        manager
+            .failures
+            .remove([alice.server_name().to_owned()].iter());
         assert!(
             manager
                 .users_for_key_query()
@@ -1851,8 +2051,10 @@ pub(crate) mod tests {
         assert!(req.device_keys.contains_key(user_id()));
 
         // make up a response and check it is processed
-        let (device_changes, identity_changes) =
-            manager.receive_keys_query_response(&reqid, &own_key_query()).await.unwrap();
+        let (device_changes, identity_changes) = manager
+            .receive_keys_query_response(&reqid, &own_key_query())
+            .await
+            .unwrap();
         assert_eq!(device_changes.new.len(), 1);
         assert_eq!(device_changes.new[0].device_id(), "LVWOVGOXME");
         assert_eq!(identity_changes.new.len(), 1);
@@ -1871,12 +2073,17 @@ pub(crate) mod tests {
 
         // First of all, populate the store with good data
         let (reqid, _) = manager.build_key_query_for_users(vec![user_id()]);
-        let (device_changes, identity_changes) =
-            manager.receive_keys_query_response(&reqid, &own_key_query()).await.unwrap();
+        let (device_changes, identity_changes) = manager
+            .receive_keys_query_response(&reqid, &own_key_query())
+            .await
+            .unwrap();
         assert_eq!(device_changes.new.len(), 1);
         let test_device_id = device_changes.new.first().unwrap().device_id().to_owned();
-        let changes =
-            Changes { devices: device_changes, identities: identity_changes, ..Changes::default() };
+        let changes = Changes {
+            devices: device_changes,
+            identities: identity_changes,
+            ..Changes::default()
+        };
         manager.store.save_changes(changes).await.unwrap();
 
         // Now provide an invalid update
@@ -1905,8 +2112,10 @@ pub(crate) mod tests {
             }
         }));
 
-        let (device_changes, identity_changes) =
-            manager.receive_keys_query_response(&reqid, &response).await.unwrap();
+        let (device_changes, identity_changes) = manager
+            .receive_keys_query_response(&reqid, &response)
+            .await
+            .unwrap();
 
         // The result should be empty
         assert_eq!(device_changes.new.len(), 0);
@@ -1915,8 +2124,13 @@ pub(crate) mod tests {
         assert_eq!(identity_changes.new.len(), 0);
 
         // And the device should not have been updated.
-        let device =
-            manager.store.get_user_devices(my_user_id).await.unwrap().get(&test_device_id).unwrap();
+        let device = manager
+            .store
+            .get_user_devices(my_user_id)
+            .await
+            .unwrap()
+            .get(&test_device_id)
+            .unwrap();
         assert_eq!(device.algorithms().len(), 2);
     }
 
@@ -1928,10 +2142,16 @@ pub(crate) mod tests {
         let stream = manager.store.devices_stream();
         pin_mut!(stream);
 
-        manager.receive_keys_query_response(&request_id, &own_key_query()).await.unwrap();
+        manager
+            .receive_keys_query_response(&request_id, &own_key_query())
+            .await
+            .unwrap();
 
         let update = assert_ready!(stream);
-        assert!(!update.new.is_empty(), "The device update should contain some devices");
+        assert!(
+            !update.new.is_empty(),
+            "The device update should contain some devices"
+        );
     }
 
     #[async_test]
@@ -1942,16 +2162,25 @@ pub(crate) mod tests {
         let stream = manager.store.user_identities_stream();
         pin_mut!(stream);
 
-        manager.receive_keys_query_response(&request_id, &own_key_query()).await.unwrap();
+        manager
+            .receive_keys_query_response(&request_id, &own_key_query())
+            .await
+            .unwrap();
 
         let update = assert_ready!(stream);
-        assert!(!update.new.is_empty(), "The identities update should contain some identities");
+        assert!(
+            !update.new.is_empty(),
+            "The identities update should contain some identities"
+        );
     }
 
     #[async_test]
     async fn test_identities_stream_raw() {
         let mut manager = Some(manager_test_helper(user_id(), device_id()).await);
-        let (request_id, _) = manager.as_ref().unwrap().build_key_query_for_users(vec![user_id()]);
+        let (request_id, _) = manager
+            .as_ref()
+            .unwrap()
+            .build_key_query_for_users(vec![user_id()]);
 
         let stream = manager.as_ref().unwrap().store.identities_stream_raw();
         pin_mut!(stream);
@@ -1971,8 +2200,10 @@ pub(crate) mod tests {
 
         assert_pending!(stream);
 
-        let (new_request_id, _) =
-            manager.as_ref().unwrap().build_key_query_for_users(vec![user_id()]);
+        let (new_request_id, _) = manager
+            .as_ref()
+            .unwrap()
+            .build_key_query_for_users(vec![user_id()]);
 
         // A second `/keys/query` response with the same result shouldn't fire a change
         // notification: the identity and device should be unchanged.
@@ -1993,8 +2224,10 @@ pub(crate) mod tests {
     #[async_test]
     async fn test_identities_stream_raw_signature_update() {
         let mut manager = Some(manager_test_helper(user_id(), device_id()).await);
-        let (request_id, _) =
-            manager.as_ref().unwrap().build_key_query_for_users(vec![other_user_id()]);
+        let (request_id, _) = manager
+            .as_ref()
+            .unwrap()
+            .build_key_query_for_users(vec![other_user_id()]);
 
         let stream = manager.as_ref().unwrap().store.identities_stream_raw();
         pin_mut!(stream);
@@ -2014,8 +2247,10 @@ pub(crate) mod tests {
 
         let initial_msk = identity_update.new[0].master_key().clone();
 
-        let (new_request_id, _) =
-            manager.as_ref().unwrap().build_key_query_for_users(vec![user_id()]);
+        let (new_request_id, _) = manager
+            .as_ref()
+            .unwrap()
+            .build_key_query_for_users(vec![user_id()]);
         // There is a new signature on the msk, should trigger a change
         manager
             .as_ref()
@@ -2069,12 +2304,20 @@ pub(crate) mod tests {
         });
 
         let response = ruma_response_from_json(&response);
-        manager.receive_keys_query_response(&TransactionId::new(), &response).await.unwrap();
+        manager
+            .receive_keys_query_response(&TransactionId::new(), &response)
+            .await
+            .unwrap();
 
         let devices = manager.store.get_user_devices(other_user).await.unwrap();
         assert_eq!(devices.devices().count(), 1);
 
-        manager.store.get_device_data(other_user, device_id!("OBEBOSKTBE")).await.unwrap().unwrap();
+        manager
+            .store
+            .get_device_data(other_user, device_id!("OBEBOSKTBE"))
+            .await
+            .unwrap()
+            .unwrap();
     }
 
     #[async_test]
@@ -2097,14 +2340,23 @@ pub(crate) mod tests {
             .await
             .unwrap();
 
-        let identity = manager.store.get_user_identity(other_user).await.unwrap().unwrap();
+        let identity = manager
+            .store
+            .get_user_identity(other_user)
+            .await
+            .unwrap()
+            .unwrap();
         let other_identity = identity.other().unwrap();
 
         // We should now have an identity for the user but no pin violation
         // (pinned master key is the current one)
         assert!(!other_identity.has_pin_violation());
-        let first_device =
-            manager.store.get_device_data(other_user, DataSet::device_a()).await.unwrap().unwrap();
+        let first_device = manager
+            .store
+            .get_device_data(other_user, DataSet::device_a())
+            .await
+            .unwrap()
+            .unwrap();
         assert!(first_device.is_cross_signed_by_owner(&identity));
 
         // We receive a new keys update for that user, with a new identity
@@ -2116,22 +2368,35 @@ pub(crate) mod tests {
             .await
             .unwrap();
 
-        let identity = manager.store.get_user_identity(other_user).await.unwrap().unwrap();
+        let identity = manager
+            .store
+            .get_user_identity(other_user)
+            .await
+            .unwrap()
+            .unwrap();
         let other_identity = identity.other().unwrap();
 
         // The previous known identity has been replaced, there should be a pin
         // violation
         assert!(other_identity.has_pin_violation());
 
-        let second_device =
-            manager.store.get_device_data(other_user, DataSet::device_b()).await.unwrap().unwrap();
+        let second_device = manager
+            .store
+            .get_device_data(other_user, DataSet::device_b())
+            .await
+            .unwrap()
+            .unwrap();
 
         // There is a new device signed by the new identity
         assert!(second_device.is_cross_signed_by_owner(&identity));
 
         // The first device should not be signed by the new identity
-        let first_device =
-            manager.store.get_device_data(other_user, DataSet::device_a()).await.unwrap().unwrap();
+        let first_device = manager
+            .store
+            .get_device_data(other_user, DataSet::device_a())
+            .await
+            .unwrap()
+            .unwrap();
         assert!(!first_device.is_cross_signed_by_owner(&identity));
 
         let remember_previous_identity = other_identity.clone();
@@ -2147,7 +2412,12 @@ pub(crate) mod tests {
             .await
             .unwrap();
 
-        let identity = manager.store.get_user_identity(other_user).await.unwrap().unwrap();
+        let identity = manager
+            .store
+            .get_user_identity(other_user)
+            .await
+            .unwrap()
+            .unwrap();
         let other_identity = identity.other().unwrap();
 
         assert_eq!(other_identity, &remember_previous_identity);
@@ -2178,7 +2448,12 @@ pub(crate) mod tests {
             .await
             .unwrap();
 
-        let identity = manager.store.get_user_identity(other_user).await.unwrap().unwrap();
+        let identity = manager
+            .store
+            .get_user_identity(other_user)
+            .await
+            .unwrap()
+            .unwrap();
         let other_identity = identity.other().unwrap();
 
         // We have a new identity now, so there should be a pin violation
@@ -2199,7 +2474,10 @@ pub(crate) mod tests {
 
         let keys_query = DataSet::own_keys_query_response_1();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         machine
             .import_cross_signing_keys(CrossSigningKeyExport {
@@ -2222,15 +2500,28 @@ pub(crate) mod tests {
         // ######
         let keys_query = DataSet::bob_keys_query_response_signed();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
-        let own_identity =
-            machine.get_identity(DataSet::own_id(), None).await.unwrap().unwrap().own().unwrap();
+        let own_identity = machine
+            .get_identity(DataSet::own_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .own()
+            .unwrap();
         // For sanity check that own identity is trusted
         assert!(own_identity.is_verified());
 
-        let bob_identity =
-            machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap().other().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
         // The verified latch should be true
         assert!(bob_identity.was_previously_verified());
         // And bob is verified
@@ -2241,10 +2532,18 @@ pub(crate) mod tests {
         // ######
         let keys_query = DataSet::bob_keys_query_response_rotated();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
-        let bob_identity =
-            machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap().other().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
         // Bob is not verified anymore
         assert!(!bob_identity.is_verified());
         // The verified latch should still be true
@@ -2278,10 +2577,16 @@ pub(crate) mod tests {
         // ######
         let keys_query = DataSet::carol_keys_query_response_unsigned();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
-        let carol_identity =
-            machine.get_identity(DataSet::carol_id(), None).await.unwrap().unwrap();
+        let carol_identity = machine
+            .get_identity(DataSet::carol_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         // The identity is not verified
         assert!(!carol_identity.is_verified());
         // The verified latch is off
@@ -2291,7 +2596,10 @@ pub(crate) mod tests {
         // when the key query response is processed
         let keys_query = DataSet::carol_keys_query_response_signed();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         let carol_identity = machine
             .get_identity(DataSet::carol_id(), None)
@@ -2318,27 +2626,47 @@ pub(crate) mod tests {
 
         let keys_query = DataSet::own_keys_query_response_1();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         // For sanity check that own identity is not trusted
-        let own_identity =
-            machine.get_identity(DataSet::own_id(), None).await.unwrap().unwrap().own().unwrap();
+        let own_identity = machine
+            .get_identity(DataSet::own_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .own()
+            .unwrap();
         assert!(!own_identity.is_verified());
 
         let keys_query = DataSet::own_keys_query_response_1();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         // Get Bob and Carol already signed
         let keys_query = DataSet::bob_keys_query_response_signed();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         let keys_query = DataSet::carol_keys_query_response_signed();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
-        machine.update_tracked_users(vec![DataSet::bob_id(), DataSet::carol_id()]).await.unwrap();
+        machine
+            .update_tracked_users(vec![DataSet::bob_id(), DataSet::carol_id()])
+            .await
+            .unwrap();
 
         machine
     }
@@ -2348,16 +2676,28 @@ pub(crate) mod tests {
         use test_json::keys_query_sets::VerificationViolationTestData as DataSet;
         let machine = common_verified_identity_changes_own_trust_change_machine_setup().await;
 
-        let own_identity =
-            machine.get_identity(DataSet::own_id(), None).await.unwrap().unwrap().own().unwrap();
+        let own_identity = machine
+            .get_identity(DataSet::own_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .own()
+            .unwrap();
 
-        let bob_identity = machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         // Bob is verified by our identity but our own identity is not yet trusted
         assert!(!bob_identity.was_previously_verified());
         assert!(own_identity.is_identity_signed(&bob_identity.other().unwrap()));
 
-        let carol_identity =
-            machine.get_identity(DataSet::carol_id(), None).await.unwrap().unwrap();
+        let carol_identity = machine
+            .get_identity(DataSet::carol_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         // Carol is verified by our identity but our own identity is not yet trusted
         assert!(!carol_identity.was_previously_verified());
         assert!(own_identity.is_identity_signed(&carol_identity.other().unwrap()));
@@ -2365,16 +2705,27 @@ pub(crate) mod tests {
         // Marking our own identity as trusted should update the existing identities
         let _ = own_identity.verify().await;
 
-        let own_identity = machine.get_identity(DataSet::own_id(), None).await.unwrap().unwrap();
+        let own_identity = machine
+            .get_identity(DataSet::own_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(own_identity.is_verified());
 
-        let carol_identity =
-            machine.get_identity(DataSet::carol_id(), None).await.unwrap().unwrap();
+        let carol_identity = machine
+            .get_identity(DataSet::carol_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(carol_identity.is_verified());
         // The latch should be set now
         assert!(carol_identity.was_previously_verified());
 
-        let bob_identity = machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(bob_identity.is_verified());
         // The latch should be set now
         assert!(bob_identity.was_previously_verified());
@@ -2385,11 +2736,21 @@ pub(crate) mod tests {
         use test_json::keys_query_sets::VerificationViolationTestData as DataSet;
         let machine = common_verified_identity_changes_own_trust_change_machine_setup().await;
 
-        let own_identity =
-            machine.get_identity(DataSet::own_id(), None).await.unwrap().unwrap().own().unwrap();
+        let own_identity = machine
+            .get_identity(DataSet::own_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .own()
+            .unwrap();
 
-        let bob_identity =
-            machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap().other().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
         // Carol is verified by our identity but our own identity is not yet trusted
         assert!(own_identity.is_identity_signed(&bob_identity));
         assert!(!bob_identity.was_previously_verified());
@@ -2415,16 +2776,27 @@ pub(crate) mod tests {
             .await
             .unwrap();
 
-        let own_identity = machine.get_identity(DataSet::own_id(), None).await.unwrap().unwrap();
+        let own_identity = machine
+            .get_identity(DataSet::own_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(own_identity.is_verified());
 
-        let carol_identity =
-            machine.get_identity(DataSet::carol_id(), None).await.unwrap().unwrap();
+        let carol_identity = machine
+            .get_identity(DataSet::carol_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(carol_identity.is_verified());
         // The latch should be set now
         assert!(carol_identity.was_previously_verified());
 
-        let bob_identity = machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(bob_identity.is_verified());
         // The latch should be set now
         assert!(bob_identity.was_previously_verified());
@@ -2435,13 +2807,17 @@ pub(crate) mod tests {
         use matrix_sdk_test::async_test;
         use ruma::room_id;
 
-        use super::{device_id, manager_test_helper};
-        use crate::{
-            Account, DeviceData, EncryptionSettings,
-            identities::manager::testing::{other_user_id, user_id},
-            olm::{InboundGroupSession, SenderData},
-            store::types::{Changes, DeviceChanges},
-        };
+        use super::device_id;
+        use super::manager_test_helper;
+        use crate::Account;
+        use crate::DeviceData;
+        use crate::EncryptionSettings;
+        use crate::identities::manager::testing::other_user_id;
+        use crate::identities::manager::testing::user_id;
+        use crate::olm::InboundGroupSession;
+        use crate::olm::SenderData;
+        use crate::store::types::Changes;
+        use crate::store::types::DeviceChanges;
 
         #[async_test]
         async fn test_adds_device_info_to_existing_sessions() {

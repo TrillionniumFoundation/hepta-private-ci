@@ -16,6 +16,8 @@ doctest = false
 # not enable HeptaCognitiveWrite by default.
 default = ["production-cognitive-write"]
 production-cognitive-write = []
+# Explicit Linux desktop binding to an independently supplied original owner.
+desktop-objective-ui = ["dep:hepta-control-core"]
 # Adds the qualification-only turn-lifecycle witness seam on top of the real
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
@@ -103,8 +105,10 @@ codex-utils-path = { workspace = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 libc = { workspace = true }
+hepta-control-core = { path = "../../apps/hepta-control-ui/rust/core", optional = true }
 
 [dev-dependencies]
+insta = { workspace = true }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }

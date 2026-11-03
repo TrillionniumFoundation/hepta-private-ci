@@ -312,6 +312,18 @@ impl ChatOwnerAdapter {
         }
     }
 
+    /// Current authenticated-host session data. This getter grants no action.
+    pub fn current_session(&self, now_ms: u64) -> Result<&OwnerSession, ChatOwnerError> {
+        if now_ms < self.now_ms {
+            return Err(ChatOwnerError::ClockRegressed);
+        }
+        let session = self.session.as_ref().ok_or(ChatOwnerError::Unavailable)?;
+        if session.expires_at_ms <= now_ms {
+            return Err(ChatOwnerError::Expired);
+        }
+        Ok(session)
+    }
+
     pub fn require_capability(
         &self,
         capability: ChatCapability,

@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use ruma::{DeviceKeyAlgorithm, OwnedRoomId};
-use serde::{Deserialize, Serialize};
+use ruma::DeviceKeyAlgorithm;
+use ruma::OwnedRoomId;
+use serde::Deserialize;
+use serde::Serialize;
 
 mod forwarder_data;
 mod inbound;
@@ -22,25 +24,35 @@ mod sender_data;
 pub(crate) mod sender_data_finder;
 
 pub use forwarder_data::ForwarderData;
-pub use inbound::{InboundGroupSession, PickledInboundGroupSession};
+pub use inbound::InboundGroupSession;
+pub use inbound::PickledInboundGroupSession;
+pub use outbound::EncryptionSettings;
+pub use outbound::OutboundGroupSession;
+pub use outbound::OutboundGroupSessionEncryptionResult;
+pub use outbound::PickledOutboundGroupSession;
+pub use outbound::ShareInfo;
 pub(crate) use outbound::ShareState;
-pub use outbound::{
-    EncryptionSettings, OutboundGroupSession, OutboundGroupSessionEncryptionResult,
-    PickledOutboundGroupSession, ShareInfo,
-};
-pub use sender_data::{KnownSenderData, SenderData, SenderDataType};
+pub use sender_data::KnownSenderData;
+pub use sender_data::SenderData;
+pub use sender_data::SenderDataType;
 use thiserror::Error;
-pub use vodozemac::megolm::{ExportedSessionKey, SessionKey};
-use vodozemac::{Curve25519PublicKey, megolm::SessionKeyDecodeError};
+use vodozemac::Curve25519PublicKey;
+pub use vodozemac::megolm::ExportedSessionKey;
+pub use vodozemac::megolm::SessionKey;
+use vodozemac::megolm::SessionKeyDecodeError;
 
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::RoomKeyExport;
+use crate::types::SigningKey;
+use crate::types::SigningKeys;
+use crate::types::deserialize_curve_key;
+use crate::types::deserialize_curve_key_vec;
+use crate::types::events::forwarded_room_key::ForwardedMegolmV1AesSha2Content;
 #[cfg(feature = "experimental-algorithms")]
 use crate::types::events::forwarded_room_key::ForwardedMegolmV2AesSha2Content;
-use crate::types::{
-    EventEncryptionAlgorithm, RoomKeyExport, SigningKey, SigningKeys, deserialize_curve_key,
-    deserialize_curve_key_vec,
-    events::forwarded_room_key::{ForwardedMegolmV1AesSha2Content, ForwardedRoomKeyContent},
-    serialize_curve_key, serialize_curve_key_vec,
-};
+use crate::types::events::forwarded_room_key::ForwardedRoomKeyContent;
+use crate::types::serialize_curve_key;
+use crate::types::serialize_curve_key_vec;
 
 /// An error type for the creation of group sessions.
 #[derive(Debug, Error)]
@@ -82,7 +94,10 @@ pub struct ExportedRoomKey {
     pub room_id: OwnedRoomId,
 
     /// The Curve25519 key of the device which initiated the session originally.
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     pub sender_key: Curve25519PublicKey,
 
     /// The ID of the session that the key is for.
@@ -109,7 +124,11 @@ pub struct ExportedRoomKey {
     /// defined in [MSC3061].
     ///
     /// [MSC3061]: https://github.com/matrix-org/matrix-spec-proposals/pull/3061
-    #[serde(default, rename = "m.shared_history", alias = "org.matrix.msc3061.shared_history")]
+    #[serde(
+        default,
+        rename = "m.shared_history",
+        alias = "org.matrix.msc3061.shared_history"
+    )]
     pub shared_history: bool,
 }
 
@@ -173,7 +192,10 @@ pub struct BackedUpRoomKey {
     pub algorithm: EventEncryptionAlgorithm,
 
     /// The Curve25519 key of the device which initiated the session originally.
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     pub sender_key: Curve25519PublicKey,
 
     /// The key for the session.
@@ -196,7 +218,11 @@ pub struct BackedUpRoomKey {
     /// defined in [MSC3061].
     ///
     /// [MSC3061]: https://github.com/matrix-org/matrix-spec-proposals/pull/3061
-    #[serde(default, rename = "m.shared_history", alias = "org.matrix.msc3061.shared_history")]
+    #[serde(
+        default,
+        rename = "m.shared_history",
+        alias = "org.matrix.msc3061.shared_history"
+    )]
     pub shared_history: bool,
 }
 
@@ -217,8 +243,9 @@ impl TryFrom<ExportedRoomKey> for ForwardedRoomKeyContent {
                 //
                 // This was fixed by the megolm v2 content. Hopefully we'll deprecate megolm v1
                 // before we have multiple signing keys.
-                if let Some(SigningKey::Ed25519(claimed_ed25519_key)) =
-                    room_key.sender_claimed_keys.get(&DeviceKeyAlgorithm::Ed25519)
+                if let Some(SigningKey::Ed25519(claimed_ed25519_key)) = room_key
+                    .sender_claimed_keys
+                    .get(&DeviceKeyAlgorithm::Ed25519)
                 {
                     Ok(ForwardedRoomKeyContent::MegolmV1AesSha2(
                         ForwardedMegolmV1AesSha2Content {
@@ -291,8 +318,10 @@ impl TryFrom<ForwardedRoomKeyContent> for ExportedRoomKey {
         match forwarded_key {
             ForwardedRoomKeyContent::MegolmV1AesSha2(content) => {
                 let mut sender_claimed_keys = SigningKeys::new();
-                sender_claimed_keys
-                    .insert(DeviceKeyAlgorithm::Ed25519, content.claimed_ed25519_key.into());
+                sender_claimed_keys.insert(
+                    DeviceKeyAlgorithm::Ed25519,
+                    content.claimed_ed25519_key.into(),
+                );
 
                 Ok(Self {
                     algorithm,

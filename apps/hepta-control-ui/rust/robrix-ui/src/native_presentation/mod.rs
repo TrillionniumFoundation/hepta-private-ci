@@ -3,7 +3,9 @@
 //! The caller moves its existing draft/state owner into this composition. It
 //! must return the same workspace for the lifetime of the window: switching
 //! between unrelated workspaces with coincident RoomKeys is not supported.
-//! This port supplies neither a chat writer nor an owner/readiness witness.
+//! This port supplies neither a writer nor an owner/readiness witness. A trusted
+//! host may install its independently authenticated Objective port into the
+//! existing workspace; the default composition remains observation-only.
 
 use hepta_control_core::chat::ChatWorkspace;
 use std::sync::Arc;
@@ -65,6 +67,7 @@ impl OwnedComposition {
     pub(crate) fn exit(&mut self) {
         if !self.closed {
             self.closed = true;
+            self.inner.workspace_mut().close_objective_owner();
             self.inner.on_ui_exit();
         }
     }

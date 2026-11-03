@@ -23,48 +23,72 @@ mod session;
 mod signing;
 pub(crate) mod utility;
 
-pub use account::{Account, OlmMessageHash, PickledAccount, StaticAccountData};
-pub(crate) use account::{OlmDecryptionInfo, SessionType};
-pub use group_sessions::{
-    BackedUpRoomKey, EncryptionSettings, ExportedRoomKey, ForwarderData, InboundGroupSession,
-    KnownSenderData, OutboundGroupSession, OutboundGroupSessionEncryptionResult,
-    PickledInboundGroupSession, PickledOutboundGroupSession, SenderData, SenderDataType,
-    SessionCreationError, SessionExportError, SessionKey, ShareInfo,
-};
-pub(crate) use group_sessions::{
-    ShareState,
-    sender_data_finder::{self, SenderDataFinder},
-};
-pub use session::{PickledSession, Session};
-pub use signing::{CrossSigningStatus, PickledCrossSigningIdentity, PrivateCrossSigningIdentity};
-pub(crate) use utility::{SignedJsonObject, VerifyJson};
-pub use vodozemac::{Curve25519PublicKey, olm::IdentityKeys};
+pub use account::Account;
+pub(crate) use account::OlmDecryptionInfo;
+pub use account::OlmMessageHash;
+pub use account::PickledAccount;
+pub(crate) use account::SessionType;
+pub use account::StaticAccountData;
+pub use group_sessions::BackedUpRoomKey;
+pub use group_sessions::EncryptionSettings;
+pub use group_sessions::ExportedRoomKey;
+pub use group_sessions::ForwarderData;
+pub use group_sessions::InboundGroupSession;
+pub use group_sessions::KnownSenderData;
+pub use group_sessions::OutboundGroupSession;
+pub use group_sessions::OutboundGroupSessionEncryptionResult;
+pub use group_sessions::PickledInboundGroupSession;
+pub use group_sessions::PickledOutboundGroupSession;
+pub use group_sessions::SenderData;
+pub use group_sessions::SenderDataType;
+pub use group_sessions::SessionCreationError;
+pub use group_sessions::SessionExportError;
+pub use group_sessions::SessionKey;
+pub use group_sessions::ShareInfo;
+pub(crate) use group_sessions::ShareState;
+pub(crate) use group_sessions::sender_data_finder::SenderDataFinder;
+pub(crate) use group_sessions::sender_data_finder::{self};
+pub use session::PickledSession;
+pub use session::Session;
+pub use signing::CrossSigningStatus;
+pub use signing::PickledCrossSigningIdentity;
+pub use signing::PrivateCrossSigningIdentity;
+pub(crate) use utility::SignedJsonObject;
+pub(crate) use utility::VerifyJson;
+pub use vodozemac::Curve25519PublicKey;
+pub use vodozemac::olm::IdentityKeys;
 
 #[cfg(test)]
 pub(crate) mod tests {
     use assert_matches::assert_matches;
-    use matrix_sdk_test::{async_test, message_like_event_content};
-    use ruma::{
-        DeviceId, UserId, device_id, event_id,
-        events::{
-            AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent,
-            relation::Replacement,
-            room::message::{Relation, RoomMessageEventContent},
-        },
-        room_id,
-        serde::Raw,
-        user_id,
-    };
-    use serde_json::{Value, from_value, json};
-    use vodozemac::olm::{OlmMessage, SessionConfig};
+    use matrix_sdk_test::async_test;
+    use matrix_sdk_test::message_like_event_content;
+    use ruma::DeviceId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::event_id;
+    use ruma::events::AnyMessageLikeEvent;
+    use ruma::events::AnyTimelineEvent;
+    use ruma::events::MessageLikeEvent;
+    use ruma::events::relation::Replacement;
+    use ruma::events::room::message::Relation;
+    use ruma::events::room::message::RoomMessageEventContent;
+    use ruma::room_id;
+    use ruma::serde::Raw;
+    use ruma::user_id;
+    use serde_json::Value;
+    use serde_json::from_value;
+    use serde_json::json;
+    use vodozemac::olm::OlmMessage;
+    use vodozemac::olm::SessionConfig;
 
-    use crate::{
-        olm::{Account, ExportedRoomKey, InboundGroupSession, Session},
-        types::events::{
-            forwarded_room_key::ForwardedRoomKeyContent, room::encrypted::EncryptedEvent,
-        },
-        utilities::json_convert,
-    };
+    use crate::olm::Account;
+    use crate::olm::ExportedRoomKey;
+    use crate::olm::InboundGroupSession;
+    use crate::olm::Session;
+    use crate::types::events::forwarded_room_key::ForwardedRoomKeyContent;
+    use crate::types::events::room::encrypted::EncryptedEvent;
+    use crate::utilities::json_convert;
 
     fn alice_id() -> &'static UserId {
         user_id!("@alice:example.org")
@@ -224,7 +248,9 @@ pub(crate) mod tests {
         assert_eq!(0, inbound.first_known_index());
         assert_eq!(outbound.session_id(), inbound.session_id());
 
-        let result = outbound.encrypt("m.room.message", &Raw::new(&content).unwrap().cast()).await;
+        let result = outbound
+            .encrypt("m.room.message", &Raw::new(&content).unwrap().cast())
+            .await;
 
         let event = json!({
             "sender": alice.user_id(),
@@ -288,12 +314,19 @@ pub(crate) mod tests {
 
         let decrypted: Value = json_convert(&decrypted).unwrap();
         let relation = decrypted.get("content").and_then(|c| c.get("m.relates_to"));
-        assert_eq!(relation, Some(&relation_json), "The decrypted event should contain a relation");
+        assert_eq!(
+            relation,
+            Some(&relation_json),
+            "The decrypted event should contain a relation"
+        );
 
         let content = message_like_event_content!({});
         let result = outbound.encrypt("m.dummy", &content).await;
         let mut encrypted: Value = json_convert(&result.content).unwrap();
-        encrypted.as_object_mut().unwrap().insert("m.relates_to".to_owned(), relation_json.clone());
+        encrypted
+            .as_object_mut()
+            .unwrap()
+            .insert("m.relates_to".to_owned(), relation_json.clone());
 
         // Let's now test if we copy the correct relation if there is no
         // relation in the encrypted content.
@@ -317,7 +350,10 @@ pub(crate) mod tests {
 
         let decrypted: Value = json_convert(&decrypted).unwrap();
         let relation = decrypted.get("content").and_then(|c| c.get("m.relates_to"));
-        assert!(relation.is_some(), "The decrypted event should contain a relation");
+        assert!(
+            relation.is_some(),
+            "The decrypted event should contain a relation"
+        );
     }
 
     #[async_test]

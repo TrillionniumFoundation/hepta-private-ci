@@ -15,11 +15,14 @@
 use std::collections::BTreeMap;
 
 use ruma::serde::JsonCastable;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use vodozemac::Curve25519PublicKey;
 
-use super::{Signatures, deserialize_curve_key, serialize_curve_key};
+use super::Signatures;
+use super::deserialize_curve_key;
+use super::serialize_curve_key;
 
 /// Auth data for the `m.megolm_backup.v1.curve25519-aes-sha2` backup algorithm
 /// as defined in the [spec].
@@ -28,7 +31,10 @@ use super::{Signatures, deserialize_curve_key, serialize_curve_key};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MegolmV1AuthData {
     ///The Curve25519 public key used to encrypt the backups.
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     pub public_key: Curve25519PublicKey,
     /// *Optional.* Signatures of the auth_data, as Signed JSON.
     #[serde(default)]
@@ -41,7 +47,11 @@ impl MegolmV1AuthData {
     // Create a new [`MegolmV1AuthData`] from a public Curve25519 key and a
     // [`Signatures`] map.
     pub(crate) fn new(public_key: Curve25519PublicKey, signatures: Signatures) -> Self {
-        Self { public_key, signatures, extra: Default::default() }
+        Self {
+            public_key,
+            signatures,
+            extra: Default::default(),
+        }
     }
 }
 
@@ -100,7 +110,10 @@ impl Serialize for RoomKeyBackupInfo {
                 algorithm: "m.megolm_backup.v1.curve25519-aes-sha2".to_owned(),
                 auth_data: serde_json::to_value(d).map_err(serde::ser::Error::custom)?,
             },
-            RoomKeyBackupInfo::Other { algorithm, auth_data } => BackupInfoHelper {
+            RoomKeyBackupInfo::Other {
+                algorithm,
+                auth_data,
+            } => BackupInfoHelper {
                 algorithm: algorithm.to_owned(),
                 auth_data: serde_json::to_value(auth_data.clone())
                     .map_err(serde::ser::Error::custom)?,
@@ -116,13 +129,20 @@ mod tests {
     use std::collections::BTreeMap;
 
     use assert_matches::assert_matches;
-    use insta::{assert_json_snapshot, with_settings};
-    use ruma::{DeviceKeyAlgorithm, KeyId, owned_user_id};
-    use serde_json::{Value, json};
-    use vodozemac::{Curve25519PublicKey, Ed25519Signature};
+    use insta::assert_json_snapshot;
+    use insta::with_settings;
+    use ruma::DeviceKeyAlgorithm;
+    use ruma::KeyId;
+    use ruma::owned_user_id;
+    use serde_json::Value;
+    use serde_json::json;
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Ed25519Signature;
 
     use super::RoomKeyBackupInfo;
-    use crate::types::{MegolmV1AuthData, Signature, Signatures};
+    use crate::types::MegolmV1AuthData;
+    use crate::types::Signature;
+    use crate::types::Signatures;
 
     #[test]
     fn serialization() {
@@ -134,7 +154,13 @@ mod tests {
         });
 
         let deserialized: RoomKeyBackupInfo = serde_json::from_value(json.clone()).unwrap();
-        assert_matches!(deserialized, RoomKeyBackupInfo::Other { algorithm: _, auth_data: _ });
+        assert_matches!(
+            deserialized,
+            RoomKeyBackupInfo::Other {
+                algorithm: _,
+                auth_data: _
+            }
+        );
 
         let serialized = serde_json::to_value(deserialized).unwrap();
         assert_eq!(json, serialized);
@@ -152,7 +178,10 @@ mod tests {
         });
 
         let deserialized: RoomKeyBackupInfo = serde_json::from_value(json.clone()).unwrap();
-        assert_matches!(deserialized, RoomKeyBackupInfo::MegolmBackupV1Curve25519AesSha2(_));
+        assert_matches!(
+            deserialized,
+            RoomKeyBackupInfo::MegolmBackupV1Curve25519AesSha2(_)
+        );
 
         let serialized = serde_json::to_value(deserialized).unwrap();
         assert_eq!(json, serialized);
@@ -166,7 +195,9 @@ mod tests {
                 owned_user_id!("@alice:localhost"),
                 BTreeMap::from([(
                     KeyId::from_parts(DeviceKeyAlgorithm::Ed25519, "ABCDEFG".into()),
-                    Ok(Signature::from(Ed25519Signature::from_slice(&[0u8; 64]).unwrap())),
+                    Ok(Signature::from(
+                        Ed25519Signature::from_slice(&[0u8; 64]).unwrap(),
+                    )),
                 )]),
             )])),
             extra: BTreeMap::from([("foo".to_owned(), Value::from("bar"))]),

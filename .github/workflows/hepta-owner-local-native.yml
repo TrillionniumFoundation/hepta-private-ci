@@ -1,0 +1,82 @@
+name: Hepta owner-local Matrixd native transport
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/uds/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-owner-local-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-owner-local-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  native:
+    name: Owner-local and original Matrixd controls (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 80
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install original repository runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Bind native compiler and source identity
+        run: |
+          New-Item -ItemType Directory -Force "$env:RUNNER_TEMP/owner-local" | Out-Null
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne "${{ github.event.pull_request.head.sha || github.sha }}") { throw "source identity mismatch" }
+          git rev-parse HEAD "HEAD^{tree}" | Tee-Object "$env:RUNNER_TEMP/owner-local/source.txt"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Set-Location codex-rs
+          rustc --version --verbose | Tee-Object "$env:RUNNER_TEMP/owner-local/toolchain.txt"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise all original UDS and actual owner-local identity controls
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-uds --lib --test-threads 1 --no-tests fail --retries 0 2>&1 | Tee-Object "$env:RUNNER_TEMP/owner-local/uds.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise every original Matrixd library control including real health transport
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-matrixd --lib --test-threads 1 --no-tests fail --retries 0 2>&1 | Tee-Object "$env:RUNNER_TEMP/owner-local/matrixd.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Check formatting and unchanged tracked source
+        if: always()
+        run: |
+          Set-Location codex-rs
+          cargo fmt --package codex-uds --package codex-hepta-matrixd -- --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve native identity and complete test output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-local-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/owner-local
+          if-no-files-found: error
+          retention-days: 14

@@ -12,66 +12,78 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{matches, sync::Arc, time::Duration};
+use std::matches;
+use std::sync::Arc;
+use std::time::Duration;
 
 use matrix_sdk_common::locks::Mutex;
-use ruma::{
-    DeviceId, OwnedTransactionId, TransactionId, UserId,
-    events::{
-        AnyMessageLikeEventContent, AnyToDeviceEventContent,
-        key::verification::{
-            HashAlgorithm, KeyAgreementProtocol, MessageAuthenticationCode,
-            ShortAuthenticationString,
-            accept::{
-                AcceptMethod, KeyVerificationAcceptEventContent, SasV1Content as AcceptV1Content,
-                SasV1ContentInit as AcceptV1ContentInit, ToDeviceKeyVerificationAcceptEventContent,
-            },
-            cancel::CancelCode,
-            done::{KeyVerificationDoneEventContent, ToDeviceKeyVerificationDoneEventContent},
-            key::{KeyVerificationKeyEventContent, ToDeviceKeyVerificationKeyEventContent},
-            start::{
-                KeyVerificationStartEventContent, SasV1Content, SasV1ContentInit, StartMethod,
-                ToDeviceKeyVerificationStartEventContent,
-            },
-        },
-        relation::Reference,
-    },
-    serde::Base64,
-    time::Instant,
-};
-use serde::{Deserialize, Serialize};
+use ruma::DeviceId;
+use ruma::OwnedTransactionId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::AnyMessageLikeEventContent;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::key::verification::HashAlgorithm;
+use ruma::events::key::verification::KeyAgreementProtocol;
+use ruma::events::key::verification::MessageAuthenticationCode;
+use ruma::events::key::verification::ShortAuthenticationString;
+use ruma::events::key::verification::accept::AcceptMethod;
+use ruma::events::key::verification::accept::KeyVerificationAcceptEventContent;
+use ruma::events::key::verification::accept::SasV1Content as AcceptV1Content;
+use ruma::events::key::verification::accept::SasV1ContentInit as AcceptV1ContentInit;
+use ruma::events::key::verification::accept::ToDeviceKeyVerificationAcceptEventContent;
+use ruma::events::key::verification::cancel::CancelCode;
+use ruma::events::key::verification::done::KeyVerificationDoneEventContent;
+use ruma::events::key::verification::done::ToDeviceKeyVerificationDoneEventContent;
+use ruma::events::key::verification::key::KeyVerificationKeyEventContent;
+use ruma::events::key::verification::key::ToDeviceKeyVerificationKeyEventContent;
+use ruma::events::key::verification::start::KeyVerificationStartEventContent;
+use ruma::events::key::verification::start::SasV1Content;
+use ruma::events::key::verification::start::SasV1ContentInit;
+use ruma::events::key::verification::start::StartMethod;
+use ruma::events::key::verification::start::ToDeviceKeyVerificationStartEventContent;
+use ruma::events::relation::Reference;
+use ruma::serde::Base64;
+use ruma::time::Instant;
+use serde::Deserialize;
+use serde::Serialize;
 use tracing::info;
-use vodozemac::{
-    Curve25519PublicKey,
-    sas::{EstablishedSas, Mac, Sas},
-};
+use vodozemac::Curve25519PublicKey;
+use vodozemac::sas::EstablishedSas;
+use vodozemac::sas::Mac;
+use vodozemac::sas::Sas;
 
-use super::{
-    OutgoingContent,
-    helpers::{
-        SasIds, calculate_commitment, get_decimal, get_emoji, get_emoji_index, get_mac_content,
-        receive_mac_event,
-    },
-};
-use crate::{
-    OwnUserIdentityData,
-    identities::{DeviceData, UserIdentityData},
-    olm::StaticAccountData,
-    verification::{
-        Cancelled, Emoji, FlowId,
-        cache::RequestInfo,
-        event_enums::{
-            AcceptContent, DoneContent, KeyContent, MacContent, OwnedAcceptContent,
-            OwnedStartContent, StartContent,
-        },
-    },
-};
+use super::OutgoingContent;
+use super::helpers::SasIds;
+use super::helpers::calculate_commitment;
+use super::helpers::get_decimal;
+use super::helpers::get_emoji;
+use super::helpers::get_emoji_index;
+use super::helpers::get_mac_content;
+use super::helpers::receive_mac_event;
+use crate::OwnUserIdentityData;
+use crate::identities::DeviceData;
+use crate::identities::UserIdentityData;
+use crate::olm::StaticAccountData;
+use crate::verification::Cancelled;
+use crate::verification::Emoji;
+use crate::verification::FlowId;
+use crate::verification::cache::RequestInfo;
+use crate::verification::event_enums::AcceptContent;
+use crate::verification::event_enums::DoneContent;
+use crate::verification::event_enums::KeyContent;
+use crate::verification::event_enums::MacContent;
+use crate::verification::event_enums::OwnedAcceptContent;
+use crate::verification::event_enums::OwnedStartContent;
+use crate::verification::event_enums::StartContent;
 
 const KEY_AGREEMENT_PROTOCOLS: &[KeyAgreementProtocol] =
     &[KeyAgreementProtocol::Curve25519HkdfSha256];
 const HASHES: &[HashAlgorithm] = &[HashAlgorithm::Sha256];
-const STRINGS: &[ShortAuthenticationString] =
-    &[ShortAuthenticationString::Decimal, ShortAuthenticationString::Emoji];
+const STRINGS: &[ShortAuthenticationString] = &[
+    ShortAuthenticationString::Decimal,
+    ShortAuthenticationString::Emoji,
+];
 
 fn the_protocol_definitions(
     short_auth_strings: Option<Vec<ShortAuthenticationString>>,
@@ -158,11 +170,16 @@ impl SupportedMacMethod {
                 let calculated_mac = Base64::parse(calculated_mac)
                     .expect("We can always decode a Mac from vodozemac");
 
-                if calculated_mac != *mac { Err(CancelCode::KeyMismatch) } else { Ok(()) }
+                if calculated_mac != *mac {
+                    Err(CancelCode::KeyMismatch)
+                } else {
+                    Ok(())
+                }
             }
             SupportedMacMethod::HkdfHmacSha256V2 | SupportedMacMethod::Msc3783HkdfHmacSha256V2 => {
                 let mac = Mac::from_slice(mac.as_bytes());
-                sas.verify_mac(input, info, &mac).map_err(|_| CancelCode::MismatchedSas)
+                sas.verify_mac(input, info, &mac)
+                    .map_err(|_| CancelCode::MismatchedSas)
             }
         }
     }
@@ -207,7 +224,9 @@ impl TryFrom<AcceptV1Content> for AcceptedProtocols {
     fn try_from(content: AcceptV1Content) -> Result<Self, Self::Error> {
         if !KEY_AGREEMENT_PROTOCOLS.contains(&content.key_agreement_protocol)
             || !HASHES.contains(&content.hash)
-            || (!content.short_authentication_string.contains(&ShortAuthenticationString::Emoji)
+            || (!content
+                .short_authentication_string
+                .contains(&ShortAuthenticationString::Emoji)
                 && !content
                     .short_authentication_string
                     .contains(&ShortAuthenticationString::Decimal))
@@ -351,7 +370,8 @@ impl<S: Clone> SasState<S> {
             .map_err(|_| CancelCode::from("Invalid public key"))?;
 
         if let Some(sas) = self.inner.lock().take() {
-            sas.diffie_hellman(their_public_key).map_err(|_| "Invalid public key".into())
+            sas.diffie_hellman(their_public_key)
+                .map_err(|_| "Invalid public key".into())
         } else {
             Err(CancelCode::UnexpectedMessage)
         }
@@ -581,14 +601,21 @@ impl SasState<Created> {
         SasState {
             inner: Arc::new(Mutex::new(Some(sas))),
             our_public_key,
-            ids: Box::new(SasIds { account, other_device, other_identity, own_identity }),
+            ids: Box::new(SasIds {
+                account,
+                other_device,
+                other_identity,
+                own_identity,
+            }),
             verification_flow_id: flow_id.into(),
 
             creation_time: Arc::new(Instant::now()),
             last_event_time: Arc::new(Instant::now()),
             started_from_request,
 
-            state: Arc::new(Created { protocol_definitions }),
+            state: Arc::new(Created {
+                protocol_definitions,
+            }),
         }
     }
 
@@ -624,7 +651,8 @@ impl SasState<Created> {
         sender: &UserId,
         content: &AcceptContent<'_>,
     ) -> Result<SasState<Accepted>, SasState<Cancelled>> {
-        self.check_event(sender, content.flow_id()).map_err(|c| self.clone().cancel(true, c))?;
+        self.check_event(sender, content.flow_id())
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         let AcceptMethod::SasV1(content) = content.method() else {
             return Err(self.cancel(true, CancelCode::UnknownMethod));
@@ -728,7 +756,12 @@ impl SasState<Started> {
             inner: Arc::new(Mutex::new(Some(sas))),
             our_public_key,
 
-            ids: Box::new(SasIds { account, other_device, other_identity, own_identity }),
+            ids: Box::new(SasIds {
+                account,
+                other_device,
+                other_identity,
+                own_identity,
+            }),
 
             creation_time: Arc::new(Instant::now()),
             last_event_time: Arc::new(Instant::now()),
@@ -763,8 +796,13 @@ impl SasState<Started> {
         accepted_protocols.short_auth_string = methods;
 
         // Decimal is required per spec.
-        if !accepted_protocols.short_auth_string.contains(&ShortAuthenticationString::Decimal) {
-            accepted_protocols.short_auth_string.push(ShortAuthenticationString::Decimal);
+        if !accepted_protocols
+            .short_auth_string
+            .contains(&ShortAuthenticationString::Decimal)
+        {
+            accepted_protocols
+                .short_auth_string
+                .push(ShortAuthenticationString::Decimal);
         }
 
         SasState {
@@ -825,7 +863,8 @@ impl SasState<Started> {
         sender: &UserId,
         content: &AcceptContent<'_>,
     ) -> Result<SasState<Accepted>, SasState<Cancelled>> {
-        self.check_event(sender, content.flow_id()).map_err(|c| self.clone().cancel(true, c))?;
+        self.check_event(sender, content.flow_id())
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         let AcceptMethod::SasV1(content) = content.method() else {
             return Err(self.cancel(true, CancelCode::UnknownMethod));
@@ -907,8 +946,9 @@ impl SasState<WeAccepted> {
         sender: &UserId,
         content: &KeyContent<'_>,
     ) -> Result<SasState<KeyReceived>, SasState<Cancelled>> {
-        let established =
-            self.handle_key_content(sender, content).map_err(|c| self.clone().cancel(true, c))?;
+        let established = self
+            .handle_key_content(sender, content)
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         Ok(SasState {
             inner: self.inner,
@@ -942,13 +982,16 @@ impl SasState<Accepted> {
         sender: &UserId,
         content: &KeyContent<'_>,
     ) -> Result<SasState<KeyReceived>, SasState<Cancelled>> {
-        let established =
-            self.handle_key_content(sender, content).map_err(|c| self.clone().cancel(true, c))?;
+        let established = self
+            .handle_key_content(sender, content)
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         let their_public_key = established.their_public_key();
 
-        let commitment =
-            calculate_commitment(their_public_key, &self.state.start_content.as_start_content());
+        let commitment = calculate_commitment(
+            their_public_key,
+            &self.state.start_content.as_start_content(),
+        );
 
         if self.state.commitment == commitment {
             Ok(SasState {
@@ -1029,12 +1072,15 @@ impl SasState<KeySent> {
         sender: &UserId,
         content: &KeyContent<'_>,
     ) -> Result<SasState<KeysExchanged>, SasState<Cancelled>> {
-        let established =
-            self.handle_key_content(sender, content).map_err(|c| self.clone().cancel(true, c))?;
+        let established = self
+            .handle_key_content(sender, content)
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         let their_public_key = established.their_public_key();
-        let commitment =
-            calculate_commitment(their_public_key, &self.state.start_content.as_start_content());
+        let commitment = calculate_commitment(
+            their_public_key,
+            &self.state.start_content.as_start_content(),
+        );
 
         if self.state.commitment == commitment {
             Ok(SasState {
@@ -1166,7 +1212,8 @@ impl SasState<KeysExchanged> {
         sender: &UserId,
         content: &MacContent<'_>,
     ) -> Result<SasState<MacReceived>, SasState<Cancelled>> {
-        self.check_event(sender, content.flow_id()).map_err(|c| self.clone().cancel(true, c))?;
+        self.check_event(sender, content.flow_id())
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         let (devices, master_keys) = receive_mac_event(
             &self.state.sas.lock(),
@@ -1230,7 +1277,8 @@ impl SasState<Confirmed> {
         sender: &UserId,
         content: &MacContent<'_>,
     ) -> Result<SasState<Done>, SasState<Cancelled>> {
-        self.check_event(sender, content.flow_id()).map_err(|c| self.clone().cancel(true, c))?;
+        self.check_event(sender, content.flow_id())
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         let (devices, master_keys) = receive_mac_event(
             &self.state.sas.lock(),
@@ -1274,7 +1322,8 @@ impl SasState<Confirmed> {
         sender: &UserId,
         content: &MacContent<'_>,
     ) -> Result<SasState<WaitingForDone>, SasState<Cancelled>> {
-        self.check_event(sender, content.flow_id()).map_err(|c| self.clone().cancel(true, c))?;
+        self.check_event(sender, content.flow_id())
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         let (devices, master_keys) = receive_mac_event(
             &self.state.sas.lock(),
@@ -1446,7 +1495,8 @@ impl SasState<WaitingForDone> {
         sender: &UserId,
         content: &DoneContent<'_>,
     ) -> Result<SasState<Done>, SasState<Cancelled>> {
-        self.check_event(sender, content.flow_id()).map_err(|c| self.clone().cancel(true, c))?;
+        self.check_event(sender, content.flow_id())
+            .map_err(|c| self.clone().cancel(true, c))?;
 
         Ok(SasState {
             inner: self.inner,
@@ -1501,30 +1551,38 @@ impl SasState<Cancelled> {
 #[cfg(test)]
 mod tests {
     use matrix_sdk_test::async_test;
-    use ruma::{
-        DeviceId, TransactionId, UserId, device_id,
-        events::key::verification::{
-            HashAlgorithm, KeyAgreementProtocol, MessageAuthenticationCode,
-            ShortAuthenticationString,
-            accept::{AcceptMethod, ToDeviceKeyVerificationAcceptEventContent},
-            start::{
-                SasV1Content, SasV1ContentInit, StartMethod,
-                ToDeviceKeyVerificationStartEventContent,
-            },
-        },
-        serde::Base64,
-        user_id,
-    };
+    use ruma::DeviceId;
+    use ruma::TransactionId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::events::key::verification::HashAlgorithm;
+    use ruma::events::key::verification::KeyAgreementProtocol;
+    use ruma::events::key::verification::MessageAuthenticationCode;
+    use ruma::events::key::verification::ShortAuthenticationString;
+    use ruma::events::key::verification::accept::AcceptMethod;
+    use ruma::events::key::verification::accept::ToDeviceKeyVerificationAcceptEventContent;
+    use ruma::events::key::verification::start::SasV1Content;
+    use ruma::events::key::verification::start::SasV1ContentInit;
+    use ruma::events::key::verification::start::StartMethod;
+    use ruma::events::key::verification::start::ToDeviceKeyVerificationStartEventContent;
+    use ruma::serde::Base64;
+    use ruma::user_id;
     use serde_json::json;
 
-    use super::{Accepted, Created, SasState, Started, SupportedMacMethod, WeAccepted};
-    use crate::{
-        AcceptedProtocols, Account, DeviceData,
-        verification::{
-            FlowId,
-            event_enums::{AcceptContent, KeyContent, MacContent, StartContent},
-        },
-    };
+    use super::Accepted;
+    use super::Created;
+    use super::SasState;
+    use super::Started;
+    use super::SupportedMacMethod;
+    use super::WeAccepted;
+    use crate::AcceptedProtocols;
+    use crate::Account;
+    use crate::DeviceData;
+    use crate::verification::FlowId;
+    use crate::verification::event_enums::AcceptContent;
+    use crate::verification::event_enums::KeyContent;
+    use crate::verification::event_enums::MacContent;
+    use crate::verification::event_enums::StartContent;
 
     fn alice_id() -> &'static UserId {
         user_id!("@alice:example.org")
@@ -1604,7 +1662,10 @@ mod tests {
 
         let accepted_protocols = AcceptedProtocols::try_from(&start_content).unwrap();
 
-        assert_eq!(accepted_protocols.message_auth_code, SupportedMacMethod::HkdfHmacSha256V2);
+        assert_eq!(
+            accepted_protocols.message_auth_code,
+            SupportedMacMethod::HkdfHmacSha256V2
+        );
         assert_eq!(
             accepted_protocols.key_agreement_protocol,
             KeyAgreementProtocol::Curve25519HkdfSha256
@@ -1773,7 +1834,9 @@ mod tests {
         let content = bob.as_content();
         let content = AcceptContent::from(&content);
         let sender = user_id!("@malory:example.org");
-        alice.into_accepted(sender, &content).expect_err("Didn't cancel on a invalid sender");
+        alice
+            .into_accepted(sender, &content)
+            .expect_err("Didn't cancel on a invalid sender");
     }
 
     #[test]

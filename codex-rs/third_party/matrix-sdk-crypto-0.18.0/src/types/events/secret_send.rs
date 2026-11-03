@@ -16,12 +16,15 @@
 
 use std::collections::BTreeMap;
 
-use ruma::{OwnedTransactionId, events::secret::request::SecretName};
-use serde::{Deserialize, Serialize};
+use ruma::OwnedTransactionId;
+use ruma::events::secret::request::SecretName;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use zeroize::Zeroize;
 
-use super::{EventType, ToDeviceEvent};
+use super::EventType;
+use super::ToDeviceEvent;
 
 /// The `m.secret.send` to-device event.
 pub type SecretSendEvent = ToDeviceEvent<SecretSendContent>;
@@ -50,7 +53,12 @@ pub struct SecretSendContent {
 impl SecretSendContent {
     /// Create a new `m.secret.send` content.
     pub fn new(request_id: OwnedTransactionId, secret: String) -> Self {
-        Self { request_id, secret, secret_name: None, other: Default::default() }
+        Self {
+            request_id,
+            secret,
+            secret_name: None,
+            other: Default::default(),
+        }
     }
 }
 
@@ -81,7 +89,8 @@ impl EventType for SecretSendContent {
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use serde_json::{Value, json};
+    use serde_json::Value;
+    use serde_json::json;
 
     use super::SecretSendEvent;
 

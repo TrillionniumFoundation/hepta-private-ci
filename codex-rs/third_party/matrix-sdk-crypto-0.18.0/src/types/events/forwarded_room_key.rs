@@ -16,18 +16,27 @@
 
 use std::collections::BTreeMap;
 
-use ruma::{DeviceKeyAlgorithm, OwnedRoomId};
-use serde::{Deserialize, Serialize};
+use ruma::DeviceKeyAlgorithm;
+use ruma::OwnedRoomId;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
-use vodozemac::{Curve25519PublicKey, Ed25519PublicKey, megolm::ExportedSessionKey};
+use vodozemac::Curve25519PublicKey;
+use vodozemac::Ed25519PublicKey;
+use vodozemac::megolm::ExportedSessionKey;
 
-use super::{EventType, ToDeviceEvent};
+use super::EventType;
+use super::ToDeviceEvent;
 #[cfg(doc)]
 use crate::olm::InboundGroupSession;
-use crate::types::{
-    EventEncryptionAlgorithm, SigningKeys, deserialize_curve_key, deserialize_curve_key_vec,
-    deserialize_ed25519_key, serialize_curve_key, serialize_curve_key_vec, serialize_ed25519_key,
-};
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::SigningKeys;
+use crate::types::deserialize_curve_key;
+use crate::types::deserialize_curve_key_vec;
+use crate::types::deserialize_ed25519_key;
+use crate::types::serialize_curve_key;
+use crate::types::serialize_curve_key_vec;
+use crate::types::serialize_ed25519_key;
 
 /// The `m.forwarded_room_key` to-device event.
 pub type ForwardedRoomKeyEvent = ToDeviceEvent<ForwardedRoomKeyContent>;
@@ -157,7 +166,10 @@ pub struct ForwardedMegolmV2AesSha2Content {
     /// It is ‘claimed’ because the receiving device has no way to tell that
     /// the original room_key actually came from a device which owns the private
     /// part of this key.
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     pub claimed_sender_key: Curve25519PublicKey,
 
     /// The Ed25519 key of the device which initiated the session originally.
@@ -188,7 +200,10 @@ impl std::fmt::Debug for ForwardedMegolmV1AesSha2Content {
         f.debug_struct("ForwardedMegolmV1AesSha2Content")
             .field("room_id", &self.room_id)
             .field("session_id", &self.session_id)
-            .field("forwarding_curve25519_key_chain", &self.forwarding_curve25519_key_chain)
+            .field(
+                "forwarding_curve25519_key_chain",
+                &self.forwarding_curve25519_key_chain,
+            )
             .field("claimed_sender_key", &self.claimed_sender_key)
             .field("claimed_ed25519_key", &self.claimed_ed25519_key)
             .finish_non_exhaustive()

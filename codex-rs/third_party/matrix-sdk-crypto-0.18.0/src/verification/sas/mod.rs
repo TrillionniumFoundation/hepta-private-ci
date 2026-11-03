@@ -19,34 +19,47 @@ mod sas_state;
 use std::sync::Arc;
 
 use as_variant::as_variant;
-use eyeball::{ObservableWriteGuard, SharedObservable};
+use eyeball::ObservableWriteGuard;
+use eyeball::SharedObservable;
 use futures_core::Stream;
 use futures_util::StreamExt;
 use inner_sas::InnerSas;
-use ruma::{
-    DeviceId, OwnedEventId, OwnedRoomId, OwnedTransactionId, RoomId, TransactionId, UserId,
-    api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest,
-    events::{
-        AnyMessageLikeEventContent, AnyToDeviceEventContent,
-        key::verification::{ShortAuthenticationString, cancel::CancelCode, start::SasV1Content},
-    },
-};
+use ruma::DeviceId;
+use ruma::OwnedEventId;
+use ruma::OwnedRoomId;
+use ruma::OwnedTransactionId;
+use ruma::RoomId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+use ruma::events::AnyMessageLikeEventContent;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::key::verification::ShortAuthenticationString;
+use ruma::events::key::verification::cancel::CancelCode;
+use ruma::events::key::verification::start::SasV1Content;
 pub use sas_state::AcceptedProtocols;
-use tracing::{debug, error, trace};
+use tracing::debug;
+use tracing::error;
+use tracing::trace;
 
-use super::{
-    CancelInfo, FlowId, IdentitiesBeingVerified, VerificationResult,
-    cache::RequestInfo,
-    event_enums::{AnyVerificationContent, OutgoingContent, OwnedAcceptContent, StartContent},
-    requests::RequestHandle,
-};
-use crate::{
-    Emoji,
-    identities::{DeviceData, UserIdentityData},
-    olm::StaticAccountData,
-    store::CryptoStoreError,
-    types::requests::{OutgoingVerificationRequest, RoomMessageRequest, ToDeviceRequest},
-};
+use super::CancelInfo;
+use super::FlowId;
+use super::IdentitiesBeingVerified;
+use super::VerificationResult;
+use super::cache::RequestInfo;
+use super::event_enums::AnyVerificationContent;
+use super::event_enums::OutgoingContent;
+use super::event_enums::OwnedAcceptContent;
+use super::event_enums::StartContent;
+use super::requests::RequestHandle;
+use crate::Emoji;
+use crate::identities::DeviceData;
+use crate::identities::UserIdentityData;
+use crate::olm::StaticAccountData;
+use crate::store::CryptoStoreError;
+use crate::types::requests::OutgoingVerificationRequest;
+use crate::types::requests::RoomMessageRequest;
+use crate::types::requests::ToDeviceRequest;
 
 /// Short authentication string object.
 #[derive(Clone, Debug)]
@@ -178,24 +191,24 @@ impl PartialEq for SasState {
 impl From<&InnerSas> for SasState {
     fn from(value: &InnerSas) -> Self {
         match value {
-            InnerSas::Created(s) => {
-                Self::Created { protocols: s.state.protocol_definitions.to_owned() }
-            }
-            InnerSas::Started(s) => {
-                Self::Started { protocols: s.state.protocol_definitions.to_owned() }
-            }
-            InnerSas::Accepted(s) => {
-                Self::Accepted { accepted_protocols: s.state.accepted_protocols.to_owned() }
-            }
-            InnerSas::WeAccepted(s) => {
-                Self::Accepted { accepted_protocols: s.state.accepted_protocols.to_owned() }
-            }
-            InnerSas::KeySent(s) => {
-                Self::Accepted { accepted_protocols: s.state.accepted_protocols.to_owned() }
-            }
-            InnerSas::KeyReceived(s) => {
-                Self::Accepted { accepted_protocols: s.state.accepted_protocols.to_owned() }
-            }
+            InnerSas::Created(s) => Self::Created {
+                protocols: s.state.protocol_definitions.to_owned(),
+            },
+            InnerSas::Started(s) => Self::Started {
+                protocols: s.state.protocol_definitions.to_owned(),
+            },
+            InnerSas::Accepted(s) => Self::Accepted {
+                accepted_protocols: s.state.accepted_protocols.to_owned(),
+            },
+            InnerSas::WeAccepted(s) => Self::Accepted {
+                accepted_protocols: s.state.accepted_protocols.to_owned(),
+            },
+            InnerSas::KeySent(s) => Self::Accepted {
+                accepted_protocols: s.state.accepted_protocols.to_owned(),
+            },
+            InnerSas::KeyReceived(s) => Self::Accepted {
+                accepted_protocols: s.state.accepted_protocols.to_owned(),
+            },
             InnerSas::KeysExchanged(s) => {
                 let emojis = value.supports_emoji().then(|| {
                     let emojis = s.get_emoji();
@@ -365,7 +378,13 @@ impl Sas {
     ) -> (Sas, OutgoingContent) {
         let flow_id = FlowId::ToDevice(transaction_id);
 
-        Self::start_helper(flow_id, identities, we_started, request_handle, short_auth_strings)
+        Self::start_helper(
+            flow_id,
+            identities,
+            we_started,
+            request_handle,
+            short_auth_strings,
+        )
     }
 
     /// Start a new SAS auth flow with the given device inside the given room.
@@ -435,7 +454,9 @@ impl Sas {
     /// returns an `AcceptEventContent` that needs to be sent out.
     pub fn accept(&self) -> Option<OutgoingVerificationRequest> {
         let protocols = as_variant!(self.state(), SasState::Started { protocols } => protocols)?;
-        let settings = AcceptSettings { allowed_methods: protocols.short_authentication_string };
+        let settings = AcceptSettings {
+            allowed_methods: protocols.short_authentication_string,
+        };
         self.accept_with_settings(settings)
     }
 
@@ -499,8 +520,13 @@ impl Sas {
     /// the server.
     pub async fn confirm(
         &self,
-    ) -> Result<(Vec<OutgoingVerificationRequest>, Option<SignatureUploadRequest>), CryptoStoreError>
-    {
+    ) -> Result<
+        (
+            Vec<OutgoingVerificationRequest>,
+            Option<SignatureUploadRequest>,
+        ),
+        CryptoStoreError,
+    > {
         let (contents, done) = {
             let mut guard = self.inner.write();
 
@@ -515,10 +541,12 @@ impl Sas {
             .into_iter()
             .map(|c| match c {
                 OutgoingContent::ToDevice(c) => self.content_to_request(&c).into(),
-                OutgoingContent::Room(r, c) => {
-                    RoomMessageRequest { room_id: r, txn_id: TransactionId::new(), content: c }
-                        .into()
+                OutgoingContent::Room(r, c) => RoomMessageRequest {
+                    room_id: r,
+                    txn_id: TransactionId::new(),
+                    content: c,
                 }
+                .into(),
             })
             .collect::<Vec<_>>();
 
@@ -545,7 +573,10 @@ impl Sas {
 
     pub(crate) async fn mark_as_done(&self) -> Result<VerificationResult, CryptoStoreError> {
         self.identities_being_verified
-            .mark_as_done(self.verified_devices().as_deref(), self.verified_identities().as_deref())
+            .mark_as_done(
+                self.verified_devices().as_deref(),
+                self.verified_identities().as_deref(),
+            )
             .await
     }
 
@@ -584,9 +615,12 @@ impl Sas {
         ObservableWriteGuard::set(&mut guard, sas);
 
         content.map(|c| match c {
-            OutgoingContent::Room(room_id, content) => {
-                RoomMessageRequest { room_id, txn_id: TransactionId::new(), content }.into()
+            OutgoingContent::Room(room_id, content) => RoomMessageRequest {
+                room_id,
+                txn_id: TransactionId::new(),
+                content,
             }
+            .into(),
             OutgoingContent::ToDevice(c) => self.content_to_request(&c).into(),
         })
     }
@@ -855,7 +889,9 @@ impl AcceptSettings {
     ///
     /// * `methods` - The methods this client allows at most
     pub fn with_allowed_methods(methods: Vec<ShortAuthenticationString>) -> Self {
-        Self { allowed_methods: methods }
+        Self {
+            allowed_methods: methods,
+        }
     }
 }
 
@@ -866,23 +902,28 @@ mod tests {
     use assert_matches::assert_matches;
     use assert_matches2::assert_let;
     use matrix_sdk_test::async_test;
-    use ruma::{
-        DeviceId, TransactionId, UserId, device_id,
-        events::key::verification::{ShortAuthenticationString, accept::AcceptMethod},
-        user_id,
-    };
+    use ruma::DeviceId;
+    use ruma::TransactionId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::events::key::verification::ShortAuthenticationString;
+    use ruma::events::key::verification::accept::AcceptMethod;
+    use ruma::user_id;
     use tokio::sync::Mutex;
 
     use super::Sas;
-    use crate::{
-        Account, DeviceData, SasState,
-        olm::PrivateCrossSigningIdentity,
-        store::{CryptoStoreWrapper, MemoryStore},
-        verification::{
-            VerificationStore,
-            event_enums::{AcceptContent, KeyContent, MacContent, OutgoingContent, StartContent},
-        },
-    };
+    use crate::Account;
+    use crate::DeviceData;
+    use crate::SasState;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::store::CryptoStoreWrapper;
+    use crate::store::MemoryStore;
+    use crate::verification::VerificationStore;
+    use crate::verification::event_enums::AcceptContent;
+    use crate::verification::event_enums::KeyContent;
+    use crate::verification::event_enums::MacContent;
+    use crate::verification::event_enums::OutgoingContent;
+    use crate::verification::event_enums::StartContent;
 
     fn alice_id() -> &'static UserId {
         user_id!("@alice:example.org")
@@ -923,7 +964,11 @@ mod tests {
 
         let bob_store = VerificationStore {
             account: bob.static_data.clone(),
-            inner: Arc::new(CryptoStoreWrapper::new(bob.user_id(), bob_device_id(), bob_store)),
+            inner: Arc::new(CryptoStoreWrapper::new(
+                bob.user_id(),
+                bob_device_id(),
+                bob_store,
+            )),
             private_identity: Mutex::new(PrivateCrossSigningIdentity::empty(bob_id())).into(),
         };
 
@@ -953,8 +998,9 @@ mod tests {
         let content = OutgoingContent::try_from(request).unwrap();
         let content = AcceptContent::try_from(&content).unwrap();
 
-        let (content, request_info) =
-            alice.receive_any_event(bob.user_id(), &content.into()).unwrap();
+        let (content, request_info) = alice
+            .receive_any_event(bob.user_id(), &content.into())
+            .unwrap();
 
         assert_matches!(alice.state(), SasState::Accepted { .. });
         assert_matches!(bob.state(), SasState::Accepted { .. });
@@ -964,8 +1010,9 @@ mod tests {
         alice.mark_request_as_sent(&request_info.unwrap().request_id);
 
         let content = KeyContent::try_from(&content).unwrap();
-        let (content, request_info) =
-            bob.receive_any_event(alice.user_id(), &content.into()).unwrap();
+        let (content, request_info) = bob
+            .receive_any_event(alice.user_id(), &content.into())
+            .unwrap();
         assert!(!bob.can_be_presented());
         assert_matches!(bob.state(), SasState::Accepted { .. });
         bob.mark_request_as_sent(&request_info.unwrap().request_id);
@@ -998,7 +1045,12 @@ mod tests {
         let content = MacContent::try_from(&content).unwrap();
         alice.receive_any_event(bob.user_id(), &content.into());
 
-        assert!(alice.verified_devices().unwrap().contains(alice.other_device()));
+        assert!(
+            alice
+                .verified_devices()
+                .unwrap()
+                .contains(alice.other_device())
+        );
         assert!(bob.verified_devices().unwrap().contains(bob.other_device()));
         assert_matches!(alice.state(), SasState::Done { .. });
         assert_matches!(bob.state(), SasState::Done { .. });
@@ -1010,8 +1062,13 @@ mod tests {
         let identities = alice_store.get_identities(bob_device).await.unwrap();
 
         let short_auth_strings = vec![ShortAuthenticationString::Decimal];
-        let (alice, content) =
-            Sas::start(identities, TransactionId::new(), true, None, Some(short_auth_strings));
+        let (alice, content) = Sas::start(
+            identities,
+            TransactionId::new(),
+            true,
+            None,
+            Some(short_auth_strings),
+        );
 
         let flow_id = alice.flow_id().to_owned();
         let content = StartContent::try_from(&content).unwrap();
@@ -1025,7 +1082,15 @@ mod tests {
         let content = AcceptContent::try_from(&content).unwrap();
         assert_let!(AcceptMethod::SasV1(content) = content.method());
 
-        assert!(content.short_authentication_string.contains(&ShortAuthenticationString::Decimal));
-        assert!(!content.short_authentication_string.contains(&ShortAuthenticationString::Emoji));
+        assert!(
+            content
+                .short_authentication_string
+                .contains(&ShortAuthenticationString::Decimal)
+        );
+        assert!(
+            !content
+                .short_authentication_string
+                .contains(&ShortAuthenticationString::Emoji)
+        );
     }
 }

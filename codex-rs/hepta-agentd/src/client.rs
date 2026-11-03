@@ -806,3 +806,19 @@ fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
         ))),
     }
 }
+
+#[cfg(target_os = "linux")]
+#[path = "objective_client.rs"]
+mod objective;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveClient;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveClientError;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveHistory;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectivePeer;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveWindow;
+#[cfg(target_os = "linux")]
+pub use objective::ObjectiveClientMode;

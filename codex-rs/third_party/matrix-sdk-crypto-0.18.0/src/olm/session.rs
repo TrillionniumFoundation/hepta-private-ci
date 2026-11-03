@@ -12,32 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{fmt, sync::Arc};
+use std::fmt;
+use std::sync::Arc;
 
-use ruma::{SecondsSinceUnixEpoch, serde::Raw};
-use serde::{Deserialize, Serialize};
+use ruma::SecondsSinceUnixEpoch;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use tokio::sync::Mutex;
-use tracing::{Span, debug};
-use vodozemac::{
-    Curve25519PublicKey,
-    olm::{DecryptionError, OlmMessage, Session as InnerSession, SessionConfig, SessionPickle},
-};
+use tracing::Span;
+use tracing::debug;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::olm::DecryptionError;
+use vodozemac::olm::OlmMessage;
+use vodozemac::olm::Session as InnerSession;
+use vodozemac::olm::SessionConfig;
+use vodozemac::olm::SessionPickle;
 
+use crate::DeviceData;
+use crate::error::EventError;
+use crate::error::OlmResult;
+use crate::error::SessionUnpickleError;
+use crate::types::DeviceKeys;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::events::EventType;
+use crate::types::events::olm_v1::DecryptedOlmV1Event;
+use crate::types::events::olm_v1::OlmV1Keys;
+use crate::types::events::room::encrypted::OlmV1Curve25519AesSha2Content;
 #[cfg(feature = "experimental-algorithms")]
 use crate::types::events::room::encrypted::OlmV2Curve25519AesSha2Content;
-use crate::{
-    DeviceData,
-    error::{EventError, OlmResult, SessionUnpickleError},
-    types::{
-        DeviceKeys, EventEncryptionAlgorithm,
-        events::{
-            EventType,
-            olm_v1::{DecryptedOlmV1Event, OlmV1Keys},
-            room::encrypted::{OlmV1Curve25519AesSha2Content, ToDeviceEncryptedEventContent},
-        },
-    },
-};
+use crate::types::events::room::encrypted::ToDeviceEncryptedEventContent;
 
 /// Cryptographic session that enables secure communication between two
 /// `Account`s
@@ -186,10 +191,14 @@ impl Session {
 
         let plaintext = {
             let content = serde_json::to_value(content)?;
-            let content = Content { event_type, content: Raw::new(&content)? };
+            let content = Content {
+                event_type,
+                content: Raw::new(&content)?,
+            };
 
-            let recipient_signing_key =
-                recipient_device.ed25519_key().ok_or(EventError::MissingSigningKey)?;
+            let recipient_signing_key = recipient_device
+                .ed25519_key()
+                .ok_or(EventError::MissingSigningKey)?;
 
             let content = DecryptedOlmV1Event {
                 sender: self.our_device_keys.user_id.clone(),
@@ -200,7 +209,9 @@ impl Session {
                         .ed25519_key()
                         .expect("Our own device should have an Ed25519 public key"),
                 },
-                recipient_keys: OlmV1Keys { ed25519: recipient_signing_key },
+                recipient_keys: OlmV1Keys {
+                    ed25519: recipient_signing_key,
+                },
                 sender_device_keys: Some(self.our_device_keys.clone()),
                 content,
             };
@@ -344,18 +355,18 @@ pub struct PickledSession {
 mod tests {
     use assert_matches2::assert_let;
     use matrix_sdk_test::async_test;
-    use ruma::{device_id, user_id};
-    use serde_json::{self, Value};
-    use vodozemac::olm::{OlmMessage, SessionConfig};
+    use ruma::device_id;
+    use ruma::user_id;
+    use serde_json::Value;
+    use serde_json::{self};
+    use vodozemac::olm::OlmMessage;
+    use vodozemac::olm::SessionConfig;
 
-    use crate::{
-        identities::DeviceData,
-        olm::Account,
-        types::events::{
-            dummy::DummyEventContent, olm_v1::DecryptedOlmV1Event,
-            room::encrypted::ToDeviceEncryptedEventContent,
-        },
-    };
+    use crate::identities::DeviceData;
+    use crate::olm::Account;
+    use crate::types::events::dummy::DummyEventContent;
+    use crate::types::events::olm_v1::DecryptedOlmV1Event;
+    use crate::types::events::room::encrypted::ToDeviceEncryptedEventContent;
 
     #[async_test]
     async fn test_encryption_and_decryption() {
@@ -390,7 +401,12 @@ mod tests {
 
         // and encrypts a message
         let message = alice_session
-            .encrypt(&alice_device, "m.dummy", ToDeviceDummyEventContent::new(), None)
+            .encrypt(
+                &alice_device,
+                "m.dummy",
+                ToDeviceDummyEventContent::new(),
+                None,
+            )
             .await
             .unwrap()
             .deserialize()
@@ -417,7 +433,10 @@ mod tests {
         // Also ensure that the encrypted payload has the device keys under the stable
         // prefix
         let plaintext: Value = serde_json::from_str(&bob_session_result.plaintext).unwrap();
-        assert_eq!(plaintext["sender_device_keys"]["user_id"].as_str(), Some("@alice:localhost"));
+        assert_eq!(
+            plaintext["sender_device_keys"]["user_id"].as_str(),
+            Some("@alice:localhost")
+        );
 
         // And the serialized object matches the format as specified in
         // DecryptedOlmV1Event

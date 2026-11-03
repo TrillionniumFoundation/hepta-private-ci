@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::BTreeMap, time::Duration};
+use std::collections::BTreeMap;
+use std::time::Duration;
 
-use ruma::{OwnedDeviceId, OwnedUserId};
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
 
 /// Customized version of `ruma_client_api::keys::get_keys::v3::Request`,
 /// without any references.
@@ -33,6 +35,9 @@ impl KeysQueryRequest {
     pub(crate) fn new(users: impl Iterator<Item = OwnedUserId>) -> Self {
         let device_keys = users.map(|u| (u, Vec::new())).collect();
 
-        Self { timeout: None, device_keys }
+        Self {
+            timeout: None,
+            device_keys,
+        }
     }
 }

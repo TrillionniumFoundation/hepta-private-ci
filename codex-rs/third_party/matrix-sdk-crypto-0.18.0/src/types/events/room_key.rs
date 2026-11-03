@@ -16,12 +16,17 @@
 
 use std::collections::BTreeMap;
 
-use ruma::{OwnedRoomId, RoomId, serde::Raw};
-use serde::{Deserialize, Serialize};
-use serde_json::{Value, value::to_raw_value};
+use ruma::OwnedRoomId;
+use ruma::RoomId;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::Value;
+use serde_json::value::to_raw_value;
 use vodozemac::megolm::SessionKey;
 
-use super::{EventType, ToDeviceEvent};
+use super::EventType;
+use super::ToDeviceEvent;
 #[cfg(doc)]
 use crate::olm::InboundGroupSession;
 use crate::types::EventEncryptionAlgorithm;
@@ -92,8 +97,10 @@ impl RoomKeyContent {
                 other: &content.other,
             };
 
-            let helper =
-                RoomKeyHelper { algorithm: self.algorithm(), other: serde_json::to_value(helper)? };
+            let helper = RoomKeyHelper {
+                algorithm: self.algorithm(),
+                other: serde_json::to_value(helper)?,
+            };
 
             Ok(Raw::from_json(to_raw_value(&helper)?))
         };
@@ -124,7 +131,11 @@ pub struct MegolmV1AesSha2Content {
     /// [MSC3061].
     ///
     /// [MSC3061]: https://github.com/matrix-org/matrix-spec-proposals/pull/3061
-    #[serde(default, rename = "m.shared_history", alias = "org.matrix.msc3061.shared_history")]
+    #[serde(
+        default,
+        rename = "m.shared_history",
+        alias = "org.matrix.msc3061.shared_history"
+    )]
     pub shared_history: bool,
     /// Any other, custom and non-specced fields of the content.
     #[serde(flatten)]
@@ -139,7 +150,13 @@ impl MegolmV1AesSha2Content {
         session_key: SessionKey,
         shared_history: bool,
     ) -> Self {
-        Self { room_id, session_id, session_key, other: Default::default(), shared_history }
+        Self {
+            room_id,
+            session_id,
+            session_key,
+            other: Default::default(),
+            shared_history,
+        }
     }
 }
 
@@ -223,7 +240,8 @@ impl Serialize for RoomKeyContent {
 #[cfg(test)]
 pub(super) mod tests {
     use assert_matches::assert_matches;
-    use serde_json::{Value, json};
+    use serde_json::Value;
+    use serde_json::json;
     use similar_asserts::assert_eq;
 
     use super::RoomKeyEvent;

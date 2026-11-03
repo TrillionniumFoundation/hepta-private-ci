@@ -14,10 +14,16 @@
 
 //! Types for room events.
 
-use std::{collections::BTreeMap, fmt::Debug};
+use std::collections::BTreeMap;
+use std::fmt::Debug;
 
-use ruma::{EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedUserId, UserId};
-use serde::{Deserialize, Serialize};
+use ruma::EventId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedEventId;
+use ruma::OwnedUserId;
+use ruma::UserId;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 
 use super::EventType;

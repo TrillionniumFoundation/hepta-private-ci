@@ -21,19 +21,25 @@
 use std::collections::BTreeMap;
 
 use js_option::JsOption;
-use ruma::{
-    DeviceKeyAlgorithm, DeviceKeyId, OwnedDeviceId, OwnedDeviceKeyId, OwnedUserId,
-    serde::{JsonCastable, Raw},
-};
-use serde::{Deserialize, Serialize};
-use serde_json::{Value, value::to_raw_value};
-use vodozemac::{Curve25519PublicKey, Ed25519PublicKey};
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedDeviceKeyId;
+use ruma::OwnedUserId;
+use ruma::serde::JsonCastable;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::Value;
+use serde_json::value::to_raw_value;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::Ed25519PublicKey;
 
-use super::{EventEncryptionAlgorithm, Signatures};
-use crate::{
-    SignatureError,
-    olm::{SignedJsonObject, VerifyJson},
-};
+use super::EventEncryptionAlgorithm;
+use super::Signatures;
+use crate::SignatureError;
+use crate::olm::SignedJsonObject;
+use crate::olm::VerifyJson;
 
 /// Represents a Matrix cryptographic device
 ///
@@ -114,25 +120,38 @@ impl DeviceKeys {
 
     /// Get the key of the given key algorithm belonging to this device.
     pub fn get_key(&self, algorithm: DeviceKeyAlgorithm) -> Option<&DeviceKey> {
-        self.keys.get(&DeviceKeyId::from_parts(algorithm, &self.device_id))
+        self.keys
+            .get(&DeviceKeyId::from_parts(algorithm, &self.device_id))
     }
 
     /// Get the Curve25519 key of the given device.
     pub fn curve25519_key(&self) -> Option<Curve25519PublicKey> {
-        self.get_key(DeviceKeyAlgorithm::Curve25519)
-            .and_then(|k| if let DeviceKey::Curve25519(k) = k { Some(*k) } else { None })
+        self.get_key(DeviceKeyAlgorithm::Curve25519).and_then(|k| {
+            if let DeviceKey::Curve25519(k) = k {
+                Some(*k)
+            } else {
+                None
+            }
+        })
     }
 
     /// Get the Ed25519 key of the given device.
     pub fn ed25519_key(&self) -> Option<Ed25519PublicKey> {
-        self.get_key(DeviceKeyAlgorithm::Ed25519)
-            .and_then(|k| if let DeviceKey::Ed25519(k) = k { Some(*k) } else { None })
+        self.get_key(DeviceKeyAlgorithm::Ed25519).and_then(|k| {
+            if let DeviceKey::Ed25519(k) = k {
+                Some(*k)
+            } else {
+                None
+            }
+        })
     }
 
     /// Verify that the given object has been signed by the Ed25519 key in this
     /// `DeviceKeys`.
     pub fn has_signed(&self, signed_object: &impl SignedJsonObject) -> Result<(), SignatureError> {
-        let key = self.ed25519_key().ok_or(SignatureError::MissingSigningKey)?;
+        let key = self
+            .ed25519_key()
+            .ok_or(SignatureError::MissingSigningKey)?;
         let key_id = &DeviceKeyId::from_parts(DeviceKeyAlgorithm::Ed25519, &self.device_id);
         key.verify_json(&self.user_id, key_id, signed_object)
     }
@@ -261,8 +280,11 @@ impl TryFrom<DeviceKeyHelper> for DeviceKeys {
 
 impl From<DeviceKeys> for DeviceKeyHelper {
     fn from(value: DeviceKeys) -> Self {
-        let keys: BTreeMap<OwnedDeviceKeyId, String> =
-            value.keys.into_iter().map(|(k, v)| (k, v.to_base64())).collect();
+        let keys: BTreeMap<OwnedDeviceKeyId, String> = value
+            .keys
+            .into_iter()
+            .map(|(k, v)| (k, v.to_base64()))
+            .collect();
 
         Self {
             user_id: value.user_id,
@@ -281,9 +303,12 @@ impl From<DeviceKeys> for DeviceKeyHelper {
 mod tests {
     use std::str::FromStr;
 
-    use ruma::{OwnedDeviceKeyId, device_id, user_id};
+    use ruma::OwnedDeviceKeyId;
+    use ruma::device_id;
+    use ruma::user_id;
     use serde_json::json;
-    use vodozemac::{Curve25519PublicKey, Curve25519SecretKey};
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Curve25519SecretKey;
 
     use super::DeviceKeys;
 
@@ -348,12 +373,16 @@ mod tests {
           }
         })).expect("Can't deserialize device keys");
 
-        device_keys.check_self_signature().expect("Self-signature check failed");
+        device_keys
+            .check_self_signature()
+            .expect("Self-signature check failed");
 
         // Change one of the fields and verify that the signature check fails.
         let new_curve_key = Curve25519SecretKey::new();
         let key_id = OwnedDeviceKeyId::from_str("curve25519:BNYQQWUMXO").unwrap();
-        device_keys.keys.insert(key_id, Curve25519PublicKey::from(&new_curve_key).into());
+        device_keys
+            .keys
+            .insert(key_id, Curve25519PublicKey::from(&new_curve_key).into());
 
         assert!(device_keys.check_self_signature().is_err());
     }

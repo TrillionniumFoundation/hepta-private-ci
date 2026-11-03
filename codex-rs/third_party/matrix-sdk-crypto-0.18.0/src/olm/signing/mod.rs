@@ -14,31 +14,42 @@
 
 mod pk_signing;
 
-use std::sync::{
-    Arc,
-    atomic::{AtomicBool, Ordering},
-};
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
-pub use pk_signing::{MasterSigning, PickledSignings, SelfSigning, SigningError, UserSigning};
-use ruma::{
-    DeviceKeyAlgorithm, DeviceKeyId, OwnedDeviceId, OwnedDeviceKeyId, OwnedUserId, UserId,
-    api::client::keys::upload_signatures::v3::{Request as SignatureUploadRequest, SignedKeys},
-    events::secret::request::SecretName,
-};
-use serde::{Deserialize, Serialize};
+pub use pk_signing::MasterSigning;
+pub use pk_signing::PickledSignings;
+pub use pk_signing::SelfSigning;
+pub use pk_signing::SigningError;
+pub use pk_signing::UserSigning;
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedDeviceKeyId;
+use ruma::OwnedUserId;
+use ruma::UserId;
+use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+use ruma::api::client::keys::upload_signatures::v3::SignedKeys;
+use ruma::events::secret::request::SecretName;
+use serde::Deserialize;
+use serde::Serialize;
 use tokio::sync::Mutex;
 use vodozemac::Ed25519Signature;
 
 use super::StaticAccountData;
-use crate::{
-    Account, DeviceData, OtherUserIdentityData, OwnUserIdentity, OwnUserIdentityData,
-    error::SignatureError,
-    store::SecretImportError,
-    types::{
-        DeviceKeys, MasterPubkey, SelfSigningPubkey, UserSigningPubkey,
-        requests::UploadSigningKeysRequest,
-    },
-};
+use crate::Account;
+use crate::DeviceData;
+use crate::OtherUserIdentityData;
+use crate::OwnUserIdentity;
+use crate::OwnUserIdentityData;
+use crate::error::SignatureError;
+use crate::store::SecretImportError;
+use crate::types::DeviceKeys;
+use crate::types::MasterPubkey;
+use crate::types::SelfSigningPubkey;
+use crate::types::UserSigningPubkey;
+use crate::types::requests::UploadSigningKeysRequest;
 
 /// Private cross signing identity.
 ///
@@ -145,7 +156,10 @@ impl PrivateCrossSigningIdentity {
         let master_key = self.master_public_key().await?.get_first_key()?.to_base64();
         let master_key = OwnedDeviceId::from(master_key);
 
-        Some(DeviceKeyId::from_parts(DeviceKeyAlgorithm::Ed25519, &master_key))
+        Some(DeviceKeyId::from_parts(
+            DeviceKeyAlgorithm::Ed25519,
+            &master_key,
+        ))
     }
 
     /// Can we sign our own devices, i.e. do we have a self signing key.
@@ -175,17 +189,29 @@ impl PrivateCrossSigningIdentity {
 
     /// Get the public part of the master key, if we have one.
     pub async fn master_public_key(&self) -> Option<MasterPubkey> {
-        self.master_key.lock().await.as_ref().map(|m| m.public_key().to_owned())
+        self.master_key
+            .lock()
+            .await
+            .as_ref()
+            .map(|m| m.public_key().to_owned())
     }
 
     /// Get the public part of the self-signing key, if we have one.
     pub async fn self_signing_public_key(&self) -> Option<SelfSigningPubkey> {
-        self.self_signing_key.lock().await.as_ref().map(|k| k.public_key().to_owned())
+        self.self_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .map(|k| k.public_key().to_owned())
     }
 
     /// Get the public part of the user-signing key, if we have one.
     pub async fn user_signing_public_key(&self) -> Option<UserSigningPubkey> {
-        self.user_signing_key.lock().await.as_ref().map(|k| k.public_key().to_owned())
+        self.user_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .map(|k| k.public_key().to_owned())
     }
 
     /// Export the seed of the private cross signing key
@@ -198,15 +224,24 @@ impl PrivateCrossSigningIdentity {
     ///   exported.
     pub async fn export_secret(&self, secret_name: &SecretName) -> Option<String> {
         match secret_name {
-            SecretName::CrossSigningMasterKey => {
-                self.master_key.lock().await.as_ref().map(|m| m.export_seed())
-            }
-            SecretName::CrossSigningUserSigningKey => {
-                self.user_signing_key.lock().await.as_ref().map(|m| m.export_seed())
-            }
-            SecretName::CrossSigningSelfSigningKey => {
-                self.self_signing_key.lock().await.as_ref().map(|m| m.export_seed())
-            }
+            SecretName::CrossSigningMasterKey => self
+                .master_key
+                .lock()
+                .await
+                .as_ref()
+                .map(|m| m.export_seed()),
+            SecretName::CrossSigningUserSigningKey => self
+                .user_signing_key
+                .lock()
+                .await
+                .as_ref()
+                .map(|m| m.export_seed()),
+            SecretName::CrossSigningSelfSigningKey => self
+                .self_signing_key
+                .lock()
+                .await
+                .as_ref()
+                .map(|m| m.export_seed()),
             _ => None,
         }
     }
@@ -224,7 +259,8 @@ impl PrivateCrossSigningIdentity {
             _ => return Ok(()),
         };
 
-        self.import_secrets(public_identity, master, self_signing, user_signing).await
+        self.import_secrets(public_identity, master, self_signing, user_signing)
+            .await
     }
 
     pub(crate) async fn import_secrets(
@@ -235,9 +271,10 @@ impl PrivateCrossSigningIdentity {
         user_signing_key: Option<&str>,
     ) -> Result<(), SecretImportError> {
         let master = if let Some(master_key) = master_key {
-            let master =
-                MasterSigning::from_base64(self.user_id().to_owned(), master_key).map_err(|e| {
-                    SecretImportError::Key { name: SecretName::CrossSigningMasterKey, error: e }
+            let master = MasterSigning::from_base64(self.user_id().to_owned(), master_key)
+                .map_err(|e| SecretImportError::Key {
+                    name: SecretName::CrossSigningMasterKey,
+                    error: e,
                 })?;
 
             if public_identity.master_key() == master.public_key() {
@@ -316,9 +353,10 @@ impl PrivateCrossSigningIdentity {
         user_signing_key: Option<&str>,
     ) -> Result<(), SecretImportError> {
         if let Some(master_key) = master_key {
-            let master =
-                MasterSigning::from_base64(self.user_id().to_owned(), master_key).map_err(|e| {
-                    SecretImportError::Key { name: SecretName::CrossSigningMasterKey, error: e }
+            let master = MasterSigning::from_base64(self.user_id().to_owned(), master_key)
+                .map_err(|e| SecretImportError::Key {
+                    name: SecretName::CrossSigningMasterKey,
+                    error: e,
                 })?;
             *self.master_key.lock().await = Some(master);
         }
@@ -386,7 +424,11 @@ impl PrivateCrossSigningIdentity {
             .await
             .is_some_and(|subkey| &subkey != public_identity.self_signing_key());
 
-        DiffResult { master_differs, user_signing_differs, self_signing_differs }
+        DiffResult {
+            master_differs,
+            user_signing_differs,
+            self_signing_differs,
+        }
     }
 
     /// Get the names of the secrets we are missing.
@@ -423,14 +465,17 @@ impl PrivateCrossSigningIdentity {
         &self,
     ) -> Result<(MasterPubkey, SelfSigningPubkey, UserSigningPubkey), SignatureError> {
         let master_private_key = self.master_key.lock().await;
-        let master_private_key =
-            master_private_key.as_ref().ok_or(SignatureError::MissingSigningKey)?;
+        let master_private_key = master_private_key
+            .as_ref()
+            .ok_or(SignatureError::MissingSigningKey)?;
         let self_signing_private_key = self.self_signing_key.lock().await;
-        let self_signing_private_key =
-            self_signing_private_key.as_ref().ok_or(SignatureError::MissingSigningKey)?;
+        let self_signing_private_key = self_signing_private_key
+            .as_ref()
+            .ok_or(SignatureError::MissingSigningKey)?;
         let user_signing_private_key = self.user_signing_key.lock().await;
-        let user_signing_private_key =
-            user_signing_private_key.as_ref().ok_or(SignatureError::MissingSigningKey)?;
+        let user_signing_private_key = user_signing_private_key
+            .as_ref()
+            .ok_or(SignatureError::MissingSigningKey)?;
 
         let mut master = master_private_key.public_key().to_owned();
         let mut self_signing = self_signing_private_key.public_key().to_owned();
@@ -609,13 +654,31 @@ impl PrivateCrossSigningIdentity {
     pub async fn pickle(&self) -> PickledCrossSigningIdentity {
         let master_key = self.master_key.lock().await.as_ref().map(|m| m.pickle());
 
-        let self_signing_key = self.self_signing_key.lock().await.as_ref().map(|m| m.pickle());
+        let self_signing_key = self
+            .self_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .map(|m| m.pickle());
 
-        let user_signing_key = self.user_signing_key.lock().await.as_ref().map(|m| m.pickle());
+        let user_signing_key = self
+            .user_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .map(|m| m.pickle());
 
-        let keys = PickledSignings { master_key, user_signing_key, self_signing_key };
+        let keys = PickledSignings {
+            master_key,
+            user_signing_key,
+            self_signing_key,
+        };
 
-        PickledCrossSigningIdentity { user_id: self.user_id.clone(), shared: self.shared(), keys }
+        PickledCrossSigningIdentity {
+            user_id: self.user_id.clone(),
+            shared: self.shared(),
+            keys,
+        }
     }
 
     /// Restore the private cross signing identity from a pickle.
@@ -626,9 +689,18 @@ impl PrivateCrossSigningIdentity {
     pub fn from_pickle(pickle: PickledCrossSigningIdentity) -> Result<Self, SigningError> {
         let keys = pickle.keys;
 
-        let master = keys.master_key.map(MasterSigning::from_pickle).transpose()?;
-        let self_signing = keys.self_signing_key.map(SelfSigning::from_pickle).transpose()?;
-        let user_signing = keys.user_signing_key.map(UserSigning::from_pickle).transpose()?;
+        let master = keys
+            .master_key
+            .map(MasterSigning::from_pickle)
+            .transpose()?;
+        let self_signing = keys
+            .self_signing_key
+            .map(SelfSigning::from_pickle)
+            .transpose()?;
+        let user_signing = keys
+            .user_signing_key
+            .map(UserSigning::from_pickle)
+            .transpose()?;
 
         Ok(Self {
             user_id: pickle.user_id.clone(),
@@ -642,16 +714,32 @@ impl PrivateCrossSigningIdentity {
     /// Get the upload request that is needed to share the public keys of this
     /// identity.
     pub(crate) async fn as_upload_request(&self) -> UploadSigningKeysRequest {
-        let master_key =
-            self.master_key.lock().await.as_ref().map(|k| k.public_key().as_ref().clone());
+        let master_key = self
+            .master_key
+            .lock()
+            .await
+            .as_ref()
+            .map(|k| k.public_key().as_ref().clone());
 
-        let user_signing_key =
-            self.user_signing_key.lock().await.as_ref().map(|k| k.public_key().as_ref().clone());
+        let user_signing_key = self
+            .user_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .map(|k| k.public_key().as_ref().clone());
 
-        let self_signing_key =
-            self.self_signing_key.lock().await.as_ref().map(|k| k.public_key().as_ref().clone());
+        let self_signing_key = self
+            .self_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .map(|k| k.public_key().as_ref().clone());
 
-        UploadSigningKeysRequest { master_key, self_signing_key, user_signing_key }
+        UploadSigningKeysRequest {
+            master_key,
+            self_signing_key,
+            user_signing_key,
+        }
     }
 }
 
@@ -660,15 +748,22 @@ mod tests {
     use std::sync::Arc;
 
     use matrix_sdk_test::async_test;
-    use ruma::{CanonicalJsonValue, DeviceKeyAlgorithm, DeviceKeyId, UserId, device_id, user_id};
+    use ruma::CanonicalJsonValue;
+    use ruma::DeviceKeyAlgorithm;
+    use ruma::DeviceKeyId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::user_id;
     use serde_json::json;
 
-    use super::{PrivateCrossSigningIdentity, pk_signing::Signing};
-    use crate::{
-        identities::{DeviceData, OtherUserIdentityData},
-        olm::{Account, SignedJsonObject, VerifyJson},
-        types::Signatures,
-    };
+    use super::PrivateCrossSigningIdentity;
+    use super::pk_signing::Signing;
+    use crate::identities::DeviceData;
+    use crate::identities::OtherUserIdentityData;
+    use crate::olm::Account;
+    use crate::olm::SignedJsonObject;
+    use crate::olm::VerifyJson;
+    use crate::types::Signatures;
 
     fn user_id() -> &'static UserId {
         user_id!("@example:localhost")
@@ -717,12 +812,28 @@ mod tests {
 
         master_key
             .public_key()
-            .verify_subkey(identity.self_signing_key.lock().await.as_ref().unwrap().public_key())
+            .verify_subkey(
+                identity
+                    .self_signing_key
+                    .lock()
+                    .await
+                    .as_ref()
+                    .unwrap()
+                    .public_key(),
+            )
             .unwrap();
 
         master_key
             .public_key()
-            .verify_subkey(identity.user_signing_key.lock().await.as_ref().unwrap().public_key())
+            .verify_subkey(
+                identity
+                    .user_signing_key
+                    .lock()
+                    .await
+                    .as_ref()
+                    .unwrap()
+                    .public_key(),
+            )
             .unwrap();
     }
 
@@ -735,7 +846,10 @@ mod tests {
         let unpickled = PrivateCrossSigningIdentity::from_pickle(pickled).unwrap();
 
         assert_eq!(identity.user_id, unpickled.user_id);
-        assert_eq!(&*identity.master_key.lock().await, &*unpickled.master_key.lock().await);
+        assert_eq!(
+            &*identity.master_key.lock().await,
+            &*unpickled.master_key.lock().await
+        );
         assert_eq!(
             &*identity.user_signing_key.lock().await,
             &*unpickled.user_signing_key.lock().await
@@ -809,6 +923,9 @@ mod tests {
 
         bob_public.master_key = Arc::new(master.try_into().unwrap());
 
-        user_signing.public_key().verify_master_key(bob_public.master_key()).unwrap();
+        user_signing
+            .public_key()
+            .verify_master_key(bob_public.master_key())
+            .unwrap();
     }
 }

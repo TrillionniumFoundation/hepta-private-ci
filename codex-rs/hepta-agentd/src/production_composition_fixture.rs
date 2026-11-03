@@ -1,3 +1,5 @@
+#![cfg(test)]
+
 //! Qualification inputs only. No fixture is a production trust source.
 
 use super::*;

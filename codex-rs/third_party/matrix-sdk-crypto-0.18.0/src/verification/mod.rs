@@ -20,43 +20,65 @@ mod qrcode;
 mod requests;
 mod sas;
 
-use std::{collections::HashMap, ops::Deref, sync::Arc};
+use std::collections::HashMap;
+use std::ops::Deref;
+use std::sync::Arc;
 
 use as_variant::as_variant;
 use event_enums::OutgoingContent;
 pub use machine::VerificationMachine;
 #[cfg(feature = "qrcode")]
-pub use qrcode::{QrVerification, QrVerificationState, ScanError};
-pub use requests::{VerificationRequest, VerificationRequestState};
+pub use qrcode::QrVerification;
 #[cfg(feature = "qrcode")]
-use ruma::events::key::verification::done::{
-    KeyVerificationDoneEventContent, ToDeviceKeyVerificationDoneEventContent,
-};
-use ruma::{
-    DeviceId, EventId, OwnedDeviceId, OwnedEventId, OwnedRoomId, OwnedTransactionId, RoomId,
-    UserId,
-    api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest,
-    events::{
-        AnyMessageLikeEventContent, AnyToDeviceEventContent,
-        key::verification::cancel::{
-            CancelCode, KeyVerificationCancelEventContent,
-            ToDeviceKeyVerificationCancelEventContent,
-        },
-        relation::Reference,
-    },
-};
-pub use sas::{AcceptSettings, AcceptedProtocols, EmojiShortAuthString, Sas, SasState};
+pub use qrcode::QrVerificationState;
+#[cfg(feature = "qrcode")]
+pub use qrcode::ScanError;
+pub use requests::VerificationRequest;
+pub use requests::VerificationRequestState;
+use ruma::DeviceId;
+use ruma::EventId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedEventId;
+use ruma::OwnedRoomId;
+use ruma::OwnedTransactionId;
+use ruma::RoomId;
+use ruma::UserId;
+use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+use ruma::events::AnyMessageLikeEventContent;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::key::verification::cancel::CancelCode;
+use ruma::events::key::verification::cancel::KeyVerificationCancelEventContent;
+use ruma::events::key::verification::cancel::ToDeviceKeyVerificationCancelEventContent;
+#[cfg(feature = "qrcode")]
+use ruma::events::key::verification::done::KeyVerificationDoneEventContent;
+#[cfg(feature = "qrcode")]
+use ruma::events::key::verification::done::ToDeviceKeyVerificationDoneEventContent;
+use ruma::events::relation::Reference;
+pub use sas::AcceptSettings;
+pub use sas::AcceptedProtocols;
+pub use sas::EmojiShortAuthString;
+pub use sas::Sas;
+pub use sas::SasState;
 use tokio::sync::Mutex;
-use tracing::{debug, error, info, warn};
+use tracing::debug;
+use tracing::error;
+use tracing::info;
+use tracing::warn;
 
-use crate::{
-    CryptoStoreError, DeviceData, LocalTrust, OwnUserIdentityData, UserIdentityData,
-    error::SignatureError,
-    gossiping::{GossipMachine, GossipRequest},
-    olm::{PrivateCrossSigningIdentity, StaticAccountData},
-    store::{CryptoStoreWrapper, types::Changes},
-    types::{Signatures, requests::OutgoingVerificationRequest},
-};
+use crate::CryptoStoreError;
+use crate::DeviceData;
+use crate::LocalTrust;
+use crate::OwnUserIdentityData;
+use crate::UserIdentityData;
+use crate::error::SignatureError;
+use crate::gossiping::GossipMachine;
+use crate::gossiping::GossipRequest;
+use crate::olm::PrivateCrossSigningIdentity;
+use crate::olm::StaticAccountData;
+use crate::store::CryptoStoreWrapper;
+use crate::store::types::Changes;
+use crate::types::Signatures;
+use crate::types::requests::OutgoingVerificationRequest;
 
 #[derive(Clone, Debug)]
 pub(crate) struct VerificationStore {
@@ -110,9 +132,17 @@ pub fn format_emojis(emojis: [Emoji; 7]) -> String {
         format!("{placeholder:^12}").replace(&placeholder, &emoji)
     };
 
-    let emoji_string = emojis.iter().map(|e| center_emoji(e)).collect::<Vec<_>>().join("");
+    let emoji_string = emojis
+        .iter()
+        .map(|e| center_emoji(e))
+        .collect::<Vec<_>>()
+        .join("");
 
-    let description = descriptions.iter().map(|d| format!("{d:^12}")).collect::<Vec<_>>().join("");
+    let description = descriptions
+        .iter()
+        .map(|d| format!("{d:^12}"))
+        .collect::<Vec<_>>()
+        .join("");
 
     format!("{emoji_string}\n{description}")
 }
@@ -123,9 +153,13 @@ impl VerificationStore {
         user_id: &UserId,
         device_id: &DeviceId,
     ) -> Result<Option<DeviceData>, CryptoStoreError> {
-        Ok(self.inner.get_device(user_id, device_id).await?.filter(|d| {
-            !(d.user_id() == self.account.user_id && d.device_id() == self.account.device_id)
-        }))
+        Ok(self
+            .inner
+            .get_device(user_id, device_id)
+            .await?
+            .filter(|d| {
+                !(d.user_id() == self.account.user_id && d.device_id() == self.account.device_id)
+            }))
     }
 
     pub async fn get_user_identity(
@@ -139,8 +173,9 @@ impl VerificationStore {
         &self,
         device_being_verified: DeviceData,
     ) -> Result<IdentitiesBeingVerified, CryptoStoreError> {
-        let identity_being_verified =
-            self.get_user_identity(device_being_verified.user_id()).await?;
+        let identity_being_verified = self
+            .get_user_identity(device_being_verified.user_id())
+            .await?;
 
         Ok(IdentitiesBeingVerified {
             private_identity: self.private_identity.lock().await.clone(),
@@ -339,7 +374,11 @@ impl CancelInfo {
 
 impl From<Cancelled> for CancelInfo {
     fn from(c: Cancelled) -> Self {
-        Self { cancelled_by_us: c.cancelled_by_us, cancel_code: c.cancel_code, reason: c.reason }
+        Self {
+            cancelled_by_us: c.cancelled_by_us,
+            cancel_code: c.cancel_code,
+            reason: c.reason,
+        }
     }
 }
 
@@ -373,7 +412,11 @@ impl Cancelled {
             _ => "Unknown cancel reason",
         };
 
-        Self { cancelled_by_us, cancel_code: code, reason }
+        Self {
+            cancelled_by_us,
+            cancel_code: code,
+            reason,
+        }
     }
 
     pub fn as_content(&self, flow_id: &FlowId) -> OutgoingContent {
@@ -607,11 +650,21 @@ impl IdentitiesBeingVerified {
     async fn request_missing_secrets(&self) -> Result<Vec<GossipRequest>, CryptoStoreError> {
         let mut secrets = self.private_identity.get_missing_secrets().await;
 
-        if self.store.inner.load_backup_keys().await?.decryption_key.is_none() {
+        if self
+            .store
+            .inner
+            .load_backup_keys()
+            .await?
+            .decryption_key
+            .is_none()
+        {
             secrets.push(ruma::events::secret::request::SecretName::RecoveryKey);
         }
 
-        Ok(GossipMachine::request_missing_secrets(self.user_id(), secrets))
+        Ok(GossipMachine::request_missing_secrets(
+            self.user_id(),
+            secrets,
+        ))
     }
 
     async fn mark_identity_as_verified(
@@ -633,7 +686,8 @@ impl IdentitiesBeingVerified {
                 .is_some_and(|i| i.master_key() == identity.master_key())
             {
                 if verified_identities.is_some_and(|i| {
-                    i.iter().any(|verified| verified.user_id() == identity.user_id())
+                    i.iter()
+                        .any(|verified| verified.user_id() == identity.user_id())
                 }) {
                     info!(
                         user_id = ?self.other_user_id(),
@@ -685,7 +739,10 @@ impl IdentitiesBeingVerified {
         &self,
         verified_devices: Option<&[DeviceData]>,
     ) -> Result<Option<DeviceData>, CryptoStoreError> {
-        let device = self.store.get_device(self.other_user_id(), self.other_device_id()).await?;
+        let device = self
+            .store
+            .get_device(self.other_user_id(), self.other_device_id())
+            .await?;
 
         let Some(device) = device else {
             let device = &self.device_being_verified;
@@ -737,33 +794,39 @@ impl IdentitiesBeingVerified {
 pub(crate) mod tests {
     use std::sync::Arc;
 
-    use ruma::{
-        DeviceId, UserId, device_id,
-        events::{AnyToDeviceEventContent, ToDeviceEvent},
-        user_id,
-    };
+    use ruma::DeviceId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::events::AnyToDeviceEventContent;
+    use ruma::events::ToDeviceEvent;
+    use ruma::user_id;
     use tokio::sync::Mutex;
 
-    use super::{VerificationStore, event_enums::OutgoingContent};
-    use crate::{
-        Account, DeviceData, OtherUserIdentityData, OwnUserIdentityData,
-        olm::PrivateCrossSigningIdentity,
-        store::{
-            CryptoStore, CryptoStoreWrapper, MemoryStore,
-            types::{Changes, IdentityChanges},
-        },
-        types::{
-            events::ToDeviceEvents,
-            requests::{AnyOutgoingRequest, OutgoingRequest, OutgoingVerificationRequest},
-        },
-    };
+    use super::VerificationStore;
+    use super::event_enums::OutgoingContent;
+    use crate::Account;
+    use crate::DeviceData;
+    use crate::OtherUserIdentityData;
+    use crate::OwnUserIdentityData;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::store::CryptoStore;
+    use crate::store::CryptoStoreWrapper;
+    use crate::store::MemoryStore;
+    use crate::store::types::Changes;
+    use crate::store::types::IdentityChanges;
+    use crate::types::events::ToDeviceEvents;
+    use crate::types::requests::AnyOutgoingRequest;
+    use crate::types::requests::OutgoingRequest;
+    use crate::types::requests::OutgoingVerificationRequest;
 
     pub(crate) fn request_to_event(
         sender: &UserId,
         request: &OutgoingVerificationRequest,
     ) -> ToDeviceEvents {
-        let content =
-            request.to_owned().try_into().expect("Can't fetch content out of the request");
+        let content = request
+            .to_owned()
+            .try_into()
+            .expect("Can't fetch content out of the request");
         wrap_any_to_device_content(sender, content)
     }
 
@@ -781,7 +844,9 @@ pub(crate) mod tests {
         sender: &UserId,
         content: OutgoingContent,
     ) -> ToDeviceEvents {
-        let OutgoingContent::ToDevice(content) = content else { unreachable!() };
+        let OutgoingContent::ToDevice(content) = content else {
+            unreachable!()
+        };
         let sender = sender.to_owned();
 
         match *content {
@@ -884,7 +949,11 @@ pub(crate) mod tests {
 
         let bob_store = VerificationStore {
             account: bob.static_data.clone(),
-            inner: Arc::new(CryptoStoreWrapper::new(bob.user_id(), bob.device_id(), bob_store)),
+            inner: Arc::new(CryptoStoreWrapper::new(
+                bob.user_id(),
+                bob.device_id(),
+                bob_store,
+            )),
             private_identity: bob_private_identity.into(),
         };
 

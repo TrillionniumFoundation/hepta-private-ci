@@ -20,20 +20,24 @@ limitations under the License.
 
 use std::fmt::Debug;
 
-use ruma::{DeviceKeyAlgorithm, OwnedRoomId};
-use serde::{Deserialize, Serialize};
-use vodozemac::{Curve25519PublicKey, megolm::ExportedSessionKey};
+use ruma::DeviceKeyAlgorithm;
+use ruma::OwnedRoomId;
+use serde::Deserialize;
+use serde::Serialize;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::megolm::ExportedSessionKey;
 
 use super::RoomKeyExport;
-use crate::{
-    olm::ExportedRoomKey,
-    types::{
-        EventEncryptionAlgorithm, SigningKeys, deserialize_curve_key,
-        events::room_key_withheld::RoomKeyWithheldContent, serialize_curve_key,
-    },
-};
+use crate::olm::ExportedRoomKey;
 #[cfg(doc)]
-use crate::{olm::InboundGroupSession, types::events::room_key::RoomKeyContent};
+use crate::olm::InboundGroupSession;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::SigningKeys;
+use crate::types::deserialize_curve_key;
+#[cfg(doc)]
+use crate::types::events::room_key::RoomKeyContent;
+use crate::types::events::room_key_withheld::RoomKeyWithheldContent;
+use crate::types::serialize_curve_key;
 
 /// A bundle of historic room keys, for sharing encrypted room history, per
 /// [MSC4268].
@@ -71,7 +75,10 @@ pub struct HistoricRoomKey {
 
     /// The Curve25519 key of the device which initiated the session originally,
     /// according to the device that sent us this key.
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     pub sender_key: Curve25519PublicKey,
 
     /// The ID of the session that the key is for.
@@ -138,12 +145,15 @@ impl From<ExportedRoomKey> for HistoricRoomKey {
 #[cfg(test)]
 mod tests {
     use insta::assert_debug_snapshot;
-    use ruma::{DeviceKeyAlgorithm, owned_room_id};
-    use vodozemac::{
-        Curve25519PublicKey, Curve25519SecretKey, Ed25519SecretKey, megolm::ExportedSessionKey,
-    };
+    use ruma::DeviceKeyAlgorithm;
+    use ruma::owned_room_id;
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Curve25519SecretKey;
+    use vodozemac::Ed25519SecretKey;
+    use vodozemac::megolm::ExportedSessionKey;
 
-    use crate::types::{EventEncryptionAlgorithm, room_history::HistoricRoomKey};
+    use crate::types::EventEncryptionAlgorithm;
+    use crate::types::room_history::HistoricRoomKey;
 
     #[test]
     fn test_historic_room_key_debug() {

@@ -114,6 +114,10 @@ pub struct ComposerView<'a> {
     pub byte_limit: usize,
     pub can_create_draft: bool,
     pub owner_status: &'static str,
+    pub objective_installed: bool,
+    pub objective_can_submit: bool,
+    pub objective_can_cancel: bool,
+    pub objective_can_refresh: bool,
     /// Admission/queue information, never a completed assistant response.
     pub delivery: Option<&'a DeliveryView>,
 }
@@ -259,6 +263,10 @@ pub fn project(
             byte_limit: hepta_control_core::chat::MAX_DRAFT_BYTES,
             can_create_draft: workspace.can_create_draft(),
             owner_status: workspace.owner_status(now_ms),
+            objective_installed: workspace.objective_installed(),
+            objective_can_submit: workspace.objective_can_submit(),
+            objective_can_cancel: workspace.objective_can_cancel(),
+            objective_can_refresh: workspace.objective_can_refresh(),
             delivery: workspace.delivery_for(active_room.local_id, now_ms),
         },
         tab: workspace.tab,
@@ -290,6 +298,8 @@ pub enum PresentationCommand {
     SetFilter(String),
     SetComposing(bool),
     RequestSend,
+    RequestObjectiveCancel,
+    RequestObjectiveRefresh,
     SelectTab(WorkspaceTab),
     SetAppearance(Appearance),
     SetNavigationOpen(bool),
@@ -304,10 +314,11 @@ pub enum ActionResult {
     Stale,
     Rejected,
     SendUnavailable,
+    SendRequested,
 }
 
-/// Local presentation commands only. An installed host must separately use the
-/// existing typed owner admission API; RequestSend never fabricates a dispatch.
+/// Local presentation commands, with explicit dispatch only through a host-installed
+/// original Objective port. The default workspace never fabricates a dispatch.
 pub fn apply_action(workspace: &mut ChatWorkspace, action: PresentationAction) -> ActionResult {
     if action.source.epoch != workspace.presentation_epoch()
         || action.source.local_id != workspace.active_id()
@@ -356,9 +367,14 @@ pub fn apply_action(workspace: &mut ChatWorkspace, action: PresentationAction) -
             if workspace.composing {
                 return ActionResult::Ignored;
             }
-            workspace.request_send();
-            return ActionResult::SendUnavailable;
+            return if workspace.request_send() {
+                ActionResult::SendRequested
+            } else {
+                ActionResult::SendUnavailable
+            };
         }
+        PresentationCommand::RequestObjectiveCancel => workspace.request_objective_cancel(),
+        PresentationCommand::RequestObjectiveRefresh => workspace.request_objective_refresh(),
         PresentationCommand::SelectTab(tab) => {
             if workspace.composing {
                 return ActionResult::Ignored;

@@ -10,6 +10,7 @@ pub mod confirmation;
 pub mod controller;
 pub mod error;
 pub mod ledger;
+pub mod objective_ui;
 pub mod projection;
 pub mod recovery;
 pub mod scheduler;

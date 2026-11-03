@@ -15,41 +15,52 @@
 //! A set of helper functions for creating [`OlmMachine`]s, and pairs of
 //! interconnected machines.
 
-use std::{collections::BTreeMap, ops::Deref, sync::Arc};
+use std::collections::BTreeMap;
+use std::ops::Deref;
+use std::sync::Arc;
 
 use as_variant::as_variant;
 use matrix_sdk_common::deserialized_responses::ProcessedToDeviceEvent;
-use matrix_sdk_test::{ruma_response_from_json, test_json};
-use ruma::{
-    DeviceId, OwnedOneTimeKeyId, TransactionId, UserId,
-    api::client::keys::{
-        claim_keys,
-        get_keys::{self, v3::Response as KeysQueryResponse},
-        upload_keys,
-    },
-    device_id,
-    encryption::OneTimeKey,
-    events::dummy::ToDeviceDummyEventContent,
-    serde::Raw,
-    user_id,
-};
+use matrix_sdk_test::ruma_response_from_json;
+use matrix_sdk_test::test_json;
+use ruma::DeviceId;
+use ruma::OwnedOneTimeKeyId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::api::client::keys::claim_keys;
+use ruma::api::client::keys::get_keys::v3::Response as KeysQueryResponse;
+use ruma::api::client::keys::get_keys::{self};
+use ruma::api::client::keys::upload_keys;
+use ruma::device_id;
+use ruma::encryption::OneTimeKey;
+use ruma::events::dummy::ToDeviceDummyEventContent;
+use ruma::serde::Raw;
+use ruma::user_id;
 use serde::Serialize;
-use serde_json::{Value, json};
+use serde_json::Value;
+use serde_json::json;
 use tokio::sync::Mutex;
 
-use crate::{
-    Account, CollectStrategy, CrossSigningBootstrapRequests, DecryptionSettings, Device,
-    DeviceData, EncryptionSyncChanges, OlmMachine, OtherUserIdentityData, TrustRequirement,
-    olm::PrivateCrossSigningIdentity,
-    store::{CryptoStoreWrapper, MemoryStore, types::Changes},
-    types::{
-        DeviceKeys,
-        events::{ToDeviceEvent, room::encrypted::ToDeviceEncryptedEventContent},
-        requests::AnyOutgoingRequest,
-    },
-    utilities::json_convert,
-    verification::VerificationMachine,
-};
+use crate::Account;
+use crate::CollectStrategy;
+use crate::CrossSigningBootstrapRequests;
+use crate::DecryptionSettings;
+use crate::Device;
+use crate::DeviceData;
+use crate::EncryptionSyncChanges;
+use crate::OlmMachine;
+use crate::OtherUserIdentityData;
+use crate::TrustRequirement;
+use crate::olm::PrivateCrossSigningIdentity;
+use crate::store::CryptoStoreWrapper;
+use crate::store::MemoryStore;
+use crate::store::types::Changes;
+use crate::types::DeviceKeys;
+use crate::types::events::ToDeviceEvent;
+use crate::types::events::room::encrypted::ToDeviceEncryptedEventContent;
+use crate::types::requests::AnyOutgoingRequest;
+use crate::utilities::json_convert;
+use crate::verification::VerificationMachine;
 
 /// These keys need to be periodically uploaded to the server.
 type OneTimeKeys = BTreeMap<OwnedOneTimeKeyId, Raw<OneTimeKey>>;
@@ -89,17 +100,26 @@ pub async fn get_prepared_machine_test_helper(
             account.generate_fallback_key_if_needed();
             account.update_uploaded_key_count(0);
             account.generate_one_time_keys_if_needed();
-            let request =
-                machine.keys_for_upload(account).await.expect("Can't prepare initial key upload");
+            let request = machine
+                .keys_for_upload(account)
+                .await
+                .expect("Can't prepare initial key upload");
             Ok(request)
         })
         .await
         .unwrap();
 
     let response = keys_upload_response();
-    machine.receive_keys_upload_response(&response).await.unwrap();
+    machine
+        .receive_keys_upload_response(&response)
+        .await
+        .unwrap();
 
-    let keys = if use_fallback_key { request.fallback_keys } else { request.one_time_keys };
+    let keys = if use_fallback_key {
+        request.fallback_keys
+    } else {
+        request.one_time_keys
+    };
 
     (machine, keys)
 }
@@ -109,7 +129,10 @@ pub async fn get_machine_after_query_test_helper() -> (OlmMachine, OneTimeKeys) 
     let response = keys_query_response();
     let req_id = TransactionId::new();
 
-    machine.receive_keys_query_response(&req_id, &response).await.unwrap();
+    machine
+        .receive_keys_query_response(&req_id, &response)
+        .await
+        .unwrap();
 
     (machine, otk)
 }
@@ -190,8 +213,11 @@ pub async fn send_and_receive_encrypted_to_device_test_helper(
     content: &Value,
     decryption_settings: &DecryptionSettings,
 ) -> ProcessedToDeviceEvent {
-    let device =
-        sender.get_device(recipient.user_id(), recipient.device_id(), None).await.unwrap().unwrap();
+    let device = sender
+        .get_device(recipient.user_id(), recipient.device_id(), None)
+        .await
+        .unwrap()
+        .unwrap();
 
     let raw_encrypted = device
         .encrypt_event_raw(event_type, content, CollectStrategy::AllDevices)
@@ -225,8 +251,10 @@ pub async fn receive_encrypted_to_device_test_helper(
         next_batch_token: None,
     };
 
-    let (decrypted, _) =
-        recipient.receive_sync_changes(sync_changes, decryption_settings).await.unwrap();
+    let (decrypted, _) = recipient
+        .receive_sync_changes(sync_changes, decryption_settings)
+        .await
+        .unwrap();
 
     assert_eq!(1, decrypted.len());
     decrypted[0].clone()
@@ -273,11 +301,16 @@ pub async fn build_encrypted_to_device_content_without_sender_data(
     .unwrap();
 
     let ciphertext = olm_session.encrypt_helper(&plaintext).await.unwrap();
-    let content =
-        olm_session.build_encrypted_event(ciphertext, None).await.expect("could not encrypt");
+    let content = olm_session
+        .build_encrypted_event(ciphertext, None)
+        .await
+        .expect("could not encrypt");
 
     sender_store
-        .save_changes(Changes { sessions: vec![olm_session], ..Default::default() })
+        .save_changes(Changes {
+            sessions: vec![olm_session],
+            ..Default::default()
+        })
         .await
         .expect("Could not save session");
 
@@ -304,7 +337,12 @@ pub async fn build_session_for_pair(
     )]);
 
     let response = claim_keys::v3::Response::new(one_time_keys);
-    alice.inner.session_manager.create_sessions(&response).await.unwrap();
+    alice
+        .inner
+        .session_manager
+        .create_sessions(&response)
+        .await
+        .unwrap();
 
     (alice, bob)
 }
@@ -318,17 +356,26 @@ pub async fn get_machine_pair_with_setup_sessions_test_helper(
 ) -> (OlmMachine, OlmMachine) {
     let (alice, bob) = get_machine_pair_with_session(alice, bob, use_fallback_key).await;
 
-    let bob_device = alice.get_device(bob.user_id(), bob.device_id(), None).await.unwrap().unwrap();
+    let bob_device = alice
+        .get_device(bob.user_id(), bob.device_id(), None)
+        .await
+        .unwrap()
+        .unwrap();
 
-    let (session, content, _) =
-        bob_device.encrypt("m.dummy", ToDeviceDummyEventContent::new()).await.unwrap();
+    let (session, content, _) = bob_device
+        .encrypt("m.dummy", ToDeviceDummyEventContent::new())
+        .await
+        .unwrap();
     alice.store().save_sessions(&[session]).await.unwrap();
 
-    let event =
-        ToDeviceEvent::new(alice.user_id().to_owned(), content.deserialize_as_unchecked().unwrap());
+    let event = ToDeviceEvent::new(
+        alice.user_id().to_owned(),
+        content.deserialize_as_unchecked().unwrap(),
+    );
 
-    let decryption_settings =
-        DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+    let decryption_settings = DecryptionSettings {
+        sender_device_trust_requirement: TrustRequirement::Untrusted,
+    };
 
     let decrypted = bob
         .store()
@@ -341,7 +388,10 @@ pub async fn get_machine_pair_with_setup_sessions_test_helper(
         .await
         .unwrap();
 
-    bob.store().save_sessions(&[decrypted.session.session()]).await.unwrap();
+    bob.store()
+        .save_sessions(&[decrypted.session.session()])
+        .await
+        .unwrap();
 
     (alice, bob)
 }
@@ -356,11 +406,19 @@ pub async fn create_session(
 ) {
     let one_time_keys = BTreeMap::from([(
         user_id.to_owned(),
-        BTreeMap::from([(device_id.to_owned(), BTreeMap::from([(key_id, one_time_key)]))]),
+        BTreeMap::from([(
+            device_id.to_owned(),
+            BTreeMap::from([(key_id, one_time_key)]),
+        )]),
     )]);
 
     let response = claim_keys::v3::Response::new(one_time_keys);
-    machine.inner.session_manager.create_sessions(&response).await.unwrap();
+    machine
+        .inner
+        .session_manager
+        .create_sessions(&response)
+        .await
+        .unwrap();
 }
 
 /// Given a set of requests returned by `bootstrap_cross_signing` for one user,
@@ -404,7 +462,9 @@ fn dummy_verification_machine() -> VerificationMachine {
     let account = Account::new(user_id!("@test_user:example.com"));
     VerificationMachine::new(
         account.deref().clone(),
-        Arc::new(Mutex::new(PrivateCrossSigningIdentity::new(account.user_id().to_owned()))),
+        Arc::new(Mutex::new(PrivateCrossSigningIdentity::new(
+            account.user_id().to_owned(),
+        ))),
         Arc::new(CryptoStoreWrapper::new(
             account.user_id(),
             account.device_id(),
@@ -489,5 +549,8 @@ pub async fn sign_user_identity_data(
     let master = user_signing.sign_user(&*other_user_identity).unwrap();
     other_user_identity.master_key = Arc::new(master.try_into().unwrap());
 
-    user_signing.public_key().verify_master_key(other_user_identity.master_key()).unwrap();
+    user_signing
+        .public_key()
+        .verify_master_key(other_user_identity.master_key())
+        .unwrap();
 }

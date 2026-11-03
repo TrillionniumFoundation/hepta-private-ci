@@ -268,3 +268,15 @@ mod notes_tests;
 #[cfg(test)]
 #[path = "objective_sender_host_tests.rs"]
 mod objective_sender_tests;
+
+#[cfg(test)]
+#[path = "objective_control_fixture.rs"]
+mod objective_control_fixture;
+
+#[cfg(test)]
+#[path = "objective_control_tests.rs"]
+mod objective_control_tests;
+
+#[cfg(all(test, feature = "desktop-objective-ui"))]
+#[path = "desktop_objective_ui_tests.rs"]
+mod desktop_objective_ui_tests;

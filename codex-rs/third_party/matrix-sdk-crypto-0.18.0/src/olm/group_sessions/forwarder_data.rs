@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use ruma::{DeviceId, UserId};
-use serde::{Deserialize, Serialize};
+use ruma::DeviceId;
+use ruma::UserId;
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::olm::{KnownSenderData, SenderData};
+use crate::olm::KnownSenderData;
+use crate::olm::SenderData;
 
 /// Represents information about the user who forwarded a megolm session under
 /// [MSC4268]. This is similar to [`SenderData`], but it is limited to variants
@@ -84,11 +87,14 @@ impl ForwarderData {
 #[cfg(test)]
 mod tests {
     use insta::assert_json_snapshot;
-    use ruma::{device_id, owned_user_id, user_id};
+    use ruma::device_id;
+    use ruma::owned_user_id;
+    use ruma::user_id;
     use vodozemac::Ed25519PublicKey;
 
     use super::ForwarderData;
-    use crate::olm::{KnownSenderData, SenderData};
+    use crate::olm::KnownSenderData;
+    use crate::olm::SenderData;
 
     #[test]
     fn snapshot_forwarder_data() {
@@ -126,8 +132,14 @@ mod tests {
         let deserialized_verified: ForwarderData =
             serde_json::from_str(&serialized_verified).unwrap();
 
-        assert!(matches!(deserialized_unverified, ForwarderData::SenderUnverified(_)));
-        assert!(matches!(deserialized_verified, ForwarderData::SenderVerified(_)));
+        assert!(matches!(
+            deserialized_unverified,
+            ForwarderData::SenderUnverified(_)
+        ));
+        assert!(matches!(
+            deserialized_verified,
+            ForwarderData::SenderVerified(_)
+        ));
     }
 
     #[test]
@@ -148,8 +160,14 @@ mod tests {
         let forwarder_unverified = ForwarderData::try_from(&sender_unverified).unwrap();
         let forwarder_verified = ForwarderData::try_from(&sender_verified).unwrap();
 
-        assert!(matches!(forwarder_unverified, ForwarderData::SenderUnverified(_)));
-        assert!(matches!(forwarder_verified, ForwarderData::SenderVerified(_)));
+        assert!(matches!(
+            forwarder_unverified,
+            ForwarderData::SenderUnverified(_)
+        ));
+        assert!(matches!(
+            forwarder_verified,
+            ForwarderData::SenderVerified(_)
+        ));
 
         assert!(
             ForwarderData::try_from(&SenderData::unknown()).is_err(),

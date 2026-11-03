@@ -14,17 +14,31 @@
 
 use std::collections::BTreeMap;
 
-use matrix_sdk_common::deserialized_responses::{VerificationLevel, WithheldCode};
-use ruma::{CanonicalJsonError, IdParseError, OwnedDeviceId, OwnedRoomId, OwnedUserId};
-use serde::{Serializer, ser::SerializeMap};
+use matrix_sdk_common::deserialized_responses::VerificationLevel;
+use matrix_sdk_common::deserialized_responses::WithheldCode;
+use ruma::CanonicalJsonError;
+use ruma::IdParseError;
+use ruma::OwnedDeviceId;
+use ruma::OwnedRoomId;
+use ruma::OwnedUserId;
+use serde::Serializer;
+use serde::ser::SerializeMap;
 use serde_json::Error as SerdeError;
 use thiserror::Error;
-use vodozemac::{Curve25519PublicKey, Ed25519PublicKey};
+use vodozemac::Curve25519PublicKey;
+use vodozemac::Ed25519PublicKey;
 
 use super::store::CryptoStoreError;
 #[cfg(doc)]
-use crate::{CollectStrategy, Device, LocalTrust, OtherUserIdentity};
-use crate::{olm::SessionExportError, types::SignedKey};
+use crate::CollectStrategy;
+#[cfg(doc)]
+use crate::Device;
+#[cfg(doc)]
+use crate::LocalTrust;
+#[cfg(doc)]
+use crate::OtherUserIdentity;
+use crate::olm::SessionExportError;
+use crate::types::SignedKey;
 
 pub type OlmResult<T> = Result<T, OlmError>;
 pub type MegolmResult<T> = Result<T, MegolmError>;

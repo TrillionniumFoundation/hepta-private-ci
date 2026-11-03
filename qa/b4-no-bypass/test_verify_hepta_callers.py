@@ -117,6 +117,40 @@ class CallerProofTests(unittest.TestCase):
         receipt = MODULE.verify(root, root / "CALLERS.toml")
         self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
 
+
+    def test_file_cfg_test_helper_does_not_grant_a_product_callsite(self) -> None:
+        root = self.make_fixture()
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        (extra / "fixture_owner.rs").write_text(
+            "#![allow(dead_code)]\n#![cfg(all(test, unix))]\n"
+            "fn fixture() { Gate::enter(); }\n",
+            encoding="utf-8",
+        )
+        receipt = MODULE.verify(root, root / "CALLERS.toml")
+        self.assertEqual(
+            receipt["boundaries"][0]["productCallers"],
+            ["codex-rs/caller/src/lib.rs"],
+        )
+
+    def test_file_cfg_production_alternative_still_requires_registration(self) -> None:
+        root = self.make_fixture()
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        (extra / "fixture_owner.rs").write_text(
+            "#![cfg(any(test, unix))]\nfn bypass() { Gate::enter(); }\n",
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "unexpected"):
+            MODULE.verify(root, root / "CALLERS.toml")
+
+    def test_file_cfg_test_cannot_satisfy_the_declared_product_caller(self) -> None:
+        root = self.make_fixture()
+        caller = root / "codex-rs/caller/src/lib.rs"
+        caller.write_text("#![cfg(test)]\n" + caller.read_text(), encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "missing"):
+            MODULE.verify(root, root / "CALLERS.toml")
+
     def test_cfg_test_fields_preserve_the_production_suffix(self) -> None:
         root = self.make_fixture()
         extra = root / "codex-rs/extra/src"

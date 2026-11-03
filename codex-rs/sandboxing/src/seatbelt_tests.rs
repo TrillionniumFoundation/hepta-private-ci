@@ -1562,21 +1562,21 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
             "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
             cwd.canonicalize()
                 .expect("canonicalize cwd")
-                .join(".git")
+                .join(".codex")
                 .display()
         ),
         format!(
             "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
             cwd.canonicalize()
                 .expect("canonicalize cwd")
-                .join(".agents")
+                .join(".git")
                 .display()
         ),
         format!(
             "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
             cwd.canonicalize()
                 .expect("canonicalize cwd")
-                .join(".codex")
+                .join(".agents")
                 .display()
         ),
         format!(
@@ -2504,7 +2504,7 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
         "missing {expected_dot_git}: {args:#?}"
     );
     let expected_dot_codex = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
+        "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
         dot_codex_canonical.to_string_lossy()
     );
     assert!(
@@ -2512,7 +2512,7 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
         "missing {expected_dot_codex}: {args:#?}"
     );
     let expected_dot_agents = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
+        "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
         dot_agents_canonical.to_string_lossy()
     );
     assert!(

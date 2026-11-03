@@ -12,33 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::HashMap, fmt, sync::Arc};
+use std::collections::HashMap;
+use std::fmt;
+use std::sync::Arc;
 
 use async_trait::async_trait;
-use matrix_sdk_common::{AsyncTraitDeps, cross_process_lock::CrossProcessLockGeneration};
-use ruma::{
-    DeviceId, OwnedDeviceId, RoomId, TransactionId, UserId, events::secret::request::SecretName,
-};
+use matrix_sdk_common::AsyncTraitDeps;
+use matrix_sdk_common::cross_process_lock::CrossProcessLockGeneration;
+use ruma::DeviceId;
+use ruma::OwnedDeviceId;
+use ruma::RoomId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::secret::request::SecretName;
 use vodozemac::Curve25519PublicKey;
 use zeroize::Zeroizing;
 
-use super::{
-    CryptoStoreError, Result,
-    types::{
-        BackupKeys, Changes, DehydratedDeviceKey, PendingChanges, RoomKeyCounts, RoomSettings,
-        StoredRoomKeyBundleData, TrackedUser,
-    },
-};
+use super::CryptoStoreError;
+use super::Result;
+use super::types::BackupKeys;
+use super::types::Changes;
+use super::types::DehydratedDeviceKey;
+use super::types::PendingChanges;
+use super::types::RoomKeyCounts;
+use super::types::RoomSettings;
+use super::types::StoredRoomKeyBundleData;
+use super::types::TrackedUser;
+use crate::Account;
+use crate::DeviceData;
+use crate::GossipRequest;
+use crate::SecretInfo;
+use crate::UserIdentityData;
+use crate::olm::InboundGroupSession;
+use crate::olm::OlmMessageHash;
+use crate::olm::OutboundGroupSession;
+use crate::olm::PrivateCrossSigningIdentity;
 #[cfg(doc)]
 use crate::olm::SenderData;
-use crate::{
-    Account, DeviceData, GossipRequest, SecretInfo, UserIdentityData,
-    olm::{
-        InboundGroupSession, OlmMessageHash, OutboundGroupSession, PrivateCrossSigningIdentity,
-        SenderDataType, Session,
-    },
-    store::types::{RoomKeyWithheldEntry, RoomPendingKeyBundleDetails},
-};
+use crate::olm::SenderDataType;
+use crate::olm::Session;
+use crate::store::types::RoomKeyWithheldEntry;
+use crate::store::types::RoomPendingKeyBundleDetails;
 
 /// Represents a store that the `OlmMachine` uses to store E2EE data (such as
 /// cryptographic keys).
@@ -461,7 +475,10 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
     }
 
     async fn save_pending_changes(&self, changes: PendingChanges) -> Result<()> {
-        self.0.save_pending_changes(changes).await.map_err(Into::into)
+        self.0
+            .save_pending_changes(changes)
+            .await
+            .map_err(Into::into)
     }
 
     async fn save_inbound_group_sessions(
@@ -469,7 +486,10 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
         sessions: Vec<InboundGroupSession>,
         backed_up_to_version: Option<&str>,
     ) -> Result<()> {
-        self.0.save_inbound_group_sessions(sessions, backed_up_to_version).await.map_err(Into::into)
+        self.0
+            .save_inbound_group_sessions(sessions, backed_up_to_version)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_sessions(&self, sender_key: &str) -> Result<Option<Vec<Session>>> {
@@ -481,18 +501,27 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
         room_id: &RoomId,
         session_id: &str,
     ) -> Result<Option<InboundGroupSession>> {
-        self.0.get_inbound_group_session(room_id, session_id).await.map_err(Into::into)
+        self.0
+            .get_inbound_group_session(room_id, session_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_inbound_group_sessions(&self) -> Result<Vec<InboundGroupSession>> {
-        self.0.get_inbound_group_sessions().await.map_err(Into::into)
+        self.0
+            .get_inbound_group_sessions()
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_inbound_group_sessions_by_room_id(
         &self,
         room_id: &RoomId,
     ) -> Result<Vec<InboundGroupSession>> {
-        self.0.get_inbound_group_sessions_by_room_id(room_id).await.map_err(Into::into)
+        self.0
+            .get_inbound_group_sessions_by_room_id(room_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_inbound_group_sessions_for_device_batch(
@@ -517,14 +546,20 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
         &self,
         backup_version: Option<&str>,
     ) -> Result<RoomKeyCounts> {
-        self.0.inbound_group_session_counts(backup_version).await.map_err(Into::into)
+        self.0
+            .inbound_group_session_counts(backup_version)
+            .await
+            .map_err(Into::into)
     }
     async fn inbound_group_sessions_for_backup(
         &self,
         backup_version: &str,
         limit: usize,
     ) -> Result<Vec<InboundGroupSession>> {
-        self.0.inbound_group_sessions_for_backup(backup_version, limit).await.map_err(Into::into)
+        self.0
+            .inbound_group_sessions_for_backup(backup_version, limit)
+            .await
+            .map_err(Into::into)
     }
 
     async fn mark_inbound_group_sessions_as_backed_up(
@@ -547,18 +582,27 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
     }
 
     async fn load_dehydrated_device_pickle_key(&self) -> Result<Option<DehydratedDeviceKey>> {
-        self.0.load_dehydrated_device_pickle_key().await.map_err(Into::into)
+        self.0
+            .load_dehydrated_device_pickle_key()
+            .await
+            .map_err(Into::into)
     }
 
     async fn delete_dehydrated_device_pickle_key(&self) -> Result<(), Self::Error> {
-        self.0.delete_dehydrated_device_pickle_key().await.map_err(Into::into)
+        self.0
+            .delete_dehydrated_device_pickle_key()
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_outbound_group_session(
         &self,
         room_id: &RoomId,
     ) -> Result<Option<OutboundGroupSession>> {
-        self.0.get_outbound_group_session(room_id).await.map_err(Into::into)
+        self.0
+            .get_outbound_group_session(room_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn load_tracked_users(&self) -> Result<Vec<TrackedUser>> {
@@ -574,7 +618,10 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
         user_id: &UserId,
         device_id: &DeviceId,
     ) -> Result<Option<DeviceData>> {
-        self.0.get_device(user_id, device_id).await.map_err(Into::into)
+        self.0
+            .get_device(user_id, device_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_user_devices(
@@ -593,40 +640,61 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
     }
 
     async fn is_message_known(&self, message_hash: &OlmMessageHash) -> Result<bool> {
-        self.0.is_message_known(message_hash).await.map_err(Into::into)
+        self.0
+            .is_message_known(message_hash)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_outgoing_secret_requests(
         &self,
         request_id: &TransactionId,
     ) -> Result<Option<GossipRequest>> {
-        self.0.get_outgoing_secret_requests(request_id).await.map_err(Into::into)
+        self.0
+            .get_outgoing_secret_requests(request_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_secret_request_by_info(
         &self,
         secret_info: &SecretInfo,
     ) -> Result<Option<GossipRequest>> {
-        self.0.get_secret_request_by_info(secret_info).await.map_err(Into::into)
+        self.0
+            .get_secret_request_by_info(secret_info)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_unsent_secret_requests(&self) -> Result<Vec<GossipRequest>> {
-        self.0.get_unsent_secret_requests().await.map_err(Into::into)
+        self.0
+            .get_unsent_secret_requests()
+            .await
+            .map_err(Into::into)
     }
 
     async fn delete_outgoing_secret_requests(&self, request_id: &TransactionId) -> Result<()> {
-        self.0.delete_outgoing_secret_requests(request_id).await.map_err(Into::into)
+        self.0
+            .delete_outgoing_secret_requests(request_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_secrets_from_inbox(
         &self,
         secret_name: &SecretName,
     ) -> Result<Vec<Zeroizing<String>>> {
-        self.0.get_secrets_from_inbox(secret_name).await.map_err(Into::into)
+        self.0
+            .get_secrets_from_inbox(secret_name)
+            .await
+            .map_err(Into::into)
     }
 
     async fn delete_secrets_from_inbox(&self, secret_name: &SecretName) -> Result<()> {
-        self.0.delete_secrets_from_inbox(secret_name).await.map_err(Into::into)
+        self.0
+            .delete_secrets_from_inbox(secret_name)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_withheld_info(
@@ -634,14 +702,20 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
         room_id: &RoomId,
         session_id: &str,
     ) -> Result<Option<RoomKeyWithheldEntry>, Self::Error> {
-        self.0.get_withheld_info(room_id, session_id).await.map_err(Into::into)
+        self.0
+            .get_withheld_info(room_id, session_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_withheld_sessions_by_room_id(
         &self,
         room_id: &RoomId,
     ) -> Result<Vec<RoomKeyWithheldEntry>, Self::Error> {
-        self.0.get_withheld_sessions_by_room_id(room_id).await.map_err(Into::into)
+        self.0
+            .get_withheld_sessions_by_room_id(room_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_room_settings(&self, room_id: &RoomId) -> Result<Option<RoomSettings>> {
@@ -653,24 +727,36 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
         room_id: &RoomId,
         user_id: &UserId,
     ) -> Result<Option<StoredRoomKeyBundleData>> {
-        self.0.get_received_room_key_bundle_data(room_id, user_id).await.map_err(Into::into)
+        self.0
+            .get_received_room_key_bundle_data(room_id, user_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn has_downloaded_all_room_keys(&self, room_id: &RoomId) -> Result<bool, Self::Error> {
-        self.0.has_downloaded_all_room_keys(room_id).await.map_err(Into::into)
+        self.0
+            .has_downloaded_all_room_keys(room_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_pending_key_bundle_details_for_room(
         &self,
         room_id: &RoomId,
     ) -> Result<Option<RoomPendingKeyBundleDetails>, Self::Error> {
-        self.0.get_pending_key_bundle_details_for_room(room_id).await.map_err(Into::into)
+        self.0
+            .get_pending_key_bundle_details_for_room(room_id)
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_all_rooms_pending_key_bundles(
         &self,
     ) -> Result<Vec<RoomPendingKeyBundleDetails>, Self::Error> {
-        self.0.get_all_rooms_pending_key_bundles().await.map_err(Into::into)
+        self.0
+            .get_all_rooms_pending_key_bundles()
+            .await
+            .map_err(Into::into)
     }
 
     async fn get_custom_value(&self, key: &str) -> Result<Option<Vec<u8>>, Self::Error> {
@@ -678,7 +764,10 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
     }
 
     async fn set_custom_value(&self, key: &str, value: Vec<u8>) -> Result<(), Self::Error> {
-        self.0.set_custom_value(key, value).await.map_err(Into::into)
+        self.0
+            .set_custom_value(key, value)
+            .await
+            .map_err(Into::into)
     }
 
     async fn remove_custom_value(&self, key: &str) -> Result<(), Self::Error> {
@@ -691,7 +780,10 @@ impl<T: CryptoStore> CryptoStore for EraseCryptoStoreError<T> {
         key: &str,
         holder: &str,
     ) -> Result<Option<CrossProcessLockGeneration>, Self::Error> {
-        self.0.try_take_leased_lock(lease_duration_ms, key, holder).await.map_err(Into::into)
+        self.0
+            .try_take_leased_lock(lease_duration_ms, key, holder)
+            .await
+            .map_err(Into::into)
     }
 
     async fn next_batch_token(&self) -> Result<Option<String>, Self::Error> {

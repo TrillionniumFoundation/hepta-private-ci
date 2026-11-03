@@ -12,21 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::BTreeMap, sync::Arc};
+use std::collections::BTreeMap;
+use std::sync::Arc;
 
 use as_variant::as_variant;
 use matrix_sdk_common::locks::RwLock as StdRwLock;
-use ruma::{DeviceId, OwnedTransactionId, OwnedUserId, TransactionId, UserId};
+use ruma::DeviceId;
+use ruma::OwnedTransactionId;
+use ruma::OwnedUserId;
+use ruma::TransactionId;
+use ruma::UserId;
 #[cfg(feature = "qrcode")]
 use tracing::debug;
-use tracing::{trace, warn};
+use tracing::trace;
+use tracing::warn;
 
-use super::{FlowId, Sas, Verification, event_enums::OutgoingContent};
+use super::FlowId;
+use super::Sas;
+use super::Verification;
+use super::event_enums::OutgoingContent;
 #[cfg(feature = "qrcode")]
 use crate::QrVerification;
-use crate::types::requests::{
-    OutgoingRequest, OutgoingVerificationRequest, RoomMessageRequest, ToDeviceRequest,
-};
+use crate::types::requests::OutgoingRequest;
+use crate::types::requests::OutgoingVerificationRequest;
+use crate::types::requests::RoomMessageRequest;
+use crate::types::requests::ToDeviceRequest;
 
 #[derive(Clone, Debug, Default)]
 pub struct VerificationCache {
@@ -70,7 +80,11 @@ impl VerificationCache {
     #[cfg(test)]
     #[allow(dead_code)]
     pub fn is_empty(&self) -> bool {
-        self.inner.verification.read().values().all(|m| m.is_empty())
+        self.inner
+            .verification
+            .read()
+            .values()
+            .all(|m| m.is_empty())
     }
 
     /// Add a new `Verification` object to the cache, this will cancel any
@@ -80,8 +94,9 @@ impl VerificationCache {
         let verification = verification.into();
 
         let mut verification_write_guard = self.inner.verification.write();
-        let user_verifications =
-            verification_write_guard.entry(verification.other_user().to_owned()).or_default();
+        let user_verifications = verification_write_guard
+            .entry(verification.other_user().to_owned())
+            .or_default();
 
         // Cancel all the old verifications as well as the new one we have for
         // this user if someone tries to have two verifications going on at
@@ -144,7 +159,8 @@ impl VerificationCache {
 
     #[cfg(feature = "qrcode")]
     pub fn get_qr(&self, sender: &UserId, flow_id: &str) -> Option<Box<QrVerification>> {
-        self.get(sender, flow_id).and_then(as_variant!(Verification::QrV1))
+        self.get(sender, flow_id)
+            .and_then(as_variant!(Verification::QrV1))
     }
 
     pub fn replace(&self, verification: Verification) {
@@ -157,11 +173,21 @@ impl VerificationCache {
     }
 
     pub fn get(&self, sender: &UserId, flow_id: &str) -> Option<Verification> {
-        self.inner.verification.read().get(sender)?.get(flow_id).cloned()
+        self.inner
+            .verification
+            .read()
+            .get(sender)?
+            .get(flow_id)
+            .cloned()
     }
 
     pub fn outgoing_requests(&self) -> Vec<OutgoingRequest> {
-        self.inner.outgoing_requests.read().values().cloned().collect()
+        self.inner
+            .outgoing_requests
+            .read()
+            .values()
+            .cloned()
+            .collect()
     }
 
     pub fn garbage_collect(&self) -> Vec<OutgoingVerificationRequest> {
@@ -181,12 +207,16 @@ impl VerificationCache {
     }
 
     pub fn get_sas(&self, user_id: &UserId, flow_id: &str) -> Option<Box<Sas>> {
-        self.get(user_id, flow_id).and_then(as_variant!(Verification::SasV1))
+        self.get(user_id, flow_id)
+            .and_then(as_variant!(Verification::SasV1))
     }
 
     pub fn add_request(&self, request: OutgoingRequest) {
         trace!("Adding an outgoing request {:?}", request);
-        self.inner.outgoing_requests.write().insert(request.request_id.clone(), request);
+        self.inner
+            .outgoing_requests
+            .write()
+            .insert(request.request_id.clone(), request);
     }
 
     pub fn add_verification_request(&self, request: OutgoingVerificationRequest) {
@@ -235,19 +265,29 @@ impl VerificationCache {
                     request: Arc::new(request.into()),
                 };
 
-                self.inner.outgoing_requests.write().insert(request_id, request);
+                self.inner
+                    .outgoing_requests
+                    .write()
+                    .insert(request_id, request);
             }
 
             OutgoingContent::Room(r, c) => {
                 let request = OutgoingRequest {
                     request: Arc::new(
-                        RoomMessageRequest { room_id: r, txn_id: request_id.clone(), content: c }
-                            .into(),
+                        RoomMessageRequest {
+                            room_id: r,
+                            txn_id: request_id.clone(),
+                            content: c,
+                        }
+                        .into(),
                     ),
                     request_id: request_id.clone(),
                 };
 
-                self.inner.outgoing_requests.write().insert(request_id, request);
+                self.inner
+                    .outgoing_requests
+                    .write()
+                    .insert(request_id, request);
             }
         }
     }
@@ -257,8 +297,11 @@ impl VerificationCache {
             trace!(?request_id, "Marking a verification HTTP request as sent");
         }
 
-        if let Some((user_id, flow_id)) =
-            self.inner.flow_ids_waiting_for_response.read().get(request_id)
+        if let Some((user_id, flow_id)) = self
+            .inner
+            .flow_ids_waiting_for_response
+            .read()
+            .get(request_id)
             && let Some(verification) = self.get(user_id, flow_id.as_str())
         {
             match verification {

@@ -1,12 +1,16 @@
-use super::{NativeChatComposition, OwnedComposition, bounded_console};
-use crate::native_launch::{LaunchMode, RunOutcome};
+use super::NativeChatComposition;
+use super::OwnedComposition;
+use super::bounded_console;
+use crate::native_launch::LaunchMode;
+use crate::native_launch::RunOutcome;
 use hepta_control_core::chat::WorkspaceTab;
 use makepad_widgets::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 /// Run the original App with the caller's sole draft/state owner. This Linux
-/// development mode is neither a NativeHost witness nor production chat send.
+/// mode creates neither a NativeHost witness nor sending authority. An explicit
+/// host-installed Objective port keeps its original independent owner checks.
 /// Resources are configured before the original script registers/loads them.
 #[cfg(target_os = "linux")]
 pub fn run_native_presentation(

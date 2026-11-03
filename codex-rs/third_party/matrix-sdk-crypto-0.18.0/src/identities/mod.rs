@@ -45,18 +45,24 @@ pub(crate) mod manager;
 pub(crate) mod room_identity_state;
 pub(crate) mod user;
 
-use std::sync::{
-    Arc,
-    atomic::{AtomicBool, Ordering},
-};
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
-pub use device::{Device, DeviceData, LocalTrust, UserDevices};
+pub use device::Device;
+pub use device::DeviceData;
+pub use device::LocalTrust;
+pub use device::UserDevices;
 pub(crate) use manager::IdentityManager;
-use serde::{Deserialize, Deserializer, Serializer};
-pub use user::{
-    OtherUserIdentity, OtherUserIdentityData, OwnUserIdentity, OwnUserIdentityData, UserIdentity,
-    UserIdentityData,
-};
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serializer;
+pub use user::OtherUserIdentity;
+pub use user::OtherUserIdentityData;
+pub use user::OwnUserIdentity;
+pub use user::OwnUserIdentityData;
+pub use user::UserIdentity;
+pub use user::UserIdentityData;
 
 // These methods are only here because Serialize and Deserialize don't seem to
 // be implemented for WASM.
