@@ -1,0 +1,203 @@
+{
+  "schema": "joint-all-hosted-components-verification-v2",
+  "source_commit": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "source_tree": "a506ff258a214bc0f3ccedb9372d2317e476b038",
+  "unique_exact_git_inputs": 1936,
+  "artifacts": [
+    {
+      "artifact_id": 13264696919,
+      "component": "lock",
+      "artifact_sha256": "fcb6898c9d1653c80498a495a65da73716da00c9ba514b5dc0b0b7d7ea303cfb",
+      "exact_git_input_hashes": 1575,
+      "generated_lock_is_exact_committed_lock": true,
+      "committed_check_precedes_original_update_and_postcheck": true
+    },
+    {
+      "artifact_id": 13263891472,
+      "component": "fleet-macos",
+      "artifact_sha256": "df8ddf49e7e8c254d3adacccaaac9e7f306f6171b41c19fb5595a33ee982313b",
+      "exact_git_input_hashes": 84,
+      "tests": 42,
+      "skipped": 0,
+      "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+      "operation_probes_are_not_acceptance": true
+    },
+    {
+      "artifact_id": 13265445790,
+      "component": "fleet-linux",
+      "artifact_sha256": "974ee8bca3d35aa74250dbeb633c443434c889ce24992e9660ee395ba1baca6c",
+      "exact_git_input_hashes": 84,
+      "tests": 42,
+      "skipped": 0,
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "operation_probes_are_not_acceptance": true
+    },
+    {
+      "artifact_id": 13264785556,
+      "component": "operator-macos",
+      "artifact_sha256": "fbc73ea97f75731952c143056701d2c1c80a0c3801534136829431259a2399c8",
+      "exact_git_input_hashes": 50,
+      "independent_component_report_sha256": "075b2d7875222946b266568b3ea08c3674b7f981559c421ace71e503fb3d08a3"
+    },
+    {
+      "artifact_id": 13264996426,
+      "component": "operator-linux",
+      "artifact_sha256": "8a8c015fc140808649c2b7ec929c2bc73cc1a310d0edf502df5892f83b87aae7",
+      "exact_git_input_hashes": 50,
+      "independent_component_report_sha256": "075b2d7875222946b266568b3ea08c3674b7f981559c421ace71e503fb3d08a3"
+    },
+    {
+      "artifact_id": 13264061136,
+      "component": "aws-windows",
+      "artifact_sha256": "e6975a7c4b50e9b737028d6092ea58f21baafb3cda0c345d96494c81db93868f",
+      "exact_git_input_hashes": 118,
+      "independent_component_report_sha256": "43d3a415ebb5f2f29b337d1d8f763fc0d4a683dd9024cf61bfbaa8b321a51859"
+    },
+    {
+      "artifact_id": 13264595695,
+      "component": "aws-macos",
+      "artifact_sha256": "1ba3c5c5ef986ed7f61147e87328a6902c09748f10b959860fc67c00f4abeb22",
+      "exact_git_input_hashes": 118,
+      "independent_component_report_sha256": "43d3a415ebb5f2f29b337d1d8f763fc0d4a683dd9024cf61bfbaa8b321a51859"
+    },
+    {
+      "artifact_id": 13265113047,
+      "component": "yaml-bazel",
+      "artifact_sha256": "d27ade6329baf7ccef03fa20fb698a5846576ad04ddc2e719d40bc0a4d74240d",
+      "exact_git_input_hashes": 97,
+      "generated_lock_is_exact_committed_lock": true,
+      "actual_bazel_targets_passed": 1,
+      "full_native_consumer_qualification": "820 original cases verified on this same commit"
+    },
+    {
+      "artifact_id": 13265186905,
+      "component": "keyring-bazel",
+      "artifact_sha256": "75d0ac0a3020bd53ffeac7ceb7881ce050c3fda85df1217db8b5fa244ad407ff",
+      "exact_git_input_hashes": 4,
+      "generated_lock_is_exact_committed_lock": true,
+      "actual_native_dbus_identity_targets_passed": 1,
+      "original_keyring_store_build_passed": true,
+      "source_scope": "Four recorded manifests/locks; full provider source and behavioral qualification remain separate."
+    },
+    {
+      "artifact_id": 13264408332,
+      "component": "aws-bazel",
+      "artifact_sha256": "8d55ce67ae0a9570e68be1d47e61da0a93b5ffd7669b256801b84f1966b5bb7f",
+      "exact_git_input_hashes": 330,
+      "generated_lock_is_exact_committed_lock": true,
+      "independent_component_report_sha256": "43d3a415ebb5f2f29b337d1d8f763fc0d4a683dd9024cf61bfbaa8b321a51859"
+    },
+    {
+      "artifact_id": 13263798527,
+      "component": "aws-linux",
+      "artifact_sha256": "bbccfbb3fe5cb3c8573a1e0cd44e99cbc79dbea8afb39bd53977f1a56abdc93e",
+      "exact_git_input_hashes": 118,
+      "independent_component_report_sha256": "43d3a415ebb5f2f29b337d1d8f763fc0d4a683dd9024cf61bfbaa8b321a51859"
+    },
+    {
+      "artifact_id": 13265707088,
+      "component": "matrix-sqlite-starlark",
+      "artifact_sha256": "a6987ac51ffd3a9478bd4f0f4344814fb61c8001be695c5b25ddd4a09d40601e",
+      "exact_git_input_hashes": 1281,
+      "actual_tests": 221,
+      "independent_component_report_sha256": "0d784c0ba33d63305a6db8ba91ed5e4aacf9751ac683707dba9bd5b39522c865"
+    },
+    {
+      "artifact_id": 13264798808,
+      "component": "matrix-crypto-migration",
+      "artifact_sha256": "5eb364fb0b270a38e8706515493dffd59d24dee66b67764de9e599c0a23df68a",
+      "exact_git_input_hashes": 1281,
+      "actual_tests": 1,
+      "independent_component_report_sha256": "0d784c0ba33d63305a6db8ba91ed5e4aacf9751ac683707dba9bd5b39522c865"
+    },
+    {
+      "artifact_id": 13263839688,
+      "component": "matrix-owners",
+      "artifact_sha256": "b5bbea6000925530f66f889a8d31be25ab5d97fc241d2608bd44b9b04ad050c2",
+      "exact_git_input_hashes": 1281,
+      "actual_tests": 113,
+      "independent_component_report_sha256": "0d784c0ba33d63305a6db8ba91ed5e4aacf9751ac683707dba9bd5b39522c865"
+    },
+    {
+      "artifact_id": 13263688945,
+      "component": "matrix-synapse-protocol",
+      "artifact_sha256": "e10721878c2e06b9ee08a3255abf2615ab1b86ccdf53ff38a6f0d4bb11e44f28",
+      "exact_git_input_hashes": 1281,
+      "actual_tests": 1,
+      "independent_component_report_sha256": "0d784c0ba33d63305a6db8ba91ed5e4aacf9751ac683707dba9bd5b39522c865"
+    },
+    {
+      "artifact_id": 13263634470,
+      "component": "matrix-bazel",
+      "artifact_sha256": "57de7020f2207e15e0c7f38812089f52f15ddf8964c5492a536f4b526161414c",
+      "exact_git_input_hashes": 1281,
+      "generated_lock_is_exact_committed_lock": true,
+      "actual_tests": null,
+      "independent_component_report_sha256": "0d784c0ba33d63305a6db8ba91ed5e4aacf9751ac683707dba9bd5b39522c865"
+    },
+    {
+      "artifact_id": 13265079243,
+      "component": "keyring-native",
+      "artifact_sha256": "19836a487016d86fb90cede3ff1570e94342f2441412a245c3ee0eb864bab922",
+      "exact_git_input_hashes": 61,
+      "original_service_operations": 12,
+      "original_secret_store_tests": 15,
+      "observed_encrypted_sessions": 17,
+      "observed_plain_sessions": 0,
+      "independent_component_report_sha256": "a3020b07dbd5a2910c1a4e12bd0a9111bd7c9befab98e7582ee400fb167edc1e"
+    },
+    {
+      "artifact_id": 13265875475,
+      "component": "yaml-graph",
+      "artifact_sha256": "3def2a514768eed0606313ebe4fac1ff84f1468b1dee70e3ff900c72f6c38818",
+      "exact_git_input_hashes": 97,
+      "actual_tests": null,
+      "independent_component_report_sha256": "ab94a7df50b29ad669a8f99a682c937f6bc0e7440ef7157814bb834fc5bf06bb"
+    },
+    {
+      "artifact_id": 13264698831,
+      "component": "yaml-native-codex-skills",
+      "artifact_sha256": "6a7fc49db3e0e0a9b3e0f79202e689b269c0201676e8f6a817d352c49d67f247",
+      "exact_git_input_hashes": 97,
+      "actual_tests": 49,
+      "independent_component_report_sha256": "ab94a7df50b29ad669a8f99a682c937f6bc0e7440ef7157814bb834fc5bf06bb"
+    },
+    {
+      "artifact_id": 13267930242,
+      "component": "yaml-native-codex-external-agent-migration",
+      "artifact_sha256": "191de5d690919359358de4d1b05ce0d3e2f2ddc03507177e34b62656d4f4b714",
+      "exact_git_input_hashes": 97,
+      "actual_tests": 166,
+      "independent_component_report_sha256": "ab94a7df50b29ad669a8f99a682c937f6bc0e7440ef7157814bb834fc5bf06bb"
+    },
+    {
+      "artifact_id": 13267735778,
+      "component": "yaml-native-codex-core-plugins",
+      "artifact_sha256": "5246f4f7498f4438f891b745382a5544f9f468d36c127b742954776d13773491",
+      "exact_git_input_hashes": 97,
+      "actual_tests": 420,
+      "independent_component_report_sha256": "ab94a7df50b29ad669a8f99a682c937f6bc0e7440ef7157814bb834fc5bf06bb"
+    },
+    {
+      "artifact_id": 13266525310,
+      "component": "yaml-native-codex-utils-yaml",
+      "artifact_sha256": "f6dd5b6a13f9849ee5130aa3fadab262d4b30ec05c106946e7194bb6eea5633c",
+      "exact_git_input_hashes": 97,
+      "actual_tests": 10,
+      "independent_component_report_sha256": "ab94a7df50b29ad669a8f99a682c937f6bc0e7440ef7157814bb834fc5bf06bb"
+    },
+    {
+      "artifact_id": 13265849287,
+      "component": "yaml-native-codex-skills-extension",
+      "artifact_sha256": "b69412a81b541385f643870614993f3ba36778280d318c252c91b6d6083b6c50",
+      "exact_git_input_hashes": 97,
+      "actual_tests": 175,
+      "independent_component_report_sha256": "ab94a7df50b29ad669a8f99a682c937f6bc0e7440ef7157814bb834fc5bf06bb"
+    }
+  ],
+  "status": "passed_for_listed_scopes",
+  "native_test_executions": 1342,
+  "original_service_operations": 12,
+  "full_original_blocking_ci": "in_progress",
+  "release_state": "Draft / HOLD_NO_GO / DENY_ALL"
+}

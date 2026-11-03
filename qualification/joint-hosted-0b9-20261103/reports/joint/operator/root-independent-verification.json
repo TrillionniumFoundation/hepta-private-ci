@@ -1,0 +1,53 @@
+{
+  "schema": "operator-hosted-independent-verification-v1",
+  "source_commit": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "source_tree": "a506ff258a214bc0f3ccedb9372d2317e476b038",
+  "original_run": 41701057186,
+  "original_source_and_test_bodies_unchanged": true,
+  "artifacts": [
+    {
+      "artifact_id": 13264785556,
+      "archive_sha256": "fbc73ea97f75731952c143056701d2c1c80a0c3801534136829431259a2399c8",
+      "source_inputs_git_byte_verified": 50,
+      "outputs_hash_verified": 11,
+      "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "test_counts": [
+        24,
+        0,
+        0,
+        0,
+        0
+      ],
+      "original_clippy_selector_includes_complete_binary": true,
+      "compiler_and_clippy_use_original_rbe": true,
+      "test_is_fresh_local_host_execution": true,
+      "test_selected_execution_platform": "@@platforms//host:host",
+      "actual_native_sandbox": "darwin-sandbox",
+      "credential_pattern_hits": 0
+    },
+    {
+      "artifact_id": 13264996426,
+      "archive_sha256": "8a8c015fc140808649c2b7ec929c2bc73cc1a310d0edf502df5892f83b87aae7",
+      "source_inputs_git_byte_verified": 50,
+      "outputs_hash_verified": 11,
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "test_counts": [
+        24,
+        0,
+        0,
+        0,
+        0
+      ],
+      "original_clippy_selector_includes_complete_binary": true,
+      "compiler_and_clippy_use_original_rbe": true,
+      "test_is_fresh_local_host_execution": true,
+      "test_selected_execution_platform": "@@+rbe_platform_repository+rbe_platform//:rbe_platform",
+      "actual_native_sandbox": "linux-sandbox",
+      "credential_pattern_hits": 0
+    }
+  ],
+  "status": "passed",
+  "limits": "Operator component qualified on the joint dependency source. This does not qualify other components or the complete original blocking CI."
+}

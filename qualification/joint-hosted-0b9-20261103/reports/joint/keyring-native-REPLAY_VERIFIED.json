@@ -1,0 +1,29 @@
+{
+  "schema": "keyring-native-joint-source-replay-v1",
+  "source_commit": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "workflow_run": 41701057061,
+  "job": 126144123622,
+  "artifact_id": 13265079243,
+  "artifact_bytes": 40023,
+  "artifact_sha256": "19836a487016d86fb90cede3ff1570e94342f2441412a245c3ee0eb864bab922",
+  "exact_git_inputs_verified": 61,
+  "native_dbus_build_and_identity_commands": 52,
+  "original_service_operations_passed": 12,
+  "actual_observed_encrypted_sessions": 17,
+  "observed_plain_sessions": 0,
+  "rejecting_service_downgrade_attempts": 0,
+  "original_secret_store_tests": 15,
+  "failed_or_skipped": 0,
+  "binaries": {
+    "baseline": {
+      "path": "/home/runner/work/_temp/keyring-provider/probe-target/debug/hepta-keyring-baseline-probe",
+      "sha256": "53b01458f803c7b1bf6d9fe5aa6d5080cf3bb7ae1f0d3494a51bf07d4da98789"
+    },
+    "candidate": {
+      "path": "/home/runner/work/_temp/keyring-provider/probe-target/debug/hepta-keyring-candidate-probe",
+      "sha256": "f547d9e06dee42f7f08531765828bf85c7cdf02e34125814519fd3fa954ff12e"
+    }
+  },
+  "status": "passed",
+  "limits": "Exact combined 0b9 provider scope. Provider after-state is recorded by the original driver; no separate after-hash file is present. No full blocking CI or scientific acceptance."
+}

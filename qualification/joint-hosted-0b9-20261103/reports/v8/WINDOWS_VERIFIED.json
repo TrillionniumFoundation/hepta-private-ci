@@ -1,0 +1,35 @@
+{
+  "schema": "v8-windows-hosted-independent-verification-v1",
+  "source_commit": "bede07d3050d897a505020215a46a3ec8d66020d",
+  "source_tree": "5fafc1d78f8b48639a7231e861a10b556bd6aa34",
+  "run": 41705384578,
+  "job": 126159900594,
+  "artifact_id": 13265608921,
+  "artifact_bytes": 29680,
+  "artifact_sha256": "b72a6f758d6c3812fe71224c70558782e56d022871357637a009944343db3a8c",
+  "immutable_git_input_paths_verified": 129,
+  "output_hashes_verified": 17,
+  "native_host": "Windows-2025Server-10.0.26100-SP0",
+  "fresh_process_parallel_test": {
+    "passed": 1,
+    "filtered_other_poc_cases": 6
+  },
+  "complete_original_consumer_tests": {
+    "v8-poc": 7,
+    "code-mode-runtime": 68,
+    "code-mode-host": 40
+  },
+  "complete_consumer_failed_ignored_measured_filtered": 0,
+  "original_sandbox_assertions_passed": true,
+  "three_complete_test_binaries_clippy_passed": true,
+  "native_msvc_wrapper_preserved": true,
+  "qualification_budget_minutes": 30,
+  "status": "windows_original_consumer_failure_scope_passed",
+  "limits": [
+    "Linux qualification pending; full original blocking CI and V8 canary source-build matrix remain separate.",
+    "This is the exact bede source, not qualification of the later joint 0b9 dependency graph.",
+    "The fresh regression intentionally selects one test; the following three complete targets have zero filtered cases.",
+    "No downloaded source or executable was run by this verifier."
+  ],
+  "release_state": "Draft / HOLD_NO_GO / DENY_ALL"
+}

@@ -1,0 +1,6 @@
+{
+  "command": "python3 -O restore_and_verify.py",
+  "exit": 1,
+  "stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/1f1d02319616/private-ci-joint-hosted-proof-20261103/qualification/joint-hosted-0b9-20261103/restore_and_verify.py\", line 120, in <module>\n    main()\n  File \"/workspace/scratch/1f1d02319616/private-ci-joint-hosted-proof-20261103/qualification/joint-hosted-0b9-20261103/restore_and_verify.py\", line 32, in main\n    require(not sys.flags.optimize, \"verification requires assertions; optimized Python is rejected\")\n  File \"/workspace/scratch/1f1d02319616/private-ci-joint-hosted-proof-20261103/qualification/joint-hosted-0b9-20261103/restore_and_verify.py\", line 18, in require\n    raise RuntimeError(message)\nRuntimeError: verification requires assertions; optimized Python is rejected\n",
+  "created_output": false
+}

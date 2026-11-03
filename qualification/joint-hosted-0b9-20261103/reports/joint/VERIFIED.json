@@ -1,0 +1,101 @@
+{
+  "schema": "joint-hosted-component-verification-v1",
+  "source_commit": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "source_tree": "a506ff258a214bc0f3ccedb9372d2317e476b038",
+  "unique_exact_git_inputs": 1750,
+  "artifacts": [
+    {
+      "artifact_id": 13264696919,
+      "component": "lock",
+      "artifact_sha256": "fcb6898c9d1653c80498a495a65da73716da00c9ba514b5dc0b0b7d7ea303cfb",
+      "exact_git_input_hashes": 1575,
+      "generated_lock_is_exact_committed_lock": true,
+      "committed_check_precedes_original_update_and_postcheck": true
+    },
+    {
+      "artifact_id": 13263891472,
+      "component": "fleet-macos",
+      "artifact_sha256": "df8ddf49e7e8c254d3adacccaaac9e7f306f6171b41c19fb5595a33ee982313b",
+      "exact_git_input_hashes": 84,
+      "tests": 42,
+      "skipped": 0,
+      "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+      "operation_probes_are_not_acceptance": true
+    },
+    {
+      "artifact_id": 13265445790,
+      "component": "fleet-linux",
+      "artifact_sha256": "974ee8bca3d35aa74250dbeb633c443434c889ce24992e9660ee395ba1baca6c",
+      "exact_git_input_hashes": 84,
+      "tests": 42,
+      "skipped": 0,
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "operation_probes_are_not_acceptance": true
+    },
+    {
+      "artifact_id": 13264785556,
+      "component": "operator-macos",
+      "artifact_sha256": "fbc73ea97f75731952c143056701d2c1c80a0c3801534136829431259a2399c8",
+      "exact_git_input_hashes": 50,
+      "independent_component_report_sha256": "075b2d7875222946b266568b3ea08c3674b7f981559c421ace71e503fb3d08a3"
+    },
+    {
+      "artifact_id": 13264996426,
+      "component": "operator-linux",
+      "artifact_sha256": "8a8c015fc140808649c2b7ec929c2bc73cc1a310d0edf502df5892f83b87aae7",
+      "exact_git_input_hashes": 50,
+      "independent_component_report_sha256": "075b2d7875222946b266568b3ea08c3674b7f981559c421ace71e503fb3d08a3"
+    },
+    {
+      "artifact_id": 13264061136,
+      "component": "aws-windows",
+      "artifact_sha256": "e6975a7c4b50e9b737028d6092ea58f21baafb3cda0c345d96494c81db93868f",
+      "exact_git_input_hashes": 118,
+      "independent_component_report_sha256": "43d3a415ebb5f2f29b337d1d8f763fc0d4a683dd9024cf61bfbaa8b321a51859"
+    },
+    {
+      "artifact_id": 13264595695,
+      "component": "aws-macos",
+      "artifact_sha256": "1ba3c5c5ef986ed7f61147e87328a6902c09748f10b959860fc67c00f4abeb22",
+      "exact_git_input_hashes": 118,
+      "independent_component_report_sha256": "43d3a415ebb5f2f29b337d1d8f763fc0d4a683dd9024cf61bfbaa8b321a51859"
+    },
+    {
+      "artifact_id": 13265113047,
+      "component": "yaml-bazel",
+      "artifact_sha256": "d27ade6329baf7ccef03fa20fb698a5846576ad04ddc2e719d40bc0a4d74240d",
+      "exact_git_input_hashes": 97,
+      "generated_lock_is_exact_committed_lock": true,
+      "actual_bazel_targets_passed": 1,
+      "full_native_consumer_qualification": "pending"
+    },
+    {
+      "artifact_id": 13265186905,
+      "component": "keyring-bazel",
+      "artifact_sha256": "75d0ac0a3020bd53ffeac7ceb7881ce050c3fda85df1217db8b5fa244ad407ff",
+      "exact_git_input_hashes": 4,
+      "generated_lock_is_exact_committed_lock": true,
+      "actual_native_dbus_identity_targets_passed": 1,
+      "original_keyring_store_build_passed": true,
+      "source_scope": "Four recorded manifests/locks; full provider source and behavioral qualification remain separate."
+    },
+    {
+      "artifact_id": 13264408332,
+      "component": "aws-bazel",
+      "artifact_sha256": "8d55ce67ae0a9570e68be1d47e61da0a93b5ffd7669b256801b84f1966b5bb7f",
+      "exact_git_input_hashes": 330,
+      "generated_lock_is_exact_committed_lock": true,
+      "independent_component_report_sha256": "43d3a415ebb5f2f29b337d1d8f763fc0d4a683dd9024cf61bfbaa8b321a51859"
+    },
+    {
+      "artifact_id": 13263798527,
+      "component": "aws-linux",
+      "artifact_sha256": "bbccfbb3fe5cb3c8573a1e0cd44e99cbc79dbea8afb39bd53977f1a56abdc93e",
+      "exact_git_input_hashes": 118,
+      "independent_component_report_sha256": "43d3a415ebb5f2f29b337d1d8f763fc0d4a683dd9024cf61bfbaa8b321a51859"
+    }
+  ],
+  "status": "passed_for_listed_scopes",
+  "full_original_blocking_ci": "pending",
+  "release_state": "Draft / HOLD_NO_GO / DENY_ALL"
+}
