@@ -76,6 +76,72 @@ jobs:
           }
           (output / "source.json").write_text(json.dumps(source, indent=2) + "\n")
           PY
+      - name: Compare PowerShell launch environments with real child processes
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import time
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "bazel-process-evidence"
+          full = dict(os.environ)
+          def select(names):
+              wanted = {name.casefold() for name in names}
+              return {key: value for key, value in full.items() if key.casefold() in wanted}
+          minimum = select(["PATH", "SYSTEMROOT", "COMSPEC", "WINDIR", "TEMP", "TMP"])
+          programs = select(["ProgramFiles", "ProgramFiles(x86)"])
+          profiles = select(["USERPROFILE", "APPDATA", "LOCALAPPDATA", "ALLUSERSPROFILE", "ProgramData", "SystemDrive", "USERNAME", "USERDOMAIN", "PSModulePath"])
+          child = base64.b64encode("[Console]::WriteLine('child-ready')".encode("utf-16le")).decode()
+          script = (
+              "[Console]::WriteLine('parent-ready'); "
+              "$child = Start-Process -FilePath powershell.exe "
+              "-ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '" + child + "') "
+              "-PassThru -NoNewWindow; "
+              "$child.WaitForExit(); [Console]::WriteLine('parent-finished')"
+          )
+          encoded = base64.b64encode(script.encode("utf-16le")).decode()
+          cases = [("minimal", minimum), ("program-files-pair", dict(minimum, **programs)),
+                   ("profile-group", dict(minimum, **profiles)), ("full-runner-reference", full)]
+          results = []
+          for executable in ("powershell.exe", "pwsh.exe"):
+              path = shutil.which(executable)
+              if path is None:
+                  raise RuntimeError("required installed executable is absent: " + executable)
+              for name, environment in cases:
+                  started = time.monotonic()
+                  process = subprocess.Popen(
+                      [path, "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded],
+                      env=environment, stdin=subprocess.DEVNULL,
+                      stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                  )
+                  timed_out = False
+                  try:
+                      stdout, stderr = process.communicate(timeout=30)
+                  except subprocess.TimeoutExpired:
+                      timed_out = True
+                      subprocess.run(["taskkill.exe", "/PID", str(process.pid), "/T", "/F"],
+                                     stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                     timeout=15, check=False)
+                      stdout, stderr = process.communicate(timeout=15)
+                  text = stdout.decode("utf-8", "replace")
+                  result = {
+                      "executable": executable, "resolved_executable": path, "case": name,
+                      "seconds": time.monotonic() - started, "exit": process.returncode,
+                      "timeout": timed_out, "stdout": text,
+                      "stderr": stderr.decode("utf-8", "replace"),
+                      "all_markers": all(marker in text for marker in ["parent-ready", "child-ready", "parent-finished"]),
+                      "added_standard_variables": sorted(key for key in environment if key not in minimum)
+                          if name != "full-runner-reference" else "runner reference; no full environment serialized",
+                  }
+                  results.append(result)
+                  (output / "powershell-environment-probes.json").write_text(json.dumps(results, indent=2) + "\n")
+                  print(json.dumps(result), flush=True)
+          PY
       - name: Run original Bazel process suites without cached test results
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -93,6 +159,8 @@ jobs:
             --test_tag_filters=-argument-comment-lint \
             --test_verbose_timeout_warnings \
             --nocache_test_results \
+            --test_env=ProgramFiles \
+            --test_env='ProgramFiles(x86)' \
             --build_metadata=COMMIT_SHA=$GITHUB_SHA \
             -- \
             //codex-rs/git-utils:git-utils-unit-tests \
