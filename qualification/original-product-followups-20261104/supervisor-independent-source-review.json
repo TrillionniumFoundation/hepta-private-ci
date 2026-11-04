@@ -1,0 +1,98 @@
+{
+  "schema": "hepta-supervisor-restart-recovery-independent-source-review-v1",
+  "reviewer": "/root/chain_blockers",
+  "delegation": "Narrow read-only review requested by /root/hepta_blockers on behalf of /root while Chain hosted readback is queued.",
+  "original_reported_failure": {
+    "run": 41758337794,
+    "job": 126348728224,
+    "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "test": "restart_budget_survives_repeated_supervisord_recovery",
+    "reported_assertion": "AutomaticRestartQueued { attempt: 2 } missing at old source line 251",
+    "raw_job_log_independently_retrieved_by_this_reviewer": false
+  },
+  "current_candidate": {
+    "pr": 4757,
+    "commit": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+    "tree": "b33ea99eea8a38aca676f2859370dc4293b5684c"
+  },
+  "inputs": [
+    {
+      "label": "old-test",
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "commit": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+      "git_blob": "e9e079316e42b20a09c259217ec9ff68e03d6ae4",
+      "bytes": 10613,
+      "sha256": "7f98a1d45e5d0dabf53dd58f65e05f412f7702c42a3348c4134da65d4f41676a"
+    },
+    {
+      "label": "new-test",
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "commit": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "git_blob": "95dd438315a26ec646b0bd7b2f14e6304cfa7361",
+      "bytes": 14801,
+      "sha256": "bbedf1e2eb96dba505ce6f167a725f52b7a6f4075e64758c440e3dc011021c8a"
+    },
+    {
+      "label": "old-tick",
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "commit": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "bytes": 13368,
+      "sha256": "41a6deb682fa12fd2c8220dd69df00ae08e3c1cf4823d1bcd673bb0bf4864975"
+    },
+    {
+      "label": "new-tick",
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "commit": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "git_blob": "985eaca97e067844c2fa1d060b285dc1a8a68efa",
+      "bytes": 14240,
+      "sha256": "7ef521f4e419677c0567d291b5e38eda5f73ee427691f227db255eb4d84ec367"
+    },
+    {
+      "label": "recovery-unchanged",
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "commit": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c",
+      "bytes": 15553,
+      "sha256": "c5e93d67fbe8aa1e7d5276721247a46354fc8b6f159534e314d210ce8d888e50"
+    },
+    {
+      "label": "new-budget",
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "commit": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "git_blob": "d79c916a1085a72115ad7eae1cf5dfbe7899143b",
+      "bytes": 7477,
+      "sha256": "d712a5cf8390e21ce7c9a25ba21635db59013691348e79724166b8091fffb48f"
+    },
+    {
+      "label": "new-journal",
+      "path": "codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "commit": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "git_blob": "26bf8bd004340620b423f3ec8ead3f118ca30ac9",
+      "bytes": 20983,
+      "sha256": "4c92003363df0a7129d419434037c6406c0d3e609ad55604f49ad5088b6fd3aa"
+    }
+  ],
+  "findings": [
+    {
+      "status": "SOURCE_CAUSE_CONFIRMED",
+      "detail": "The old tick.rs automatic restart success branch durably claims the restart and records claim.attempt, then emits only the legacy RestartQueued event. It does not emit AutomaticRestartQueued anywhere in that branch. The original test explicitly searches for AutomaticRestartQueued attempt 2; its missing-event assertion is consistent with this code. This alone does not prove a lost or replenished durable restart budget."
+    },
+    {
+      "status": "ALREADY_COVERED_IN_CANDIDATE_SOURCE",
+      "detail": "The current tick.rs retains legacy RestartQueued and additionally emits AutomaticRestartQueued with the actual durably returned claim.attempt. On exhaustion it emits AutomaticRestartBudgetExhausted and retains the original operator-visible RestartBudgetExhausted fault."
+    },
+    {
+      "status": "TEST_STRENGTHENED_WITH_SAME_BUDGET",
+      "detail": "Current test checks actual canonical durable JSON main.attempts/pending after each crash, health and recovery. It still requires attempts 1,2,3, exactly four spawns, configured maximum 3, original 300-second recovery window and 250/500/1000-ms backoffs. New 249/499/999-ms pre-boundary checks reject early spawning. Automatic events are required exactly once, and the exhaustion tick must contain the exact agent/error fault rather than falsely expecting a clean TickReport."
+    },
+    {
+      "status": "RECOVERY_PATH_UNCHANGED",
+      "detail": "Exact recovery.rs is byte-identical between the failed and current commits (blob 529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c). pending_restart reads the canonical durable main record; adopted children retain the pending attempt without creating a duplicate process."
+    }
+  ],
+  "recommendation": "Do not create a duplicate fix. Run the current combined source's original Windows supervisor target and this exact regression; preserve the old failed receipt. Source-level supersession is established, combined native qualification is still pending.",
+  "native_commands_executed": 0,
+  "source_modified": false,
+  "qualification_promoted": false
+}

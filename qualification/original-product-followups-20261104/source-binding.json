@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "status": "CANDIDATE_SOURCE_COMPOSED_CURRENT_NATIVE_QUALIFICATION_PENDING",
+  "base_commit": "fcedede3f945bc75cec6dc7730c7cf0ef9056eda",
+  "base_tree": "9212b58ea86c793d58542b797512bab3bf75460c",
+  "source_bindings": [
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_tests.rs",
+      "bytes": 160841,
+      "git_blob": "77e523a12c77c3e614dd9ac1632f1e8a692918d9",
+      "sha256": "b8c8cc939b2a6940f8b232930182c7a64213e6cd174a05728b9dc1fb7a7ffcb3",
+      "origin": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "previous_git_blob": "ad779bccf5a8d9ea68cf7b239b4ef12fe7d8e02e"
+    },
+    {
+      "path": "codex-rs/core/src/environment_selection.rs",
+      "bytes": 73263,
+      "git_blob": "31f93b571795e1be60e3f0085baf892310a4a41e",
+      "sha256": "8208278cc7068c259dc11ed9bca5985f150a8f66fb4aafc06c24c9045f7e9d5c",
+      "origin": "867b838ffa3a956a45048337dd5cc31cb2650464",
+      "previous_git_blob": "968926556b0b8ee9ac3e9cd77f5f8ad849d64907"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "bytes": 14240,
+      "git_blob": "985eaca97e067844c2fa1d060b285dc1a8a68efa",
+      "sha256": "7ef521f4e419677c0567d291b5e38eda5f73ee427691f227db255eb4d84ec367",
+      "origin": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "previous_git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "bytes": 14801,
+      "git_blob": "95dd438315a26ec646b0bd7b2f14e6304cfa7361",
+      "sha256": "bbedf1e2eb96dba505ce6f167a725f52b7a6f4075e64758c440e3dc011021c8a",
+      "origin": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "previous_git_blob": "e9e079316e42b20a09c259217ec9ff68e03d6ae4"
+    }
+  ],
+  "original_negative": {
+    "source_head": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "actual_checkout": "1e7cae598d1e90e1bc0a3d45c1fb5f3978d279c6",
+    "source_and_actual_checkout_tree": "49a9567143edd2b1aed5cc929afb04bdb6e39469",
+    "actual_checkout_parents": [
+      "3cc71d6ec7e5e084dcecceb2757bc940459f0ada",
+      "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11"
+    ],
+    "run": 41758337794,
+    "job": 126348728224,
+    "selected_targets": 141,
+    "total_selector_targets": 576,
+    "executed_targets": 93,
+    "passed_targets": 87,
+    "failed_targets": 6,
+    "original_platform_skipped_targets": 48,
+    "complete_decoded_log": {
+      "bytes": 1000291,
+      "sha256": "3a6f1c3f387c88b29e2c0cec909fc411618c849e5ddf7d906e34d5550b60dbde",
+      "reconstruction": "Decompress each ordered RFC1952 stored-DEFLATE part and concatenate the exact bytes at the recorded offsets. Parts are not text excerpts.",
+      "parts": [
+        {
+          "path": "qualification/original-product-followups-20261104/original-windows-shard1/job.part000.log.gz",
+          "bytes": 400053,
+          "git_blob": "6600042ae06406ba22ffc31f56c43cf3bb741c51",
+          "sha256": "fa701866c4886ea68c534167415377c78483dcc756c3ddeaf04a54aa551880ad",
+          "decoded_offset": 0,
+          "decoded_bytes": 400000,
+          "decoded_sha256": "c5ff2aafbfb3932cc377ac542600af09e2f2db6d41c8b29b1e12aae730eb1c29"
+        },
+        {
+          "path": "qualification/original-product-followups-20261104/original-windows-shard1/job.part001.log.gz",
+          "bytes": 400053,
+          "git_blob": "965cc28b9698ff2dfbe3f67c6a32eb9def732362",
+          "sha256": "5f55e21c641b60616c182c58e10f55641dada7b62ffbd7e638067efa1c45361a",
+          "decoded_offset": 400000,
+          "decoded_bytes": 400000,
+          "decoded_sha256": "a7d7c5f5a04e76ed49757301feab1b3ee807bb4af2a055485bf850471510d37e"
+        },
+        {
+          "path": "qualification/original-product-followups-20261104/original-windows-shard1/job.part002.log.gz",
+          "bytes": 200329,
+          "git_blob": "fc4de2cbca78ff57a9ba21a2d4bee939fd1df0e5",
+          "sha256": "f90bff7c29b70cf3058f03430447e59f2276a09165f366e18904e4cea775e167",
+          "decoded_offset": 800000,
+          "decoded_bytes": 200291,
+          "decoded_sha256": "b041d16cb5e4545029f959bdfeef25ade5dfae258999b698ebbc35714b70e7a7"
+        }
+      ]
+    }
+  },
+  "changes": [
+    {
+      "scope": "Core default wait timeout fixture",
+      "description": "Reuse exact owner paused-clock fixture. Existing 20ms early deadline, 50ms configured default, 1s outer deadline and every original result assertion are byte-identical.",
+      "timing_cause": "Inference supported by pinned Tokio1.54.1 Timeout::poll polling the inner future before the outer timeout; a delayed host poll can make both real timers ready.",
+      "primary_source": {
+        "url": "https://github.com/tokio-rs/tokio/blob/tokio-1.54.1/tokio/src/time/timeout.rs",
+        "sha256": "43c57490ef366ec6687b7039e40530257db8c90ccb29ce9d3c103121884ad4a4"
+      }
+    },
+    {
+      "scope": "Core snapshot tracing fixture",
+      "description": "Reuse only with_current_subscriber on the existing spawned snapshot future. Every original trace assertion and deadline remains byte-identical."
+    },
+    {
+      "scope": "Supervisor restart events",
+      "description": "Reuse the exact existing owner tick.rs and strengthened original recovery regression. Emit AutomaticRestartQueued from the durable claim's actual attempt, retain legacy RestartQueued and the original exhaustion fault; explicitly emit exhaustion event. The original 3-attempt/300-second/250-500-1000ms policy remains.",
+      "independent_review": {
+        "path": "qualification/original-product-followups-20261104/supervisor-independent-source-review.json",
+        "bytes": 5281,
+        "git_blob": "f5f18550cc2f8b9a83bc539b1ff6291dd81cca19",
+        "sha256": "765e6a5911cf8add8ecffa358b638559db6695f12c415ecde1715a3956ef5354"
+      }
+    }
+  ],
+  "not_adopted": [
+    "Owner's additional restart_journal or restart_budget source changes",
+    "Any source from another branch beyond the four exact listed files",
+    "Any regenerated schema bytes without executing the original generator"
+  ],
+  "schema_followup": {
+    "original_failed_cases": [
+      "schema_fixtures_tests::experimental_precomputed_exports_match_generated",
+      "schema_fixtures_tests::json_schema_fixtures_match_generated",
+      "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+    ],
+    "diagnosis": "Actual negative output has missing generated type files and a stale precomputed v2 index; this is not only newline spelling. The original reader already normalizes CRLF. Run both original stable and experimental generation commands; do not edit generated exports by hand.",
+    "generation_run": "pending"
+  },
+  "scope": {
+    "new_native_tests_executed": 0,
+    "new_reader_tests_executed": 0,
+    "original_assertions_or_budgets_weakened": false,
+    "cargo_or_bazel_lock_changes": false,
+    "full_product_ci_closed": false,
+    "posture": "Draft / HOLD_NO_GO / DENY_ALL",
+    "original_library_items_deleted": 0
+  }
+}
