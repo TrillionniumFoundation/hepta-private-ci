@@ -1286,7 +1286,10 @@ async fn cold_resume_uses_current_named_profile_roots_and_retains_runtime_cwd() 
                 runtime_workspace_roots,
                 ..
             } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
-            assert_eq!(cwd.as_path(), runtime_cwd_path.as_path());
+            assert_eq!(
+                cwd,
+                AbsolutePathBuf::from_absolute_path(runtime_cwd_path.as_path())?,
+            );
             assert_eq!(
                 active_permission_profile,
                 Some(ActivePermissionProfile {
