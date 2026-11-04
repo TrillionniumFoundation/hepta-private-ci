@@ -1,0 +1,101 @@
+{
+  "status": "PASS_FOR_PUBLICATION_AS_FIXED_SAVED128_PAYLOAD_SHA_WORK_QUALIFICATION",
+  "reviewer_candidate_or_model_execution": false,
+  "review_mode": "Independent saved source/data hashes, JSON linkage, exact opaque-byte grouping, recorded errors and arithmetic; no candidate or original implementation import.",
+  "candidate_freeze_sha256": "4b0653dddd7465e9740e4d723ee492db89a9587320b287bc082c4b8adcc68828",
+  "result_sha256": "a10c9d466c0bbb7d982e8511979d565d370b60618d2b74ca773011da964075bc",
+  "wait4_receipt_sha256": "581a7a63c85d22b49874d534dbddffa8e173fb8c5774b01eb817df6db0d914a0",
+  "input_audit": {
+    "frozen_files": 5,
+    "pinned_input_files": 392,
+    "pinned_input_bytes": 2406239,
+    "all_hashes_match": true,
+    "reconstructed_history_leaves": 128,
+    "opaque_payloads_checked": 256,
+    "distinct_actual_order_byte_strings": 24
+  },
+  "full128": {
+    "logical_reads_both_modes": 256,
+    "logical_bytes_both_modes": 1680512,
+    "original_payload_SHA_calls": 256,
+    "original_payload_SHA_bytes": 1680512,
+    "memo_payload_SHA_calls": 174,
+    "memo_payload_SHA_bytes": 1612780,
+    "memo_hits": 82,
+    "entries_before_clear": 16,
+    "retained_key_bytes_before_clear": 13216,
+    "avoided_payload_SHA_calls": 82,
+    "avoided_payload_SHA_bytes": 67732,
+    "independent_actual_byte_grouping_matches": true
+  },
+  "tail64_memo": {
+    "logical_reads": 128,
+    "logical_bytes": 840256,
+    "hash_calls": 80,
+    "hash_bytes": 800608,
+    "hits": 48
+  },
+  "absolute_total_WORK": {
+    "history_walks": 9,
+    "history_leaves_validated": 768,
+    "payload_read_calls": 1552,
+    "payload_bytes_read": 10083248
+  },
+  "history_records_individually_match": true,
+  "temporary_file_evidence": {
+    "observations_per_mode": 9,
+    "acceptances_per_mode": 4,
+    "refusals_per_mode": 5,
+    "logical_reads_per_mode": 8,
+    "logical_bytes_per_mode": 88,
+    "original_SHA_calls": 6,
+    "memo_SHA_calls": 2,
+    "memo_hits": 4,
+    "all_errors_returned_hashes_and_work_deltas_match": true,
+    "both_terminal_directories_identical": true,
+    "a_bin_bytes": 10,
+    "a_bin_sha256": "01b68a1d1c0fb8c046204fce76a874a56491125deb85278734087012155a346c",
+    "b_bin_bytes": 11,
+    "b_bin_sha256": "3f04a14abaeed43d93d71863024d4186c91b41b32cb7dbba39bbeb0a42b619b1",
+    "link_bin_literal_symlink_target": "b.bin",
+    "intermediate_filesystem_snapshots_retained": false,
+    "scope": "Trusted-local fixed sequence plus bound observations and terminal files; not adversarial filesystem or concurrent-race qualification."
+  },
+  "capacity_record": {
+    "calls": 21,
+    "hash_calls": 20,
+    "hash_bytes": 81922,
+    "hits": 1,
+    "entries": 16,
+    "retained_payload_bytes": 65536,
+    "bytearray_refusal_and_unchanged_counters": true
+  },
+  "process_and_cost": {
+    "child_complete_wait": true,
+    "child_raw_status": 0,
+    "child_exit_code": 0,
+    "whole_child_CPU_seconds": 0.177797,
+    "outer_CPU_prefix_seconds": 0.031517557,
+    "known_invocation_CPU_lower_bound_seconds": 0.209314557,
+    "outer_final_tail": "unknown_nonzero",
+    "preparation_review_and_history": "additional_nonzero",
+    "peak_child_RSS_KiB": 12708,
+    "child_stdout_and_stderr_empty": true,
+    "outer_evidence": "Read explicitly posthoc invoking-agent tool-transcript excerpt: exec_command chunk e28eea, exit 0, no session_id, completed; stdout JSON matches child receipt. Not a second independent wait4.",
+    "per_case_timing_absent": true,
+    "CPU_speedup_established": false,
+    "strict256_budget_established": false,
+    "outer_tool_transcript_sha256": "281fdf070b7bb83f10220d2a1437ff1cdf38a95598f98d0584ebab2e6064e596",
+    "outer_excerpt_stdout_matches_child_receipt": true
+  },
+  "publication_limits": [
+    "Only fixed saved128 scoped payload SHA computations and hashed bytes decrease; logical reads remain unchanged.",
+    "Dictionary hashing/equality, allocation, compilation and out-of-scope SHA calls have additional cost. No total-program work or CPU saving is inferred.",
+    "Receipt CPU cannot be compared with the prior equality experiment as speedup because the workloads differ.",
+    "Per-memo key-payload limits are not total process RSS limits; occupancy is recorded before explicit cleanup.",
+    "Outer tail and preparation/review/history remain additional; per-process caps do not establish strict aggregate budget.",
+    "Publication is an evidence snapshot, not authority for rerun, integration, training, deployment, 256-step execution or relaxation of holds."
+  ],
+  "publication_source_files_byte_identical": true,
+  "publication_summary_objects_match": true
+}

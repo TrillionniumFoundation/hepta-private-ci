@@ -1,0 +1,80 @@
+{
+  "status": "PASS_SOURCE_ONLY_FOR_ONE_FIXED_SAVED128_WORK_QUALIFICATION",
+  "candidate_freeze_sha256": "4b0653dddd7465e9740e4d723ee492db89a9587320b287bc082c4b8adcc68828",
+  "candidate_executed_by_reviewer": false,
+  "RUN_ONCE_absent_at_review": true,
+  "frozen_files_hash_checked": 5,
+  "baseline_source_hashes_match": true,
+  "previous_equality_optimization_included": false,
+  "fresh_reads_and_original_reference_guards_preserved": true,
+  "memo_key": "Exact newly read immutable builtin bytes, never path/mtime/expected digest",
+  "history_scope": "New memo per invocation; statistics copied and keys explicitly cleared in finally",
+  "cache_bound": {
+    "maximum_entries": 16,
+    "maximum_admitted_content_bytes": 4096,
+    "maximum_retained_key_payload_bytes": 65536,
+    "eviction": false,
+    "whole_process_memory_bound_claim": false
+  },
+  "metadata_only_full128_prediction": {
+    "payload_read_calls": 256,
+    "payload_bytes_read": 1680512,
+    "original_payload_SHA_calls": 256,
+    "memo_payload_SHA_calls": 174,
+    "memo_payload_SHA_bytes": 1612780,
+    "memo_hits": 82,
+    "memo_entries_before_clear": 16,
+    "memo_retained_payload_bytes_before_clear": 13216,
+    "avoided_payload_SHA_calls": 82,
+    "avoided_payload_SHA_bytes": 67732
+  },
+  "metadata_only_tail64_memo_prediction": {
+    "payload_read_calls": 128,
+    "payload_bytes_read": 840256,
+    "hash_calls": 80,
+    "hash_bytes": 800608,
+    "hits": 48,
+    "entries_before_clear": 16,
+    "retained_payload_bytes_before_clear": 13216
+  },
+  "temporary_file_sequence_prediction_per_mode": {
+    "cases": 9,
+    "acceptances": 4,
+    "refusals": 5,
+    "payload_read_calls": 8,
+    "payload_bytes_read": 88,
+    "digest_attempts": 6,
+    "original_hash_calls": 6,
+    "original_hash_bytes": 66,
+    "memo_hash_calls": 2,
+    "memo_hash_bytes": 22,
+    "memo_hits": 4
+  },
+  "expected_total_WORK_on_success": {
+    "history_walks": 9,
+    "history_leaves_validated": 768,
+    "payload_read_calls": 1552,
+    "payload_bytes_read": 10083248
+  },
+  "capacity_fixture_prediction": {
+    "calls": 21,
+    "hash_calls": 20,
+    "hash_bytes": 81922,
+    "hits": 1,
+    "entries": 16,
+    "retained_payload_bytes": 65536,
+    "bytearray_refuses_before_counter_change": true
+  },
+  "pre_run_review_changes": [
+    "Explicit finally cleanup prevents exec-created cycles from retaining memo key payloads; snapshots remain pre-clear statistics.",
+    "PLAN now accurately limits failure evidence to completed records plus caught exception, with no guarantee for in-progress observations or hard-kill RESULT."
+  ],
+  "limitations": [
+    "All counts are prospective source/metadata predictions; no candidate execution result is certified here.",
+    "Payload SHA counters are not total-program hashing cost. Logical IO remains unchanged and dictionary/content comparison adds cost.",
+    "Temporary-file qualification is trusted-local change detection, not an adversarial filesystem or race guarantee.",
+    "No timing screen, CPU speedup claim, complete-subtree budget proof or strict256 admission.",
+    "Worker lock release does not establish outer termination; whole-child cost plus outer prefix omits a nonzero final tail and preparation/review/history.",
+    "Execution needs parent admission. No automatic retry, cache-size sweep, production integration, deployment, training or relaxation of existing holds."
+  ]
+}
