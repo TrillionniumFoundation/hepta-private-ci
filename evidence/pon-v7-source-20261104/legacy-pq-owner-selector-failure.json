@@ -1,0 +1,165 @@
+{
+  "schema": "hepta-v6-current-pq-owner-stale-selector-review-v1",
+  "run_id": 41779609474,
+  "root_cause": "stale nonexistent pq_authority:: selector selects zero tests; minimum-tests14 correctly fails despite cargo exit0",
+  "qualification_relaxed": false,
+  "source_modified": false,
+  "native_tests_run_by_reviewer": false,
+  "lanes": [
+    {
+      "lane": "x64merge",
+      "artifact_id": 13299341081,
+      "zip_bytes": 13428,
+      "zip_sha256": "a06142ca00a1078fe96458e5ccc70398b91484bdebb8f616294587c83c57ccf4",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "../chain/trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--lib",
+        "pq_authority::",
+        "--",
+        "--show-output",
+        "--test-threads=1"
+      ],
+      "cargo_exit": 0,
+      "wrapper_exit": 1,
+      "minimum_tests": 14,
+      "passed": 0,
+      "failed": 0,
+      "timed_out": false,
+      "log_sha256": "19ed366959dca313eced83fbcf013ba219dd526cc13eb450f5c7d861f76245ae",
+      "log_bytes": 7215,
+      "test_summary": [
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 990 filtered out; finished in 0.00s"
+      ],
+      "source": {
+        "chain_commit": "44d3def32f515b98fc41f074fe1b88e97f046191",
+        "chain_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+        "lane": "base-merge",
+        "manifest_sha256": "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8",
+        "product_qualification": false,
+        "profile": "hepta-integrated-chain-execution-v6",
+        "schema": "hepta-native-pair-execution-source-v1",
+        "tested_commit": "914dffbf7d0a1fb11d3f8b5fc3e4854146913c0b",
+        "tested_tree": "f3e07fc21a74e9a4367610ba10f5883213609320"
+      }
+    },
+    {
+      "lane": "armmerge",
+      "artifact_id": 13298777829,
+      "zip_bytes": 13422,
+      "zip_sha256": "6dafb269866c57ca7a907bc18606f51441aab0609620429a2a3f82fe6bc9e134",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "../chain/trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--lib",
+        "pq_authority::",
+        "--",
+        "--show-output",
+        "--test-threads=1"
+      ],
+      "cargo_exit": 0,
+      "wrapper_exit": 1,
+      "minimum_tests": 14,
+      "passed": 0,
+      "failed": 0,
+      "timed_out": false,
+      "log_sha256": "01100e1d5e7a32690a802053dfd2a2288472937913ba709d881af8eecc1c8750",
+      "log_bytes": 7191,
+      "test_summary": [
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 990 filtered out; finished in 0.00s"
+      ],
+      "source": {
+        "chain_commit": "44d3def32f515b98fc41f074fe1b88e97f046191",
+        "chain_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+        "lane": "base-merge",
+        "manifest_sha256": "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8",
+        "product_qualification": false,
+        "profile": "hepta-integrated-chain-execution-v6",
+        "schema": "hepta-native-pair-execution-source-v1",
+        "tested_commit": "914dffbf7d0a1fb11d3f8b5fc3e4854146913c0b",
+        "tested_tree": "f3e07fc21a74e9a4367610ba10f5883213609320"
+      }
+    },
+    {
+      "lane": "x64head",
+      "artifact_id": 13299266889,
+      "zip_bytes": 1370820,
+      "zip_sha256": "7435227d27c370a96dcb7adb8b436d0ad5f2ad4a3bd38c977906598d809d1e15",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "../chain/trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--lib",
+        "pq_authority::",
+        "--",
+        "--show-output",
+        "--test-threads=1"
+      ],
+      "cargo_exit": 0,
+      "wrapper_exit": 1,
+      "minimum_tests": 14,
+      "passed": 0,
+      "failed": 0,
+      "timed_out": false,
+      "log_sha256": "797e1bb4b968c6a895aa24aaf6215d74606ba5c285b7d59431200b60c85c3174",
+      "log_bytes": 7215,
+      "test_summary": [
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 990 filtered out; finished in 0.00s"
+      ],
+      "source": {
+        "chain_commit": "44d3def32f515b98fc41f074fe1b88e97f046191",
+        "chain_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+        "lane": "source-head",
+        "manifest_sha256": "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8",
+        "product_qualification": false,
+        "profile": "hepta-integrated-chain-execution-v6",
+        "schema": "hepta-native-pair-execution-source-v1",
+        "tested_commit": "44d3def32f515b98fc41f074fe1b88e97f046191",
+        "tested_tree": "f3e07fc21a74e9a4367610ba10f5883213609320"
+      }
+    }
+  ],
+  "historical_reference": {
+    "chain_commit": "c16507147b65285ea94dead22d3b93c5db7295af",
+    "owner_blob": "879a7358f6eb7b075cf30cd2f9e274570d6fdca1",
+    "tests_blob": "9e406fb7c41d9b0be1627189467f56ad5e8d3684",
+    "test_names": [
+      "nonpersistent_backends_cannot_reset_real_pq_replay_consumption",
+      "disk_backing_with_memory_like_filename_keeps_real_replay_guard",
+      "three_real_pq_operations_survive_reopen_without_nonce_rewind",
+      "signature_randomness_cannot_replay_one_operation",
+      "two_connections_cannot_consume_the_same_sequence",
+      "changed_scope_unrelated_database_and_classical_inputs_are_rejected",
+      "unexpected_abort_trigger_is_rejected_without_consuming_sequence",
+      "silent_insert_ignore_is_rejected_before_granting_authority",
+      "temporary_tables_cannot_redirect_a_durable_authorization",
+      "counter_reset_trigger_cannot_make_one_signature_replayable",
+      "changed_schema_is_not_an_identically_pinned_owner",
+      "scope_identity_is_rechecked_in_the_actual_write_transaction",
+      "missing_or_corrupt_tip_is_rejected_without_resetting_sequence",
+      "real_sqlite_full_failure_rolls_back_sequence_and_record_together"
+    ],
+    "scope": "separate TPQ1 durable local authorization owner, purpose1..6, test purpose4; not installed by legacy Node and no model-install or chainwork capability"
+  },
+  "current_scope": "PNQ2/PqWitnessV4 component controls; 47 current exact selectors do not prove semantic equivalence or migration of historical TPQ1 local owner"
+}

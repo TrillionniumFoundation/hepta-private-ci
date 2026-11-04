@@ -1,0 +1,93 @@
+{
+  "checks": [
+    {
+      "all_expected_calls_observed": true,
+      "controlled_mode": "pass",
+      "lane": "source-head",
+      "last_recorded_label": "binary-after",
+      "native_calls_mocked": 47,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "workflow_exit": 0
+    },
+    {
+      "all_expected_calls_observed": true,
+      "controlled_mode": "pass",
+      "lane": "base-merge",
+      "last_recorded_label": "binary-after",
+      "native_calls_mocked": 47,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "workflow_exit": 0
+    },
+    {
+      "all_expected_calls_observed": true,
+      "controlled_mode": "mixed-failure",
+      "lane": "source-head",
+      "last_recorded_label": "binary-after",
+      "native_calls_mocked": 47,
+      "stderr_sha256": "3751574590463b52cc8ed898f070939cba237727bc40ba4f79916053aa28b2b2",
+      "stdout_sha256": "66ad5e1eecb08c9d440088bc381f59ff9e3f7a01a39f51447ce164b12ecc25b0",
+      "workflow_exit": 1
+    },
+    {
+      "all_expected_calls_observed": true,
+      "controlled_mode": "duplicate-artifact",
+      "lane": "source-head",
+      "last_recorded_label": "binary-before",
+      "native_calls_mocked": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0c3dd3558ca6ff00e65b014ca15a8a1dc4322cac2827218c7de624ec17fe46a0",
+      "workflow_exit": 1
+    },
+    {
+      "all_expected_calls_observed": true,
+      "controlled_mode": "changed-binary",
+      "lane": "source-head",
+      "last_recorded_label": "binary-after",
+      "native_calls_mocked": 47,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7aa663bd0c98a7f0fc0daf8ad26b465915eafed45d5f28f5daaf301cd6449948",
+      "workflow_exit": 1
+    },
+    {
+      "all_expected_calls_observed": true,
+      "controlled_mode": "duplicate-selector",
+      "lane": "source-head",
+      "last_recorded_label": null,
+      "native_calls_mocked": 0,
+      "stderr_sha256": "52fdfed770456fa53fd719f3072fbc2826bf9b2137069aefbf38a40d9beff342",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "workflow_exit": 1
+    },
+    {
+      "all_expected_calls_observed": true,
+      "controlled_mode": "child-selector",
+      "lane": "source-head",
+      "last_recorded_label": null,
+      "native_calls_mocked": 0,
+      "stderr_sha256": "d8be94676158da5a77c6c57dfd3bc1368758ffea8a6d5a1dc5f4e5ba0c11fe0d",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "workflow_exit": 1
+    },
+    {
+      "all_expected_calls_observed": true,
+      "controlled_mode": "pass",
+      "lane": "unknown-lane",
+      "last_recorded_label": null,
+      "native_calls_mocked": 0,
+      "stderr_sha256": "7fce60de360b9fa8d1fb32eaf4f25af014b66c458b1a9c1f0fd36fe34ce61646",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "workflow_exit": 2
+    }
+  ],
+  "harness_sha256": "54014ae08fc9423096fb4d9ad6bee95f741083d103462421d62ea6c0f64a9b0d",
+  "installation_authorized": false,
+  "native_commands_executed": false,
+  "provider_executed": false,
+  "qualification": false,
+  "schema": "hepta-v7-controlled-pq-workflow-wiring-v1",
+  "scope": "Actual workflow Bash and original exact-log reader with synthetic Cargo and recorder output only.",
+  "whole_chain_quantum_security_qualified": false,
+  "workflow_sha256": "0060be255cd4dac2b0123bb9d86cdff6685566b730996770a11ff6201ce01d4c"
+}

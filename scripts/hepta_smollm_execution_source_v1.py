@@ -8,6 +8,7 @@ The original V2 profile, source manifest, target and plan remain immutable.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sys
@@ -40,6 +41,28 @@ CHAIN_COMMIT_V5 = "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c"
 CHAIN_TREE_V5 = "535660af742d62b6578b5e4334e0f2d2c17527e0"
 MANIFEST_NAME_V5 = "smollm2-public-initial-v2.execution-sources-v5.json"
 MANIFEST_SHA256_V5 = "57ebcfa34d3e578679c3040fab3e4065683bd032592a183574767d5d3eaa9404"
+# Freeze only after the final reviewed Chain source and its ordered merge exist.
+PROFILE_V6 = "hepta-integrated-chain-execution-v6"
+CHAIN_COMMIT_V6 = "44d3def32f515b98fc41f074fe1b88e97f046191"
+CHAIN_TREE_V6 = "f3e07fc21a74e9a4367610ba10f5883213609320"
+MANIFEST_NAME_V6 = "smollm2-public-initial-v2.execution-sources-v6.json"
+MANIFEST_SHA256_V6 = "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8"
+PROFILE_V7 = "hepta-integrated-chain-execution-v7"
+CHAIN_COMMIT_V7 = "a10c39025cdc03d3265b031d6547b11e0350da2c"
+CHAIN_TREE_V7 = "f82a65891b8c5d094ad9a67450751253ec150910"
+MANIFEST_NAME_V7 = "smollm2-public-initial-v2.execution-sources-v7.json"
+MANIFEST_SHA256_V7 = "f39b96cbac0e429c7fc3712217a9fdbbe03248d2b5c12e4ebe1fe15be7a5eef8"
+PROFILE_V8 = "hepta-integrated-chain-execution-v8"
+CHAIN_COMMIT_V8 = "73ab6e9a83bcc836e261d93f9bb23ceafe556758"
+CHAIN_TREE_V8 = "65a2100f3feccc29a096a3348c109d77f0a656c2"
+MANIFEST_NAME_V8 = "smollm2-public-initial-v2.execution-sources-v8.json"
+MANIFEST_SHA256_V8 = "e712ccdd8218e81ade0ac7202f00259fc60c1ebd5f10a468323b7298df406ab5"
+# Published only after the new Chain source and its ordered merge are verified.
+PROFILE_V9 = "hepta-integrated-chain-execution-v9"
+CHAIN_COMMIT_V9 = "c156c2310346d1367b8f9b1111171f412b5ffce2"
+CHAIN_TREE_V9 = "6ee8553bf3960ff31268a65bfc0c54970dfc12fb"
+MANIFEST_NAME_V9 = "smollm2-public-initial-v2.execution-sources-v9.json"
+MANIFEST_SHA256_V9 = "cd1d7cdf1e53c890eb0483b0e57e9050de04cbdd51fcbd1f91837da80fb279d7"
 HISTORICAL_PROFILE_SHA256 = (
     "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8"
 )
@@ -73,6 +96,21 @@ def registered_sources():
         PROFILE_V3: (CHAIN_COMMIT_V3, MANIFEST_NAME_V3, MANIFEST_SHA256_V3),
         PROFILE_V4: (CHAIN_COMMIT_V4, MANIFEST_NAME_V4, MANIFEST_SHA256_V4),
         PROFILE_V5: (CHAIN_COMMIT_V5, MANIFEST_NAME_V5, MANIFEST_SHA256_V5),
+        PROFILE_V6: (CHAIN_COMMIT_V6, MANIFEST_NAME_V6, MANIFEST_SHA256_V6),
+        PROFILE_V7: (CHAIN_COMMIT_V7, MANIFEST_NAME_V7, MANIFEST_SHA256_V7),
+        PROFILE_V8: (CHAIN_COMMIT_V8, MANIFEST_NAME_V8, MANIFEST_SHA256_V8),
+        PROFILE_V9: (CHAIN_COMMIT_V9, MANIFEST_NAME_V9, MANIFEST_SHA256_V9),
+    }
+
+
+def registered_trees():
+    """Keep commit-and-tree profiles explicit while retaining legacy identities."""
+    return {
+        PROFILE_V5: CHAIN_TREE_V5,
+        PROFILE_V6: CHAIN_TREE_V6,
+        PROFILE_V7: CHAIN_TREE_V7,
+        PROFILE_V8: CHAIN_TREE_V8,
+        PROFILE_V9: CHAIN_TREE_V9,
     }
 
 
@@ -118,18 +156,18 @@ def checked_manifest(profile):
             "historical_sources_sha256",
             "files",
         }
-        | ({"chain_tree"} if profile == PROFILE_V5 else set())
+        | ({"chain_tree"} if profile in registered_trees() else set())
         and value["schema"]
         == "hepta-smollm-public-initial-execution-sources-"
-        + ("v2" if profile == PROFILE_V5 else "v1")
+        + ("v2" if profile in registered_trees() else "v1")
         and value["profile"] == profile
         and value["chain_commit"] == commit,
         "closed exact execution-source identity",
     )
-    if profile == PROFILE_V5:
+    if profile in registered_trees():
         require(
-            re.fullmatch(r"[0-9a-f]{40}", CHAIN_TREE_V5) is not None
-            and value["chain_tree"] == CHAIN_TREE_V5,
+            re.fullmatch(r"[0-9a-f]{40}", registered_trees()[profile]) is not None
+            and value["chain_tree"] == registered_trees()[profile],
             "exact integrated Chain tree required",
         )
     for name, field, expected in (
@@ -167,6 +205,20 @@ def verify_selected(chain, profile):
 
 def verify(chain, profile):
     """Reject unreviewed or mixed source bytes before any Chain import."""
+    return _verify(chain, profile, None)
+
+
+def verify_merged(chain, profile, base):
+    """Check V9's actual ordered merge checkout with the same source-input guard."""
+    require(profile == PROFILE_V9, "merged execution-source verification requires V9")
+    require(
+        type(base) is str and re.fullmatch(r"[0-9a-f]{40}", base) is not None,
+        "explicit exact merge base required",
+    )
+    return _verify(chain, profile, base)
+
+
+def _verify(chain, profile, base):
     value = checked_manifest(profile)
     chain = Path(chain)
     require(
@@ -174,14 +226,77 @@ def verify(chain, profile):
     )
     # Reuse the existing reader's environment, replacement and hook policy.
     head = git("rev-parse", "HEAD", repository=chain)
-    require(head == value["chain_commit"], "exact integrated Chain commit required")
-    if profile == PROFILE_V5:
+    if base is None:
+        require(head == value["chain_commit"], "exact integrated Chain commit required")
+    else:
+        # Reuse the existing candidate owner: matching trees alone cannot admit
+        # unrelated ancestry, reversed parents, or a noncanonical merge. This reads
+        # the actual checkout; it never switches HEAD or repairs source inputs.
+        from hepta_ci_candidate import candidate_plan
+
+        candidate = candidate_plan(
+            source=value["chain_commit"],
+            tested=head,
+            lane="base-merge",
+            base=base,
+            repository=chain,
+        )
+        require(
+            candidate["source_tree"] == value["chain_tree"],
+            "exact integrated Chain source tree required",
+        )
+    if profile in registered_trees():
         require(
             git("rev-parse", "HEAD^{tree}", repository=chain) == value["chain_tree"],
             "exact integrated Chain tree required",
         )
+    if profile == PROFILE_V9:
+        # Both this interpreter and its children must leave the frozen import
+        # directories unchanged. Do not repair the caller's environment or
+        # delete existing bytecode: either would hide an invalid source input.
+        require(
+            sys.dont_write_bytecode
+            and os.environ.get("PYTHONDONTWRITEBYTECODE") == "1",
+            "V9 requires disabled bytecode writes and inherited PYTHONDONTWRITEBYTECODE=1",
+        )
+        # Reuse the CI identity owner's flag policy without refreshing or
+        # clearing the caller's index. Raw hashes still check every pinned file.
+        require(
+            not any(
+                row and (row[0] == "S" or row[0].islower())
+                for row in git(
+                    "ls-files",
+                    "-v",
+                    "-z",
+                    "--",
+                    "scripts",
+                    "formal",
+                    "config",
+                    repository=chain,
+                ).split("\0")
+            ),
+            "V9 execution source contains hidden index flags",
+        )
+        # Deliberately omit --exclude-standard: ignored packages, bytecode,
+        # native extensions and directory symlinks can alter Python imports
+        # while every manifest byte remains intact. This is a source-input
+        # boundary, not a sandbox for arbitrary import hooks or runtime code.
+        require(
+            not git(
+                "ls-files",
+                "--others",
+                "-z",
+                "--",
+                "scripts",
+                "formal",
+                "config",
+                repository=chain,
+            ),
+            "V9 execution source contains untracked or ignored inputs",
+        )
     git(
         "diff",
+        *(("--no-ext-diff", "--no-textconv") if profile == PROFILE_V9 else ()),
         "--exit-code",
         "HEAD",
         "--",
@@ -241,7 +356,7 @@ def verify(chain, profile):
     result = {
         "schema": "hepta-smollm-public-initial-execution-source-verified-v1",
         "profile": profile,
-        "chain_commit": head,
+        "chain_commit": value["chain_commit"],
         "manifest_sha256": selected_source(profile)[2],
         "historical_profile_sha256": HISTORICAL_PROFILE_SHA256,
         "historical_sources_sha256": HISTORICAL_SOURCES_SHA256,
@@ -250,8 +365,10 @@ def verify(chain, profile):
         "product_qualification": False,
         "installation_authorized": False,
     }
-    if profile == PROFILE_V5:
+    if profile in registered_trees():
         result["chain_tree"] = value["chain_tree"]
+    if base is not None:
+        result.update(tested_commit=head, base_commit=base, lane="base-merge")
     return result
 
 

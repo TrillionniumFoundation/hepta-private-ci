@@ -1,0 +1,82 @@
+{
+  "schema": "hepta-v6-local-merge-guard-controls-v1",
+  "scope": "Earlier isolated actual-Git guard controls. These are behavioral negative/positive controls, not the final native pairing or publication identity.",
+  "finalizer": {
+    "schema": "hepta-v6-merge-tree-guard-control-v1",
+    "scope": "local real Git negative control only; not the published pair",
+    "inputs": {
+      "scope": "Local actual-Git counterfactual only; not a candidate",
+      "chain": "/workspace/scratch/8a53368149fe/hepta-v6-merge-negative-chain",
+      "source": "ea94a7293c7dd382547b1cc84d4ed1058a2545be",
+      "tree": "59e3498b05a79a71a50c87dae77590ee46186aca",
+      "base": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+      "merge": "9ae4f32af9f44d57ab4920f10fd4874dba751011",
+      "merge_tree": "5ff3c9778aa86cee479523772e73e2a85a734704"
+    },
+    "only_merge_change": [
+      "README.md"
+    ],
+    "command": [
+      "python3",
+      "-B",
+      "/workspace/scratch/8a53368149fe/finalize-hepta-v6.py",
+      "--hepta",
+      "/workspace/scratch/8a53368149fe/hepta-v6-merge-negative-hepta",
+      "--chain",
+      "/workspace/scratch/8a53368149fe/hepta-v6-merge-negative-chain",
+      "--source",
+      "ea94a7293c7dd382547b1cc84d4ed1058a2545be",
+      "--tree",
+      "59e3498b05a79a71a50c87dae77590ee46186aca",
+      "--base",
+      "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+      "--merge",
+      "9ae4f32af9f44d57ab4920f10fd4874dba751011"
+    ],
+    "returncode": 1,
+    "stderr": "V6 ordered merge must preserve the reviewed source tree\n",
+    "stdout": "",
+    "prepared_files_unchanged": true,
+    "prepared_file_sha256": {
+      "scripts/hepta_smollm_execution_source_v1.py": "872e1526af9534bd3fcfb8f8534e857ae67f84bdcc929caa38f2d49aef3221ba",
+      ".github/workflows/hepta-pon-native-pair.yml": "e3d845fbe8c40eb3e3bf027c08ac04b7d30bb3766f0b9a3cba4743b5144079cb",
+      ".github/workflows/hepta-public-initial-v2.yml": "70fbb31120a6a7089d3002debd4b06b9112a08f2eff22e6d0b4023fee6426dfb",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v6.json": "706142b1da47e700502c5d62f14e05724b810c214d6f4d9724accd9904b9f16b"
+    },
+    "qualification": false
+  },
+  "workflow": {
+    "schema": "hepta-v6-workflow-tree-guard-control-v1",
+    "scope": "isolated real Git controls only; not the intended final tuple",
+    "source": "ea94a7293c7dd382547b1cc84d4ed1058a2545be",
+    "tree": "59e3498b05a79a71a50c87dae77590ee46186aca",
+    "same_tree_merge": "e9b20a698d0265b4871f821ed842359ef153a168",
+    "different_tree_merge": "9ae4f32af9f44d57ab4920f10fd4874dba751011",
+    "records": [
+      {
+        "lane": "source-head",
+        "tested_commit": "ea94a7293c7dd382547b1cc84d4ed1058a2545be",
+        "returncode": 0,
+        "stdout": "{\"chain_commit\": \"ea94a7293c7dd382547b1cc84d4ed1058a2545be\", \"chain_tree\": \"59e3498b05a79a71a50c87dae77590ee46186aca\", \"lane\": \"source-head\", \"manifest_sha256\": \"afbd00cb57e25e4a02e1370546542a1709f127cfca5a58f87cdfff462c16c511\", \"product_qualification\": false, \"profile\": \"hepta-integrated-chain-execution-v6\", \"schema\": \"hepta-native-pair-execution-source-v1\", \"tested_commit\": \"ea94a7293c7dd382547b1cc84d4ed1058a2545be\", \"tested_tree\": \"59e3498b05a79a71a50c87dae77590ee46186aca\"}\n",
+        "stderr": ""
+      },
+      {
+        "lane": "base-merge",
+        "tested_commit": "e9b20a698d0265b4871f821ed842359ef153a168",
+        "returncode": 0,
+        "stdout": "{\"chain_commit\": \"ea94a7293c7dd382547b1cc84d4ed1058a2545be\", \"chain_tree\": \"59e3498b05a79a71a50c87dae77590ee46186aca\", \"lane\": \"base-merge\", \"manifest_sha256\": \"afbd00cb57e25e4a02e1370546542a1709f127cfca5a58f87cdfff462c16c511\", \"product_qualification\": false, \"profile\": \"hepta-integrated-chain-execution-v6\", \"schema\": \"hepta-native-pair-execution-source-v1\", \"tested_commit\": \"e9b20a698d0265b4871f821ed842359ef153a168\", \"tested_tree\": \"59e3498b05a79a71a50c87dae77590ee46186aca\"}\n",
+        "stderr": ""
+      },
+      {
+        "lane": "base-merge",
+        "tested_commit": "9ae4f32af9f44d57ab4920f10fd4874dba751011",
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 11, in <module>\nAssertionError: V6 refuses merged source changes\n"
+      }
+    ],
+    "qualification": false
+  },
+  "ci_qualification": false,
+  "installation_authorized": false
+}

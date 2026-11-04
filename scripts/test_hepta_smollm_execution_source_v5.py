@@ -173,7 +173,8 @@ class ExecutionSourceV5Tests(unittest.TestCase):
                         changed[name]["identity"][field] = "b" * 40
                         with self.assertRaisesRegex(ValueError, "same V5 Chain"):
                             evidence.integrated_sources(changed)
-        self.assertIsNone(evidence.integrated_sources(repositories))
+        with patch.object(study.original, "EXECUTION_SOURCE_PROFILE", None):
+            self.assertIsNone(evidence.integrated_sources(repositories))
 
     def test_unfrozen_source_cannot_import_diverse_training(self):
         pins = dict(
