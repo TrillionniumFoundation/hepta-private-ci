@@ -1,4 +1,6 @@
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -232,18 +234,25 @@ fn ssh_string(bytes: &[u8]) -> Vec<u8> {
 }
 
 fn write_private(path: &Path, bytes: &[u8]) {
-    let mut options = OpenOptions::new();
-    options.create_new(true).write(true);
-    #[cfg(unix)]
+    #[cfg(windows)]
+    crate::durable::write_private_new(path, bytes).expect("create private Windows fixture");
+    #[cfg(not(windows))]
     {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut file = options.open(path).expect("create private test file");
+        file.write_all(bytes).expect("write private test file");
     }
-    let mut file = options.open(path).expect("create private test file");
-    file.write_all(bytes).expect("write private test file");
 }
 
 fn set_private_permissions(path: &Path) {
+    #[cfg(windows)]
+    crate::test_support::retain_oracle_output(path);
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

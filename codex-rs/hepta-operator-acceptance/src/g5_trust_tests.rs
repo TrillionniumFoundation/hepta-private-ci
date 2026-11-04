@@ -383,6 +383,8 @@ impl TrustFixture {
 }
 
 fn set_private_permissions(path: &Path) {
+    #[cfg(windows)]
+    crate::test_support::retain_oracle_output(path);
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

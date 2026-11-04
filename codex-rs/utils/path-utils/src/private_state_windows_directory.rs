@@ -62,7 +62,25 @@ unsafe extern "system" {
     ) -> NTSTATUS;
 }
 
+enum DirectoryOpen {
+    Create,
+    ExistingRead,
+    ExistingReadWrite,
+}
+
 pub(super) fn open(root: &Path) -> io::Result<File> {
+    open_with_mode(root, DirectoryOpen::Create)
+}
+
+pub(super) fn open_existing(root: &Path) -> io::Result<File> {
+    open_with_mode(root, DirectoryOpen::ExistingRead)
+}
+
+pub(super) fn open_existing_writable(root: &Path) -> io::Result<File> {
+    open_with_mode(root, DirectoryOpen::ExistingReadWrite)
+}
+
+fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
     let mut name = wide_path(root)?;
     // Convert the already absolute Win32 verbatim spelling to the NT namespace.
     // This retains long paths and UNC (\\?\UNC\... -> \??\UNC\...) without
@@ -92,7 +110,10 @@ pub(super) fn open(root: &Path) -> io::Result<File> {
             attributes: OBJ_CASE_INSENSITIVE as u32 | OBJ_DONT_REPARSE as u32,
             // Applied only if the leaf is created. Existing security is never
             // repaired; the caller validates the exact returned handle.
-            security_descriptor: security.lpSecurityDescriptor,
+            security_descriptor: match mode {
+                DirectoryOpen::Create => security.lpSecurityDescriptor,
+                DirectoryOpen::ExistingRead | DirectoryOpen::ExistingReadWrite => ptr::null(),
+            },
             security_quality_of_service: ptr::null(),
         };
         let mut io_status = IO_STATUS_BLOCK {
@@ -105,14 +126,22 @@ pub(super) fn open(root: &Path) -> io::Result<File> {
         let status = unsafe {
             NtCreateFile(
                 &mut handle,
-                FILE_GENERIC_READ | FILE_GENERIC_WRITE,
+                match mode {
+                    DirectoryOpen::ExistingRead => FILE_GENERIC_READ,
+                    DirectoryOpen::Create | DirectoryOpen::ExistingReadWrite => {
+                        FILE_GENERIC_READ | FILE_GENERIC_WRITE
+                    }
+                },
                 &attributes,
                 &mut io_status,
                 ptr::null(),
                 FILE_ATTRIBUTE_NORMAL,
                 // Retain the original no-delete-sharing pin until File drops.
                 FILE_SHARE_READ | FILE_SHARE_WRITE,
-                FILE_OPEN_IF,
+                match mode {
+                    DirectoryOpen::Create => FILE_OPEN_IF,
+                    DirectoryOpen::ExistingRead | DirectoryOpen::ExistingReadWrite => 1, // FILE_OPEN
+                },
                 FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT | FILE_OPEN_REPARSE_POINT,
                 ptr::null(),
                 /*ea_length*/ 0,
