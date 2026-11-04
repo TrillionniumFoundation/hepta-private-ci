@@ -1,0 +1,120 @@
+name: original artifact evidence verification
+
+on:
+  push:
+    branches: [checkpoint/private-ci-original-evidence-20261104]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify:
+    if: github.ref_name == 'checkpoint/private-ci-original-evidence-20261104'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - key: state-windows
+            source: 052f4caa6c26396f37cecac6e133433d06a61eb2
+          - key: state-bazel
+            source: 052f4caa6c26396f37cecac6e133433d06a61eb2
+          - key: state-linux
+            source: 052f4caa6c26396f37cecac6e133433d06a61eb2
+          - key: state-macos
+            source: 052f4caa6c26396f37cecac6e133433d06a61eb2
+          - key: env-source
+            source: 00963996f16c067fbd04517d22d3d7e53d1d09a6
+          - key: env-merge
+            source: 2eb8c97ea45fa13aca3186eb0ca1355c85af2f58
+          - key: memory-macos
+            source: c4023a27d00622382d8f23830fae93350252bf5f
+          - key: memory-linux
+            source: c4023a27d00622382d8f23830fae93350252bf5f
+          - key: memory-windows
+            source: c4023a27d00622382d8f23830fae93350252bf5f
+          - key: dylint-lock
+            source: 30ad34c1895597a04dc42f0d233505aa7566a6b7
+    env:
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    steps:
+      - name: Checkout isolated verifier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: harness
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout: qualification/original-artifact-evidence-20261104
+      - name: Checkout exact original input blobs
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source }}
+          path: source
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /codex-rs/
+            /.github/
+            /scripts/
+            /bazel/
+            /patches/
+            /third_party/
+            /cargo_bazel_template/
+            /tools/argument-comment-lint/
+            /justfile
+            /defs.bzl
+            /BUILD.bazel
+            /MODULE.bazel
+            /MODULE.bazel.lock
+            /.bazelrc
+            /.bazelversion
+            /workspace_root_test_launcher.*
+            /qualification/windows-private-state-current/
+            /qualification/windows-process-env-current/
+            /qualification/memory-migration-20261103/
+            /qualification/dylint-20261103/
+            /qualification/keyring-sync-provider/build_pinned_client.py
+      - name: Check verifier syntax
+        run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py
+      - name: Verify original ZIP, Git inputs and recorded outputs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EVIDENCE_KEY: ${{ matrix.key }}
+        run: >-
+          python3 harness/qualification/original-artifact-evidence-20261104/verify.py
+          --manifest harness/qualification/original-artifact-evidence-20261104/artifacts.json
+          --key "$EVIDENCE_KEY" --source source
+          --output "$RUNNER_TEMP/evidence-$EVIDENCE_KEY"
+      - name: Checkout the independent Dylint reproducer
+        if: matrix.key == 'dylint-lock'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b744660a0ebd2b31726c38445cab810a8c3b1626
+          path: dylint-proof
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout: qualification/dylint-20261103/hosted-30ad34
+      - name: Run the independent Dylint reproducer and optimized-Python rejection
+        if: matrix.key == 'dylint-lock'
+        env:
+          EVIDENCE_DIRECTORY: ${{ runner.temp }}/evidence-dylint-lock
+        run: python3 harness/qualification/original-artifact-evidence-20261104/run_root_reproducer.py
+      - name: Retain verification and exact original ZIP
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: original-evidence-${{ matrix.key }}-${{ github.sha }}
+          path: ${{ runner.temp }}/evidence-${{ matrix.key }}
+          if-no-files-found: error
+          retention-days: 14
