@@ -51,8 +51,8 @@ elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('          rust-lld: error: undefined symbol: __stack_chk_fail')
     print('          >>> referenced by native-archive.o')
     print('FAIL: //fake:target')
-    if os.environ.get('BAZEL_PROBE_EXTRA_FAILED_TARGET'):
-        print('FAIL: ' + os.environ['BAZEL_PROBE_EXTRA_FAILED_TARGET'])
+    if '//other:target' in sys.argv[1:]:
+        print('FAIL: //other:target')
     sys.exit(37)
 """
 
@@ -66,7 +66,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.testlogs = self.root / "testlogs"
         target_log = self.testlogs / "fake" / "target" / "test.log"
         target_log.parent.mkdir(parents=True)
-        target_log.write_text("actual failing test diagnostic\n", encoding="utf-8")
+        target_log.write_bytes(b"actual failing test diagnostic\n")
         probe = self.root / "probe.py"
         probe.write_text(PROBE, encoding="utf-8")
         if os.name == "nt":
@@ -418,7 +418,6 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         output = self.root / "execution logs with spaces"
         self.env.update(
             BAZEL_PROBE_FAIL="1",
-            BAZEL_PROBE_EXTRA_FAILED_TARGET="//other:target",
             CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(output),
         )
         payloads = {
@@ -449,13 +448,20 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
         self.assertEqual(len(calls), 2, calls)
+        self.assertEqual(
+            calls[0][calls[0].index("--") + 1 :],
+            ["//fake:target", "//other:target"],
+            result.stdout + result.stderr,
+        )
         self.assertIn("actual failing test diagnostic", result.stdout)
         self.assertNotIn("collection was incomplete", result.stderr)
         manifests = list(output.glob("failed-test-logs/invocation-*/manifest.json"))
         self.assertEqual(len(manifests), 1)
         manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
         self.assertEqual(
-            manifest["selected_targets"], ["//fake:target", "//other:target"]
+            manifest["selected_targets"],
+            ["//fake:target", "//other:target"],
+            result.stdout + result.stderr,
         )
         self.assertEqual(manifest["errors"], [])
         self.assertTrue(manifest["complete_for_selected_targets"])
