@@ -73,6 +73,8 @@ MinAtar 部分实际运行了以下重放：
 
 最新 registration 与 last candidate 身份一致，但已不同于原审计。07:07:41 UTC 对其明确绑定的小 adapter 做只读核验：9,988 bytes，6 个 F32 tensors、2,379 个参数、全部有限，完整 SHA 为 `f8f71a43303e13208411ecfe340ee1f5e4b87c4fef33545b6deb5b530c452032`。没有对它执行新的 forward 或训练，没有重读大 base。状态文件与 adapter 是分别带时间戳的读取，不是跨文件原子快照。完整来源承诺与边界见 `QUALIFICATION.json` 的 `trainer_status_refresh`；下面的历史实验和容量证书仍只绑定原三份产物，不能移用于新候选。
 
+最后一次只读刷新取得源时间 **08:53:11.047 UTC**、观察时间 **08:54:05 UTC** 的原生状态：队列仍为 RUNNING=0、COMPLETED=113、FAILED=2、ADMITTED=0，pending=3，候选与 job 均与06:59相同。当前列出的 blocker 是 `HOST_FULL_MEMORY_PSI_PRESSURE` 与 `CANDIDATE_READY_AWAITING_FORWARD_ADMISSION`。这是原生报告的内存压力标志，没有另行探测整机资源或改变服务；旧报价／连续性 blocker 不再列出仅代表快照差异，不证明永久修复。**08:56:03.920 UTC** 对同一明确绑定的小 adapter 进行唯一一次 stdlib 读取，仍为上述 `f8f71a43…`、9,988 B、6 F32／2,379 参数、全部有限，元数据在读取中稳定。未重读大 base、未 forward／训练／评估；状态与权重仍是分别带时间戳的读取。完整独立记录在 `QUALIFICATION.json.trainer_status_refresh_final`，旧快照和所有冻结实验保持原样。
+
 原历史实验绑定并实际读取的三份产物：
 
 | 对象 | 参数及类型 | 审计结果 |
@@ -234,7 +236,7 @@ TRAIN own-bank logit MSE 均值从 .0115570 降到 .00631729，但相对 Oracle 
 
 ## 4. 原生执行和失败边界
 
-配套实现：[HeptaRuntime PR #91](https://github.com/TrillionniumFoundation/hepta-runtime/pull/91)，提交 [`f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d`](https://github.com/TrillionniumFoundation/hepta-runtime/commit/f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d)。发布 tree 与完成本机验证的 tree 完全相同；以下软件失败状态与该版本绑定。自动 CI [run 41794981838](https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41794981838) 是独立收据，终态以该 run 与 PR 更新为准。
+配套实现：[HeptaRuntime PR #91](https://github.com/TrillionniumFoundation/hepta-runtime/pull/91)，当前提交 [`d85852b3c1708d9b2e8162badc07116999eff15e`](https://github.com/TrillionniumFoundation/hepta-runtime/commit/d85852b3c1708d9b2e8162badc07116999eff15e)。原权重实现与实际模型桥接绑定首次提交 `f63aa5c…` 及其保留的二进制；当前版本的12个既有变更 Rust 文件仍逐字节相同，只额外修复首次启动的状态目录创建权限。两个版本的发布 tree 均与各自隔离工作树核同。历史失败、定向修复与当前官方 CI 分别记录，不能相互替代。
 
 配套 Rust 子系统增加两个操作：有界 supervised proximal-ridge planner，以及单候选 guarded linear patch。planner 明确记录使用训练目标、零梯度步骤、源权重尚未认证；guard 再用完整文件 SHA 和原始元素字节认证源，对真实候选运行 F32 forward，然后检查主分数与声明的输出约束。
 
@@ -248,7 +250,7 @@ TRAIN own-bank logit MSE 均值从 .0115570 降到 .00631729，但相对 Oracle 
 
 原生 planner 限制为最多 64 个特征、8 个输出和 2,048 行；原生 guard 的线性输入上限不同。769 维 Current100k 案例使用独立 fixture 中预先冻结的求解结果，只验证原生编辑／前向／拒绝路径，未调用超出限制的原生 planner。49 维 Hepta 案例才同时验证了原生规划和编辑链。
 
-### 完整软件 gate 的终态：失败，未授予发布资格
+### 历史本机完整测试、首次官方 CI 与初始化修复
 
 最终本机 r8 执行 `cargo test --locked --offline --all-features -- --test-threads=1`，主 library harness 为 **1,694 passed / 2 failed / 36 ignored**，Cargo 返回 **101**；命令墙钟 3,856.177192 秒，未取消、未超时。后续 harness 和串联 fmt 没有执行。12 个变更 Rust 文件的运行前后 hash 完全一致。
 
@@ -256,7 +258,15 @@ TRAIN own-bank logit MSE 均值从 .0115570 降到 .00631729，但相对 Oracle 
 
 相同源码的定向 weight 测试为 35 passed / 1 ignored；另外显式执行的 NumPy 真实夹具、外部 PyTorch MCP 进程和 owner inventory 检查通过，严格 all-targets Clippy 及 fmt 也在独立收据中通过。这些局部结果不替代完整测试。此前失败、取消及 test-fixture 修复均保留在配套 Runtime 的 qualification 中，累计记录验证墙钟 **13,819.706684 秒（230.328445 分钟）**；该和包含取消任务的 supervisor 寿命，不是 CPU/GPU 或模型训练成本。
 
-GitHub 官方 CI 属于另一个 host/harness 的独立验收，结果在配套 PR 跟踪；无论其结果如何，本机 r8 失败均保持原样。此提交以 draft PR 交付审查，没有合并或部署。
+首次官方 [CI 41794981838](https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41794981838) 在 `f63aa5c…` 上同样失败：1,764 项运行，1,762 passed／2 failed／40 skipped，nextest exit100；后续13–19步骤未执行。它的两项失败是 external MCP 首次工具调用的审计拒绝；本机 r8 的两项 index 测试在该 CI 中通过，不能因此抹去本机失败。一次独立、同二进制的 capacity child 诊断也通过，但原 r8 内层原因仍未知；该诊断另计3.017139秒 runner墙钟。
+
+后续已复现并修复一个生产初始化缺陷：合法缺失的 state 根在 umask0022 下被建成0755，而首次请求审计要求0700。实测旧控制器得到0755及相同拒绝；仅改为Unix递归DirBuilder以0700创建**新目录**，原外部测试的输入与断言不变。同一个 external 测试二进制由旧控制器的2失败变为新控制器的2通过，config模块20通过，strict Clippy及fmt通过。新根实测0700且REA检查成功；预存0755负例仍0755、继续拒绝，未放宽准入或chmod已有根。[定向修复收据](https://github.com/TrillionniumFoundation/hepta-runtime/blob/d85852b3c1708d9b2e8162badc07116999eff15e/experiments/weight/native_guard_20261104/state_initialization/README.md)另计223.328217秒验证墙钟，包含166.542417秒构建。它不改变模型质量结果，也未重跑完整本机套件。
+
+当前修复提交 `d85852b3…` 的官方 [CI 41801488646](https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41801488646) 已于 **09:16:10 UTC** 完整成功：all-features 为 **1,764 run／1,764 passed／40 skipped**，no-default 为 **1,744 run／1,744 passed／28 skipped**，测试阶段分别188.715与186.827秒。14个新增guard/ridge用例在两配置各自通过。文件安全9项、控制面15脚本／285项、X230共98项、两配置check及strict Clippy、fmt、release binaries/examples构建、release REA／Linux syscall拒绝和独立Python ZIP→Rust检查均执行并通过。没有修改workflow、禁用失败用例或手动重试；两个source head各只有一次自动push CI。
+
+首次CI的两项external用例在当前all-features实际通过，未把它们计入no-default；r8的两项index用例在当前两配置通过，但仍不解释历史单进程失败。跳过项和doctests没有被计入已执行项。该job墙钟 **2,057秒（34分17秒）**，事件创建到run终态2,062秒；它们不是CPU核时。完整decoded日志826,675 UTF-8 B，SHA `439f365b9abe1d9130fd6187810c3b4132f8be66221fce8c7f1ba6e7c46f3cb0`。prospective-merge job按push条件跳过，未获合并候选资格。最新软件CI成功与模型任务收益未通过是两个独立结论。
+
+两个PR均以draft交付审查，没有合并或部署。历史r8、首次官方CI及各自的源码／二进制／日志身份全部保留。
 
 ## 5. 真实来源 blocker 没有被研究侧绕过
 

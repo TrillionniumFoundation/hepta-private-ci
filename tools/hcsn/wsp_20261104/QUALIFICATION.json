@@ -9,10 +9,218 @@
     "qwen_base": "2fc06364715b967f1860aea9cf38778875588b17"
   },
   "companion_runtime": {
-    "delivery_commit": "f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d",
+    "delivery_commit": "d85852b3c1708d9b2e8162badc07116999eff15e",
     "pull_request": "https://github.com/TrillionniumFoundation/hepta-runtime/pull/91",
-    "software_gate": "FAILED_R8_COMPLETE",
+    "software_gate": "CURRENT_EXACT_HEAD_OFFICIAL_CI_PASS_HISTORICAL_LOCAL_R8_FAIL",
     "source_identity": {
+      "base_sha": "1f2d3d782e8803e769989234e7902ca5c04eff97",
+      "files": {
+        "src/mcp/mod.rs": {
+          "bytes": 2405,
+          "sha256": "ec94920d4b785c974a74e59e19cbd378ee93bd08465b307209719fdd3e3e24fb"
+        },
+        "src/mcp/server.rs": {
+          "bytes": 138402,
+          "sha256": "8c19d4cceaa1e4548bd9897037756191888240ed4cc8f1bd2d04a93d0694fbcf"
+        },
+        "src/mcp/weight_artifact.rs": {
+          "bytes": 19182,
+          "sha256": "99cd59fefec7bf9196764331af3d1dfde56d3a4963cc915d9eac799e33cfc12a"
+        },
+        "src/mcp/weight_forward.rs": {
+          "bytes": 9780,
+          "sha256": "6574efb9b4ab38321d7af9bc338c0a85dd05c1f467ffd362ce98ac52720f1f3d"
+        },
+        "src/mcp/weight_guard.rs": {
+          "bytes": 12714,
+          "sha256": "d8aa5fafee4faeb4d947523011a6b244e171c2bc3aa4b8dcd75d5ab069189e33"
+        },
+        "src/mcp/weight_guard_tests.rs": {
+          "bytes": 8069,
+          "sha256": "4cb0c4a182c9a6e36f1a31a4dd8d71b4fe93f528f2a3a7a8e295709377b24241"
+        },
+        "src/mcp/weight_ridge.rs": {
+          "bytes": 13240,
+          "sha256": "9e381a3489a7ad31300828cc25071e5920d861f6a09a40beb1a6db89ae25ae4e"
+        },
+        "src/mcp/weight_ridge_tests.rs": {
+          "bytes": 8523,
+          "sha256": "0d979666b70d4e146ad223a515652d1cbf652e97968973e6b1516fbc4ff5634e"
+        },
+        "src/mcp/runtime/effect_owner_fence_tests.rs": {
+          "bytes": 21893,
+          "sha256": "a76304a451a628e2aada68b0ba13c08fe6c05ecf7c921d699c9f2853b4ff1bdf"
+        },
+        "src/mcp/runtime/jobs_start_io_tests.rs": {
+          "bytes": 16553,
+          "sha256": "acb1749d69728f15646a436be0aad78e6e2d90ba442c35db399c0ba5f2919339"
+        },
+        "tests/weight_forward_external.rs": {
+          "bytes": 12126,
+          "sha256": "856726f52efd71e548f5393145b6b1d61541bd4939c88b9f047e09b6e66660c5"
+        },
+        "src/mcp/runtime/ssh_observation_maintenance_tests.rs": {
+          "bytes": 20650,
+          "sha256": "b6436f27e6697b2aa26f91b4e976e16823540e6c4883b86bdf11f910802d5e8c"
+        },
+        "src/mcp/runtime/config.rs": {
+          "bytes": 24580,
+          "sha256": "f2f37d2b5b7f25a704a75651ae0e0a9044796dbfebd33dd72f901c259850c3f9"
+        }
+      },
+      "scope": "Current 13 changed Rust files: the original12 weight/test files remain byte-identical, plus the separately qualified first-start initializer. Historical r8 and actual-model bridge retain their original source/binary bindings."
+    },
+    "local_complete_suite": {
+      "command": "cargo test --locked --offline --all-features -- --test-threads=1",
+      "cargo_exit_code": 101,
+      "supervisor_exit_code": 1,
+      "passed": 1694,
+      "failed": 2,
+      "ignored": 36,
+      "wall_seconds": 3856.177191562,
+      "cancelled": false,
+      "timed_out": false,
+      "later_harnesses_and_fmt_reached": false,
+      "source12_unchanged": true,
+      "log_bytes": 196063,
+      "log_sha256": "82c863537186873e096afae0b3929e9113ac4e6e0b2d3bcfad806ff8f684ad25",
+      "failures": [
+        {
+          "test": "request_audit::index::tests::bounded_index_capacity_waits_without_retiring_live_callers_or_blocking_writers",
+          "assertion": "status.success()",
+          "inner_cause": "UNKNOWN; child stdout not retained and no nocapture"
+        },
+        {
+          "test": "request_audit::index::tests::large_pending_view_remains_exact_while_continuous_publications_progress",
+          "assertion": "Instant::now() < deadline",
+          "known_scope": "final ten-second progress deadline failed; deeper cause unresolved; subsequent observation checks not reached"
+        }
+      ]
+    },
+    "separate_targeted_qualification": {
+      "weight_tests_passed": 35,
+      "weight_tests_ignored": 1,
+      "explicit_ignored_actual_numpy_fixture_passed": true,
+      "explicit_ignored_pytorch_process_fixture_passed": true,
+      "owner_inventory_passed": true,
+      "all_targets_strict_clippy_passed": true,
+      "fmt_passed": true,
+      "scoped_checks_do_not_qualify_complete_suite": true
+    },
+    "recorded_validation_wall_seconds_total": 13819.706683616,
+    "validation_cost_scope": "Completed command wall time plus cancelled supervisor lifetimes; not CPU/GPU time, API charges or model-training cost; excludes diagnosis and inter-run work.",
+    "official_github_ci": {
+      "schema": "hepta.native-wsp-official-ci-final.v1",
+      "repository": "TrillionniumFoundation/hepta-runtime",
+      "head_sha": "d85852b3c1708d9b2e8162badc07116999eff15e",
+      "run_id": 41801488646,
+      "job_id": 126478066130,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41801488646",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41801488646/job/126478066130",
+      "event": "push",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "run_created_utc": "2026-11-04T08:41:48Z",
+      "run_terminal_updated_utc": "2026-11-04T09:16:10Z",
+      "job_started_utc": "2026-11-04T08:41:52Z",
+      "job_completed_utc": "2026-11-04T09:16:09Z",
+      "job_wall_seconds": 2057,
+      "event_to_terminal_seconds": 2062,
+      "all_features_nextest": {
+        "binaries": 13,
+        "run": 1764,
+        "passed": 1764,
+        "failed": 0,
+        "skipped": 40,
+        "test_seconds": 188.715,
+        "compile_seconds": 466
+      },
+      "no_default_nextest": {
+        "binaries": 12,
+        "run": 1744,
+        "passed": 1744,
+        "failed": 0,
+        "skipped": 28,
+        "test_seconds": 186.827,
+        "compile_seconds": 354
+      },
+      "new_guard_tests_passed_per_configuration": 7,
+      "new_ridge_tests_passed_per_configuration": 7,
+      "other_gates": {
+        "format": "PASS",
+        "both_configuration_checks": "PASS",
+        "both_configuration_strict_clippy": "PASS",
+        "descriptor_relative_safety": {
+          "tests": 9,
+          "status": "PASS"
+        },
+        "control_plane": {
+          "scripts": 15,
+          "tests": 285,
+          "status": "PASS"
+        },
+        "x230_regression": {
+          "tests": 98,
+          "status": "PASS"
+        },
+        "release_bins_and_examples": {
+          "status": "PASS",
+          "compile_seconds": 305
+        },
+        "release_rea_and_linux_syscall_denial": "PASS",
+        "independent_python_zip_to_rust_worker": "PASS"
+      },
+      "former_external_failures": {
+        "scope": "all-features only; not executed in no-default log",
+        "external_mcp_policy_worker_and_controller_restart": "PASS 0.107s",
+        "model_pages_ranges_and_archive_roles_use_the_shipped_mcp_workers": "PASS 0.066s"
+      },
+      "historical_r8_tests": {
+        "bounded_index_capacity": {
+          "all_features": "PASS 0.108s",
+          "no_default": "PASS 0.108s"
+        },
+        "large_pending_view": {
+          "all_features": "PASS 0.233s",
+          "no_default": "PASS 0.228s"
+        },
+        "original_r8_causes_not_explained": true
+      },
+      "workflow_identity": {
+        "bytes": 15577,
+        "sha256": "83ceffb17fc6f17e705850434569009cb8a19cf820e2e5cc8a4b7e6c93a2798d",
+        "unchanged_from_initial_head": true
+      },
+      "complete_decoded_job_log": {
+        "bytes": 826675,
+        "lines": 6075,
+        "sha256": "439f365b9abe1d9130fd6187810c3b4132f8be66221fce8c7f1ba6e7c46f3cb0",
+        "preserves_cr_lf_and_ansi": true
+      },
+      "zip_evidence_artifact": {
+        "id": 13309363962,
+        "bytes": 5368
+      },
+      "prospective_merge_job": {
+        "id": 126478068489,
+        "status": "skipped",
+        "reason": "push event condition",
+        "qualified": false
+      },
+      "manual_retry_or_dispatch": false,
+      "original_r8_and_first_ci_failures_preserved": true,
+      "model_efficacy_changed": false,
+      "limits": [
+        "Selected isolated-process test configurations and the recorded workflow only; skipped tests and doctests are not included.",
+        "Does not explain original monolithic local r8 index failures.",
+        "Does not qualify prospective-merge execution, private-data-independent reproduction, end-to-end model gains or production policy activation."
+      ]
+    },
+    "delivery_tree": "84f79718dda7ce1f976e6d21ad041031f4fd5c7f",
+    "delivery_tree_exactly_matches_tested_local_commit": true,
+    "first_delivery_commit": "f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d",
+    "original_weight_and_r8_source_identity": {
       "base_sha": "1f2d3d782e8803e769989234e7902ca5c04eff97",
       "files": {
         "src/mcp/mod.rs": {
@@ -66,55 +274,126 @@
       },
       "scope": "The final 12 Rust source files used by targeted followup and r8; historical 11-file r5-r7 binding is retained separately."
     },
-    "local_complete_suite": {
-      "command": "cargo test --locked --offline --all-features -- --test-threads=1",
-      "cargo_exit_code": 101,
-      "supervisor_exit_code": 1,
-      "passed": 1694,
-      "failed": 2,
-      "ignored": 36,
-      "wall_seconds": 3856.177191562,
-      "cancelled": false,
-      "timed_out": false,
-      "later_harnesses_and_fmt_reached": false,
-      "source12_unchanged": true,
-      "log_bytes": 196063,
-      "log_sha256": "82c863537186873e096afae0b3929e9113ac4e6e0b2d3bcfad806ff8f684ad25",
+    "official_github_ci_first_terminal": {
+      "schema": "hepta.native-wsp-official-ci-attempt.v1",
+      "repository": "TrillionniumFoundation/hepta-runtime",
+      "head": "f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d",
+      "run": 41794981838,
+      "attempt": 1,
+      "job": 126456845758,
+      "event": "push",
+      "conclusion": "failure",
+      "started_utc": "2026-11-04T07:49:55Z",
+      "completed_utc": "2026-11-04T08:08:19Z",
+      "job_wall_seconds": 1104,
+      "nextest": {
+        "run": 1764,
+        "passed": 1762,
+        "failed": 2,
+        "skipped": 40,
+        "seconds": 187.957,
+        "exit_code": 100
+      },
       "failures": [
         {
-          "test": "request_audit::index::tests::bounded_index_capacity_waits_without_retiring_live_callers_or_blocking_writers",
-          "assertion": "status.success()",
-          "inner_cause": "UNKNOWN; child stdout not retained and no nocapture"
+          "test": "external_mcp_policy_worker_and_controller_restart",
+          "file": "tests/rea_mcp_external.rs",
+          "line": 88,
+          "rpc_id": 3,
+          "error": "-32603 request audit unavailable; dispatch refused"
         },
         {
-          "test": "request_audit::index::tests::large_pending_view_remains_exact_while_continuous_publications_progress",
-          "assertion": "Instant::now() < deadline",
-          "known_scope": "final ten-second progress deadline failed; deeper cause unresolved; subsequent observation checks not reached"
+          "test": "model_pages_ranges_and_archive_roles_use_the_shipped_mcp_workers",
+          "file": "tests/rea_mcp_external.rs",
+          "line": 88,
+          "rpc_id": 20,
+          "error": "-32603 request audit unavailable; dispatch refused"
         }
-      ]
+      ],
+      "r8_failure_tests_in_this_run": {
+        "bounded_index_capacity": "passed 0.103s",
+        "large_pending_view": "passed 0.219s"
+      },
+      "before_tests": {
+        "source_identity": "passed",
+        "fmt": "passed",
+        "all_targets_check": "passed",
+        "no_default_check": "passed",
+        "all_features_clippy": "passed",
+        "no_default_clippy": "passed"
+      },
+      "subsequent_steps13_to19": "skipped",
+      "local_r8_failure_unchanged": true,
+      "scope": "One automatically triggered exact-head isolated-process CI; its passes do not explain local r8 failures.",
+      "log_identity": {
+        "bytes": 431584,
+        "sha256": "03827d8d640f7b339b9054664756df69d1a863546c08f17bb7797d6b9db15e4c"
+      }
     },
-    "separate_targeted_qualification": {
-      "weight_tests_passed": 35,
-      "weight_tests_ignored": 1,
-      "explicit_ignored_actual_numpy_fixture_passed": true,
-      "explicit_ignored_pytorch_process_fixture_passed": true,
-      "owner_inventory_passed": true,
-      "all_targets_strict_clippy_passed": true,
-      "fmt_passed": true,
-      "scoped_checks_do_not_qualify_complete_suite": true
+    "initializer_followup": {
+      "scope": "Production initialization of a newly absent runtime state directory under umask 0022; unchanged external REA tests, focused configuration regressions and exact-mode admission controls.",
+      "qualification_url": "https://github.com/TrillionniumFoundation/hepta-runtime/blob/d85852b3c1708d9b2e8162badc07116999eff15e/experiments/weight/native_guard_20261104/state_initialization/qualification.json",
+      "qualification_sha256": "7907392922fb458a5eb439d960df832f7fb93f5e8e34f465dfda9d48980e4222",
+      "source_fix": {
+        "file": "src/mcp/runtime/config.rs",
+        "before": {
+          "bytes": 24254,
+          "sha256": "b772110a05c16204928144a900c75b609f296b4c7e26f216b293810d481c31e2"
+        },
+        "before_byte_identical_to_local_commit": "bdb2eaa675757502be19647b11a83f03bb972a11",
+        "tree_equivalent_published_before_head": "f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d",
+        "before_tree_sha": "93191effdf4e60213b22d03e823df4ffe9651da8",
+        "after": {
+          "bytes": 24580,
+          "sha256": "f2f37d2b5b7f25a704a75651ae0e0a9044796dbfebd33dd72f901c259850c3f9"
+        },
+        "change": "Replace create_dir_all with a recursive DirBuilder; set creation mode 0700 through DirBuilderExt only under cfg(unix).",
+        "existing_directory_permissions_changed": false,
+        "production_audit_or_owner_checks_relaxed": false,
+        "canonicalization_preserved": true,
+        "external_test_source_unchanged": {
+          "bytes": 11520,
+          "sha256": "53a53d5da2877274bb9c75ddf6fbde9371f5d38b56d90bde4376f90de5c8d0cd"
+        },
+        "configuration_regression_source_unchanged": {
+          "bytes": 13500,
+          "sha256": "533962981326e05fbfc1b7f6ce1986df804916c88ff67c0cbe38926d3d2a5f69"
+        },
+        "independent_source_review": true
+      },
+      "unchanged_external_test_binary_sha256": "f2da4ae78f302b61330a4e82231e4a46fde33b12eba7f9d0d055ab794ae49284",
+      "before_tests": {
+        "passed": 0,
+        "failed": 2,
+        "exit_code": 101
+      },
+      "after_tests": {
+        "passed": 2,
+        "failed": 0,
+        "exit_code": 0
+      },
+      "config_tests_passed": 20,
+      "strict_clippy_and_fmt_passed": true,
+      "new_root_mode": "0700",
+      "new_root_first_tool_passed": true,
+      "existing_0755_root_preserved_and_refused": true,
+      "focused_validation_wall_seconds": 223.3282167710131,
+      "complete_suite_run_in_this_followup": false,
+      "actual_model_bridge_reexecuted_after_initializer_fix": false,
+      "model_quality_experiment_performed": false,
+      "production_services_or_live_models_modified": false
     },
-    "recorded_validation_wall_seconds_total": 13819.706683616,
-    "validation_cost_scope": "Completed command wall time plus cancelled supervisor lifetimes; not CPU/GPU time, API charges or model-training cost; excludes diagnosis and inter-run work.",
-    "official_github_ci": {
-      "scope": "Separate host/harness evidence; never overwrites local r8 failure. See PR for terminal outcome.",
-      "exact_head": "f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d",
-      "run_url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41794981838",
-      "status_at_package_freeze": "in_progress",
-      "automatically_triggered_push": true,
-      "manual_retries": 0
+    "independent_capacity_child_diagnostic": {
+      "receipt_in_runtime_pr": true,
+      "sha256": "de5bbce00b3e16d3de78edf8adb84a736055bcd48298ab24f1b72d8ad2e81bb1",
+      "passed": 1,
+      "executions": 1,
+      "runner_wall_seconds": 3.017138945055194,
+      "child_wall_seconds": 0.907259313040413,
+      "original_failure_still_unresolved": true
     },
-    "delivery_tree": "93191effdf4e60213b22d03e823df4ffe9651da8",
-    "delivery_tree_exactly_matches_tested_local_commit": true
+    "current_official_workflow_qualified": true,
+    "complete_monolithic_local_suite_on_current_head_executed": false
   },
   "qualified_components": {
     "mit_published_minatar_program_replay": {
@@ -555,14 +834,15 @@
     "native_interruption_recovery_qualified": false
   },
   "remaining_blockers": [
-    "local complete software gate failed r8 (1694 passed,2 failed,36 ignored,Cargo101); capacity child inner cause and ten-second progress failure remain unresolved",
+    "historical monolithic local r8 index-test failures remain unexplained; current d858 exact-head isolated-process official workflow passed all required gates, and prospective-merge job was conditionally skipped",
     "actual Trader mechanism-to-tensor mapping absent",
     "source command lacks fill or terminal zero-fill proof",
     "frozen prospective windows not mature",
     "Qwen original grader dependencies, complete pinned inputs, vLLM/long-context generation and full benchmark unqualified",
     "native full neural/CTMC graph compiler and global NDU optimizer absent",
     "production cancellation/restart evaluation journal absent",
-    "actual Trader numerical reproduction requires authorized private fixture"
+    "actual Trader numerical reproduction requires authorized private fixture",
+    "latest native resident snapshot reports HOST_FULL_MEMORY_PSI_PRESSURE and pending forward admission; no host-resource remediation or prospective model admission was performed"
   ],
   "evidence_paths": {
     "original_joint": "joint/records/ACCEPTANCE_AUDIT.json",
@@ -803,5 +1083,199 @@
       "The former 05:43 current-queue UNKNOWN observation remains in the earlier record. This later native status snapshot resolves that observation at its stated time only."
     ]
   },
-  "latest_trainer_observation_field": "trainer_status_refresh; earlier checkpoint_identity_refresh is a preserved historical observation"
+  "latest_trainer_observation_field": "trainer_status_refresh; earlier checkpoint_identity_refresh is a preserved historical observation",
+  "trainer_status_refresh_final": {
+    "schema": "hepta.wsp.final-trainer-status-refresh.v1",
+    "status": "NATIVE_SNAPSHOT_AND_BOUND_SMALL_ADAPTER_READ_COMPLETE",
+    "purpose": "One final bounded read-only refresh of the previously resolved resident status source and only its explicitly bound small adapter. Separate from all frozen model experiments.",
+    "status_source": {
+      "observed_utc": "2026-11-04T08:54:05Z",
+      "observation_clock_resolution_seconds": 1,
+      "schema": "heptatrader.laya-resident-status.v1",
+      "bytes": 25591,
+      "content_sha256": "c3aa7b2def7e450389e239fa2064e2d6dc4b7963b47a0cb95ef4199ab6903ce0",
+      "native_updated_utc": "2026-11-04T08:53:11.047Z",
+      "native_at_ms": 1793782391047,
+      "current_blockers_checked_utc": "2026-11-04T08:53:11.046Z",
+      "evaluation_queue_checked_utc": "2026-11-04T08:53:11.046Z",
+      "source_entrypoint": "Exactly the previously resolved native control/status.json entrypoint; no new discovery or service inspection.",
+      "scope": "Native resident queue snapshot; not a whole-host process or GPU activity inventory."
+    },
+    "native_status": {
+      "phase": "CANDIDATE_READY_AWAITING_FORWARD_ADMISSION",
+      "job_counts": {
+        "ADMITTED": 0,
+        "COMPLETED": 113,
+        "FAILED": 2,
+        "RUNNING": 0
+      },
+      "pending_evaluations": 3,
+      "current_blockers": [
+        "HOST_FULL_MEMORY_PSI_PRESSURE",
+        "CANDIDATE_READY_AWAITING_FORWARD_ADMISSION"
+      ],
+      "completed_candidates_without_forward_trial": 42,
+      "blocking_deferred_training_candidates": 1,
+      "deferred_training_candidates": 1
+    },
+    "latest_candidate_binding": {
+      "binding_unambiguous": true,
+      "latest_registered_candidate_matches_last_candidate": true,
+      "candidate_identity_same_as_previous_0659_snapshot": true,
+      "job_identity_same_as_previous_0659_snapshot": true,
+      "training_state": "COMPLETED",
+      "registration_state": "REGISTRATION_RECORD_NOT_AVAILABLE",
+      "registration_is_performance_result": false,
+      "plan_file_exists": false,
+      "forward_admission_pending": true,
+      "private_candidate_and_job_identifiers_included": false
+    },
+    "bound_small_adapter": {
+      "all_finite": true,
+      "bytes": 9988,
+      "candidate_evaluated": false,
+      "file_read_completed_utc": "2026-11-04T08:56:03.920154+00:00",
+      "forward_executed": false,
+      "large_base_read": false,
+      "maximum_file_bytes": 1048576,
+      "observed_utc": "2026-11-04T08:56:03.920614+00:00",
+      "parameters": 2379,
+      "schema": "hepta.wsp.final-bound-small-adapter-scan.v1",
+      "sha256": "f8f71a43303e13208411ecfe340ee1f5e4b87c4fef33545b6deb5b530c452032",
+      "single_bound_file_read": true,
+      "source_status_sha256": "c3aa7b2def7e450389e239fa2064e2d6dc4b7963b47a0cb95ef4199ab6903ce0",
+      "status": "COMPLETE",
+      "tensor_count": 6,
+      "tensors": [
+        {
+          "dtype": "F32",
+          "finite_count": 64,
+          "name": "model.act_head.2.A",
+          "nonfinite_count": 0,
+          "numel": 64,
+          "shape": [
+            1,
+            64
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 2,
+          "name": "model.act_head.2.B",
+          "nonfinite_count": 0,
+          "numel": 2,
+          "shape": [
+            2,
+            1
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 1536,
+          "name": "model.scorer.1.A",
+          "nonfinite_count": 0,
+          "numel": 1536,
+          "shape": [
+            2,
+            768
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 8,
+          "name": "model.scorer.1.B",
+          "nonfinite_count": 0,
+          "numel": 8,
+          "shape": [
+            4,
+            2
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 768,
+          "name": "model.scorer.3.A",
+          "nonfinite_count": 0,
+          "numel": 768,
+          "shape": [
+            1,
+            768
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 1,
+          "name": "model.scorer.3.B",
+          "nonfinite_count": 0,
+          "numel": 1,
+          "shape": [
+            1,
+            1
+          ]
+        }
+      ],
+      "training_executed": false,
+      "scan_result_received_utc": "2026-11-04T08:58:22Z",
+      "file_metadata_stable_during_read": true,
+      "dense_nonoverlapping_layout_validated": true,
+      "same_content_as_previous_0707_scan": true,
+      "previous_adapter_sha256": "f8f71a43303e13208411ecfe340ee1f5e4b87c4fef33545b6deb5b530c452032",
+      "same_content_as_original_audited_adapter": false,
+      "original_audited_adapter_sha256": "8fa37e66e7466942b26376da00ef0afcb34ba1bebf5f6eba2324bc7237db1791",
+      "current_candidate_performance_evaluated": false
+    },
+    "comparison_to_previous_observation": {
+      "previous_status_observed_utc": "2026-11-04T06:59:24Z",
+      "previous_status_source_sha256": "51fd2f21800388f59316f1c20f7b556633e0456af4b934a76b0b13db39014a75",
+      "previous_adapter_scan_observed_utc": "2026-11-04T07:07:41.267999Z",
+      "completed_count_change": 0,
+      "running_count_change": 0,
+      "blocker_codes_newly_present": [
+        "HOST_FULL_MEMORY_PSI_PRESSURE"
+      ],
+      "previous_blocker_codes_not_present": [
+        "LATEST_SOURCE_QUOTE_NOT_FRESH",
+        "SOURCE_CONTINUITY_NOT_READY",
+        "SOURCE_QUALITY_HOLD_NO_REFRESH_AUTHORITY"
+      ],
+      "blocker_comparison_is_snapshot_difference_only": true,
+      "previous_record_expected_bytes": 6183,
+      "previous_record_expected_sha256": "b4d832b6a862a53813312a2659c398794c5a9ae704389fa918a958b0d3595951",
+      "previous_record_preserved_unchanged": true
+    },
+    "original_scientific_results_binding": {
+      "original_large_base_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+      "original_adapter_sha256": "8fa37e66e7466942b26376da00ef0afcb34ba1bebf5f6eba2324bc7237db1791",
+      "frozen_value_head_sha256": "1f3071b3b1aaa89966b2d72abb2aec3f0841e2eb9bb24964abc54f30ac22b759",
+      "historical_rows": 54,
+      "current_large_base_identity": "NOT_RECHECKED",
+      "current_full_model_identity_validated": false,
+      "current_frozen_readout_identity": "NOT_RECHECKED_BY_THIS_REFRESH",
+      "performance_claims_transferred_to_latest_candidate": false
+    },
+    "boundaries": {
+      "native_status_reads": 1,
+      "bound_small_adapter_scans": 1,
+      "extra_status_retry": false,
+      "large_base_read_or_rehashed": false,
+      "forward_executed": false,
+      "training_executed": false,
+      "model_performance_evaluated": false,
+      "queue_action_performed": false,
+      "service_action_performed": false,
+      "broker_request_sent": false,
+      "broad_directory_discovery_performed": false,
+      "frozen_experiments_changed": false,
+      "prior_status_records_changed": false,
+      "private_host_paths_or_account_data_or_parameter_values_included": false
+    },
+    "limitations": [
+      "The source snapshot and adapter read have separate timestamps and are not an atomic cross-file snapshot. The adapter is bound to the candidate explicitly registered in that captured native snapshot.",
+      "RUNNING=0 is the recorded resident queue count at its native check time. It is not a claim that every process on the host is idle; no whole-host process or GPU inventory was repeated.",
+      "HOST_FULL_MEMORY_PSI_PRESSURE is a blocker reported by the native source. This refresh did not independently probe host resource pressure or change any resource or service setting.",
+      "Same content as the previous small adapter, a valid layout and finite values do not establish predictive quality, task value, forward admission or generalization.",
+      "The latest adapter remains different from the original audited adapter. Original 54-row results remain bound to their original artifact identities and are not extended to this candidate.",
+      "Blocker-code differences describe two snapshots and are not independent proof that an omitted earlier condition has been permanently resolved."
+    ]
+  }
 }
