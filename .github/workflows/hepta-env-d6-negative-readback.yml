@@ -35,6 +35,10 @@ jobs:
           git --no-replace-objects diff --exit-code HEAD --
           python3 qualification/env-d6-negative-artifact-20261104/readback.py --output "$RUNNER_TEMP/env-d6-negative-readback"
           git --no-replace-objects diff --exit-code HEAD --
+      - name: Replay exact original XML through the candidate reader
+        run: |
+          python3 qualification/env-d6-negative-artifact-20261104/replay.py --evidence "$RUNNER_TEMP/env-d6-negative-readback"
+          git --no-replace-objects diff --exit-code HEAD --
       - name: Retain bounded readback
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
