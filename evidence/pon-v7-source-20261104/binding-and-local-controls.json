@@ -1,0 +1,342 @@
+{
+  "binding": {
+    "chain_base": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "chain_ordered_merge": "0dac3ffa4513860c9c063b9f8ffb6a022d22ba64",
+    "chain_source": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+    "chain_tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+    "changed_files": [
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v7.json",
+      "scripts/hepta_smollm_execution_source_v1.py",
+      ".github/workflows/hepta-public-initial-v2.yml",
+      ".github/workflows/hepta-pon-native-pair.yml"
+    ],
+    "historical_files_sha256": {
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v1.json": "4b92ec8b9aa385148dc7bfc4d35630a05b5ced93fef1c503305ff8e28d0b1e6a",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v2.json": "7db8bb705a7bf17e08aba973a7a4d2f9c14693d4a6af782abdc7c254dc91699a",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v3.json": "9dcd7666bb6462712356ee73a5f17d5d3fdecfea44a3ff8dad01dca10a25dfa3",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v4.json": "cc88782c649504cbab886ba5040f183e27fb87d278d682492d68253101bc8f31",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v5.json": "57ebcfa34d3e578679c3040fab3e4065683bd032592a183574767d5d3eaa9404",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v6.json": "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.plan.json": "01ec1a644f37b9fc7a4c6616f589768df97f8eed7a289b5de86afadaa7ce6165",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.profile": "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.sources.json": "c4a529e9710f18feaa4996457991876d3999d36bdde285903e72d7180f8bbd0c",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.target.json": "4c443932649d5be08577307d67332a520ea0cf5499fc24f54f98a85bbb948b4b"
+    },
+    "installed_native_executed": false,
+    "native_pair_executed": false,
+    "observation": {
+      "chain_commit": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "chain_tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+      "historical_profile_sha256": "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8",
+      "historical_sources_sha256": "c4a529e9710f18feaa4996457991876d3999d36bdde285903e72d7180f8bbd0c",
+      "installation_authorized": false,
+      "manifest_sha256": "f39b96cbac0e429c7fc3712217a9fdbbe03248d2b5c12e4ebe1fe15be7a5eef8",
+      "model_compatibility_changed": false,
+      "product_qualification": false,
+      "profile": "hepta-integrated-chain-execution-v7",
+      "schema": "hepta-smollm-public-initial-execution-source-verified-v1",
+      "verified_source_files": 42
+    },
+    "ordinary_model_cli_executed": false,
+    "qualification": false,
+    "schema": "hepta-v7-source-finalization-v1"
+  },
+  "current_chain_execution_evidence": [
+    {
+      "bytes": 4753,
+      "copied_byte_for_byte": true,
+      "evidence_source": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "evidence_tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+      "file": "chain-a10c-protocol-execution.json",
+      "original_path": "final-validation/run-a10c39025cdc03d3-protocol/summary.json",
+      "qualification": false,
+      "sha256": "c89a923c486a9ff6b4fde8402fe5e9473fead9b7642499e390fbf15c25899816"
+    },
+    {
+      "bytes": 126587,
+      "copied_byte_for_byte": true,
+      "evidence_source": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "evidence_tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+      "file": "chain-a10c-business.json",
+      "original_path": "readback/a10c-business-projection.json",
+      "qualification": false,
+      "sha256": "89822e359193e08f7f1921db3e540d8d56128245f1e49b845598c2cb12bd8ea5"
+    }
+  ],
+  "current_pq_gate": {
+    "binary_observation": {
+      "adapter": "scripts/hepta_ci_pq_binary_v7.py",
+      "after_all_controls_requires_same_observation": true,
+      "after_runs_despite_individual_control_failures": true,
+      "build": "Same release/all-features no-run Cargo JSON command retained with source-before/source-after and full log digest",
+      "every_exec_observed": false,
+      "old_44d_binary_receipts_retroactively_added": false,
+      "recorded": [
+        "compiler artifact profile/features/source",
+        "canonical executable path",
+        "size",
+        "SHA-256",
+        "ELF machine",
+        "file identity/times"
+      ],
+      "reuse": [
+        "run_history_native.file_observation",
+        "check_cross_arch_cost.elf_machine",
+        "replay_pinned_native.json_load",
+        "public_host_ci_observation.write_new"
+      ],
+      "selection": "Exactly one trnm_pon_node library test compiler artifact from the current crate source and manifest; PQ native feature and release optimization required",
+      "transient_binary_replacement_excluded": false
+    },
+    "build_profile": "release",
+    "controlled_workflow_wiring": {
+      "controlled_cases": 8,
+      "file": "controlled-pq-workflow-wiring.json",
+      "native_commands_executed": false,
+      "provider_executed": false,
+      "sha256": "fba2e2bd15b1f76d38564d12e9727fff1e15e08984233c06e45efa25cd304f25"
+    },
+    "every_selected_result_requires": "one passed, zero failed/ignored/measured, exact full identity",
+    "exact_execution_reader": "scripts/ci/check_required_native_test.py",
+    "features": "--all-features",
+    "individual_failures_accumulated_without_truncating_later_selectors": true,
+    "legacy_minimum": 14,
+    "legacy_selector": "pq_authority::",
+    "legacy_semantic_equivalence_or_migration_claimed": false,
+    "legacy_zero_selected_failure_retained": true,
+    "native_toolchain": "1.95.0",
+    "new_v7_release_native_execution_pending": true,
+    "original_provider_digest_and_real_smoke_preserved": true,
+    "provider_script": "scripts/ci/prepare_pq_provider.sh",
+    "provider_version": "3.5.9",
+    "remaining_hold": [
+      "TPQ1 ownership migration and authorization inheritance/revocation",
+      "Historical memory/VFS, same-sequence two-connection and specific SQLite trigger/TEMP/FULL faults are not automatically covered by current47",
+      "All real effect entrances under a current PQ trust root; complete monotonic effects-state root"
+    ],
+    "required_registry": "config/pon/pq-system-required-tests-v1.json",
+    "required_unique_exact_selectors": 47,
+    "scope": "Current PNQ2/PqWitnessV4 components; not equivalent to the removed TPQ1 local purpose1..6 owner.",
+    "source_and_command_recorder": "scripts/ci/record_pq_native_command.py"
+  },
+  "execution_closure_bytes_equal_v6": true,
+  "format_limit": {
+    "attempted": true,
+    "command": "just fmt",
+    "reason": "Partial exact-file mirror has no Cargo.toml or justfile; just is not installed. No Rust source was changed.",
+    "returncode": 127
+  },
+  "hepta_base_commit": "c65104116fe5f34e315a4ab1043a2b5b6519070c",
+  "historical_pq_owner_selector_failure": {
+    "bytes": 6365,
+    "copied_byte_for_byte": true,
+    "file": "legacy-pq-owner-selector-failure.json",
+    "original_path": "readback/hepta-v6-pq-owner/review.json",
+    "sha256": "a6dd7ab05617ef4388dec3b69bcfaa12d0207fa4f322c41f6d0c186b6d99196a"
+  },
+  "historical_v6_manifest_and_identity_unchanged": true,
+  "installation_authorized": false,
+  "installed_native_executed": false,
+  "native_pair_executed": false,
+  "ordinary_model_cli_executed": false,
+  "parent_44d_evidence": [
+    {
+      "bytes": 32893,
+      "copied_byte_for_byte": true,
+      "evidence_source": "44d3def32f515b98fc41f074fe1b88e97f046191",
+      "evidence_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+      "file": "chain-parent-44d-business.json",
+      "not_current_a10c_native_qualification": true,
+      "original_path": "readback/44d-business-projection.json",
+      "sha256": "2bd6eff3237e9441fd54ba52f648441759a64e96d3adafcce77e57b56c5ad30e"
+    },
+    {
+      "bytes": 71326,
+      "copied_byte_for_byte": true,
+      "evidence_source": "44d3def32f515b98fc41f074fe1b88e97f046191",
+      "evidence_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+      "file": "chain-parent-44d-false-trace.json",
+      "not_current_a10c_native_qualification": true,
+      "original_path": "readback/chain-44d-false-trace-verified.json",
+      "sha256": "27c43040807668b02289a5fa02c6a40b0e41ff62c26b6ad885c479564b4b8779"
+    },
+    {
+      "bytes": 5004,
+      "copied_byte_for_byte": true,
+      "evidence_source": "44d3def32f515b98fc41f074fe1b88e97f046191",
+      "evidence_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+      "file": "chain-parent-44d-pq-controls.json",
+      "not_current_a10c_native_qualification": true,
+      "original_path": "final-validation/ci-readback/controls-summary.json",
+      "sha256": "e522c18d58b6812d64921ff822ad85cefa5410452d2766a2196dc04b0d692ab0"
+    },
+    {
+      "bytes": 1428,
+      "copied_byte_for_byte": true,
+      "evidence_source": "44d3def32f515b98fc41f074fe1b88e97f046191",
+      "evidence_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+      "file": "chain-parent-44d-pq-full-regression.json",
+      "not_current_a10c_native_qualification": true,
+      "original_path": "final-validation/ci-readback/full-summary-4-lanes.json",
+      "sha256": "b3b82a591f5b0bbaf52980cef6c4abcff1926c461a940e38114a070a5495ffcf"
+    }
+  ],
+  "product_qualification": false,
+  "qualification": false,
+  "review": {
+    "binary_adapter": "Independent read-only review found no Cargo artifact structure, exception propagation or binary-before/after wiring blocker; matched actual 44d CI compiler-artifact field shape. Build/before failure refuses controls; individual control failure retains remaining exact controls and after observation.",
+    "current47_wiring": "No execution-blocking issue found. Current47 release runs remain required; old TPQ1 semantics do not transfer.",
+    "reviewed_files_sha256": {
+      ".github/workflows/hepta-pon-native-pair.yml": "0060be255cd4dac2b0123bb9d86cdff6685566b730996770a11ff6201ce01d4c",
+      "scripts/hepta_ci_pq_binary_v7.py": "19455710246cf1b06589f4fb8a54d563d598c06e2125ec8d4fd49643d70aa377"
+    },
+    "reviewer": "pq_recovery",
+    "reviewer_executed_native": false,
+    "reviewer_modified_source": false,
+    "scope": "7 unit controls and 8 controlled Bash scenarios validate wiring only; snapshots do not attest every exec or transient binary replacement.",
+    "whole_chain_quantum_security_qualified": false
+  },
+  "schema": "hepta-v7-source-and-local-controls-v1",
+  "scope": "Hepta V7 source identity and local Python/controlled Bash checks only. Separately inventoried original Chain JSON files retain their exact source and actual outcomes; no Hepta native pair, model, installed, prospective evolution or business qualification is inferred.",
+  "source_files": {
+    ".github/workflows/hepta-pon-native-pair.yml": {
+      "bytes": 101418,
+      "sha256": "0060be255cd4dac2b0123bb9d86cdff6685566b730996770a11ff6201ce01d4c"
+    },
+    ".github/workflows/hepta-public-initial-v2.yml": {
+      "bytes": 31215,
+      "sha256": "3a2111b9396a0597b89b47d2c1a89c6af5727e41bdd4ca6973d943a68852ad49"
+    },
+    "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v7.json": {
+      "bytes": 7086,
+      "sha256": "f39b96cbac0e429c7fc3712217a9fdbbe03248d2b5c12e4ebe1fe15be7a5eef8"
+    },
+    "scripts/hepta_ci_pq_binary_v7.py": {
+      "bytes": 6341,
+      "sha256": "19455710246cf1b06589f4fb8a54d563d598c06e2125ec8d4fd49643d70aa377"
+    },
+    "scripts/hepta_smollm_execution_source_v1.py": {
+      "bytes": 10654,
+      "sha256": "2eb0b4b3551f7a86bce58dfd487e2f81b8bed288c880c70581454555c834affa"
+    },
+    "scripts/test_hepta_ci_pq_binary_v7.py": {
+      "bytes": 5383,
+      "sha256": "c138af7793480370270006936eb933ca7e49d5af5ae09e9214f4091453e4421d"
+    },
+    "scripts/test_hepta_smollm_execution_source_v1.py": {
+      "bytes": 21388,
+      "sha256": "9a60c76b8d52fedfdc137089c1fbaf09611a6b75f3a7a0ab0833918d6ebed7c0"
+    },
+    "scripts/test_hepta_smollm_execution_source_v7.py": {
+      "bytes": 11024,
+      "sha256": "4f28549ba78b57d2a5b9def664eaf8d04739826a88a8996b89c0ca50c727e149"
+    }
+  },
+  "source_metadata_change": {
+    "changed_lines": "one replacement line in each of two CI metadata files",
+    "current": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+    "parent": "44d3def32f515b98fc41f074fe1b88e97f046191",
+    "paths": [
+      ".github/workflows/pon-branch-encoding-acceptance.yml",
+      "config/pon/pq-cross-branch-corpus-v1.json"
+    ],
+    "qualification_boundary": "a10c changes only the branch-encoding expected test count and its corpus blob pin; complete native and scripts subtrees equal 44d. Parent JSON files remain 44d/f3 or its 914d merge. Separate a10c protocol execution records 60 passed/2 original ignored and unchanged binary; separate a10c business execution retains its failures. Neither qualifies the unexecuted new Hepta V7 release pair or remaining native matrix.",
+    "unchanged_subtrees": {
+      "scripts": {
+        "current_a10c_tree": "29dbb8acf8ba28b39501a4058219ef69a36f6439",
+        "identical": true,
+        "parent_44d_tree": "29dbb8acf8ba28b39501a4058219ef69a36f6439"
+      },
+      "trillionnium": {
+        "current_a10c_tree": "243e97a00434168ecc04e4213b760a2ceb066d72",
+        "identical": true,
+        "parent_44d_tree": "243e97a00434168ecc04e4213b760a2ceb066d72"
+      }
+    }
+  },
+  "suites": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_smollm_execution_source_v*.py",
+        "-v"
+      ],
+      "log_sha256": "e4dde2a2435c514d5d7e8ff4365bd469d318118ae9ccc09a2d47d7f481a94cbd",
+      "minimum_tests": 72,
+      "name": "source-active-v7",
+      "observed_tests": 72,
+      "passed": true,
+      "returncode": 0,
+      "selected_profile": "hepta-integrated-chain-execution-v7"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_neural_*diverse_v3.py",
+        "-v"
+      ],
+      "log_sha256": "6b96ec3e7cf99b1de7031f60639433cbe58a73edd0c82eed3dbd86e2c43a31fc",
+      "minimum_tests": 32,
+      "name": "diverse-installed-context",
+      "observed_tests": 32,
+      "passed": true,
+      "returncode": 0,
+      "selected_profile": null
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_ci_pq_binary_v7.py",
+        "-v"
+      ],
+      "log_sha256": "b93abfcf4704d86ce4c8525084de163893ee3987e6ebfd67d5c03fe61b161090",
+      "minimum_tests": 7,
+      "name": "current-pq-binary-controls",
+      "observed_tests": 7,
+      "passed": true,
+      "returncode": 0,
+      "selected_profile": null
+    }
+  ],
+  "v7_cannot_inherit_v6_observations": true,
+  "workflow_change_controls": [
+    {
+      "after_sha256": "0060be255cd4dac2b0123bb9d86cdff6685566b730996770a11ff6201ce01d4c",
+      "all_other_job_fields_and_steps_identical_after_explicit_source_profile_and_control_changes": true,
+      "before_sha256": "9f38db2e10c8135a79a4d6f33c1754c4f25464f7aba2c52f28808f572662b19f",
+      "explicit_current_pq_scope_change": true,
+      "original_deadlines_hardware_cpu_and_attack_budgets_unchanged": true,
+      "path": ".github/workflows/hepta-pon-native-pair.yml"
+    },
+    {
+      "after_sha256": "3a2111b9396a0597b89b47d2c1a89c6af5727e41bdd4ca6973d943a68852ad49",
+      "all_other_job_fields_and_steps_identical_after_explicit_source_profile_and_control_changes": true,
+      "before_sha256": "df6bb5a7e85849d7537dab8520506fb4a8b6243809f9bc50d6a48b8e74d0545f",
+      "explicit_current_pq_scope_change": false,
+      "original_deadlines_hardware_cpu_and_attack_budgets_unchanged": true,
+      "path": ".github/workflows/hepta-public-initial-v2.yml"
+    }
+  ],
+  "yaml_shell_steps": 124
+}

@@ -46,6 +46,11 @@ CHAIN_COMMIT_V6 = "44d3def32f515b98fc41f074fe1b88e97f046191"
 CHAIN_TREE_V6 = "f3e07fc21a74e9a4367610ba10f5883213609320"
 MANIFEST_NAME_V6 = "smollm2-public-initial-v2.execution-sources-v6.json"
 MANIFEST_SHA256_V6 = "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8"
+PROFILE_V7 = "hepta-integrated-chain-execution-v7"
+CHAIN_COMMIT_V7 = "a10c39025cdc03d3265b031d6547b11e0350da2c"
+CHAIN_TREE_V7 = "f82a65891b8c5d094ad9a67450751253ec150910"
+MANIFEST_NAME_V7 = "smollm2-public-initial-v2.execution-sources-v7.json"
+MANIFEST_SHA256_V7 = "f39b96cbac0e429c7fc3712217a9fdbbe03248d2b5c12e4ebe1fe15be7a5eef8"
 HISTORICAL_PROFILE_SHA256 = (
     "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8"
 )
@@ -80,12 +85,17 @@ def registered_sources():
         PROFILE_V4: (CHAIN_COMMIT_V4, MANIFEST_NAME_V4, MANIFEST_SHA256_V4),
         PROFILE_V5: (CHAIN_COMMIT_V5, MANIFEST_NAME_V5, MANIFEST_SHA256_V5),
         PROFILE_V6: (CHAIN_COMMIT_V6, MANIFEST_NAME_V6, MANIFEST_SHA256_V6),
+        PROFILE_V7: (CHAIN_COMMIT_V7, MANIFEST_NAME_V7, MANIFEST_SHA256_V7),
     }
 
 
 def registered_trees():
     """Keep commit-and-tree profiles explicit while retaining legacy identities."""
-    return {PROFILE_V5: CHAIN_TREE_V5, PROFILE_V6: CHAIN_TREE_V6}
+    return {
+        PROFILE_V5: CHAIN_TREE_V5,
+        PROFILE_V6: CHAIN_TREE_V6,
+        PROFILE_V7: CHAIN_TREE_V7,
+    }
 
 
 def selected_source(profile):

@@ -1,0 +1,42 @@
+{
+  "schema": "trnm-final-pq-full-readback-summary-v1",
+  "source_sha": "44d3def32f515b98fc41f074fe1b88e97f046191",
+  "tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+  "run_id": 41778472961,
+  "verified_at_utc": "2026-11-04T06:02:26.701036+00:00",
+  "verifier_sha256": "73a061a879d903089e2be6be7f548b869cb46c1ba263792e54f7b7f8907a2de6",
+  "pinned_execution_reader_sha256": "6f211d1a23521e9960df94ebd6de63c6c9733489d795eb7d2d4eaac1b790db28",
+  "lanes_verified": [
+    "amd-merge",
+    "arm-head",
+    "arm-merge",
+    "amd-head"
+  ],
+  "full_node_per_lane": {
+    "passed": 980,
+    "failed": 0,
+    "ignored": 26,
+    "filtered": 0
+  },
+  "account_archive_subgroup_per_lane": {
+    "passed": 31,
+    "failed": 0,
+    "ignored": 7
+  },
+  "native_authenticated_subgroup_per_lane": {
+    "passed": 90,
+    "failed": 0,
+    "ignored": 1
+  },
+  "subgroups_are_not_additional_tests": true,
+  "strict_original_node_clippy_per_verified_lane": "PASS",
+  "two_explicit_original_cost_controls_per_verified_lane": "PASS",
+  "original_ignored_annotations_verified_from_44d_git_source": 26,
+  "required_47_full_suite_identities_present_per_lane": true,
+  "original_172_control_archive_members_unchanged_per_lane": true,
+  "independent_node_binary_sha256_record_present": false,
+  "local_node_build_failure_retained": true,
+  "current_a10c_execution_claimed": false,
+  "whole_system_qualified": false,
+  "release_decision": "HOLD_NO_GO"
+}
