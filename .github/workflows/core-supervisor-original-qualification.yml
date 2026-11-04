@@ -1,0 +1,77 @@
+name: Original Core and Supervisor followups
+
+on:
+  push:
+    branches: [research/private-ci-original-core-supervisor-20261104-gpt6]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: original-core-supervisor-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-native:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, ubuntu-24.04]
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      RUST_MIN_STACK: '8388608'
+      NEXTEST_PROFILE: local
+      PYTHONIOENCODING: utf-8
+      PYTHONDONTWRITEBYTECODE: '1'
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install native Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libdbus-1-dev libssl-dev libcap-dev
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.151
+      - name: Isolate the native build output
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+              stream.write("CARGO_TARGET_DIR=" + str(Path(os.environ["RUNNER_TEMP"]) / "original-core-supervisor-target") + "\n")
+          PY
+      - name: Reject missing, filtered, duplicate and retried original cases
+        run: python -m unittest discover -s qualification/core-supervisor-original-20261104 -p test_reader.py -v
+      - name: Run original cases and original scoped Clippy
+        run: python qualification/core-supervisor-original-20261104/run_original_native.py --output "$RUNNER_TEMP/core-supervisor-original"
+      - name: Retain all original output and exact source identities
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: original-core-supervisor-${{ matrix.runner }}-${{ github.sha }}
+          path: ${{ runner.temp }}/core-supervisor-original
+          if-no-files-found: error
+          retention-days: 14
