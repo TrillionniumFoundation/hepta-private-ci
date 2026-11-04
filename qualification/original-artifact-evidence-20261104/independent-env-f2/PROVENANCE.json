@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "scope": "Immutable read-only evidence checkpoint; no product-source ref change",
+  "source_head": "f2d0fcd44cedd662f5cbccff1278ade26354f350",
+  "merge_head": "6579544c4b154eda1d19b7f7fe6aca12c432b50e",
+  "original_run": 41777409210,
+  "read_only_bridge": {
+    "head": "6b6dadf306d218429e448438cf726119332a5c7c",
+    "run": 41779318217,
+    "source_job": 126406969860,
+    "merge_job": 126406969758
+  },
+  "artifact_native_status": "both original positive suites passed; source job's later negative cleanup failure remains separate",
+  "files": [
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-env-f2/source/VERIFIED_PROJECTION.json",
+      "bytes": 10698,
+      "git_blob": "cdde3e8609a1c304205a17727d1f560266e79cf7",
+      "sha256": "7725d630515a6194bba4cec5657637cceced07cb1c6f30cbbb88c913adad92b0"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-env-f2/source/readonly-job.log",
+      "bytes": 216851,
+      "git_blob": "087c6e8e4101e5f483a457e3b72af33ef595c294",
+      "sha256": "032f9c66180388968ff5b72d39b0b402f0c716ae5fe337420a53f11de5964fe9"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-env-f2/merge/VERIFIED_PROJECTION.json",
+      "bytes": 10693,
+      "git_blob": "13ebc741c88e9d69a0a501de0852cca883ff3ba3",
+      "sha256": "fe5184735700b293a9d008a352db57f8430518363545fbcfaf55d9c3e46cc88e"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-env-f2/merge/readonly-job.log",
+      "bytes": 217066,
+      "git_blob": "6655972b967aa763c3df101d070478bfe0f05997",
+      "sha256": "71c38287290ae11a7304e5be2cd72be2a35c6f9e38e9b9410bb8aa967c5c3f23"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/reviews/fleet-create-only-static.json",
+      "bytes": 6585,
+      "git_blob": "a6556d8e260bb6552b893021a0e09e25f32ee811",
+      "sha256": "d251b554e1dfee4ce919bf83c3281c7bed78752fe898da7be988cf2628bef5ca"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/reviews/union-exact-registry-static.json",
+      "bytes": 12699,
+      "git_blob": "15dfa0c911a966fb3fe6e81313827e83ea4dbd52",
+      "sha256": "8ed2d86db0e28ea1f015b0797abe81ae6250ef9fbd62c58e6ce38eda5b970fdc"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-env-f2/README.md",
+      "bytes": 1868,
+      "git_blob": "aa0e8a4245204f3b854b40e268ea5613cacf3e98",
+      "sha256": "164635960bf7756886b38c53077cbcf56ae65c54a3396fa4f85ab4769b76342e"
+    }
+  ]
+}
