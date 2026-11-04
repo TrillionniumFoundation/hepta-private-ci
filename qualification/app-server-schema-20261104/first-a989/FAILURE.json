@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "commit": "a9896efd266f6528263296977111254a083100c2",
+  "tree": "060cd0acde1f026cb0acc143339e93944ac0f071",
+  "run": 41767809264,
+  "job": 126370216327,
+  "status": "FAILED_BEFORE_SCHEMA_GENERATION",
+  "first_error": "libdbus-sys v0.2.7 build script: pkg-config could not find dbus-1 >= 1.6 or dbus-1.pc",
+  "artifact": {
+    "id": 13293911060,
+    "bytes": 797985,
+    "sha256": "42a3e5ebaf25776fbfda4e5b3fb6a9e82ed59fb2d2930fa14d33358fc3ff3da6"
+  },
+  "correction": "Install native development prerequisites on the disposable Linux runner. The generator script, recipes, compiler, case inventory, assertions, lockfile protections, and 30-minute budget are unchanged. Fetch depth 4 preserves access to the original formatter base through this successor.",
+  "full_original_log": {
+    "bytes": 129528,
+    "git_blob": "06d3c846d421e23664c193b2a6f2db25dbdf8338",
+    "sha256": "09dc94f756f0f55b578d819b93f5b7c39768ca47e1a7f4d8fd0adab409c60cff"
+  },
+  "transport": {
+    "format": "RFC1952 gzip with stored DEFLATE blocks",
+    "compressed": false,
+    "bytes": 129556,
+    "git_blob": "fd6872f25fdb41bb929c7fc85916e1c013564b36",
+    "sha256": "ac825893d9ca92567fe619f77c32b33e66bf0fd05f8f99d87298fb4e89122c34"
+  },
+  "native_protocol_cases_executed": 0,
+  "generation_completed": false,
+  "qualification": false
+}

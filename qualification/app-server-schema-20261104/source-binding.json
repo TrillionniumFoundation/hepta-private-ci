@@ -63,5 +63,19 @@
     "basis": "Existing original three-platform native receipts use this workspace-relative nextest store through scripts/run-nextest.py even when CARGO_TARGET_DIR selects a separate compilation cache.",
     "metadata_reference": "nextest-rs/nextest @cargo-nextest-0.9.103 nextest-metadata/src/test_list.rs",
     "metadata_git_blob": "987c1498dbd9daa3e445cbce822ab343d2e61de3"
+  },
+  "preceding_attempt": {
+    "commit": "a9896efd266f6528263296977111254a083100c2",
+    "tree": "060cd0acde1f026cb0acc143339e93944ac0f071",
+    "run": 41767809264,
+    "job": 126370216327,
+    "status": "FAILED_BEFORE_SCHEMA_GENERATION",
+    "first_error": "libdbus-sys v0.2.7 build script: pkg-config could not find dbus-1 >= 1.6 or dbus-1.pc",
+    "artifact": {
+      "id": 13293911060,
+      "bytes": 797985,
+      "sha256": "42a3e5ebaf25776fbfda4e5b3fb6a9e82ed59fb2d2930fa14d33358fc3ff3da6"
+    },
+    "correction": "Install native development prerequisites on the disposable Linux runner. The generator script, recipes, compiler, case inventory, assertions, lockfile protections, and 30-minute budget are unchanged. Fetch depth 4 preserves access to the original formatter base through this successor."
   }
 }
