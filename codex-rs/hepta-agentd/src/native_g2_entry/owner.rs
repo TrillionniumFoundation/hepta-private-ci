@@ -135,15 +135,28 @@ pub(super) fn run(
         let command =
             serde_json::from_slice(bytes).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
         let value = runtime
-            .block_on(execute(&owner, command))
+            .block_on(drive_original(execute(&owner, command)))
             .map_err(|_| HostIssuerTransportError::Unavailable)?;
         serde_json::to_vec(&value).map_err(|_| HostIssuerTransportError::Unavailable)
     })? {}
     Ok(())
 }
 
-// Avoid inlining the large command poll body into scheduler specializations.
+// Keep the original future owned by block_on so Tokio still applies its size gate.
+async fn drive_original<F: std::future::Future>(future: F) -> F::Output {
+    let mut future = std::pin::pin!(future);
+    std::future::poll_fn(|context| poll_original(future.as_mut(), context)).await
+}
+
+// Keep the concrete command poll outside scheduler inlining.
 #[inline(never)]
+fn poll_original<F: std::future::Future>(
+    future: std::pin::Pin<&mut F>,
+    context: &mut std::task::Context<'_>,
+) -> std::task::Poll<F::Output> {
+    future.poll(context)
+}
+
 async fn execute(
     owner: &AgentdG2NativeOperationHost,
     command: Command,
