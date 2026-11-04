@@ -52,8 +52,10 @@ WORKFLOW_REFERENCE_SCRIPTS = (
     "scripts/hepta-gap-closure.py",
     "scripts/hepta_source_registry_closure.py",
 )
+# Only exact root-relative workflow paths belong to this checkout. A qualified
+# owner/repository/.github/workflows/... signer is external provenance.
 WORKFLOW_REFERENCE_RE = re.compile(
-    r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
+    r"(?<![A-Za-z0-9_./-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
 FILES = {
     "current": "docs/CURRENT.json",
