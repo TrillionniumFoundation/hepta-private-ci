@@ -1,0 +1,208 @@
+{
+  "admission": "Eligible for exactly the frozen bounded qualification after explicit parent once-run admission, using the existing shared lock and unchanged limits. Stop and preserve failure; no retry, retuning, cap increase, old-bug run or additional model work. Independent saved-only review is still required after any run.",
+  "blocking_findings": [],
+  "capacity_review": {
+    "capacity_sha256": "31cd80ea64ed32c4d8f57d3b9bf86b05596f096ad857cbb9e273b4025e4af337",
+    "chain_conditional_bound_bytes": 3497830,
+    "chain_files": 63,
+    "failure_boundary": "Temporary/orphan/error files count in broader terminal inventory, not the successful shape. Exclusive RUN_ONCE creation prevents automatic rerun. Pre-try setup failures, uncatchable parent death, kernel stalls or failed cleanup/storage can still prevent final receipts; no stronger guarantee is claimed.",
+    "reconstruction": "Independently summed all 63 chain entries and five top entries. Four normal log files and both lockfiles have zero success allowance. Exact existing NPZ sizes are 1560407 and 12303, each below 2 MiB FSIZE. Supervisor checks exact chain path set, every per-path cap and aggregate after producer reap; outer checks top JSON/log limits, complete role receipt, terminal count/size and receipt fixed point.",
+    "successful_conditional_bound_bytes": 3694438,
+    "successful_files": 68,
+    "top_files": 5
+  },
+  "case_inventory": {
+    "actual_vs_fixture": "One real EOF scenario plus one SavedWireBackend scenario. The fixture shares original clock interval but has distinct root/run/request/namespace binding. It consumes pinned old wire/route with current artifact/identity fields; it is not fresh model execution or independently arriving external cancellation.",
+    "expected_active_EOF_failures": 1,
+    "expected_actual_work": {
+      "actor_predictions": 1,
+      "encoded_rows": 1,
+      "final_I": 1,
+      "fresh_models": 0,
+      "model_allocation_restores": 2,
+      "optimizer_steps": 0,
+      "prefix_J": 1,
+      "real_serving_calls": 1,
+      "reference_calls": 0,
+      "saved_wire_mock_calls": 1
+    },
+    "failure_semantics": "Each expected refusal catches ContractError and checks exact message; acceptance or a different error fails the qualification. The real EOF must match the exact ChannelEOF-before-frame evidence and remain unknown.",
+    "literal_check_names": {
+      "supervise.py": [
+        "joint_fault_bound_known_result",
+        "close_observation_partial_order",
+        "exact_public_receipt_only_refusals",
+        "distinct_real_and_mock_work"
+      ],
+      "worker.py": [
+        "artifact_exact",
+        "real_reference_route_wire",
+        "acked_known_prefix",
+        "precise_fault_no_cancel",
+        "only_fault_record_added",
+        "EOF_same_live_state_work_ack_unchanged",
+        "one_real_work_retained",
+        "model_unchanged",
+        "inputs_unchanged",
+        "fresh_refusal_no_mock_effect",
+        "normal_fixture_cancelled",
+        "duplicate_exact_receipt_no_effect",
+        "valid_receipt_after_restoring_volatile_alias",
+        "fixture_one_mock_zero_real_increment",
+        "exact_active_channel_failure"
+      ]
+    },
+    "named_checks": 27,
+    "recovery_scope": "The readonly Attempt restoration is not a model restoration. There is no recovery process, new model retry or live continuation. Two successful duplicate lookups share the single already committed fixture cancellation.",
+    "refusals": [
+      {
+        "error": "no committed cancellation acknowledgement",
+        "name": "EOF_REPLAY"
+      },
+      {
+        "error": "live-control recovered view is read-only",
+        "name": "EOF_READONLY"
+      },
+      {
+        "error": "no committed cancellation acknowledgement",
+        "name": "FRESH_REPLAY"
+      },
+      {
+        "error": "acknowledgement final record mismatch",
+        "name": "OLD_FRONTIER"
+      },
+      {
+        "error": "acknowledgement attempt identity/state mismatch",
+        "name": "WRONG_IDENTITY"
+      },
+      {
+        "error": "acknowledgement live snapshot mismatch",
+        "name": "CHANGED_SNAPSHOT"
+      },
+      {
+        "error": "control command identity/schema mismatch",
+        "name": "CONFLICTING_MESSAGE"
+      },
+      {
+        "error": "persisted acknowledgement mismatch",
+        "name": "ALIASED_FINAL"
+      }
+    ],
+    "supervisor_checks": 4,
+    "worker_literal_checks": 15,
+    "worker_refusal_inventory_checks": 8
+  },
+  "design_findings": [
+    {
+      "evidence": "live_core.py:205-247: readonly then missing-ACK refusal; successful receipt path validates command/clock and never invokes _cancel, _save, _put_control, backend or state transitions. First cancellation remains _boundary -> _cancel. Missing-ACK refusal precedes clock validation, an effect-free rejection that does not expand the accepted contract.",
+      "id": "D1",
+      "result": "SATISFIED"
+    },
+    {
+      "evidence": "live_core.py:216-244 reads four fixed slots with bounded exact refs, hashes, canonical bytes and duplicate/nonfinite JSON rejection. It validates persisted ACK equality, command/pin/time order, observed identity/command, both journal checksums, and complete intent/final transition. The prior_record field is retained in the observation; no separate fifth-record reconstruction or arbitrary historical graph proof is claimed.",
+      "id": "D2",
+      "result": "SATISFIED"
+    },
+    {
+      "evidence": "live_core.py:227-230 verifies actual control-ack before relying on shared final dictionaries. Lines 239-245 compare complete intent/final state and current a snapshot at saved observation, not only phase or prefix lengths. Return at 247 detaches the reference. Worker:108-115 changes the real caller-visible final alias, expects persisted acknowledgement mismatch, then restores only volatile test data and repeats the valid lookup.",
+      "id": "D3",
+      "result": "SATISFIED"
+    },
+    {
+      "evidence": "worker.py:91-100 uses normal public start/publish/await_cancel and an explicitly local fixture command to create the ACK, then verifies exact duplicate with unchanged inventory/work and detached return. Ordinary terminal_guard/blocked is not used to reject the legitimate cancelled receipt. Receipt path separately refuses conflicting fault/failure/rejection markers.",
+      "id": "D4",
+      "result": "SATISFIED"
+    },
+    {
+      "evidence": "worker.py:42-65 keeps original live a/d through actual EOF and specifically refuses valid replay for missing committed ACK; complete inventories and fixed-time snapshots/work/ACK are compared. Original unknown fault and no-cancel/no-next-piece inventory are jointly reverified after producer exit. Eight exact refusal cases are statically enumerated; this is not exhaustive hostile-input or crash-window testing.",
+      "id": "D5",
+      "result": "SATISFIED_FOR_FIXED_QUALIFICATION"
+    }
+  ],
+  "design_review_sha256": "0b231fd815061e6e9bfde54c32ebcfb3c9feeddb80d961ee5cca7ce9db3dda79",
+  "method": "Independent read-only source/control-flow review, stdlib AST parsing, exact file/closure/input/reference hashes and capacity arithmetic. No candidate imports, tests, protocol, model, RNG, optimizer, old-bug reproduction, remote operation or restricted owner/V3-subtree reads. Only this review artifact is written.",
+  "parent_once_run_admission_required": true,
+  "process_and_resource_review": {
+    "EOF_order": "Supervisor alone retains command-pipe writer; producer closes its inherited writer before exec. Supervisor waits for READY, verifies midpoint/root/lock/request/source/known result and pre-close inventory, then closes writer without sending bytes. Worker awaits EOF, records unknown and performs same-instance replay test. Supervisor reaps producer before final fault/inventory verification.",
+    "cost_scope": "Subtree receipt includes supervisor plus producer once; worker CPU partitions it rather than adding a second charge. Outer measured prefix is extra and final tail unknown. Reviewer/preparation and earlier histories are extra costs. Per-process caps and posthoc terminal tests do not constitute a strict aggregate CPU/RSS/disk quota or universal cleanup guarantee.",
+    "existing_shared_lock": {
+      "mode": "supervisor opens existing resolved caller path rb and flock EX|NB; no create/fallback for benchmark lock",
+      "observed_bytes": 0,
+      "observed_device": 27,
+      "observed_inode": 536619,
+      "path": "/workspace/shared/rgb-class-preservation-20261030/benchmark.lock"
+    },
+    "fixture_pipe": "Separate private fixture pipe is written by the same worker before await_cancel. This tests normal public receipt construction, not external cancellation causality.",
+    "hard_limits_per_process": {
+      "AS_bytes": [
+        268435456,
+        268435456
+      ],
+      "CPU_seconds": [
+        2,
+        2
+      ],
+      "FSIZE_bytes": [
+        2097152,
+        2097152
+      ]
+    },
+    "inheritance": "run_once sets hard and soft caps before spawning; owned_process child inherits without raising. Single CPU affinity and BLAS/OMP/MKL/NUMEXPR thread counts 1 are set before exec. Producer reports exact inherited caps; supervisor checks them.",
+    "lock_scope": "The unchanged public local-writer wrapper separately creates/owns its per-root .hepta-writer.lock. That is the existing cooperative product protocol, not a substitute for the caller-provided benchmark lock or production authority.",
+    "owned_process_safety": "Exact previously reviewed owned_process registers its ownership object before fork and stores child PID before unmasking SIGALRM; uses WNOHANG wait4 and marks reap before optional log allocations. Cleanup targets registered unreaped children only. No additional threads/processes or hidden retries.",
+    "process_graph": [
+      "outer run_once",
+      "one supervisor",
+      "one producer"
+    ],
+    "terminal_caps": {
+      "largest_reaped_RSS_bytes": 268435456,
+      "outer_receipt_bytes": 65536,
+      "reaped_subtree_CPU_seconds": 5,
+      "retained_RUN_ONCE_bytes": 8388608,
+      "retained_RUN_ONCE_files": 100
+    },
+    "wall_limits_seconds": {
+      "fixed_live_clock_interval": 45,
+      "handled_failure_cleanup": 15,
+      "outer_initial": 90,
+      "supervisor": 60,
+      "worker": 30
+    }
+  },
+  "publication_admitted": false,
+  "qualification_admitted": true,
+  "reviewed_at_utc": "2026-11-04T01:22:24.684743+00:00",
+  "run_performed": false,
+  "schema": "independent-source-review-v1",
+  "scope_limits": [
+    "One fixed trusted cooperative local Linux profile, current user_cancel receipt and authorized singleton data. Not owner authentication, hostile Python/filesystem isolation, distributed exactly-once or global deduplication.",
+    "Original clock.validate-observe semantics remain; no deadline-expired replay feature, clock renewal, ACK-loss outcome recovery or successful restored live effects are added.",
+    "This source review does not qualify all branches of the inherited output-budget runtime, the excluded legacy serve API or arbitrary crash/transport/power-loss cases.",
+    "All old results remain scoped to their original freezes. No aggregate PASS, retrospective old-bug test, additional execution or publication is authorized by this artifact.",
+    "A transient execution-environment transport disconnect occurred before creation of one supplementary read-only command; it did not execute. Original environment returned; final freeze was rechecked and RUN_ONCE absence confirmed before this artifact was written."
+  ],
+  "source_and_input_binding": {
+    "byteexact_origin_entries": 20,
+    "changed_or_new_entries": [
+      "live_core.py",
+      "run_once.py",
+      "supervise.py",
+      "worker.py"
+    ],
+    "dependencies": "Fixed run uses included local modules plus existing stdlib and NumPy. The only unresolved AST import is multimodal_contract.py:329 serve inside to_legacy_request, reachable through excluded legacy dispatch only; the fixed content-input and policy path does not call it. Installation is outside admission.",
+    "exactness": "All FREEZE entries, all closure hashes/sizes and declared origin byte equality, all 18 INPUTS and all 9 REFERENCES were independently checked. Inputs are the original 13 data/history assets plus five legacy/EOF evidence pins.",
+    "freeze_entries": 32,
+    "frozen_entry_total_bytes": 193415,
+    "input_count": 18,
+    "input_total_bytes": 1807439,
+    "legacy_evidence": "legacy_live_core.py is exact predecessor source and is hash/AST evidence only. No frozen runtime imports it. No old affected candidate is executed.",
+    "live_core_delta": "GuardedDelivery.replay_control is the only changed method AST versus the exact legacy_live_core copy. Other methods and wrapper remain unchanged.",
+    "model_input_scope": "Original saved Content and Actor state, including optimizer arrays, are restored once each. Request uses original authorized row0 and old request, with new artifact/source/run/deadline bindings. Backend receives converted pixels, policy and identity; no labels or clean targets. Original wire/numeric route are reference comparisons, not a second model computation.",
+    "python_ASTs": 24,
+    "reference_pin_count": 9,
+    "source_closure_entries": 24
+  },
+  "source_freeze_sha256": "625d1bdb080698cd7164aac0fe90514b17584939aa57edea6ca9819c1c37b1ca",
+  "status": "PASS_SOURCE_SCOPED_RECEIPT_ONLY_REPLAY"
+}
