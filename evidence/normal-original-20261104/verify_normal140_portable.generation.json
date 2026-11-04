@@ -1,0 +1,29 @@
+{
+  "schema": "hepta-normal140-offline-reader-generation-v1",
+  "path": "/home/qian-qi/work/hepta-musl-helper-audit-recovery-20261104/verify_normal140_portable.py",
+  "bytes": 35739,
+  "sha256": "f93532ad2daa8d30e714744c0fb811d88c6117dc9f0b7e4b60d7b493a965b038",
+  "base_reader": {
+    "bytes": 18805,
+    "sha256": "9e44b4f1727fe791a2b29c9b170ade4488198cdb8ba58877e40004f8ffb0cc8c"
+  },
+  "workflow_sha256": "9dcf16372805fa13840875e396da579f16236c6f32524465eca4425d2a4bfe24",
+  "pure_functions": [
+    "environment",
+    "feature_values",
+    "inspect_actions",
+    "inspect_cquery",
+    "inspect_graph",
+    "normalize_path",
+    "normalized_label",
+    "one_option",
+    "option_values",
+    "profile",
+    "rustc_command_arguments",
+    "unique_map",
+    "validate_actions"
+  ],
+  "original_audit_function_ast_identical": true,
+  "runtime_exec_eval_compile_import_or_network_calls": false,
+  "native_executions": 0
+}

@@ -1,0 +1,201 @@
+{
+  "schema": "hepta-exec2-trigger-audit-v1",
+  "timestamp": "2026-11-04T01:51:18.863583+00:00",
+  "candidate": "a6d8ce20bf8f5b6991d2dc5ef7313812944db060",
+  "workflow_source_baseline": "103e4bcb3a6fbce57943a0c7c339d1d48808ce69",
+  "source_only_delta_preserves_workflows": true,
+  "default_main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "branch": "test/hepta-musl-helper-exec2-ctor-20261104",
+  "new_branch_absent_before_and_after": true,
+  "default_main_identical_before_and_after": true,
+  "candidate_yaml": 88,
+  "default_main_yaml": 75,
+  "unique_full_source_variants": 113,
+  "full_source_bytes": 1250691,
+  "all_full_git_blob_and_sha256_reverified": true,
+  "push_unique_path_count": 11,
+  "push_unique_variant_count": 18,
+  "candidate_push_count": 11,
+  "default_push_count": 11,
+  "existing_push_matches": 0,
+  "create_count": 0,
+  "workflow_run_count": 0,
+  "pull_request_target": [
+    {
+      "path": ".github/workflows/cla.yml",
+      "blob": "8316a3562fb2adeda5deb36a94d7aafa3fc5a8df",
+      "event": "pull_request_target"
+    }
+  ],
+  "pull_request_target_applicability": "CLA workflow requires a pull request event; no PR is created for this branch",
+  "event_counts_per_unique_variant": {
+    "push": 18,
+    "workflow_dispatch": 73,
+    "workflow_call": 74,
+    "pull_request": 20,
+    "issue_comment": 1,
+    "pull_request_target": 1,
+    "schedule": 2,
+    "issues": 3
+  },
+  "push_rows": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "git_blob": "43269479125e8e8b660cee1ad80666fe017205b8",
+      "branches": [
+        "work/automation-taskflow-durable-causal-chain"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "git_blob": "ea960487f3df8098098c90b24dd5025b2cd99ee0",
+      "branches": [
+        "main"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "git_blob": "2a7032e049df0efb8056211f96bc9b41174c10e2",
+      "branches": [
+        "main"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "git_blob": "a322c87c5bc250f7026e2700f92b6edfd45ef6be",
+      "branches": [],
+      "branch_matches": false,
+      "reason": "tag-only push"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "git_blob": "73292e2ca6e80527a636e4d244ceb83eb61846de",
+      "branches": [
+        "**full-ci**"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "git_blob": "7c0eab9ee115e68be98202b845d19967fec45b93",
+      "branches": [],
+      "branch_matches": false,
+      "reason": "tag-only push"
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "git_blob": "2252d54e5523fc5c1150da4ceb0c351e08562190",
+      "branches": [],
+      "branch_matches": false,
+      "reason": "tag-only push"
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "git_blob": "cd7c19e88eac5642d779ee76196f7ffbba287d39",
+      "branches": [],
+      "branch_matches": false,
+      "reason": "tag-only push"
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "git_blob": "0325310f8acd1fe956a4509dc0260fc1767ddce4",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "git_blob": "ac78c1e38415c52326ddfcbb0667035f5406781e",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "git_blob": "301490550049309eed591f7ebc016a9329879915",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "git_blob": "950849763e6cc2c3a0459af3fd746f68bce9e086",
+      "branches": [
+        "main"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "git_blob": "a388ab40723d2d2cab332a05e39fa96668c95aa4",
+      "branches": [
+        "**full-ci**"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "git_blob": "1082826f7a19fcda44545c79d8620fe51e326d99",
+      "branches": [],
+      "branch_matches": false,
+      "reason": "tag-only push"
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "git_blob": "83d3b98c2359ec312cc5fbe560334598489e2e1e",
+      "branches": [],
+      "branch_matches": false,
+      "reason": "tag-only push"
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "git_blob": "69509c54da76eee1a6cb5a350f231117174c784d",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "git_blob": "7a4102412d01b6f63c4a7dceb490633733d8b0e5",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "git_blob": "f75d05e226d2b6579c8f029d91490591839e0b54",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "branch_matches": false,
+      "reason": "branch patterns"
+    }
+  ],
+  "inputs": {
+    "all_sources": "*.yml",
+    "inventory": "inventories.json",
+    "before": "source-receipts.json",
+    "after": "final-ref-readbacks.json",
+    "event_sections": "event-sections-read0.json"
+  },
+  "outcome": "PASS_STATIC_TRIGGER_SCOPE"
+}

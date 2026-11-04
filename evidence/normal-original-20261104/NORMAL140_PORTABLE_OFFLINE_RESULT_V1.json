@@ -1,0 +1,1145 @@
+{
+  "schema": "hepta-normal140-portable-offline-v1",
+  "timestamp": "2026-11-04T02:08:36.580632+00:00",
+  "source": {
+    "head": "103e4bcb3a6fbce57943a0c7c339d1d48808ce69",
+    "merge": "68c36639d609033334785b347273899f5abab500",
+    "tree": "73d6f50dd52b5e30b536758335dbc82385f63ab3",
+    "harness": "bb813345a214c52767ac544230d6a475d51e8509"
+  },
+  "manifest_sha256": "0d3786126c78286bc2cc961137337196f728aff04efd644e55f2ffcef1138c10",
+  "author_reader_sha256": "f93532ad2daa8d30e714744c0fb811d88c6117dc9f0b7e4b60d7b493a965b038",
+  "lanes": [
+    {
+      "artifact_id": 13284682700,
+      "kind": "head",
+      "platform": "gnu",
+      "group": "feature-parity",
+      "official_size": 289989,
+      "official_sha256": "7a5239a96decaf2a9d60679573660e84a71ce7a76bfc1967f11ca76f6d44624d",
+      "workflow_conclusion": "success",
+      "native_passed": 6,
+      "native_failed": 0,
+      "not_executed": 0,
+      "cases": {
+        "default_profile": {
+          "status": "PASS",
+          "expected_names": [
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          "observed_names": [
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "238"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 238,
+          "missing": []
+        },
+        "default_writer": {
+          "status": "PASS",
+          "expected_names": [
+            "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          ],
+          "observed_names": [
+            "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0,
+          "missing": []
+        },
+        "qualification_unit": {
+          "status": "PASS",
+          "expected_names": [
+            "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+            "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+            "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          ],
+          "observed_names": [
+            "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+            "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+            "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          ],
+          "running_counts": [
+            "3"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "3",
+              "0",
+              "0",
+              "0",
+              "239"
+            ]
+          ],
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 239,
+          "missing": []
+        },
+        "qualification_product": {
+          "status": "PASS",
+          "expected_names": [
+            "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          ],
+          "observed_names": [
+            "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "12"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 12,
+          "missing": []
+        }
+      },
+      "failed_checks": []
+    },
+    {
+      "artifact_id": 13284987969,
+      "kind": "head",
+      "platform": "musl",
+      "group": "feature-parity",
+      "official_size": 295947,
+      "official_sha256": "d940126aebde9f7010fba5f6c988ba24f2fc686751c9ed2b75bb5ae6fe834c91",
+      "workflow_conclusion": "success",
+      "native_passed": 6,
+      "native_failed": 0,
+      "not_executed": 0,
+      "cases": {
+        "default_profile": {
+          "status": "PASS",
+          "expected_names": [
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          "observed_names": [
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "238"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 238,
+          "missing": []
+        },
+        "default_writer": {
+          "status": "PASS",
+          "expected_names": [
+            "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          ],
+          "observed_names": [
+            "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0,
+          "missing": []
+        },
+        "qualification_unit": {
+          "status": "PASS",
+          "expected_names": [
+            "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+            "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+            "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          ],
+          "observed_names": [
+            "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+            "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+            "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          ],
+          "running_counts": [
+            "3"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "3",
+              "0",
+              "0",
+              "0",
+              "239"
+            ]
+          ],
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 239,
+          "missing": []
+        },
+        "qualification_product": {
+          "status": "PASS",
+          "expected_names": [
+            "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          ],
+          "observed_names": [
+            "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "12"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 12,
+          "missing": []
+        }
+      },
+      "failed_checks": []
+    },
+    {
+      "artifact_id": 13285141555,
+      "kind": "prospective-merge",
+      "platform": "gnu",
+      "group": "feature-parity",
+      "official_size": 294967,
+      "official_sha256": "f36c6cebe1c84a4e2be10914eee556d7b3dda51845a2923ee312cd07aff17cc1",
+      "workflow_conclusion": "success",
+      "native_passed": 6,
+      "native_failed": 0,
+      "not_executed": 0,
+      "cases": {
+        "default_profile": {
+          "status": "PASS",
+          "expected_names": [
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          "observed_names": [
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "238"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 238,
+          "missing": []
+        },
+        "default_writer": {
+          "status": "PASS",
+          "expected_names": [
+            "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          ],
+          "observed_names": [
+            "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0,
+          "missing": []
+        },
+        "qualification_unit": {
+          "status": "PASS",
+          "expected_names": [
+            "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+            "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+            "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          ],
+          "observed_names": [
+            "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+            "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+            "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          ],
+          "running_counts": [
+            "3"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "3",
+              "0",
+              "0",
+              "0",
+              "239"
+            ]
+          ],
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 239,
+          "missing": []
+        },
+        "qualification_product": {
+          "status": "PASS",
+          "expected_names": [
+            "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          ],
+          "observed_names": [
+            "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "12"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 12,
+          "missing": []
+        }
+      },
+      "failed_checks": []
+    },
+    {
+      "artifact_id": 13284448668,
+      "kind": "prospective-merge",
+      "platform": "musl",
+      "group": "feature-parity",
+      "official_size": 296480,
+      "official_sha256": "9e5d846a8ae235b3208bf3c2c033afff11e7649766d33a9a5520f70925c6628b",
+      "workflow_conclusion": "success",
+      "native_passed": 6,
+      "native_failed": 0,
+      "not_executed": 0,
+      "cases": {
+        "default_profile": {
+          "status": "PASS",
+          "expected_names": [
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          "observed_names": [
+            "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "238"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 238,
+          "missing": []
+        },
+        "default_writer": {
+          "status": "PASS",
+          "expected_names": [
+            "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          ],
+          "observed_names": [
+            "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0,
+          "missing": []
+        },
+        "qualification_unit": {
+          "status": "PASS",
+          "expected_names": [
+            "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+            "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+            "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          ],
+          "observed_names": [
+            "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+            "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+            "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          ],
+          "running_counts": [
+            "3"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "3",
+              "0",
+              "0",
+              "0",
+              "239"
+            ]
+          ],
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 239,
+          "missing": []
+        },
+        "qualification_product": {
+          "status": "PASS",
+          "expected_names": [
+            "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          ],
+          "observed_names": [
+            "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          ],
+          "running_counts": [
+            "1"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "12"
+            ]
+          ],
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 12,
+          "missing": []
+        }
+      },
+      "failed_checks": []
+    },
+    {
+      "artifact_id": 13285571889,
+      "kind": "head",
+      "platform": "gnu",
+      "group": "remaining29",
+      "official_size": 290546,
+      "official_sha256": "fbd6dcf417d56dccca82f0de6dcc5cfa1f5e7b351e2820db525b8e9a4c1652fb",
+      "workflow_conclusion": "failure",
+      "native_passed": 27,
+      "native_failed": 0,
+      "not_executed": 2,
+      "cases": {
+        "infer": {
+          "status": "PASS",
+          "expected_names": [
+            "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+            "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant",
+            "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+            "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+            "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+            "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+            "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+            "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+            "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+            "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+            "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+            "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+            "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+            "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+            "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+            "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+            "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+            "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+            "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+            "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+            "test_process::tests::requires_the_exact_original_case_and_one_pass",
+            "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+            "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion"
+          ],
+          "observed_names": [
+            "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+            "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+            "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+            "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+            "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+            "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+            "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+            "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+            "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+            "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+            "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+            "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+            "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+            "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+            "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+            "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+            "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+            "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion",
+            "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+            "test_process::tests::requires_the_exact_original_case_and_one_pass",
+            "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+            "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+            "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant"
+          ],
+          "running_counts": [
+            "25"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "25",
+              "0",
+              "0",
+              "0",
+              "153"
+            ]
+          ],
+          "passed": 25,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 153,
+          "missing": []
+        },
+        "exec_discovery": {
+          "status": "FAIL_OR_INCOMPLETE",
+          "expected_names": [
+            "sandboxed_discovery_batches_roots_without_combining_different_permissions"
+          ],
+          "missing": [
+            "command.json",
+            "build-events.jsonl",
+            "original-test.log",
+            "native.exit",
+            "binary-identities.json"
+          ]
+        },
+        "exec_fs": {
+          "status": "FAIL_OR_INCOMPLETE",
+          "expected_names": [
+            "sandboxed_file_system_helper_finds_bwrap_on_preserved_path"
+          ],
+          "missing": [
+            "command.json",
+            "build-events.jsonl",
+            "original-test.log",
+            "native.exit",
+            "binary-identities.json"
+          ]
+        },
+        "supervisord": {
+          "status": "PASS",
+          "expected_names": [
+            "supervisord_child_entry",
+            "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          ],
+          "observed_names": [
+            "supervisord_child_entry",
+            "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          ],
+          "running_counts": [
+            "2"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "2",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0,
+          "missing": []
+        }
+      },
+      "failed_checks": [
+        "exec_discovery:complete_evidence",
+        "exec_fs:complete_evidence",
+        "helper_pre:PASS",
+        "helper_pre:exec_discovery:case",
+        "helper_pre:exec_discovery:independent_parse",
+        "helper_pre:exec_fs:case",
+        "helper_pre:exec_fs:independent_parse",
+        "helper_post:complete"
+      ]
+    },
+    {
+      "artifact_id": 13284219204,
+      "kind": "head",
+      "platform": "musl",
+      "group": "remaining29",
+      "official_size": 294949,
+      "official_sha256": "69bb237e41f28b4fbf7da24d951a20c9a7b8abb7684b5cbf7a58495c62ec0d17",
+      "workflow_conclusion": "failure",
+      "native_passed": 27,
+      "native_failed": 0,
+      "not_executed": 2,
+      "cases": {
+        "infer": {
+          "status": "PASS",
+          "expected_names": [
+            "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+            "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant",
+            "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+            "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+            "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+            "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+            "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+            "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+            "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+            "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+            "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+            "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+            "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+            "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+            "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+            "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+            "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+            "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+            "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+            "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+            "test_process::tests::requires_the_exact_original_case_and_one_pass",
+            "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+            "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion"
+          ],
+          "observed_names": [
+            "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+            "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+            "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+            "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+            "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+            "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+            "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+            "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+            "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+            "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+            "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+            "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+            "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+            "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+            "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+            "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+            "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+            "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion",
+            "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+            "test_process::tests::requires_the_exact_original_case_and_one_pass",
+            "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+            "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+            "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant"
+          ],
+          "running_counts": [
+            "25"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "25",
+              "0",
+              "0",
+              "0",
+              "153"
+            ]
+          ],
+          "passed": 25,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 153,
+          "missing": []
+        },
+        "exec_discovery": {
+          "status": "FAIL_OR_INCOMPLETE",
+          "expected_names": [
+            "sandboxed_discovery_batches_roots_without_combining_different_permissions"
+          ],
+          "missing": [
+            "command.json",
+            "build-events.jsonl",
+            "original-test.log",
+            "native.exit",
+            "binary-identities.json"
+          ]
+        },
+        "exec_fs": {
+          "status": "FAIL_OR_INCOMPLETE",
+          "expected_names": [
+            "sandboxed_file_system_helper_finds_bwrap_on_preserved_path"
+          ],
+          "missing": [
+            "command.json",
+            "build-events.jsonl",
+            "original-test.log",
+            "native.exit",
+            "binary-identities.json"
+          ]
+        },
+        "supervisord": {
+          "status": "PASS",
+          "expected_names": [
+            "supervisord_child_entry",
+            "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          ],
+          "observed_names": [
+            "supervisord_child_entry",
+            "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          ],
+          "running_counts": [
+            "2"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "2",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0,
+          "missing": []
+        }
+      },
+      "failed_checks": [
+        "exec_discovery:complete_evidence",
+        "exec_fs:complete_evidence",
+        "helper_pre:PASS",
+        "helper_pre:exec_discovery:case",
+        "helper_pre:exec_discovery:independent_parse",
+        "helper_pre:exec_fs:case",
+        "helper_pre:exec_fs:independent_parse",
+        "helper_post:complete"
+      ]
+    },
+    {
+      "artifact_id": 13284998019,
+      "kind": "prospective-merge",
+      "platform": "gnu",
+      "group": "remaining29",
+      "official_size": 290890,
+      "official_sha256": "e54085a34fe7e3befc92359fa3c55232f92618d863a98b7110956e2a58a3c47c",
+      "workflow_conclusion": "failure",
+      "native_passed": 27,
+      "native_failed": 0,
+      "not_executed": 2,
+      "cases": {
+        "infer": {
+          "status": "PASS",
+          "expected_names": [
+            "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+            "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant",
+            "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+            "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+            "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+            "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+            "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+            "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+            "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+            "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+            "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+            "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+            "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+            "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+            "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+            "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+            "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+            "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+            "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+            "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+            "test_process::tests::requires_the_exact_original_case_and_one_pass",
+            "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+            "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion"
+          ],
+          "observed_names": [
+            "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+            "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+            "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+            "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+            "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+            "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+            "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+            "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+            "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+            "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+            "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+            "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+            "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+            "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+            "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+            "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+            "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+            "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion",
+            "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+            "test_process::tests::requires_the_exact_original_case_and_one_pass",
+            "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+            "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+            "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant"
+          ],
+          "running_counts": [
+            "25"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "25",
+              "0",
+              "0",
+              "0",
+              "153"
+            ]
+          ],
+          "passed": 25,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 153,
+          "missing": []
+        },
+        "exec_discovery": {
+          "status": "FAIL_OR_INCOMPLETE",
+          "expected_names": [
+            "sandboxed_discovery_batches_roots_without_combining_different_permissions"
+          ],
+          "missing": [
+            "command.json",
+            "build-events.jsonl",
+            "original-test.log",
+            "native.exit",
+            "binary-identities.json"
+          ]
+        },
+        "exec_fs": {
+          "status": "FAIL_OR_INCOMPLETE",
+          "expected_names": [
+            "sandboxed_file_system_helper_finds_bwrap_on_preserved_path"
+          ],
+          "missing": [
+            "command.json",
+            "build-events.jsonl",
+            "original-test.log",
+            "native.exit",
+            "binary-identities.json"
+          ]
+        },
+        "supervisord": {
+          "status": "PASS",
+          "expected_names": [
+            "supervisord_child_entry",
+            "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          ],
+          "observed_names": [
+            "supervisord_child_entry",
+            "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          ],
+          "running_counts": [
+            "2"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "2",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0,
+          "missing": []
+        }
+      },
+      "failed_checks": [
+        "exec_discovery:complete_evidence",
+        "exec_fs:complete_evidence",
+        "helper_pre:PASS",
+        "helper_pre:exec_discovery:case",
+        "helper_pre:exec_discovery:independent_parse",
+        "helper_pre:exec_fs:case",
+        "helper_pre:exec_fs:independent_parse",
+        "helper_post:complete"
+      ]
+    },
+    {
+      "artifact_id": 13284549137,
+      "kind": "prospective-merge",
+      "platform": "musl",
+      "group": "remaining29",
+      "official_size": 294492,
+      "official_sha256": "1c70113a95f8d5a08965633cdb0144923ed5f14c1913f26910f2b03496949c12",
+      "workflow_conclusion": "failure",
+      "native_passed": 27,
+      "native_failed": 0,
+      "not_executed": 2,
+      "cases": {
+        "infer": {
+          "status": "PASS",
+          "expected_names": [
+            "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+            "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant",
+            "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+            "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+            "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+            "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+            "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+            "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+            "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+            "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+            "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+            "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+            "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+            "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+            "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+            "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+            "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+            "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+            "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+            "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+            "test_process::tests::requires_the_exact_original_case_and_one_pass",
+            "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+            "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion"
+          ],
+          "observed_names": [
+            "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+            "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+            "smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth",
+            "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+            "smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot",
+            "smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child",
+            "smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth",
+            "smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload",
+            "smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner",
+            "smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed",
+            "smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation",
+            "smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth",
+            "smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready",
+            "smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window",
+            "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+            "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+            "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+            "smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt",
+            "test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion",
+            "test_process::tests::rejects_successful_zero_case_and_ignored_case_runs",
+            "test_process::tests::requires_the_exact_original_case_and_one_pass",
+            "smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted",
+            "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+            "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant"
+          ],
+          "running_counts": [
+            "25"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "25",
+              "0",
+              "0",
+              "0",
+              "153"
+            ]
+          ],
+          "passed": 25,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 153,
+          "missing": []
+        },
+        "exec_discovery": {
+          "status": "FAIL_OR_INCOMPLETE",
+          "expected_names": [
+            "sandboxed_discovery_batches_roots_without_combining_different_permissions"
+          ],
+          "missing": [
+            "command.json",
+            "build-events.jsonl",
+            "original-test.log",
+            "native.exit",
+            "binary-identities.json"
+          ]
+        },
+        "exec_fs": {
+          "status": "FAIL_OR_INCOMPLETE",
+          "expected_names": [
+            "sandboxed_file_system_helper_finds_bwrap_on_preserved_path"
+          ],
+          "missing": [
+            "command.json",
+            "build-events.jsonl",
+            "original-test.log",
+            "native.exit",
+            "binary-identities.json"
+          ]
+        },
+        "supervisord": {
+          "status": "PASS",
+          "expected_names": [
+            "supervisord_child_entry",
+            "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          ],
+          "observed_names": [
+            "supervisord_child_entry",
+            "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          ],
+          "running_counts": [
+            "2"
+          ],
+          "native_summaries": [
+            [
+              "ok",
+              "2",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0,
+          "missing": []
+        }
+      },
+      "failed_checks": [
+        "exec_discovery:complete_evidence",
+        "exec_fs:complete_evidence",
+        "helper_pre:PASS",
+        "helper_pre:exec_discovery:case",
+        "helper_pre:exec_discovery:independent_parse",
+        "helper_pre:exec_fs:case",
+        "helper_pre:exec_fs:independent_parse",
+        "helper_post:complete"
+      ]
+    }
+  ],
+  "native_passed": 132,
+  "native_failed": 0,
+  "exec_not_executed": 8,
+  "new_native_executions": 0,
+  "artifact_code_executions": 0,
+  "network_calls": 0,
+  "outcome": "VERIFIED_ORIGINAL_132_PASS_8_UNEXECUTED_WITH_FOUR_WORKFLOW_FAILURES"
+}

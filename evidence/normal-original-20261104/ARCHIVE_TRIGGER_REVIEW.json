@@ -1,0 +1,153 @@
+{
+  "schema": "hepta-inert-evidence-archive-trigger-review-v1",
+  "branch": "archive/hepta-normal-original-evidence-20261104",
+  "parent": "a6d8ce20bf8f5b6991d2dc5ef7313812944db060",
+  "parent_tree": "1da8b039da9ccf72b2290af6af74dc6315a819b3",
+  "default_main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "prior_full_immutable_audit": {
+    "bytes": 6102,
+    "sha256": "172f768a993d4c762468620db568534009dd79e30d0c3af5485931bde4d6e89b"
+  },
+  "source_workflows_unchanged": true,
+  "full_variants_from_prior_verified_audit": 113,
+  "branch_absent": true,
+  "no_pr": true,
+  "commit_skip_ci": true,
+  "create_count": 0,
+  "workflow_run_count": 0,
+  "push_rows": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "git_blob": "43269479125e8e8b660cee1ad80666fe017205b8",
+      "branches": [
+        "work/automation-taskflow-durable-causal-chain"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "git_blob": "ea960487f3df8098098c90b24dd5025b2cd99ee0",
+      "branches": [
+        "main"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "git_blob": "2a7032e049df0efb8056211f96bc9b41174c10e2",
+      "branches": [
+        "main"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "git_blob": "a322c87c5bc250f7026e2700f92b6edfd45ef6be",
+      "branches": [],
+      "tag_only": true
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "git_blob": "73292e2ca6e80527a636e4d244ceb83eb61846de",
+      "branches": [
+        "**full-ci**"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "git_blob": "7c0eab9ee115e68be98202b845d19967fec45b93",
+      "branches": [],
+      "tag_only": true
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "git_blob": "2252d54e5523fc5c1150da4ceb0c351e08562190",
+      "branches": [],
+      "tag_only": true
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "git_blob": "cd7c19e88eac5642d779ee76196f7ffbba287d39",
+      "branches": [],
+      "tag_only": true
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "git_blob": "0325310f8acd1fe956a4509dc0260fc1767ddce4",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "git_blob": "ac78c1e38415c52326ddfcbb0667035f5406781e",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "git_blob": "301490550049309eed591f7ebc016a9329879915",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "git_blob": "950849763e6cc2c3a0459af3fd746f68bce9e086",
+      "branches": [
+        "main"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "git_blob": "a388ab40723d2d2cab332a05e39fa96668c95aa4",
+      "branches": [
+        "**full-ci**"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "git_blob": "1082826f7a19fcda44545c79d8620fe51e326d99",
+      "branches": [],
+      "tag_only": true
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "git_blob": "83d3b98c2359ec312cc5fbe560334598489e2e1e",
+      "branches": [],
+      "tag_only": true
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "git_blob": "69509c54da76eee1a6cb5a350f231117174c784d",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "git_blob": "7a4102412d01b6f63c4a7dceb490633733d8b0e5",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "tag_only": false
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "git_blob": "f75d05e226d2b6579c8f029d91490591839e0b54",
+      "branches": [
+        "integration/single-main-20260922"
+      ],
+      "tag_only": false
+    }
+  ],
+  "scope": "Derive inert archive applicability from previously fully rehashed immutable H/default workflow sources; neither ref changed. All push patterns are fixed main/work/integration, **full-ci**, or tags-only; this archive branch matches none. Only evidence files will be added."
+}

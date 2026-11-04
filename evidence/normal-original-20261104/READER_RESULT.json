@@ -1,0 +1,41 @@
+{
+  "schema": "hepta-retained-normal-evidence-verification-v1",
+  "result": "PASS_DATA_INTEGRITY",
+  "payloads": [
+    {
+      "payload": "normal140-run-41746794500",
+      "run_id": 41746794500,
+      "bytes": 2518260,
+      "sha256": "0af98127396dad7cf6e479973ca0260c43b3e3e8741219e203be70dc02ed08aa",
+      "outer_members_verified": 42,
+      "official_zip_bytes_and_metadata_verified": 8,
+      "official_zip_members_verified": 340,
+      "retained_original_outcomes": {
+        "native_passed": 132,
+        "native_failed": 0,
+        "exec_not_executed": 8,
+        "workflow_conclusion": "failure"
+      }
+    },
+    {
+      "payload": "exec2-run-41752326136",
+      "run_id": 41752326136,
+      "bytes": 1134596,
+      "sha256": "3e6d3bad909704cc43b7c19edf3a8dcffebe0ffec581414236cc6d540f0983ab",
+      "outer_members_verified": 25,
+      "official_zip_bytes_and_metadata_verified": 4,
+      "official_zip_members_verified": 188,
+      "retained_original_outcomes": {
+        "metadata_pre_passed": 4,
+        "compile_blocked_entries": 8,
+        "native_executions": 0,
+        "workflow_conclusion": "failure"
+      }
+    }
+  ],
+  "native_executions": 0,
+  "artifact_code_executions": 0,
+  "network_requests": 0,
+  "extracted_files": 0,
+  "scope": "Payload, member and official artifact identities verified. Retained source-specific outcomes are not new test executions."
+}
