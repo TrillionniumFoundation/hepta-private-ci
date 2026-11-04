@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+  "run": 41767471183,
+  "scope": "Actual completed original job logs; separate full ZIP/Git/output verification remains pending.",
+  "original_logs": {
+    "linux": {
+      "path": "qualification/original-artifact-evidence-20261104/memory-97a-original-observations/linux.job.log",
+      "bytes": 198420,
+      "sha256": "a58cbb05c7b80d76f51e300d18ee4f02e37db067bed8d1fabf05dc99e90a31de",
+      "original_status": "passed",
+      "command_exits": [
+        {
+          "name": "initial-clean-source",
+          "exit_code": 0
+        },
+        {
+          "name": "rustc-version",
+          "exit_code": 0
+        },
+        {
+          "name": "nextest-version",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-utils-path-inventory",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-utils-path-original-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-state-inventory",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-state-original-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-hepta-memory-inventory",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-hepta-memory-original-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "original-scoped-clippy",
+          "exit_code": 0
+        },
+        {
+          "name": "final-clean-source",
+          "exit_code": 0
+        }
+      ],
+      "problems": [],
+      "source_inputs_unchanged": true
+    },
+    "macos": {
+      "path": "qualification/original-artifact-evidence-20261104/memory-97a-original-observations/macos.job.log",
+      "bytes": 195670,
+      "sha256": "0e4108dc0eaba8ef9e7e14429dc7df527fe00b860c20b3830a183dc21f8c3951",
+      "original_status": "passed",
+      "command_exits": [
+        {
+          "name": "initial-clean-source",
+          "exit_code": 0
+        },
+        {
+          "name": "rustc-version",
+          "exit_code": 0
+        },
+        {
+          "name": "nextest-version",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-utils-path-inventory",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-utils-path-original-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-state-inventory",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-state-original-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-hepta-memory-inventory",
+          "exit_code": 0
+        },
+        {
+          "name": "codex-hepta-memory-original-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "original-scoped-clippy",
+          "exit_code": 0
+        },
+        {
+          "name": "final-clean-source",
+          "exit_code": 0
+        }
+      ],
+      "problems": [],
+      "source_inputs_unchanged": true
+    },
+    "bazel": {
+      "path": "qualification/original-artifact-evidence-20261104/memory-97a-original-observations/bazel.job.log",
+      "bytes": 220423,
+      "sha256": "fd9eb2e94e0fb42f3ccfbc5723c5152c5cb40e10f472cf367bd8cd1cd0666cb8",
+      "original_status": "passed",
+      "command_exits": [
+        {
+          "name": "initial-clean-source",
+          "exit_code": 0
+        },
+        {
+          "name": "committed-lock-first",
+          "exit_code": 0
+        },
+        {
+          "name": "original-lock-update",
+          "exit_code": 0
+        },
+        {
+          "name": "original-lock-check",
+          "exit_code": 0
+        },
+        {
+          "name": "original-testlog-location",
+          "exit_code": 0
+        },
+        {
+          "name": "original-inventory-path",
+          "exit_code": 0
+        },
+        {
+          "name": "original-ignored-inventory-path",
+          "exit_code": 0
+        },
+        {
+          "name": "original-inventory-state",
+          "exit_code": 0
+        },
+        {
+          "name": "original-ignored-inventory-state",
+          "exit_code": 0
+        },
+        {
+          "name": "original-inventory-memory",
+          "exit_code": 0
+        },
+        {
+          "name": "original-ignored-inventory-memory",
+          "exit_code": 0
+        },
+        {
+          "name": "original-library-targets",
+          "exit_code": 0
+        },
+        {
+          "name": "original-scoped-clippy",
+          "exit_code": 0
+        },
+        {
+          "name": "final-clean-source",
+          "exit_code": 0
+        }
+      ],
+      "problems": null,
+      "source_inputs_unchanged": true
+    }
+  },
+  "jobs": {
+    "linux": 126370589294,
+    "macos": 126370589220,
+    "bazel": 126370589231
+  },
+  "windows": "still running at this checkpoint",
+  "original_ignored_memory_cases_retained": 7
+}

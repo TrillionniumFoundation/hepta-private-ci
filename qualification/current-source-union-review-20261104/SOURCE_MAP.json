@@ -1,0 +1,3025 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-11-04 03:53:45 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Read-only candidate composition analysis. No combined source tree, lock, product ref or qualified combined result is created by this report.",
+  "common_source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "proposed_root_base": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+  "components": {
+    "base": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+    "owner_state": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+    "memory": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+    "env": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+    "auth": "aaf74551dccf99f2d0d1525d02337cf804233817",
+    "v8": "083116160fe81198ae0c441aad22224c0c8d2940",
+    "tee": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9"
+  },
+  "comparison_basis": {
+    "owner_state": {
+      "merge_base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "status": "ahead",
+      "listed_changed_paths": 111
+    },
+    "env": {
+      "merge_base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "status": "ahead",
+      "listed_changed_paths": 37
+    },
+    "auth": {
+      "merge_base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "status": "ahead",
+      "listed_changed_paths": 16
+    },
+    "v8": {
+      "merge_base": "80de936f9b738179b87aee0a4d7066e6ca501c8e",
+      "status": "diverged",
+      "listed_changed_paths": 15
+    },
+    "tee": {
+      "merge_base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "status": "ahead",
+      "listed_changed_paths": 52
+    }
+  },
+  "paths": {
+    ".github/scripts/test_run_bazel_clippy_targets.py": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    ".github/workflows/hepta-windows-archive-input-qualification.yml": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "codex-rs/cli/src/hepta.rs": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/cli/src/main.rs": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/cli/src/main_shared.rs": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "codex-rs/core/src/environment_selection.rs": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/core/src/tools/handlers/multi_agents_tests.rs": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-supervisor/src/tick.rs": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      }
+    ],
+    "patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/INDEPENDENT_REVIEW.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/LOCAL_CHECKS.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/ORIGINAL_FAILURES.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/README.md": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/SOURCE.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/placement/OUTPUTS.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/placement/RECEIPT.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/placement_probe.py": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/original-product-followups-20261104/README.md": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/original-product-followups-20261104/original-windows-shard1/job.part000.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/original-product-followups-20261104/original-windows-shard1/job.part001.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/original-product-followups-20261104/original-windows-shard1/job.part002.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/original-product-followups-20261104/source-binding.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/original-product-followups-20261104/supervisor-independent-source-review.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/repo-gates-composition-20261104/README.md": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/repo-gates-composition-20261104/original-contract-failure.excerpt.log": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/repo-gates-composition-20261104/original-pinned-ruff-diagnostic.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/repo-gates-composition-20261104/owner-contract-pass.excerpt.log": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/repo-gates-composition-20261104/source-binding.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/README.md": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/evidence.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/independent-static-review.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/native-ced3/artifacts.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/native-ced3/evidence.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/native-ced3/linux.job.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/native-ced3/lock.job.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/native-ced3/windows.job.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/negative-original-job.part01.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/negative-original-job.part02.log.gz": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/run.py": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/run_lock.py": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-archive-inputs-20261104/source-binding.json": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "added"
+      }
+    ],
+    "scripts/hepta-docs.py": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      }
+    ],
+    "scripts/list-bazel-clippy-targets.sh": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      }
+    ],
+    "scripts/test_hepta_cleanup_consumers.py": [
+      {
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "status": "modified"
+      }
+    ],
+    ".github/workflows/hepta-memory-migration-qualification.yml": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    ".github/workflows/hepta-windows-memory-current.yml": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/Cargo.lock": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      },
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      },
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "modified"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/Cargo.toml": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store_sync.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store_windows.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-memory/src/cognitive_test_support.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-memory/src/local_turn_binding.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/state/Cargo.toml": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/state/src/sqlite_recovery.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/state/src/sqlite_recovery_image.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/state/src/sqlite_recovery_image_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/state/src/sqlite_recovery_windows.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/state/src/sqlite_recovery_windows_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/utils/path-utils/Cargo.toml": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      },
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/lib.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "modified"
+      },
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      },
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_directory.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      },
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      },
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_security.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      },
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      },
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/README.md": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/evidence.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/hosted-398838/13275361588.zip": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/hosted-398838/13275381359.zip": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/hosted-398838/13275610579.zip": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/hosted-398838/VERIFIED.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/hosted-398838/mac-failure-classification.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/hosted-398838/manifest.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/mac-successor/README.md": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/mac-successor/evidence.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/mac-successor/original-memory-target.log.gz": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/original-linux-job.log.gz": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/reader-controls.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/run.py": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/memory-migration-20261103/verify_previous.py": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/README.md": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/failed-b12/DIAGNOSIS.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/failed-b12/README.md": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/failed-b12/bazel-VERIFIED.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/failed-b12/bazel-bridge-original.log.gz": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/failed-b12/independent-bazel-listing-review.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/failed-b12/windows-VERIFIED.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/failed-b12/windows-bridge-original.log.gz": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/generate.py": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/generated-ceb/RECEIPT.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/generated-ceb/original-generation.log.gz": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/generated-inputs.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/run_bazel.py": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/run_native.py": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/scope.json": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-memory-recovery-current/test_readers.py": [
+      {
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "status": "added"
+      }
+    ],
+    ".github/fixtures/windows-private-state-acquisition/path-check-open.patch": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    ".github/fixtures/windows-private-state-acquisition/unchecked-create.patch": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    ".github/scripts/check_windows_private_state_acquisition.py": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    ".github/scripts/test_check_windows_private_state_acquisition.py": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    ".github/workflows/hepta-windows-owner-local-qualification.yml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    ".github/workflows/hepta-windows-private-state-qualification.yml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/client.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/control.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/control_native_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/control_peer_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/state_isolation_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-contracts/Cargo.toml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-contracts/src/authority_lease.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-contracts/src/authority_lease_windows.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-contracts/src/final_use_store.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-contracts/src/final_use_store_windows.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-matrixd/src/control.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-prompt-registry/Cargo.toml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-prompt-registry/src/durable.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-prompt-registry/src/durable_windows.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/uds/Cargo.toml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/uds/src/lib.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/uds/src/lib_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/uds/src/owner_local.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/uds/src/owner_local_security.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/uds/src/owner_local_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/uds/src/owner_local_windows.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "codex-rs/uds/src/owner_local_windows_tests.rs": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/README.md": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/independent-source-review.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/independent-wrapper-review.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/cargo-deny.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/cargo-deny.raw.jsonl.gz.part-00": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/cargo-deny.raw.jsonl.gz.part-01": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/cargo-resolution.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/compressed-evidence-parts.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/just-fmt-final.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/just-fmt.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/metadata.json.gz.part-00": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/metadata.json.gz.part-01": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/uds-original.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/uds-original.junit.xml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/uds-original.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/uds-scoped-fix.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/uds-scoped-fix.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/local/validation.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/run_qualification.py": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/upstream-13248293506.zip": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/upstream-13248477030.zip": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/upstream-13248722651.zip": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/upstream-artifact-verification.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-owner-local-current/upstream-source.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/README.md": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/candidate-source.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-64006d6/README.md": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-64006d6/acquisition-manifest.json.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-64006d6/codex-hepta-agentd.junit.xml.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-64006d6/independent-fixture-review.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-64006d6/observed-results.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-8275996/README.md": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-8275996/independent-fixture-review.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-8275996/macos-agentd.junit.xml.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-8275996/observed-results.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-8275996/replay_progress.py": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-8275996/windows-positive.log.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-d5f36b3/codex-hepta-agentd.junit.xml.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-d5f36b3/codex-hepta-contracts.junit.xml.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-d5f36b3/codex-hepta-prompt-registry.junit.xml.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-d5f36b3/codex-utils-path.junit.xml.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-d5f36b3/observed-results.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/hosted-d5f36b3/scoped-clippy-fix.log.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/independent-agentd-review.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/independent-source-review.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/binary-parts.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/cargo-deny.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/cargo-deny.raw.jsonl.gz.part00": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/cargo-deny.raw.jsonl.gz.part01": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/cargo-resolution.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/codex-hepta-contracts.junit.xml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/codex-hepta-contracts.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/codex-hepta-prompt-registry.junit.xml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/codex-hepta-prompt-registry.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/codex-utils-path.junit.xml": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/codex-utils-path.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/just-fmt.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/lint-format.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/metadata.json.gz.part00": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/metadata.json.gz.part01": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/metadata.stderr": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/original-library-native.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/local/scoped-clippy-fix.log": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/run_qualification.py": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/upstream-acquisition-controls.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/upstream-agentd-compile-failure.log.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/upstream-agentd.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/upstream-job-logs.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/upstream-private-state-native.log.gz": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-private-state-current/upstream-private-state.json": [
+      {
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "status": "added"
+      }
+    ],
+    ".bazelrc": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "modified"
+      },
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    ".github/workflows/hepta-windows-process-env-qualification.yml": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "codex-rs/core/src/codex_thread.rs": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/core/src/tasks/idle_work.rs": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "codex-rs/core/src/tasks/idle_work_tests.rs": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "codex-rs/core/src/tasks/mod.rs": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/core/src/tasks/terminalization_completion.rs": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "codex-rs/ext/queue/src/service.rs": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/ext/queue/tests/queue_service.rs": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/git-utils/Cargo.toml": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/git-utils/src/git_process_tests.rs": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "modified"
+      }
+    ],
+    "qualification/windows-process-env-current/README.md": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/hosted-fb1c/observed-results.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/hosted-fb1c/predecessor-static-review.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/hosted-fb1c/wsl-launcher.log.bin": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/local-qualification.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/run_qualification.py": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/test_reports.py": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/upstream-112c/VERIFIED.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/upstream-112c/git-utils-unit-tests-test.log.gz": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/upstream-112c/git-utils-unit-tests-test.xml.gz": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/upstream-112c/queue-queue_service-test-test.log.gz": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/upstream-112c/queue-queue_service-test-test.xml.gz": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-env-current/upstream-112c/report-bytes.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/README.md": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/generate.py": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/generated-inputs.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/historical-legacy-env-merge.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/historical-legacy-env-source.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/ordered-idle/FORMATTER_ADOPTION.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/ordered-idle/ORIGINAL_FAILURES.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/ordered-idle/README.md": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/ordered-idle/SOURCE_BINDING.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/ordered-idle/formatter-7a139330.log": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/provenance.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    "qualification/windows-process-fixtures-current/scope.json": [
+      {
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "status": "added"
+      }
+    ],
+    ".github/workflows/hepta-authorized-read-qualification.yml": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "codex-rs/exec-server/src/local_file_system.rs": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/exec-server/src/remote.rs": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/exec-server/tests/authorized_read_rpc.rs": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "modified"
+      }
+    ],
+    "qualification/authorized-read-20261103/README.md": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/fixture-evidence.json": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/fixture-evidence.zip": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/local-evidence.json": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/local-evidence.zip": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/original-negative/13266619365.zip": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/original-negative/13266689342.zip": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/original-negative/13267774672.zip": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/original-negative/VERIFIED.json": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/run.py": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    "qualification/authorized-read-20261103/verify_original_negative.py": [
+      {
+        "owner": "auth",
+        "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+        "status": "added"
+      }
+    ],
+    ".github/workflows/hepta-v8-allocator-qualification.yml": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "codex-rs/code-mode-runtime/src/v8_init.rs": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/v8-poc/BUILD.bazel": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/v8-poc/src/lib.rs": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "modified"
+      }
+    ],
+    "qualification/v8-allocator-20261103/README.md": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/evidence-manifest.json": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/launcher-844-negative.json": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/launcher-844-negative.zip": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/linux-bede-negative.json": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/linux-bede-negative.zip": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/linux-bede-original.log.gz": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/local-evidence.zip": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/original-failure.json": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/run.py": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    "qualification/v8-allocator-20261103/windows-shard-3-original.log.gz": [
+      {
+        "owner": "v8",
+        "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+        "status": "added"
+      }
+    ],
+    ".gitattributes": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    ".github/actions/setup-bazel-ci/action.yml": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    ".github/workflows/bazel9-windows-output-backport.yml": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    ".github/workflows/hepta-robrix-runfiles-qualification.yml": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "codex-rs/hepta-supervisor/BUILD.bazel": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-supervisor/Cargo.toml": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "modified"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/README.md": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/bazel9-windows-tee-drain.patch": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/build.py": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/first-58290/evidence.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/first-58290/job.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/hosted-f7/README.md": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/hosted-f7/artifacts.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/hosted-f7/hosted-result.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/hosted-f7/native-original-job.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/integration/independent-static-review.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/integration/source-inventory.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/publication/independent-harness-review.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/second-3616/builder-version.stderr": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/second-3616/builder-version.stdout": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/second-3616/evidence.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/second-3616/independent-readback.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/second-3616/job.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/second-3616/original-receipt.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/source-binding.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/bazel9-output-backport-20261104/upstream-static-review.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/README.md": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/evidence.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/native-a488/artifact-metadata.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/native-a488/evidence.json": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/native-a488/format-original-job.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/native-a488/linux-original-job.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/native-a488/lock-original-job.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/native-a488/mac-original-job.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/native-a488/windows-original-job.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/original-negative-target.log.gz": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/run.py": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ],
+    "qualification/robrix-runfiles-20261104/run_lock.py": [
+      {
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "status": "added"
+      }
+    ]
+  },
+  "overlaps": {
+    "codex-rs/cli/src/hepta.rs": [
+      {
+        "path": "codex-rs/cli/src/hepta.rs",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "27c294cd065862c50a7de0673d1836f6e66881d4",
+        "bytes": 57,
+        "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971"
+      },
+      {
+        "path": "codex-rs/cli/src/hepta.rs",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "27c294cd065862c50a7de0673d1836f6e66881d4",
+        "bytes": 57,
+        "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971"
+      }
+    ],
+    "codex-rs/cli/src/main.rs": [
+      {
+        "path": "codex-rs/cli/src/main.rs",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "27c294cd065862c50a7de0673d1836f6e66881d4",
+        "bytes": 57,
+        "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971"
+      },
+      {
+        "path": "codex-rs/cli/src/main.rs",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "27c294cd065862c50a7de0673d1836f6e66881d4",
+        "bytes": 57,
+        "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971"
+      }
+    ],
+    "codex-rs/cli/src/main_shared.rs": [
+      {
+        "path": "codex-rs/cli/src/main_shared.rs",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+        "bytes": 176978,
+        "sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513"
+      },
+      {
+        "path": "codex-rs/cli/src/main_shared.rs",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+        "bytes": 176978,
+        "sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/INDEPENDENT_REVIEW.json": [
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/INDEPENDENT_REVIEW.json",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "705fc44b3c50e6238375e47a8b87f5ab6b1cfb41",
+        "bytes": 1981,
+        "sha256": "c21b702d87cca3151428cd10c8bfa6a85a45905bee2ce7d2fad664af449f17e0"
+      },
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/INDEPENDENT_REVIEW.json",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "705fc44b3c50e6238375e47a8b87f5ab6b1cfb41",
+        "bytes": 1981,
+        "sha256": "c21b702d87cca3151428cd10c8bfa6a85a45905bee2ce7d2fad664af449f17e0"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/LOCAL_CHECKS.json": [
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/LOCAL_CHECKS.json",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "08bc851fc2d9596603a3febb54444600bff05bb0",
+        "bytes": 1816,
+        "sha256": "73a57980b974fda6276c11249e4e1653a0fa30665d2be46ba6052ec9e8903df1"
+      },
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/LOCAL_CHECKS.json",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "08bc851fc2d9596603a3febb54444600bff05bb0",
+        "bytes": 1816,
+        "sha256": "73a57980b974fda6276c11249e4e1653a0fa30665d2be46ba6052ec9e8903df1"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/ORIGINAL_FAILURES.json": [
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/ORIGINAL_FAILURES.json",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "e2b52b8c592ba40cb748ef7bd77febfbf6eaa2b5",
+        "bytes": 86158,
+        "sha256": "96d368e82ddb184cd3398734dfb206cc67e992c562d465d09cae52eb45ea43c6"
+      },
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/ORIGINAL_FAILURES.json",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "e2b52b8c592ba40cb748ef7bd77febfbf6eaa2b5",
+        "bytes": 86158,
+        "sha256": "96d368e82ddb184cd3398734dfb206cc67e992c562d465d09cae52eb45ea43c6"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/README.md": [
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/README.md",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "e9549c17fd7d9997e272b4ab325e0c853c516449",
+        "bytes": 3380,
+        "sha256": "e602ad807557cff6464169218d21e8177f61304aed78603ec4e40a5f75569626"
+      },
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/README.md",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "e9549c17fd7d9997e272b4ab325e0c853c516449",
+        "bytes": 3380,
+        "sha256": "e602ad807557cff6464169218d21e8177f61304aed78603ec4e40a5f75569626"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/SOURCE.json": [
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/SOURCE.json",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "8f396dbbfd3ba2df091b988cadcb7038878cb6fa",
+        "bytes": 2170,
+        "sha256": "94424d5029e2962beeaa9c100d40c8c5c44c3b3edaa4f7d61465daf3f73e0299"
+      },
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/SOURCE.json",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "8f396dbbfd3ba2df091b988cadcb7038878cb6fa",
+        "bytes": 2170,
+        "sha256": "94424d5029e2962beeaa9c100d40c8c5c44c3b3edaa4f7d61465daf3f73e0299"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/placement/OUTPUTS.json": [
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/placement/OUTPUTS.json",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "593357ec1bda661423b61f7b39af60a7071a8c4d",
+        "bytes": 763,
+        "sha256": "d080fe6ee5ed66c3c155512adbd2e2ab67f858848a2cec4f255c1cb6f7a33bac"
+      },
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/placement/OUTPUTS.json",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "593357ec1bda661423b61f7b39af60a7071a8c4d",
+        "bytes": 763,
+        "sha256": "d080fe6ee5ed66c3c155512adbd2e2ab67f858848a2cec4f255c1cb6f7a33bac"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/placement/RECEIPT.json": [
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/placement/RECEIPT.json",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "4413853e267f2d7757590e1cee1e9cea3d7e9bcd",
+        "bytes": 5694,
+        "sha256": "0e1fe768a524985265f00ed9ee4456db605f964b70a0ce5f2bcbf7ebdcf0134e"
+      },
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/placement/RECEIPT.json",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "4413853e267f2d7757590e1cee1e9cea3d7e9bcd",
+        "bytes": 5694,
+        "sha256": "0e1fe768a524985265f00ed9ee4456db605f964b70a0ce5f2bcbf7ebdcf0134e"
+      }
+    ],
+    "qualification/cli-crate-entrypoint-20261103/placement_probe.py": [
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/placement_probe.py",
+        "owner": "base",
+        "head": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+        "blob": "be70d2ce1fb5eb22b56cacaf86f8d10ff3e136ef",
+        "bytes": 4079,
+        "sha256": "9be4add8f1a8118d983d947881ea1b928810182d29d0a88ad46d6c2537107aba"
+      },
+      {
+        "path": "qualification/cli-crate-entrypoint-20261103/placement_probe.py",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "be70d2ce1fb5eb22b56cacaf86f8d10ff3e136ef",
+        "bytes": 4079,
+        "sha256": "9be4add8f1a8118d983d947881ea1b928810182d29d0a88ad46d6c2537107aba"
+      }
+    ],
+    "codex-rs/Cargo.lock": [
+      {
+        "path": "codex-rs/Cargo.lock",
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "fcfa4f99823bb3eedf7b4074aa6d1967dd891594",
+        "bytes": 416774,
+        "sha256": "3799ac5debde96c287c8b7c4454a9ef9308495c96936fc0d3c345c7e06136d92"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "94e4ac80c04dffb62702df1dfbf48ec5a4070fd2",
+        "bytes": 416813,
+        "sha256": "04ad14edd92986051b2d1bc3ad81a30a34a9cef954d08ce2468b7dda51704e78"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "blob": "49f6ab3d413689327da8e096f39ff0d8c5fa2b65",
+        "bytes": 416711,
+        "sha256": "25c229461ad91e433685c6f39c9c240354be47c33a2bbffae45ccf9f5afee85b"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "186a92cfef199e15ea9cf4897c5776f22d6b2227",
+        "bytes": 416719,
+        "sha256": "11d045e6e94e53dbcbe289bd1004ae559a4be48522eca2baa7f637cd3fb7e0a0"
+      }
+    ],
+    "codex-rs/utils/path-utils/Cargo.toml": [
+      {
+        "path": "codex-rs/utils/path-utils/Cargo.toml",
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+        "bytes": 697,
+        "sha256": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/Cargo.toml",
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+        "bytes": 697,
+        "sha256": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/lib.rs": [
+      {
+        "path": "codex-rs/utils/path-utils/src/lib.rs",
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "fc94d1f8b9f7c6ed8546ab357cdccdd59627ac61",
+        "bytes": 7680,
+        "sha256": "7087bbf2dd61ad06a7cb9094db7f44aca6aa6caffe8f85ae94db11f0cb843a98"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/lib.rs",
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "f4c65951c6c830a752b2b2563d9716589959d83b",
+        "bytes": 7114,
+        "sha256": "f909fd2d4d2c312b84c2972583573e99a5d4efb7f5c691df3a6b8912e3ffb589"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows.rs": [
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "2186bad1fda6aec90239299b9628968a425baf16",
+        "bytes": 26625,
+        "sha256": "2ac1f2c3eaa346cad787515777031ed1c82b1b2720cf00c35c7f0c8219c04080"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "03a8170a874621c362e1b135df654016207082d5",
+        "bytes": 26201,
+        "sha256": "ab6b480dc11705751f09f25ddf125f6d0ee7a3c42809d9d8867bac4803d5593d"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_directory.rs": [
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "ba645e90dc5a95d74d50370c7b2da90280c71229",
+        "bytes": 6404,
+        "sha256": "55edcbb06d3ac763a18a3628a58e76ff2c625d4cff39d368ee8a4ce89796ce0d"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "b4e85af5ba4f2a92d37bbec2c3fa1d65795ce6c4",
+        "bytes": 5376,
+        "sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs": [
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+        "bytes": 4909,
+        "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+        "bytes": 4909,
+        "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_security.rs": [
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "6289e7a878ef0494743b99734a60d368357c8562",
+        "bytes": 3333,
+        "sha256": "bfa9700c839f6ddafcc833dc47f70fec0cc7706584d43f21d96a223d341281d0"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "6289e7a878ef0494743b99734a60d368357c8562",
+        "bytes": 3333,
+        "sha256": "bfa9700c839f6ddafcc833dc47f70fec0cc7706584d43f21d96a223d341281d0"
+      }
+    ],
+    "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs": [
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+        "owner": "memory",
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+        "bytes": 10150,
+        "sha256": "bc31c4d507fd0172a02fb628bc5cc911063bab31ef4d6de71ca699d9269c45cc"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+        "owner": "owner_state",
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+        "bytes": 10150,
+        "sha256": "bc31c4d507fd0172a02fb628bc5cc911063bab31ef4d6de71ca699d9269c45cc"
+      }
+    ],
+    ".bazelrc": [
+      {
+        "path": ".bazelrc",
+        "owner": "env",
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "blob": "4be01309831bb9502fc5e1b2e63949e8a0e2828e",
+        "bytes": 14043,
+        "sha256": "c851702682dcd66ee0d378803477060383b0de36cca183536708440515e85a6c"
+      },
+      {
+        "path": ".bazelrc",
+        "owner": "tee",
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "a7e99cb758f821a9b3dd2cf711ea3bba1c6aaee9",
+        "bytes": 13824,
+        "sha256": "8e5380d7831effcdf7f7c2f73b83b45fcc663a06e91ef57a40e4f8023328ff50"
+      }
+    ]
+  },
+  "cargo_records": {
+    "base": {
+      "sha": "d6c49a2eed9bddda69d9a46726014c5262c7b310",
+      "bytes": 416693,
+      "sha256": "4d84dbb8e5b04d4ff62db84134267ddc825d0c0bc03a53a37ea7a4cb667f0f42",
+      "packageCount": 1517
+    },
+    "components": {
+      "memory": {
+        "head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+        "blob": "fcfa4f99823bb3eedf7b4074aa6d1967dd891594",
+        "packageCount": 1517,
+        "changes": [
+          {
+            "package": "codex-hepta-memory@0.0.0#",
+            "added": [
+              "codex-utils-path"
+            ],
+            "removed": []
+          },
+          {
+            "package": "codex-state@0.0.0#",
+            "added": [
+              "codex-utils-path"
+            ],
+            "removed": []
+          },
+          {
+            "package": "codex-utils-path@0.0.0#",
+            "added": [
+              "winapi-util",
+              "windows-sys 0.52.0"
+            ],
+            "removed": []
+          }
+        ]
+      },
+      "owner_state": {
+        "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+        "blob": "94e4ac80c04dffb62702df1dfbf48ec5a4070fd2",
+        "packageCount": 1517,
+        "changes": [
+          {
+            "package": "codex-hepta-contracts@0.0.0#",
+            "added": [
+              "codex-utils-path"
+            ],
+            "removed": []
+          },
+          {
+            "package": "codex-hepta-prompt-registry@0.0.0#",
+            "added": [
+              "codex-utils-path"
+            ],
+            "removed": []
+          },
+          {
+            "package": "codex-uds@0.0.0#",
+            "added": [
+              "sha2 0.10.9",
+              "windows-sys 0.61.2"
+            ],
+            "removed": []
+          },
+          {
+            "package": "codex-utils-path@0.0.0#",
+            "added": [
+              "winapi-util",
+              "windows-sys 0.52.0"
+            ],
+            "removed": []
+          }
+        ]
+      },
+      "env": {
+        "head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+        "blob": "49f6ab3d413689327da8e096f39ff0d8c5fa2b65",
+        "packageCount": 1517,
+        "changes": [
+          {
+            "package": "codex-git-utils@0.0.0#",
+            "added": [
+              "base64 0.22.1"
+            ],
+            "removed": []
+          }
+        ]
+      },
+      "tee": {
+        "head": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+        "blob": "186a92cfef199e15ea9cf4897c5776f22d6b2227",
+        "packageCount": 1517,
+        "changes": [
+          {
+            "package": "codex-hepta-supervisor@0.0.0#",
+            "added": [
+              "codex-utils-cargo-bin"
+            ],
+            "removed": []
+          }
+        ]
+      }
+    },
+    "unionDependencyAdditions": {
+      "codex-hepta-memory@0.0.0#": [
+        "codex-utils-path"
+      ],
+      "codex-state@0.0.0#": [
+        "codex-utils-path"
+      ],
+      "codex-utils-path@0.0.0#": [
+        "winapi-util",
+        "windows-sys 0.52.0"
+      ],
+      "codex-hepta-contracts@0.0.0#": [
+        "codex-utils-path"
+      ],
+      "codex-hepta-prompt-registry@0.0.0#": [
+        "codex-utils-path"
+      ],
+      "codex-uds@0.0.0#": [
+        "sha2 0.10.9",
+        "windows-sys 0.61.2"
+      ],
+      "codex-git-utils@0.0.0#": [
+        "base64 0.22.1"
+      ],
+      "codex-hepta-supervisor@0.0.0#": [
+        "codex-utils-cargo-bin"
+      ]
+    }
+  },
+  "resolutions": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "decision": "Generate from the composed manifests with the original pinned Cargo command; preserve every independent old lock and verify the union of exactly ten added edges in eight workspace records against the 1517-package baseline. Do not select one component lock as the combined lock."
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "decision": "Run original committed-lock-first, real update and check on the composed tree. Any generated difference must be adopted by exact bytes and requalified."
+    },
+    {
+      "paths": [
+        "codex-rs/utils/path-utils/src/lib.rs",
+        "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "codex-rs/utils/path-utils/src/private_state_windows_directory.rs"
+      ],
+      "decision": "Use exact Memory97a bytes after its native qualification. Reviewed difference preserves the 052 create branch and adds existing-only retained-recovery methods. Re-run original private-state/OwnerLocal and Memory consumers on the composed source."
+    },
+    {
+      "path": ".bazelrc",
+      "decision": "Compose the exact eight Env Windows environment variables with the single Tee bazel_tools repository override. Require the exact shared setup preparation/finalizer before each applicable consumer; a standalone rc replacement would be incomplete."
+    },
+    {
+      "paths": [
+        "codex-rs/cli/src/main.rs",
+        "codex-rs/cli/src/hepta.rs",
+        "codex-rs/cli/src/main_shared.rs"
+      ],
+      "decision": "Keep root a3 bytes. Actual immutable reads equal Tee/Robrix ancestry exactly."
+    },
+    {
+      "component": "v8",
+      "decision": "Port only the reviewed three production/build paths plus its qualification material; head083 diverges from0b9 at80de. Preserve current1.96 dependency graph and other0b9 inputs."
+    }
+  ],
+  "other_owner_product": {
+    "pr": 4757,
+    "head": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+    "pr_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "actual_merge_base_with_common_source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "status": "diverged",
+    "pr_relative_delta_paths": [
+      ".bazelrc",
+      ".codespellrc",
+      ".github/scripts/test_run_bazel_clippy_targets.py",
+      ".github/workflows/bazel.yml",
+      ".github/workflows/codespell.yml",
+      ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      ".github/workflows/hepta-operator-acceptance-native.yml",
+      ".github/workflows/hepta-owner-local-native.yml",
+      ".github/workflows/windows-bazel-process-native.yml",
+      ".github/workflows/windows-core-lifecycle.yml",
+      ".github/workflows/windows-retained-recovery.yml",
+      "CALLERS.toml",
+      "apps/hepta-control-ui/rust/core/Cargo.toml",
+      "apps/hepta-control-ui/rust/core/src/chat.rs",
+      "apps/hepta-control-ui/rust/core/src/chat/fixtures.rs",
+      "codex-rs/Cargo.lock",
+      "codex-rs/app-server/src/lib.rs",
+      "codex-rs/app-server/src/message_processor.rs",
+      "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "codex-rs/core/src/agent/control.rs",
+      "codex-rs/core/src/agent/control/legacy.rs",
+      "codex-rs/core/src/agent/control/residency.rs",
+      "codex-rs/core/src/agent/control/spawn.rs",
+      "codex-rs/core/src/agent/control/transitions.rs",
+      "codex-rs/core/src/agent/control_shutdown_tests.rs",
+      "codex-rs/core/src/agent/control_tests.rs",
+      "codex-rs/core/src/agent/registry.rs",
+      "codex-rs/core/src/agent/registry_tests.rs",
+      "codex-rs/core/src/guardian/review_session.rs",
+      "codex-rs/core/src/thread_manager.rs",
+      "codex-rs/core/src/thread_manager/runtime_identity.rs",
+      "codex-rs/core/src/tools/handlers/multi_agents_tests.rs",
+      "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+      "codex-rs/exec-server/src/remote_file_system.rs",
+      "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+      "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "codex-rs/exec-server/tests/file_system_unix.rs",
+      "codex-rs/exec/Cargo.toml",
+      "codex-rs/exec/tests/suite/resume.rs",
+      "codex-rs/hepta-agentd/BUILD.bazel",
+      "codex-rs/hepta-agentd/src/client.rs",
+      "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "codex-rs/hepta-agentd/src/control.rs",
+      "codex-rs/hepta-agentd/src/control_native_tests.rs",
+      "codex-rs/hepta-agentd/src/control_peer_tests.rs",
+      "codex-rs/hepta-agentd/src/notes_channel_tests.rs",
+      "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "codex-rs/hepta-agentd/src/test_support.rs",
+      "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "codex-rs/hepta-infer-worker-host/src/native_agent_output.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_agent_output_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "codex-rs/hepta-memory/Cargo.toml",
+      "codex-rs/hepta-memory/src/cognitive_path.rs",
+      "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+      "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+      "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+      "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+      "codex-rs/hepta-operator-acceptance/Cargo.toml",
+      "codex-rs/hepta-operator-acceptance/src/durable.rs",
+      "codex-rs/hepta-operator-acceptance/src/durable_windows.rs",
+      "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs",
+      "codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+      "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+      "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "codex-rs/hepta-operator-acceptance/src/manifest_inventory_tests.rs",
+      "codex-rs/hepta-operator-acceptance/src/sshsig.rs",
+      "codex-rs/hepta-operator-acceptance/src/sshsig_tests.rs",
+      "codex-rs/hepta-operator-acceptance/src/test_support.rs",
+      "codex-rs/hepta-operator-acceptance/src/trust.rs",
+      "codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
+      "codex-rs/hepta-supervisor/BUILD.bazel",
+      "codex-rs/hepta-supervisor/Cargo.toml",
+      "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "codex-rs/rollout/src/state_db.rs",
+      "codex-rs/rollout/src/state_db_tests.rs",
+      "codex-rs/state/Cargo.toml",
+      "codex-rs/state/src/sqlite_recovery.rs",
+      "codex-rs/state/src/sqlite_recovery_image.rs",
+      "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+      "codex-rs/state/src/sqlite_recovery_windows.rs",
+      "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+      "codex-rs/utils/path-utils/src/lib.rs",
+      "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+      "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs",
+      "defs.bzl",
+      "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "scripts/list-bazel-clippy-targets.sh"
+    ],
+    "cross_base_compare_returned_300_paths": true,
+    "cross_base_compare_is_complete": false,
+    "decision": "Do not overlay the whole owner tree. Its Rust1.95/UI/Objective/schema lineage and 95 PR paths are not a complete two-tree diff relative to0b9. Reconcile each additional owner component using exact sources and current native scope; retain schema1–15 and1.96."
+  },
+  "limitations": [
+    "File-path overlap is not semantic compatibility or native qualification.",
+    "Component native results remain bound to their original heads; no combined-tree result is inferred.",
+    "The newest full Windows failures extend beyond this candidate set. The separate failure-scope report keeps unmapped and partly covered targets open.",
+    "The root-owned app-server-schema generator and Core/Supervisor native scopes may produce newer heads; refresh them before any actual composition."
+  ]
+}
