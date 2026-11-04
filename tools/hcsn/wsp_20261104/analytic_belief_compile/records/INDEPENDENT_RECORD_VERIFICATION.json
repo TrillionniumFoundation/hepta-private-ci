@@ -1,0 +1,20 @@
+{
+  "schema": "hepta-belief-compile-readonly-verification-receipt-v1",
+  "exit_code": 0,
+  "scope": "Record/source arithmetic only; no model forward, candidate solve, gradient update or random world generation.",
+  "output": {
+    "status": "passed_record_identity_metrics_dedup",
+    "verifier_sha256": "716f7910ccd8224afd7c38fe5276d7fc7f04b7959087cd5d1f303d0aa5497c02",
+    "results_sha256": "63ae9ff85631fd53c70f4dc69a82dc59feaaa84e37a19ed1efcb19e8316babd6",
+    "probes_verified": 20,
+    "arm_split_records_verified": 160,
+    "contrast_metric_CIs_verified": 154,
+    "test_worlds_verified": 320,
+    "history_unique_schedules": 1616,
+    "previous_frozen_files_verified": 177,
+    "transferred_raw_files_verified": 49,
+    "new_model_calls": 0,
+    "random_draws": 0,
+    "scope": "Scalar record arithmetic, source/parameter identity, exact registered-content dedup and recorded freeze chain only. Convex numerical-source verification is independently handled by verify_belief_solver_records.py; no global external-history freshness claim."
+  }
+}

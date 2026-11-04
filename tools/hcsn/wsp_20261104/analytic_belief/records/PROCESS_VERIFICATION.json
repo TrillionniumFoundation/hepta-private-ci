@@ -1,0 +1,104 @@
+{
+  "automatic_retry": false,
+  "cancelled": false,
+  "events": [
+    {
+      "CP_accepted": true,
+      "CP_val_gain": 0.0060637278213998,
+      "P_accepted": false,
+      "P_val_gain": -0.00029962616335937886,
+      "cpu": 0.76086,
+      "fit": 11,
+      "stage": "original_train_val_fixed"
+    },
+    {
+      "CP_accepted": true,
+      "CP_val_gain": 0.005507331901406759,
+      "P_accepted": false,
+      "P_val_gain": 0.00016750859558456455,
+      "cpu": 1.717803,
+      "fit": 23,
+      "stage": "original_train_val_fixed"
+    },
+    {
+      "CP_accepted": false,
+      "CP_val_gain": -0.015574508526646658,
+      "P_accepted": false,
+      "P_val_gain": 0.0005795885957896596,
+      "cpu": 2.5628620000000004,
+      "fit": 37,
+      "stage": "original_train_val_fixed"
+    },
+    {
+      "CP_accepted": false,
+      "CP_val_gain": 0.0016750940964337935,
+      "P_accepted": false,
+      "P_val_gain": 0.00020261937554294507,
+      "cpu": 3.3440980000000002,
+      "fit": 53,
+      "stage": "original_train_val_fixed"
+    },
+    {
+      "CP_accepted": false,
+      "CP_val_gain": 0.0013055251148778035,
+      "P_accepted": true,
+      "P_val_gain": 0.017241580786854005,
+      "cpu": 4.674314,
+      "fit": 71,
+      "stage": "original_train_val_fixed"
+    },
+    {
+      "sha256": "8a5a3a1214c594e93280c75d45506a6fddee1acb45a4f32a910c17f780ac778d",
+      "stage": "all_five_gates_frozen_before_new_test"
+    },
+    {
+      "cpu": 7.625828,
+      "fit": 11,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "cpu": 10.661186,
+      "fit": 23,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "cpu": 13.792421000000001,
+      "fit": 37,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "cpu": 16.579177,
+      "fit": 53,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "cpu": 19.747682,
+      "fit": 71,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "CP_accepted": 2,
+      "P_accepted": 1,
+      "error": null,
+      "measurement": {
+        "cpu_seconds": 19.757740000000002,
+        "endpoint": "before final results compression and qualification write;120 CPU hard cap covers whole process",
+        "peak_rss_bytes": 123584512,
+        "process_cpu_seconds_at_measurement": 19.814992,
+        "wall_seconds": 20.016549041999998
+      },
+      "results_sha256": "fe5cf45508635bfc4bd96154a073fba3c292d6a82fd452c54b17ac27e3850dfb",
+      "stage": "finished",
+      "status": "completed"
+    }
+  ],
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "schema": "hepta-analytic-belief-process-verification-v1",
+  "scope": "Durable completion and ordered progress only; host/job/absolute operational paths omitted.",
+  "state": "succeeded",
+  "stderr_bytes": 0,
+  "stdout_bytes": 1839,
+  "timed_out": false
+}

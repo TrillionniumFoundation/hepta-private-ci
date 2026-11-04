@@ -1,0 +1,143 @@
+{
+  "schema": "hepta-belief-compile-process-verification-v1",
+  "state": "succeeded",
+  "exit_code": 0,
+  "timed_out": false,
+  "cancelled": false,
+  "automatic_retry": false,
+  "output_complete": true,
+  "output_durable": true,
+  "stderr_bytes": 0,
+  "stdout_bytes": 2280,
+  "ordered_events": [
+    {
+      "stage": "solvers_and_original_gates_frozen",
+      "fit": 11,
+      "D_FW_gap": 1.3331349912881763e-15,
+      "G_FW_gap": 9.99554273790719e-9,
+      "G_steps": 6549,
+      "G_converged": true,
+      "accepted": {
+        "D": false,
+        "CD": false,
+        "G": false,
+        "CG": false
+      },
+      "cpu": 1.18127
+    },
+    {
+      "stage": "solvers_and_original_gates_frozen",
+      "fit": 23,
+      "D_FW_gap": 1.0586150012148465e-15,
+      "G_FW_gap": 9.997648191522462e-9,
+      "G_steps": 9624,
+      "G_converged": true,
+      "accepted": {
+        "D": false,
+        "CD": false,
+        "G": false,
+        "CG": false
+      },
+      "cpu": 2.615799
+    },
+    {
+      "stage": "solvers_and_original_gates_frozen",
+      "fit": 37,
+      "D_FW_gap": 0,
+      "G_FW_gap": 9.990430069372128e-9,
+      "G_steps": 5713,
+      "G_converged": true,
+      "accepted": {
+        "D": false,
+        "CD": false,
+        "G": false,
+        "CG": false
+      },
+      "cpu": 3.789263
+    },
+    {
+      "stage": "solvers_and_original_gates_frozen",
+      "fit": 53,
+      "D_FW_gap": -1.0842021724855044e-19,
+      "G_FW_gap": 9.998616387640359e-9,
+      "G_steps": 18039,
+      "G_converged": true,
+      "accepted": {
+        "D": false,
+        "CD": false,
+        "G": false,
+        "CG": false
+      },
+      "cpu": 5.221294
+    },
+    {
+      "stage": "solvers_and_original_gates_frozen",
+      "fit": 71,
+      "D_FW_gap": -1.0842021724855044e-19,
+      "G_FW_gap": 9.995786450834633e-9,
+      "G_steps": 15776,
+      "G_converged": true,
+      "accepted": {
+        "D": true,
+        "CD": false,
+        "G": true,
+        "CG": false
+      },
+      "cpu": 7.085496
+    },
+    {
+      "stage": "all_five_solver_and_gate_records_frozen_before_generation",
+      "sha256": "35f198fef38058d37d72777bec5777e608b65020cf476cf1740ec37e542c9738"
+    },
+    {
+      "stage": "all320_worlds_deduplicated_before_any_test_scoring",
+      "sha256": "83c34d0b2edae732f0cade22796fec92cb9579992141e890905670edb9e41bb4",
+      "known_duplicates": 0
+    },
+    {
+      "stage": "test_complete",
+      "fit": 11,
+      "cpu": 10.0139
+    },
+    {
+      "stage": "test_complete",
+      "fit": 23,
+      "cpu": 13.368562
+    },
+    {
+      "stage": "test_complete",
+      "fit": 37,
+      "cpu": 16.652759
+    },
+    {
+      "stage": "test_complete",
+      "fit": 53,
+      "cpu": 19.652662999999997
+    },
+    {
+      "stage": "test_complete",
+      "fit": 71,
+      "cpu": 22.595868
+    },
+    {
+      "stage": "finished",
+      "status": "completed",
+      "measurement": {
+        "cpu_seconds": 22.61468,
+        "wall_seconds": 22.7039915,
+        "process_cpu_seconds_at_measurement": 22.673103,
+        "peak_rss_bytes": 128598016,
+        "endpoint": "Before final results compression and qualification write;180CPU hard cap covers whole process."
+      },
+      "gates_accepted": {
+        "D": 1,
+        "CD": 0,
+        "G": 1,
+        "CG": 0
+      },
+      "results_sha256": "63ae9ff85631fd53c70f4dc69a82dc59feaaa84e37a19ed1efcb19e8316babd6",
+      "error": null
+    }
+  ],
+  "scope": "Sanitized durable status and ordered stdout stages of the sole frozen scientific run; no host/job/absolute-path identity included."
+}

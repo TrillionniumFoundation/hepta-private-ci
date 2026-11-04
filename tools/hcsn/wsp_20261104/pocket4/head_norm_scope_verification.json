@@ -1,0 +1,78 @@
+{
+  "all_checked_heads_fit_0p100001": true,
+  "arithmetic": "EXACT_STORED_IEEE_RATIONALS",
+  "capacity_helper_sha256": "e080ada7c8e218454d43fe60a34f30e0a477889466ce60209c0083c8ddee6b2c",
+  "checks": [
+    {
+      "exact_norm_le_nominal_0p1": true,
+      "exact_norm_le_tolerance_0p100001": true,
+      "head": "parent",
+      "original_unit_norm_lower": "0.072193418383770757709461",
+      "original_unit_norm_upper": "0.072193418383770757709462",
+      "representation": "STORED_F64_USD_FIXTURE"
+    },
+    {
+      "exact_norm_le_nominal_0p1": true,
+      "exact_norm_le_tolerance_0p100001": true,
+      "head": "parent",
+      "original_unit_norm_lower": "0.072193420096083099337016",
+      "original_unit_norm_upper": "0.072193420096083099337017",
+      "representation": "F32_USD_NATIVE_GATE_CONVERSION"
+    },
+    {
+      "exact_norm_le_nominal_0p1": false,
+      "exact_norm_le_tolerance_0p100001": true,
+      "head": "exact18",
+      "original_unit_norm_lower": "0.100000000000000003713420",
+      "original_unit_norm_upper": "0.100000000000000003713421",
+      "representation": "STORED_F64_USD_FIXTURE"
+    },
+    {
+      "exact_norm_le_nominal_0p1": true,
+      "exact_norm_le_tolerance_0p100001": true,
+      "head": "exact18",
+      "original_unit_norm_lower": "0.099999999521930238169774",
+      "original_unit_norm_upper": "0.099999999521930238169775",
+      "representation": "F32_USD_NATIVE_GATE_CONVERSION"
+    },
+    {
+      "exact_norm_le_nominal_0p1": true,
+      "exact_norm_le_tolerance_0p100001": true,
+      "head": "exact36",
+      "original_unit_norm_lower": "0.099999999999999970546713",
+      "original_unit_norm_upper": "0.099999999999999970546714",
+      "representation": "STORED_F64_USD_FIXTURE"
+    },
+    {
+      "exact_norm_le_nominal_0p1": false,
+      "exact_norm_le_tolerance_0p100001": true,
+      "head": "exact36",
+      "original_unit_norm_lower": "0.100000000829928644673238",
+      "original_unit_norm_upper": "0.100000000829928644673239",
+      "representation": "F32_USD_NATIVE_GATE_CONVERSION"
+    },
+    {
+      "exact_norm_le_nominal_0p1": true,
+      "exact_norm_le_tolerance_0p100001": true,
+      "head": "exact54",
+      "original_unit_norm_lower": "0.099999999999999787645751",
+      "original_unit_norm_upper": "0.099999999999999787645752",
+      "representation": "STORED_F64_USD_FIXTURE"
+    },
+    {
+      "exact_norm_le_nominal_0p1": true,
+      "exact_norm_le_tolerance_0p100001": true,
+      "head": "exact54",
+      "original_unit_norm_lower": "0.099999998559860469054105",
+      "original_unit_norm_upper": "0.099999998559860469054106",
+      "representation": "F32_USD_NATIVE_GATE_CONVERSION"
+    }
+  ],
+  "fixture_sha256": "205bb2d9d1329c5a4ee134ce12146c29e842da80a8662a8e3533e0b85a4bd90a",
+  "norm_scope": "JOINT_WEIGHT_AND_BIAS; USD_FIXTURE_NORM_DIVIDED_BY_100",
+  "not_a_universal_fp32_norm_admission_proof": true,
+  "operational_certificate_requires_true_norm_bound": true,
+  "schema": "hepta.wsp.exact-head-norm-scope.v1",
+  "source_sha256": "c3738febffb5e65ef4e7c1be2b06c02a3249d6bafb7504afe3dbc7b91d848977",
+  "weights_and_labels_disclosed": false
+}

@@ -1,0 +1,113 @@
+{
+  "bank_index_zero_based": 7,
+  "models": [
+    {
+      "bank_semantics": "no-new-observation predictive state probability at next boundary, two boundaries and deadline6; thresholds normalized(-.5,0,.5), strict>; actual scheduled future drives and durations",
+      "family": "renewal",
+      "fit": 11,
+      "head_dimensions": [
+        85,
+        48,
+        4
+      ],
+      "last_two_coordinates": [
+        -1,
+        1
+      ],
+      "n_grid": 31,
+      "schema": "joint-policy-v1",
+      "sha256": "84c4386d0c8725959da10862cdfaad73b654b80e908f3de8d2383530767a38ac",
+      "state_count": 33,
+      "target": "sign(X_deadline6)>0, including early submit; learned belief is not privileged posterior"
+    },
+    {
+      "bank_semantics": "no-new-observation predictive state probability at next boundary, two boundaries and deadline6; thresholds normalized(-.5,0,.5), strict>; actual scheduled future drives and durations",
+      "family": "renewal",
+      "fit": 23,
+      "head_dimensions": [
+        85,
+        48,
+        4
+      ],
+      "last_two_coordinates": [
+        -1,
+        1
+      ],
+      "n_grid": 31,
+      "schema": "joint-policy-v1",
+      "sha256": "db58500626d4fc89161e4e4ce0ea89b75a70b92794c178cd679c56e60c7ac9ee",
+      "state_count": 33,
+      "target": "sign(X_deadline6)>0, including early submit; learned belief is not privileged posterior"
+    },
+    {
+      "bank_semantics": "no-new-observation predictive state probability at next boundary, two boundaries and deadline6; thresholds normalized(-.5,0,.5), strict>; actual scheduled future drives and durations",
+      "family": "renewal",
+      "fit": 37,
+      "head_dimensions": [
+        85,
+        48,
+        4
+      ],
+      "last_two_coordinates": [
+        -1,
+        1
+      ],
+      "n_grid": 31,
+      "schema": "joint-policy-v1",
+      "sha256": "cc4f66a63b0af1c90fb31764ee4a724b7837eab081abac94a50ccac7b882dd71",
+      "state_count": 33,
+      "target": "sign(X_deadline6)>0, including early submit; learned belief is not privileged posterior"
+    },
+    {
+      "bank_semantics": "no-new-observation predictive state probability at next boundary, two boundaries and deadline6; thresholds normalized(-.5,0,.5), strict>; actual scheduled future drives and durations",
+      "family": "renewal",
+      "fit": 53,
+      "head_dimensions": [
+        85,
+        48,
+        4
+      ],
+      "last_two_coordinates": [
+        -1,
+        1
+      ],
+      "n_grid": 31,
+      "schema": "joint-policy-v1",
+      "sha256": "608e4f54ebf89d85f9778a26034144c6c7cc3f5f8e0b988cbcd9a5ac57dcb937",
+      "state_count": 33,
+      "target": "sign(X_deadline6)>0, including early submit; learned belief is not privileged posterior"
+    },
+    {
+      "bank_semantics": "no-new-observation predictive state probability at next boundary, two boundaries and deadline6; thresholds normalized(-.5,0,.5), strict>; actual scheduled future drives and durations",
+      "family": "renewal",
+      "fit": 71,
+      "head_dimensions": [
+        85,
+        48,
+        4
+      ],
+      "last_two_coordinates": [
+        -1,
+        1
+      ],
+      "n_grid": 31,
+      "schema": "joint-policy-v1",
+      "sha256": "4d3c1124e4309b8124f98e2586f91fcc3022be5c733f29b04f2338fb6aa02d2c",
+      "state_count": 33,
+      "target": "sign(X_deadline6)>0, including early submit; learned belief is not privileged posterior"
+    }
+  ],
+  "raw_input_index_zero_based": 83,
+  "required_deadline": 6,
+  "required_event": "normalized_coordinate>0; zero belongs to0",
+  "scope": "read_only_checkpoint_semantics_no_forward",
+  "source_code_argument": "SOURCE_SEMANTICS.md",
+  "source_read_only_identity": {
+    "joint_deploy.py": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+    "joint_law.py": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65",
+    "joint_model.py": "250ec083ce30e11ea55c0347ed2fbc549be02a514e97c6da472699820afd3284",
+    "joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+    "joint_train.py": "d39ee3de7b459c72aa7263ed804b391b2487f1a7685a373ca478f2404a59f3f4",
+    "legacy_task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06"
+  }
+}

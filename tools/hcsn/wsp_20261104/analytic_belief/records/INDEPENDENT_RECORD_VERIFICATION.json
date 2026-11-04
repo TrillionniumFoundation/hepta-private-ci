@@ -1,0 +1,28 @@
+{
+  "command_from_published_package": "PYTHONDONTWRITEBYTECODE=1 python verify_analytic_belief.py --study-root ../joint --old-heads ../exploratory_belief/OLD_CONTINUATION_HEADS.json.gz",
+  "executed_verifier_sha256": "528deea7eeb7d2a57f45abd3c58874fe62eac54a4412c3d7c704e9e9d7b25f66",
+  "exit_code": 0,
+  "model_executions": 0,
+  "output": {
+    "CP_validation_accepts": 2,
+    "P_validation_accepts": 1,
+    "arm_split_records_verified": 100,
+    "executed_driver_sha256": "9e8950bbf7949a4d9caf5841f3507e042b3a934df0d1be7aba19158e7b7e23c0",
+    "execution_graph_changed": true,
+    "fresh_world_records_verified": 320,
+    "metric_contrast_CIs_verified": 36,
+    "new_parameter_edits": 0,
+    "previous_frozen_files_hash_verified": 123,
+    "probe_files_verified": 20,
+    "protocol_sha256": "88de0753b8e1c36bab97768b3fa8c55cb43d5ef17a3f0700fa0ed8912fe15515",
+    "scope": "Read-only source/hash/record verification; scalar recomputation of recorded probe metrics, world-value means, and all contrasts. No model forward, utility reevaluation, world generation, or teacher/model posterior recomputation. Freeze hashes establish recorded ordering, not an independent timestamp authority.",
+    "status": "passed",
+    "transferred_raw_files_verified": 38,
+    "verifier_sha256": "528deea7eeb7d2a57f45abd3c58874fe62eac54a4412c3d7c704e9e9d7b25f66"
+  },
+  "schema": "hepta-analytic-belief-independent-record-verification-v1",
+  "scope": "Independent record arithmetic and identity verification only; separate from the single scientific experiment cost.",
+  "status": "passed",
+  "stderr_bytes": 0,
+  "wall_seconds": 0.30805029399925843
+}

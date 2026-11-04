@@ -1,0 +1,77 @@
+{
+  "candidate_searches": 0,
+  "cpu_hard_limit_seconds": 120,
+  "cpu_soft_signal_seconds": 115,
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "driver_sha256": "9e8950bbf7949a4d9caf5841f3507e042b3a934df0d1be7aba19158e7b7e23c0",
+  "evaluation": "Original known finite CTMC law and TRAIN-fitted decoder confusion for grading; model own mass/tables only in policy scorer; no actual FullHX or Trader",
+  "execution_graph_changed": true,
+  "exploratory": true,
+  "external_preregistration": false,
+  "failure_policy": "One execution only; preserve blocked result and available records; no retry,no clipping,no parameter fitting",
+  "fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "fresh_probes": "Original fixed behavior_rows mechanism with seed870160000, generated after all original gates; shared probe rows and worlds across four raw arms; metrics never select models",
+  "gated_arms": [
+    "P_gated",
+    "CP_gated"
+  ],
+  "graceful_cpu_check_seconds": 110,
+  "gradient_steps": 0,
+  "hyperparameter_retries": 0,
+  "intervention": "P uses A checkpoint and CP uses old frozen C checkpoint; each replaces terminal belief with own model forecast bank[7], changing only q[4:6] and returned probability.0 newly edited weight parameters; explicit execution-graph bypass, not pure WSP.",
+  "matrix_path": "Strict explicit-reduction reference products; diagnostic BLAS comparison only; raise overflow/invalid/divide",
+  "model_posterior_scope": "Equals Oracle posterior only when prior,transition,emission and time/event definitions match; core misspecification may make learned head compensation useful",
+  "new_parameter_edits": 0,
+  "no_teacher_projection_input": true,
+  "old_heads_gzip_sha256": "d4f220739bc5b76d19ab02e1440e48b2ef82f6098a7ff78516284e61d32518e1",
+  "operator_wall_limit_seconds": 180,
+  "original_probes": "ALL original TRAIN/VAL rows; full expected utility over original64 TRAIN and16 VAL worlds perfit; Q-MSE,continuation-Q-MSE,belief Brier,behavior regret as descriptive measures only",
+  "original_results_uncompressed_sha256": "a55a8136842d366f3d3663b05028bae8fa7eedad63bfa731662fb692104eedb4",
+  "probability_gate": "bank[7] finite and0<=p<=1; failure stops entire run, no new clipping or fallback. Original learned sigmoid logit clipping remains unchanged.",
+  "raw_arms": [
+    "A",
+    "C",
+    "P",
+    "CP"
+  ],
+  "required_bank_semantics": "no-new-observation predictive state probability at next boundary, two boundaries and deadline6; thresholds normalized(-.5,0,.5), strict>; actual scheduled future drives and durations",
+  "required_target": "sign(X_deadline6)>0, including early submit; learned belief is not privileged posterior",
+  "sampled_peak_rss_bytes": 4294967296,
+  "schema": "hepta-analytic-belief-projection-protocol-v1",
+  "seed": 870160000,
+  "semantic_identity_check": "Every cached state: raw_input[83]==bank[7], independently propagate current model mass with the same model tables to6 and sum coordinate>0; absolute identity error<=2e-12.",
+  "semantics_sha256": "0e15af453910bb8f0e4869deb2fe119b78c4db11f5f2f6b895d8ec1916dd2076",
+  "source_argument_sha256": "4414c0bc523d020c47b24189ff8c711fee463e7dd4a0e897f8b64e5cea0f865a",
+  "source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "source_sha256": {
+    "checked_replay.py": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24",
+    "joint_deploy.py": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+    "joint_law.py": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65",
+    "joint_protocol.json": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606",
+    "joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+    "legacy_task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "run_head_edit.py": "fe0681ef732b660db0b195bda21cf9ab40b0d6cd8b7fe0c69ade7b9e67198b6f",
+    "truth_transitions.npz": "3a62c48272d90b459622ed8818fddf36de983831fbc0c1306fc39b27345228f0"
+  },
+  "statistics": "Five original independent training fits; descriptive unadjusted paired Student-t95% CIs for P-A,CP-C,gated paired differences,C-A,and interaction; utility/Brier/Q reported; no multiplicity-qualified superiority claim",
+  "validation_gate": {
+    "CP": "CP utility minus C utility >=.005",
+    "P": "P utility minus A utility >=.005",
+    "all_five_before_fresh_tests": true,
+    "not_new_independent_validation": true,
+    "rejection": "Restore execution mode to paired learned baseline; paired checkpoint parameters never changed",
+    "reused_original_validation": true,
+    "threshold": 0.005
+  },
+  "worlds_per_fit_per_domain": 32,
+  "written_utc": "2026-11-04T05:55:12.694523+00:00"
+}

@@ -1,0 +1,33 @@
+{
+  "actual_fixture_norms_separately_verified": true,
+  "certificate_premise": "true Euclidean joint norm <= stated exact decimal radius",
+  "computed_norm_rejection_threshold": "0.100001",
+  "declared_projection_radius": "0.1",
+  "fp32_check_is_universal_true_norm_proof": false,
+  "live_code_or_protocol_modified": false,
+  "schema": "hepta.wsp.norm-admission-scope.v1",
+  "source_contracts": [
+    {
+      "construction": "joint parameter norm projected to 0.1 each step",
+      "final_admission": "FP32 computed joint norm <= 0.100001",
+      "relative_file": "research/neuron_learning/laya_cell/financial_value_train.py",
+      "sha256": "50c86e6ffa0d4b468cbb62c0320c50f85827f91500248a327865a415bc7c9de3"
+    },
+    {
+      "admission": "FP32 computed joint norm <= 0.100001",
+      "relative_file": "research/neuron_learning/laya_cell/financial_forward_predict.py",
+      "sha256": "b744e17dff94db797ca5bef8a17acdae47b93d0d946432bd5b27eefb3c994e4a"
+    },
+    {
+      "admission": "nonconstant heads: FP64 computed joint norm <= 0.100001",
+      "exception": "constant baselines exempt; their feature weight is zero and prediction variance is zero",
+      "relative_file": "research/weight_edit/current100k_study.py",
+      "sha256": "b433fb8f190fb7a6fd2e1ef112343ea14e3be6da30d9a29bb47d1c8805503771"
+    },
+    {
+      "loader": "pinned SHA, shape, dtype, finite values; no universal norm cap",
+      "relative_file": "research/neuron_learning/laya_cell/current100k_weight_shadow.py",
+      "sha256": "8df9ec236a794a1e0d68175a75209539c24d054b6917c34bf274c05f4beed64c"
+    }
+  ]
+}

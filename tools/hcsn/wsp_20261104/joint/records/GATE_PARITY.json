@@ -1,0 +1,98 @@
+{
+  "criteria": ".005 exact validation utility gain",
+  "selected_method_fits": [
+    {
+      "fit": 11,
+      "method": "direct",
+      "validation_gain": 0.018944026709696915,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 11,
+      "method": "gradient",
+      "validation_gain": 0.018944026709696915,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 11,
+      "method": "random",
+      "validation_gain": 0.010747703093775207,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 23,
+      "method": "direct",
+      "validation_gain": 0.041980273084189196,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 23,
+      "method": "gradient",
+      "validation_gain": 0.041980273084189196,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 23,
+      "method": "random",
+      "validation_gain": 0.026733108797485444,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 37,
+      "method": "direct",
+      "validation_gain": 0.029131016317785474,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 37,
+      "method": "gradient",
+      "validation_gain": 0.029131016317785474,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 37,
+      "method": "random",
+      "validation_gain": 0.026948189730987948,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 53,
+      "method": "direct",
+      "validation_gain": 0.010877896574194412,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 53,
+      "method": "gradient",
+      "validation_gain": 0.016072791704449196,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 53,
+      "method": "random",
+      "validation_gain": 0.009018602473086446,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 71,
+      "method": "direct",
+      "validation_gain": 0.06770025986633899,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 71,
+      "method": "gradient",
+      "validation_gain": 0.06770025986633899,
+      "accept_at_common_0p005": true
+    },
+    {
+      "fit": 71,
+      "method": "random",
+      "validation_gain": 0.0194084283944915,
+      "accept_at_common_0p005": true
+    }
+  ],
+  "all_accepted": true,
+  "frozen_implementation": "direct revert explicit; GD/random selected outputs; common gate leaves all observations unchanged",
+  "gradient_lambda": "shared from direct validation selection, not independently tuned"
+}

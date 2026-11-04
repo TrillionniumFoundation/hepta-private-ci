@@ -1,0 +1,1568 @@
+{
+  "schema": "hepta-train-head-policy-feasibility-v1",
+  "source_geometry_sha256": "2928beeceabd3c6b48cda7d1b5df2de4ddbbaecc2ebedb23d2a8ce75df1816d5",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "margins": [
+    0.0,
+    0.001
+  ],
+  "oracle_tie_tolerance": 1e-10,
+  "scope": "original TRAIN only; 147 frozen-feature continuation coefficients; belief and fixed STOP/SUBMIT untouched; no candidate is deployed or tested on holdout",
+  "trust_box": "componentwise +/- rho where rho=.5*||base continuation||_2; this contains the L2 trust ball, so only infeasibility transfers",
+  "fits": [
+    {
+      "fit": 11,
+      "train_rows": 308,
+      "rho_l2": 0.6137086908047282,
+      "cases": [
+        {
+          "margin": 0.0,
+          "constraints": 1061,
+          "oracle_tie_rows_skipped": [
+            20,
+            22,
+            24,
+            47,
+            138,
+            145,
+            264,
+            279
+          ],
+          "immutable_contradictions": [],
+          "immutable_contradiction_rows": [],
+          "unrestricted": {
+            "solver_status": 0,
+            "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+            "cpu_seconds": 0.0684301479999998,
+            "max_constraint_violation": 1.1102230246251565e-14,
+            "delta_l2": 9.776290722444994,
+            "delta_linf": 4.308002627801499,
+            "numerically_feasible": true
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 0,
+            "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+            "cpu_seconds": 0.04174143799999985,
+            "max_constraint_violation": 5.440092820663267e-15,
+            "delta_l2": 6.05762762068985,
+            "delta_linf": 0.6137086908047282,
+            "numerically_feasible": true
+          }
+        },
+        {
+          "margin": 0.001,
+          "constraints": 1061,
+          "oracle_tie_rows_skipped": [
+            20,
+            22,
+            24,
+            47,
+            138,
+            145,
+            264,
+            279
+          ],
+          "immutable_contradictions": [],
+          "immutable_contradiction_rows": [],
+          "unrestricted": {
+            "solver_status": 0,
+            "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+            "cpu_seconds": 0.029680815000000083,
+            "max_constraint_violation": 7.105427357601002e-15,
+            "delta_l2": 10.82039825381115,
+            "delta_linf": 3.838182713051657,
+            "numerically_feasible": true
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 0,
+            "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+            "cpu_seconds": 0.046425629000000024,
+            "max_constraint_violation": 3.885780586188048e-15,
+            "delta_l2": 5.958591306280209,
+            "delta_linf": 0.6137086908047282,
+            "numerically_feasible": true
+          }
+        }
+      ]
+    },
+    {
+      "fit": 23,
+      "train_rows": 290,
+      "rho_l2": 0.5873548879453641,
+      "cases": [
+        {
+          "margin": 0.0,
+          "constraints": 984,
+          "oracle_tie_rows_skipped": [
+            40,
+            82,
+            153,
+            164,
+            177,
+            183,
+            184,
+            190,
+            204,
+            210,
+            211,
+            257
+          ],
+          "immutable_contradictions": [
+            {
+              "row": 227,
+              "oracle_action": "SUBMIT1",
+              "other_action": "STOP",
+              "oracle_gap": 0.004617799894481411,
+              "frozen_or_base_score_gap": -0.00024980445753575165,
+              "rhs": -0.00024980445753575165,
+              "constraint": 765,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.00024980445753575165,
+              "certificate_y": {
+                "index": 765,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 227,
+              "oracle_action": "SUBMIT1",
+              "other_action": "SUBMIT0",
+              "oracle_gap": 0.009235599788962823,
+              "frozen_or_base_score_gap": -0.0004996089150715033,
+              "rhs": -0.0004996089150715033,
+              "constraint": 766,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.0004996089150715033,
+              "certificate_y": {
+                "index": 766,
+                "value": 1.0
+              }
+            }
+          ],
+          "immutable_contradiction_rows": [
+            227
+          ],
+          "unrestricted": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.011233396999999812
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.012787113999999988
+          }
+        },
+        {
+          "margin": 0.001,
+          "constraints": 984,
+          "oracle_tie_rows_skipped": [
+            40,
+            82,
+            153,
+            164,
+            177,
+            183,
+            184,
+            190,
+            204,
+            210,
+            211,
+            257
+          ],
+          "immutable_contradictions": [
+            {
+              "row": 227,
+              "oracle_action": "SUBMIT1",
+              "other_action": "STOP",
+              "oracle_gap": 0.004617799894481411,
+              "frozen_or_base_score_gap": -0.00024980445753575165,
+              "rhs": -0.0012498044575357517,
+              "constraint": 765,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.0012498044575357517,
+              "certificate_y": {
+                "index": 765,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 227,
+              "oracle_action": "SUBMIT1",
+              "other_action": "SUBMIT0",
+              "oracle_gap": 0.009235599788962823,
+              "frozen_or_base_score_gap": -0.0004996089150715033,
+              "rhs": -0.0014996089150715033,
+              "constraint": 766,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.0014996089150715033,
+              "certificate_y": {
+                "index": 766,
+                "value": 1.0
+              }
+            }
+          ],
+          "immutable_contradiction_rows": [
+            227
+          ],
+          "unrestricted": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.010023794999999946
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.010651685000000022
+          }
+        }
+      ]
+    },
+    {
+      "fit": 37,
+      "train_rows": 299,
+      "rho_l2": 0.6383366568497058,
+      "cases": [
+        {
+          "margin": 0.0,
+          "constraints": 1043,
+          "oracle_tie_rows_skipped": [
+            47,
+            48,
+            115,
+            146,
+            164,
+            181,
+            213
+          ],
+          "immutable_contradictions": [
+            {
+              "row": 87,
+              "oracle_action": "SUBMIT0",
+              "other_action": "STOP",
+              "oracle_gap": 0.013225596924220318,
+              "frozen_or_base_score_gap": -0.03318916704893704,
+              "rhs": -0.03318916704893704,
+              "constraint": 309,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.03318916704893704,
+              "certificate_y": {
+                "index": 309,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 87,
+              "oracle_action": "SUBMIT0",
+              "other_action": "SUBMIT1",
+              "oracle_gap": 0.026451193848440635,
+              "frozen_or_base_score_gap": -0.06637833409787408,
+              "rhs": -0.06637833409787408,
+              "constraint": 310,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.06637833409787408,
+              "certificate_y": {
+                "index": 310,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 105,
+              "oracle_action": "SUBMIT0",
+              "other_action": "STOP",
+              "oracle_gap": 0.012301087117525311,
+              "frozen_or_base_score_gap": -0.011636345871215203,
+              "rhs": -0.011636345871215203,
+              "constraint": 374,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.011636345871215203,
+              "certificate_y": {
+                "index": 374,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 105,
+              "oracle_action": "SUBMIT0",
+              "other_action": "SUBMIT1",
+              "oracle_gap": 0.024602174235050622,
+              "frozen_or_base_score_gap": -0.023272691742430407,
+              "rhs": -0.023272691742430407,
+              "constraint": 376,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.023272691742430407,
+              "certificate_y": {
+                "index": 376,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 106,
+              "oracle_action": "SUBMIT0",
+              "other_action": "STOP",
+              "oracle_gap": 0.012301087117525311,
+              "frozen_or_base_score_gap": -0.006383602254853793,
+              "rhs": -0.006383602254853793,
+              "constraint": 377,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.006383602254853793,
+              "certificate_y": {
+                "index": 377,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 106,
+              "oracle_action": "SUBMIT0",
+              "other_action": "SUBMIT1",
+              "oracle_gap": 0.024602174235050622,
+              "frozen_or_base_score_gap": -0.012767204509707586,
+              "rhs": -0.012767204509707586,
+              "constraint": 379,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.012767204509707586,
+              "certificate_y": {
+                "index": 379,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 113,
+              "oracle_action": "SUBMIT0",
+              "other_action": "STOP",
+              "oracle_gap": 0.02208782102354445,
+              "frozen_or_base_score_gap": -0.020342675457810655,
+              "rhs": -0.020342675457810655,
+              "constraint": 404,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.020342675457810655,
+              "certificate_y": {
+                "index": 404,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 113,
+              "oracle_action": "SUBMIT0",
+              "other_action": "SUBMIT1",
+              "oracle_gap": 0.0441756420470889,
+              "frozen_or_base_score_gap": -0.04068535091562131,
+              "rhs": -0.04068535091562131,
+              "constraint": 405,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.04068535091562131,
+              "certificate_y": {
+                "index": 405,
+                "value": 1.0
+              }
+            }
+          ],
+          "immutable_contradiction_rows": [
+            87,
+            105,
+            106,
+            113
+          ],
+          "unrestricted": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.01094454899999997
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.011593941000000108
+          }
+        },
+        {
+          "margin": 0.001,
+          "constraints": 1043,
+          "oracle_tie_rows_skipped": [
+            47,
+            48,
+            115,
+            146,
+            164,
+            181,
+            213
+          ],
+          "immutable_contradictions": [
+            {
+              "row": 87,
+              "oracle_action": "SUBMIT0",
+              "other_action": "STOP",
+              "oracle_gap": 0.013225596924220318,
+              "frozen_or_base_score_gap": -0.03318916704893704,
+              "rhs": -0.03418916704893704,
+              "constraint": 309,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.03418916704893704,
+              "certificate_y": {
+                "index": 309,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 87,
+              "oracle_action": "SUBMIT0",
+              "other_action": "SUBMIT1",
+              "oracle_gap": 0.026451193848440635,
+              "frozen_or_base_score_gap": -0.06637833409787408,
+              "rhs": -0.06737833409787408,
+              "constraint": 310,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.06737833409787408,
+              "certificate_y": {
+                "index": 310,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 105,
+              "oracle_action": "SUBMIT0",
+              "other_action": "STOP",
+              "oracle_gap": 0.012301087117525311,
+              "frozen_or_base_score_gap": -0.011636345871215203,
+              "rhs": -0.012636345871215204,
+              "constraint": 374,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.012636345871215204,
+              "certificate_y": {
+                "index": 374,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 105,
+              "oracle_action": "SUBMIT0",
+              "other_action": "SUBMIT1",
+              "oracle_gap": 0.024602174235050622,
+              "frozen_or_base_score_gap": -0.023272691742430407,
+              "rhs": -0.024272691742430408,
+              "constraint": 376,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.024272691742430408,
+              "certificate_y": {
+                "index": 376,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 106,
+              "oracle_action": "SUBMIT0",
+              "other_action": "STOP",
+              "oracle_gap": 0.012301087117525311,
+              "frozen_or_base_score_gap": -0.006383602254853793,
+              "rhs": -0.007383602254853793,
+              "constraint": 377,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.007383602254853793,
+              "certificate_y": {
+                "index": 377,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 106,
+              "oracle_action": "SUBMIT0",
+              "other_action": "SUBMIT1",
+              "oracle_gap": 0.024602174235050622,
+              "frozen_or_base_score_gap": -0.012767204509707586,
+              "rhs": -0.013767204509707587,
+              "constraint": 379,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.013767204509707587,
+              "certificate_y": {
+                "index": 379,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 113,
+              "oracle_action": "SUBMIT0",
+              "other_action": "STOP",
+              "oracle_gap": 0.02208782102354445,
+              "frozen_or_base_score_gap": -0.020342675457810655,
+              "rhs": -0.021342675457810656,
+              "constraint": 404,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.021342675457810656,
+              "certificate_y": {
+                "index": 404,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 113,
+              "oracle_action": "SUBMIT0",
+              "other_action": "SUBMIT1",
+              "oracle_gap": 0.0441756420470889,
+              "frozen_or_base_score_gap": -0.04068535091562131,
+              "rhs": -0.04168535091562131,
+              "constraint": 405,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.04168535091562131,
+              "certificate_y": {
+                "index": 405,
+                "value": 1.0
+              }
+            }
+          ],
+          "immutable_contradiction_rows": [
+            87,
+            105,
+            106,
+            113
+          ],
+          "unrestricted": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.01605857799999999
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.015147456999999864
+          }
+        }
+      ]
+    },
+    {
+      "fit": 53,
+      "train_rows": 341,
+      "rho_l2": 0.6493010465191316,
+      "cases": [
+        {
+          "margin": 0.0,
+          "constraints": 1172,
+          "oracle_tie_rows_skipped": [
+            11,
+            44,
+            63,
+            80,
+            224,
+            230,
+            258,
+            270
+          ],
+          "immutable_contradictions": [
+            {
+              "row": 66,
+              "oracle_action": "SUBMIT1",
+              "other_action": "STOP",
+              "oracle_gap": 0.0009610889470139661,
+              "frozen_or_base_score_gap": -0.009228331898466946,
+              "rhs": -0.009228331898466946,
+              "constraint": 218,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.009228331898466946,
+              "certificate_y": {
+                "index": 218,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 66,
+              "oracle_action": "SUBMIT1",
+              "other_action": "SUBMIT0",
+              "oracle_gap": 0.0019221778940279322,
+              "frozen_or_base_score_gap": -0.018456663796933892,
+              "rhs": -0.018456663796933892,
+              "constraint": 220,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.018456663796933892,
+              "certificate_y": {
+                "index": 220,
+                "value": 1.0
+              }
+            }
+          ],
+          "immutable_contradiction_rows": [
+            66
+          ],
+          "unrestricted": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.022328278999999895
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.010684272999999855
+          }
+        },
+        {
+          "margin": 0.001,
+          "constraints": 1172,
+          "oracle_tie_rows_skipped": [
+            11,
+            44,
+            63,
+            80,
+            224,
+            230,
+            258,
+            270
+          ],
+          "immutable_contradictions": [
+            {
+              "row": 66,
+              "oracle_action": "SUBMIT1",
+              "other_action": "STOP",
+              "oracle_gap": 0.0009610889470139661,
+              "frozen_or_base_score_gap": -0.009228331898466946,
+              "rhs": -0.010228331898466947,
+              "constraint": 218,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.010228331898466947,
+              "certificate_y": {
+                "index": 218,
+                "value": 1.0
+              }
+            },
+            {
+              "row": 66,
+              "oracle_action": "SUBMIT1",
+              "other_action": "SUBMIT0",
+              "oracle_gap": 0.0019221778940279322,
+              "frozen_or_base_score_gap": -0.018456663796933892,
+              "rhs": -0.019456663796933893,
+              "constraint": 220,
+              "type": "immutable_terminal_contradiction",
+              "certificate_A_transpose_y_max_abs": 0.0,
+              "certificate_b_dot_y": -0.019456663796933893,
+              "certificate_y": {
+                "index": 220,
+                "value": 1.0
+              }
+            }
+          ],
+          "immutable_contradiction_rows": [
+            66
+          ],
+          "unrestricted": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.009776737999999785
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.010425979999999946
+          }
+        }
+      ]
+    },
+    {
+      "fit": 71,
+      "train_rows": 344,
+      "rho_l2": 0.6276000738520313,
+      "cases": [
+        {
+          "margin": 0.0,
+          "constraints": 1185,
+          "oracle_tie_rows_skipped": [
+            25,
+            29,
+            85,
+            160,
+            172,
+            187,
+            209,
+            238,
+            275,
+            293,
+            323
+          ],
+          "immutable_contradictions": [],
+          "immutable_contradiction_rows": [],
+          "unrestricted": {
+            "solver_status": 0,
+            "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+            "cpu_seconds": 0.050046515000000014,
+            "max_constraint_violation": 1.482147737874584e-14,
+            "delta_l2": 12.865240189970864,
+            "delta_linf": 5.415351031509614,
+            "numerically_feasible": true
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.0614528980000002,
+            "certificate_status": 0,
+            "numeric_farkas_certificate": {
+              "A_transpose_y_max_abs": 4.787836793695988e-16,
+              "b_dot_y": -0.0005149002502291972,
+              "y_sum": 0.9999999999999994,
+              "min_y": 0.0,
+              "support": [
+                {
+                  "constraint": 21,
+                  "weight": 0.0005184791264924459
+                },
+                {
+                  "constraint": 38,
+                  "weight": 0.006524538277400164
+                },
+                {
+                  "constraint": 61,
+                  "weight": 1.0408774031267013e-05
+                },
+                {
+                  "constraint": 66,
+                  "weight": 0.008841278766092692
+                },
+                {
+                  "constraint": 70,
+                  "weight": 0.0025778077559960168
+                },
+                {
+                  "constraint": 76,
+                  "weight": 0.01670009835429503
+                },
+                {
+                  "constraint": 83,
+                  "weight": 0.03217635553981311
+                },
+                {
+                  "constraint": 104,
+                  "weight": 0.0370756778903033
+                },
+                {
+                  "constraint": 111,
+                  "weight": 1.0054074634043289e-05
+                },
+                {
+                  "constraint": 125,
+                  "weight": 0.007392403952513747
+                },
+                {
+                  "constraint": 149,
+                  "weight": 0.00542481788258677
+                },
+                {
+                  "constraint": 156,
+                  "weight": 0.013558434866020505
+                },
+                {
+                  "constraint": 168,
+                  "weight": 0.005656256349671449
+                },
+                {
+                  "constraint": 172,
+                  "weight": 0.03756219644451738
+                },
+                {
+                  "constraint": 176,
+                  "weight": 0.05287275610592244
+                },
+                {
+                  "constraint": 189,
+                  "weight": 0.013945323484292916
+                },
+                {
+                  "constraint": 193,
+                  "weight": 0.00014614057848775928
+                },
+                {
+                  "constraint": 253,
+                  "weight": 0.0010857432734751044
+                },
+                {
+                  "constraint": 257,
+                  "weight": 0.017455215646568798
+                },
+                {
+                  "constraint": 271,
+                  "weight": 0.01191291471808858
+                },
+                {
+                  "constraint": 315,
+                  "weight": 0.021044312690797436
+                },
+                {
+                  "constraint": 316,
+                  "weight": 0.05264816661233891
+                },
+                {
+                  "constraint": 319,
+                  "weight": 0.019972565357885743
+                },
+                {
+                  "constraint": 325,
+                  "weight": 0.004087704082305395
+                },
+                {
+                  "constraint": 338,
+                  "weight": 0.006791657318420952
+                },
+                {
+                  "constraint": 350,
+                  "weight": 0.0097818950707901
+                },
+                {
+                  "constraint": 373,
+                  "weight": 0.00026569699247327517
+                },
+                {
+                  "constraint": 385,
+                  "weight": 0.007920628023274555
+                },
+                {
+                  "constraint": 418,
+                  "weight": 0.0078779140306075
+                },
+                {
+                  "constraint": 425,
+                  "weight": 0.006182204354408057
+                },
+                {
+                  "constraint": 438,
+                  "weight": 0.02798715871546272
+                },
+                {
+                  "constraint": 442,
+                  "weight": 0.015587833771688328
+                },
+                {
+                  "constraint": 444,
+                  "weight": 0.04682185558766104
+                },
+                {
+                  "constraint": 461,
+                  "weight": 0.000632565736101822
+                },
+                {
+                  "constraint": 467,
+                  "weight": 0.005333830374613414
+                },
+                {
+                  "constraint": 469,
+                  "weight": 0.003962670524917403
+                },
+                {
+                  "constraint": 475,
+                  "weight": 0.0009323439082607352
+                },
+                {
+                  "constraint": 478,
+                  "weight": 0.024227010430332468
+                },
+                {
+                  "constraint": 482,
+                  "weight": 0.027468049945049058
+                },
+                {
+                  "constraint": 530,
+                  "weight": 0.003424342789555123
+                },
+                {
+                  "constraint": 572,
+                  "weight": 0.025154761514475637
+                },
+                {
+                  "constraint": 580,
+                  "weight": 0.0157183486178272
+                },
+                {
+                  "constraint": 599,
+                  "weight": 0.0021421819687648656
+                },
+                {
+                  "constraint": 600,
+                  "weight": 0.0026501184379000347
+                },
+                {
+                  "constraint": 620,
+                  "weight": 0.004065250354398847
+                },
+                {
+                  "constraint": 627,
+                  "weight": 0.0016532477596127141
+                },
+                {
+                  "constraint": 628,
+                  "weight": 0.0034752280519516473
+                },
+                {
+                  "constraint": 645,
+                  "weight": 0.0036664704383811593
+                },
+                {
+                  "constraint": 659,
+                  "weight": 0.01478692795722096
+                },
+                {
+                  "constraint": 684,
+                  "weight": 0.0017628627444159523
+                },
+                {
+                  "constraint": 706,
+                  "weight": 0.005387932648072532
+                },
+                {
+                  "constraint": 712,
+                  "weight": 0.005109872438504764
+                },
+                {
+                  "constraint": 714,
+                  "weight": 0.001206492455280182
+                },
+                {
+                  "constraint": 744,
+                  "weight": 0.013047650167768229
+                },
+                {
+                  "constraint": 755,
+                  "weight": 0.013059215057984607
+                },
+                {
+                  "constraint": 766,
+                  "weight": 0.010174279585531984
+                },
+                {
+                  "constraint": 767,
+                  "weight": 0.013508208018963913
+                },
+                {
+                  "constraint": 806,
+                  "weight": 0.007981299911582255
+                },
+                {
+                  "constraint": 859,
+                  "weight": 0.001260290477724498
+                },
+                {
+                  "constraint": 880,
+                  "weight": 0.02319726619340218
+                },
+                {
+                  "constraint": 908,
+                  "weight": 0.007089697216061441
+                },
+                {
+                  "constraint": 912,
+                  "weight": 0.015481415116622313
+                },
+                {
+                  "constraint": 993,
+                  "weight": 0.008526723171110022
+                },
+                {
+                  "constraint": 1033,
+                  "weight": 0.02867660267631119
+                },
+                {
+                  "constraint": 1035,
+                  "weight": 0.03010865957480039
+                },
+                {
+                  "constraint": 1045,
+                  "weight": 0.01614567175732506
+                },
+                {
+                  "constraint": 1056,
+                  "weight": 3.42282703632324e-05
+                },
+                {
+                  "constraint": 1060,
+                  "weight": 0.02306592349496928
+                },
+                {
+                  "constraint": 1067,
+                  "weight": 0.011053913626043558
+                },
+                {
+                  "constraint": 1068,
+                  "weight": 0.008663856045388494
+                },
+                {
+                  "constraint": 1072,
+                  "weight": 0.016441652089838905
+                },
+                {
+                  "constraint": 1085,
+                  "weight": 0.0009999039039003156
+                },
+                {
+                  "constraint": 1113,
+                  "weight": 0.0017939250655543487
+                },
+                {
+                  "constraint": 1135,
+                  "weight": 0.002212315981145163
+                },
+                {
+                  "constraint": 1146,
+                  "weight": 0.0492394320713927
+                },
+                {
+                  "constraint": 1147,
+                  "weight": 0.0051157829345466746
+                },
+                {
+                  "constraint": 1150,
+                  "weight": 0.005136825904638209
+                },
+                {
+                  "constraint": 1177,
+                  "weight": 0.009376927175107916
+                },
+                {
+                  "constraint": 1186,
+                  "weight": 0.0033874953096507242
+                },
+                {
+                  "constraint": 1193,
+                  "weight": 0.0012189183555918915
+                },
+                {
+                  "constraint": 1203,
+                  "weight": 0.0007622033526493657
+                },
+                {
+                  "constraint": 1216,
+                  "weight": 0.00046719950957050803
+                },
+                {
+                  "constraint": 1224,
+                  "weight": 0.0026279982979315877
+                },
+                {
+                  "constraint": 1242,
+                  "weight": 0.001593339254213213
+                },
+                {
+                  "constraint": 1250,
+                  "weight": 0.0002471762133378697
+                },
+                {
+                  "constraint": 1251,
+                  "weight": 0.0022630046121654675
+                },
+                {
+                  "constraint": 1358,
+                  "weight": 0.0011235765174385645
+                },
+                {
+                  "constraint": 1360,
+                  "weight": 0.002615416288009452
+                },
+                {
+                  "constraint": 1372,
+                  "weight": 0.0003441641474724532
+                },
+                {
+                  "constraint": 1378,
+                  "weight": 0.0007602075013128009
+                },
+                {
+                  "constraint": 1380,
+                  "weight": 0.0010660520416783865
+                },
+                {
+                  "constraint": 1392,
+                  "weight": 0.0007751873158825745
+                },
+                {
+                  "constraint": 1406,
+                  "weight": 0.00219071798437611
+                },
+                {
+                  "constraint": 1410,
+                  "weight": 0.0006237901201309183
+                },
+                {
+                  "constraint": 1413,
+                  "weight": 0.0020890787795337616
+                },
+                {
+                  "constraint": 1414,
+                  "weight": 3.0786752359179066e-05
+                },
+                {
+                  "constraint": 1417,
+                  "weight": 0.0013487388524779501
+                },
+                {
+                  "constraint": 1421,
+                  "weight": 0.0014124899742020349
+                },
+                {
+                  "constraint": 1429,
+                  "weight": 0.00048378976698373616
+                }
+              ],
+              "ordering": "oracle inequalities, +I box upper bounds, -I box lower bounds",
+              "scope": "floating-point certificate, not an exact rational proof"
+            }
+          }
+        },
+        {
+          "margin": 0.001,
+          "constraints": 1185,
+          "oracle_tie_rows_skipped": [
+            25,
+            29,
+            85,
+            160,
+            172,
+            187,
+            209,
+            238,
+            275,
+            293,
+            323
+          ],
+          "immutable_contradictions": [],
+          "immutable_contradiction_rows": [],
+          "unrestricted": {
+            "solver_status": 0,
+            "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+            "cpu_seconds": 0.03735023100000001,
+            "max_constraint_violation": 1.0102162162350936e-14,
+            "delta_l2": 10.599418520428301,
+            "delta_linf": 3.9237170127421,
+            "numerically_feasible": true
+          },
+          "trust_box_outer_bound": {
+            "solver_status": 2,
+            "solver_message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+            "cpu_seconds": 0.05090266500000018,
+            "certificate_status": 0,
+            "numeric_farkas_certificate": {
+              "A_transpose_y_max_abs": 5.707240235963695e-16,
+              "b_dot_y": -0.0014874689192830816,
+              "y_sum": 1.0000000000000004,
+              "min_y": 0.0,
+              "support": [
+                {
+                  "constraint": 21,
+                  "weight": 0.0005184791264926283
+                },
+                {
+                  "constraint": 38,
+                  "weight": 0.006524538277399497
+                },
+                {
+                  "constraint": 61,
+                  "weight": 1.0408774031714743e-05
+                },
+                {
+                  "constraint": 66,
+                  "weight": 0.0088412787660947
+                },
+                {
+                  "constraint": 70,
+                  "weight": 0.002577807755994142
+                },
+                {
+                  "constraint": 76,
+                  "weight": 0.0167000983542948
+                },
+                {
+                  "constraint": 83,
+                  "weight": 0.032176355539812414
+                },
+                {
+                  "constraint": 104,
+                  "weight": 0.0370756778903024
+                },
+                {
+                  "constraint": 111,
+                  "weight": 1.0054074633740717e-05
+                },
+                {
+                  "constraint": 125,
+                  "weight": 0.007392403952513226
+                },
+                {
+                  "constraint": 149,
+                  "weight": 0.005424817882587001
+                },
+                {
+                  "constraint": 156,
+                  "weight": 0.013558434866020763
+                },
+                {
+                  "constraint": 168,
+                  "weight": 0.0056562563496728386
+                },
+                {
+                  "constraint": 172,
+                  "weight": 0.03756219644451819
+                },
+                {
+                  "constraint": 176,
+                  "weight": 0.05287275610592152
+                },
+                {
+                  "constraint": 189,
+                  "weight": 0.0139453234842929
+                },
+                {
+                  "constraint": 193,
+                  "weight": 0.00014614057848754628
+                },
+                {
+                  "constraint": 253,
+                  "weight": 0.0010857432734767563
+                },
+                {
+                  "constraint": 257,
+                  "weight": 0.01745521564656988
+                },
+                {
+                  "constraint": 271,
+                  "weight": 0.011912914718088493
+                },
+                {
+                  "constraint": 315,
+                  "weight": 0.021044312690798074
+                },
+                {
+                  "constraint": 316,
+                  "weight": 0.05264816661233826
+                },
+                {
+                  "constraint": 319,
+                  "weight": 0.019972565357885975
+                },
+                {
+                  "constraint": 325,
+                  "weight": 0.004087704082306309
+                },
+                {
+                  "constraint": 338,
+                  "weight": 0.006791657318420605
+                },
+                {
+                  "constraint": 350,
+                  "weight": 0.009781895070790034
+                },
+                {
+                  "constraint": 373,
+                  "weight": 0.0002656969924730798
+                },
+                {
+                  "constraint": 385,
+                  "weight": 0.00792062802327458
+                },
+                {
+                  "constraint": 418,
+                  "weight": 0.00787791403060693
+                },
+                {
+                  "constraint": 425,
+                  "weight": 0.006182204354407792
+                },
+                {
+                  "constraint": 438,
+                  "weight": 0.02798715871546267
+                },
+                {
+                  "constraint": 442,
+                  "weight": 0.015587833771689033
+                },
+                {
+                  "constraint": 444,
+                  "weight": 0.0468218555876617
+                },
+                {
+                  "constraint": 461,
+                  "weight": 0.0006325657361010048
+                },
+                {
+                  "constraint": 467,
+                  "weight": 0.005333830374612614
+                },
+                {
+                  "constraint": 469,
+                  "weight": 0.003962670524917309
+                },
+                {
+                  "constraint": 475,
+                  "weight": 0.0009323439082610543
+                },
+                {
+                  "constraint": 478,
+                  "weight": 0.024227010430332117
+                },
+                {
+                  "constraint": 482,
+                  "weight": 0.027468049945048957
+                },
+                {
+                  "constraint": 530,
+                  "weight": 0.003424342789555183
+                },
+                {
+                  "constraint": 572,
+                  "weight": 0.025154761514476813
+                },
+                {
+                  "constraint": 580,
+                  "weight": 0.01571834861782902
+                },
+                {
+                  "constraint": 599,
+                  "weight": 0.0021421819687621655
+                },
+                {
+                  "constraint": 600,
+                  "weight": 0.0026501184379023367
+                },
+                {
+                  "constraint": 620,
+                  "weight": 0.004065250354398609
+                },
+                {
+                  "constraint": 627,
+                  "weight": 0.0016532477596131092
+                },
+                {
+                  "constraint": 628,
+                  "weight": 0.003475228051951519
+                },
+                {
+                  "constraint": 645,
+                  "weight": 0.0036664704383801037
+                },
+                {
+                  "constraint": 659,
+                  "weight": 0.01478692795722059
+                },
+                {
+                  "constraint": 684,
+                  "weight": 0.0017628627444149854
+                },
+                {
+                  "constraint": 706,
+                  "weight": 0.005387932648072131
+                },
+                {
+                  "constraint": 712,
+                  "weight": 0.005109872438504528
+                },
+                {
+                  "constraint": 714,
+                  "weight": 0.0012064924552796148
+                },
+                {
+                  "constraint": 744,
+                  "weight": 0.013047650167767998
+                },
+                {
+                  "constraint": 755,
+                  "weight": 0.013059215057984113
+                },
+                {
+                  "constraint": 766,
+                  "weight": 0.010174279585531352
+                },
+                {
+                  "constraint": 767,
+                  "weight": 0.013508208018963633
+                },
+                {
+                  "constraint": 806,
+                  "weight": 0.00798129991158256
+                },
+                {
+                  "constraint": 859,
+                  "weight": 0.0012602904777243742
+                },
+                {
+                  "constraint": 880,
+                  "weight": 0.02319726619340176
+                },
+                {
+                  "constraint": 908,
+                  "weight": 0.00708969721606134
+                },
+                {
+                  "constraint": 912,
+                  "weight": 0.015481415116622571
+                },
+                {
+                  "constraint": 993,
+                  "weight": 0.008526723171109417
+                },
+                {
+                  "constraint": 1033,
+                  "weight": 0.028676602676311697
+                },
+                {
+                  "constraint": 1035,
+                  "weight": 0.03010865957480064
+                },
+                {
+                  "constraint": 1045,
+                  "weight": 0.016145671757325487
+                },
+                {
+                  "constraint": 1056,
+                  "weight": 3.422827036281221e-05
+                },
+                {
+                  "constraint": 1060,
+                  "weight": 0.023065923494968773
+                },
+                {
+                  "constraint": 1067,
+                  "weight": 0.011053913626043804
+                },
+                {
+                  "constraint": 1068,
+                  "weight": 0.008663856045388947
+                },
+                {
+                  "constraint": 1072,
+                  "weight": 0.016441652089839606
+                },
+                {
+                  "constraint": 1085,
+                  "weight": 0.000999903903899929
+                },
+                {
+                  "constraint": 1113,
+                  "weight": 0.001793925065555523
+                },
+                {
+                  "constraint": 1135,
+                  "weight": 0.002212315981145397
+                },
+                {
+                  "constraint": 1146,
+                  "weight": 0.04923943207139477
+                },
+                {
+                  "constraint": 1147,
+                  "weight": 0.005115782934544842
+                },
+                {
+                  "constraint": 1150,
+                  "weight": 0.005136825904639751
+                },
+                {
+                  "constraint": 1177,
+                  "weight": 0.009376927175107656
+                },
+                {
+                  "constraint": 1186,
+                  "weight": 0.0033874953096510205
+                },
+                {
+                  "constraint": 1193,
+                  "weight": 0.001218918355591742
+                },
+                {
+                  "constraint": 1203,
+                  "weight": 0.0007622033526490621
+                },
+                {
+                  "constraint": 1216,
+                  "weight": 0.0004671995095701083
+                },
+                {
+                  "constraint": 1224,
+                  "weight": 0.002627998297931773
+                },
+                {
+                  "constraint": 1242,
+                  "weight": 0.0015933392542133347
+                },
+                {
+                  "constraint": 1250,
+                  "weight": 0.00024717621333790593
+                },
+                {
+                  "constraint": 1251,
+                  "weight": 0.0022630046121652624
+                },
+                {
+                  "constraint": 1358,
+                  "weight": 0.0011235765174381338
+                },
+                {
+                  "constraint": 1360,
+                  "weight": 0.0026154162880095274
+                },
+                {
+                  "constraint": 1372,
+                  "weight": 0.0003441641474726848
+                },
+                {
+                  "constraint": 1378,
+                  "weight": 0.0007602075013124852
+                },
+                {
+                  "constraint": 1380,
+                  "weight": 0.0010660520416785313
+                },
+                {
+                  "constraint": 1392,
+                  "weight": 0.0007751873158825049
+                },
+                {
+                  "constraint": 1406,
+                  "weight": 0.0021907179843759813
+                },
+                {
+                  "constraint": 1410,
+                  "weight": 0.0006237901201310211
+                },
+                {
+                  "constraint": 1413,
+                  "weight": 0.002089078779533818
+                },
+                {
+                  "constraint": 1414,
+                  "weight": 3.078675235920319e-05
+                },
+                {
+                  "constraint": 1417,
+                  "weight": 0.0013487388524779137
+                },
+                {
+                  "constraint": 1421,
+                  "weight": 0.0014124899742021723
+                },
+                {
+                  "constraint": 1429,
+                  "weight": 0.0004837897669834803
+                }
+              ],
+              "ordering": "oracle inequalities, +I box upper bounds, -I box lower bounds",
+              "scope": "floating-point certificate, not an exact rational proof"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

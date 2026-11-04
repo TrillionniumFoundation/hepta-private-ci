@@ -1,0 +1,1532 @@
+{
+  "candidate_searches": 0,
+  "execution_graph_changed": true,
+  "fit_seeds": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "frozen_identities": {
+    "PROTOCOL_BEFORE_RESULTS.json": "88de0753b8e1c36bab97768b3fa8c55cb43d5ef17a3f0700fa0ed8912fe15515",
+    "SEMANTICS_BEFORE_RUN.json": "0e15af453910bb8f0e4869deb2fe119b78c4db11f5f2f6b895d8ec1916dd2076",
+    "SOURCE_SEMANTICS.md": "4414c0bc523d020c47b24189ff8c711fee463e7dd4a0e897f8b64e5cea0f865a",
+    "records/ALL_TRAIN_VAL_BEFORE_TEST.json": "8a5a3a1214c594e93280c75d45506a6fddee1acb45a4f32a910c17f780ac778d",
+    "records/QUALIFICATION.json": "6a07b32f0a11a6534c916f27785f07d6bda14b76a433c7dbb1139049b36ea6e4",
+    "records/RESULTS.json.gz": "fe5cf45508635bfc4bd96154a073fba3c292d6a82fd452c54b17ac27e3850dfb",
+    "run_analytic_belief.py": "9e8950bbf7949a4d9caf5841f3507e042b3a934df0d1be7aba19158e7b7e23c0"
+  },
+  "gradient_steps": 0,
+  "independent_record_verification": {
+    "model_executions": 0,
+    "receipt_sha256": "d1c8a3826992e7d586a303e4b51c3a3c213ed3bfc934c9171ddbf5a5734090e5",
+    "scope": "20 probes,100 arm/split records,320 generated-world records,36 contrast/metric CIs,123 old file hashes,38 original transferred files,12 ordered events. Does not establish global cross-study schedule freshness.",
+    "status": "passed",
+    "verifier_sha256": "528deea7eeb7d2a57f45abd3c58874fe62eac54a4412c3d7c704e9e9d7b25f66"
+  },
+  "interpretation": {
+    "FullHX_or_Trader_validated": false,
+    "all_gated_utility_contrast_CIs_include_zero": true,
+    "confirmed_gated_task_superiority": false,
+    "exploratory": true,
+    "external_preregistration": false,
+    "multiplicity_adjusted": false,
+    "positive_raw_mechanism_signal": true,
+    "pure_WSP_success_claim": false,
+    "raw_CP_minus_C_utility_descriptive_CI_positive_IID_only": true,
+    "raw_P_minus_A_utility_descriptive_CI_positive_both_domains": true,
+    "raw_belief_posterior_MSE_CI_negative_both_domains": true,
+    "training_efficiency_superiority_claim": false
+  },
+  "intervention": "Analytic execution-graph bypass using own bank[7] for terminal belief; not pure weight-space editing.",
+  "matrix_audit": {
+    "count": 713873,
+    "max_abs_difference": 8.881784197001252e-16,
+    "max_input_abs": 1.0,
+    "max_output_abs": 3.461914362934469,
+    "nonfinite_count": 0
+  },
+  "measurement": {
+    "cpu_seconds": 19.757740000000002,
+    "endpoint": "before final results compression and qualification write;120 CPU hard cap covers whole process",
+    "peak_rss_bytes": 123584512,
+    "process_cpu_seconds_at_measurement": 19.814992,
+    "wall_seconds": 20.016549041999998
+  },
+  "metrics": {
+    "belief_brier": "Mean squared difference from Oracle posterior; Brier excess risk, excludes irreducible Bernoulli term p*(1-p).",
+    "continuation_q_mse": "Pooled legal WAIT/READ/REPAIR squared error; unchanged by analytic bypass.",
+    "expected_utility": "Complete expected policy utility under original finite CTMC task and decoder; no actual trading.",
+    "q_mse": "Mean across probe rows of within-row legal-action squared error; descriptive only."
+  },
+  "model_posterior_scope": "Own model posterior, not Oracle posterior unless prior, transition, emissions and time/event definitions match.",
+  "model_runs": 1,
+  "new_weight_parameters_changed": 0,
+  "numeric_scope": "Strict explicit-reduction path, overflow/invalid/divide raise; BLAS diagnostic only. Existing learned sigmoid clipping unchanged; projection adds none.",
+  "old123_preserved": true,
+  "original_train_validation_means": {
+    "train": {
+      "A": {
+        "belief_brier": 0.0002682475816673296,
+        "continuation_q_mse": 0.010510176356739542,
+        "expected_utility": 0.24120002549792088,
+        "q_mse": 0.00400763451121738,
+        "teacher_behavior_regret": 0.012726391533420688
+      },
+      "C": {
+        "belief_brier": 0.0002682475816673296,
+        "continuation_q_mse": 0.007692216779648726,
+        "expected_utility": 0.2513658602428553,
+        "q_mse": 0.0030736502196449045,
+        "teacher_behavior_regret": 0.00926377644160142
+      },
+      "CP": {
+        "belief_brier": 0.00023109292054837143,
+        "continuation_q_mse": 0.007692216779648726,
+        "expected_utility": 0.24935883680653084,
+        "q_mse": 0.002968076118688047,
+        "teacher_behavior_regret": 0.009105648604733696
+      },
+      "P": {
+        "belief_brier": 0.00023109292054837143,
+        "continuation_q_mse": 0.010510176356739542,
+        "expected_utility": 0.24112366797106372,
+        "q_mse": 0.0039020604102605223,
+        "teacher_behavior_regret": 0.012014161534205607
+      }
+    },
+    "validation": {
+      "A": {
+        "belief_brier": 0.0006109115232716295,
+        "continuation_q_mse": 0.023642825356215827,
+        "expected_utility": 0.203540689858617,
+        "q_mse": 0.008963977574569666,
+        "teacher_behavior_regret": 0.014908544344015819
+      },
+      "C": {
+        "belief_brier": 0.0006109115232716295,
+        "continuation_q_mse": 0.02048589220453192,
+        "expected_utility": 0.237267384369058,
+        "q_mse": 0.007910036154112208,
+        "teacher_behavior_regret": 0.01136580243824447
+      },
+      "CP": {
+        "belief_brier": 0.00015555157501150478,
+        "continuation_q_mse": 0.02048589220453192,
+        "expected_utility": 0.2370628184505523,
+        "q_mse": 0.007073945827503144,
+        "teacher_behavior_regret": 0.010903437897083137
+      },
+      "P": {
+        "belief_brier": 0.00015555157501150478,
+        "continuation_q_mse": 0.023642825356215827,
+        "expected_utility": 0.20711902409669936,
+        "q_mse": 0.008127887247960602,
+        "teacher_behavior_regret": 0.014635043667088348
+      }
+    }
+  },
+  "probability_audits": [
+    {
+      "fit": 11,
+      "maximum_bank7": 0.9837718725938918,
+      "maximum_same_model_deadline_identity_error": 2.220446049250313e-16,
+      "minimum_bank7": 0.016479630399495675,
+      "out_of_range_or_nonfinite": 0,
+      "projection_clipping_operations": 0,
+      "teacher_inputs_to_projection": 0,
+      "unique_feature_states": 2581
+    },
+    {
+      "fit": 23,
+      "maximum_bank7": 0.9827065772577994,
+      "maximum_same_model_deadline_identity_error": 3.3306690738754696e-16,
+      "minimum_bank7": 0.03839688978074491,
+      "out_of_range_or_nonfinite": 0,
+      "projection_clipping_operations": 0,
+      "teacher_inputs_to_projection": 0,
+      "unique_feature_states": 3462
+    },
+    {
+      "fit": 37,
+      "maximum_bank7": 0.9581087331651036,
+      "maximum_same_model_deadline_identity_error": 2.220446049250313e-16,
+      "minimum_bank7": 0.017950980324575892,
+      "out_of_range_or_nonfinite": 0,
+      "projection_clipping_operations": 0,
+      "teacher_inputs_to_projection": 0,
+      "unique_feature_states": 3281
+    },
+    {
+      "fit": 53,
+      "maximum_bank7": 0.9374508439590123,
+      "maximum_same_model_deadline_identity_error": 2.220446049250313e-16,
+      "minimum_bank7": 0.025680930576846728,
+      "out_of_range_or_nonfinite": 0,
+      "projection_clipping_operations": 0,
+      "teacher_inputs_to_projection": 0,
+      "unique_feature_states": 2588
+    },
+    {
+      "fit": 71,
+      "maximum_bank7": 0.9627425761196768,
+      "maximum_same_model_deadline_identity_error": 3.3306690738754696e-16,
+      "minimum_bank7": 0.01817121104309297,
+      "out_of_range_or_nonfinite": 0,
+      "projection_clipping_operations": 0,
+      "teacher_inputs_to_projection": 0,
+      "unique_feature_states": 4658
+    }
+  ],
+  "publication_scope": "Public archived joint checkpoint-derived bounded task evidence; no new private HeptaTrader data or original model weight copies.",
+  "read_only_seed_audit_verification": {
+    "command_from_published_package": "PYTHONDONTWRITEBYTECODE=1 python verify_seed_overlap.py --study-root ../joint",
+    "exit_code": 0,
+    "model_calls": 0,
+    "output": {
+      "confirmed_reused_schedules": 64,
+      "current_evaluation_worlds": 320,
+      "globally_unseen_claim": false,
+      "model_calls": 0,
+      "random_draws": 0,
+      "receipt_sha256": "397b3a5f4609052d743b5f456b7af5b476678fa50841289b0aad9cbd66ae718b",
+      "recorded_blocks_compared": 300,
+      "status": "passed_with_disclosed_cross_study_reuse",
+      "verifier_sha256": "fc71bc02ce4b6e139d861cabf4fb7e0490ca05e01454c593d5c85d10899720eb"
+    },
+    "random_draws": 0,
+    "stderr_bytes": 0,
+    "wall_seconds": 0.26799593000032473
+  },
+  "schema": "hepta-analytic-belief-package-qualification-v1",
+  "scientific_process_status": "completed_once_exit0_stderr0",
+  "seed_overlap_erratum": {
+    "audit_receipt": "seed_overlap_audit.json",
+    "audit_sha256": "397b3a5f4609052d743b5f456b7af5b476678fa50841289b0aad9cbd66ae718b",
+    "behavior_seed_collisions": 3,
+    "complete_global_freshness_claim_withdrawn": true,
+    "confirmed_global_unseen_schedule_count": null,
+    "current_duplicate_schedule_occurrences": 0,
+    "current_seed": 870160000,
+    "effective_IID_seed": 870270000,
+    "effective_OOD_seed": 871270000,
+    "erratum": "SEED_OVERLAP_ERRATUM.md",
+    "erratum_sha256": "5bdc042cd2f0a3fc857978d45212554075b0ab09cebd1f554d25ccdf7b82ff17",
+    "known_cross_study_reused_worlds": 64,
+    "known_overlap_current_fit": 11,
+    "known_overlap_previous_fit": 23,
+    "known_overlap_previous_seed": 870040000,
+    "ordered_block_comparisons": 300,
+    "remaining256_global_freshness_proven": false,
+    "rerun_or_fit_exclusion": false,
+    "retained_world_denominator": 320,
+    "scope": "All four study fit/domain seeds,300 current-to-prior ordered-block comparisons,current and prior-grid individual schedule identities,and original cohort source seed definitions. No exhaustive all-history individual-world proof; remaining256 globally-unseen status not established."
+  },
+  "source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_repository_visibility": "public",
+  "teacher_inputs_to_projection": 0,
+  "test_summary": {
+    "iid": {
+      "arms": {
+        "A": {
+          "belief_brier": {
+            "mean": 0.00046717306783488553,
+            "per_fit": [
+              0.00046169359945450936,
+              0.0005503680299189375,
+              0.00042192858022943044,
+              0.0004502378979128969,
+              0.0004516372316586534
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.019490467915580574,
+            "per_fit": [
+              0.01642431491347707,
+              0.01873042375929624,
+              0.021565332156376234,
+              0.01743611936127959,
+              0.023296149387473725
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.21998359229367606,
+            "per_fit": [
+              0.21326871537067904,
+              0.23470035220092111,
+              0.20664886164968055,
+              0.24964096126033822,
+              0.19565907098676147
+            ]
+          },
+          "q_mse": {
+            "mean": 0.007337330072952698,
+            "per_fit": [
+              0.0061909137262211094,
+              0.007183232923570122,
+              0.008046073046880979,
+              0.0064640816982688976,
+              0.008802348969822384
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.01490481359602297,
+            "per_fit": [
+              0.011688713769920261,
+              0.010683580704548857,
+              0.017296667046244336,
+              0.012895364903407201,
+              0.021959741555994196
+            ]
+          }
+        },
+        "C": {
+          "belief_brier": {
+            "mean": 0.00046717306783488553,
+            "per_fit": [
+              0.00046169359945450936,
+              0.0005503680299189375,
+              0.00042192858022943044,
+              0.0004502378979128969,
+              0.0004516372316586534
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.01812524564799769,
+            "per_fit": [
+              0.015809676054502793,
+              0.019066231823640326,
+              0.01891347285008967,
+              0.01784124454619218,
+              0.018995602965563466
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.23882944289045263,
+            "per_fit": [
+              0.22352930912899605,
+              0.246189980120263,
+              0.2815031182111046,
+              0.24006944951448375,
+              0.20285535747741573
+            ]
+          },
+          "q_mse": {
+            "mean": 0.006898170598348947,
+            "per_fit": [
+              0.006023596736807001,
+              0.007304300429966232,
+              0.0072048575346478445,
+              0.006596686612218457,
+              0.007361411678105201
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.011823394790627063,
+            "per_fit": [
+              0.008400851448186647,
+              0.008234847400102994,
+              0.01655553919849849,
+              0.013075344953471972,
+              0.012850390952875221
+            ]
+          }
+        },
+        "CP": {
+          "belief_brier": {
+            "mean": 0.00025526450148070045,
+            "per_fit": [
+              0.00018599902057272476,
+              0.00033652287498469094,
+              0.0001844901931971906,
+              0.00026707364511984345,
+              0.0003022367735290524
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.01812524564799769,
+            "per_fit": [
+              0.015809676054502793,
+              0.019066231823640326,
+              0.01891347285008967,
+              0.01784124454619218,
+              0.018995602965563466
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.24564539368975877,
+            "per_fit": [
+              0.2247558855723198,
+              0.25359117652728386,
+              0.2945460406948094,
+              0.24622105616105106,
+              0.20911280949333
+            ]
+          },
+          "q_mse": {
+            "mean": 0.0064860594042946695,
+            "per_fit": [
+              0.005491797982384999,
+              0.0068867002436813094,
+              0.006692744261306646,
+              0.006275345731820408,
+              0.007083708802279984
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.010133515747618971,
+            "per_fit": [
+              0.007176605929656973,
+              0.007072645024742767,
+              0.01604133958009046,
+              0.012170802606976179,
+              0.008206185596628477
+            ]
+          }
+        },
+        "CP_gated": {
+          "belief_brier": {
+            "mean": 0.0003692651210716793,
+            "per_fit": [
+              0.00018599902057272476,
+              0.00033652287498469094,
+              0.00042192858022943044,
+              0.0004502378979128969,
+              0.0004516372316586534
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.01812524564799769,
+            "per_fit": [
+              0.015809676054502793,
+              0.019066231823640326,
+              0.01891347285008967,
+              0.01784124454619218,
+              0.018995602965563466
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.24055499746052153,
+            "per_fit": [
+              0.2247558855723198,
+              0.25359117652728386,
+              0.2815031182111046,
+              0.24006944951448375,
+              0.20285535747741573
+            ]
+          },
+          "q_mse": {
+            "mean": 0.006708290810207562,
+            "per_fit": [
+              0.005491797982384999,
+              0.0068867002436813094,
+              0.0072048575346478445,
+              0.006596686612218457,
+              0.007361411678105201
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.011346105211849084,
+            "per_fit": [
+              0.007176605929656973,
+              0.007072645024742767,
+              0.01655553919849849,
+              0.013075344953471972,
+              0.012850390952875221
+            ]
+          }
+        },
+        "P": {
+          "belief_brier": {
+            "mean": 0.00025526450148070045,
+            "per_fit": [
+              0.00018599902057272476,
+              0.00033652287498469094,
+              0.0001844901931971906,
+              0.00026707364511984345,
+              0.0003022367735290524
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.019490467915580574,
+            "per_fit": [
+              0.01642431491347707,
+              0.01873042375929624,
+              0.021565332156376234,
+              0.01743611936127959,
+              0.023296149387473725
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.22553927388948797,
+            "per_fit": [
+              0.21941053207627553,
+              0.23655666792418878,
+              0.2149829272155751,
+              0.25636956639297814,
+              0.20037667583842217
+            ]
+          },
+          "q_mse": {
+            "mean": 0.006925218878898421,
+            "per_fit": [
+              0.005659114971799109,
+              0.0067656327372852,
+              0.007533959773539782,
+              0.006142740817870849,
+              0.008524646093997168
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.012311600701360798,
+            "per_fit": [
+              0.0075805831725989665,
+              0.00749685134053321,
+              0.01615442111573787,
+              0.012530197755383818,
+              0.017795950122550128
+            ]
+          }
+        },
+        "P_gated": {
+          "belief_brier": {
+            "mean": 0.00043729297620896527,
+            "per_fit": [
+              0.00046169359945450936,
+              0.0005503680299189375,
+              0.00042192858022943044,
+              0.0004502378979128969,
+              0.0003022367735290524
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.019490467915580574,
+            "per_fit": [
+              0.01642431491347707,
+              0.01873042375929624,
+              0.021565332156376234,
+              0.01743611936127959,
+              0.023296149387473725
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.2209271132640082,
+            "per_fit": [
+              0.21326871537067904,
+              0.23470035220092111,
+              0.20664886164968055,
+              0.24964096126033822,
+              0.20037667583842217
+            ]
+          },
+          "q_mse": {
+            "mean": 0.007281789497787655,
+            "per_fit": [
+              0.0061909137262211094,
+              0.007183232923570122,
+              0.008046073046880979,
+              0.0064640816982688976,
+              0.008524646093997168
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.014072055309334159,
+            "per_fit": [
+              0.011688713769920261,
+              0.010683580704548857,
+              0.017296667046244336,
+              0.012895364903407201,
+              0.017795950122550128
+            ]
+          }
+        }
+      },
+      "contrasts": {
+        "CP_gated_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0002665726118515422,
+              7.075671832512975e-05
+            ],
+            "independent_fits": 5,
+            "mean": -9.790794676320623e-05,
+            "per_fit": [
+              -0.00027569457888178457,
+              -0.00021384515493424658,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.00226878921494016,
+              0.005719898355078003
+            ],
+            "independent_fits": 5,
+            "mean": 0.0017255545700689211,
+            "per_fit": [
+              0.0012265764433237458,
+              0.00740119640702086,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0005165861972410982,
+              0.00013682662095832883
+            ],
+            "independent_fits": 5,
+            "mean": -0.0001898797881413847,
+            "per_fit": [
+              -0.0005317987544220014,
+              -0.0004176001862849221,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "CP_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0002722848426870092,
+              -0.0001515322900213609
+            ],
+            "independent_fits": 5,
+            "mean": -0.00021190856635418506,
+            "per_fit": [
+              -0.00027569457888178457,
+              -0.00021384515493424658,
+              -0.00023743838703223983,
+              -0.00018316425279305345,
+              -0.000149400458129601
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.0015806004593285367,
+              0.012051301139283857
+            ],
+            "independent_fits": 5,
+            "mean": 0.006815950799306197,
+            "per_fit": [
+              0.0012265764433237458,
+              0.00740119640702086,
+              0.01304292248370481,
+              0.006151606646567304,
+              0.006257452015914267
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0005518473659526721,
+              -0.00027237502215588346
+            ],
+            "independent_fits": 5,
+            "mean": -0.00041211119405427775,
+            "per_fit": [
+              -0.0005317987544220014,
+              -0.0004176001862849221,
+              -0.0005121132733411984,
+              -0.0003213408803980494,
+              -0.00027770287582521737
+            ]
+          }
+        },
+        "C_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.021427062339640382,
+              0.059118763533193466
+            ],
+            "independent_fits": 5,
+            "mean": 0.018845850596776542,
+            "per_fit": [
+              0.010260593758317005,
+              0.011489627919341883,
+              0.07485425656142403,
+              -0.009571511745854466,
+              0.007196286490654263
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0012903731194105462,
+              0.0004120541702030438
+            ],
+            "independent_fits": 5,
+            "mean": -0.00043915947460375116,
+            "per_fit": [
+              -0.00016731698941410862,
+              0.00012106750639610982,
+              -0.0008412155122331346,
+              0.00013260491394955984,
+              -0.0014409372917171823
+            ]
+          }
+        },
+        "P_gated_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.00011284052576356807,
+              5.308034251172768e-05
+            ],
+            "independent_fits": 5,
+            "mean": -2.9880091625920198e-05,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.000149400458129601
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.0016761132093980077,
+              0.0035631551500622883
+            ],
+            "independent_fits": 5,
+            "mean": 0.0009435209703321402,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0047176048516607005
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.00020974593322189755,
+              9.866478289181128e-05
+            ],
+            "independent_fits": 5,
+            "mean": -5.554057516504313e-05,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.00027770287582521563
+            ]
+          }
+        },
+        "P_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0002722848426870092,
+              -0.0001515322900213609
+            ],
+            "independent_fits": 5,
+            "mean": -0.00021190856635418506,
+            "per_fit": [
+              -0.00027569457888178457,
+              -0.00021384515493424658,
+              -0.00023743838703223983,
+              -0.00018316425279305345,
+              -0.000149400458129601
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.002525258093436318,
+              0.008586105098187417
+            ],
+            "independent_fits": 5,
+            "mean": 0.0055556815958118675,
+            "per_fit": [
+              0.006141816705596492,
+              0.0018563157232676653,
+              0.008334065565894555,
+              0.0067286051326399254,
+              0.0047176048516607005
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0005518473659526711,
+              -0.0002723750221558823
+            ],
+            "independent_fits": 5,
+            "mean": -0.0004121111940542767,
+            "per_fit": [
+              -0.0005317987544220006,
+              -0.0004176001862849221,
+              -0.0005121132733411967,
+              -0.00032134088039804855,
+              -0.00027770287582521563
+            ]
+          }
+        },
+        "interaction": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.004001855588855978,
+              0.006522393995844649
+            ],
+            "independent_fits": 5,
+            "mean": 0.0012602692034943352,
+            "per_fit": [
+              -0.0049152402622727465,
+              0.005544880683753195,
+              0.004708856917810256,
+              -0.0005769984860725941,
+              0.001539847164253566
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -1.9418933767282198e-18,
+              -1.3977479444394887e-19
+            ],
+            "independent_fits": 5,
+            "mean": -1.0408340855860842e-18,
+            "per_fit": [
+              -8.673617379884035e-19,
+              0.0,
+              -1.734723475976807e-18,
+              -8.673617379884035e-19,
+              -1.734723475976807e-18
+            ]
+          }
+        }
+      }
+    },
+    "ood": {
+      "arms": {
+        "A": {
+          "belief_brier": {
+            "mean": 0.0040542276276817725,
+            "per_fit": [
+              0.0025276802443389133,
+              0.0033668448648487104,
+              0.004054553512101276,
+              0.007370772136686099,
+              0.0029512873804338627
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.08979569548369645,
+            "per_fit": [
+              0.05020461808022344,
+              0.03301370028643259,
+              0.07073587210642313,
+              0.16081590927822534,
+              0.13420837766717783
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.11915875722306205,
+            "per_fit": [
+              0.1731346492730456,
+              0.11188297518006002,
+              0.028942712130130298,
+              0.13245985847946035,
+              0.1493735910526139
+            ]
+          },
+          "q_mse": {
+            "mean": 0.037414940026752726,
+            "per_fit": [
+              0.021046009950066856,
+              0.01658645088527323,
+              0.03079065220134649,
+              0.06643625675752636,
+              0.0522153303395507
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.06936141055345467,
+            "per_fit": [
+              0.032750409876328206,
+              0.030155514602748165,
+              0.029812972704671935,
+              0.14092141818306753,
+              0.1131667374004575
+            ]
+          }
+        },
+        "C": {
+          "belief_brier": {
+            "mean": 0.0040542276276817725,
+            "per_fit": [
+              0.0025276802443389133,
+              0.0033668448648487104,
+              0.004054553512101276,
+              0.007370772136686099,
+              0.0029512873804338627
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.08646919821053924,
+            "per_fit": [
+              0.04650929343845879,
+              0.03154918512042249,
+              0.07224905771445539,
+              0.16902626232809775,
+              0.11301219245126178
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.12961992423420213,
+            "per_fit": [
+              0.16598918835505017,
+              0.12594052787491686,
+              0.03609203667580836,
+              0.16407926060428807,
+              0.15599860766094717
+            ]
+          },
+          "q_mse": {
+            "mean": 0.03625343829435217,
+            "per_fit": [
+              0.01981674835660884,
+              0.016164526906978664,
+              0.031221508602626784,
+              0.06935219164578242,
+              0.04471221595976415
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.06402159249217987,
+            "per_fit": [
+              0.027752026316653453,
+              0.031474672071700835,
+              0.03332219228350264,
+              0.14625721255993043,
+              0.08130185922911197
+            ]
+          }
+        },
+        "CP": {
+          "belief_brier": {
+            "mean": 0.0003864558407797718,
+            "per_fit": [
+              0.00040178194066909696,
+              0.00038030882240248687,
+              0.000452590071111064,
+              0.0003326426358386307,
+              0.00036495573387758086
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.08646919821053924,
+            "per_fit": [
+              0.04650929343845879,
+              0.03154918512042249,
+              0.07224905771445539,
+              0.16902626232809775,
+              0.11301219245126178
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.1554207445770038,
+            "per_fit": [
+              0.19193814786687213,
+              0.11473554657775582,
+              0.08368508292400417,
+              0.18986407879075062,
+              0.19688086672563626
+            ]
+          },
+          "q_mse": {
+            "mean": 0.02979231034480767,
+            "per_fit": [
+              0.015904657393019297,
+              0.010691318638198574,
+              0.024985318633546454,
+              0.05716491957496364,
+              0.04021533748431038
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.046874105836499466,
+            "per_fit": [
+              0.033364923579622105,
+              0.02043463839039377,
+              0.0351499267775187,
+              0.09048497975511367,
+              0.05493606067984908
+            ]
+          }
+        },
+        "CP_gated": {
+          "belief_brier": {
+            "mean": 0.003031740758458564,
+            "per_fit": [
+              0.00040178194066909696,
+              0.00038030882240248687,
+              0.004054553512101276,
+              0.007370772136686099,
+              0.0029512873804338627
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.08646919821053924,
+            "per_fit": [
+              0.04650929343845879,
+              0.03154918512042249,
+              0.07224905771445539,
+              0.16902626232809775,
+              0.11301219245126178
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.1325687198771343,
+            "per_fit": [
+              0.19193814786687213,
+              0.11473554657775582,
+              0.03609203667580836,
+              0.16407926060428807,
+              0.15599860766094717
+            ]
+          },
+          "q_mse": {
+            "mean": 0.03437637844787825,
+            "per_fit": [
+              0.015904657393019297,
+              0.010691318638198574,
+              0.031221508602626784,
+              0.06935219164578242,
+              0.04471221595976415
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.06293616520851218,
+            "per_fit": [
+              0.033364923579622105,
+              0.02043463839039377,
+              0.03332219228350264,
+              0.14625721255993043,
+              0.08130185922911197
+            ]
+          }
+        },
+        "P": {
+          "belief_brier": {
+            "mean": 0.0003864558407797718,
+            "per_fit": [
+              0.00040178194066909696,
+              0.00038030882240248687,
+              0.000452590071111064,
+              0.0003326426358386307,
+              0.00036495573387758086
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.08979569548369645,
+            "per_fit": [
+              0.05020461808022344,
+              0.03301370028643259,
+              0.07073587210642313,
+              0.16081590927822534,
+              0.13420837766717783
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.15769958291267086,
+            "per_fit": [
+              0.202884667266336,
+              0.11271574102972873,
+              0.07477032239441309,
+              0.21210678125562582,
+              0.1860204026172506
+            ]
+          },
+          "q_mse": {
+            "mean": 0.03095381207720822,
+            "per_fit": [
+              0.017133918986477314,
+              0.011113242616493137,
+              0.024554462232266157,
+              0.054248984686707566,
+              0.04771845186409692
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.04749396938804746,
+            "per_fit": [
+              0.032872198243536446,
+              0.020267461000267675,
+              0.03144106013005876,
+              0.07981358739492808,
+              0.07307554017144632
+            ]
+          }
+        },
+        "P_gated": {
+          "belief_brier": {
+            "mean": 0.003536961298370516,
+            "per_fit": [
+              0.0025276802443389133,
+              0.0033668448648487104,
+              0.004054553512101276,
+              0.007370772136686099,
+              0.00036495573387758086
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.08979569548369645,
+            "per_fit": [
+              0.05020461808022344,
+              0.03301370028643259,
+              0.07073587210642313,
+              0.16081590927822534,
+              0.13420837766717783
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.12648811953598937,
+            "per_fit": [
+              0.1731346492730456,
+              0.11188297518006002,
+              0.028942712130130298,
+              0.13245985847946035,
+              0.1860204026172506
+            ]
+          },
+          "q_mse": {
+            "mean": 0.03651556433166197,
+            "per_fit": [
+              0.021046009950066856,
+              0.01658645088527323,
+              0.03079065220134649,
+              0.06643625675752636,
+              0.04771845186409692
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.06134317110765244,
+            "per_fit": [
+              0.032750409876328206,
+              0.030155514602748165,
+              0.029812972704671935,
+              0.14092141818306753,
+              0.07307554017144632
+            ]
+          }
+        }
+      },
+      "contrasts": {
+        "CP_gated_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0028015192988787197,
+              0.0007565455604323038
+            ],
+            "independent_fits": 5,
+            "mean": -0.001022486869223208,
+            "per_fit": [
+              -0.0021258983036698165,
+              -0.0029865360424462233,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.014114748156360359,
+              0.020012339442224733
+            ],
+            "independent_fits": 5,
+            "mean": 0.0029487956429321864,
+            "per_fit": [
+              0.025948959511821967,
+              -0.011204981297161035,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.005141225182899738,
+              0.0013871054899518846
+            ],
+            "independent_fits": 5,
+            "mean": -0.0018770598464739265,
+            "per_fit": [
+              -0.0039120909635895415,
+              -0.0054732082687800904,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "CP_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.006102083316588456,
+              -0.0012334602572155436
+            ],
+            "independent_fits": 5,
+            "mean": -0.003667771786902,
+            "per_fit": [
+              -0.0021258983036698165,
+              -0.0029865360424462233,
+              -0.003601963440990212,
+              -0.007038129500847468,
+              -0.002586331646556282
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.002457625026290714,
+              0.05405926571189407
+            ],
+            "independent_fits": 5,
+            "mean": 0.025800820342801678,
+            "per_fit": [
+              0.025948959511821967,
+              -0.011204981297161035,
+              0.04759304624819581,
+              0.025784818186462555,
+              0.04088225906468909
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.010587264217201797,
+              -0.002334991681887209
+            ],
+            "independent_fits": 5,
+            "mean": -0.006461127949544503,
+            "per_fit": [
+              -0.0039120909635895415,
+              -0.0054732082687800904,
+              -0.0062361899690803295,
+              -0.01218727207081878,
+              -0.004496878475453769
+            ]
+          }
+        },
+        "C_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.007057768196593664,
+              0.02798010221887385
+            ],
+            "independent_fits": 5,
+            "mean": 0.010461167011140093,
+            "per_fit": [
+              -0.007145460917995422,
+              0.01405755269485684,
+              0.007149324545678064,
+              0.03161940212482772,
+              0.006625016608333256
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.005967588014330682,
+              0.003644584549529572
+            ],
+            "independent_fits": 5,
+            "mean": -0.001161501732400555,
+            "per_fit": [
+              -0.0012292615934580177,
+              -0.00042192397829456454,
+              0.000430856401280294,
+              0.002915934888256061,
+              -0.007503114379786548
+            ]
+          }
+        },
+        "P_gated_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0019534278974111265,
+              0.0009188952387886138
+            ],
+            "independent_fits": 5,
+            "mean": -0.0005172663293112564,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.002586331646556282
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.013020209805020989,
+              0.027678934430875667
+            ],
+            "independent_fits": 5,
+            "mean": 0.00732936231292734,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0366468115646367
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.003396442941459351,
+              0.0015976915512778403
+            ],
+            "independent_fits": 5,
+            "mean": -0.0008993756950907552,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.004496878475453776
+            ]
+          }
+        },
+        "P_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.006102083316588456,
+              -0.0012334602572155436
+            ],
+            "independent_fits": 5,
+            "mean": -0.003667771786902,
+            "per_fit": [
+              -0.0021258983036698165,
+              -0.0029865360424462233,
+              -0.003601963440990212,
+              -0.007038129500847468,
+              -0.002586331646556282
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.00317207621110472,
+              0.07390957516811292
+            ],
+            "independent_fits": 5,
+            "mean": 0.038540825689608815,
+            "per_fit": [
+              0.029750017993290412,
+              0.0008327658496687096,
+              0.04582761026428279,
+              0.07964692277616547,
+              0.0366468115646367
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.010587264217201806,
+              -0.002334991681887208
+            ],
+            "independent_fits": 5,
+            "mean": -0.006461127949544507,
+            "per_fit": [
+              -0.0039120909635895415,
+              -0.005473208268780092,
+              -0.006236189969080333,
+              -0.012187272070818794,
+              -0.004496878475453776
+            ]
+          }
+        },
+        "interaction": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.04231923833666608,
+              0.0168392276430518
+            ],
+            "independent_fits": 5,
+            "mean": -0.012740005346807137,
+            "per_fit": [
+              -0.0038010584814684445,
+              -0.012037747146829744,
+              0.0017654359839130232,
+              -0.05386210458970292,
+              0.004235447500052392
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -9.821195535596257e-19,
+              1.2084349799811192e-17
+            ],
+            "independent_fits": 5,
+            "mean": 5.551115123125783e-18,
+            "per_fit": [
+              0.0,
+              3.469446951953614e-18,
+              3.469446951953614e-18,
+              1.3877787807814457e-17,
+              6.938893903907228e-18
+            ]
+          }
+        }
+      }
+    }
+  },
+  "test_total_seed": 870160000,
+  "test_world_count": 320,
+  "validation": {
+    "CP_accepted_fits": [
+      11,
+      23
+    ],
+    "CP_incumbent": "C",
+    "P_accepted_fits": [
+      71
+    ],
+    "P_incumbent": "A",
+    "all_fit_gates": {
+      "11": {
+        "CP": {
+          "accepted": true,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "C",
+          "restored_execution_mode_if_rejected": false,
+          "validation_gain": 0.0060637278213998
+        },
+        "P": {
+          "accepted": false,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "A",
+          "restored_execution_mode_if_rejected": true,
+          "validation_gain": -0.00029962616335937886
+        }
+      },
+      "23": {
+        "CP": {
+          "accepted": true,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "C",
+          "restored_execution_mode_if_rejected": false,
+          "validation_gain": 0.005507331901406759
+        },
+        "P": {
+          "accepted": false,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "A",
+          "restored_execution_mode_if_rejected": true,
+          "validation_gain": 0.00016750859558456455
+        }
+      },
+      "37": {
+        "CP": {
+          "accepted": false,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "C",
+          "restored_execution_mode_if_rejected": true,
+          "validation_gain": -0.015574508526646658
+        },
+        "P": {
+          "accepted": false,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "A",
+          "restored_execution_mode_if_rejected": true,
+          "validation_gain": 0.0005795885957896596
+        }
+      },
+      "53": {
+        "CP": {
+          "accepted": false,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "C",
+          "restored_execution_mode_if_rejected": true,
+          "validation_gain": 0.0016750940964337935
+        },
+        "P": {
+          "accepted": false,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "A",
+          "restored_execution_mode_if_rejected": true,
+          "validation_gain": 0.00020261937554294507
+        }
+      },
+      "71": {
+        "CP": {
+          "accepted": false,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "C",
+          "restored_execution_mode_if_rejected": true,
+          "validation_gain": 0.0013055251148778035
+        },
+        "P": {
+          "accepted": true,
+          "paired_checkpoint_parameters_unchanged": true,
+          "reference": "A",
+          "restored_execution_mode_if_rejected": false,
+          "validation_gain": 0.017241580786854005
+        }
+      }
+    },
+    "all_five_gates_frozen_before_this_run_test_generation": true,
+    "new_independent_validation": false,
+    "previously_used_to_select_C": true,
+    "reused_original_validation": true,
+    "threshold": 0.005
+  }
+}

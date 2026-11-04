@@ -1,0 +1,807 @@
+{
+  "schema": "hepta-wsp-research-qualification-v1",
+  "date_utc": "2026-11-04",
+  "repository_visibility": "public",
+  "source_revisions": {
+    "hepta_joint": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+    "runtime_base": "1f2d3d782e8803e769989234e7902ca5c04eff97",
+    "mit_release": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+    "qwen_base": "2fc06364715b967f1860aea9cf38778875588b17"
+  },
+  "companion_runtime": {
+    "delivery_commit": "f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d",
+    "pull_request": "https://github.com/TrillionniumFoundation/hepta-runtime/pull/91",
+    "software_gate": "FAILED_R8_COMPLETE",
+    "source_identity": {
+      "base_sha": "1f2d3d782e8803e769989234e7902ca5c04eff97",
+      "files": {
+        "src/mcp/mod.rs": {
+          "bytes": 2405,
+          "sha256": "ec94920d4b785c974a74e59e19cbd378ee93bd08465b307209719fdd3e3e24fb"
+        },
+        "src/mcp/server.rs": {
+          "bytes": 138402,
+          "sha256": "8c19d4cceaa1e4548bd9897037756191888240ed4cc8f1bd2d04a93d0694fbcf"
+        },
+        "src/mcp/weight_artifact.rs": {
+          "bytes": 19182,
+          "sha256": "99cd59fefec7bf9196764331af3d1dfde56d3a4963cc915d9eac799e33cfc12a"
+        },
+        "src/mcp/weight_forward.rs": {
+          "bytes": 9780,
+          "sha256": "6574efb9b4ab38321d7af9bc338c0a85dd05c1f467ffd362ce98ac52720f1f3d"
+        },
+        "src/mcp/weight_guard.rs": {
+          "bytes": 12714,
+          "sha256": "d8aa5fafee4faeb4d947523011a6b244e171c2bc3aa4b8dcd75d5ab069189e33"
+        },
+        "src/mcp/weight_guard_tests.rs": {
+          "bytes": 8069,
+          "sha256": "4cb0c4a182c9a6e36f1a31a4dd8d71b4fe93f528f2a3a7a8e295709377b24241"
+        },
+        "src/mcp/weight_ridge.rs": {
+          "bytes": 13240,
+          "sha256": "9e381a3489a7ad31300828cc25071e5920d861f6a09a40beb1a6db89ae25ae4e"
+        },
+        "src/mcp/weight_ridge_tests.rs": {
+          "bytes": 8523,
+          "sha256": "0d979666b70d4e146ad223a515652d1cbf652e97968973e6b1516fbc4ff5634e"
+        },
+        "src/mcp/runtime/effect_owner_fence_tests.rs": {
+          "bytes": 21893,
+          "sha256": "a76304a451a628e2aada68b0ba13c08fe6c05ecf7c921d699c9f2853b4ff1bdf"
+        },
+        "src/mcp/runtime/jobs_start_io_tests.rs": {
+          "bytes": 16553,
+          "sha256": "acb1749d69728f15646a436be0aad78e6e2d90ba442c35db399c0ba5f2919339"
+        },
+        "tests/weight_forward_external.rs": {
+          "bytes": 12126,
+          "sha256": "856726f52efd71e548f5393145b6b1d61541bd4939c88b9f047e09b6e66660c5"
+        },
+        "src/mcp/runtime/ssh_observation_maintenance_tests.rs": {
+          "bytes": 20650,
+          "sha256": "b6436f27e6697b2aa26f91b4e976e16823540e6c4883b86bdf11f910802d5e8c"
+        }
+      },
+      "scope": "The final 12 Rust source files used by targeted followup and r8; historical 11-file r5-r7 binding is retained separately."
+    },
+    "local_complete_suite": {
+      "command": "cargo test --locked --offline --all-features -- --test-threads=1",
+      "cargo_exit_code": 101,
+      "supervisor_exit_code": 1,
+      "passed": 1694,
+      "failed": 2,
+      "ignored": 36,
+      "wall_seconds": 3856.177191562,
+      "cancelled": false,
+      "timed_out": false,
+      "later_harnesses_and_fmt_reached": false,
+      "source12_unchanged": true,
+      "log_bytes": 196063,
+      "log_sha256": "82c863537186873e096afae0b3929e9113ac4e6e0b2d3bcfad806ff8f684ad25",
+      "failures": [
+        {
+          "test": "request_audit::index::tests::bounded_index_capacity_waits_without_retiring_live_callers_or_blocking_writers",
+          "assertion": "status.success()",
+          "inner_cause": "UNKNOWN; child stdout not retained and no nocapture"
+        },
+        {
+          "test": "request_audit::index::tests::large_pending_view_remains_exact_while_continuous_publications_progress",
+          "assertion": "Instant::now() < deadline",
+          "known_scope": "final ten-second progress deadline failed; deeper cause unresolved; subsequent observation checks not reached"
+        }
+      ]
+    },
+    "separate_targeted_qualification": {
+      "weight_tests_passed": 35,
+      "weight_tests_ignored": 1,
+      "explicit_ignored_actual_numpy_fixture_passed": true,
+      "explicit_ignored_pytorch_process_fixture_passed": true,
+      "owner_inventory_passed": true,
+      "all_targets_strict_clippy_passed": true,
+      "fmt_passed": true,
+      "scoped_checks_do_not_qualify_complete_suite": true
+    },
+    "recorded_validation_wall_seconds_total": 13819.706683616,
+    "validation_cost_scope": "Completed command wall time plus cancelled supervisor lifetimes; not CPU/GPU time, API charges or model-training cost; excludes diagnosis and inter-run work.",
+    "official_github_ci": {
+      "scope": "Separate host/harness evidence; never overwrites local r8 failure. See PR for terminal outcome.",
+      "exact_head": "f63aa5c750ec7d2d537e50c22ef0b1bc8cc6814d",
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/41794981838",
+      "status_at_package_freeze": "in_progress",
+      "automatically_triggered_push": true,
+      "manual_retries": 0
+    },
+    "delivery_tree": "93191effdf4e60213b22d03e823df4ffe9651da8",
+    "delivery_tree_exactly_matches_tested_local_commit": true
+  },
+  "qualified_components": {
+    "mit_published_minatar_program_replay": {
+      "games": 3,
+      "episodes": 768,
+      "bitwise_author_checkpoint_match": true,
+      "fresh_astra_discovery": false,
+      "ppo_training_reproduction": false
+    },
+    "qwen_published_edit_export": {
+      "status": "passed_file_identity_only",
+      "exported_tensors": 335,
+      "changed_tensors": 2,
+      "unchanged_tensors": 333,
+      "changed_bf16_values": 130188,
+      "generated_answers": 0,
+      "complete_benchmark_reproduction": false,
+      "file_export_alone_qualifies_loading": false
+    },
+    "actual_checkpoint_audit": {
+      "objects": 3,
+      "all_observed_parameters_finite": true,
+      "live_weights_modified": false
+    },
+    "finite_current100k_capacity_certificate": {
+      "rows": 54,
+      "features": 768,
+      "true_joint_norm_radius": "0.100001",
+      "rmse_lower_bound_usd": "22.910836573345425339477668",
+      "exact_stored_array_real_affine_scope": true,
+      "all_f32_forward_kernel_rounding_certified": false,
+      "private_inputs_required_for_numeric_reproduction": true,
+      "task_value_upper_bound_certified": false
+    },
+    "native_actual_head_bridge": {
+      "binary_sha256": "61170e9ba6c6cd17d907f11e2c3e3b01e59d3855ca3ab11de26205c8ba996228",
+      "hepta_f64_numpy_max_absolute_error": 9.766493169749424e-16,
+      "current100k_harmful_candidates_rejected_and_bytes_restored": 2,
+      "hepta_forced_constraint_failure_bytes_restored": true,
+      "actual_head_end_to_end_utility_claimed": false
+    },
+    "belief_training_repair": {
+      "constraints": 457,
+      "wrong_before": 6,
+      "wrong_after": 0,
+      "previously_correct_preserved": 451,
+      "nonzero_bias_edits": 3,
+      "belief_only_validation_accepts": 0
+    },
+    "fit71_finite_ieee_box_certificates": 2,
+    "qwen_cpu_loading": {
+      "status": "passed_strict_cpu_load_and_finite_forward",
+      "backend": "declared Transformers CPU compatibility port",
+      "main_language_tensors_per_model": 320,
+      "target_keys_with_tied_alias": 321,
+      "strict_load": true,
+      "missing_keys": 0,
+      "unexpected_keys": 0,
+      "explicitly_unconsumed_mtp_tensors": 15,
+      "fixed_nonbenchmark_input_tokens": 7,
+      "forward_calls": 2,
+      "generated_tokens": 0,
+      "all_tested_logits_finite": true,
+      "vllm_harness_qualified": false,
+      "long_context_qualified": false,
+      "kv_cache_and_generation_qualified": false,
+      "capability_improvement_claimed": false,
+      "wall_seconds": 9.427264991,
+      "cpu_seconds": 9.507730247
+    },
+    "finite_ndu_value_grid": {
+      "status": "completed_search_and_rejected_by_validation",
+      "protocol_sha256": "3c20de99d8a5a141d0cac9fb63d3c03219bde8d675a91306f412ae12e106eca7",
+      "fits": 5,
+      "candidates_per_fit": 125,
+      "complete_candidate_rows": 625,
+      "feasible_candidates_exact_original_radius": 625,
+      "edited_biases_per_model": 3,
+      "selection_objective": "complete expected TRAIN task utility under frozen public law",
+      "incumbent": "previously frozen C, not original A",
+      "validation_gain_threshold": 0.005,
+      "validation_comparison": ">=",
+      "validation_accepts": 0,
+      "random_control_accepts": 0,
+      "all_rejections_exactly_revert_to_incumbent": true,
+      "new_worlds": 320,
+      "new_seed": 870150000,
+      "finite_computed_grid_optimum_only": true,
+      "continuous_global_ndu_optimum": false,
+      "raw_increment_iid_mean": 0.003781589866020163,
+      "raw_increment_iid_descriptive_fit95_ci": [
+        -0.011999380377727496,
+        0.019562560109767823
+      ],
+      "raw_increment_ood_mean": 0.015539076885224896,
+      "raw_increment_ood_descriptive_fit95_ci": [
+        -0.008463980979373977,
+        0.039542134749823765
+      ],
+      "gated_increment_both_domains": 0.0,
+      "cpu_seconds": 62.480971000000004,
+      "wall_seconds": 62.616643624999995,
+      "pilot_cpu_seconds_separate": 0.32090300000000005,
+      "validation_set_previously_used_to_select_C": true,
+      "new_independent_validation_set": false,
+      "measurement_ends_before_final_results_compression_and_receipt_write": true,
+      "cpu_hard_limit_whole_process_seconds": 300
+    },
+    "analytic_belief_bypass_records": {
+      "status": "completed_exploratory_structural_control_with_disclosed_reuse",
+      "execution_graph_changed": true,
+      "new_weight_parameters_changed": 0,
+      "teacher_inputs_to_projection": 0,
+      "protocol_sha256": "88de0753b8e1c36bab97768b3fa8c55cb43d5ef17a3f0700fa0ed8912fe15515",
+      "test_world_count": 320,
+      "known_cross_study_reused_schedules": 64,
+      "remaining256_global_freshness_proven": false,
+      "P_validation_accepts": 1,
+      "CP_validation_accepts": 2,
+      "original_validation_reused": true,
+      "independent_record_verifier_passed": true,
+      "seed_overlap_verifier_status": "passed_with_disclosed_cross_study_reuse",
+      "raw_P_minus_A_descriptive_utility_CIs_positive_both_domains": true,
+      "gated_utility_CIs_all_include_zero": true,
+      "cpu_seconds": 19.757740000000002,
+      "wall_seconds": 20.016549041999998,
+      "measurement_ends_before_final_results_compression_and_receipt_write": true,
+      "new_execution_weight_edit_success_claim": false
+    },
+    "analytic_belief_weight_compilation": {
+      "status": "passed_numerical_compilation_scope_task_value_unqualified",
+      "protocol_sha256": "f0b35b698c3da2738ef187fa6dea1f402a418d5cbf317f3fa425c5097fe26e90",
+      "design_sha256": "da512b0ac3a1fc9c67e8d004456f2c8605dcbddb3ec64888f3431627ec77b18c",
+      "fits": 5,
+      "training_rows": 1582,
+      "new_weight_parameters_changed_per_candidate": 49,
+      "parameter_dtype": "binary64 in the declared NumPy checkpoint graph",
+      "execution_graph_changed": false,
+      "new_F32_full_graph_deployment_qualified": false,
+      "fitting_target": "logit of own-model bank[7] on original TRAIN states only",
+      "teacher_targets_used_for_fitting": false,
+      "fixed_regularizer": 0.0001,
+      "original_edit_radius_fraction": 0.5,
+      "safe_radius_factor": 0.99999999,
+      "stored_parameter_original_and_safe_norms_exactly_checked": true,
+      "FW_common_numerical_tolerance": 1e-08,
+      "both_solvers_all_fits_reach_FW_gate": true,
+      "direct_max_numerical_FW_gap": 1.3331349912881763e-15,
+      "direct_max_KKT_stationarity_linf": 4.8636116835309995e-14,
+      "gradient_steps_per_fit": [
+        6549,
+        9624,
+        5713,
+        18039,
+        15776
+      ],
+      "exact_real_outward_optimality_certificate": false,
+      "new_test_worlds": 320,
+      "registered_history_occurrences": 1680,
+      "registered_history_unique_schedules": 1616,
+      "known_schedule_duplicates_before_test_scoring": 0,
+      "seed_domain_separation": true,
+      "unknown_external_and_unavailable_formal_confirmation_freshness_proven": false,
+      "validation_set_reused": true,
+      "validation_gain_threshold": 0.005,
+      "validation_accepts": {
+        "CD": 0,
+        "CG": 0,
+        "D": 1,
+        "G": 1
+      },
+      "train_fit_mean_metrics": {
+        "A": {
+          "own_bank_logit_mse": 0.011557023704603517,
+          "belief_brier": 0.0002682475816673296
+        },
+        "D": {
+          "own_bank_logit_mse": 0.006317287687066327,
+          "belief_brier": 0.00029103636999404554
+        },
+        "G": {
+          "own_bank_logit_mse": 0.006317294915852642,
+          "belief_brier": 0.00029106610578131533
+        }
+      },
+      "utility_contrasts": {
+        "iid": {
+          "CD_gated_minus_C": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0
+          },
+          "CD_minus_C": {
+            "descriptive_paired_95_ci": [
+              -0.004728150294143062,
+              0.0003300756669577616
+            ],
+            "independent_fits": 5,
+            "mean": -0.00219903731359265
+          },
+          "CD_minus_CG": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0
+          },
+          "CG_gated_minus_C": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0
+          },
+          "CG_minus_C": {
+            "descriptive_paired_95_ci": [
+              -0.004728150294143062,
+              0.0003300756669577616
+            ],
+            "independent_fits": 5,
+            "mean": -0.00219903731359265
+          },
+          "C_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.014962922662499982,
+              0.06319002565011167
+            ],
+            "independent_fits": 5,
+            "mean": 0.02411355149380584
+          },
+          "D_gated_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.0025458510518515036,
+              0.005412082093162554
+            ],
+            "independent_fits": 5,
+            "mean": 0.0014331155206555256
+          },
+          "D_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.002785890197010913,
+              0.006433080765702885
+            ],
+            "independent_fits": 5,
+            "mean": 0.0018235952843459857
+          },
+          "D_minus_G": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0
+          },
+          "G_gated_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.0025458510518515036,
+              0.005412082093162554
+            ],
+            "independent_fits": 5,
+            "mean": 0.0014331155206555256
+          },
+          "G_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.002785890197010913,
+              0.006433080765702885
+            ],
+            "independent_fits": 5,
+            "mean": 0.0018235952843459857
+          }
+        },
+        "ood": {
+          "CD_gated_minus_C": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0
+          },
+          "CD_minus_C": {
+            "descriptive_paired_95_ci": [
+              -0.0035080756631913927,
+              0.015000942260944169
+            ],
+            "independent_fits": 5,
+            "mean": 0.0057464332988763885
+          },
+          "CD_minus_CG": {
+            "descriptive_paired_95_ci": [
+              -6.639558555649093e-05,
+              3.12325771149776e-05
+            ],
+            "independent_fits": 5,
+            "mean": -1.758150422075666e-05
+          },
+          "CG_gated_minus_C": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0
+          },
+          "CG_minus_C": {
+            "descriptive_paired_95_ci": [
+              -0.003485973758095802,
+              0.015014003364290093
+            ],
+            "independent_fits": 5,
+            "mean": 0.005764014803097145
+          },
+          "C_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.005244397836263095,
+              0.04884346372012509
+            ],
+            "independent_fits": 5,
+            "mean": 0.021799532941930995
+          },
+          "D_gated_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.0021726795027124483,
+              0.004618777607692203
+            ],
+            "independent_fits": 5,
+            "mean": 0.0012230490524898774
+          },
+          "D_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.011138782855022313,
+              0.015921438688316882
+            ],
+            "independent_fits": 5,
+            "mean": 0.0023913279166472845
+          },
+          "D_minus_G": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0
+          },
+          "G_gated_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.0021726795027124483,
+              0.004618777607692203
+            ],
+            "independent_fits": 5,
+            "mean": 0.0012230490524898774
+          },
+          "G_minus_A": {
+            "descriptive_paired_95_ci": [
+              -0.011138782855022313,
+              0.015921438688316882
+            ],
+            "independent_fits": 5,
+            "mean": 0.0023913279166472845
+          }
+        }
+      },
+      "direct_solver_cpu_seconds": 0.013079000000000618,
+      "gradient_solver_cpu_seconds": 1.2709959999999998,
+      "shared_Gram_spectrum_cpu_seconds": 0.004005999999999649,
+      "solver_cost_scope": "single sequential observation of one fixed 49-dimensional convex self-target problem at a common numerical gate; excludes shared features, evaluation, full model training and Agent cost",
+      "measurement": {
+        "cpu_seconds": 22.61468,
+        "endpoint": "Before final results compression and qualification write;180CPU hard cap covers whole process.",
+        "peak_rss_bytes": 128598016,
+        "process_cpu_seconds_at_measurement": 22.673103,
+        "wall_seconds": 22.7039915
+      },
+      "CPU_hard_limit_seconds": 180,
+      "matmul_audit": {
+        "count": 797035,
+        "max_abs_difference": 1.1546319456101628e-14,
+        "max_input_abs": 1.6452451767963467,
+        "max_output_abs": 344.0,
+        "nonfinite_count": 0
+      },
+      "independent_record_verifiers_passed": true,
+      "general_task_value_improvement_qualified": false,
+      "superiority_to_gradient_at_task_value_or_total_training_cost_qualified": false,
+      "record_verification_scope": "retained problem arithmetic, exact stored-parameter norms, published parameter recipes, recorded serialization flags, provenance, gates and statistics; not an independent full model JSON reconstruction",
+      "complete_phase_cost": {
+        "PGD_including_features_and_Gram_cpu_seconds": 1.7277579999999997,
+        "PGD_including_shared_Gram_cpu_seconds": 1.2750019999999995,
+        "PGD_solver_cpu_seconds": 1.2709959999999998,
+        "direct_including_features_and_Gram_cpu_seconds": 0.4698410000000003,
+        "direct_including_shared_Gram_cpu_seconds": 0.017085000000000267,
+        "direct_solver_cpu_seconds": 0.013079000000000618,
+        "observed_single_run_ratios": {
+          "including_Gram_spectrum": 74.62698273339068,
+          "including_features_and_Gram": 3.6773248822473956,
+          "solver_only": 97.17837755179599
+        },
+        "scope": "Single-run same-convex-FW-precision phase timing for49-parameter self-target problems; not task-quality,whole-study,inference,full-model-training,or repeated-benchmark speedup.",
+        "shared_Gram_spectrum_cpu_seconds": 0.004005999999999649,
+        "shared_TRAIN_features_cpu_seconds": 0.45275600000000005
+      }
+    }
+  },
+  "efficacy": {
+    "original_joint_new_worlds": 320,
+    "exploratory_followup_new_worlds": 320,
+    "direct_edit_superiority_to_gd_qualified": false,
+    "targeted_belief_task_value_improvement_qualified": false,
+    "incremental_belief_value_over_continuation_qualified": false,
+    "new_fullhx_episodes": 0,
+    "new_heptatrader_episodes": 0,
+    "prospective_trading_return_qualified": false,
+    "global_ndu_optimality_qualified": false,
+    "compute_matched_full_model_training_comparison": false,
+    "energy_or_total_dollar_savings_qualified": false,
+    "finite_ndu_grid_new_worlds": 320,
+    "incremental_direct_task_value_search_qualified": false,
+    "analytic_belief_raw_positive_exploratory_signal": true,
+    "analytic_belief_gated_superiority_qualified": false,
+    "pure_weight_efficacy_from_analytic_bypass": false,
+    "analytic_belief_compile_test_worlds": 320,
+    "analytic_belief_compilation_task_value_superiority_qualified": false,
+    "same_convex_precision_local_solver_comparison_qualified": true
+  },
+  "execution_boundaries": {
+    "new_private_trader_rows_or_weights_published": false,
+    "production_activation": false,
+    "live_trading_actions": false,
+    "original_source_ledger_or_denominator_changed": false,
+    "incomplete_source_outcome_preserved": "UNKNOWN",
+    "live_filesystem_rollback_claimed": false,
+    "native_durable_evaluation_journal": false,
+    "native_interruption_recovery_qualified": false
+  },
+  "remaining_blockers": [
+    "local complete software gate failed r8 (1694 passed,2 failed,36 ignored,Cargo101); capacity child inner cause and ten-second progress failure remain unresolved",
+    "actual Trader mechanism-to-tensor mapping absent",
+    "source command lacks fill or terminal zero-fill proof",
+    "frozen prospective windows not mature",
+    "Qwen original grader dependencies, complete pinned inputs, vLLM/long-context generation and full benchmark unqualified",
+    "native full neural/CTMC graph compiler and global NDU optimizer absent",
+    "production cancellation/restart evaluation journal absent",
+    "actual Trader numerical reproduction requires authorized private fixture"
+  ],
+  "evidence_paths": {
+    "original_joint": "joint/records/ACCEPTANCE_AUDIT.json",
+    "belief_followup": "exploratory_belief/records/ACCEPTANCE.json",
+    "native_hepta": "native/native-hepta-summary.json",
+    "native_current100k": "native/native-current100k-summary.json",
+    "capacity": "pocket4/finite_capacity_certificate_operational.json",
+    "source_blocker": "pocket4/source_replay_blocker_aggregate.json",
+    "finite_ndu_value_grid": "ndu_value_grid/PACKAGE_QUALIFICATION.json",
+    "analytic_belief": "analytic_belief/PACKAGE_QUALIFICATION.json",
+    "cross_study_seed_reuse": "analytic_belief/SEED_OVERLAP_ERRATUM.md",
+    "analytic_belief_weight_compilation": "analytic_belief_compile/PACKAGE_QUALIFICATION.json"
+  },
+  "public_independent_acceptance": "public experiments and software are reproducible from pinned sources; actual Trader numbers require private input access",
+  "checkpoint_identity_refresh": {
+    "schema": "hepta.wsp.checkpoint_identity_refresh.v1",
+    "observed_utc": "2026-11-04T05:43:02.997598+00:00",
+    "status_refresh": "UNKNOWN_SOURCE_PATH_NOT_RETAINED",
+    "reason": "The earlier local audit retained trainer-status content but not its exact source filename. A single fixed trainer-status filename was absent; no directory discovery was performed. Current queue counts, current phase and latest-candidate identity are not freshly verified.",
+    "original_status_observed_unix_ms": 1793760818820,
+    "original_status": {
+      "phase": "EVALUATING_BOUNDED_CANDIDATE_QUEUE",
+      "job_counts": {
+        "RUNNING": 0,
+        "COMPLETED": 109,
+        "FAILED": 2,
+        "ADMITTED": 0
+      },
+      "not_current": true
+    },
+    "audited_small_checkpoints": [
+      {
+        "label": "audited_adapter",
+        "bytes": 9988,
+        "sha256": "8fa37e66e7466942b26376da00ef0afcb34ba1bebf5f6eba2324bc7237db1791",
+        "matches_original_audit": true
+      },
+      {
+        "label": "frozen_readout",
+        "bytes": 3220,
+        "sha256": "1f3071b3b1aaa89966b2d72abb2aec3f0841e2eb9bb24964abc54f30ac22b759",
+        "matches_original_audit": true
+      }
+    ],
+    "large_base": {
+      "bytes": 643835514,
+      "matches_original_size": true,
+      "content_sha256_recomputed": false
+    },
+    "current_latest_checkpoint_identity_verified": false,
+    "config_roots_match_original": true,
+    "read_only_boundaries": {
+      "large_weights_read": false,
+      "broker_requests": 0,
+      "existing_files_changed": false,
+      "frozen_package_changed": false
+    }
+  },
+  "metric_definitions": {
+    "belief_brier": {
+      "implemented": "mean((model_probability - Oracle.posterior)**2)",
+      "interpretation": "posterior probability MSE / expected Brier excess risk under declared law",
+      "includes_bernoulli_irreducible_variance": false,
+      "new_real_trading_label_brier": false
+    }
+  },
+  "trainer_status_refresh": {
+    "schema": "hepta.wsp.trainer-status-refresh.v1",
+    "observation_utc": "2026-11-04T06:59:24Z",
+    "purpose": "Bounded read-only current trainer-state refresh; separate from the frozen scientific experiment package.",
+    "source": {
+      "schema": "heptatrader.laya-resident-status.v1",
+      "content_sha256": "51fd2f21800388f59316f1c20f7b556633e0456af4b934a76b0b13db39014a75",
+      "bytes": 9620,
+      "native_updated_utc": "2026-11-04T06:58:51.206Z",
+      "native_at_ms": 1793775531206,
+      "age_seconds_at_read": 32.794,
+      "provenance": "The explicitly named resident trainer service referenced a wrapper configuration, which bound its original configuration; the declared control directory contained this native status record.",
+      "original_configuration_content_sha256": "ffde1187e1fc0d28c893328920ae0f6a6a70615adad51fadcdfc85287bd54527"
+    },
+    "native_status": {
+      "phase": "CANDIDATE_READY_AWAITING_FORWARD_ADMISSION",
+      "job_counts": {
+        "ADMITTED": 0,
+        "COMPLETED": 113,
+        "FAILED": 2,
+        "RUNNING": 0
+      },
+      "pending_evaluations": 3,
+      "current_blockers": [
+        "CANDIDATE_READY_AWAITING_FORWARD_ADMISSION",
+        "LATEST_SOURCE_QUOTE_NOT_FRESH",
+        "SOURCE_CONTINUITY_NOT_READY",
+        "SOURCE_QUALITY_HOLD_NO_REFRESH_AUTHORITY"
+      ],
+      "completed_candidates_without_forward_trial": 42,
+      "blocking_deferred_training_candidates": 1,
+      "deferred_training_candidates": 1
+    },
+    "latest_candidate": {
+      "candidate_identity_same_as_original_audit": false,
+      "job_identity_same_as_original_audit": false,
+      "latest_registration_matches_last_candidate": true,
+      "training_state": "COMPLETED",
+      "registration_state": "REGISTRATION_RECORD_NOT_AVAILABLE",
+      "registration_is_performance_result": false,
+      "plan_file_exists": false,
+      "forward_admission_pending": true,
+      "performance_evaluated_by_this_refresh": false
+    },
+    "latest_small_adapter": {
+      "all_finite": true,
+      "bound_to_native_status_sha256": "51fd2f21800388f59316f1c20f7b556633e0456af4b934a76b0b13db39014a75",
+      "bytes": 9988,
+      "candidate_performance_evaluated": false,
+      "forward_executed": false,
+      "large_base_read": false,
+      "maximum_file_bytes": 1048576,
+      "observed_utc": "2026-11-04T07:07:41.267999+00:00",
+      "only_native_status_bound_small_adapter_read": true,
+      "parameters": 2379,
+      "same_content_as_0701_identity_observation": true,
+      "schema": "hepta.wsp.small-adapter-identity-scan.v1",
+      "sha256": "f8f71a43303e13208411ecfe340ee1f5e4b87c4fef33545b6deb5b530c452032",
+      "tensor_count": 6,
+      "tensors": [
+        {
+          "dtype": "F32",
+          "finite_count": 64,
+          "name": "model.act_head.2.A",
+          "nonfinite_count": 0,
+          "numel": 64,
+          "shape": [
+            1,
+            64
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 2,
+          "name": "model.act_head.2.B",
+          "nonfinite_count": 0,
+          "numel": 2,
+          "shape": [
+            2,
+            1
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 1536,
+          "name": "model.scorer.1.A",
+          "nonfinite_count": 0,
+          "numel": 1536,
+          "shape": [
+            2,
+            768
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 8,
+          "name": "model.scorer.1.B",
+          "nonfinite_count": 0,
+          "numel": 8,
+          "shape": [
+            4,
+            2
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 768,
+          "name": "model.scorer.3.A",
+          "nonfinite_count": 0,
+          "numel": 768,
+          "shape": [
+            1,
+            768
+          ]
+        },
+        {
+          "dtype": "F32",
+          "finite_count": 1,
+          "name": "model.scorer.3.B",
+          "nonfinite_count": 0,
+          "numel": 1,
+          "shape": [
+            1,
+            1
+          ]
+        }
+      ],
+      "training_executed": false,
+      "same_content_as_original_audited_adapter": false,
+      "original_audited_adapter_sha256": "8fa37e66e7466942b26376da00ef0afcb34ba1bebf5f6eba2324bc7237db1791"
+    },
+    "previous_native_observation": {
+      "native_at_ms": 1793760818820,
+      "native_updated_utc": "2026-11-04T02:53:38.820Z",
+      "phase": "EVALUATING_BOUNDED_CANDIDATE_QUEUE",
+      "job_counts": {
+        "ADMITTED": 0,
+        "COMPLETED": 109,
+        "FAILED": 2,
+        "RUNNING": 0
+      },
+      "completed_count_change": 4
+    },
+    "wrapper_observation": {
+      "observed_utc": "2026-11-04T06:46:38.456465Z",
+      "service_active": true,
+      "interpretation": "An active resident wrapper is not evidence that a gradient-training task is running. The later native queue snapshot reports RUNNING=0."
+    },
+    "prior_scientific_results_binding": {
+      "large_base_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+      "adapter_sha256": "8fa37e66e7466942b26376da00ef0afcb34ba1bebf5f6eba2324bc7237db1791",
+      "frozen_value_head_sha256": "1f3071b3b1aaa89966b2d72abb2aec3f0841e2eb9bb24964abc54f30ac22b759",
+      "historical_rows": 54,
+      "extension_to_new_candidate_claimed": false
+    },
+    "boundaries": {
+      "prior_0543_unknown_observation_preserved": true,
+      "frozen_pocket4_package_changed": false,
+      "large_base_read": false,
+      "new_forward_executed": false,
+      "training_executed": false,
+      "candidate_performance_evaluated": false,
+      "broker_request_sent": false,
+      "production_service_changed": false,
+      "training_interrupted": false,
+      "private_identifiers_paths_and_parameter_values_published": false
+    },
+    "limitations": [
+      "Status and adapter reads are separately time-stamped snapshots, not an atomic cross-file snapshot.",
+      "The latest adapter has different content from the original audited adapter. Its finite values and parameter layout are not evidence of predictive, task-value or generalization improvement.",
+      "The prior historical readout results and capacity certificate remain bound to their original artifact and fixture identities; no new forward admission or scientific evaluation was performed.",
+      "The former 05:43 current-queue UNKNOWN observation remains in the earlier record. This later native status snapshot resolves that observation at its stated time only."
+    ]
+  },
+  "latest_trainer_observation_field": "trainer_status_refresh; earlier checkpoint_identity_refresh is a preserved historical observation"
+}

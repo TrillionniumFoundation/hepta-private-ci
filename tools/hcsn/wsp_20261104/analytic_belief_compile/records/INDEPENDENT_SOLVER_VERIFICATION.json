@@ -1,0 +1,91 @@
+{
+  "schema": "hepta-belief-compile-readonly-verification-receipt-v1",
+  "exit_code": 0,
+  "scope": "Record/source arithmetic only; no model forward, candidate solve, gradient update or random world generation.",
+  "output": {
+    "status": "passed_recorded_convex_numerics",
+    "verifier_sha256": "82a1dd83a63adc9861cb6f961df4a842a78f0d06d0812feae04c812c2e4c23c9",
+    "results_sha256": "63ae9ff85631fd53c70f4dc69a82dc59feaaa84e37a19ed1efcb19e8316babd6",
+    "fits": [
+      {
+        "fit": 11,
+        "TRAIN_rows": 308,
+        "H_max_difference_from_frozen_geometry": 3.469446951953614e-16,
+        "own_bank_exactly_matches_prior_TRAIN_probe": true,
+        "direct_objective_recomputed": 0.00898995229882489,
+        "PGD_objective_recomputed": 0.00898995942694088,
+        "direct_FW_gap_recomputed": 1.3333518317226734e-15,
+        "PGD_FW_gap_recomputed": 9.99554273790719e-9,
+        "direct_mu": 0.0018490855254551996,
+        "direct_KKT_stationarity_linf_recomputed": 1.2634750017059826e-14,
+        "PGD_steps": 6549,
+        "PGD_converged": true,
+        "equal_objective_precision_gate_passed": true
+      },
+      {
+        "fit": 23,
+        "TRAIN_rows": 290,
+        "H_max_difference_from_frozen_geometry": 4.579669976578771e-16,
+        "own_bank_exactly_matches_prior_TRAIN_probe": true,
+        "direct_objective_recomputed": 0.006889293601658943,
+        "PGD_objective_recomputed": 0.006889301384545157,
+        "direct_FW_gap_recomputed": 1.0581813203458523e-15,
+        "PGD_FW_gap_recomputed": 9.997648191522462e-9,
+        "direct_mu": 0.0017185748702202588,
+        "direct_KKT_stationarity_linf_recomputed": 4.8638393659872214e-14,
+        "PGD_steps": 9624,
+        "PGD_converged": true,
+        "equal_objective_precision_gate_passed": true
+      },
+      {
+        "fit": 37,
+        "TRAIN_rows": 299,
+        "H_max_difference_from_frozen_geometry": 3.7470027081099033e-16,
+        "own_bank_exactly_matches_prior_TRAIN_probe": true,
+        "direct_objective_recomputed": 0.008064120694192057,
+        "PGD_objective_recomputed": 0.008064128313885479,
+        "direct_FW_gap_recomputed": 0,
+        "PGD_FW_gap_recomputed": 9.990430069372128e-9,
+        "direct_mu": 0.0026230858354775563,
+        "direct_KKT_stationarity_linf_recomputed": 4.2099570357612137e-16,
+        "PGD_steps": 5713,
+        "PGD_converged": true,
+        "equal_objective_precision_gate_passed": true
+      },
+      {
+        "fit": 53,
+        "TRAIN_rows": 341,
+        "H_max_difference_from_frozen_geometry": 3.885780586188048e-16,
+        "own_bank_exactly_matches_prior_TRAIN_probe": true,
+        "direct_objective_recomputed": 0.0026068929634558927,
+        "PGD_objective_recomputed": 0.0026068999198413548,
+        "direct_FW_gap_recomputed": 0,
+        "PGD_FW_gap_recomputed": 9.998616387640359e-9,
+        "direct_mu": 0.000752272610126052,
+        "direct_KKT_stationarity_linf_recomputed": 2.1595274396837838e-16,
+        "PGD_steps": 18039,
+        "PGD_converged": true,
+        "equal_objective_precision_gate_passed": true
+      },
+      {
+        "fit": 71,
+        "TRAIN_rows": 344,
+        "H_max_difference_from_frozen_geometry": 3.3306690738754696e-16,
+        "own_bank_exactly_matches_prior_TRAIN_probe": true,
+        "direct_objective_recomputed": 0.005211835394615992,
+        "PGD_objective_recomputed": 0.005211842051466542,
+        "direct_FW_gap_recomputed": 0,
+        "PGD_FW_gap_recomputed": 9.995786450726213e-9,
+        "direct_mu": 0.0008881769438701597,
+        "direct_KKT_stationarity_linf_recomputed": 2.799952110443815e-16,
+        "PGD_steps": 15776,
+        "PGD_converged": true,
+        "equal_objective_precision_gate_passed": true
+      }
+    ],
+    "new_model_forwards": 0,
+    "candidate_solves": 0,
+    "gradient_updates": 0,
+    "scope": "Independent scalar reconstruction of recorded objective/gradient/Gram/FW/KKT and exact stored-IEEE radius, with previously frozen TRAIN H and own-bank target provenance. Eigenvalues checked for L only; no new candidate solve or PGD replay. Numerical diagnostics are not rigorous outward-rounded real optimality certificates. Matching this small self-target objective does not establish full-model-training or task-quality equivalence."
+  }
+}

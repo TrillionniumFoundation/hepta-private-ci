@@ -1,0 +1,144 @@
+{
+  "FullHX_or_Trader": false,
+  "analytic_driver_sha256": "9e8950bbf7949a4d9caf5841f3507e042b3a934df0d1be7aba19158e7b7e23c0",
+  "canonical_schedule_rule": "All policy/evaluator exogenous fields listed in frozen history registry; omit id and unused synthetic packet placeholders/identities.",
+  "chronology": "All five original TRAIN/VAL solver and gate records frozen before TEST world generation; then all320 worlds generated and content-audited before any TEST policy or Oracle scoring.",
+  "claims_scope": "Approximate optimum of this fixed-feature regularized convex logit problem only. No global NDU or task-optimality inference from objective optimum.",
+  "cost_scope": "Report shared TRAIN features/Gram/spectrum,each solver,validation/test,and full process endpoints. No new full-model-training comparison or task-quality speed claim.",
+  "cpu_hard_limit_seconds": 180,
+  "cpu_soft_signal_seconds": 175,
+  "direct_solver": {
+    "fail_if_FW_gap_above": 1e-08,
+    "gradient": "2*(A*delta-g)",
+    "independent_check": "Cholesky solution of same linear system and reference-H gradient; numerical checks only",
+    "linear_residual_gate": "linf<=1e-9*(1+maxabs(g))",
+    "method": "eigh of A=H.T*H/n+lambdaI; solve(A+muI)delta=g with scalar monotone root if active; fixed160 maximum bisections and64 bracket steps",
+    "numerical_negative_gap_allowance": 1e-12
+  },
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "duplicate_policy": "Compare all320 actual schedule fingerprints to frozen known-history and each other before any TEST score; any duplicate or registered integer seed collision blocks whole run, no resampling or seed change.",
+  "exact_original_budget": "sum Fraction(stored_b[j])-Fraction(b0[j]) squared <= sum Fraction(b0[j]) squared /4",
+  "exact_safe_budget": "actual stored real squared difference <= Fraction(binary64 safe_radius)**2",
+  "execution_graph_changed": false,
+  "exploratory": true,
+  "external_preregistration": false,
+  "final_storage_numerical_inward_guard": {
+    "condition": "Only if stored actual exact safe radius is exceeded after floating root/projection/storage; recompute diagnostics and fail if still outside; identical routine for D/G; no target/value selection.",
+    "factor": 0.999999999999,
+    "maximum_applications_per_candidate_storage": 1
+  },
+  "fit_data": "All and only original TRAIN rows from each pinned checkpoint input; rebuild strict hidden+bias H and own model bank7. No old TEST probes or teacher posterior in fitting.",
+  "fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "gap": "grad_f(b).dot(b-b0)+rho_safe*norm(grad_f(b)); floating diagnostic at stored b, not outward exact real global certificate",
+  "gated_arms": [
+    "D_gated",
+    "CD_gated",
+    "G_gated",
+    "CG_gated"
+  ],
+  "graceful_cpu_check_seconds": 170,
+  "historical_seed_registry_sha256": "397b3a5f4609052d743b5f456b7af5b476678fa50841289b0aad9cbd66ae718b",
+  "history_coverage": {
+    "additional_equivalent_numerical_rerun_blocks": 20,
+    "four_prior_study_world_occurrences": 1280,
+    "known_uncovered": "Original formal confirmation world content absent from available archive; unknown/external history not covered; seed definitions alone do not prove content uniqueness.",
+    "original_TRAIN_VAL": 400,
+    "source_occurrences": 1680,
+    "unique_schedules": 1616
+  },
+  "history_registry_sha256": "e29228a4b6858b6aea4d4fd623bb5ac26db450dab61bc660e148493d97fd9163",
+  "incumbents": {
+    "CD": "C",
+    "CG": "C",
+    "D": "A",
+    "G": "A"
+  },
+  "joint_source_sha256": {
+    "checked_replay.py": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24",
+    "joint_deploy.py": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+    "joint_law.py": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65",
+    "joint_protocol.json": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606",
+    "joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+    "legacy_task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "run_head_edit.py": "fe0681ef732b660db0b195bda21cf9ab40b0d6cd8b7fe0c69ade7b9e67198b6f",
+    "truth_transitions.npz": "3a62c48272d90b459622ed8818fddf36de983831fbc0c1306fc39b27345228f0"
+  },
+  "local_source_sha256": {
+    "belief_convex.py": "79fe3006b4ccebf765ab4160d67c17690330d4a4cd128f3d3f1050fb53af5444",
+    "prepare_history_registry.py": "72f7c853b39a05775de1d26108a68dc99fec8159f3f02787b88eadfccf8a4aa5",
+    "run_belief_compile.py": "2472219f9d94fda23b74852ef4b09a0377e70c4211bb43bdd67aab6c4304e2f6"
+  },
+  "metrics": [
+    "complete_expected_utility",
+    "posterior_MSE_Brier_excess_risk",
+    "legal_Q_MSE",
+    "continuation_Q_MSE",
+    "teacher_behavior_regret",
+    "own_bank_probability_MSE",
+    "own_bank_logit_MSE"
+  ],
+  "new_parameter_scope": "Only49 Belief row plus bias; W1,core,decoder,three continuation rows unchanged relative to paired A/C. C is old frozen continuation edit, no new fitting of C.",
+  "numerics": "Original strict explicit-reduction model path; NumPy overflow/invalid/divide raise; model forecast never newly clipped; eig/Cholesky floating linear algebra disclosed.",
+  "objective": "mean((H*b-logit(own_bank7))**2)+1e-4*||b-b0||2**2",
+  "objective_target": "log(p)-log1p(-p), own bank7 only; finite strict0<p<1 required, fail without clipping",
+  "old_heads_sha256": "d4f220739bc5b76d19ab02e1440e48b2ef82f6098a7ff78516284e61d32518e1",
+  "original_radius_fraction": 0.5,
+  "original_results_uncompressed_sha256": "a55a8136842d366f3d3663b05028bae8fa7eedad63bfa731662fb692104eedb4",
+  "parameter_serialization": "Build real candidate checkpoint JSON by replacing onlynetwork.w2[3]/b2[3]; roundtrip must reproduce evaluated head exactly; restoring those49 values must equal paired original checkpoint. Record canonical model SHA and head-only export, no full model copies.",
+  "previous177_manifest_sha256": "2ccea98e0cc287a20f7e637eaad5333a5607799902204a0989302c0eb3469cad",
+  "projected_gradient": {
+    "FW_tolerance": 1e-08,
+    "initial": "b0 (delta=0)",
+    "max_steps": 20000,
+    "not_converged_policy": "Retain candidate/diagnostics and evaluate; prohibit same-convex-precision solver speed ratio if either solver lacks declared tolerance",
+    "numerical_negative_gap_allowance": 1e-12,
+    "step": "1/L where L=2*lambda_max(A), shared spectral setup",
+    "stop": "own final-stored-b reference-H numerical FW gap <=1e-8, or fixed maximum; no direct-solution information"
+  },
+  "raw_arms": [
+    "A",
+    "C",
+    "D",
+    "CD",
+    "G",
+    "CG"
+  ],
+  "regularization": 0.0001,
+  "required_bank_semantics": "no-new-observation predictive state probability at next boundary, two boundaries and deadline6; thresholds normalized(-.5,0,.5), strict>; actual scheduled future drives and durations",
+  "required_target": "sign(X_deadline6)>0, including early submit; learned belief is not privileged posterior",
+  "reused_original_validation": true,
+  "run_policy": "One scientific execution, no retry,no hyperparameter tuning. Preserve blocked records if any prerequisite,number,content or budget gate fails.",
+  "safe_radius_factor": 0.99999999,
+  "sampled_rss_limit_bytes": 4294967296,
+  "schema": "hepta-analytic-belief-weight-compilation-frozen-design-v1",
+  "seed_derivation": "SHA256 canonical labelled JSON(namespace,design_sha256,generator_sha256,fit,domain,purpose,replication=0), entire256-bit digest as RNG entropy. Design excludes its own hash,derived seeds,results,and timestamps.",
+  "seed_namespace": "hepta-belief-compile-domain-separation-v1",
+  "seed_purposes": [
+    "worlds",
+    "behavior_probes"
+  ],
+  "selection": "Exactly one direct and one PGD candidate per fit. No VAL lambda/radius/seed selection; evaluate all six raw arms then fixed paired gates.",
+  "source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "statistics": "Paired five-training-fit descriptive Student-t95% CIs,df4,no multiplicity adjustment; report all raw/gated and D-G/ CD-CG; no global external-unseen claim.",
+  "teacher_scope": "Oracle labels,posterior,branches and utility only for evaluation, never fit inputs/targets.",
+  "test_worlds_total": 320,
+  "training_row_counts": [
+    308,
+    290,
+    299,
+    341,
+    344
+  ],
+  "validation_already_used_for_C_selection": true,
+  "validation_threshold": 0.005,
+  "worlds_per_fit_per_domain": 32
+}

@@ -1,0 +1,87 @@
+{
+  "fixture_bytes": 357560,
+  "fixture_sha256": "205bb2d9d1329c5a4ee134ce12146c29e842da80a8662a8e3533e0b85a4bd90a",
+  "generalization_or_blind_holdout_claim": false,
+  "head_conversion": "multiply original weight and bias by 100 for fixture USD output; certificate uses original radius 0.1 and output scale 100",
+  "historical_label_access": "ALL_54_LABELS_PREVIOUSLY_VIEWED_BEFORE_CURRENT_ANALYSIS",
+  "private_rows_weights_and_machine_paths_disclosed": false,
+  "raw_fixture_is_public": false,
+  "reproduction_access_requirement": "Authorized owner must supply the hash-pinned private fixture; source and aggregate proof are public-reviewable, private-data reproduction is conditional on access.",
+  "row_order": "stable ascending sort by original input_started_at_ms; apply same permutation to features and targets",
+  "schema": "hepta.wsp.private-input-reproduction-manifest.v1",
+  "source_sha256": {
+    "feature_safetensors": "22d0afbf910ae6b7161b6c5476fdf8e6e921895514c6b6842d0e239f4cc8c483",
+    "head_safetensors": "1f3071b3b1aaa89966b2d72abb2aec3f0841e2eb9bb24964abc54f30ac22b759",
+    "selected_dataset_json": "cfd5d40c9979c5f4a3a4c0b2b14c731ba44663b9e6e3058553cec7feda37aa35"
+  },
+  "targets": "float(net_usd), already USD; no values disclosed",
+  "tensors": {
+    "exact18.bias": {
+      "dtype": "F64",
+      "shape": [
+        1
+      ]
+    },
+    "exact18.weight": {
+      "dtype": "F64",
+      "shape": [
+        1,
+        768
+      ]
+    },
+    "exact36.bias": {
+      "dtype": "F64",
+      "shape": [
+        1
+      ]
+    },
+    "exact36.weight": {
+      "dtype": "F64",
+      "shape": [
+        1,
+        768
+      ]
+    },
+    "exact54.bias": {
+      "dtype": "F64",
+      "shape": [
+        1
+      ]
+    },
+    "exact54.weight": {
+      "dtype": "F64",
+      "shape": [
+        1,
+        768
+      ]
+    },
+    "inputs": {
+      "dtype": "F64",
+      "role": "exact widening of frozen F32 features",
+      "shape": [
+        54,
+        768
+      ]
+    },
+    "parent.bias": {
+      "dtype": "F64",
+      "shape": [
+        1
+      ]
+    },
+    "parent.weight": {
+      "dtype": "F64",
+      "shape": [
+        1,
+        768
+      ]
+    },
+    "targets_usd": {
+      "dtype": "F64",
+      "role": "known historical target in USD",
+      "shape": [
+        54
+      ]
+    }
+  }
+}
