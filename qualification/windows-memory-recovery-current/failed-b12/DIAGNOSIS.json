@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "parent": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "original_run": 41756875503,
+  "attempt": 2,
+  "read_only_bridge_run": 41762791646,
+  "product_state": "DRAFT_HOLD",
+  "baseline": {
+    "windows": {
+      "path_passed": 21,
+      "state_passed": 209,
+      "state_failed": 1,
+      "memory_compile_error": "E0659: assert_eq macro ambiguity in cognitive_store_recovery_windows_tests.rs:42",
+      "state_first_failure": "sqlite_recovery_windows_tests.rs:243: same_recovery_home(native, verbatim)",
+      "clippy_completed_successfully": false
+    },
+    "bazel": {
+      "path_passed": 7,
+      "state_shards_passed": [
+        55,
+        49,
+        52,
+        60
+      ],
+      "memory_passed": 272,
+      "original_memory_ignored": 7,
+      "targets_executed": 3,
+      "targets_passed": 3,
+      "qualification_status": "failed",
+      "failure": "Collector expected unsharded state/test.log, but the original state target has four shards.",
+      "clippy_reached": false
+    },
+    "macos": {
+      "path_passed": 4,
+      "state_passed": 213,
+      "state_failed": 2,
+      "memory_passed": 272,
+      "original_memory_ignored": 7,
+      "qualification_status": "failed",
+      "failed_cases": [
+        "cold_image_is_immutable_and_reconnects_to_same_copy",
+        "cold_image_rejects_wrong_guard_replacement_sidecars_and_size"
+      ],
+      "raw_failure_artifact_bridge": "queued when this candidate was prepared",
+      "fixture_inference": "Both owned homes omit canonicalization before the original bind method, which rejects a Unix parent whose physical canonical path differs. The candidate canonicalizes only these owned test directories; the raw failure and a new native result remain necessary for a causal/closure claim."
+    }
+  },
+  "changes": [
+    "Resolve the ambiguous macro with the same explicit pretty_assertions import already used by the surrounding tests.",
+    "Canonicalize the Windows fixture's own private home through AbsolutePathBuf before deriving native/verbatim spellings; production same_recovery_home stays strict.",
+    "Keep the old guard validation before materialization and the exact original database assertion afterward. Add three sidecar byte/absence comparisons, then bind and validate a fresh source snapshot after legitimate directory metadata mutation.",
+    "Canonicalize only two Unix test-owned homes; all original cold-image assertions remain unchanged.",
+    "Collect every fresh state shard report and verify exact FNV partition against an independently listed compiled test universe. Listing-only bazel run disables sharding as required by Bazel 9; the original test remains four-sharded.",
+    "Retain the original test/Clippy commands, 30-minute workflow budget, seven exact original ignored cases, full library execution and strict failure propagation.",
+    "Print bounded JUnit failure details when the original native test fails."
+  ],
+  "reader_controls": {
+    "original": 13,
+    "candidate": 24,
+    "executed_on_candidate": 0,
+    "status": "pending original hosted generator"
+  },
+  "retained_failure_logs": [
+    {
+      "path": "qualification/windows-memory-recovery-current/failed-b12/windows-bridge-original.log.gz",
+      "bridge_job": 126354111700,
+      "encoding": "gzip using stored DEFLATE blocks",
+      "encoded_bytes": 384958,
+      "encoded_sha256": "5d055a830f072c38c5f13ba7649721e7269a31ea8d7441d50ffa5d2f747bda2a",
+      "original_utf8_bytes": 384910,
+      "original_sha256": "15a98e794f604342ec6d56d4a2aaee97cf0728d929664a910a26beb3666ca006"
+    },
+    {
+      "path": "qualification/windows-memory-recovery-current/failed-b12/bazel-bridge-original.log.gz",
+      "bridge_job": 126354111327,
+      "encoding": "gzip using stored DEFLATE blocks",
+      "encoded_bytes": 126835,
+      "encoded_sha256": "988ba668515f11d9f86d732149561d4b9b78bb2323a52fa13e1d407dbebb8486",
+      "original_utf8_bytes": 126807,
+      "original_sha256": "26cb7967a25698701f6db87d0e5e5dad918a93622ae61ace4bbf6f1b2310c7c8"
+    }
+  ],
+  "scope_exclusions": [
+    "No runtime Rust changes relative to b12",
+    "No dependency, Cargo.lock or MODULE.bazel.lock change in this candidate",
+    "No source identity/ACL/NTFS/reparse/fence relaxation",
+    "No schema 16 or 17 or other #4714 scope",
+    "No whole-CI admission"
+  ]
+}

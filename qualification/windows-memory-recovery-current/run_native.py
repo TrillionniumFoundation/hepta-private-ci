@@ -94,6 +94,26 @@ def validate_junit(raw, listed):
             "executed": names, "original_ignored": listed["original_ignored"]}
 
 
+
+def junit_failure_details(raw):
+    """Make original failures visible without changing their acceptance."""
+    root = ET.fromstring(raw)
+    bad = {"failure", "error", "skipped", "rerunFailure", "rerunError", "flakyFailure", "flakyError"}
+    failures = []
+    remaining = 65536
+    for case in root.iter("testcase"):
+        if not any(child.tag in bad for child in case):
+            continue
+        details = []
+        for child in case:
+            if child.tag in bad or child.tag in {"system-out", "system-err"}:
+                text = (child.text or "")[:min(8192, remaining)]
+                remaining -= len(text)
+                details.append({"kind": child.tag, "attributes": child.attrib, "text": text})
+        failures.append({"name": case.get("name"), "details": details})
+    return failures
+
+
 def main():
     require(__debug__, "optimized Python is not accepted")
     parser = argparse.ArgumentParser()
@@ -159,6 +179,9 @@ def main():
                            "--lib", "--no-tests=fail", "--retries", "0", "--success-output=final"])
                 if report.is_file():
                     shutil.copyfile(report, output / (package + "-junit.xml"))
+                    details = junit_failure_details(report.read_bytes())
+                    if details:
+                        print("ORIGINAL_JUNIT_FAILURES=" + json.dumps({"package": package, "cases": details}), flush=True)
                 require(code == 0, "original library tests failed")
                 require(report.is_file(), "successful process produced no fresh JUnit")
                 log = b"".join((output / (package + "-original-tests." + suffix)).read_bytes()

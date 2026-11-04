@@ -13,6 +13,8 @@ import xml.etree.ElementTree as ET
 
 from generate import ROOT, HERE, digest, require, snapshot
 
+SHARD_COUNTS = {"path": 1, "state": 4, "memory": 1}
+
 TARGETS = {
     "path": "//codex-rs/utils/path-utils:path-utils-unit-tests",
     "state": "//codex-rs/state:state-unit-tests",
@@ -20,21 +22,94 @@ TARGETS = {
 }
 
 
-def test_counts(raw, allowed_ignored):
-    log = raw.decode("utf-8")
-    summaries = re.findall(
-        r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out",
-        log)
-    require(summaries, "missing Rust test completion")
-    require(summaries[-1][0] == "ok", "final Rust result failed")
-    passed, failed, ignored, measured, filtered = map(int, summaries[-1][1:])
-    require(passed > 0 and failed == measured == filtered == 0, "incomplete original library")
-    names = re.findall(r"^test (\S+) \.\.\. ignored(?:,.*)?$", log, re.MULTILINE)
-    require(len(names) == len(set(names)) == ignored and set(names) == set(allowed_ignored),
+
+def libtest_inventory(raw, allow_empty=False):
+    text = raw.decode("utf-8").replace("\r\n", "\n")
+    rows = re.findall(r"^(\S+): (test|benchmark)$", text, re.MULTILINE)
+    require(all(kind == "test" for _, kind in rows), "unexpected benchmark inventory")
+    names = [name for name, _ in rows]
+    require(len(names) == len(set(names)) and (names or allow_empty),
+            "empty or duplicate original inventory")
+    return sorted(names)
+
+
+def shard_index(name, count):
+    value = 2166136261
+    for byte in name.encode("utf-8"):
+        value = ((value ^ byte) * 16777619) & 0xffffffff
+    return value % count
+
+
+def complete_shard_counts(logs, listed, allowed_ignored):
+    require(logs and listed and len(listed) == len(set(listed)), "missing complete library inventory")
+    allowed = set(allowed_ignored)
+    require(allowed <= set(listed), "ignored cases missing from original inventory")
+    all_names, ignored_names, summaries, shard_cases = [], [], [], []
+    for index, raw in enumerate(logs):
+        text = raw.decode("utf-8").replace("\r\n", "\n")
+        matches = list(re.finditer(
+            r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; "
+            r"(\d+) measured; (\d+) filtered out", text))
+        require(len(matches) == 1, "missing, duplicated or retried original shard summary")
+        summary = matches[0]
+        counts = list(map(int, summary.groups()[1:]))
+        rows = re.findall(r"^test (\S+) \.\.\. (ok|FAILED|ignored)(?:,.*)?$",
+                          text[:summary.start()], re.MULTILINE)
+        require(not any(line.startswith("test ") for line in text[summary.end():].splitlines()),
+                "unaccounted test output after shard completion")
+        actual = [sum(status == value for _, status in rows) for value in ("ok", "FAILED", "ignored")]
+        require(summary.group(1) == "ok" and actual == counts[:3] and counts[1] == counts[3] == 0,
+                "original shard outcomes failed or do not match its counters")
+        expected = {name for name in listed if shard_index(name, len(logs)) == index}
+        names = [name for name, _ in rows]
+        require(len(names) == len(set(names)) and set(names) == expected,
+                "shard does not cover its complete original assigned cases")
+        require(counts[4] == len(listed) - len(names), "shard filter count does not conserve the original universe")
+        require("skipping test:" not in text.lower(), "early-return skip reported")
+        all_names.extend(names)
+        ignored_names.extend(name for name, status in rows if status == "ignored")
+        summaries.append(counts)
+        shard_cases.append(names)
+    require(len(all_names) == len(set(all_names)) == len(listed) and set(all_names) == set(listed),
+            "shards do not cover the complete disjoint original inventory")
+    require(set(ignored_names) == allowed and len(ignored_names) == len(allowed),
             "original ignored set changed")
-    require("skipping test:" not in log.lower(), "early-return skip reported")
-    return {"passed": passed, "failed": failed, "original_ignored": names,
-            "measured": measured, "filtered": filtered, "rust_summaries": summaries}
+    passed = sum(row[0] for row in summaries)
+    require(passed > 0, "zero original cases executed")
+    return {"passed": passed, "failed": 0, "original_ignored": ignored_names,
+            "measured": 0, "filtered": 0, "shard_counts": summaries, "shard_cases": shard_cases,
+            "inventory": listed, "complete_disjoint_coverage": True}
+
+
+def test_counts(raw, allowed_ignored):
+    # The unsharded reader uses the actual case rows as its local inventory.
+    # Runtime qualification additionally compares against independent --list output.
+    text = raw.decode("utf-8").replace("\r\n", "\n")
+    listed = sorted(re.findall(r"^test (\S+) \.\.\. (?:ok|FAILED|ignored)(?:,.*)?$", text, re.MULTILINE))
+    return complete_shard_counts([raw], listed, allowed_ignored)
+
+
+def report_members(directory, count):
+    expected = ([Path("test.log")] if count == 1 else
+                [Path(f"shard_{index + 1}_of_{count}") / "test.log" for index in range(count)])
+    actual_logs = {path.relative_to(directory) for path in directory.rglob("test.log")}
+    actual_xml = {path.relative_to(directory) for path in directory.rglob("test.xml")}
+    require(actual_logs == set(expected) and actual_xml == {path.with_suffix(".xml") for path in expected},
+            "missing, stale, extra or retried original shard reports")
+    return [(directory / path, directory / path.with_suffix(".xml")) for path in expected]
+
+
+def validate_wrapper_xml(raw):
+    root = ET.fromstring(raw)
+    cases = list(root.iter("testcase"))
+    suites = list(root.iter("testsuite"))
+    require(cases and suites, "empty Bazel shard XML")
+    require(sum(int(suite.get("tests", "-1")) for suite in suites) == len(cases),
+            "Bazel shard XML counters differ")
+    bad = {"failure", "error", "skipped", "rerunFailure", "rerunError", "flakyFailure", "flakyError"}
+    require(not any(node.tag in bad for node in root.iter()), "Bazel shard failed, retried or skipped")
+    require(all(int(suite.get(key, "0")) == 0 for suite in suites
+                for key in ("failures", "errors", "skipped")), "bad wrapper counters")
 
 
 def main():
@@ -91,34 +166,56 @@ def main():
         for name, target in TARGETS.items():
             package, label = target.removeprefix("//").split(":")
             reports[name] = directory / package / label
-            for suffix in ("log", "xml"):
-                path = reports[name] / ("test." + suffix)
-                if path.exists():
-                    path.unlink()
+            # Remove only this qualification's known generated target reports,
+            # including every prior shard and retry, before the original test.
+            if reports[name].exists():
+                require(not reports[name].is_symlink(), "unexpected target-report symlink")
+                shutil.rmtree(reports[name])
         wrapper = [bash, "./.github/scripts/run-bazel-ci.sh", "--print-failed-test-logs",
                    "--print-failed-action-summary", "--remote-download-toplevel", "--"]
+        # Bazel run supports one test execution artifact. Disable sharding only
+        # for listing; the original test command below retains all four state shards.
+        inventories = {}
+        receipt["inventories"] = inventories
+        for name, target in TARGETS.items():
+            require(run("original-inventory-" + name,
+                        [*wrapper, "run", "--test_sharding_strategy=disabled", target, "--", "--list", "--format", "terse"]) == 0,
+                    "original library inventory failed: " + name)
+            require(run("original-ignored-inventory-" + name,
+                        [*wrapper, "run", "--test_sharding_strategy=disabled", target, "--", "--list", "--format", "terse", "--ignored"]) == 0,
+                    "original ignored inventory failed: " + name)
+            listed = libtest_inventory((output / ("original-inventory-" + name + ".stdout")).read_bytes())
+            ignored = libtest_inventory(
+                (output / ("original-ignored-inventory-" + name + ".stdout")).read_bytes(), allow_empty=True)
+            expected_ignored = config["original_ignored_memory_cases"] if name == "memory" else []
+            require(set(ignored) == set(expected_ignored) and set(ignored) <= set(listed),
+                    "original ignored inventory changed")
+            inventories[name] = {"all_cases": listed, "original_ignored": ignored}
         code = run("original-library-targets", [*wrapper, "test", "--keep_going",
                    "--nocache_test_results", "--test_output=all", "--", *TARGETS.values()])
+        copied = {}
         for name, directory in reports.items():
-            for suffix in ("log", "xml"):
-                source = directory / ("test." + suffix)
-                if source.is_file():
-                    shutil.copyfile(source, output / (name + "." + suffix))
+            # Retain every actual report before enforcing completeness, also on failure.
+            copied[name] = []
+            for source in sorted(directory.rglob("*")):
+                if source.is_file() and source.name in {"test.log", "test.xml"}:
+                    relative = source.relative_to(directory).as_posix()
+                    destination = name + "--" + relative.replace("/", "--")
+                    shutil.copyfile(source, output / destination)
+                    copied[name].append({"relative": relative, "file": destination})
+        receipt["retained_reports"] = copied
         require(code == 0, "original library target failed")
         combined = "".join((output / ("original-library-targets." + suffix)).read_text(
                            encoding="utf-8", errors="replace") for suffix in ("stdout", "stderr"))
         require(re.search(r"Executed 3 out of 3 tests?: 3 tests? pass", combined) is not None,
                 "not all three targets actually executed")
-        for name in TARGETS:
+        for name, directory in reports.items():
+            pairs = report_members(directory, SHARD_COUNTS[name])
+            for _, xml in pairs:
+                validate_wrapper_xml(xml.read_bytes())
             allowed = config["original_ignored_memory_cases"] if name == "memory" else []
-            receipt["targets"][name] = test_counts((output / (name + ".log")).read_bytes(), allowed)
-            root = ET.fromstring((output / (name + ".xml")).read_bytes())
-            require(list(root.iter("testcase")), "empty Bazel XML")
-            require(not any(e.tag in {"failure", "error", "skipped"} for e in root.iter()),
-                    "Bazel XML failure or skip")
-            suites = list(root.iter("testsuite"))
-            require(suites and all(int(s.get(k, "0")) == 0 for s in suites
-                                   for k in ("failures", "errors", "skipped")), "bad wrapper counters")
+            receipt["targets"][name] = complete_shard_counts(
+                [log.read_bytes() for log, _ in pairs], inventories[name]["all_cases"], allowed)
         require(run("original-scoped-clippy", [*wrapper, "build", "--config=clippy", "--",
                     *(target + "-bin" for target in TARGETS.values())]) == 0,
                 "original scoped Clippy failed")

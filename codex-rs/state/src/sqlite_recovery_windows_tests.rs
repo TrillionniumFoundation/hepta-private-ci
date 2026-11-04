@@ -18,6 +18,7 @@ impl Fixture {
     fn new() -> anyhow::Result<Self> {
         let home = unique_temp_dir();
         let directory = open_private_state_directory(&home)?;
+        let home = home.as_path().abs().canonicalize()?.into_path_buf();
         drop(create_new_private_state_child(&directory, "cold.sqlite3")?);
         let database = home.join("cold.sqlite3");
         let config = SqliteConfig::new_for_testing(home.as_path().abs());
@@ -237,6 +238,17 @@ async fn windows_native_and_verbatim_homes_bind_without_admitting_another_direct
     let fixture = Fixture::new()?;
     fixture.initialize().await?;
     let original = std::fs::read(&fixture.database)?;
+    let read_source_sidecars = || -> std::io::Result<Vec<Option<Vec<u8>>>> {
+        ["-wal", "-shm", "-journal"]
+            .into_iter()
+            .map(|suffix| match std::fs::read(sqlite_sidecar_path(&fixture.database, suffix)) {
+                Ok(bytes) => Ok(Some(bytes)),
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+                Err(error) => Err(error),
+            })
+            .collect()
+    };
+    let original_sidecars = read_source_sidecars()?;
     let native = fixture.config.home().to_path_buf();
     let verbatim = native.canonicalize()?;
     assert_ne!(native.as_os_str(), verbatim.as_os_str());
@@ -278,12 +290,20 @@ async fn windows_native_and_verbatim_homes_bind_without_admitting_another_direct
         Err(SqliteRecoveryError::Indeterminate)
     ));
     assert!(!outside.exists());
+    guard.verify_inspection_unchanged()?;
     let target = verbatim.join("candidate.sqlite3");
     fixture
         .config
         .materialize_identity_bound_recovery_copy(&guard, &target)?;
     assert_eq!(std::fs::read(&target)?, original);
     assert_eq!(std::fs::read(&fixture.database)?, original);
+    assert_eq!(read_source_sidecars()?, original_sidecars);
+    // Candidate creation changes directory metadata. Preserve the source-byte
+    // assertions above, then validate a new retained snapshot of that source.
+    drop(guard);
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     guard.verify_inspection_unchanged()?;
     Ok(())
 }

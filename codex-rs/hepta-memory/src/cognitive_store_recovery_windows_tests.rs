@@ -1,6 +1,7 @@
 use super::*;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn exact_current_cut_recovers_both_native_and_verbatim_root_spellings() {
