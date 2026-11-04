@@ -8,12 +8,16 @@ use std::sync::OnceLock;
 use futures::FutureExt;
 use futures::future::BoxFuture;
 use futures::future::WeakShared;
+use tokio::runtime::Handle;
+use tokio::runtime::Id;
 
 use crate::info::detect_local_fsmonitor_override;
 use crate::info::run_git_command_with_timeout_from;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 struct GitStatusKey {
+    // Shared scans retain timers and process handles from their polling runtime.
+    runtime_id: Id,
     git: PathBuf,
     repo_root: PathBuf,
 }
@@ -44,7 +48,11 @@ async fn git_status_key(git: PathBuf, repo_root: &Path) -> GitStatusKey {
     let repo_root = tokio::fs::canonicalize(repo_root)
         .await
         .unwrap_or_else(|_| repo_root.to_path_buf());
-    GitStatusKey { git, repo_root }
+    GitStatusKey {
+        runtime_id: Handle::current().id(),
+        git,
+        repo_root,
+    }
 }
 
 async fn share_git_status_run<F, Fut>(key: GitStatusKey, run: F) -> Option<bool>
