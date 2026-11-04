@@ -556,8 +556,9 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
     store.close().await;
 
     let external = tempfile::tempdir()?;
+    let canonical_external_root = external.path().canonicalize()?;
     let (frontier_file, frontier_trust_file) = write_recovery_frontier(
-        external.path(),
+        &canonical_external_root,
         "store:kernel-evidence-recovery-ok",
         snapshot,
     )?;
@@ -644,8 +645,9 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     let current_snapshot = current_store.recovery_snapshot().await?;
     current_store.close().await;
 
+    let canonical_external_root = external.path().canonicalize()?;
     let (frontier_file, frontier_trust_file) = write_recovery_frontier(
-        external.path(),
+        &canonical_external_root,
         "store:kernel-evidence-recovery-old",
         current_snapshot,
     )?;
