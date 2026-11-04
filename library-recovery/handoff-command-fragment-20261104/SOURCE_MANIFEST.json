@@ -1,0 +1,72 @@
+{
+  "schema": "additional-original-code-fragment-manifest-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private": false,
+  "archive_parent": "f2e9cb2b5d422c54208a00492b8ecb9239568914",
+  "archive_ref": "refs/heads/archive/library-small-source-20261103-gpt6",
+  "draft_pr": 4713,
+  "object": {
+    "git_blob_sha": "e4fae6ef44c01e268c8937b99775204506f41d93",
+    "sha256": "f6589754cb991753838bd5d44c308c075af2d72790b440405d00fe871897d5ec",
+    "bytes": 714,
+    "path": "library-recovery/handoff-command-fragment-20261104/objects/e4fae6ef44c01e268c8937b99775204506f41d93.sh",
+    "type": "operational-command-code-fence",
+    "original_language": "bash",
+    "standalone_historical_file": false
+  },
+  "original_parents": [
+    {
+      "git_blob_sha": "c39eb021662be7a2f27449d53a7a886f07d89f0d",
+      "sha256": "7084089976ddd60638830bb2dfeec0b701261fe85d86369056e073b670954083",
+      "bytes": 19214,
+      "library_file_id": "libfile_c7ebf21e456c8191a1b558bb8601bb64",
+      "library_version": null,
+      "filename": "HEPTA_NEXT_AGENT_MASTER_PROMPT_2026-10-18.md",
+      "opening_fence_line": 20,
+      "first_content_line": 21,
+      "last_content_line": 32,
+      "closing_fence_line": 33,
+      "byte_start": 3212,
+      "byte_end": 3926
+    },
+    {
+      "git_blob_sha": "198459aac231390883c15119fb3088755ac295f6",
+      "sha256": "a6e5489edf415ab6d6bf7f2c20f70d539a94e1808313ceb04c1b1ffba3a1ad54",
+      "bytes": 29936,
+      "library_file_id": "libfile_f4ffd19b61588191b1c96de8fb87cc39",
+      "library_version": null,
+      "filename": "HEPTA_PRIVATE_CI_AUDIT_AND_AGENT_HANDOFF_2026-10-18.md",
+      "opening_fence_line": 30,
+      "first_content_line": 31,
+      "last_content_line": 42,
+      "closing_fence_line": 43,
+      "byte_start": 4476,
+      "byte_end": 5190
+    }
+  ],
+  "extraction": {
+    "method": "Exact UTF-8 byte slice and exact fenced-line equality in both full parents, each matching a frozen original SHA-256 / Git blob / byte count.",
+    "parent_full_text_endings": "Library rendered text plus one LF only where all three frozen fingerprints match",
+    "line_endings_normalized": false,
+    "source_bytes_changed": false,
+    "parents_agree": true
+  },
+  "placement_basis": "The excerpt explicitly names TrillionniumFoundation/hepta-private-ci in its GitHub CLI commands. This is an isolated archival projection of historical operational instructions, not a current execution instruction or a proof of sole historical ownership.",
+  "original_parent_documents_archived_by_this_change": false,
+  "parent_sync_inferred_from_fragment": false,
+  "counts": {
+    "new_frozen_candidates": 0,
+    "frozen_verified_unchanged": 5889,
+    "frozen_total": 6116,
+    "frozen_remaining": 227,
+    "prior_additional_objects": 48,
+    "new_additional_objects": 1
+  },
+  "archived_commands_executed": false,
+  "original_source_or_patch_executed": false,
+  "local_native_tests_executed": 0,
+  "scientific_or_production_qualification": false,
+  "all_original_archives_dot_histories_complete": false,
+  "clearance_allowed": false,
+  "originals_deleted": 0
+}

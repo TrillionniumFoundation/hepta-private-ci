@@ -1,0 +1,50 @@
+{
+  "schema": "exact-two-parent-code-fence-extraction-v1",
+  "fragment": {
+    "git_blob_sha": "e4fae6ef44c01e268c8937b99775204506f41d93",
+    "sha256": "f6589754cb991753838bd5d44c308c075af2d72790b440405d00fe871897d5ec",
+    "bytes": 714
+  },
+  "parents": [
+    {
+      "git_blob_sha": "c39eb021662be7a2f27449d53a7a886f07d89f0d",
+      "sha256": "7084089976ddd60638830bb2dfeec0b701261fe85d86369056e073b670954083",
+      "bytes": 19214,
+      "library_file_id": "libfile_c7ebf21e456c8191a1b558bb8601bb64",
+      "library_version": null,
+      "filename": "HEPTA_NEXT_AGENT_MASTER_PROMPT_2026-10-18.md",
+      "opening_fence_line": 20,
+      "first_content_line": 21,
+      "last_content_line": 32,
+      "closing_fence_line": 33,
+      "byte_start": 3212,
+      "byte_end": 3926,
+      "parent_complete_fingerprint_matched": true,
+      "byte_range_equals_fragment": true,
+      "line_range_equals_fragment": true,
+      "fence_opening_and_closing_exact": true
+    },
+    {
+      "git_blob_sha": "198459aac231390883c15119fb3088755ac295f6",
+      "sha256": "a6e5489edf415ab6d6bf7f2c20f70d539a94e1808313ceb04c1b1ffba3a1ad54",
+      "bytes": 29936,
+      "library_file_id": "libfile_f4ffd19b61588191b1c96de8fb87cc39",
+      "library_version": null,
+      "filename": "HEPTA_PRIVATE_CI_AUDIT_AND_AGENT_HANDOFF_2026-10-18.md",
+      "opening_fence_line": 30,
+      "first_content_line": 31,
+      "last_content_line": 42,
+      "closing_fence_line": 43,
+      "byte_start": 4476,
+      "byte_end": 5190,
+      "parent_complete_fingerprint_matched": true,
+      "byte_range_equals_fragment": true,
+      "line_range_equals_fragment": true,
+      "fence_opening_and_closing_exact": true
+    }
+  ],
+  "original_material_read_only": true,
+  "code_executed": "newly authored byte/hash/extraction checks only; no archived command",
+  "new_formal_candidates": 0,
+  "original_parent_sync_proven": false
+}
