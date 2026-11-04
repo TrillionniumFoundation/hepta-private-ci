@@ -860,7 +860,10 @@ async fn turn_diff_display_roots(step_context: &StepContext) -> Vec<(String, Pat
             .features
             .enabled(Feature::CwdRelativeTurnDiffs)
         {
-            display_roots.push((turn_environment.selection.environment_id.clone(), cwd.clone()));
+            display_roots.push((
+                turn_environment.selection.environment_id.clone(),
+                cwd.clone(),
+            ));
             continue;
         }
         // A turn cwd is expected to be a directory. If it is a file, the failed `<cwd>/.git` probe
