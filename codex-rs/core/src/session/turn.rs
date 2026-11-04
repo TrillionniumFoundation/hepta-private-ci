@@ -854,6 +854,15 @@ async fn turn_diff_display_roots(step_context: &StepContext) -> Vec<(String, Pat
     let mut display_roots = Vec::new();
     for turn_environment in step_context.environments.turn_environments() {
         let cwd = turn_environment.cwd();
+        if step_context
+            .turn
+            .config
+            .features
+            .enabled(Feature::CwdRelativeTurnDiffs)
+        {
+            display_roots.push((turn_environment.selection.environment_id.clone(), cwd.clone()));
+            continue;
+        }
         // A turn cwd is expected to be a directory. If it is a file, the failed `<cwd>/.git` probe
         // is ignored and ancestor search continues from its parent.
         let root = find_nearest_ancestor_with_markers(

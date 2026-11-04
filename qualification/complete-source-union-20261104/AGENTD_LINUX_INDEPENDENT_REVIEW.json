@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.linux-product-fixture-independent-review.v1",
+  "reviewer": "hepta_blockers",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+  "inputs": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "before": {
+        "git_blob_sha": "3d6c567a32cb8486702690778f9afdb292a3bda0",
+        "sha256": "2fb0df6387ce453f801692e8fa324bd5c306234a1e7fc0e60f1f1b49e2a3f935",
+        "bytes": 97087
+      },
+      "after": {
+        "git_blob_sha": "3d8cc817959064df9e9f465f3bc7420efe2d97ab",
+        "sha256": "0e28557766ceea76a03ff4de80b9e6b04d8e8fa7cd700f6847d1c5402abed25a",
+        "bytes": 98497
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "before": {
+        "git_blob_sha": "e7a2e3732ccfa954207a787d2e26dc58987a0e73",
+        "sha256": "620bce0a4f0f300165200ca8dcff9cddabf81706584007337f62feae5de2713c",
+        "bytes": 26352
+      },
+      "after": {
+        "git_blob_sha": "c2ecc470dadc6a30ce5246ee689d70f3042ea009",
+        "sha256": "ef1130e8d18845498fc8edb1769f2d4475782fe1209efb8f7840a336b29bf0b0",
+        "bytes": 26352
+      }
+    }
+  ],
+  "supporting_sources": [
+    {
+      "path": "codex-rs/hepta-memory/migrations/0014_kg_incremental_generation_storage.sql",
+      "git_blob_sha": "1a78321beb35e3a927d2c4c06f883c0647aeef3b",
+      "sha256": "302df10bc9ad7080851fbc034ff04af84534a1a1951f5d3b03579435c85163b2",
+      "bytes": 8341
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+      "git_blob_sha": "14702d68d7f9e5c25ac76d2605bdb958cecc0803",
+      "sha256": "33c265a3b6f1be073f7a5a4df5b47e0e4f62c3dae9c9d39d1414dfe0d13d26d7",
+      "bytes": 50726
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "git_blob_sha": "c180a3e2c01b555ba96c9a87f8354ef9d0c38d3e",
+      "sha256": "18e920c75e67fa7862293fd9c00afce3864b5ac0a602bcf8b07d51cb64f6c300",
+      "bytes": 8343
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "git_blob_sha": "d94042bddf8fcf785e2963a3acc90afcab3dbd69",
+      "sha256": "01695336f08194ee7c0fd991266ed0f05adcab6413af173501ceee18209aa8b9",
+      "bytes": 4837
+    }
+  ],
+  "conclusion": "No confirmed blocker found in these two fixture-only deltas; no runtime qualification performed.",
+  "kg_findings": [
+    "The changed SQL observes the current generation's revision-facts storage rather than the legacy copied kg_nodes/kg_edges rows. It joins the mandatory revision_facts_v1 witness on the same scope/generation and keeps the current kg_projection pointer equality.",
+    "Entity and relation facts are selected through the latest receipt for each memory at or before the bound generation, with the exact receipt memory revision. The selection matches migration 0014's count-trigger and the production selected_heads reconstruction.",
+    "The verified/active predicates and expected source_id/source_revision=1 remain explicit; immutable revision fact-set checks, outer trigger memory/revision bindings and the existing count/hash assertions remain. Missing storage witnesses or query rows still fail through fetch_one.",
+    "This is a fresh-current-generation observer. It does not qualify legacy historical generations or prove every production recovery path. Production writer and schema bytes are unchanged by the fixture diff.",
+    "The entire old/new difference is inside one existing SQL string. All 131 ensure/assert-family macro occurrences, 72 lines containing assert, function names and test attributes remain unchanged. Fourteen lexical test attributes include an existing feature-conditional case; this static count is not a runtime case count."
+  ],
+  "supervisord_findings": [
+    "Exactly one source line changes: compile-time env!(CARGO_BIN_EXE_codex-hepta-agentd) is replaced by the already-declared codex_utils_cargo_bin::cargo_bin(\"codex-hepta-agentd\")? resolver.",
+    "The resolver retains the exact binary name, supports Cargo and declared Bazel runfiles, and returns an error when the declared binary is unavailable. It does not skip or pretend the daemon was launched.",
+    "The other source bytes, original 25 ensure/assert-family checks and 120-second readiness constant are unchanged."
+  ],
+  "execution": {
+    "local_compiler": false,
+    "native_test": false,
+    "sql_execution": false,
+    "source_mutation_by_reviewer": false,
+    "old_pass_reused": false
+  },
+  "remaining": "Run the unchanged original product tests and platform/combined gates at the new actual source. Source review alone does not establish either previous failure's full runtime resolution."
+}

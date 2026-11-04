@@ -367,6 +367,10 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     changed_review.auto_review_enabled = Some(true);
     let mut changed_request_kind = volatile_metadata.clone();
     changed_request_kind.request_kind = Some(CodexResponsesRequestKind::Memory);
+    let mut changed_extra = volatile_metadata.clone();
+    changed_extra
+        .extra
+        .insert("fiber_run_id".to_string(), "another-run".to_string());
     for (field, changed_metadata) in [
         ("sandbox", changed_sandbox),
         ("parent thread", changed_parent),
@@ -374,6 +378,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         ("thread source", changed_source),
         ("review policy", changed_review),
         ("non-turn request kind", changed_request_kind),
+        ("client metadata", changed_extra),
     ] {
         assert_ne!(
             identity_a,

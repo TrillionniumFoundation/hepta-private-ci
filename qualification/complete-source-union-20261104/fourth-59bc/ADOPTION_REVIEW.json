@@ -1,0 +1,338 @@
+{
+  "schema": "hepta.complete-source.generated-adoption-review.v1",
+  "base": {
+    "commit": "59bc256880156acd4dad4f8e3880abe149b8a4ce",
+    "tree": "6c7694edda83dcc60068b99b1f69afb92fe2c698",
+    "branch": "integration/private-ci-complete-source-20261104-gpt6"
+  },
+  "source_run": {
+    "id": 41779948906,
+    "job": 126408967197,
+    "status": "generated-needs-adoption",
+    "qualified": false,
+    "source_inputs": 10926,
+    "artifact": {
+      "id": 13299421181,
+      "bytes": 7455720,
+      "digest": "sha256:14f6b979060a7b216973cbc8ab3406d5f5f2cbcda99eddb09b564cd0c7e5491c"
+    }
+  },
+  "actual_generated_files": [
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 12908,
+      "git": "1dbac4d351ea30d388262b8920f9089ac6e02656",
+      "sha256": "e0451eaa94672393c8d464636fae3eba0a6ea7aff5856b271f802c94bc97b62c",
+      "frames": 1,
+      "prefix": "GENERATED_FILE"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "encoding": "utf-8",
+      "bytes": 8284,
+      "git": "091a2f80f4e709aaeb750e4f5eb8fa939f7924c1",
+      "sha256": "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51",
+      "frames": 1,
+      "prefix": "GENERATED_FILE"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "encoding": "utf-8",
+      "bytes": 1688557,
+      "git": "f0ed20515e3bc32ec751f95e002e3baf42dc0b3b",
+      "sha256": "366b3f9baaf486d73a57d68919e5a769da0802e335963bc847d0277fe04bdec9",
+      "frames": 52,
+      "prefix": "GENERATED_FILE"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "encoding": "utf-8",
+      "bytes": 417288,
+      "git": "b106e6e25b46cd782dcbc3f32512763a511fb82f",
+      "sha256": "3d031b76df5194a8a69ddcabe345fa3015527df864b35be26fb23678bdb3b413",
+      "frames": 13,
+      "prefix": "GENERATED_FILE"
+    }
+  ],
+  "complete_stdout_readback": {
+    "bytes": 3608231,
+    "sha256": "b36e1aca84a624137a95faed89825ceb2b174931cecb270b6a2ddd4e264a1c23",
+    "git_blob": "6607fa1078935f54ad09cfdf071d1294b623f2f6",
+    "chunks": [
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-01.log.gz",
+        "offset": 0,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "b6165458f02d400b6eea24e58d7f57ef3806ab56bccc78502cc146e9098ac080",
+        "git_blob": "07c5133b39640059378a2083723c87c6e42b2ca8",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "e09db3582c325bb6a6ad0e849a34565e9ae335944a0471c0103d2cea08a868e0"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-02.log.gz",
+        "offset": 400000,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "078f029721a6d957489f8dbebce96681287cebc23be8fae7a174dc7211c66d92",
+        "git_blob": "fc4cef6613fd553f560b218fff7b9882326f55e5",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "d6e5aa2d4cd3b11875e045e1cb751b9e1a6fcf42a9040e0f6f0ae377bf7d5512"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-03.log.gz",
+        "offset": 800000,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "b5b60cecfa938084c93f70e045e1e9af472dacc4d375eb1e508187e3529c8f70",
+        "git_blob": "f43518b8399b490f37566ae60751d411d173f07e",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "0909e26a465fd28f7d01c7bd72968d0d7c77adfbd0b8355867b32b654d113abb"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-04.log.gz",
+        "offset": 1200000,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "07ed9b41dff5b805d94d121b0adc2855cee42f8ab906f89e9fd1986d5b45963d",
+        "git_blob": "fb8fa5bbf9b7a06ecde92254ed0cff1afde1a37f",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "3ed9a13bd09ef106496a6d9f68fc48d5a20bc2af9bc57224378d2b5ecbf6f842"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-05.log.gz",
+        "offset": 1600000,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "0c46d9a370655ab9664c34e5b1ab8a287e736bd01b2d56207fd531a1a4053e66",
+        "git_blob": "179c2d8734284f622335600b4a79ce3e2a489e6f",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "866edfeccd43a957b19627372e66ae993b76bfe80947a22a14f3e876ade7716c"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-06.log.gz",
+        "offset": 2000000,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "f44dea0333b442efeb428ca95b76da098c0bc99befdd4cf8f4bf11fc9ce7c8d3",
+        "git_blob": "360cfbb9c492df51d51660d33540520440583053",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "869f38fc7b2d0dd2bab0d2944b5411e5cae5f897945475133b15c5bdd0eaa29d"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-07.log.gz",
+        "offset": 2400000,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "ce2599153d5bccd3ee4da065c55c6986376fed270c89a385ee304da2a4a1171b",
+        "git_blob": "1838c1cf1b9759d389c5cacfd59fda997d17d2a0",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "1f0cd68da244ea0136568d2d00e44df9c89f4eef0d10a30c7c00aa8604a731bd"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-08.log.gz",
+        "offset": 2800000,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "34fee6b6c4c6bee4633e3d4c71ae55eafb554b4c33701abee7bce14b3b6044e0",
+        "git_blob": "c16c76e7706feaa90469c8ae3eabb8066e6e2615",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "7e615a0e53b2f334b78143f0881e87b059293b3f41c0244230d9078070f059e7"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-09.log.gz",
+        "offset": 3200000,
+        "uncompressed_bytes": 400000,
+        "uncompressed_sha256": "13053f36a031f464b34914313e15722ab12a1000042aa1fdb045fb8c534e1686",
+        "git_blob": "f8021c3608b2bbcc248eb30690b50def26e2e432",
+        "gzip_bytes": 400053,
+        "gzip_sha256": "5d97ac3229b119cb639267642fdbc27784b9c786ffc75feabc88b76b14a28a25"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fourth-59bc/original-job-10.log.gz",
+        "offset": 3600000,
+        "uncompressed_bytes": 8231,
+        "uncompressed_sha256": "4e0528434443413a916ac7606713d36635d769ef7cc3960c8025d637e8ba5bf3",
+        "git_blob": "2fa37c13e0ba73841f86a48ca4ca12874be09b53",
+        "gzip_bytes": 8254,
+        "gzip_sha256": "9b0211643ad39b5a4b15e35190fd09e8ccac93d1aa779aabf0f755ffed8ee5ac"
+      }
+    ],
+    "encoding_note": "Raw decoded GitHub job bytes preserved, including two UTF-8 BOMs at log-chunk boundaries. Only the timestamp transport prefixes are removed for framed-output parsing; all offsets, frame byte counts, complete Git IDs and SHA256 values were verified. Gzip members use stored DEFLATE blocks."
+  },
+  "cargo": {
+    "baseline_packages": 1517,
+    "actual_generated_packages": 1518,
+    "delta_from_prior_executed_0cf": [
+      {
+        "name": "codex-git-utils",
+        "version": "0.0.0",
+        "before": "\nname = \"codex-git-utils\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"base64 0.22.1\",\n \"chrono\",\n \"codex-file-system\",\n \"codex-protocol\",\n \"codex-utils-absolute-path\",\n \"codex-utils-path-uri\",\n \"codex-utils-pty\",\n \"futures\",\n \"gix\",\n \"once_cell\",\n \"pretty_assertions\",\n \"regex\",\n \"schemars 0.8.22\",\n \"serde\",\n \"similar\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"ts-rs\",\n \"walkdir\",\n]\n\n",
+        "after": "\nname = \"codex-git-utils\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"chrono\",\n \"codex-file-system\",\n \"codex-protocol\",\n \"codex-utils-absolute-path\",\n \"codex-utils-path-uri\",\n \"codex-utils-pty\",\n \"futures\",\n \"gix\",\n \"once_cell\",\n \"pretty_assertions\",\n \"regex\",\n \"schemars 0.8.22\",\n \"serde\",\n \"similar\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"ts-rs\",\n \"walkdir\",\n]\n\n"
+      },
+      {
+        "name": "codex-hepta-fleet",
+        "version": "0.0.0",
+        "before": "\nname = \"codex-hepta-fleet\"\nversion = \"0.0.0\"\ndependencies = [\n \"codex-hepta-contracts\",\n \"codex-hepta-paths\",\n \"ed25519-dalek 2.2.0\",\n \"pretty_assertions\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"toml 0.9.11+spec-1.1.0\",\n]\n\n",
+        "after": "\nname = \"codex-hepta-fleet\"\nversion = \"0.0.0\"\ndependencies = [\n \"codex-hepta-contracts\",\n \"codex-hepta-paths\",\n \"codex-utils-path\",\n \"ed25519-dalek 2.2.0\",\n \"pretty_assertions\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"toml 0.9.11+spec-1.1.0\",\n]\n\n"
+      }
+    ],
+    "unchanged_from_0cf_records": 1516,
+    "registry_transition_count": 18,
+    "registry_changes": [
+      {
+        "before": {
+          "name": "unicode-normalization",
+          "version": "0.1.25",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "5fd4f6878c9cb28d874b009da9e8d183b5abc80117c40bbd187a1fde336be6e8",
+          "dependencies": [
+            "tinyvec"
+          ]
+        },
+        "after": {
+          "name": "unicode-normalization",
+          "version": "0.1.26",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "75cd3fb03d5288b3ba9a1ee103ac7e9cbb59f0b03d64f8ddfcc04dd42758a85d",
+          "dependencies": [
+            "tinyvec"
+          ]
+        }
+      }
+    ],
+    "all_identities_and_checksums_verified_by_generator": true,
+    "independent_static_review": "15dfa0c911a966fb3fe6e81313827e83ea4dbd52"
+  },
+  "bazel": {
+    "changed_top_level_sections": [
+      "facts"
+    ],
+    "changed_fact_section": "@@rules_rs+//rs:extensions.bzl%crate",
+    "before": 1515,
+    "after": 1503,
+    "added": [
+      "dylint_6.3.2",
+      "dylint_internal_6.3.2",
+      "dylint_linting_6.3.2",
+      "dylint_testing_6.3.2",
+      "git2_0.21.0",
+      "libgit2-sys_0.18.8+1.9.7",
+      "pastey_0.2.3",
+      "path+crates/../apps/hepta-control-ui/rust/core_hepta-control-core",
+      "serde_spanned_1.1.2",
+      "toml_1.1.8+spec-1.1.0",
+      "toml_datetime_1.1.2+spec-1.1.0",
+      "toml_edit_0.25.17+spec-1.1.0",
+      "toml_parser_1.1.5+spec-1.1.0",
+      "toml_writer_1.1.3+spec-1.1.0",
+      "unicode-normalization_0.1.26"
+    ],
+    "removed": [
+      "dylint_5.0.0",
+      "dylint_internal_5.0.0",
+      "dylint_linting_5.0.0",
+      "dylint_testing_5.0.0",
+      "git2_0.20.4",
+      "icu_collections_2.1.1",
+      "icu_locale_core_2.1.1",
+      "icu_normalizer_2.1.1",
+      "icu_normalizer_data_2.1.1",
+      "icu_properties_2.1.2",
+      "icu_properties_data_2.1.2",
+      "icu_provider_2.1.1",
+      "if_chain_1.0.3",
+      "libgit2-sys_0.18.3+1.9.2",
+      "libssh2-sys_0.3.1",
+      "openssl-sys_0.9.112",
+      "serde_spanned_1.0.4",
+      "tinystr_0.8.2",
+      "toml_0.9.12+spec-1.1.0",
+      "toml_parser_1.0.9+spec-1.1.0",
+      "unicode-normalization_0.1.25",
+      "winnow_0.7.15",
+      "yoke-derive_0.8.1",
+      "yoke_0.8.1",
+      "zerotrie_0.2.3",
+      "zerovec-derive_0.11.2",
+      "zerovec_0.11.5"
+    ],
+    "common_changed": 0,
+    "explanation": "The original update produces the current source graph: retained separately pinned Dylint 6.3.2 graph, the actual UI local crate, and unicode-normalization 0.1.26. Registry file hashes, selected yanked versions, module extension metadata and lock format are unchanged. No generated lock byte was edited by the adopter."
+  },
+  "formatter": {
+    "files": [
+      "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "codex-rs/utils/path-utils/src/private_state_windows_directory.rs"
+    ],
+    "review": "Only a function-call trailing comma/wrapping and an expression arm's redundant braces were adjusted by the actual original Rust formatter. Runtime and assertion expressions are unchanged."
+  },
+  "further_changes": {
+    "cwd_relative_turn_diff": {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "before": "93da15694a96535fff72bc2af02e906bbf036736",
+      "after": "5d4a12c07b158bf35ed32d6b7ef6d65455d1639b",
+      "reason": "The existing feature was never read when choosing turn diff display roots. Read the existing flag per current turn and use each selected environment cwd when enabled; the default ancestor search and all seven existing integration cases are unchanged.",
+      "runtime_executed": false
+    },
+    "appserver_recovery_review": "e395f90197c239d6a6e00b8b73dd44fc58759394",
+    "websocket_identity_review": "52a650f6780de906c5b86ee5db15362d64844871",
+    "native_workflow_source": "9770f39fd96672d8fe40d62979a19a2d9939290b",
+    "reader_original_log": {
+      "git_blob": "76061b212349a48fa96b8103aa0ab155464db520",
+      "bytes": 24972,
+      "sha256": "8b87dfcbe67ccb190d30444c987a1646cbbf74db7232d6ab8d51db0cd54df90a"
+    },
+    "reader_controls": {
+      "run": 41781454686,
+      "job": 126413712543,
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "optimized_python_rejected": true,
+      "pinned_actionlint_passed": true,
+      "product_jobs": "skipped on isolated reader branch"
+    },
+    "unchanged_original_reader_functions": {
+      "native": [
+        {
+          "name": "unique_object",
+          "unchanged": true
+        },
+        {
+          "name": "inventory",
+          "unchanged": true
+        },
+        {
+          "name": "validate_junit",
+          "unchanged": true
+        },
+        {
+          "name": "junit_failure_details",
+          "unchanged": true
+        }
+      ],
+      "bazel": [
+        {
+          "name": "libtest_inventory",
+          "unchanged": true
+        },
+        {
+          "name": "shard_index",
+          "unchanged": true
+        },
+        {
+          "name": "complete_shard_counts",
+          "unchanged": true
+        },
+        {
+          "name": "test_counts",
+          "unchanged": true
+        },
+        {
+          "name": "report_members",
+          "unchanged": true
+        },
+        {
+          "name": "validate_wrapper_xml",
+          "unchanged": true
+        }
+      ]
+    }
+  },
+  "remaining": "Run the new committed source through the unchanged first lock check, original formatter/check, actual Cargo/Bazel generation and whole-source byte stability, then the original aliases, complete native groups, product integrations and full combined gates. No original failure has been overwritten or counted as product qualification.",
+  "original_source_deletions": 0
+}

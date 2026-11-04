@@ -161,9 +161,7 @@ fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
                     DirectoryOpen::ExistingRead => FILE_GENERIC_READ,
                     DirectoryOpen::Create
                     | DirectoryOpen::CreateNew
-                    | DirectoryOpen::ExistingReadWrite => {
-                        FILE_GENERIC_READ | FILE_GENERIC_WRITE
-                    }
+                    | DirectoryOpen::ExistingReadWrite => FILE_GENERIC_READ | FILE_GENERIC_WRITE,
                 },
                 &attributes,
                 &mut io_status,

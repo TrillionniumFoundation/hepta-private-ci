@@ -367,7 +367,9 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
         record.layout.matrix_secrets_root(),
         record.layout.automation_root(),
     ] {
-        drop(codex_utils_path::open_existing_private_state_directory(root)?);
+        drop(codex_utils_path::open_existing_private_state_directory(
+            root,
+        )?);
     }
     assert_eq!(
         fleet.registry.load_agent(&record.manifest.agent_id)?,

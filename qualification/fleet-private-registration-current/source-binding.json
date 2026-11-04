@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "scope": "Exact candidate inputs for complete owner qualification. This manifest is a source binding, not an execution receipt.",
+  "base_source": "59bc256880156acd4dad4f8e3880abe149b8a4ce",
+  "donors": {
+    "original_native": {
+      "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+      "blob": "4f7062a272d776a8aa43da00a068132a63b54e0a",
+      "unchanged_functions": [
+        "unique_object",
+        "inventory",
+        "validate_junit",
+        "junit_failure_details"
+      ]
+    },
+    "original_bazel": {
+      "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+      "blob": "472ac6d42327c106c19c6e232f92c29b06ba502f",
+      "unchanged_functions": [
+        "libtest_inventory",
+        "shard_index",
+        "complete_shard_counts",
+        "test_counts",
+        "report_members",
+        "validate_wrapper_xml"
+      ]
+    },
+    "original_controls": {
+      "blob": "62a4caf424d5b1e1abd4a67cee5af419a79f6890",
+      "original_methods_unchanged": 24,
+      "new_methods": 4
+    },
+    "snapshot": {
+      "blob": "9e0977def7a715f8579cda491194cdbab3ea72c4",
+      "exact_functions": [
+        "require",
+        "identity",
+        "snapshot"
+      ]
+    },
+    "pinned_dbus_builder": {
+      "path": "qualification/keyring-sync-provider/build_pinned_client.py",
+      "blob": "9bbf8e8b95a3b11d9bf24b63c377962c37adc6b8"
+    },
+    "actionlint": {
+      "tag": "v1.7.12",
+      "id": 384924896,
+      "name": "actionlint_1.7.12_linux_amd64.tar.gz",
+      "size": 2353908,
+      "digest": "sha256:8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+      "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz"
+    }
+  },
+  "native_feature_scope": "Cargo default features including Agentd production-cognitive-write, no all-features or qualification-only feature override",
+  "unexecuted_at_creation": true,
+  "files": [
+    {
+      "path": "qualification/fleet-private-registration-current/common.py",
+      "git_blob": "eb613002ffd48409929e13426219017ec8710143",
+      "sha256": "d35fa78af015aad25ce20b713707785b5eded7170199cfcbb0cf012fe41925ce",
+      "bytes": 2399
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/run_native.py",
+      "git_blob": "ed406d0601f54d00ffd3e5f7bc562ce7bc407c79",
+      "sha256": "0577e1b6e8186d47912bc3ddddd09645d55aeca3020b6490606298adec8eb72b",
+      "bytes": 15822
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/run_bazel.py",
+      "git_blob": "628a1d657c1b9e6b78e5a24c889a451b0f6fe075",
+      "sha256": "baac32cb36b95c57d127bcc34456a3995111d0034d1a6b9e71b04f4ae3e41add",
+      "bytes": 13639
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/test_readers.py",
+      "git_blob": "c6ac005182b90f4ce3feb6ebd59693becbda8da2",
+      "sha256": "88939865338960dc1e7e0dfff5be31e7534e64ba7a6a8ab2bf40fb42e875ebbd",
+      "bytes": 12319
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/scope.json",
+      "git_blob": "c362c6500175a5642348e7a2ae485013d85755bf",
+      "sha256": "ffa8a5d8121f1f963a0c456ebd220c17a269383d4811ec5c3651d26f3b13c14a",
+      "bytes": 2492
+    },
+    {
+      "path": ".github/workflows/fleet-private-registration-qualification.yml",
+      "git_blob": "16fea60c7dfb0389adc254ea6bccbf8a217ba3cd",
+      "sha256": "b4f2a30669985d0c84775fea5b79cdeee9abc0ba6a5cf5d55355b2658932af5e",
+      "bytes": 8528
+    },
+    {
+      "path": ".github/workflows/complete-source-generation.yml",
+      "git_blob": "6c1a521f60568cf3abd124d350e9faf0e431009c",
+      "sha256": "4b3a8824fab0cd35ecef23b1d8e7a82d82b8d0b5e04355cfc4c8b51d9f48cc39",
+      "bytes": 4126
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/README.md",
+      "git_blob": "317238fdffccf21e55c412c11aeaf725bbc4cfd8",
+      "sha256": "927688e946f65794bf0a60af3e0658baf0e7dce79c8c3c6bd21d4f5b7360fdd8",
+      "bytes": 4094
+    }
+  ]
+}

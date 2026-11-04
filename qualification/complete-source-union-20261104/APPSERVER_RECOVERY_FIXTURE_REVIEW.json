@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.appserver.turn-recovery.approval-fixture.static-review.v1",
+  "reviewer": "hepta_blockers",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "59bc256880156acd4dad4f8e3880abe149b8a4ce",
+  "base_tree": "6c7694edda83dcc60068b99b1f69afb92fe2c698",
+  "inputs": [
+    {
+      "scope": "target",
+      "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+      "git_blob_sha": "7aa8b98e4751e953743d298850966bc2cdfb9fa6",
+      "sha256": "4709d3de4368f33ac9d3d46a6350f1b5cff966914870ce47adb7203a34125b03",
+      "bytes": 34749
+    },
+    {
+      "scope": "protocol",
+      "path": "codex-rs/protocol/src/protocol.rs",
+      "git_blob_sha": "90b686e7752f622c9cd530a9d575495fba372479",
+      "sha256": "388767a29c1a90c684d92e0e41bd7e4006cd81e2b22aaac05e0f35217bff8ecc",
+      "bytes": 217604
+    },
+    {
+      "scope": "config",
+      "path": "codex-rs/core/src/config/mod.rs",
+      "git_blob_sha": "57a071fd89537bf4219c521281e4c42174d5e924",
+      "sha256": "ebbeae65aa387cce085524de709516e2877e6c4ea15738cd26dbe531bf74b65b",
+      "bytes": 190270
+    },
+    {
+      "scope": "exec_policy",
+      "path": "codex-rs/core/src/exec_policy.rs",
+      "git_blob_sha": "f24b062469d579929739c2cb4221661499ca9248",
+      "sha256": "876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff",
+      "bytes": 39414
+    },
+    {
+      "scope": "fixture_config",
+      "path": "codex-rs/app-server/tests/common/config.rs",
+      "git_blob_sha": "f359b40f89c9ab9f997aef1cbf6b614d4eae4aaf",
+      "sha256": "c7f70885be8c06372754aec4473d30d060e242fa5279eaf03e9218e630aceef2",
+      "bytes": 5895
+    },
+    {
+      "scope": "existing_escalated_helper",
+      "path": "codex-rs/app-server/tests/common/responses.rs",
+      "git_blob_sha": "3e726309e1786f3e0651692227803db1327b6707",
+      "sha256": "3bf3aff8aa362c49796a36ed5385e9d0cb73d0c059af46bb3ba3071481bc6940",
+      "bytes": 4362
+    },
+    {
+      "scope": "helper_export",
+      "path": "codex-rs/app-server/tests/common/lib.rs",
+      "git_blob_sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c",
+      "sha256": "09ab94bc0980fff7813494fba5a4516d72175ea3b3f5a5409ca8fe29dd3eee15",
+      "bytes": 2802
+    }
+  ],
+  "proposed": {
+    "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+    "git_blob_sha": "ed1d5744f68fc6598fef5782302a843ce92b3fba",
+    "sha256": "2bb87b5b9640985beeb96551693f7d2ed38d1a322f686f70a484d59f6c4febf8",
+    "bytes": 34771,
+    "four_changed_lines": [
+      {
+        "line": 14,
+        "old": "use app_test_support::create_command_execution_sse_response;",
+        "new": "use app_test_support::create_escalated_command_execution_sse_response;"
+      },
+      {
+        "line": 742,
+        "old": "        .with_approval_policy(\"untrusted\")",
+        "new": "        .with_approval_policy(\"on-request\")"
+      },
+      {
+        "line": 757,
+        "old": "        .with_approval_policy(\"untrusted\")",
+        "new": "        .with_approval_policy(\"on-request\")"
+      },
+      {
+        "line": 971,
+        "old": "    create_command_execution_sse_response(",
+        "new": "    create_escalated_command_execution_sse_response("
+      }
+    ],
+    "created_blob_and_exact_remote_readback": true
+  },
+  "observed_origin": {
+    "run_id": 41771368391,
+    "job_id": 126384287502,
+    "failure_description": "Root independently read original two-case startup rejection of retired public untrusted approval setting; this reviewer binds current source semantics, not a new independent native log download."
+  },
+  "findings": [
+    "Public Config explicitly rejects cfg.approval_policy UnlessTrusted. AskForApproval OnRequest is supported and default; internal untrusted-project policy is distinct.",
+    "MockResponsesConfig defaults to never and read-only. Therefore merely removing with_approval_policy would select never and is not the proposed fix.",
+    "Unchanged blocked_turn_response is a normal python3 -c sleep command. Bare on-request does not deterministically preserve the original approval-blocked precondition.",
+    "The existing exported create_escalated_command_execution_sse_response uses identical command/workdir/yield fields and adds require_escalated with a fixed test justification. In the unchanged restricted fixture OnRequest routes requests_sandbox_override to Prompt, preserving explicit human approval.",
+    "Two original blocked-command cases retain their CommandExecutionRequestApproval checks; recovery/cross-thread/provider-output denial and model request counts are unchanged.",
+    "Both helpers retain approvals_reviewer=user. Only fixture setup changes; no production approval policy, tool execution, sandbox or recovery implementation changes."
+  ],
+  "source_checks": {
+    "changed_lines": 4,
+    "unchanged_line_count": true,
+    "assertion_timeout_related_lines_identical": true,
+    "test_attributes_identical": true,
+    "test_attributes_count": 8
+  },
+  "qualification": {
+    "native_executed": false,
+    "fmt_executed": false,
+    "approval_blocked_native_precondition_observed_on_candidate": false,
+    "original_full_appserver_required": true,
+    "production_qualification": false
+  },
+  "conclusion": "No confirmed source-level blocker in the four-line conservative fixture proposal. Preserve the original complete native suites and deadlines before claiming the startup/recovery blocker closed."
+}
