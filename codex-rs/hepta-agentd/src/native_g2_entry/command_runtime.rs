@@ -26,12 +26,9 @@ impl<F: std::future::Future> std::future::Future for OriginalPoll<'_, F> {
         self: std::pin::Pin<&mut Self>,
         context: &mut std::task::Context<'_>,
     ) -> std::task::Poll<Self::Output> {
-        let future = self
-            .get_mut()
-            .future
-            .as_mut()
-            .as_pin_mut()
-            .expect("the original future is retained until forwarder drop");
+        let Some(future) = self.get_mut().future.as_mut().as_pin_mut() else {
+            unreachable!("the original future is retained until forwarder drop");
+        };
         poll_original(future, context)
     }
 }

@@ -64,21 +64,19 @@ enum Scheduler {
     MultiThread,
 }
 
-fn runtime(scheduler: Scheduler) -> Runtime {
+fn runtime(scheduler: Scheduler) -> std::io::Result<Runtime> {
     match scheduler {
         Scheduler::CurrentThread => tokio::runtime::Builder::new_current_thread()
             .enable_all()
-            .build()
-            .unwrap(),
+            .build(),
         Scheduler::MultiThread => tokio::runtime::Builder::new_multi_thread()
             .worker_threads(/* val */ 1)
             .enable_all()
-            .build()
-            .unwrap(),
+            .build(),
     }
 }
 
-fn foreign_runtime(scheduler: Scheduler) -> Runtime {
+fn foreign_runtime(scheduler: Scheduler) -> std::io::Result<Runtime> {
     runtime(match scheduler {
         Scheduler::CurrentThread => Scheduler::MultiThread,
         Scheduler::MultiThread => Scheduler::CurrentThread,
@@ -324,10 +322,11 @@ fn reject_nested<const N: usize>(runtime: &Runtime, route: Route) -> Observation
 }
 
 #[test]
-fn completion_and_unwind_keep_the_original_drop_context() {
+fn completion_and_unwind_keep_the_original_drop_context() -> Result<(), Box<dyn std::error::Error>>
+{
     for scheduler in [Scheduler::CurrentThread, Scheduler::MultiThread] {
-        let active = runtime(scheduler);
-        let foreign = foreign_runtime(scheduler);
+        let active = runtime(scheduler)?;
+        let foreign = foreign_runtime(scheduler)?;
         for context in [OuterContext::Absent, OuterContext::ForeignHandle] {
             let _outer = match context {
                 OuterContext::Absent => None,
@@ -345,13 +344,15 @@ fn completion_and_unwind_keep_the_original_drop_context() {
             }
         }
     }
+    Ok(())
 }
 
 #[test]
-fn pending_cancellation_keeps_the_original_drop_context() {
+fn pending_cancellation_keeps_the_original_drop_context() -> Result<(), Box<dyn std::error::Error>>
+{
     for scheduler in [Scheduler::CurrentThread, Scheduler::MultiThread] {
-        let active = runtime(scheduler);
-        let foreign = foreign_runtime(scheduler);
+        let active = runtime(scheduler)?;
+        let foreign = foreign_runtime(scheduler)?;
         for context in [OuterContext::Absent, OuterContext::ForeignHandle] {
             let _outer = match context {
                 OuterContext::Absent => None,
@@ -367,13 +368,15 @@ fn pending_cancellation_keeps_the_original_drop_context() {
             );
         }
     }
+    Ok(())
 }
 
 #[test]
-fn runtime_entry_rejection_keeps_the_original_drop_context() {
+fn runtime_entry_rejection_keeps_the_original_drop_context()
+-> Result<(), Box<dyn std::error::Error>> {
     for scheduler in [Scheduler::CurrentThread, Scheduler::MultiThread] {
-        let active = runtime(scheduler);
-        let foreign = foreign_runtime(scheduler);
+        let active = runtime(scheduler)?;
+        let foreign = foreign_runtime(scheduler)?;
         foreign.block_on(async {
             assert_eq!(
                 reject_nested::<0>(&active, Route::SharedPoll),
@@ -385,4 +388,5 @@ fn runtime_entry_rejection_keeps_the_original_drop_context() {
             );
         });
     }
+    Ok(())
 }
