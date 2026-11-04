@@ -30,7 +30,12 @@ struct App {
 impl ProductionOutboxTarget for App {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
         assert_eq!(request.operation_destination_id, self.destination);
-        self.values.lock().unwrap().push(request.payload_json);
+        {
+            let Ok(mut values) = self.values.lock() else {
+                panic!("fixture application values mutex must not be poisoned");
+            };
+            values.push(request.payload_json);
+        }
         Box::pin(async {
             ProductionTargetOutcome::Indeterminate {
                 reason: "fixture applied and lost reply".into(),
@@ -62,7 +67,9 @@ impl AuthorityClock for Clock {
     }
 }
 
-fn operations(owner: &str) -> [(OperationIntentV1, &'static str, String); 2] {
+fn operations(
+    owner: &str,
+) -> Result<[(OperationIntentV1, &'static str, String); 2], Box<dyn std::error::Error>> {
     let notes = NotesTargetIdentity {
         session_instance: "1".repeat(32),
         task_id: 1,
@@ -79,20 +86,20 @@ fn operations(owner: &str) -> [(OperationIntentV1, &'static str, String); 2] {
         "destination_id":calculator.destination_id(),"target":calculator,"expected_revision":0,
         "left":"12","operator":"add","right":"30"})
     .to_string();
-    let generation = Generation::new(1).unwrap();
-    let subject = StableId::new(owner).unwrap();
-    [
+    let generation = Generation::new(1)?;
+    let subject = StableId::new(owner)?;
+    Ok([
         (
-            notes_operation_intent(&notes, &note, subject.clone(), generation).unwrap(),
+            notes_operation_intent(&notes, &note, subject.clone(), generation)?,
             NOTES_REPLACE_TOPIC_V1,
             note,
         ),
         (
-            calculator_operation_intent(&calculator, &calc, subject, generation).unwrap(),
+            calculator_operation_intent(&calculator, &calc, subject, generation)?,
             CALCULATOR_EVALUATE_TOPIC_V1,
             calc,
         ),
-    ]
+    ])
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -101,7 +108,7 @@ async fn two_apps_cannot_cross_the_same_original_turn_effect_boundary_twice()
     // Both sequential orders and genuinely overlapping original transactions.
     for mode in [0, 1, 2] {
         let fixture = Fixture::new().await;
-        let [notes, calculator] = operations(fixture.writer.owner_agent_id().as_str());
+        let [notes, calculator] = operations(fixture.writer.owner_agent_id().as_str())?;
         let contenders = [notes, calculator];
         let queued = if mode < 2 {
             let first = &contenders[mode];
