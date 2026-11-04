@@ -1,0 +1,17 @@
+{
+  "schema": "independent-idle-fence-review-followup-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prior_review_blob": "9b1b1bcff2a4fd8c8efc5b8a5bd5a59f45981100",
+  "old_test_blob": "da30f9f06437324d0ec0e909afc694b6ed7158ac",
+  "new_test": {
+    "blob": "0a70aa1cccf2460ef510436432b6a975e1f49a48",
+    "bytes": 3296,
+    "sha256": "52b9f260859501a51956d7dda168a30c18b0199439b294f70728d761725a48e8"
+  },
+  "unchanged_reader_blob": "e96223241c49279988f62606a8637637cefd413b",
+  "scope": "Read-only full new test source and previous exact four-file review. No native execution or mutant run.",
+  "finding": "The strengthened cancellation control now awaits a oneshot sent from inside the follower's own completion future before checking that its work remains unstarted. With the existing default current-thread Tokio test runtime and unfulfilled own fence, this removes the previously identified not-yet-scheduled false-green window. Removing the own completion await prevents that entered signal from completing successfully. The prior two tests remain byte-identical; production logic and the original 33/35 native commands are not modified by this test patch.",
+  "conclusion": "The specific source-level test synchronization issue is addressed; actual controls and original gates remain pending.",
+  "native_tests_executed": 0,
+  "full_core_qualified": false
+}

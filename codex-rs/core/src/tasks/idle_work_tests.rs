@@ -59,6 +59,7 @@ async fn cancelled_idle_fence_releases_followers_without_bypassing_their_fence()
     let (cancel_tx, cancel_rx) = oneshot::channel::<()>();
     let (first_tx, first_rx) = oneshot::channel();
     let (follower_fence_tx, follower_fence_rx) = oneshot::channel();
+    let (entered_tx, entered_rx) = oneshot::channel();
     let (follower_tx, mut follower_rx) = oneshot::channel();
     queue
         .defer(
@@ -70,7 +71,10 @@ async fn cancelled_idle_fence_releases_followers_without_bypassing_their_fence()
         .expect("first contributor");
     queue
         .defer(
-            Box::pin(async move { follower_fence_rx.await.expect("follower's own fence") }),
+            Box::pin(async move {
+                entered_tx.send(()).expect("follower entered completion");
+                follower_fence_rx.await.expect("follower's own fence")
+            }),
             async move {
                 follower_tx.send(()).expect("follower observer");
             },
@@ -78,6 +82,7 @@ async fn cancelled_idle_fence_releases_followers_without_bypassing_their_fence()
         .expect("second contributor");
     drop(cancel_tx);
     assert!(first_rx.await.is_err());
+    entered_rx.await.expect("follower must await its own fence");
     assert_eq!(
         follower_rx.try_recv(),
         Err(oneshot::error::TryRecvError::Empty)

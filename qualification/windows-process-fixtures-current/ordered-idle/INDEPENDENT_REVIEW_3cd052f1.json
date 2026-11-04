@@ -1,0 +1,59 @@
+{
+  "schema": "independent-idle-fence-and-selected-control-source-review-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+  "inputs": [
+    {
+      "path": "codex-rs/core/src/tasks/idle_work.rs",
+      "blob": "afcf7cfaaa4a00070a208b7a4e2880d52adafaa9",
+      "bytes": 2533,
+      "sha256": "bd5bdb94b152fb495b0101f20948fc7a709c17bcb4e2c9425223aab31936bbe4"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/terminalization_completion.rs",
+      "blob": "58380b295fcbe3502d72a714e1a98e7472459f8a",
+      "bytes": 932,
+      "sha256": "912802dce5df821c04dd351373ffa7cd8269931ab5d1791595a61fe970095866"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/idle_work_tests.rs",
+      "blob": "da30f9f06437324d0ec0e909afc694b6ed7158ac",
+      "bytes": 3072,
+      "sha256": "57c768ef3901a2836352a32ff9c86bf84e31b334adbcbd250c224858df805685"
+    },
+    {
+      "path": "qualification/windows-process-env-current/run_qualification.py",
+      "blob": "e96223241c49279988f62606a8637637cefd413b",
+      "bytes": 17169,
+      "sha256": "b00b73434abd4078a2101e41c9baf81806024407f0e5cc3485dba2489eef1ef2"
+    }
+  ],
+  "scope": "Read-only source review of the three idle-work files and the new selected-control reader/command. No Cargo, Bazel, Rust tests, mutation test or Windows execution was performed.",
+  "findings": [
+    {
+      "kind": "production_source",
+      "status": "no_new_confirmed_blocking_defect_in_scope",
+      "detail": "The actual DeferredIdleWork still acquires one of 32 permits before spawning, retains registration order through the predecessor oneshot, then awaits its own completion before work. Dropped predecessor senders release ordering only. pending_turn_terminalization snapshots and observes current owners under the existing watchdog; it does not adopt/replay/release ownership, and its comments require normal admission afterward."
+    },
+    {
+      "kind": "test_synchronization",
+      "status": "fix_requested",
+      "path": "codex-rs/core/src/tasks/idle_work_tests.rs",
+      "selector": "cancelled_idle_fence_releases_followers_without_bypassing_their_fence",
+      "detail": "After first_rx resolves Err, the follower may not yet have been scheduled. An immediate try_recv Empty can therefore occur even if a mutant incorrectly skips the follower's own completion; sending that fence afterward loses the distinction. This is source reasoning about a possible false-green interleaving, not an executed mutant result.",
+      "proposed_change": "Have the follower's completion future send a dedicated entered signal immediately before awaiting its own fence. After first_rx Err, await entered before asserting no follower output; then release the original follower fence. This preserves production logic and resources and establishes the intended Pending-fence observation under the test's default current-thread runtime."
+    },
+    {
+      "kind": "selected_control_reader",
+      "status": "no_new_confirmed_blocking_defect_in_scope",
+      "detail": "parse_idle_reports requires one nonfailed/nonskipped wrapper, XML system-out equal to the retained log, exactly one successful 3/0/0/0 native summary, exactly the three distinct named controls and no explicit failed/ignored/skipping lines. It records filtered other-core cases and explicitly limits scope to the three controls. The separate idle command uses the existing wrapper, Windows platform, no cached test result, selected idle prefix and disabled sharding. Original 33/35 suites retain independent success checks, and any command/reader error keeps overall status failed."
+    }
+  ],
+  "qualification": {
+    "source_review_only": true,
+    "native_tests_executed": 0,
+    "original_33_35_suites_independently_replayed": false,
+    "full_core_qualified": false,
+    "cancellation_regression_qualified": false
+  }
+}

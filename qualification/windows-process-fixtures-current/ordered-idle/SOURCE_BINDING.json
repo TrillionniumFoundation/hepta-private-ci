@@ -51,9 +51,9 @@
       "path": "codex-rs/core/src/tasks/idle_work_tests.rs",
       "before": null,
       "after": {
-        "git_blob_sha": "da30f9f06437324d0ec0e909afc694b6ed7158ac",
-        "sha256": "57c768ef3901a2836352a32ff9c86bf84e31b334adbcbd250c224858df805685",
-        "bytes": 3072
+        "git_blob_sha": "0a70aa1cccf2460ef510436432b6a975e1f49a48",
+        "sha256": "52b9f260859501a51956d7dda168a30c18b0199439b294f70728d761725a48e8",
+        "bytes": 3296
       },
       "before_original_formatter": {
         "git_blob_sha": "5a64bd9fa162d98c6fb7cb0e01a6512d6fa9f6f3",
@@ -163,7 +163,7 @@
     "python_tests": false,
     "formatting": false
   },
-  "status": "Draft with the exact hosted formatter output adopted. The same original generation gate must confirm committed bytes unchanged before native qualification.",
+  "status": "Draft with an explicit follower-completion handshake in the cancellation control. Original generation and native gates remain required on this exact follow-up.",
   "original_formatter_adoption": {
     "source_commit": "7a1393304a76c45052e538087565c00a135f5a14",
     "run_id": 41767138349,
@@ -176,5 +176,24 @@
     "committed_bazel_lock_equals_generated": true,
     "local_formatter_execution": false,
     "hosted_original_formatter_executed": true
+  },
+  "test_synchronization_followup": {
+    "previous_commit": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+    "previous_fixture": {
+      "git_blob_sha": "da30f9f06437324d0ec0e909afc694b6ed7158ac",
+      "sha256": "57c768ef3901a2836352a32ff9c86bf84e31b334adbcbd250c224858df805685",
+      "bytes": 3072
+    },
+    "updated_fixture": {
+      "git_blob_sha": "0a70aa1cccf2460ef510436432b6a975e1f49a48",
+      "sha256": "52b9f260859501a51956d7dda168a30c18b0199439b294f70728d761725a48e8",
+      "bytes": 3296
+    },
+    "reason": "A try_recv Empty result did not alone prove that the follower had been scheduled. The selected cancellation control now awaits a signal emitted inside the follower's own completion before checking that its work remains blocked.",
+    "original_two_controls_unchanged": true,
+    "production_unchanged": true,
+    "previous_independent_review_blob": "9b1b1bcff2a4fd8c8efc5b8a5bd5a59f45981100",
+    "hosted_original_generation_pending_on_updated_fixture": true,
+    "native_execution_claimed": false
   }
 }
