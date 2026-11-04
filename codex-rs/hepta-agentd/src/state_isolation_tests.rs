@@ -43,6 +43,10 @@ use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+    // Keep macOS socket paths below SUN_LEN without shortening agent identities.
+    #[cfg(target_os = "macos")]
+    let temp = tempfile::tempdir_in("/tmp")?;
+    #[cfg(not(target_os = "macos"))]
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     #[cfg(unix)]
