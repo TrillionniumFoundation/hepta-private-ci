@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "purpose": "Unmerged artifact-only lock generation; product source and generated lock are admitted together through the product PR.",
+  "expected_repository": "TrillionniumFoundation/hepta-private-ci",
+  "expected_ref": "refs/heads/audit/windows-helper-lock-20261104",
+  "source_base": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+  "required_parent_count": 1,
+  "required_changed_path_count": 7,
+  "artifact_generation_paths": [
+    ".github/workflows/hepta-product-fixture-lock.yml",
+    "qualification/product-fixture-lock-20261104/generate_lock.py",
+    "qualification/product-fixture-lock-20261104/helper-source-manifest.json"
+  ],
+  "source_patch_sha256": "0cd19b83dff84500c53e1534ecd96a609f7fe0f7f20a9d7269d0a686bc0a3573",
+  "expected_cargo_package_count": 1502,
+  "dependency_scope": "Only codex-exec-server adds the already-existing workspace dev dependency codex-utils-cargo-bin; package identities/versions remain unchanged.",
+  "production_source_changed": false,
+  "files": [
+    {
+      "path": "codex-rs/exec-server/BUILD.bazel",
+      "expected_sha256": "7ebe1f8d7aa1f5bbe8eb55b8f3914af11ca97032cd604cc68686ad4fd2cc2244",
+      "expected_git_blob": "73c71a65112db4c7d306f3be215ab17907decfa5"
+    },
+    {
+      "path": "codex-rs/exec-server/Cargo.toml",
+      "expected_sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+      "expected_git_blob": "455df9eedc14b77ac3779899087cd8391b153b37"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/exec_server.rs",
+      "expected_sha256": "b2107193d5acbdcd345f28ce167ffe42d2e642de4f013e06ad7332a40d63dda6",
+      "expected_git_blob": "98bb544e1ba70a44c4ece9dd7d46caecc4d8e906"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "expected_sha256": "c9778dfe2a3c1e8c06f5ca41d84d544c70bc07171f3b8ae5c3bc5f041d51496e",
+      "expected_git_blob": "9743ef2f4f4c8521265c0187524278c256114163"
+    }
+  ],
+  "initial_module_lock": {
+    "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+    "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+  },
+  "admission": "A generated artifact is not product acceptance; root imports exact bytes only after source hashes and original update/check receipts verify."
+}
