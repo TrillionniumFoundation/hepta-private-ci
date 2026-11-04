@@ -105,7 +105,10 @@ impl SqliteConfig {
         &self,
         path: &Path,
     ) -> Result<ExistingSqliteRecoveryGuard, SqliteRecoveryError> {
-        if path.parent() != Some(self.home()) {
+        if !path
+            .parent()
+            .is_some_and(|parent| same_recovery_path(parent, self.home()))
+        {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         ExistingSqliteRecoveryGuard::bind(path)
@@ -193,7 +196,12 @@ impl ExistingSqliteRecoveryGuard {
     }
 
     fn revalidate_for(&self, config: &SqliteConfig) -> Result<(), SqliteRecoveryError> {
-        if self.inner.database_path.parent() != Some(config.home()) {
+        if !self
+            .inner
+            .database_path
+            .parent()
+            .is_some_and(|parent| same_recovery_path(parent, config.home()))
+        {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         self.revalidate()
@@ -212,6 +220,29 @@ impl ExistingSqliteRecoveryGuard {
     #[cfg(not(any(unix, windows)))]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         Err(SqliteRecoveryError::Indeterminate)
+    }
+}
+
+/// Compare only namespace spellings of the same path. AbsolutePathBuf strips
+/// Windows drive/UNC device prefixes, while retained OS paths may keep them.
+/// This does not case-fold, resolve a reparse point, or replace handle identity
+/// validation; every admitted existing object still passes the retained guard.
+fn same_recovery_path(left: &Path, right: &Path) -> bool {
+    if left == right {
+        return true;
+    }
+    #[cfg(windows)]
+    {
+        let (Some(left), Some(right)) = (left.to_str(), right.to_str()) else {
+            return false;
+        };
+        let normalized_left = codex_utils_absolute_path::normalize_windows_device_path(left);
+        let normalized_right = codex_utils_absolute_path::normalize_windows_device_path(right);
+        normalized_left.as_deref().unwrap_or(left) == normalized_right.as_deref().unwrap_or(right)
+    }
+    #[cfg(not(windows))]
+    {
+        false
     }
 }
 

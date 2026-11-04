@@ -141,6 +141,7 @@ jobs:
               "frozen_private_child_retains_bytes_and_refuses_write_and_delete_handles",
               "frozen_child_rejects_missing_alias_and_hard_link_without_creation",
               "fresh_materialization_never_opens_an_occupied_name",
+              "windows_namespace_aliases_match_configured_home_without_merging_other_roots",
               "windows_guard_never_creates_missing_sources_and_rejects_live_writers",
               "windows_sidecar_appearance_refuses_before_any_candidate_is_created",
               "windows_retains_each_sidecar_and_rejects_hard_links_for_every_role",
@@ -152,6 +153,10 @@ jobs:
               "windows_native_temp_and_case_aliases_share_store_identity_and_source_replay",
               "native_and_os_canonical_roots_share_store_identity_and_source_replay",
               "junction_and_its_descendants_are_rejected",
+              "exact_current_cut_recovers_writable_generation_and_persists_activation",
+              "graceful_close_retains_store_fence_until_sqlite_connections_finish",
+              "predecessor_witness_is_rejected_and_current_witness_recovers",
+              "revoked_owner_profile_and_witness_checks_precede_recovery_admission",
           }
           observed = {name for report in receipt["junit"] for name in report["executed"]}
           if result.returncode == 0 and not required <= observed:

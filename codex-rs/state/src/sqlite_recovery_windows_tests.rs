@@ -56,6 +56,60 @@ impl Drop for Fixture {
     }
 }
 
+#[tokio::test]
+async fn windows_namespace_aliases_match_configured_home_without_merging_other_roots()
+-> anyhow::Result<()> {
+    let fixture = Fixture::new()?;
+    fixture.initialize().await?;
+    let canonical_home = fixture.home.canonicalize()?;
+    let config = SqliteConfig::new_for_testing(canonical_home.as_path().abs());
+    let source = canonical_home.join("cold.sqlite3");
+    let native_source = config.home().join("cold.sqlite3");
+    // Exercise the real mismatch: AbsolutePathBuf removes the OS prefix.
+    assert_ne!(source.parent(), Some(config.home()));
+    eprintln!(
+        "retained recovery OS source={} configured home={}",
+        source.display(),
+        config.home().display()
+    );
+    let before = std::fs::read(&source)?;
+    let guard = config.bind_existing_recovery_database(&source)?;
+    guard.verify_inspection_unchanged()?;
+    let image = config.open_cold_image_read_only_pool(&guard).await?;
+    let value: String = sqlx::query_scalar("SELECT value FROM fact")
+        .fetch_one(&image)
+        .await?;
+    assert_eq!(value, "original");
+    image.close().await;
+
+    assert_eq!(
+        config.materialize_identity_bound_recovery_copy(&guard, &native_source),
+        Err(SqliteRecoveryError::Indeterminate)
+    );
+    let other = Fixture::new()?;
+    let outside = other.home.canonicalize()?.join("outside.sqlite3");
+    assert!(matches!(
+        config.bind_existing_recovery_database(&other.database),
+        Err(SqliteRecoveryError::Indeterminate)
+    ));
+    assert_eq!(
+        config.materialize_identity_bound_recovery_copy(&guard, &outside),
+        Err(SqliteRecoveryError::Indeterminate)
+    );
+    assert!(!outside.exists());
+    guard.verify_inspection_unchanged()?;
+
+    let target = canonical_home.join("candidate.sqlite3");
+    config.materialize_identity_bound_recovery_copy(&guard, &target)?;
+    assert_eq!(std::fs::read(&source)?, before);
+    assert_eq!(std::fs::read(&target)?, before);
+    drop(guard);
+    config
+        .bind_existing_recovery_database(&target)?
+        .verify_inspection_unchanged()?;
+    Ok(())
+}
+
 #[test]
 fn windows_guard_never_creates_missing_sources_and_rejects_live_writers() -> anyhow::Result<()> {
     let fixture = Fixture::new()?;

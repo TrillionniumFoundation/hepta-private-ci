@@ -11,6 +11,7 @@
 use super::ExistingSqliteRecoveryGuard;
 use super::SqliteConfig;
 use super::SqliteRecoveryError;
+use super::same_recovery_path;
 use sqlx::SqlitePool;
 
 impl SqliteConfig {
@@ -48,8 +49,10 @@ impl SqliteConfig {
             const MAX_SIDECAR_BYTES: u64 = 128 * 1024 * 1024;
             const MAX_BUNDLE_BYTES: u64 = 256 * 1024 * 1024;
 
-            if target.parent() != Some(self.home())
-                || target == guard.inner.database_path
+            if !target
+                .parent()
+                .is_some_and(|parent| same_recovery_path(parent, self.home()))
+                || same_recovery_path(target, &guard.inner.database_path)
                 || target.file_name().is_none()
             {
                 return Err(SqliteRecoveryError::Indeterminate);
