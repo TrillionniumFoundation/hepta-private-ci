@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_head": "9770f39fd96672d8fe40d62979a19a2d9939290b",
+  "source_tree": "fd3715b73de3e5b8d323c4999455abbe0b59b00f",
+  "parent": "59bc256880156acd4dad4f8e3880abe149b8a4ce",
+  "branch": "qualification/private-ci-fleet-readers-20261104-gpt6",
+  "run_id": 41781454686,
+  "job_id": 126413712543,
+  "actual_status": "SUCCESS",
+  "reader_tests": {
+    "executed": 28,
+    "failed": 0,
+    "skipped": 0,
+    "original_functions_and_24_controls_preserved": true,
+    "new_controls": 4
+  },
+  "optimized_execution": {
+    "native_reader_rejected": true,
+    "bazel_reader_rejected": true,
+    "comparison": "original exact optimized Python rejection text"
+  },
+  "workflow_validation": {
+    "actionlint_version": "1.7.12",
+    "archive_sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+    "binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4",
+    "files": [
+      ".github/workflows/complete-source-generation.yml",
+      ".github/workflows/fleet-private-registration-qualification.yml"
+    ],
+    "exit_code": 0
+  },
+  "product_executions": 0,
+  "intentionally_skipped_jobs": [
+    {
+      "id": 126414554981,
+      "name": "Complete ${{ matrix.group }} libraries (${{ matrix.runner }})",
+      "reason": "diagnostic branch is not the fixed source branch; no qualified generation caller"
+    },
+    {
+      "id": 126414555602,
+      "name": "Original Linux Bazel ${{ matrix.group }} libraries",
+      "reason": "diagnostic branch is not the fixed source branch; no qualified generation caller"
+    }
+  ],
+  "original_job_log": {
+    "git_blob": "76061b212349a48fa96b8103aa0ab155464db520",
+    "bytes": 24972,
+    "sha256": "8b87dfcbe67ccb190d30444c987a1646cbbf74db7232d6ab8d51db0cd54df90a"
+  },
+  "inputs": [
+    {
+      "path": "qualification/fleet-private-registration-current/common.py",
+      "blob": "eb613002ffd48409929e13426219017ec8710143",
+      "bytes": 2399,
+      "sha256": "d35fa78af015aad25ce20b713707785b5eded7170199cfcbb0cf012fe41925ce"
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/run_native.py",
+      "blob": "ed406d0601f54d00ffd3e5f7bc562ce7bc407c79",
+      "bytes": 15822,
+      "sha256": "0577e1b6e8186d47912bc3ddddd09645d55aeca3020b6490606298adec8eb72b"
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/run_bazel.py",
+      "blob": "628a1d657c1b9e6b78e5a24c889a451b0f6fe075",
+      "bytes": 13639,
+      "sha256": "baac32cb36b95c57d127bcc34456a3995111d0034d1a6b9e71b04f4ae3e41add"
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/test_readers.py",
+      "blob": "c6ac005182b90f4ce3feb6ebd59693becbda8da2",
+      "bytes": 12319,
+      "sha256": "88939865338960dc1e7e0dfff5be31e7534e64ba7a6a8ab2bf40fb42e875ebbd"
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/scope.json",
+      "blob": "c362c6500175a5642348e7a2ae485013d85755bf",
+      "bytes": 2492,
+      "sha256": "ffa8a5d8121f1f963a0c456ebd220c17a269383d4811ec5c3651d26f3b13c14a"
+    },
+    {
+      "path": ".github/workflows/fleet-private-registration-qualification.yml",
+      "blob": "16fea60c7dfb0389adc254ea6bccbf8a217ba3cd",
+      "bytes": 8528,
+      "sha256": "b4f2a30669985d0c84775fea5b79cdeee9abc0ba6a5cf5d55355b2658932af5e"
+    },
+    {
+      "path": ".github/workflows/complete-source-generation.yml",
+      "blob": "6c1a521f60568cf3abd124d350e9faf0e431009c",
+      "bytes": 4126,
+      "sha256": "4b3a8824fab0cd35ecef23b1d8e7a82d82b8d0b5e04355cfc4c8b51d9f48cc39"
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/README.md",
+      "blob": "317238fdffccf21e55c412c11aeaf725bbc4cfd8",
+      "bytes": 4094,
+      "sha256": "927688e946f65794bf0a60af3e0658baf0e7dce79c8c3c6bd21d4f5b7360fdd8"
+    },
+    {
+      "path": "qualification/fleet-private-registration-current/source-binding.json",
+      "blob": "e7315f1ac6c427ceb0cf820a0e259b2e8d2787c5",
+      "bytes": 3985,
+      "sha256": "c53bc8b9fdf0a4915f69b0df947077595fa523365ab167ffc33fac491e9ebbad"
+    }
+  ],
+  "boundaries": [
+    "This job exercised readers and workflow syntax, not product/native libraries.",
+    "The exact donor functions were compared as text; the native libraries must run on the committed composed successor.",
+    "The caller addition must be appended to the current generation workflow without discarding later root changes.",
+    "Add these qualification source paths to the reviewed formatter scope when composing; no existing product assertions or ignores change."
+  ]
+}
