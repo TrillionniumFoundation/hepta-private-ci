@@ -1,0 +1,45 @@
+name: Verify one original f5 native rejection artifact
+
+on:
+  push:
+    branches: [checkpoint/env-d6-negative-artifact-20261104-gpt6]
+    paths:
+      - qualification/env-f5-native-evidence-20261104/readback.py
+      - .github/workflows/hepta-env-f5-native-readback.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: env-f5-native-artifact-readback
+  cancel-in-progress: false
+
+jobs:
+  read-original:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout: |
+            qualification/env-f5-native-evidence-20261104
+          persist-credentials: false
+      - name: Read fixed original native control without executing archive content
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git --no-replace-objects diff --exit-code HEAD --
+          python3 qualification/env-f5-native-evidence-20261104/readback.py --output "$RUNNER_TEMP/env-f5-native-readback"
+          git --no-replace-objects diff --exit-code HEAD --
+      - name: Retain bounded readback
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: env-f5-native-readback-${{ github.sha }}
+          path: ${{ runner.temp }}/env-f5-native-readback
+          if-no-files-found: error
+          retention-days: 14

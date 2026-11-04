@@ -1,0 +1,1356 @@
+﻿2026-11-04T06:07:17.0727932Z Current runner version: '2.338.2'
+2026-11-04T06:07:17.0756761Z ##[group]Runner Image Provisioner
+2026-11-04T06:07:17.0758040Z Hosted Compute Agent
+2026-11-04T06:07:17.0758640Z Version: 20261021.618
+2026-11-04T06:07:17.0759257Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T06:07:17.0760362Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T06:07:17.0761126Z Worker ID: {a1326def-3503-4571-9d2f-3742cd236677}
+2026-11-04T06:07:17.0761951Z Region: centralus
+2026-11-04T06:07:17.0762534Z Cloud: Azure
+2026-11-04T06:07:17.0763069Z ##[endgroup]
+2026-11-04T06:07:17.0764782Z ##[group]Operating System
+2026-11-04T06:07:17.0765459Z Microsoft Windows Server 2025
+2026-11-04T06:07:17.0766062Z 10.0.26100
+2026-11-04T06:07:17.0766633Z Datacenter
+2026-11-04T06:07:17.0767154Z ##[endgroup]
+2026-11-04T06:07:17.0767681Z ##[group]Runner Image
+2026-11-04T06:07:17.0768286Z Image: windows-2025-vs2026
+2026-11-04T06:07:17.0768951Z Version: 20261030.294.1
+2026-11-04T06:07:17.0770725Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261030.294/images/windows/Windows2025-VS2026-Readme.md
+2026-11-04T06:07:17.0772482Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261030.294
+2026-11-04T06:07:17.0773487Z ##[endgroup]
+2026-11-04T06:07:17.0774682Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T06:07:17.0777165Z Contents: read
+2026-11-04T06:07:17.0777738Z Metadata: read
+2026-11-04T06:07:17.0778347Z ##[endgroup]
+2026-11-04T06:07:17.0780971Z Secret source: Actions
+2026-11-04T06:07:17.0781908Z Cache mode: write
+2026-11-04T06:07:17.0782596Z Prepare workflow directory
+2026-11-04T06:07:17.1386278Z Prepare all required actions
+2026-11-04T06:07:17.1454467Z Getting action download info
+2026-11-04T06:07:17.3716735Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-04T06:07:17.5197919Z Download action repository 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f' (SHA:bbbca2ddaa5d8feaa63e36b76fdaad77386f024f)
+2026-11-04T06:07:17.7414878Z Complete job name: Original Windows Git and queue suites (base-merge)
+2026-11-04T06:07:17.9529009Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-04T06:07:17.9530771Z with:
+2026-11-04T06:07:17.9531340Z   ref: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:17.9531960Z   fetch-depth: 1
+2026-11-04T06:07:17.9532439Z   filter: blob:none
+2026-11-04T06:07:17.9532922Z   persist-credentials: false
+2026-11-04T06:07:17.9533635Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:07:17.9537225Z   token: ***
+2026-11-04T06:07:17.9537670Z   ssh-strict: true
+2026-11-04T06:07:17.9538177Z   ssh-user: git
+2026-11-04T06:07:17.9538658Z   clean: true
+2026-11-04T06:07:17.9539137Z   sparse-checkout-cone-mode: true
+2026-11-04T06:07:17.9539685Z   fetch-tags: false
+2026-11-04T06:07:17.9540164Z   show-progress: true
+2026-11-04T06:07:17.9540622Z   lfs: false
+2026-11-04T06:07:17.9541071Z   submodules: false
+2026-11-04T06:07:17.9541599Z   set-safe-directory: true
+2026-11-04T06:07:17.9542316Z env:
+2026-11-04T06:07:17.9542874Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:17.9543511Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:17.9544118Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:17.9544606Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:17.9545145Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:17.9545694Z ##[endgroup]
+2026-11-04T06:07:18.1171241Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:07:18.1174841Z ##[group]Getting Git version info
+2026-11-04T06:07:18.1177138Z Working directory is 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-11-04T06:07:18.1962931Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-04T06:07:18.6843294Z git version 2.56.0.windows.4
+2026-11-04T06:07:18.6906185Z ##[endgroup]
+2026-11-04T06:07:18.6930376Z Temporarily overriding HOME='D:\a\_temp\7bdd78b2-c2dc-44f3-bd91-1b362155aced' before making global git config changes
+2026-11-04T06:07:18.6935266Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T06:07:18.6943401Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:18.7567993Z Deleting the contents of 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-11-04T06:07:18.7573823Z ##[group]Initializing the repository
+2026-11-04T06:07:18.7582970Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:18.8868111Z Initialized empty Git repository in D:/a/hepta-private-ci/hepta-private-ci/.git/
+2026-11-04T06:07:18.8926487Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:07:18.9608390Z ##[endgroup]
+2026-11-04T06:07:18.9610002Z ##[group]Disabling automatic garbage collection
+2026-11-04T06:07:18.9617757Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-11-04T06:07:18.9980788Z ##[endgroup]
+2026-11-04T06:07:18.9982674Z ##[group]Setting up auth
+2026-11-04T06:07:18.9984183Z Removing SSH command configuration
+2026-11-04T06:07:18.9993538Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:07:19.0418176Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-04T06:07:20.9590942Z Removing HTTP extra header
+2026-11-04T06:07:20.9605780Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:07:20.9988238Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-04T06:07:21.5679123Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:07:21.5693858Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:07:21.6055447Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-04T06:07:22.1332740Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-11-04T06:07:22.1725361Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:22.2095031Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:22.2556523Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:22.3017763Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:22.3415667Z ##[endgroup]
+2026-11-04T06:07:22.3417553Z ##[group]Fetching the repository
+2026-11-04T06:07:22.3430470Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:23.6386561Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:07:23.6387629Z  * branch            97c601299dd3af35640ac79475f9010e3a30ee2b -> FETCH_HEAD
+2026-11-04T06:07:23.6445372Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse --verify --quiet 97c601299dd3af35640ac79475f9010e3a30ee2b^{object}
+2026-11-04T06:07:23.6948651Z 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:23.6989460Z ##[endgroup]
+2026-11-04T06:07:23.6990266Z ##[group]Determining the checkout info
+2026-11-04T06:07:23.6990977Z ##[endgroup]
+2026-11-04T06:07:23.7001075Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-11-04T06:07:23.7499998Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-11-04T06:07:23.7862072Z ##[group]Checking out the ref
+2026-11-04T06:07:23.7871423Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:34.1824249Z Updating files:   0% (1/10357)
+2026-11-04T06:07:34.2018912Z Updating files:   1% (104/10357)
+2026-11-04T06:07:34.2282083Z Updating files:   2% (208/10357)
+2026-11-04T06:07:34.2537448Z Updating files:   3% (311/10357)
+2026-11-04T06:07:34.2703016Z Updating files:   4% (415/10357)
+2026-11-04T06:07:34.2872915Z Updating files:   5% (518/10357)
+2026-11-04T06:07:34.3042353Z Updating files:   6% (622/10357)
+2026-11-04T06:07:34.3190729Z Updating files:   7% (725/10357)
+2026-11-04T06:07:34.3353501Z Updating files:   8% (829/10357)
+2026-11-04T06:07:34.3480164Z Updating files:   9% (933/10357)
+2026-11-04T06:07:34.3673507Z Updating files:  10% (1036/10357)
+2026-11-04T06:07:34.3828726Z Updating files:  11% (1140/10357)
+2026-11-04T06:07:34.4064242Z Updating files:  12% (1243/10357)
+2026-11-04T06:07:34.4371722Z Updating files:  13% (1347/10357)
+2026-11-04T06:07:34.4629436Z Updating files:  14% (1450/10357)
+2026-11-04T06:07:34.4909597Z Updating files:  15% (1554/10357)
+2026-11-04T06:07:34.5120784Z Updating files:  16% (1658/10357)
+2026-11-04T06:07:34.5316719Z Updating files:  17% (1761/10357)
+2026-11-04T06:07:34.5532922Z Updating files:  18% (1865/10357)
+2026-11-04T06:07:34.5772611Z Updating files:  19% (1968/10357)
+2026-11-04T06:07:34.5958780Z Updating files:  20% (2072/10357)
+2026-11-04T06:07:34.6177487Z Updating files:  21% (2175/10357)
+2026-11-04T06:07:34.6408251Z Updating files:  22% (2279/10357)
+2026-11-04T06:07:34.6640602Z Updating files:  23% (2383/10357)
+2026-11-04T06:07:34.6833649Z Updating files:  24% (2486/10357)
+2026-11-04T06:07:34.7086742Z Updating files:  25% (2590/10357)
+2026-11-04T06:07:34.7312286Z Updating files:  26% (2693/10357)
+2026-11-04T06:07:34.7525146Z Updating files:  27% (2797/10357)
+2026-11-04T06:07:34.7853083Z Updating files:  28% (2900/10357)
+2026-11-04T06:07:34.8087884Z Updating files:  29% (3004/10357)
+2026-11-04T06:07:34.8317556Z Updating files:  30% (3108/10357)
+2026-11-04T06:07:34.8524074Z Updating files:  31% (3211/10357)
+2026-11-04T06:07:34.8753342Z Updating files:  32% (3315/10357)
+2026-11-04T06:07:34.8928347Z Updating files:  33% (3418/10357)
+2026-11-04T06:07:34.9142561Z Updating files:  34% (3522/10357)
+2026-11-04T06:07:34.9351941Z Updating files:  35% (3625/10357)
+2026-11-04T06:07:34.9511917Z Updating files:  36% (3729/10357)
+2026-11-04T06:07:35.0162161Z Updating files:  36% (3793/10357)
+2026-11-04T06:07:35.0485904Z Updating files:  37% (3833/10357)
+2026-11-04T06:07:35.0760487Z Updating files:  38% (3936/10357)
+2026-11-04T06:07:35.0998367Z Updating files:  39% (4040/10357)
+2026-11-04T06:07:35.1201318Z Updating files:  40% (4143/10357)
+2026-11-04T06:07:35.1404190Z Updating files:  41% (4247/10357)
+2026-11-04T06:07:35.1643885Z Updating files:  42% (4350/10357)
+2026-11-04T06:07:35.1886856Z Updating files:  43% (4454/10357)
+2026-11-04T06:07:35.2085881Z Updating files:  44% (4558/10357)
+2026-11-04T06:07:35.2341888Z Updating files:  45% (4661/10357)
+2026-11-04T06:07:35.2559373Z Updating files:  46% (4765/10357)
+2026-11-04T06:07:35.2776025Z Updating files:  47% (4868/10357)
+2026-11-04T06:07:35.3002313Z Updating files:  48% (4972/10357)
+2026-11-04T06:07:35.3238121Z Updating files:  49% (5075/10357)
+2026-11-04T06:07:35.3451314Z Updating files:  50% (5179/10357)
+2026-11-04T06:07:35.3670464Z Updating files:  51% (5283/10357)
+2026-11-04T06:07:35.6826060Z Updating files:  52% (5386/10357)
+2026-11-04T06:07:35.7056437Z Updating files:  53% (5490/10357)
+2026-11-04T06:07:35.7243008Z Updating files:  54% (5593/10357)
+2026-11-04T06:07:35.7480474Z Updating files:  55% (5697/10357)
+2026-11-04T06:07:35.7701383Z Updating files:  56% (5800/10357)
+2026-11-04T06:07:35.8013207Z Updating files:  57% (5904/10357)
+2026-11-04T06:07:35.8319933Z Updating files:  58% (6008/10357)
+2026-11-04T06:07:35.8547051Z Updating files:  59% (6111/10357)
+2026-11-04T06:07:35.8798379Z Updating files:  60% (6215/10357)
+2026-11-04T06:07:35.8991992Z Updating files:  61% (6318/10357)
+2026-11-04T06:07:35.9201077Z Updating files:  62% (6422/10357)
+2026-11-04T06:07:35.9376046Z Updating files:  63% (6525/10357)
+2026-11-04T06:07:35.9518949Z Updating files:  64% (6629/10357)
+2026-11-04T06:07:35.9552781Z Updating files:  64% (6718/10357)
+2026-11-04T06:07:35.9718788Z Updating files:  65% (6733/10357)
+2026-11-04T06:07:35.9901113Z Updating files:  66% (6836/10357)
+2026-11-04T06:07:36.0109026Z Updating files:  67% (6940/10357)
+2026-11-04T06:07:36.0352066Z Updating files:  68% (7043/10357)
+2026-11-04T06:07:36.0531666Z Updating files:  69% (7147/10357)
+2026-11-04T06:07:36.0667770Z Updating files:  70% (7250/10357)
+2026-11-04T06:07:36.0822034Z Updating files:  71% (7354/10357)
+2026-11-04T06:07:36.0951141Z Updating files:  72% (7458/10357)
+2026-11-04T06:07:36.1217924Z Updating files:  73% (7561/10357)
+2026-11-04T06:07:36.1437775Z Updating files:  74% (7665/10357)
+2026-11-04T06:07:36.1587976Z Updating files:  75% (7768/10357)
+2026-11-04T06:07:36.1784888Z Updating files:  76% (7872/10357)
+2026-11-04T06:07:36.1954849Z Updating files:  77% (7975/10357)
+2026-11-04T06:07:36.2106126Z Updating files:  78% (8079/10357)
+2026-11-04T06:07:36.2304390Z Updating files:  79% (8183/10357)
+2026-11-04T06:07:36.2505958Z Updating files:  80% (8286/10357)
+2026-11-04T06:07:36.2750695Z Updating files:  81% (8390/10357)
+2026-11-04T06:07:36.2947036Z Updating files:  82% (8493/10357)
+2026-11-04T06:07:36.3168269Z Updating files:  83% (8597/10357)
+2026-11-04T06:07:36.3418822Z Updating files:  84% (8700/10357)
+2026-11-04T06:07:36.3614232Z Updating files:  85% (8804/10357)
+2026-11-04T06:07:36.3867089Z Updating files:  86% (8908/10357)
+2026-11-04T06:07:36.4107251Z Updating files:  87% (9011/10357)
+2026-11-04T06:07:36.4383113Z Updating files:  88% (9115/10357)
+2026-11-04T06:07:36.4631787Z Updating files:  89% (9218/10357)
+2026-11-04T06:07:36.5038456Z Updating files:  90% (9322/10357)
+2026-11-04T06:07:36.5339642Z Updating files:  91% (9425/10357)
+2026-11-04T06:07:36.5583412Z Updating files:  92% (9529/10357)
+2026-11-04T06:07:36.5878609Z Updating files:  93% (9633/10357)
+2026-11-04T06:07:36.6103508Z Updating files:  94% (9736/10357)
+2026-11-04T06:07:36.6395291Z Updating files:  95% (9840/10357)
+2026-11-04T06:07:36.6683345Z Updating files:  96% (9943/10357)
+2026-11-04T06:07:36.6894435Z Updating files:  97% (10047/10357)
+2026-11-04T06:07:36.7080801Z Updating files:  98% (10150/10357)
+2026-11-04T06:07:36.7305779Z Updating files:  99% (10254/10357)
+2026-11-04T06:07:36.7306436Z Updating files: 100% (10357/10357)
+2026-11-04T06:07:36.7307296Z Updating files: 100% (10357/10357), done.
+2026-11-04T06:07:36.7588739Z Note: switching to '97c601299dd3af35640ac79475f9010e3a30ee2b'.
+2026-11-04T06:07:36.7589247Z 
+2026-11-04T06:07:36.7589517Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-04T06:07:36.7590267Z changes and commit them, and you can discard any commits you make in this
+2026-11-04T06:07:36.7590889Z state without impacting any branches by switching back to a branch.
+2026-11-04T06:07:36.7591261Z 
+2026-11-04T06:07:36.7591556Z If you want to create a new branch to retain commits you create, you may
+2026-11-04T06:07:36.7592201Z do so (now or later) by using -c with the switch command. Example:
+2026-11-04T06:07:36.7593061Z 
+2026-11-04T06:07:36.7593324Z   git switch -c <new-branch-name>
+2026-11-04T06:07:36.7593545Z 
+2026-11-04T06:07:36.7593721Z Or undo this operation with:
+2026-11-04T06:07:36.7593946Z 
+2026-11-04T06:07:36.7594135Z   git switch -
+2026-11-04T06:07:36.7594496Z 
+2026-11-04T06:07:36.7594770Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-04T06:07:36.7595094Z 
+2026-11-04T06:07:36.7595472Z HEAD is now at 97c6012 Merge f5bddc124052837befca7735b9e5a46ab708e5a5 into 00963996f16c067fbd04517d22d3d7e53d1d09a6
+2026-11-04T06:07:36.9367893Z ##[endgroup]
+2026-11-04T06:07:37.2435178Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-11-04T06:07:37.3703800Z 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:37.3770480Z ##[group]Removing auth
+2026-11-04T06:07:37.3771112Z Removing SSH command configuration
+2026-11-04T06:07:37.3789332Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:07:37.4256943Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-04T06:07:38.0742216Z Removing HTTP extra header
+2026-11-04T06:07:38.0755434Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:07:38.1154850Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-04T06:07:38.7544936Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:07:38.7554236Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:07:38.7899378Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-04T06:07:38.7900428Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-04T06:07:38.7901527Z includeif.gitdir:/github/workspace/.git.path
+2026-11-04T06:07:38.7902147Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-04T06:07:38.7952026Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-04T06:07:38.8298963Z D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:38.8347305Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:38.8781774Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-04T06:07:38.9119493Z D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:38.9171680Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:38.9549558Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-04T06:07:38.9867284Z /github/runner_temp/git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:38.9916792Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:39.0311141Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-04T06:07:39.0666533Z /github/runner_temp/git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:39.0712888Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:07:39.1103085Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-04T06:07:39.7228673Z Removing credentials config 'D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config'
+2026-11-04T06:07:39.7246415Z ##[endgroup]
+2026-11-04T06:07:39.7766923Z Prepare all required actions
+2026-11-04T06:07:39.7767958Z Getting action download info
+2026-11-04T06:07:39.8915974Z Download action repository 'actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7' (SHA:668228422ae6a00e4ad889ee87cd7109ec5666a7)
+2026-11-04T06:07:40.4124855Z ##[group]Run ./.github/actions/prepare-bazel-ci
+2026-11-04T06:07:40.4125260Z with:
+2026-11-04T06:07:40.4125588Z   target: x86_64-pc-windows-msvc
+2026-11-04T06:07:40.4125975Z   cache-scope: windows-process-env-union
+2026-11-04T06:07:40.4126311Z env:
+2026-11-04T06:07:40.4126584Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:40.4126994Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:40.4127530Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:40.4128016Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:40.4128492Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:40.4128955Z ##[endgroup]
+2026-11-04T06:07:40.4204532Z ##[start-action display=Set up Bazel CI;id=__self.setup_bazel]
+2026-11-04T06:07:40.4423511Z Prepare all required actions
+2026-11-04T06:07:40.4424222Z Getting action download info
+2026-11-04T06:07:40.5430057Z Download action repository 'bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86' (SHA:c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86)
+2026-11-04T06:07:41.0072046Z ##[group]Run ./.github/actions/setup-bazel-ci
+2026-11-04T06:07:41.0072361Z with:
+2026-11-04T06:07:41.0072602Z   target: x86_64-pc-windows-msvc
+2026-11-04T06:07:41.0072841Z env:
+2026-11-04T06:07:41.0073054Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:41.0073307Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:41.0073585Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:41.0073775Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:41.0074009Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:41.0074246Z ##[endgroup]
+2026-11-04T06:07:41.0081853Z ##[start-action display=Run ./.github/actions/setup-ci;id=__self.setup_bazel.setup_ci]
+2026-11-04T06:07:41.0282303Z Prepare all required actions
+2026-11-04T06:07:41.0282792Z Getting action download info
+2026-11-04T06:07:41.1429670Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-04T06:07:41.2861749Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-04T06:07:41.6704583Z ##[group]Run ./.github/actions/setup-ci
+2026-11-04T06:07:41.6704991Z env:
+2026-11-04T06:07:41.6705278Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:41.6705715Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:41.6706143Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:41.6706407Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:41.6706648Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:41.6706952Z ##[endgroup]
+2026-11-04T06:07:41.6719174Z ##[start-action display=Configure Dev Drive (Windows);id=__self.setup_bazel.setup_ci.__run]
+2026-11-04T06:07:41.6928192Z ##[group]Run ./.github/scripts/setup-dev-drive.ps1
+2026-11-04T06:07:41.6928788Z [36;1m./.github/scripts/setup-dev-drive.ps1[0m
+2026-11-04T06:07:43.0595844Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-04T06:07:43.0596226Z env:
+2026-11-04T06:07:43.0596466Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:43.0596752Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:43.0597303Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:43.0597525Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:43.0597767Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:43.0597983Z ##[endgroup]
+2026-11-04T06:07:43.6929299Z Using existing Dev Drive at D:
+2026-11-04T06:07:43.8655515Z ##[end-action id=__self.setup_bazel.setup_ci.__run;outcome=success;conclusion=success;duration_ms=2193]
+2026-11-04T06:07:43.8659381Z ##[start-action display=Configure CI build root (Unix);id=__self.setup_bazel.setup_ci.__run_2]
+2026-11-04T06:07:43.8671228Z ##[end-action id=__self.setup_bazel.setup_ci.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:07:43.8674361Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=__self.setup_bazel.setup_ci.__run_3]
+2026-11-04T06:07:43.8678619Z ##[end-action id=__self.setup_bazel.setup_ci.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:07:43.8680393Z ##[start-action display=Configure CI build paths;id=__self.setup_bazel.setup_ci.configure_ci_build_paths]
+2026-11-04T06:07:43.8830146Z ##[group]Run set -euo pipefail
+2026-11-04T06:07:43.8830677Z [36;1mset -euo pipefail[0m
+2026-11-04T06:07:43.8831045Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-11-04T06:07:43.8831521Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-11-04T06:07:43.8831959Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-11-04T06:07:43.8832330Z [36;1m# confuse test MANIFEST handling.[0m
+2026-11-04T06:07:43.8832628Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-11-04T06:07:43.8832913Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-11-04T06:07:43.8833282Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-11-04T06:07:43.8833797Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-11-04T06:07:43.8834275Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-11-04T06:07:43.8834579Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-11-04T06:07:43.8834803Z [36;1m[0m
+2026-11-04T06:07:43.8834981Z [36;1mbuild_dirs=([0m
+2026-11-04T06:07:43.8835193Z [36;1m  "$bazel_output_base"[0m
+2026-11-04T06:07:43.8835427Z [36;1m  "$bazel_output_user_root"[0m
+2026-11-04T06:07:43.8835671Z [36;1m  "$bazel_repository_cache"[0m
+2026-11-04T06:07:43.8835934Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-11-04T06:07:43.8836179Z [36;1m  "$cargo_target_dir"[0m
+2026-11-04T06:07:43.8836395Z [36;1m  "$tmp"[0m
+2026-11-04T06:07:43.8836576Z [36;1m)[0m
+2026-11-04T06:07:43.8836756Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-11-04T06:07:43.8837073Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-11-04T06:07:43.8837481Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-11-04T06:07:43.8837785Z [36;1m[0m
+2026-11-04T06:07:43.8837946Z [36;1m{[0m
+2026-11-04T06:07:43.8838265Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-11-04T06:07:43.8838622Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-11-04T06:07:43.8838972Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-11-04T06:07:43.8839324Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-11-04T06:07:43.8839692Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-11-04T06:07:43.8840050Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-11-04T06:07:43.8840316Z [36;1m  echo "TEMP=$tmp"[0m
+2026-11-04T06:07:43.8840575Z [36;1m  echo "TMP=$tmp"[0m
+2026-11-04T06:07:43.8840799Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-11-04T06:07:43.8869282Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:43.8869655Z env:
+2026-11-04T06:07:43.8869855Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:43.8870141Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:43.8870437Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:43.8870870Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:43.8871145Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:43.8871353Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:43.8871548Z ##[endgroup]
+2026-11-04T06:07:47.0027751Z ##[end-action id=__self.setup_bazel.setup_ci.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=3134]
+2026-11-04T06:07:47.0034143Z ##[start-action display=Prefer the Git CLI for Cargo git dependencies;id=__self.setup_bazel.setup_ci.__run_4]
+2026-11-04T06:07:47.0168532Z ##[group]Run echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+2026-11-04T06:07:47.0168998Z [36;1mecho "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"[0m
+2026-11-04T06:07:47.0180235Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:47.0180567Z env:
+2026-11-04T06:07:47.0180743Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:47.0181000Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:47.0181307Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:47.0181518Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:47.0181750Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:47.0181970Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:47.0182211Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:47.0182488Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:47.0182685Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:47.0182929Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:47.0183298Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:47.0183731Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:47.0183949Z   TEMP: D:/tmp
+2026-11-04T06:07:47.0184116Z   TMP: D:/tmp
+2026-11-04T06:07:47.0184287Z ##[endgroup]
+2026-11-04T06:07:47.0869526Z ##[end-action id=__self.setup_bazel.setup_ci.__run_4;outcome=success;conclusion=success;duration_ms=83]
+2026-11-04T06:07:47.0872818Z ##[start-action display=Install DotSlash;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash]
+2026-11-04T06:07:47.1083117Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-04T06:07:47.1083678Z env:
+2026-11-04T06:07:47.1084160Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:47.1084432Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:47.1084710Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:47.1084930Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:47.1085156Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:47.1085390Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:47.1085651Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:47.1085971Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:47.1086182Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:47.1086425Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:47.1086826Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:47.1087186Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:47.1087412Z   TEMP: D:/tmp
+2026-11-04T06:07:47.1087577Z   TMP: D:/tmp
+2026-11-04T06:07:47.1087776Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:47.1087991Z ##[endgroup]
+2026-11-04T06:07:47.1123678Z ##[start-action display=Run echo platform=windows >> $GITHUB_OUTPUT;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.configure]
+2026-11-04T06:07:47.1276240Z ##[group]Run echo platform=windows >> $GITHUB_OUTPUT
+2026-11-04T06:07:47.1276617Z [36;1mecho platform=windows >> $GITHUB_OUTPUT[0m
+2026-11-04T06:07:47.1279617Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-04T06:07:47.1290677Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:47.1291034Z env:
+2026-11-04T06:07:47.1291220Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:47.1291473Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:47.1291935Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:47.1292146Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:47.1292386Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:47.1292596Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:47.1292836Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:47.1293112Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:47.1293325Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:47.1293571Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:47.1294074Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:47.1294408Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:47.1294613Z   TEMP: D:/tmp
+2026-11-04T06:07:47.1294786Z   TMP: D:/tmp
+2026-11-04T06:07:47.1294974Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:47.1295186Z ##[endgroup]
+2026-11-04T06:07:47.9058433Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=793]
+2026-11-04T06:07:47.9064502Z ##[start-action display=Run mkdir -p "D:\a\_temp/install-dotslash/bin";id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run]
+2026-11-04T06:07:47.9205385Z ##[group]Run mkdir -p "D:\a\_temp/install-dotslash/bin"
+2026-11-04T06:07:47.9205770Z [36;1mmkdir -p "D:\a\_temp/install-dotslash/bin"[0m
+2026-11-04T06:07:47.9216483Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:47.9216847Z env:
+2026-11-04T06:07:47.9217073Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:47.9217345Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:47.9218139Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:47.9218503Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:47.9218753Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:47.9218970Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:47.9219238Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:47.9219542Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:47.9219757Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:47.9220032Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:47.9220416Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:47.9220793Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:47.9221016Z   TEMP: D:/tmp
+2026-11-04T06:07:47.9221195Z   TMP: D:/tmp
+2026-11-04T06:07:47.9221390Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:47.9221618Z ##[endgroup]
+2026-11-04T06:07:47.9816426Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=75]
+2026-11-04T06:07:47.9822421Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2]
+2026-11-04T06:07:47.9950783Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \
+2026-11-04T06:07:47.9951557Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \[0m
+2026-11-04T06:07:47.9954259Z [36;1m--header "authorization: ***" \[0m
+2026-11-04T06:07:47.9954604Z [36;1m--output "D:\a\_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-04T06:07:47.9954989Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-04T06:07:47.9965928Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:47.9966307Z env:
+2026-11-04T06:07:47.9966520Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:47.9966788Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:47.9967074Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:47.9967283Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:47.9967521Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:47.9967744Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:47.9968001Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:47.9969067Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:47.9969316Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:47.9969703Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:47.9970259Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:47.9970898Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:47.9971157Z   TEMP: D:/tmp
+2026-11-04T06:07:47.9971335Z   TMP: D:/tmp
+2026-11-04T06:07:47.9971569Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:47.9972000Z ##[endgroup]
+2026-11-04T06:07:48.5542274Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=571]
+2026-11-04T06:07:48.5550623Z ##[start-action display=Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -C "D:\a\_temp/install-dotslash/bin/";id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3]
+2026-11-04T06:07:48.5556256Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:07:48.5561080Z ##[start-action display=Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4]
+2026-11-04T06:07:48.5734240Z ##[group]Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local
+2026-11-04T06:07:48.5735142Z [36;1mtar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local[0m
+2026-11-04T06:07:48.5747161Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:48.5747640Z env:
+2026-11-04T06:07:48.5747954Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:48.5748328Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:48.5748695Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:48.5748995Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:48.5749384Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:48.5749691Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:48.5750036Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:48.5750416Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:48.5750700Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:48.5751068Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:48.5751575Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:48.5752027Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:48.5752355Z   TEMP: D:/tmp
+2026-11-04T06:07:48.5752612Z   TMP: D:/tmp
+2026-11-04T06:07:48.5752916Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:48.5753239Z ##[endgroup]
+2026-11-04T06:07:48.9813203Z dotslash.exe
+2026-11-04T06:07:48.9960140Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4;outcome=success;conclusion=success;duration_ms=439]
+2026-11-04T06:07:48.9966608Z ##[start-action display=Run echo "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5]
+2026-11-04T06:07:49.0230623Z ##[group]Run echo "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-04T06:07:49.0231061Z [36;1mecho "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-04T06:07:49.0242874Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:49.0243228Z env:
+2026-11-04T06:07:49.0243406Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:49.0243696Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:49.0243973Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:49.0244173Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:49.0244402Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:49.0244612Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:49.0244860Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:49.0245349Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:49.0245555Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:49.0245817Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:49.0246213Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:49.0246574Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:49.0246806Z   TEMP: D:/tmp
+2026-11-04T06:07:49.0246992Z   TMP: D:/tmp
+2026-11-04T06:07:49.0247182Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:49.0247390Z ##[endgroup]
+2026-11-04T06:07:49.0642577Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=67]
+2026-11-04T06:07:49.0645373Z ##[start-action display=Run dotslash --version;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6]
+2026-11-04T06:07:49.0770892Z ##[group]Run dotslash --version
+2026-11-04T06:07:49.0771419Z [36;1mdotslash --version[0m
+2026-11-04T06:07:49.0785057Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:49.0785435Z env:
+2026-11-04T06:07:49.0785628Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:49.0785982Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:49.0786298Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:49.0786517Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:49.0786759Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:49.0786975Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:49.0787224Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:49.0787528Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:49.0787754Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:49.0788014Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:49.0788390Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:49.0788745Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:49.0788966Z   TEMP: D:/tmp
+2026-11-04T06:07:49.0789134Z   TMP: D:/tmp
+2026-11-04T06:07:49.0789331Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:49.0789552Z ##[endgroup]
+2026-11-04T06:07:49.1362835Z DotSlash 0.5.9
+2026-11-04T06:07:49.1444022Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=79]
+2026-11-04T06:07:49.1460131Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash;outcome=success;conclusion=success;duration_ms=2058]
+2026-11-04T06:07:49.1462713Z ##[start-action display=Install just;id=__self.setup_bazel.setup_ci.__taiki-e_install-action]
+2026-11-04T06:07:49.1631716Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-04T06:07:49.1632088Z with:
+2026-11-04T06:07:49.1632282Z   tool: just@1.51.0
+2026-11-04T06:07:49.1632490Z   checksum: true
+2026-11-04T06:07:49.1632688Z   fallback: cargo-binstall
+2026-11-04T06:07:49.1632896Z env:
+2026-11-04T06:07:49.1633082Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:49.1633349Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:49.1633660Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:49.1633873Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:49.1634096Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:49.1634294Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:49.1634532Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:49.1634820Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:49.1635033Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:49.1635295Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:49.1635810Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:49.1636180Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:49.1636403Z   TEMP: D:/tmp
+2026-11-04T06:07:49.1636585Z   TMP: D:/tmp
+2026-11-04T06:07:49.1636809Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:49.1637048Z ##[endgroup]
+2026-11-04T06:07:49.1645347Z ##[start-action display=Run set -eu;id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run]
+2026-11-04T06:07:49.1651481Z ##[end-action id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:07:49.1656783Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run_2]
+2026-11-04T06:07:49.1797887Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-04T06:07:49.1798778Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-04T06:07:49.1810494Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:07:49.1810866Z env:
+2026-11-04T06:07:49.1811069Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:49.1811364Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:49.1811637Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:49.1811845Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:49.1812081Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:49.1812294Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:49.1812542Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:49.1812848Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:49.1813058Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:49.1813312Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:49.1813682Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:49.1814028Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:49.1814251Z   TEMP: D:/tmp
+2026-11-04T06:07:49.1814442Z   TMP: D:/tmp
+2026-11-04T06:07:49.1814629Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:49.1814864Z   INPUT_TOOL: just@1.51.0
+2026-11-04T06:07:49.1815059Z   INPUT_CHECKSUM: true
+2026-11-04T06:07:49.1815266Z   INPUT_FALLBACK: cargo-binstall
+2026-11-04T06:07:49.1817862Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-04T06:07:49.1818093Z   ACTION_USER_AGENT:  ()
+2026-11-04T06:07:49.1818287Z ##[endgroup]
+2026-11-04T06:07:49.3549972Z info: host platform: x86_64_windows
+2026-11-04T06:07:49.4110317Z info: cargo is located at /c/Users/runneradmin/.cargo/bin/cargo
+2026-11-04T06:07:49.9369108Z ##[warning]just@1.51.0 for 'x86_64_windows' is not supported; fallback to cargo-binstall
+2026-11-04T06:07:49.9370032Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-04T06:07:50.0232607Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-04T06:07:50.7329786Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-pc-windows-msvc.zip
+2026-11-04T06:07:51.1562683Z info: verifying sha256 checksum for cargo-binstall-x86_64-pc-windows-msvc.zip
+2026-11-04T06:07:51.7203457Z info: cargo-binstall installed at /c/Users/runneradmin/.cargo/bin/cargo-binstall.exe
+2026-11-04T06:07:51.7291728Z + cargo-binstall.exe binstall -V
+2026-11-04T06:07:51.7522979Z 1.15.11
+2026-11-04T06:07:51.8525352Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-04T06:07:59.4326112Z  WARN The package just v1.51.0 (x86_64-pc-windows-msvc) has been downloaded from github.com
+2026-11-04T06:07:59.4327458Z  INFO This will install the following binaries:
+2026-11-04T06:07:59.4328019Z  INFO   - just.exe => C:\Users\runneradmin\.cargo\bin\just.exe
+2026-11-04T06:07:59.4328523Z  INFO Installing binaries...
+2026-11-04T06:07:59.4359877Z  INFO Done in 7.6525467s
+2026-11-04T06:07:59.4542532Z ##[end-action id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=10288]
+2026-11-04T06:07:59.4547626Z ##[end-action id=__self.setup_bazel.setup_ci.__taiki-e_install-action;outcome=success;conclusion=success;duration_ms=10308]
+2026-11-04T06:07:59.4550475Z ##[start-action display=Make DotSlash available in PATH (Unix);id=__self.setup_bazel.setup_ci.__run_5]
+2026-11-04T06:07:59.4555133Z ##[end-action id=__self.setup_bazel.setup_ci.__run_5;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:07:59.4556778Z ##[start-action display=Make DotSlash available in PATH (Windows);id=__self.setup_bazel.setup_ci.__run_6]
+2026-11-04T06:07:59.4692132Z ##[group]Run Copy-Item (Get-Command dotslash).Source -Destination "$env:LOCALAPPDATA\Microsoft\WindowsApps\dotslash.exe"
+2026-11-04T06:07:59.4692898Z [36;1mCopy-Item (Get-Command dotslash).Source -Destination "$env:LOCALAPPDATA\Microsoft\WindowsApps\dotslash.exe"[0m
+2026-11-04T06:07:59.4763578Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-04T06:07:59.4763931Z env:
+2026-11-04T06:07:59.4764147Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:59.4764634Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:59.4764929Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:59.4765166Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:59.4765412Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:59.4765627Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:59.4765897Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:59.4766199Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:59.4766427Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:59.4766684Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:59.4767185Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:59.4767545Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:59.4767778Z   TEMP: D:/tmp
+2026-11-04T06:07:59.4767957Z   TMP: D:/tmp
+2026-11-04T06:07:59.4768147Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:59.4768451Z ##[endgroup]
+2026-11-04T06:07:59.8611942Z ##[end-action id=__self.setup_bazel.setup_ci.__run_6;outcome=success;conclusion=success;duration_ms=405]
+2026-11-04T06:07:59.8614608Z ##[start-action display=Enable Git long paths (Windows);id=__self.setup_bazel.setup_ci.__run_7]
+2026-11-04T06:07:59.8751571Z ##[group]Run git config --global core.longpaths true
+2026-11-04T06:07:59.8751931Z [36;1mgit config --global core.longpaths true[0m
+2026-11-04T06:07:59.8822607Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-04T06:07:59.8822939Z env:
+2026-11-04T06:07:59.8823130Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:07:59.8823390Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:07:59.8823649Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:07:59.8823851Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:07:59.8824062Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:07:59.8824257Z   CI_BUILD_ROOT: D:
+2026-11-04T06:07:59.8824492Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:07:59.8824770Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:07:59.8824972Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:07:59.8825200Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:07:59.8825543Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:07:59.8825876Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:07:59.8826087Z   TEMP: D:/tmp
+2026-11-04T06:07:59.8826259Z   TMP: D:/tmp
+2026-11-04T06:07:59.8826429Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:07:59.8826641Z ##[endgroup]
+2026-11-04T06:08:00.3201637Z ##[end-action id=__self.setup_bazel.setup_ci.__run_7;outcome=success;conclusion=success;duration_ms=458]
+2026-11-04T06:08:00.3236941Z ##[end-action id=__self.setup_bazel.setup_ci;outcome=success;conclusion=success;duration_ms=19316]
+2026-11-04T06:08:00.3239097Z ##[start-action display=Set up Bazel;id=__self.setup_bazel.__bazel-contrib_setup-bazel]
+2026-11-04T06:08:00.3397998Z ##[group]Run bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+2026-11-04T06:08:00.3398346Z with:
+2026-11-04T06:08:00.3398552Z   bazelisk-version: 1.28.1
+2026-11-04T06:08:00.3398749Z   output-base: D:/o
+2026-11-04T06:08:00.3398935Z   bazelisk-cache: false
+2026-11-04T06:08:00.3399115Z   cache-save: true
+2026-11-04T06:08:00.3399281Z   cache-version: 1
+2026-11-04T06:08:00.3399448Z   disk-cache: false
+2026-11-04T06:08:00.3399608Z   module-root: .
+2026-11-04T06:08:00.3399780Z   repository-cache: false
+2026-11-04T06:08:00.3401874Z   token: ***
+2026-11-04T06:08:00.3402248Z env:
+2026-11-04T06:08:00.3402416Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:00.3402652Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:00.3402913Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:00.3403122Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:00.3403339Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:00.3403534Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:00.3403754Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:00.3404011Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:00.3404349Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:00.3404597Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:00.3404933Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:00.3405259Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:00.3405458Z   TEMP: D:/tmp
+2026-11-04T06:08:00.3405612Z   TMP: D:/tmp
+2026-11-04T06:08:00.3405791Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:00.3406021Z ##[endgroup]
+2026-11-04T06:08:00.5249789Z ##[group]Configure Bazel
+2026-11-04T06:08:00.5250320Z Configuration:
+2026-11-04T06:08:00.5251928Z {
+2026-11-04T06:08:00.5252211Z   "baseCacheKey": "setup-bazel-1-win32-x64",
+2026-11-04T06:08:00.5252636Z   "cacheSave": true,
+2026-11-04T06:08:00.5253024Z   "bazeliskCache": {
+2026-11-04T06:08:00.5253203Z     "enabled": false,
+2026-11-04T06:08:00.5253383Z     "files": [
+2026-11-04T06:08:00.5253554Z       "./.bazelversion"
+2026-11-04T06:08:00.5253736Z     ],
+2026-11-04T06:08:00.5253914Z     "name": "bazelisk",
+2026-11-04T06:08:00.5254145Z     "paths": [
+2026-11-04T06:08:00.5254345Z       "C:/Users/runneradmin/AppData/Local/bazelisk"
+2026-11-04T06:08:00.5254591Z     ]
+2026-11-04T06:08:00.5254737Z   },
+2026-11-04T06:08:00.5254897Z   "bazeliskVersion": "1.28.1",
+2026-11-04T06:08:00.5255097Z   "bazelrc": [],
+2026-11-04T06:08:00.5255262Z   "diskCache": {
+2026-11-04T06:08:00.5255437Z     "enabled": false,
+2026-11-04T06:08:00.5255632Z     "files": [
+2026-11-04T06:08:00.5255795Z       "./MODULE.bazel",
+2026-11-04T06:08:00.5255987Z       "./WORKSPACE.bazel",
+2026-11-04T06:08:00.5256183Z       "./WORKSPACE.bzlmod",
+2026-11-04T06:08:00.5256379Z       "./WORKSPACE",
+2026-11-04T06:08:00.5256590Z       "./**/BUILD.bazel",
+2026-11-04T06:08:00.5256840Z       "./**/BUILD"
+2026-11-04T06:08:00.5257040Z     ],
+2026-11-04T06:08:00.5257292Z     "name": "disk",
+2026-11-04T06:08:00.5257531Z     "paths": [
+2026-11-04T06:08:00.5257722Z       "D:/o-disk"
+2026-11-04T06:08:00.5257879Z     ]
+2026-11-04T06:08:00.5258019Z   },
+2026-11-04T06:08:00.5258271Z   "externalCache": {},
+2026-11-04T06:08:00.5258561Z   "paths": {
+2026-11-04T06:08:00.5258738Z     "bazelExternal": "D:/o/external",
+2026-11-04T06:08:00.5258962Z     "bazelOutputBase": "D:/o",
+2026-11-04T06:08:00.5259152Z     "bazelrc": [
+2026-11-04T06:08:00.5259321Z       "C:/Users/runneradmin/.bazelrc"
+2026-11-04T06:08:00.5259518Z     ]
+2026-11-04T06:08:00.5259672Z   },
+2026-11-04T06:08:00.5259824Z   "os": {
+2026-11-04T06:08:00.5259981Z     "arch": "x64",
+2026-11-04T06:08:00.5260150Z     "platform": "win32"
+2026-11-04T06:08:00.5260316Z   },
+2026-11-04T06:08:00.5260469Z   "repositoryCache": {
+2026-11-04T06:08:00.5260637Z     "enabled": false,
+2026-11-04T06:08:00.5260818Z     "files": [
+2026-11-04T06:08:00.5261037Z       "./MODULE.bazel",
+2026-11-04T06:08:00.5261288Z       "./WORKSPACE.bazel",
+2026-11-04T06:08:00.5261546Z       "./WORKSPACE.bzlmod",
+2026-11-04T06:08:00.5262233Z       "./WORKSPACE"
+2026-11-04T06:08:00.5262783Z     ],
+2026-11-04T06:08:00.5263082Z     "name": "repository",
+2026-11-04T06:08:00.5263385Z     "paths": [
+2026-11-04T06:08:00.5263638Z       "D:/o-repo"
+2026-11-04T06:08:00.5263877Z     ]
+2026-11-04T06:08:00.5264095Z   }
+2026-11-04T06:08:00.5264311Z }
+2026-11-04T06:08:00.5264797Z ##[endgroup]
+2026-11-04T06:08:00.5265238Z ##[group]Setup Bazelisk
+2026-11-04T06:08:01.5199662Z ##[endgroup]
+2026-11-04T06:08:01.5370886Z ##[end-action id=__self.setup_bazel.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=1213]
+2026-11-04T06:08:01.5373637Z ##[start-action display=Configure Bazel repository cache;id=__self.setup_bazel.configure_bazel_repository_cache]
+2026-11-04T06:08:01.5502163Z ##[group]Run "repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+2026-11-04T06:08:01.5502928Z [36;1m"repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append[0m
+2026-11-04T06:08:01.5572575Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-04T06:08:01.5572906Z env:
+2026-11-04T06:08:01.5573093Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:01.5573355Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:01.5573630Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:01.5573844Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:01.5574065Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:01.5574282Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:01.5574542Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:01.5574811Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:01.5575013Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:01.5575247Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:01.5575611Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:01.5575939Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:01.5576150Z   TEMP: D:/tmp
+2026-11-04T06:08:01.5576316Z   TMP: D:/tmp
+2026-11-04T06:08:01.5576497Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:01.5579074Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:08:01.5579286Z ##[endgroup]
+2026-11-04T06:08:01.9136861Z ##[end-action id=__self.setup_bazel.configure_bazel_repository_cache;outcome=success;conclusion=success;duration_ms=376]
+2026-11-04T06:08:01.9139572Z ##[start-action display=Expose MSVC SDK environment (Windows);id=__self.setup_bazel.__run]
+2026-11-04T06:08:01.9289034Z ##[group]Run # Bazel exec-side Rust build scripts do not reliably inherit the MSVC developer
+2026-11-04T06:08:01.9289798Z [36;1m# Bazel exec-side Rust build scripts do not reliably inherit the MSVC developer[0m
+2026-11-04T06:08:01.9290738Z [36;1m# shell on GitHub-hosted Windows runners, so discover the latest VS install and[0m
+2026-11-04T06:08:01.9291222Z [36;1m# ask `VsDevCmd.bat` to materialize the x64/x64 compiler + SDK environment.[0m
+2026-11-04T06:08:01.9291719Z [36;1m$vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"[0m
+2026-11-04T06:08:01.9292141Z [36;1mif (-not (Test-Path $vswhere)) {[0m
+2026-11-04T06:08:01.9292407Z [36;1m  throw "vswhere.exe not found"[0m
+2026-11-04T06:08:01.9292654Z [36;1m}[0m
+2026-11-04T06:08:01.9292821Z [36;1m[0m
+2026-11-04T06:08:01.9293326Z [36;1m$installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null[0m
+2026-11-04T06:08:01.9293923Z [36;1mif (-not $installPath) {[0m
+2026-11-04T06:08:01.9294252Z [36;1m  throw "Could not locate a Visual Studio installation with VC tools"[0m
+2026-11-04T06:08:01.9294584Z [36;1m}[0m
+2026-11-04T06:08:01.9294762Z [36;1m[0m
+2026-11-04T06:08:01.9295018Z [36;1m$vsDevCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'[0m
+2026-11-04T06:08:01.9295363Z [36;1mif (-not (Test-Path $vsDevCmd)) {[0m
+2026-11-04T06:08:01.9295665Z [36;1m  throw "VsDevCmd.bat not found at $vsDevCmd"[0m
+2026-11-04T06:08:01.9295918Z [36;1m}[0m
+2026-11-04T06:08:01.9296082Z [36;1m[0m
+2026-11-04T06:08:01.9296394Z [36;1m# Keep the export surface explicit: these are the paths and SDK roots that the[0m
+2026-11-04T06:08:01.9296878Z [36;1m# MSVC toolchain probes need later when Bazel runs Windows exec-platform build[0m
+2026-11-04T06:08:01.9297263Z [36;1m# scripts such as `aws-lc-sys`.[0m
+2026-11-04T06:08:01.9297510Z [36;1m$varsToExport = @([0m
+2026-11-04T06:08:01.9297726Z [36;1m  'INCLUDE',[0m
+2026-11-04T06:08:01.9298127Z [36;1m  'LIB',[0m
+2026-11-04T06:08:01.9298323Z [36;1m  'LIBPATH',[0m
+2026-11-04T06:08:01.9298514Z [36;1m  'PATH',[0m
+2026-11-04T06:08:01.9298724Z [36;1m  'UCRTVersion',[0m
+2026-11-04T06:08:01.9298946Z [36;1m  'UniversalCRTSdkDir',[0m
+2026-11-04T06:08:01.9299181Z [36;1m  'VCINSTALLDIR',[0m
+2026-11-04T06:08:01.9299409Z [36;1m  'VCToolsInstallDir',[0m
+2026-11-04T06:08:01.9299657Z [36;1m  'WindowsLibPath',[0m
+2026-11-04T06:08:01.9299879Z [36;1m  'WindowsSdkBinPath',[0m
+2026-11-04T06:08:01.9300107Z [36;1m  'WindowsSdkDir',[0m
+2026-11-04T06:08:01.9300488Z [36;1m  'WindowsSDKLibVersion',[0m
+2026-11-04T06:08:01.9300738Z [36;1m  'WindowsSDKVersion'[0m
+2026-11-04T06:08:01.9300947Z [36;1m)[0m
+2026-11-04T06:08:01.9301133Z [36;1m$requiredVars = @([0m
+2026-11-04T06:08:01.9301335Z [36;1m  'INCLUDE',[0m
+2026-11-04T06:08:01.9301521Z [36;1m  'LIB',[0m
+2026-11-04T06:08:01.9301700Z [36;1m  'LIBPATH',[0m
+2026-11-04T06:08:01.9301904Z [36;1m  'UniversalCRTSdkDir',[0m
+2026-11-04T06:08:01.9302184Z [36;1m  'VCToolsInstallDir',[0m
+2026-11-04T06:08:01.9302414Z [36;1m  'WindowsSdkDir'[0m
+2026-11-04T06:08:01.9302606Z [36;1m)[0m
+2026-11-04T06:08:01.9302769Z [36;1m[0m
+2026-11-04T06:08:01.9303058Z [36;1m# `VsDevCmd.bat` is a batch file, so invoke it under `cmd.exe`, suppress its[0m
+2026-11-04T06:08:01.9303530Z [36;1m# banner, then dump the resulting environment with `set`. Re-export only the[0m
+2026-11-04T06:08:01.9303997Z [36;1m# approved keys into `GITHUB_ENV` so later steps inherit the same MSVC context.[0m
+2026-11-04T06:08:01.9304490Z [36;1m# Windows environment names are case-insensitive, but Git Bash variable lookup[0m
+2026-11-04T06:08:01.9304955Z [36;1m# is not. Normalize every accepted key to the canonical spelling above before[0m
+2026-11-04T06:08:01.9305329Z [36;1m# handing it to the shell wrapper.[0m
+2026-11-04T06:08:01.9305723Z [36;1m$envLines = & cmd.exe /c ('"{0}" -no_logo -arch=x64 -host_arch=x64 >nul && set' -f $vsDevCmd)[0m
+2026-11-04T06:08:01.9306123Z [36;1mif ($LASTEXITCODE -ne 0) {[0m
+2026-11-04T06:08:01.9306446Z [36;1m  throw "VsDevCmd.bat failed with exit code $LASTEXITCODE"[0m
+2026-11-04T06:08:01.9306744Z [36;1m}[0m
+2026-11-04T06:08:01.9306918Z [36;1m[0m
+2026-11-04T06:08:01.9307197Z [36;1m# PowerShell hashtable keys are case-insensitive, matching Windows[0m
+2026-11-04T06:08:01.9307647Z [36;1m# environment semantics while retaining the canonical key chosen above.[0m
+2026-11-04T06:08:01.9308020Z [36;1m$exportedValues = @{}[0m
+2026-11-04T06:08:01.9308262Z [36;1mforeach ($line in $envLines) {[0m
+2026-11-04T06:08:01.9308530Z [36;1m  if ($line -notmatch '^(.*?)=(.*)$') {[0m
+2026-11-04T06:08:01.9308786Z [36;1m    continue[0m
+2026-11-04T06:08:01.9309096Z [36;1m  }[0m
+2026-11-04T06:08:01.9309421Z [36;1m[0m
+2026-11-04T06:08:01.9309626Z [36;1m  $inputName = $matches[1][0m
+2026-11-04T06:08:01.9309861Z [36;1m  $value = $matches[2][0m
+2026-11-04T06:08:01.9310099Z [36;1m  $canonicalName = $varsToExport |[0m
+2026-11-04T06:08:01.9310586Z [36;1m    Where-Object { $_ -ieq $inputName } |[0m
+2026-11-04T06:08:01.9310872Z [36;1m    Select-Object -First 1[0m
+2026-11-04T06:08:01.9311136Z [36;1m  if ($null -eq $canonicalName) {[0m
+2026-11-04T06:08:01.9311413Z [36;1m    continue[0m
+2026-11-04T06:08:01.9311613Z [36;1m  }[0m
+2026-11-04T06:08:01.9311795Z [36;1m[0m
+2026-11-04T06:08:01.9312048Z [36;1m  if ($exportedValues.ContainsKey($canonicalName) -and[0m
+2026-11-04T06:08:01.9312402Z [36;1m      $exportedValues[$canonicalName] -cne $value) {[0m
+2026-11-04T06:08:01.9312801Z [36;1m    throw "VsDevCmd.bat returned conflicting values for $canonicalName"[0m
+2026-11-04T06:08:01.9313148Z [36;1m  }[0m
+2026-11-04T06:08:01.9313359Z [36;1m  $exportedValues[$canonicalName] = $value[0m
+2026-11-04T06:08:01.9313612Z [36;1m}[0m
+2026-11-04T06:08:01.9313784Z [36;1m[0m
+2026-11-04T06:08:01.9313955Z [36;1m$missingVars = @([0m
+2026-11-04T06:08:01.9314183Z [36;1m  $requiredVars | Where-Object {[0m
+2026-11-04T06:08:01.9314659Z [36;1m    -not $exportedValues.ContainsKey($_) -or[0m
+2026-11-04T06:08:01.9314986Z [36;1m    [string]::IsNullOrWhiteSpace($exportedValues[$_])[0m
+2026-11-04T06:08:01.9315279Z [36;1m  }[0m
+2026-11-04T06:08:01.9315449Z [36;1m)[0m
+2026-11-04T06:08:01.9315652Z [36;1mif ($missingVars.Count -ne 0) {[0m
+2026-11-04T06:08:01.9316041Z [36;1m  throw "VsDevCmd.bat did not provide required variables: $($missingVars -join ', ')"[0m
+2026-11-04T06:08:01.9316438Z [36;1m}[0m
+2026-11-04T06:08:01.9316607Z [36;1m[0m
+2026-11-04T06:08:01.9316943Z [36;1mforeach ($canonicalName in $varsToExport) {[0m
+2026-11-04T06:08:01.9317277Z [36;1m  if ($exportedValues.ContainsKey($canonicalName)) {[0m
+2026-11-04T06:08:01.9317637Z [36;1m    "$canonicalName=$($exportedValues[$canonicalName])" |[0m
+2026-11-04T06:08:01.9318015Z [36;1m      Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append[0m
+2026-11-04T06:08:01.9318342Z [36;1m  }[0m
+2026-11-04T06:08:01.9318529Z [36;1m}[0m
+2026-11-04T06:08:01.9393012Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-04T06:08:01.9393366Z env:
+2026-11-04T06:08:01.9393567Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:01.9393849Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:01.9394146Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:01.9394389Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:01.9394619Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:01.9394827Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:01.9395075Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:01.9395380Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:01.9395599Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:01.9395871Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:01.9396254Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:01.9396613Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:01.9396840Z   TEMP: D:/tmp
+2026-11-04T06:08:01.9397030Z   TMP: D:/tmp
+2026-11-04T06:08:01.9397216Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:01.9400466Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:08:01.9400715Z ##[endgroup]
+2026-11-04T06:08:08.5964211Z ##[end-action id=__self.setup_bazel.__run;outcome=success;conclusion=success;duration_ms=6682]
+2026-11-04T06:08:08.5967185Z ##[start-action display=Compute cache-stable Windows Bazel PATH;id=__self.setup_bazel.__run_2]
+2026-11-04T06:08:08.6097171Z ##[group]Run ./.github/scripts/compute-bazel-windows-path.ps1
+2026-11-04T06:08:08.6097592Z [36;1m./.github/scripts/compute-bazel-windows-path.ps1[0m
+2026-11-04T06:08:08.6167414Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-04T06:08:08.6167738Z env:
+2026-11-04T06:08:08.6167928Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:08.6168176Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:08.6168443Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:08.6168658Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:08.6168896Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:08.6169111Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:08.6169346Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:08.6169613Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:08.6169808Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:08.6170048Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:08.6170404Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:08.6170755Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:08.6170980Z   TEMP: D:/tmp
+2026-11-04T06:08:08.6171150Z   TMP: D:/tmp
+2026-11-04T06:08:08.6171340Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:08.6173697Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:08:08.6175353Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:08:08.6179011Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:08:08.6180996Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:08:08.6195126Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:08:08.6206788Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:08:08.6207059Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:08.6207430Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:08:08.6207901Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:08:08.6208568Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:08:08.6209301Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:08:08.6209624Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:08.6209911Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:08:08.6210152Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:08:08.6210368Z ##[endgroup]
+2026-11-04T06:08:09.1113128Z Derived CODEX_BAZEL_WINDOWS_PATH entries:
+2026-11-04T06:08:09.1127559Z   C:\Program Files\PowerShell\7
+2026-11-04T06:08:09.1136598Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64
+2026-11-04T06:08:09.1142718Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages
+2026-11-04T06:08:09.1151208Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow
+2026-11-04T06:08:09.1157901Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer
+2026-11-04T06:08:09.1164154Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn
+2026-11-04T06:08:09.1170540Z   C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\
+2026-11-04T06:08:09.1176467Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools
+2026-11-04T06:08:09.1182289Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector
+2026-11-04T06:08:09.1187892Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console
+2026-11-04T06:08:09.1194047Z   C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64
+2026-11-04T06:08:09.1200895Z   C:\Program Files (x86)\Windows Kits\10\bin\\x64
+2026-11-04T06:08:09.1206570Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64
+2026-11-04T06:08:09.1212280Z   C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:08:09.1217972Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\
+2026-11-04T06:08:09.1224740Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\
+2026-11-04T06:08:09.1231650Z   C:\mingw64\bin
+2026-11-04T06:08:09.1239580Z   C:\Program Files\Git\bin
+2026-11-04T06:08:09.1246277Z   C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts
+2026-11-04T06:08:09.1253458Z   C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-04T06:08:09.1259712Z   C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin
+2026-11-04T06:08:09.1265960Z   C:\Windows\system32
+2026-11-04T06:08:09.1271582Z   C:\Windows
+2026-11-04T06:08:09.1277276Z   C:\Windows\System32\Wbem
+2026-11-04T06:08:09.1283411Z   C:\Windows\System32\WindowsPowerShell\v1.0\
+2026-11-04T06:08:09.1289202Z   C:\Windows\System32\OpenSSH\
+2026-11-04T06:08:09.1295670Z   C:\Program Files\PowerShell\7\
+2026-11-04T06:08:09.1301058Z   C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\
+2026-11-04T06:08:09.1306868Z   C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager
+2026-11-04T06:08:09.1312361Z   C:\Program Files\Git\cmd
+2026-11-04T06:08:09.1318873Z   C:\Program Files\Git\ucrt64\bin
+2026-11-04T06:08:09.1324335Z   C:\Program Files\Git\usr\bin
+2026-11-04T06:08:09.1330438Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin
+2026-11-04T06:08:09.1336954Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin
+2026-11-04T06:08:09.1342316Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+2026-11-04T06:08:09.1348050Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe
+2026-11-04T06:08:09.1353841Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:08:09.1359094Z   C:\Program Files\nodejs
+2026-11-04T06:08:09.1364815Z   C:\msys64\mingw64\bin
+2026-11-04T06:08:09.1370607Z   C:\msys64\ucrt64\bin
+2026-11-04T06:08:09.1376974Z   C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:08:09.1893560Z ##[end-action id=__self.setup_bazel.__run_2;outcome=success;conclusion=success;duration_ms=592]
+2026-11-04T06:08:09.1901953Z ##[end-action id=__self.setup_bazel;outcome=success;conclusion=success;duration_ms=28770]
+2026-11-04T06:08:09.1904053Z ##[start-action display=Configure fail-closed release lockdown root;id=__self.__run]
+2026-11-04T06:08:09.1907425Z ##[end-action id=__self.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:08:09.3020615Z ##[start-action display=Compute bazel repository cache key;id=__self.cache_bazel_repository_key]
+2026-11-04T06:08:09.3163593Z ##[group]Run echo "repository-cache-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-${CACHE_HASH}" >> "${GITHUB_OUTPUT}"
+2026-11-04T06:08:09.3164403Z [36;1mecho "repository-cache-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-${CACHE_HASH}" >> "${GITHUB_OUTPUT}"[0m
+2026-11-04T06:08:09.3165083Z [36;1mecho "repository-cache-restore-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-" >> "${GITHUB_OUTPUT}"[0m
+2026-11-04T06:08:09.3178356Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:08:09.3178760Z env:
+2026-11-04T06:08:09.3179045Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:09.3179361Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:09.3179707Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:09.3179981Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:09.3180804Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:09.3181184Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:09.3181479Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:09.3182072Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:09.3182331Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:09.3182652Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:09.3183091Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:09.3183501Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:09.3183783Z   TEMP: D:/tmp
+2026-11-04T06:08:09.3184014Z   TMP: D:/tmp
+2026-11-04T06:08:09.3184257Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:09.3186945Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:08:09.3189099Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:08:09.3191971Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:08:09.3194297Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:08:09.3209410Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:08:09.3225248Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:08:09.3225642Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:09.3226219Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:08:09.3226899Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:08:09.3227734Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:08:09.3228502Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:08:09.3229020Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:09.3229454Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:08:09.3229829Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:08:09.3238767Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:08:09.3246660Z   CACHE_SCOPE: windows-process-env-union
+2026-11-04T06:08:09.3246970Z   TARGET: x86_64-pc-windows-msvc
+2026-11-04T06:08:09.3247688Z   CACHE_HASH: b5ba8f1c0200a59c80506b2507fae3990d85d03e6c2034cdd3b651e3cba00f93
+2026-11-04T06:08:09.3248095Z ##[endgroup]
+2026-11-04T06:08:09.3697110Z ##[end-action id=__self.cache_bazel_repository_key;outcome=success;conclusion=success;duration_ms=67]
+2026-11-04T06:08:09.3699653Z ##[start-action display=Restore bazel repository cache;id=__self.cache_bazel_repository_restore]
+2026-11-04T06:08:09.3873211Z ##[group]Run actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-04T06:08:09.3873797Z with:
+2026-11-04T06:08:09.3874171Z   path: D:/bazel-repository-cache
+2026-11-04T06:08:09.3874901Z   key: bazel-cache-windows-process-env-union-x86_64-pc-windows-msvc-b5ba8f1c0200a59c80506b2507fae3990d85d03e6c2034cdd3b651e3cba00f93
+2026-11-04T06:08:09.3875820Z   restore-keys: bazel-cache-windows-process-env-union-x86_64-pc-windows-msvc-
+
+2026-11-04T06:08:09.3876359Z   enableCrossOsArchive: false
+2026-11-04T06:08:09.3876802Z   fail-on-cache-miss: false
+2026-11-04T06:08:09.3877171Z   lookup-only: false
+2026-11-04T06:08:09.3877472Z env:
+2026-11-04T06:08:09.3877813Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:09.3878207Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:09.3878673Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:09.3879034Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:09.3879370Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:09.3879740Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:09.3880136Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:09.3880554Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:09.3880973Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:09.3881342Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:09.3881900Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:09.3882394Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:09.3882741Z   TEMP: D:/tmp
+2026-11-04T06:08:09.3883287Z   TMP: D:/tmp
+2026-11-04T06:08:09.3883665Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:09.3886394Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:08:09.3888713Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:08:09.3891707Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:08:09.3894659Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:08:09.3909218Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:08:09.3925417Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:08:09.3926010Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:09.3926704Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:08:09.3927482Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:08:09.3928472Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:08:09.3929386Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:08:09.3930100Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:09.3930656Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:08:09.3931134Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:08:09.3939311Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:08:09.3947305Z ##[endgroup]
+2026-11-04T06:08:10.1582455Z Cache not found for input keys: bazel-cache-windows-process-env-union-x86_64-pc-windows-msvc-b5ba8f1c0200a59c80506b2507fae3990d85d03e6c2034cdd3b651e3cba00f93, bazel-cache-windows-process-env-union-x86_64-pc-windows-msvc-
+2026-11-04T06:08:10.1728588Z ##[end-action id=__self.cache_bazel_repository_restore;outcome=success;conclusion=success;duration_ms=802]
+2026-11-04T06:08:10.1733347Z ##[start-action display=Set up Bazel execution logs;id=__self.__run_2]
+2026-11-04T06:08:10.1907254Z ##[group]Run mkdir -p "${RUNNER_TEMP}/bazel-execution-logs"
+2026-11-04T06:08:10.1908088Z [36;1mmkdir -p "${RUNNER_TEMP}/bazel-execution-logs"[0m
+2026-11-04T06:08:10.1909023Z [36;1mecho "CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=${RUNNER_TEMP}/bazel-execution-logs" >> "${GITHUB_ENV}"[0m
+2026-11-04T06:08:10.1926238Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:08:10.1926935Z env:
+2026-11-04T06:08:10.1927373Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:10.1927917Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:10.1928523Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:10.1929018Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:10.1929482Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:10.1929951Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:10.1930461Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:10.1931046Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:10.1931496Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:10.1932089Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:10.1932851Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:10.1933556Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:10.1934039Z   TEMP: D:/tmp
+2026-11-04T06:08:10.1934424Z   TMP: D:/tmp
+2026-11-04T06:08:10.1934887Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:10.1939383Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:08:10.1942605Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:08:10.1947598Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:08:10.1951811Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:08:10.1967644Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:08:10.1981678Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:08:10.1982102Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:10.1982676Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:08:10.1983344Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:08:10.1984302Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:08:10.1985030Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:08:10.1985515Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:10.1985963Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:08:10.1986380Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:08:10.1993834Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:08:10.2001847Z ##[endgroup]
+2026-11-04T06:08:10.2650770Z ##[end-action id=__self.__run_2;outcome=success;conclusion=success;duration_ms=91]
+2026-11-04T06:08:10.2827956Z ##[group]Run python -m unittest discover -s qualification/windows-process-env-current -p 'test_*.py' -v
+2026-11-04T06:08:10.2828878Z [36;1mpython -m unittest discover -s qualification/windows-process-env-current -p 'test_*.py' -v[0m
+2026-11-04T06:08:10.2842228Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:08:10.2842734Z env:
+2026-11-04T06:08:10.2843072Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:10.2843544Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:10.2843966Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:10.2844327Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:10.2844699Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:10.2845051Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:10.2845436Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:10.2845910Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:10.2846280Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:10.2846795Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:10.2847368Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:10.2847877Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:10.2848246Z   TEMP: D:/tmp
+2026-11-04T06:08:10.2848553Z   TMP: D:/tmp
+2026-11-04T06:08:10.2848923Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:10.2852099Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:08:10.2854136Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:08:10.2857096Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:08:10.2859517Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:08:10.2875558Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:08:10.2889510Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:08:10.2889955Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:10.2890519Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:08:10.2891638Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:08:10.2892502Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:08:10.2893722Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:08:10.2894250Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:10.2894715Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:08:10.2895168Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:08:10.2902441Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:08:10.2909872Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-04T06:08:10.2910427Z ##[endgroup]
+2026-11-04T06:08:12.5985020Z test_accepts_only_all_three_selected_controls (test_reports.DeferredIdleReportAcceptance.test_accepts_only_all_three_selected_controls) ... ok
+2026-11-04T06:08:12.5987442Z test_rejects_ignored_control (test_reports.DeferredIdleReportAcceptance.test_rejects_ignored_control) ... ok
+2026-11-04T06:08:12.6047553Z test_rejects_missing_or_duplicate_control (test_reports.DeferredIdleReportAcceptance.test_rejects_missing_or_duplicate_control) ... ok
+2026-11-04T06:08:12.6049059Z test_rejects_stale_xml (test_reports.DeferredIdleReportAcceptance.test_rejects_stale_xml) ... ok
+2026-11-04T06:08:12.6570858Z test_original_two_complete_reports (test_reports.OriginalReportAcceptance.test_original_two_complete_reports) ... ok
+2026-11-04T06:08:12.6576101Z test_rejects_different_nested_subprocess (test_reports.OriginalReportAcceptance.test_rejects_different_nested_subprocess) ... ok
+2026-11-04T06:08:12.6582235Z test_rejects_duplicate_wrappers (test_reports.OriginalReportAcceptance.test_rejects_duplicate_wrappers) ... ok
+2026-11-04T06:08:12.6587659Z test_rejects_empty_wrapper (test_reports.OriginalReportAcceptance.test_rejects_empty_wrapper) ... ok
+2026-11-04T06:08:12.6590803Z test_rejects_mismatched_raw_report (test_reports.OriginalReportAcceptance.test_rejects_mismatched_raw_report) ... ok
+2026-11-04T06:08:12.6596181Z test_rejects_missing_original_lifecycle_case (test_reports.OriginalReportAcceptance.test_rejects_missing_original_lifecycle_case) ... ok
+2026-11-04T06:08:12.6601113Z test_rejects_parent_filtering (test_reports.OriginalReportAcceptance.test_rejects_parent_filtering) ... ok
+2026-11-04T06:08:12.6609568Z test_rejects_skipped_or_failed_wrapper (test_reports.OriginalReportAcceptance.test_rejects_skipped_or_failed_wrapper) ... ok
+2026-11-04T06:08:12.6615055Z test_rejects_zero_native_result (test_reports.OriginalReportAcceptance.test_rejects_zero_native_result) ... ok
+2026-11-04T06:08:12.6615470Z 
+2026-11-04T06:08:12.6616331Z ----------------------------------------------------------------------
+2026-11-04T06:08:12.6617164Z Ran 13 tests in 0.110s
+2026-11-04T06:08:12.6617522Z 
+2026-11-04T06:08:12.6617622Z OK
+2026-11-04T06:08:12.7052915Z ##[group]Run HEPTA_BASH="$(cygpath -w "$BASH")" \
+2026-11-04T06:08:12.7053704Z [36;1mHEPTA_BASH="$(cygpath -w "$BASH")" \[0m
+2026-11-04T06:08:12.7054513Z [36;1m  python qualification/windows-process-env-current/run_qualification.py --output "$RUNNER_TEMP/windows-process-env-evidence"[0m
+2026-11-04T06:08:12.7067360Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:08:12.7067873Z env:
+2026-11-04T06:08:12.7068222Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:08:12.7068609Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:12.7069068Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:08:12.7069407Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:08:12.7069763Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:08:12.7070101Z   CI_BUILD_ROOT: D:
+2026-11-04T06:08:12.7070459Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:08:12.7070878Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:08:12.7071337Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:08:12.7071773Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:08:12.7072282Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:08:12.7072747Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:08:12.7073115Z   TEMP: D:/tmp
+2026-11-04T06:08:12.7073407Z   TMP: D:/tmp
+2026-11-04T06:08:12.7073719Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:08:12.7076271Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:08:12.7078959Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:08:12.7081984Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:08:12.7084338Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:08:12.7099859Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:08:12.7113103Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:08:12.7113492Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:12.7114042Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:08:12.7114690Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:08:12.7116332Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:08:12.7117133Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:08:12.7117643Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:08:12.7118124Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:08:12.7118569Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:08:12.7125916Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:08:12.7133752Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-04T06:08:12.7134432Z   BUILDBUDDY_API_KEY: ***
+2026-11-04T06:08:12.7135055Z   HEPTA_EXPECTED_COMMIT: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:08:12.7135562Z ##[endgroup]
+2026-11-04T06:12:23.0821820Z PROCESS_QUALIFICATION_DIAGNOSTIC={"status": "passed", "source_commit": "97c601299dd3af35640ac79475f9010e3a30ee2b", "source_unchanged": true, "native": {"git-utils-unit-tests": {"log_present": true, "bytes": 4161, "sha256": "18ea6f9625625c0608a0a7013b5081c0147db2cd2251f6f1f9555ade08add076", "summaries": [[1, 0, 0, 0, 32], [33, 0, 0, 0, 0]], "summary_count": 2, "known_failed_cases": [], "other_failed_case_count": 0, "parent_before_child_launch": false, "parent_after_child_launch": false, "child_script_started": false}, "queue-queue_service-test": {"log_present": true, "bytes": 2770, "sha256": "7493859feba3ce039192ac1c49603c3d4b6b596bd3958da319e60cb7c88c455b", "summaries": [[35, 0, 0, 0, 0]], "summary_count": 1, "known_failed_cases": [], "other_failed_case_count": 0, "parent_before_child_launch": false, "parent_after_child_launch": false, "child_script_started": false}}, "idle_controls": {"passed": 3, "failed": 0, "ignored": 0, "measured": 0, "filtered_other_core_cases": 2331, "names": ["tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence", "tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order", "tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow"], "scope": "Only the three selected idle-work controls; not the full core suite.", "log_sha256": "18ee92f7a6ee40f0c0d4627ff0feabe5b11de966ead1cf12996c9eab11da1ccd", "xml_sha256": "52b6b1d8b22a43061db9f8f0bbdc0fad44b649a8ce53556b09926ed5e86ff643"}}
+2026-11-04T06:12:23.1972606Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-04T06:12:23.1973155Z with:
+2026-11-04T06:12:23.1973651Z   name: windows-process-env-union-base-merge-97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:12:23.1974244Z   path: D:\a\_temp/windows-process-env-evidence
+2026-11-04T06:12:23.1974643Z   if-no-files-found: error
+2026-11-04T06:12:23.1975051Z   retention-days: 7
+2026-11-04T06:12:23.1975394Z   compression-level: 6
+2026-11-04T06:12:23.1975704Z   overwrite: false
+2026-11-04T06:12:23.1976029Z   include-hidden-files: false
+2026-11-04T06:12:23.1976372Z   archive: true
+2026-11-04T06:12:23.1976674Z env:
+2026-11-04T06:12:23.1976973Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:12:23.1977385Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:12:23.1977781Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:12:23.1978097Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:12:23.1978444Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:12:23.1978875Z   CI_BUILD_ROOT: D:
+2026-11-04T06:12:23.1979481Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:12:23.1979895Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:12:23.1980258Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:12:23.1980647Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:12:23.1981153Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:12:23.1982497Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:12:23.1982865Z   TEMP: D:/tmp
+2026-11-04T06:12:23.1983207Z   TMP: D:/tmp
+2026-11-04T06:12:23.1983534Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:12:23.1986351Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:12:23.1988377Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:12:23.1991420Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:12:23.1993789Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:12:23.2008528Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:12:23.2022286Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:12:23.2022723Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:12:23.2023282Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:12:23.2024408Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:12:23.2025337Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:12:23.2026136Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:12:23.2026686Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:12:23.2027239Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:12:23.2027666Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:12:23.2036072Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:12:23.2044159Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-04T06:12:23.2044619Z ##[endgroup]
+2026-11-04T06:12:24.0661109Z With the provided path, there will be 12 files uploaded
+2026-11-04T06:12:24.0666030Z Artifact name is valid!
+2026-11-04T06:12:24.0667211Z Root directory input is valid!
+2026-11-04T06:12:24.3934840Z Uploading artifact: windows-process-env-union-base-merge-97c601299dd3af35640ac79475f9010e3a30ee2b.zip
+2026-11-04T06:12:24.3976696Z Beginning upload of artifact content to blob storage
+2026-11-04T06:12:25.3615913Z Uploaded bytes 4524122
+2026-11-04T06:12:25.4093892Z Finished uploading artifact content to blob storage!
+2026-11-04T06:12:25.4095078Z SHA256 digest of uploaded artifact is eb1e915ea591a26e275a04bebedea6aa81766628c4c185c81aba1281e22d8fb7
+2026-11-04T06:12:25.4096443Z Finalizing artifact upload
+2026-11-04T06:12:25.9254149Z Artifact windows-process-env-union-base-merge-97c601299dd3af35640ac79475f9010e3a30ee2b successfully finalized. Artifact ID 13299958989
+2026-11-04T06:12:25.9255469Z Artifact windows-process-env-union-base-merge-97c601299dd3af35640ac79475f9010e3a30ee2b has been successfully uploaded! Final size is 4524122 bytes. Artifact ID is 13299958989
+2026-11-04T06:12:25.9271306Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41782882626/artifacts/13299958989
+2026-11-04T06:12:25.9728197Z Prepare all required actions
+2026-11-04T06:12:25.9771136Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-04T06:12:25.9771537Z env:
+2026-11-04T06:12:25.9771946Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:12:25.9772396Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:12:25.9772892Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:12:25.9773275Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:12:25.9773652Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:12:25.9774058Z   CI_BUILD_ROOT: D:
+2026-11-04T06:12:25.9774436Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:12:25.9774871Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:12:25.9775258Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:12:25.9775622Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:12:25.9776227Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:12:25.9776859Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:12:25.9777459Z   TEMP: D:/tmp
+2026-11-04T06:12:25.9778704Z   TMP: D:/tmp
+2026-11-04T06:12:25.9779034Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:12:25.9783231Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:12:25.9785921Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:12:25.9788940Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:12:25.9791582Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:12:25.9807508Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:12:25.9821635Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:12:25.9822054Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:12:25.9822701Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:12:25.9823457Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:12:25.9824337Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:12:25.9825130Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:12:25.9825746Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:12:25.9826716Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:12:25.9827213Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:12:25.9834605Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:12:25.9842532Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-04T06:12:25.9843048Z ##[endgroup]
+2026-11-04T06:12:25.9848672Z ##[start-action display=Check for a clean worktree;id=__self_2.__run]
+2026-11-04T06:12:25.9995773Z ##[group]Run set -euo pipefail
+2026-11-04T06:12:25.9996237Z [36;1mset -euo pipefail[0m
+2026-11-04T06:12:25.9996587Z [36;1m[0m
+2026-11-04T06:12:25.9997370Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-04T06:12:25.9997934Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-04T06:12:25.9998252Z [36;1m  exit 0[0m
+2026-11-04T06:12:25.9998582Z [36;1mfi[0m
+2026-11-04T06:12:25.9998841Z [36;1m[0m
+2026-11-04T06:12:25.9999346Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-04T06:12:26.0000160Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-04T06:12:26.0000552Z [36;1mexit 1[0m
+2026-11-04T06:12:26.0013771Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:12:26.0014312Z env:
+2026-11-04T06:12:26.0014666Z   PYTHONIOENCODING: utf-8
+2026-11-04T06:12:26.0015019Z   CANDIDATE_SHA: 97c601299dd3af35640ac79475f9010e3a30ee2b
+2026-11-04T06:12:26.0015490Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:12:26.0015857Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:12:26.0016207Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:12:26.0016786Z   CI_BUILD_ROOT: D:
+2026-11-04T06:12:26.0017283Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:12:26.0017685Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-04T06:12:26.0017964Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-04T06:12:26.0018378Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-04T06:12:26.0018920Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-41782882626-native
+2026-11-04T06:12:26.0019415Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-04T06:12:26.0020141Z   TEMP: D:/tmp
+2026-11-04T06:12:26.0020480Z   TMP: D:/tmp
+2026-11-04T06:12:26.0020937Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:12:26.0023445Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:12:26.0025616Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-04T06:12:26.0028727Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-04T06:12:26.0031180Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-04T06:12:26.0044028Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.1\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-04T06:12:26.0056063Z   UCRTVersion: 10.0.26100.0
+2026-11-04T06:12:26.0056508Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:12:26.0057163Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-04T06:12:26.0057812Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-04T06:12:26.0058676Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-04T06:12:26.0059383Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-04T06:12:26.0060366Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-04T06:12:26.0060813Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-04T06:12:26.0061268Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-04T06:12:26.0069400Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-04T06:12:26.0078658Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-04T06:12:26.0079372Z ##[endgroup]
+2026-11-04T06:12:26.3527160Z ##[end-action id=__self_2.__run;outcome=success;conclusion=success;duration_ms=367]
+2026-11-04T06:12:26.3819980Z Post job cleanup.
+2026-11-04T06:12:26.3825735Z ##[start-action display=Set up Bazel;id=__2b35f447-a844-4779-9e64-473dc3aae4b8.__bazel-contrib_setup-bazel]
+2026-11-04T06:12:26.3983864Z Post job cleanup.
+2026-11-04T06:12:26.5923696Z ##[end-action id=__2b35f447-a844-4779-9e64-473dc3aae4b8.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=209]
+2026-11-04T06:12:26.6246783Z Post job cleanup.
+2026-11-04T06:12:26.8195160Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-04T06:12:26.8585365Z git version 2.56.0.windows.4
+2026-11-04T06:12:26.8665348Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\dc40c222-390c-498f-b442-5ef90a8b367c\.gitconfig'
+2026-11-04T06:12:26.8689304Z Temporarily overriding HOME='D:\a\_temp\dc40c222-390c-498f-b442-5ef90a8b367c' before making global git config changes
+2026-11-04T06:12:26.8690425Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T06:12:26.8702140Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-04T06:12:26.9112616Z Removing SSH command configuration
+2026-11-04T06:12:26.9124906Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:12:26.9505856Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-04T06:12:27.4793316Z Removing HTTP extra header
+2026-11-04T06:12:27.4806476Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:12:27.5187073Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-04T06:12:28.0124367Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:12:28.0138644Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:12:28.0464281Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-04T06:12:28.0465500Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-04T06:12:28.0511034Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-04T06:12:28.0853951Z D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:12:28.0906462Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:12:28.1282733Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-04T06:12:28.1614943Z D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:12:28.1656580Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config
+2026-11-04T06:12:28.2040497Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-04T06:12:28.7134188Z Removing credentials config 'D:\a\_temp\git-credentials-23b9ee2c-8200-4244-a485-d471a1f333a4.config'
+2026-11-04T06:12:28.7379833Z Cleaning up orphan processes
+2026-11-04T06:12:28.7612877Z Terminate orphan process: pid (7264) (java)

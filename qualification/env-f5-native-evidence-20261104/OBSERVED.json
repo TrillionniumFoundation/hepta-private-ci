@@ -1,0 +1,426 @@
+{
+  "schema": "hepta.env.f5.original-terminal-evidence.v1",
+  "generated_utc": "2026-11-04 06:16:57 UTC",
+  "source_commit": "f5bddc124052837befca7735b9e5a46ab708e5a5",
+  "source_tree": "d1440d79ec6cf406185a6b709c472b3557db524a",
+  "actual_base_merge": "97c601299dd3af35640ac79475f9010e3a30ee2b",
+  "run_id": 41782882626,
+  "run_attempt": 1,
+  "run_conclusion": "success",
+  "jobs": [
+    {
+      "id": 126418262429,
+      "kind": "generation",
+      "conclusion": "success",
+      "file": "original-generate-job.log",
+      "git_blob_sha": "c5f4d1277207168165a4e21f808bb687322b098c",
+      "sha256": "20067f7fd9011cdf81c16459363bbb22fbf59c278648e9b0ef9a234fe6748d66",
+      "bytes": 129174
+    },
+    {
+      "id": 126419485455,
+      "kind": "source-head",
+      "conclusion": "success",
+      "file": "original-source-job.log",
+      "git_blob_sha": "4485b6e650331154fccfe0d868f25f6cbc7aefaf",
+      "sha256": "579af60ed1b1414acb8dfa4f1201907009e7ad019783bdbbd32903090949ed3f",
+      "bytes": 207207
+    },
+    {
+      "id": 126419485530,
+      "kind": "base-merge",
+      "conclusion": "success",
+      "file": "original-merge-job.log",
+      "git_blob_sha": "85ff98d8732739756bdaa41576643aec9a7f243b",
+      "sha256": "5544ab9223cbe2b48e55db70c9a9ac9fad5945fd4b9d2e92617e4ac8df73af05",
+      "bytes": 181373
+    }
+  ],
+  "generation": {
+    "source_commit": "f5bddc124052837befca7735b9e5a46ab708e5a5",
+    "base_commit": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+    "status": "committed-lock-qualified",
+    "commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.18301858499999923,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 18.70993204799999,
+        "log_sha256": "0b22e06831edf40a9cc310014606fbb74ee4eee0525ec03e405ccdef2b2f8584"
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+        ],
+        "exit_code": 0,
+        "seconds": 0.6060330389999962,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+        ],
+        "exit_code": 0,
+        "seconds": 0.6049351550000068,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 16.710774227,
+        "log_sha256": "5ae0aefb678724d4a819755e27ac69bc2a7287307fac10516724f7cb227fd9f1"
+      },
+      {
+        "name": "actual-locked-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 1.0343681230000072,
+        "log_sha256": "d9e3fbd6fedcc99c0b7cdf1899d27a7cc2959583dca3486aea826c7359e22f1d"
+      },
+      {
+        "name": "original-lock-update",
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 19.424185965999996,
+        "log_sha256": "5563e76f49aee6994e659bb32f8c4b0af0852af69a8228a347a1e342bb173807"
+      },
+      {
+        "name": "original-lock-check",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 5.184958782999999,
+        "log_sha256": "8a03137c747cf0c86b6158fb609d6ac0d7c7835b4b503f1a92a5cabe82c053dc"
+      }
+    ],
+    "scope": "Real lock generation and formatting; native product qualification is separate.",
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-git-utils": [
+          "base64 0.22.1"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "changed_paths": [],
+    "committed_cargo_equals_generated": true,
+    "committed_bazel_equals_generated": true,
+    "source_unchanged": true
+  },
+  "source_positive": {
+    "status": "passed",
+    "source_commit": "f5bddc124052837befca7735b9e5a46ab708e5a5",
+    "source_unchanged": true,
+    "native": {
+      "git-utils-unit-tests": {
+        "log_present": true,
+        "bytes": 4161,
+        "sha256": "7cb1cd6aa9a360ed141fb0c2caacbdf98d6e86bb99438ba9ecafff0b1b01a899",
+        "summaries": [
+          [
+            1,
+            0,
+            0,
+            0,
+            32
+          ],
+          [
+            33,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "summary_count": 2,
+        "known_failed_cases": [],
+        "other_failed_case_count": 0,
+        "parent_before_child_launch": false,
+        "parent_after_child_launch": false,
+        "child_script_started": false
+      },
+      "queue-queue_service-test": {
+        "log_present": true,
+        "bytes": 2770,
+        "sha256": "f46d296a8f3f27dbfae440b045ecb75439fed348aadab874f02a3ff7fa772ef2",
+        "summaries": [
+          [
+            35,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "summary_count": 1,
+        "known_failed_cases": [],
+        "other_failed_case_count": 0,
+        "parent_before_child_launch": false,
+        "parent_after_child_launch": false,
+        "child_script_started": false
+      }
+    },
+    "idle_controls": {
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered_other_core_cases": 2331,
+      "names": [
+        "tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence",
+        "tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order",
+        "tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow"
+      ],
+      "scope": "Only the three selected idle-work controls; not the full core suite.",
+      "log_sha256": "a8b9579584333a582ba539c04fa5be2185e3d268ec56491a95a3511d27f09210",
+      "xml_sha256": "68293ff04a8e6d24c6e4ebd0bde309c6ab915bcd6d320a1411a3a1590f3c2677"
+    }
+  },
+  "base_merge_positive": {
+    "status": "passed",
+    "source_commit": "97c601299dd3af35640ac79475f9010e3a30ee2b",
+    "source_unchanged": true,
+    "native": {
+      "git-utils-unit-tests": {
+        "log_present": true,
+        "bytes": 4161,
+        "sha256": "18ea6f9625625c0608a0a7013b5081c0147db2cd2251f6f1f9555ade08add076",
+        "summaries": [
+          [
+            1,
+            0,
+            0,
+            0,
+            32
+          ],
+          [
+            33,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "summary_count": 2,
+        "known_failed_cases": [],
+        "other_failed_case_count": 0,
+        "parent_before_child_launch": false,
+        "parent_after_child_launch": false,
+        "child_script_started": false
+      },
+      "queue-queue_service-test": {
+        "log_present": true,
+        "bytes": 2770,
+        "sha256": "7493859feba3ce039192ac1c49603c3d4b6b596bd3958da319e60cb7c88c455b",
+        "summaries": [
+          [
+            35,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "summary_count": 1,
+        "known_failed_cases": [],
+        "other_failed_case_count": 0,
+        "parent_before_child_launch": false,
+        "parent_after_child_launch": false,
+        "child_script_started": false
+      }
+    },
+    "idle_controls": {
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered_other_core_cases": 2331,
+      "names": [
+        "tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence",
+        "tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order",
+        "tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow"
+      ],
+      "scope": "Only the three selected idle-work controls; not the full core suite.",
+      "log_sha256": "18ee92f7a6ee40f0c0d4627ff0feabe5b11de966ead1cf12996c9eab11da1ccd",
+      "xml_sha256": "52b6b1d8b22a43061db9f8f0bbdc0fad44b649a8ce53556b09926ed5e86ff643"
+    }
+  },
+  "source_actual_negative_control": {
+    "status": "rejection-demonstrated",
+    "source_commit": "f5bddc124052837befca7735b9e5a46ab708e5a5",
+    "source_restored": true,
+    "clean_exit_code": 0,
+    "reader_controls": {
+      "synthetic_accepted": 1,
+      "synthetic_rejected": 7,
+      "synthetic_cases_are_native_evidence": false
+    },
+    "xml_reader_controls": {
+      "synthetic_accepted": 2,
+      "synthetic_rejected": 18,
+      "synthetic_cases_are_native_evidence": false
+    },
+    "report_cleanup_controls": {
+      "real_readonly_report_removed": true,
+      "nonregular_directory_rejected_without_removal": true,
+      "native_product_acceptance": false
+    },
+    "removed_prior_reports": {
+      "log": {
+        "bytes": 4161,
+        "sha256": "7cb1cd6aa9a360ed141fb0c2caacbdf98d6e86bb99438ba9ecafff0b1b01a899",
+        "windows_readonly_attribute_observed": true,
+        "windows_readonly_attribute_cleared": true
+      },
+      "xml": {
+        "bytes": 4485,
+        "sha256": "44c8c37490f630e346d2af330c9a33dff76a86fb0ed998566bd24dc22f040d47",
+        "windows_readonly_attribute_observed": true,
+        "windows_readonly_attribute_cleared": true
+      }
+    },
+    "rejection": {
+      "failed_cases": [
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+      ],
+      "surviving_descendants": 2,
+      "passed": 0,
+      "failed": 2,
+      "ignored": 0,
+      "measured": 0,
+      "other_original_cases_filtered": 31,
+      "scope": "Two separate negative controls, not product pass counts."
+    },
+    "wrapper": {
+      "wrapper_tests": 1,
+      "wrapper_failures": 0,
+      "wrapper_errors": 1,
+      "rust_exit_code": 101,
+      "exact_original_log_bound": true
+    },
+    "native_product_acceptance": false
+  },
+  "artifacts": [
+    {
+      "id": 13300540318,
+      "name": "windows-process-fixtures-generated-f5bddc124052837befca7735b9e5a46ab708e5a5",
+      "size_in_bytes": 4301409,
+      "digest": "sha256:1a4b32b288818d5d89e1e60e9870ebe983ddf8c9575a3ef97cd203efa51ee71e",
+      "expired": false,
+      "workflow_run": {
+        "id": 41782882626,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/private-ci-windows-process-fixtures-20261104",
+        "head_sha": "f5bddc124052837befca7735b9e5a46ab708e5a5"
+      }
+    },
+    {
+      "id": 13300197050,
+      "name": "windows-process-env-union-source-head-f5bddc124052837befca7735b9e5a46ab708e5a5",
+      "size_in_bytes": 4455946,
+      "digest": "sha256:574a82d2d4a37be504d1a0a12b5c3e16db43351a8eeb90f3a280250159760aef",
+      "expired": false,
+      "workflow_run": {
+        "id": 41782882626,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/private-ci-windows-process-fixtures-20261104",
+        "head_sha": "f5bddc124052837befca7735b9e5a46ab708e5a5"
+      }
+    },
+    {
+      "id": 13299958989,
+      "name": "windows-process-env-union-base-merge-97c601299dd3af35640ac79475f9010e3a30ee2b",
+      "size_in_bytes": 4524122,
+      "digest": "sha256:eb1e915ea591a26e275a04bebedea6aa81766628c4c185c81aba1281e22d8fb7",
+      "expired": false,
+      "workflow_run": {
+        "id": 41782882626,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/private-ci-windows-process-fixtures-20261104",
+        "head_sha": "f5bddc124052837befca7735b9e5a46ab708e5a5"
+      }
+    },
+    {
+      "id": 13299399930,
+      "name": "windows-process-native-rejection-f5bddc124052837befca7735b9e5a46ab708e5a5",
+      "size_in_bytes": 4437,
+      "digest": "sha256:c9529e6341df86f4cc8c408390de337cada0f605fa116978899c5266d3bc855a",
+      "expired": false,
+      "workflow_run": {
+        "id": 41782882626,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "fix/private-ci-windows-process-fixtures-20261104",
+        "head_sha": "f5bddc124052837befca7735b9e5a46ab708e5a5"
+      }
+    }
+  ],
+  "verification": {
+    "complete_job_logs_read": true,
+    "markers_unique_and_parsed": true,
+    "original_jobs_not_rerun_by_checkpoint": true,
+    "artifact_bytes_independently_downloaded_here": false,
+    "artifact_readback_workflow_pending": true,
+    "private_bridge_positive_readback_requested": true,
+    "all_old_failed_receipts_preserved": true
+  },
+  "boundaries": {
+    "full_core_suite": false,
+    "full_integrated_repository_qualification": false,
+    "scientific_gates_closed": false,
+    "original_library_deleted": 0,
+    "source_candidate_counts_unchanged": true,
+    "negative_controls_not_product_pass_counts": true,
+    "cleanup_controls_not_native_product_acceptance": true
+  }
+}

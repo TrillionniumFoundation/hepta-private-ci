@@ -1,0 +1,1527 @@
+﻿2026-11-04T06:04:00.2057141Z Current runner version: '2.338.2'
+2026-11-04T06:04:00.2087316Z ##[group]Runner Image Provisioner
+2026-11-04T06:04:00.2088270Z Hosted Compute Agent
+2026-11-04T06:04:00.2088981Z Version: 20261021.618
+2026-11-04T06:04:00.2089758Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T06:04:00.2091019Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T06:04:00.2091784Z Worker ID: {bd5567f8-f758-4b9c-ae6f-75a190998af4}
+2026-11-04T06:04:00.2092523Z Region: eastus
+2026-11-04T06:04:00.2093149Z Cloud: Azure
+2026-11-04T06:04:00.2093739Z ##[endgroup]
+2026-11-04T06:04:00.2095771Z ##[group]Operating System
+2026-11-04T06:04:00.2096473Z Ubuntu
+2026-11-04T06:04:00.2097017Z 24.04.5
+2026-11-04T06:04:00.2097590Z LTS
+2026-11-04T06:04:00.2098202Z ##[endgroup]
+2026-11-04T06:04:00.2098798Z ##[group]Runner Image
+2026-11-04T06:04:00.2099437Z Image: ubuntu-24.04
+2026-11-04T06:04:00.2100019Z Version: 20261025.353.1
+2026-11-04T06:04:00.2101807Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-04T06:04:00.2103519Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-04T06:04:00.2104595Z ##[endgroup]
+2026-11-04T06:04:00.2105814Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T06:04:00.2108245Z Contents: read
+2026-11-04T06:04:00.2108980Z Metadata: read
+2026-11-04T06:04:00.2109583Z ##[endgroup]
+2026-11-04T06:04:00.2112161Z Secret source: Actions
+2026-11-04T06:04:00.2113229Z Cache mode: write
+2026-11-04T06:04:00.2114025Z Prepare workflow directory
+2026-11-04T06:04:00.2546955Z Prepare all required actions
+2026-11-04T06:04:00.2601399Z Getting action download info
+2026-11-04T06:04:00.4617231Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-04T06:04:00.5821933Z Download action repository 'dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58' (SHA:3db9de313aa3e84732d075f6fd8938cc0d6d4b58)
+2026-11-04T06:04:00.6809137Z Download action repository 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f' (SHA:bbbca2ddaa5d8feaa63e36b76fdaad77386f024f)
+2026-11-04T06:04:00.9034025Z Complete job name: generate
+2026-11-04T06:04:00.9998390Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-04T06:04:00.9999542Z with:
+2026-11-04T06:04:01.0000040Z   ref: f5bddc124052837befca7735b9e5a46ab708e5a5
+2026-11-04T06:04:01.0000903Z   fetch-depth: 32
+2026-11-04T06:04:01.0001355Z   filter: blob:none
+2026-11-04T06:04:01.0001829Z   persist-credentials: false
+2026-11-04T06:04:01.0002441Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:04:01.0006493Z   token: ***
+2026-11-04T06:04:01.0006926Z   ssh-strict: true
+2026-11-04T06:04:01.0007360Z   ssh-user: git
+2026-11-04T06:04:01.0007783Z   clean: true
+2026-11-04T06:04:01.0008216Z   sparse-checkout-cone-mode: true
+2026-11-04T06:04:01.0008750Z   fetch-tags: false
+2026-11-04T06:04:01.0009193Z   show-progress: true
+2026-11-04T06:04:01.0009639Z   lfs: false
+2026-11-04T06:04:01.0010093Z   submodules: false
+2026-11-04T06:04:01.0010703Z   set-safe-directory: true
+2026-11-04T06:04:01.0011599Z env:
+2026-11-04T06:04:01.0012083Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:01.0012589Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:01.0013082Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:01.0013607Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:01.0014093Z ##[endgroup]
+2026-11-04T06:04:01.2991711Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:04:01.2994704Z ##[group]Getting Git version info
+2026-11-04T06:04:01.2995685Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-04T06:04:01.2997785Z [command]/usr/bin/git version
+2026-11-04T06:04:01.3092811Z git version 2.56.0
+2026-11-04T06:04:01.3116299Z ##[endgroup]
+2026-11-04T06:04:01.3138847Z Temporarily overriding HOME='/home/runner/work/_temp/7f42b0c1-b4ae-4ff8-a1c3-27319843b6e6' before making global git config changes
+2026-11-04T06:04:01.3279645Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T06:04:01.3305436Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:01.3310468Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-04T06:04:01.3312851Z ##[group]Initializing the repository
+2026-11-04T06:04:01.3314714Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:01.3400064Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T06:04:01.3401756Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T06:04:01.3402788Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T06:04:01.3403610Z hint: call:
+2026-11-04T06:04:01.3404066Z hint:
+2026-11-04T06:04:01.3404652Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T06:04:01.3405327Z hint:
+2026-11-04T06:04:01.3406019Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T06:04:01.3407023Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T06:04:01.3407852Z hint:
+2026-11-04T06:04:01.3408644Z hint: 	git branch -m <name>
+2026-11-04T06:04:01.3409702Z hint:
+2026-11-04T06:04:01.3411309Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T06:04:01.3413689Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-04T06:04:01.3425681Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:04:01.3486947Z ##[endgroup]
+2026-11-04T06:04:01.3488623Z ##[group]Disabling automatic garbage collection
+2026-11-04T06:04:01.3492760Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T06:04:01.3537978Z ##[endgroup]
+2026-11-04T06:04:01.3539658Z ##[group]Setting up auth
+2026-11-04T06:04:01.3541346Z Removing SSH command configuration
+2026-11-04T06:04:01.3548193Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:04:01.3611896Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T06:04:01.4062786Z Removing HTTP extra header
+2026-11-04T06:04:01.4069603Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:04:01.4118813Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T06:04:01.4375865Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:04:01.4383366Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:04:01.4435346Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T06:04:01.4713180Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T06:04:01.4771880Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:01.4824669Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:01.4882452Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:01.4931908Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:01.4977530Z ##[endgroup]
+2026-11-04T06:04:01.4979314Z ##[group]Fetching the repository
+2026-11-04T06:04:01.4988425Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=32 origin f5bddc124052837befca7735b9e5a46ab708e5a5
+2026-11-04T06:04:01.8765824Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:04:01.8767615Z  * branch            f5bddc124052837befca7735b9e5a46ab708e5a5 -> FETCH_HEAD
+2026-11-04T06:04:01.8778452Z [command]/usr/bin/git rev-parse --verify --quiet f5bddc124052837befca7735b9e5a46ab708e5a5^{object}
+2026-11-04T06:04:01.8821498Z f5bddc124052837befca7735b9e5a46ab708e5a5
+2026-11-04T06:04:01.8829268Z ##[endgroup]
+2026-11-04T06:04:01.8832120Z ##[group]Determining the checkout info
+2026-11-04T06:04:01.8834466Z ##[endgroup]
+2026-11-04T06:04:01.8837389Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T06:04:01.8908584Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T06:04:01.8959351Z ##[group]Checking out the ref
+2026-11-04T06:04:01.8962337Z [command]/usr/bin/git checkout --progress --force f5bddc124052837befca7735b9e5a46ab708e5a5
+2026-11-04T06:04:16.5181800Z Updating files:   0% (1/10357)
+2026-11-04T06:04:16.5244674Z Updating files:   1% (104/10357)
+2026-11-04T06:04:16.5378747Z Updating files:   2% (208/10357)
+2026-11-04T06:04:16.5492743Z Updating files:   3% (311/10357)
+2026-11-04T06:04:16.5540394Z Updating files:   4% (415/10357)
+2026-11-04T06:04:16.5588392Z Updating files:   5% (518/10357)
+2026-11-04T06:04:16.5634225Z Updating files:   6% (622/10357)
+2026-11-04T06:04:16.5674303Z Updating files:   7% (725/10357)
+2026-11-04T06:04:16.5717239Z Updating files:   8% (829/10357)
+2026-11-04T06:04:16.5757941Z Updating files:   9% (933/10357)
+2026-11-04T06:04:16.5800639Z Updating files:  10% (1036/10357)
+2026-11-04T06:04:16.5842136Z Updating files:  11% (1140/10357)
+2026-11-04T06:04:16.5899036Z Updating files:  12% (1243/10357)
+2026-11-04T06:04:16.5996301Z Updating files:  13% (1347/10357)
+2026-11-04T06:04:16.6087114Z Updating files:  14% (1450/10357)
+2026-11-04T06:04:16.6193889Z Updating files:  15% (1554/10357)
+2026-11-04T06:04:16.6281962Z Updating files:  16% (1658/10357)
+2026-11-04T06:04:16.6355726Z Updating files:  17% (1761/10357)
+2026-11-04T06:04:16.6434795Z Updating files:  18% (1865/10357)
+2026-11-04T06:04:16.6506406Z Updating files:  19% (1968/10357)
+2026-11-04T06:04:16.6574304Z Updating files:  20% (2072/10357)
+2026-11-04T06:04:16.6651539Z Updating files:  21% (2175/10357)
+2026-11-04T06:04:16.6744510Z Updating files:  22% (2279/10357)
+2026-11-04T06:04:16.6837267Z Updating files:  23% (2383/10357)
+2026-11-04T06:04:16.6907610Z Updating files:  24% (2486/10357)
+2026-11-04T06:04:16.7013915Z Updating files:  25% (2590/10357)
+2026-11-04T06:04:16.7095658Z Updating files:  26% (2693/10357)
+2026-11-04T06:04:16.7183056Z Updating files:  27% (2797/10357)
+2026-11-04T06:04:16.7323199Z Updating files:  28% (2900/10357)
+2026-11-04T06:04:16.7408589Z Updating files:  29% (3004/10357)
+2026-11-04T06:04:16.7484695Z Updating files:  30% (3108/10357)
+2026-11-04T06:04:16.7557833Z Updating files:  31% (3211/10357)
+2026-11-04T06:04:16.7637866Z Updating files:  32% (3315/10357)
+2026-11-04T06:04:16.7704141Z Updating files:  33% (3418/10357)
+2026-11-04T06:04:16.7779104Z Updating files:  34% (3522/10357)
+2026-11-04T06:04:16.7862188Z Updating files:  35% (3625/10357)
+2026-11-04T06:04:16.7949355Z Updating files:  36% (3729/10357)
+2026-11-04T06:04:16.8033504Z Updating files:  37% (3833/10357)
+2026-11-04T06:04:16.8126184Z Updating files:  38% (3936/10357)
+2026-11-04T06:04:16.8201481Z Updating files:  39% (4040/10357)
+2026-11-04T06:04:16.8281238Z Updating files:  40% (4143/10357)
+2026-11-04T06:04:16.8363140Z Updating files:  41% (4247/10357)
+2026-11-04T06:04:16.8462621Z Updating files:  42% (4350/10357)
+2026-11-04T06:04:16.8558635Z Updating files:  43% (4454/10357)
+2026-11-04T06:04:16.8632040Z Updating files:  44% (4558/10357)
+2026-11-04T06:04:16.8752885Z Updating files:  45% (4661/10357)
+2026-11-04T06:04:16.8828532Z Updating files:  46% (4765/10357)
+2026-11-04T06:04:16.8901347Z Updating files:  47% (4868/10357)
+2026-11-04T06:04:16.8977532Z Updating files:  48% (4972/10357)
+2026-11-04T06:04:16.9063394Z Updating files:  49% (5075/10357)
+2026-11-04T06:04:16.9137612Z Updating files:  50% (5179/10357)
+2026-11-04T06:04:16.9220066Z Updating files:  51% (5283/10357)
+2026-11-04T06:04:16.9303633Z Updating files:  52% (5386/10357)
+2026-11-04T06:04:16.9384033Z Updating files:  53% (5490/10357)
+2026-11-04T06:04:16.9435908Z Updating files:  54% (5593/10357)
+2026-11-04T06:04:16.9522918Z Updating files:  55% (5697/10357)
+2026-11-04T06:04:16.9600429Z Updating files:  56% (5800/10357)
+2026-11-04T06:04:16.9746468Z Updating files:  57% (5904/10357)
+2026-11-04T06:04:16.9879196Z Updating files:  58% (6008/10357)
+2026-11-04T06:04:16.9965372Z Updating files:  59% (6111/10357)
+2026-11-04T06:04:17.0067435Z Updating files:  60% (6215/10357)
+2026-11-04T06:04:17.0129259Z Updating files:  61% (6318/10357)
+2026-11-04T06:04:17.0200860Z Updating files:  62% (6422/10357)
+2026-11-04T06:04:17.0253568Z Updating files:  63% (6525/10357)
+2026-11-04T06:04:17.0305137Z Updating files:  64% (6629/10357)
+2026-11-04T06:04:17.0356212Z Updating files:  65% (6733/10357)
+2026-11-04T06:04:17.0423840Z Updating files:  66% (6836/10357)
+2026-11-04T06:04:17.0487617Z Updating files:  67% (6940/10357)
+2026-11-04T06:04:17.0573983Z Updating files:  68% (7043/10357)
+2026-11-04T06:04:17.0631731Z Updating files:  69% (7147/10357)
+2026-11-04T06:04:17.0668917Z Updating files:  70% (7250/10357)
+2026-11-04T06:04:17.0706477Z Updating files:  71% (7354/10357)
+2026-11-04T06:04:17.0743740Z Updating files:  72% (7458/10357)
+2026-11-04T06:04:17.0856159Z Updating files:  73% (7561/10357)
+2026-11-04T06:04:17.0931124Z Updating files:  74% (7665/10357)
+2026-11-04T06:04:17.0981490Z Updating files:  75% (7768/10357)
+2026-11-04T06:04:17.1041372Z Updating files:  76% (7872/10357)
+2026-11-04T06:04:17.1090884Z Updating files:  77% (7975/10357)
+2026-11-04T06:04:17.1129934Z Updating files:  78% (8079/10357)
+2026-11-04T06:04:17.1205764Z Updating files:  79% (8183/10357)
+2026-11-04T06:04:17.1275504Z Updating files:  80% (8286/10357)
+2026-11-04T06:04:17.1362930Z Updating files:  81% (8390/10357)
+2026-11-04T06:04:17.1416986Z Updating files:  82% (8493/10357)
+2026-11-04T06:04:17.1469651Z Updating files:  83% (8597/10357)
+2026-11-04T06:04:17.1557006Z Updating files:  84% (8700/10357)
+2026-11-04T06:04:17.1624043Z Updating files:  85% (8804/10357)
+2026-11-04T06:04:17.1697353Z Updating files:  86% (8908/10357)
+2026-11-04T06:04:17.1788195Z Updating files:  87% (9011/10357)
+2026-11-04T06:04:17.1894656Z Updating files:  88% (9115/10357)
+2026-11-04T06:04:17.1985304Z Updating files:  89% (9218/10357)
+2026-11-04T06:04:17.2168384Z Updating files:  90% (9322/10357)
+2026-11-04T06:04:17.2287769Z Updating files:  91% (9425/10357)
+2026-11-04T06:04:17.2380780Z Updating files:  92% (9529/10357)
+2026-11-04T06:04:17.2514432Z Updating files:  93% (9633/10357)
+2026-11-04T06:04:17.2601734Z Updating files:  94% (9736/10357)
+2026-11-04T06:04:17.2689459Z Updating files:  95% (9840/10357)
+2026-11-04T06:04:17.2789750Z Updating files:  96% (9943/10357)
+2026-11-04T06:04:17.2867449Z Updating files:  97% (10047/10357)
+2026-11-04T06:04:17.2927366Z Updating files:  98% (10150/10357)
+2026-11-04T06:04:17.3006632Z Updating files:  99% (10254/10357)
+2026-11-04T06:04:17.3007004Z Updating files: 100% (10357/10357)
+2026-11-04T06:04:17.3130596Z Updating files: 100% (10357/10357), done.
+2026-11-04T06:04:17.3131545Z Note: switching to 'f5bddc124052837befca7735b9e5a46ab708e5a5'.
+2026-11-04T06:04:17.3132147Z 
+2026-11-04T06:04:17.3132398Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-04T06:04:17.3132995Z changes and commit them, and you can discard any commits you make in this
+2026-11-04T06:04:17.3133585Z state without impacting any branches by switching back to a branch.
+2026-11-04T06:04:17.3134200Z 
+2026-11-04T06:04:17.3134428Z If you want to create a new branch to retain commits you create, you may
+2026-11-04T06:04:17.3134982Z do so (now or later) by using -c with the switch command. Example:
+2026-11-04T06:04:17.3135288Z 
+2026-11-04T06:04:17.3135414Z   git switch -c <new-branch-name>
+2026-11-04T06:04:17.3135621Z 
+2026-11-04T06:04:17.3135732Z Or undo this operation with:
+2026-11-04T06:04:17.3135920Z 
+2026-11-04T06:04:17.3136016Z   git switch -
+2026-11-04T06:04:17.3136160Z 
+2026-11-04T06:04:17.3136405Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-04T06:04:17.3136786Z 
+2026-11-04T06:04:17.3137048Z HEAD is now at f5bddc1 test: bind native Windows rejection to exact Bazel error XML
+2026-11-04T06:04:17.3162994Z ##[endgroup]
+2026-11-04T06:04:17.3228387Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T06:04:17.3271153Z f5bddc124052837befca7735b9e5a46ab708e5a5
+2026-11-04T06:04:17.3283170Z ##[group]Removing auth
+2026-11-04T06:04:17.3283694Z Removing SSH command configuration
+2026-11-04T06:04:17.3288598Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:04:17.3337056Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T06:04:17.3622942Z Removing HTTP extra header
+2026-11-04T06:04:17.3628323Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:04:17.3676287Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T06:04:17.3949761Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:04:17.3954743Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:04:17.3999498Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-04T06:04:17.4010664Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-04T06:04:17.4011303Z includeif.gitdir:/github/workspace/.git.path
+2026-11-04T06:04:17.4011710Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-04T06:04:17.4015109Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-04T06:04:17.4052962Z /home/runner/work/_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:17.4102992Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:17.4152104Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-04T06:04:17.4189916Z /home/runner/work/_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:17.4205173Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:17.4259778Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-04T06:04:17.4301670Z /github/runner_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:17.4308843Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:17.4357427Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-04T06:04:17.4391347Z /github/runner_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:17.4399211Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config
+2026-11-04T06:04:17.4446975Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T06:04:17.4717061Z Removing credentials config '/home/runner/work/_temp/git-credentials-d46a01c5-d202-4ecb-b0cb-1a1db5284d8d.config'
+2026-11-04T06:04:17.4727794Z ##[endgroup]
+2026-11-04T06:04:17.5009432Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-04T06:04:17.5009856Z with:
+2026-11-04T06:04:17.5010072Z   ref: 00963996f16c067fbd04517d22d3d7e53d1d09a6
+2026-11-04T06:04:17.5010694Z   path: original-lock-source
+2026-11-04T06:04:17.5010952Z   fetch-depth: 1
+2026-11-04T06:04:17.5011160Z   filter: blob:none
+2026-11-04T06:04:17.5011387Z   persist-credentials: false
+2026-11-04T06:04:17.5011666Z   sparse-checkout-cone-mode: false
+2026-11-04T06:04:17.5011952Z   sparse-checkout: /codex-rs/Cargo.lock
+2026-11-04T06:04:17.5012284Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:04:17.5014747Z   token: ***
+2026-11-04T06:04:17.5014950Z   ssh-strict: true
+2026-11-04T06:04:17.5015148Z   ssh-user: git
+2026-11-04T06:04:17.5015338Z   clean: true
+2026-11-04T06:04:17.5015525Z   fetch-tags: false
+2026-11-04T06:04:17.5015734Z   show-progress: true
+2026-11-04T06:04:17.5015941Z   lfs: false
+2026-11-04T06:04:17.5016123Z   submodules: false
+2026-11-04T06:04:17.5016367Z   set-safe-directory: true
+2026-11-04T06:04:17.5016600Z env:
+2026-11-04T06:04:17.5016793Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:17.5017015Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:17.5017235Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:17.5017485Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:17.5017708Z ##[endgroup]
+2026-11-04T06:04:17.5948485Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:04:17.5949813Z ##[group]Getting Git version info
+2026-11-04T06:04:17.5951191Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source'
+2026-11-04T06:04:17.5994454Z [command]/usr/bin/git version
+2026-11-04T06:04:17.6046233Z git version 2.56.0
+2026-11-04T06:04:17.6074683Z ##[endgroup]
+2026-11-04T06:04:17.6092060Z Temporarily overriding HOME='/home/runner/work/_temp/5512071b-150f-4d56-adb9-a30758eee9c8' before making global git config changes
+2026-11-04T06:04:17.6093466Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T06:04:17.6098152Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source
+2026-11-04T06:04:17.6144702Z ##[group]Initializing the repository
+2026-11-04T06:04:17.6151977Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source
+2026-11-04T06:04:17.6210078Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git/
+2026-11-04T06:04:17.6211550Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T06:04:17.6212348Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T06:04:17.6212895Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T06:04:17.6213284Z hint: call:
+2026-11-04T06:04:17.6213480Z hint:
+2026-11-04T06:04:17.6213730Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T06:04:17.6214069Z hint:
+2026-11-04T06:04:17.6214366Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T06:04:17.6214869Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T06:04:17.6215253Z hint:
+2026-11-04T06:04:17.6215446Z hint: 	git branch -m <name>
+2026-11-04T06:04:17.6215745Z hint:
+2026-11-04T06:04:17.6216296Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T06:04:17.6226731Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:04:17.6273248Z ##[endgroup]
+2026-11-04T06:04:17.6273703Z ##[group]Disabling automatic garbage collection
+2026-11-04T06:04:17.6279763Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T06:04:17.6317243Z ##[endgroup]
+2026-11-04T06:04:17.6317689Z ##[group]Setting up auth
+2026-11-04T06:04:17.6319052Z Removing SSH command configuration
+2026-11-04T06:04:17.6328090Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:04:17.6369106Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T06:04:17.6675749Z Removing HTTP extra header
+2026-11-04T06:04:17.6683025Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:04:17.6731919Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T06:04:17.7034612Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:04:17.7042752Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:04:17.7092197Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T06:04:17.7379541Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T06:04:17.7447901Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git.path /home/runner/work/_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:17.7505918Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:17.7572991Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/original-lock-source/.git.path /github/runner_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:17.7624700Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/original-lock-source/.git/worktrees/*.path /github/runner_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:17.7675138Z ##[endgroup]
+2026-11-04T06:04:17.7676140Z ##[group]Fetching the repository
+2026-11-04T06:04:17.7691307Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin 00963996f16c067fbd04517d22d3d7e53d1d09a6
+2026-11-04T06:04:18.0638680Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-04T06:04:18.0639559Z  * branch            00963996f16c067fbd04517d22d3d7e53d1d09a6 -> FETCH_HEAD
+2026-11-04T06:04:18.0659058Z [command]/usr/bin/git rev-parse --verify --quiet 00963996f16c067fbd04517d22d3d7e53d1d09a6^{object}
+2026-11-04T06:04:18.0706251Z 00963996f16c067fbd04517d22d3d7e53d1d09a6
+2026-11-04T06:04:18.0713727Z ##[endgroup]
+2026-11-04T06:04:18.0714727Z ##[group]Determining the checkout info
+2026-11-04T06:04:18.0716439Z ##[endgroup]
+2026-11-04T06:04:18.0717113Z ##[group]Setting up sparse checkout
+2026-11-04T06:04:18.0724267Z [command]/usr/bin/git config core.sparseCheckout true
+2026-11-04T06:04:18.0782050Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+2026-11-04T06:04:18.0825166Z .git/info/sparse-checkout
+2026-11-04T06:04:18.0835313Z ##[endgroup]
+2026-11-04T06:04:18.0836083Z ##[group]Checking out the ref
+2026-11-04T06:04:18.0843097Z [command]/usr/bin/git checkout --progress --force 00963996f16c067fbd04517d22d3d7e53d1d09a6
+2026-11-04T06:04:18.5264497Z Note: switching to '00963996f16c067fbd04517d22d3d7e53d1d09a6'.
+2026-11-04T06:04:18.5265160Z 
+2026-11-04T06:04:18.5265707Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-04T06:04:18.5266574Z changes and commit them, and you can discard any commits you make in this
+2026-11-04T06:04:18.5267402Z state without impacting any branches by switching back to a branch.
+2026-11-04T06:04:18.5267867Z 
+2026-11-04T06:04:18.5268495Z If you want to create a new branch to retain commits you create, you may
+2026-11-04T06:04:18.5269295Z do so (now or later) by using -c with the switch command. Example:
+2026-11-04T06:04:18.5269746Z 
+2026-11-04T06:04:18.5269917Z   git switch -c <new-branch-name>
+2026-11-04T06:04:18.5270534Z 
+2026-11-04T06:04:18.5270699Z Or undo this operation with:
+2026-11-04T06:04:18.5270963Z 
+2026-11-04T06:04:18.5271098Z   git switch -
+2026-11-04T06:04:18.5271283Z 
+2026-11-04T06:04:18.5271623Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-04T06:04:18.5271941Z 
+2026-11-04T06:04:18.5272177Z HEAD is now at 0096399 fix(qualification): use the running workflow Git Bash on Windows
+2026-11-04T06:04:18.5275106Z ##[endgroup]
+2026-11-04T06:04:18.5330724Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T06:04:18.5368884Z 00963996f16c067fbd04517d22d3d7e53d1d09a6
+2026-11-04T06:04:18.5379414Z ##[group]Removing auth
+2026-11-04T06:04:18.5379839Z Removing SSH command configuration
+2026-11-04T06:04:18.5385169Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:04:18.5434319Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T06:04:18.5706597Z Removing HTTP extra header
+2026-11-04T06:04:18.5722845Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:04:18.5788391Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T06:04:18.6124097Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:04:18.6125040Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:04:18.6192072Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git.path
+2026-11-04T06:04:18.6193455Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git/worktrees/*.path
+2026-11-04T06:04:18.6194531Z includeif.gitdir:/github/workspace/original-lock-source/.git.path
+2026-11-04T06:04:18.6195362Z includeif.gitdir:/github/workspace/original-lock-source/.git/worktrees/*.path
+2026-11-04T06:04:18.6202589Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git.path
+2026-11-04T06:04:18.6271248Z /home/runner/work/_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:18.6294161Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git.path /home/runner/work/_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:18.6365599Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git/worktrees/*.path
+2026-11-04T06:04:18.6397694Z /home/runner/work/_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:18.6426500Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:18.6517102Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/original-lock-source/.git.path
+2026-11-04T06:04:18.6546830Z /github/runner_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:18.6561598Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/original-lock-source/.git.path /github/runner_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:18.6628289Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/original-lock-source/.git/worktrees/*.path
+2026-11-04T06:04:18.6677284Z /github/runner_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:18.6687196Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/original-lock-source/.git/worktrees/*.path /github/runner_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config
+2026-11-04T06:04:18.6756354Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T06:04:18.7130878Z Removing credentials config '/home/runner/work/_temp/git-credentials-4b7ea6a5-6fb1-4f39-b916-d549caaad664.config'
+2026-11-04T06:04:18.7142571Z ##[endgroup]
+2026-11-04T06:04:18.7422169Z Prepare all required actions
+2026-11-04T06:04:18.7422866Z Getting action download info
+2026-11-04T06:04:18.7984912Z Download action repository 'actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7' (SHA:668228422ae6a00e4ad889ee87cd7109ec5666a7)
+2026-11-04T06:04:19.0137326Z ##[group]Run ./.github/actions/prepare-bazel-ci
+2026-11-04T06:04:19.0137849Z with:
+2026-11-04T06:04:19.0138094Z   target: x86_64-unknown-linux-gnu
+2026-11-04T06:04:19.0138518Z   cache-scope: windows-process-fixtures-lock
+2026-11-04T06:04:19.0138804Z env:
+2026-11-04T06:04:19.0138993Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.0139216Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.0139525Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.0139911Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.0140483Z ##[endgroup]
+2026-11-04T06:04:19.0214509Z ##[start-action display=Set up Bazel CI;id=__self.setup_bazel]
+2026-11-04T06:04:19.0316075Z Prepare all required actions
+2026-11-04T06:04:19.0316594Z Getting action download info
+2026-11-04T06:04:19.0916629Z Download action repository 'bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86' (SHA:c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86)
+2026-11-04T06:04:19.3362099Z ##[group]Run ./.github/actions/setup-bazel-ci
+2026-11-04T06:04:19.3362636Z with:
+2026-11-04T06:04:19.3362991Z   target: x86_64-unknown-linux-gnu
+2026-11-04T06:04:19.3363417Z env:
+2026-11-04T06:04:19.3363769Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.3364163Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.3364546Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.3364974Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.3365359Z ##[endgroup]
+2026-11-04T06:04:19.3376132Z ##[start-action display=Run ./.github/actions/setup-ci;id=__self.setup_bazel.setup_ci]
+2026-11-04T06:04:19.3542762Z Prepare all required actions
+2026-11-04T06:04:19.3543648Z Getting action download info
+2026-11-04T06:04:19.4199959Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-04T06:04:19.4927630Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-04T06:04:19.6345246Z ##[group]Run ./.github/actions/setup-ci
+2026-11-04T06:04:19.6345538Z env:
+2026-11-04T06:04:19.6345742Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.6345977Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.6346207Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.6346465Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.6346691Z ##[endgroup]
+2026-11-04T06:04:19.6355888Z ##[start-action display=Configure Dev Drive (Windows);id=__self.setup_bazel.setup_ci.__run]
+2026-11-04T06:04:19.6395880Z ##[end-action id=__self.setup_bazel.setup_ci.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:04:19.6398385Z ##[start-action display=Configure CI build root (Unix);id=__self.setup_bazel.setup_ci.__run_2]
+2026-11-04T06:04:19.6443895Z ##[group]Run echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
+2026-11-04T06:04:19.6444449Z [36;1mecho "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"[0m
+2026-11-04T06:04:19.6469187Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:19.6469543Z env:
+2026-11-04T06:04:19.6469755Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.6469995Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.6470427Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.6470694Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.6470919Z ##[endgroup]
+2026-11-04T06:04:19.6555653Z ##[end-action id=__self.setup_bazel.setup_ci.__run_2;outcome=success;conclusion=success;duration_ms=15]
+2026-11-04T06:04:19.6558411Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=__self.setup_bazel.setup_ci.__run_3]
+2026-11-04T06:04:19.6585506Z ##[group]Run sudo sysctl -w kernel.unprivileged_userns_clone=1
+2026-11-04T06:04:19.6585958Z [36;1msudo sysctl -w kernel.unprivileged_userns_clone=1[0m
+2026-11-04T06:04:19.6586752Z [36;1mif sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then[0m
+2026-11-04T06:04:19.6587337Z [36;1m  sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0[0m
+2026-11-04T06:04:19.6587694Z [36;1mfi[0m
+2026-11-04T06:04:19.6608068Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:19.6608411Z env:
+2026-11-04T06:04:19.6608624Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.6608860Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.6609086Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.6609345Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.6609607Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:19.6609890Z ##[endgroup]
+2026-11-04T06:04:19.6726145Z kernel.unprivileged_userns_clone = 1
+2026-11-04T06:04:19.7259342Z kernel.apparmor_restrict_unprivileged_userns = 0
+2026-11-04T06:04:19.7278180Z ##[end-action id=__self.setup_bazel.setup_ci.__run_3;outcome=success;conclusion=success;duration_ms=71]
+2026-11-04T06:04:19.7281407Z ##[start-action display=Configure CI build paths;id=__self.setup_bazel.setup_ci.configure_ci_build_paths]
+2026-11-04T06:04:19.7306091Z ##[group]Run set -euo pipefail
+2026-11-04T06:04:19.7306415Z [36;1mset -euo pipefail[0m
+2026-11-04T06:04:19.7306785Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-11-04T06:04:19.7307304Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-11-04T06:04:19.7307808Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-11-04T06:04:19.7308209Z [36;1m# confuse test MANIFEST handling.[0m
+2026-11-04T06:04:19.7308509Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-11-04T06:04:19.7308841Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-11-04T06:04:19.7309238Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-11-04T06:04:19.7309817Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-11-04T06:04:19.7310868Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-11-04T06:04:19.7311205Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-11-04T06:04:19.7311450Z [36;1m[0m
+2026-11-04T06:04:19.7311644Z [36;1mbuild_dirs=([0m
+2026-11-04T06:04:19.7311867Z [36;1m  "$bazel_output_base"[0m
+2026-11-04T06:04:19.7312115Z [36;1m  "$bazel_output_user_root"[0m
+2026-11-04T06:04:19.7312374Z [36;1m  "$bazel_repository_cache"[0m
+2026-11-04T06:04:19.7312635Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-11-04T06:04:19.7312904Z [36;1m  "$cargo_target_dir"[0m
+2026-11-04T06:04:19.7313134Z [36;1m  "$tmp"[0m
+2026-11-04T06:04:19.7313321Z [36;1m)[0m
+2026-11-04T06:04:19.7313521Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-11-04T06:04:19.7314082Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-11-04T06:04:19.7314551Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-11-04T06:04:19.7314895Z [36;1m[0m
+2026-11-04T06:04:19.7315068Z [36;1m{[0m
+2026-11-04T06:04:19.7315297Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-11-04T06:04:19.7315633Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-11-04T06:04:19.7315992Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-11-04T06:04:19.7316382Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-11-04T06:04:19.7316792Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-11-04T06:04:19.7317188Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-11-04T06:04:19.7317484Z [36;1m  echo "TEMP=$tmp"[0m
+2026-11-04T06:04:19.7317719Z [36;1m  echo "TMP=$tmp"[0m
+2026-11-04T06:04:19.7317946Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-11-04T06:04:19.7338276Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:19.7338623Z env:
+2026-11-04T06:04:19.7338829Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.7339074Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.7339299Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.7339726Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.7340009Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:19.7340624Z ##[endgroup]
+2026-11-04T06:04:19.7429287Z ##[end-action id=__self.setup_bazel.setup_ci.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=14]
+2026-11-04T06:04:19.7434962Z ##[start-action display=Prefer the Git CLI for Cargo git dependencies;id=__self.setup_bazel.setup_ci.__run_4]
+2026-11-04T06:04:19.7460007Z ##[group]Run echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+2026-11-04T06:04:19.7460845Z [36;1mecho "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"[0m
+2026-11-04T06:04:19.7481340Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:19.7481711Z env:
+2026-11-04T06:04:19.7481926Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.7482162Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.7482400Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.7482656Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.7482928Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:19.7483315Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:19.7483722Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:19.7484070Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:19.7484502Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:19.7485120Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:19.7485685Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:19.7486029Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:19.7486319Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:19.7486575Z ##[endgroup]
+2026-11-04T06:04:19.7538726Z ##[end-action id=__self.setup_bazel.setup_ci.__run_4;outcome=success;conclusion=success;duration_ms=10]
+2026-11-04T06:04:19.7541744Z ##[start-action display=Install DotSlash;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash]
+2026-11-04T06:04:19.7606708Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-04T06:04:19.7607128Z env:
+2026-11-04T06:04:19.7607328Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.7607557Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.7607784Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.7608031Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.7608285Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:19.7608677Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:19.7609083Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:19.7609429Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:19.7610041Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:19.7610972Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:19.7611550Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:19.7611894Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:19.7612171Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:19.7612438Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:19.7612688Z ##[endgroup]
+2026-11-04T06:04:19.7651521Z ##[start-action display=Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.configure]
+2026-11-04T06:04:19.7679938Z ##[group]Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT
+2026-11-04T06:04:19.7680686Z [36;1mecho platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:19.7684112Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:19.7705010Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:19.7705368Z env:
+2026-11-04T06:04:19.7705575Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:19.7705820Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:19.7706047Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:19.7706298Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:19.7706555Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:19.7706945Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:19.7707362Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:19.7707712Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:19.7708138Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:19.7708749Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:19.7709288Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:19.7709628Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:19.7709900Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:19.7710501Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:19.7710840Z ##[endgroup]
+2026-11-04T06:04:20.1430089Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=377]
+2026-11-04T06:04:20.1435868Z ##[start-action display=Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin";id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run]
+2026-11-04T06:04:20.1456547Z ##[group]Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin"
+2026-11-04T06:04:20.1457011Z [36;1mmkdir -p "/home/runner/work/_temp/install-dotslash/bin"[0m
+2026-11-04T06:04:20.1478419Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:20.1478772Z env:
+2026-11-04T06:04:20.1478970Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:20.1479201Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:20.1479425Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:20.1479687Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:20.1479950Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:20.1481039Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:20.1481474Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:20.1481826Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:20.1482260Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:20.1482856Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:20.1483396Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:20.1483939Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.1484226Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.1484501Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:20.1484753Z ##[endgroup]
+2026-11-04T06:04:20.1590579Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=11]
+2026-11-04T06:04:20.1597469Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2]
+2026-11-04T06:04:20.1621260Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \
+2026-11-04T06:04:20.1622169Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \[0m
+2026-11-04T06:04:20.1625039Z [36;1m--header "authorization: ***" \[0m
+2026-11-04T06:04:20.1625484Z [36;1m--output "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-04T06:04:20.1625950Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-04T06:04:20.1647540Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:20.1648074Z env:
+2026-11-04T06:04:20.1648286Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:20.1648525Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:20.1648748Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:20.1649005Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:20.1649272Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:20.1649667Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:20.1650071Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:20.1650762Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:20.1651218Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:20.1651823Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:20.1652379Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:20.1652724Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.1653017Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.1653289Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:20.1653542Z ##[endgroup]
+2026-11-04T06:04:20.4706923Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=310]
+2026-11-04T06:04:20.4715310Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/";id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3]
+2026-11-04T06:04:20.4748884Z ##[group]Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"
+2026-11-04T06:04:20.4749753Z [36;1mtar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"[0m
+2026-11-04T06:04:20.4770969Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:20.4771326Z env:
+2026-11-04T06:04:20.4771538Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:20.4771773Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:20.4772000Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:20.4772252Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:20.4772519Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:20.4772914Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:20.4773320Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:20.4773670Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:20.4774096Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:20.4774712Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:20.4775520Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:20.4775866Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.4776147Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.4776430Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:20.4776682Z ##[endgroup]
+2026-11-04T06:04:20.4845445Z dotslash
+2026-11-04T06:04:20.4976012Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3;outcome=success;conclusion=success;duration_ms=25]
+2026-11-04T06:04:20.4981215Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -O >"/home/runner/work/_temp/install-dotslash/bin/dotslash.exe" --force-local;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4]
+2026-11-04T06:04:20.4986141Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:04:20.4989105Z ##[start-action display=Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5]
+2026-11-04T06:04:20.5008968Z ##[group]Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-04T06:04:20.5009674Z [36;1mecho "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-04T06:04:20.5029994Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:20.5030583Z env:
+2026-11-04T06:04:20.5030787Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:20.5031017Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:20.5031236Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:20.5031497Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:20.5031752Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:20.5032148Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:20.5032552Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:20.5032922Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:20.5033364Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:20.5033977Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:20.5034533Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:20.5034884Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5035166Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5035434Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:20.5035678Z ##[endgroup]
+2026-11-04T06:04:20.5087677Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=9]
+2026-11-04T06:04:20.5090635Z ##[start-action display=Run dotslash --version;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6]
+2026-11-04T06:04:20.5110564Z ##[group]Run dotslash --version
+2026-11-04T06:04:20.5110885Z [36;1mdotslash --version[0m
+2026-11-04T06:04:20.5133375Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:20.5133732Z env:
+2026-11-04T06:04:20.5133930Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:20.5134161Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:20.5134395Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:20.5134648Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:20.5134902Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:20.5135289Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:20.5135702Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:20.5136052Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:20.5136485Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:20.5137097Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:20.5137643Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:20.5138165Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5138448Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5138714Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:20.5138961Z ##[endgroup]
+2026-11-04T06:04:20.5194233Z DotSlash 0.5.9
+2026-11-04T06:04:20.5203990Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=11]
+2026-11-04T06:04:20.5218470Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash;outcome=success;conclusion=success;duration_ms=767]
+2026-11-04T06:04:20.5221378Z ##[start-action display=Install just;id=__self.setup_bazel.setup_ci.__taiki-e_install-action]
+2026-11-04T06:04:20.5272465Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-04T06:04:20.5272852Z with:
+2026-11-04T06:04:20.5273034Z   tool: just@1.51.0
+2026-11-04T06:04:20.5273233Z   checksum: true
+2026-11-04T06:04:20.5273452Z   fallback: cargo-binstall
+2026-11-04T06:04:20.5273678Z env:
+2026-11-04T06:04:20.5273864Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:20.5274088Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:20.5274307Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:20.5274553Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:20.5274975Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:20.5275373Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:20.5275779Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:20.5276127Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:20.5276559Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:20.5277165Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:20.5277710Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:20.5278051Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5278335Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5278602Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:20.5278851Z ##[endgroup]
+2026-11-04T06:04:20.5283247Z ##[start-action display=Run set -eu;id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run]
+2026-11-04T06:04:20.5303424Z ##[group]Run set -eu
+2026-11-04T06:04:20.5303686Z [36;1mset -eu[0m
+2026-11-04T06:04:20.5303922Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-04T06:04:20.5304270Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-04T06:04:20.5304722Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-04T06:04:20.5305159Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-04T06:04:20.5305481Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-04T06:04:20.5305802Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-04T06:04:20.5306113Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-04T06:04:20.5306429Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-04T06:04:20.5306691Z [36;1m    else[0m
+2026-11-04T06:04:20.5306901Z [36;1m      apk --no-cache add bash[0m
+2026-11-04T06:04:20.5307153Z [36;1m    fi[0m
+2026-11-04T06:04:20.5307364Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-04T06:04:20.5307605Z [36;1m  else[0m
+2026-11-04T06:04:20.5307857Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-11-04T06:04:20.5308169Z [36;1m    exit 1[0m
+2026-11-04T06:04:20.5308364Z [36;1m  fi[0m
+2026-11-04T06:04:20.5308554Z [36;1mfi[0m
+2026-11-04T06:04:20.5445276Z shell: /usr/bin/sh -e {0}
+2026-11-04T06:04:20.5445560Z env:
+2026-11-04T06:04:20.5445772Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:20.5446023Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:20.5446251Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:20.5446507Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:20.5446766Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:20.5447175Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:20.5447781Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:20.5448149Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:20.5448612Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:20.5449232Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:20.5449792Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:20.5450158Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5450797Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5451081Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:20.5451336Z ##[endgroup]
+2026-11-04T06:04:20.5525033Z ##[end-action id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=24]
+2026-11-04T06:04:20.5530590Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run_2]
+2026-11-04T06:04:20.5549601Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-04T06:04:20.5550567Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-04T06:04:20.5571796Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:20.5572139Z env:
+2026-11-04T06:04:20.5572342Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:20.5572578Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:20.5572803Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:20.5573061Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:20.5573319Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:20.5573722Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:20.5574137Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:20.5574496Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:20.5574940Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:20.5575558Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:20.5576108Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:20.5576449Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5576783Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:20.5577048Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:20.5577301Z   INPUT_TOOL: just@1.51.0
+2026-11-04T06:04:20.5577527Z   INPUT_CHECKSUM: true
+2026-11-04T06:04:20.5589572Z   INPUT_FALLBACK: cargo-binstall
+2026-11-04T06:04:20.5592869Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-04T06:04:20.5593137Z   ACTION_USER_AGENT:  ()
+2026-11-04T06:04:20.5593365Z ##[endgroup]
+2026-11-04T06:04:20.5845839Z info: host platform: x86_64_linux
+2026-11-04T06:04:20.5959262Z ##[warning]just@1.51.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-11-04T06:04:20.5960038Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-04T06:04:20.5986144Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-04T06:04:20.6346796Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-04T06:04:20.8863058Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-04T06:04:21.0212637Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-11-04T06:04:21.0215642Z + cargo-binstall binstall -V
+2026-11-04T06:04:21.0226309Z 1.15.11
+2026-11-04T06:04:21.0350810Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-04T06:04:30.0854960Z  WARN The package just v1.51.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-11-04T06:04:30.0856002Z  INFO This will install the following binaries:
+2026-11-04T06:04:30.0856623Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-11-04T06:04:30.0857506Z  INFO Installing binaries...
+2026-11-04T06:04:30.0875343Z  INFO Done in 9.063234569s
+2026-11-04T06:04:30.0898796Z ##[end-action id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=9536]
+2026-11-04T06:04:30.0904706Z ##[end-action id=__self.setup_bazel.setup_ci.__taiki-e_install-action;outcome=success;conclusion=success;duration_ms=9568]
+2026-11-04T06:04:30.0907672Z ##[start-action display=Make DotSlash available in PATH (Unix);id=__self.setup_bazel.setup_ci.__run_5]
+2026-11-04T06:04:30.0932222Z ##[group]Run if [[ -w /usr/local/bin ]]; then
+2026-11-04T06:04:30.0932572Z [36;1mif [[ -w /usr/local/bin ]]; then[0m
+2026-11-04T06:04:30.0932876Z [36;1m  cp "$(which dotslash)" /usr/local/bin[0m
+2026-11-04T06:04:30.0933154Z [36;1melse[0m
+2026-11-04T06:04:30.0933389Z [36;1m  sudo cp "$(which dotslash)" /usr/local/bin[0m
+2026-11-04T06:04:30.0933680Z [36;1mfi[0m
+2026-11-04T06:04:30.0954386Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:30.0954748Z env:
+2026-11-04T06:04:30.0954953Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:30.0955184Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:30.0955416Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:30.0955681Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:30.0956147Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:30.0956563Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:30.0956993Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:30.0957353Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:30.0957786Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:30.0958391Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:30.0958961Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:30.0959313Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:30.0959602Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:30.0959872Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:30.0960119Z ##[endgroup]
+2026-11-04T06:04:30.1055609Z ##[end-action id=__self.setup_bazel.setup_ci.__run_5;outcome=success;conclusion=success;duration_ms=14]
+2026-11-04T06:04:30.1058279Z ##[start-action display=Make DotSlash available in PATH (Windows);id=__self.setup_bazel.setup_ci.__run_6]
+2026-11-04T06:04:30.1062876Z ##[end-action id=__self.setup_bazel.setup_ci.__run_6;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:04:30.1065094Z ##[start-action display=Enable Git long paths (Windows);id=__self.setup_bazel.setup_ci.__run_7]
+2026-11-04T06:04:30.1068610Z ##[end-action id=__self.setup_bazel.setup_ci.__run_7;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:04:30.1096844Z ##[end-action id=__self.setup_bazel.setup_ci;outcome=success;conclusion=success;duration_ms=10771]
+2026-11-04T06:04:30.1099049Z ##[start-action display=Set up Bazel;id=__self.setup_bazel.__bazel-contrib_setup-bazel]
+2026-11-04T06:04:30.1149959Z ##[group]Run bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+2026-11-04T06:04:30.1150743Z with:
+2026-11-04T06:04:30.1150954Z   bazelisk-version: 1.28.1
+2026-11-04T06:04:30.1151239Z   output-base: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:30.1151532Z   bazelisk-cache: false
+2026-11-04T06:04:30.1151882Z   cache-save: true
+2026-11-04T06:04:30.1152088Z   cache-version: 1
+2026-11-04T06:04:30.1152280Z   disk-cache: false
+2026-11-04T06:04:30.1152476Z   module-root: .
+2026-11-04T06:04:30.1152683Z   repository-cache: false
+2026-11-04T06:04:30.1155026Z   token: ***
+2026-11-04T06:04:30.1155218Z env:
+2026-11-04T06:04:30.1155407Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:30.1155639Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:30.1155857Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:30.1156106Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:30.1156362Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:30.1157015Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:30.1157419Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:30.1157775Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:30.1158210Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:30.1158813Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:30.1159352Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:30.1159696Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:30.1159972Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:30.1160632Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:30.1160917Z ##[endgroup]
+2026-11-04T06:04:30.2785862Z ##[group]Configure Bazel
+2026-11-04T06:04:30.2786824Z Configuration:
+2026-11-04T06:04:30.2787333Z {
+2026-11-04T06:04:30.2787760Z   "baseCacheKey": "setup-bazel-1-linux-x64",
+2026-11-04T06:04:30.2788123Z   "cacheSave": true,
+2026-11-04T06:04:30.2788348Z   "bazeliskCache": {
+2026-11-04T06:04:30.2788555Z     "enabled": false,
+2026-11-04T06:04:30.2788763Z     "files": [
+2026-11-04T06:04:30.2788987Z       "./.bazelversion"
+2026-11-04T06:04:30.2789196Z     ],
+2026-11-04T06:04:30.2790112Z     "name": "bazelisk",
+2026-11-04T06:04:30.2790756Z     "paths": [
+2026-11-04T06:04:30.2791059Z       "/home/runner/.cache/bazelisk"
+2026-11-04T06:04:30.2791371Z     ]
+2026-11-04T06:04:30.2791545Z   },
+2026-11-04T06:04:30.2791727Z   "bazeliskVersion": "1.28.1",
+2026-11-04T06:04:30.2791968Z   "bazelrc": [],
+2026-11-04T06:04:30.2792157Z   "diskCache": {
+2026-11-04T06:04:30.2792348Z     "enabled": false,
+2026-11-04T06:04:30.2792554Z     "files": [
+2026-11-04T06:04:30.2792742Z       "./MODULE.bazel",
+2026-11-04T06:04:30.2793023Z       "./WORKSPACE.bazel",
+2026-11-04T06:04:30.2793421Z       "./WORKSPACE.bzlmod",
+2026-11-04T06:04:30.2793795Z       "./WORKSPACE",
+2026-11-04T06:04:30.2794125Z       "./**/BUILD.bazel",
+2026-11-04T06:04:30.2794485Z       "./**/BUILD"
+2026-11-04T06:04:30.2794680Z     ],
+2026-11-04T06:04:30.2794851Z     "name": "disk",
+2026-11-04T06:04:30.2795045Z     "paths": [
+2026-11-04T06:04:30.2795259Z       "/home/runner/.cache/bazel-disk"
+2026-11-04T06:04:30.2795517Z     ]
+2026-11-04T06:04:30.2795705Z   },
+2026-11-04T06:04:30.2795882Z   "externalCache": {},
+2026-11-04T06:04:30.2796240Z   "paths": {
+2026-11-04T06:04:30.2796679Z     "bazelExternal": "/home/runner/.cache/codex-ci/o/external",
+2026-11-04T06:04:30.2797300Z     "bazelOutputBase": "/home/runner/.cache/codex-ci/o",
+2026-11-04T06:04:30.2797618Z     "bazelrc": [
+2026-11-04T06:04:30.2797822Z       "/home/runner/.bazelrc"
+2026-11-04T06:04:30.2798038Z     ]
+2026-11-04T06:04:30.2798200Z   },
+2026-11-04T06:04:30.2798880Z   "os": {
+2026-11-04T06:04:30.2799291Z     "arch": "x64",
+2026-11-04T06:04:30.2799686Z     "platform": "linux"
+2026-11-04T06:04:30.2800068Z   },
+2026-11-04T06:04:30.2800708Z   "repositoryCache": {
+2026-11-04T06:04:30.2801120Z     "enabled": false,
+2026-11-04T06:04:30.2801378Z     "files": [
+2026-11-04T06:04:30.2801621Z       "./MODULE.bazel",
+2026-11-04T06:04:30.2802083Z       "./WORKSPACE.bazel",
+2026-11-04T06:04:30.2802536Z       "./WORKSPACE.bzlmod",
+2026-11-04T06:04:30.2802826Z       "./WORKSPACE"
+2026-11-04T06:04:30.2803076Z     ],
+2026-11-04T06:04:30.2803304Z     "name": "repository",
+2026-11-04T06:04:30.2803581Z     "paths": [
+2026-11-04T06:04:30.2803848Z       "/home/runner/.cache/bazel-repo"
+2026-11-04T06:04:30.2804164Z     ]
+2026-11-04T06:04:30.2804373Z   }
+2026-11-04T06:04:30.2804584Z }
+2026-11-04T06:04:30.2805051Z ##[endgroup]
+2026-11-04T06:04:30.2805483Z ##[group]Setup Bazelisk
+2026-11-04T06:04:31.0565343Z ##[endgroup]
+2026-11-04T06:04:31.0686566Z ##[end-action id=__self.setup_bazel.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=958]
+2026-11-04T06:04:31.0690941Z ##[start-action display=Configure Bazel repository cache;id=__self.setup_bazel.configure_bazel_repository_cache]
+2026-11-04T06:04:31.0712715Z ##[group]Run "repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+2026-11-04T06:04:31.0713600Z [36;1m"repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append[0m
+2026-11-04T06:04:31.0735877Z shell: /usr/bin/pwsh -command ". '{0}'"
+2026-11-04T06:04:31.0736179Z env:
+2026-11-04T06:04:31.0736381Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:31.0736616Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:31.0736841Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:31.0737098Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:31.0737368Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:31.0737765Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:31.0738184Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:31.0738538Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:31.0738970Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:31.0739585Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:31.0740133Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:31.0740996Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:31.0741295Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:31.0741575Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:31.0744059Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:31.0744310Z ##[endgroup]
+2026-11-04T06:04:35.6604638Z ##[end-action id=__self.setup_bazel.configure_bazel_repository_cache;outcome=success;conclusion=success;duration_ms=4591]
+2026-11-04T06:04:35.6607533Z ##[start-action display=Expose MSVC SDK environment (Windows);id=__self.setup_bazel.__run]
+2026-11-04T06:04:35.6612231Z ##[end-action id=__self.setup_bazel.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:04:35.6614509Z ##[start-action display=Compute cache-stable Windows Bazel PATH;id=__self.setup_bazel.__run_2]
+2026-11-04T06:04:35.6618097Z ##[end-action id=__self.setup_bazel.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:04:35.6625360Z ##[end-action id=__self.setup_bazel;outcome=success;conclusion=success;duration_ms=16641]
+2026-11-04T06:04:35.6627426Z ##[start-action display=Configure fail-closed release lockdown root;id=__self.__run]
+2026-11-04T06:04:35.6632468Z ##[end-action id=__self.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:04:35.7362126Z ##[start-action display=Compute bazel repository cache key;id=__self.cache_bazel_repository_key]
+2026-11-04T06:04:35.7383000Z ##[group]Run echo "repository-cache-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-${CACHE_HASH}" >> "${GITHUB_OUTPUT}"
+2026-11-04T06:04:35.7383794Z [36;1mecho "repository-cache-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-${CACHE_HASH}" >> "${GITHUB_OUTPUT}"[0m
+2026-11-04T06:04:35.7384523Z [36;1mecho "repository-cache-restore-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-" >> "${GITHUB_OUTPUT}"[0m
+2026-11-04T06:04:35.7404666Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:35.7405022Z env:
+2026-11-04T06:04:35.7405223Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:35.7405462Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:35.7405715Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:35.7405975Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:35.7406240Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:35.7406641Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:35.7407046Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:35.7407397Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:35.7407829Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:35.7408433Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:35.7408979Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:35.7409510Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:35.7409800Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:35.7410070Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:35.7412924Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:35.7413223Z   CACHE_SCOPE: windows-process-fixtures-lock
+2026-11-04T06:04:35.7413534Z   TARGET: x86_64-unknown-linux-gnu
+2026-11-04T06:04:35.7413910Z   CACHE_HASH: b5ba8f1c0200a59c80506b2507fae3990d85d03e6c2034cdd3b651e3cba00f93
+2026-11-04T06:04:35.7414301Z ##[endgroup]
+2026-11-04T06:04:35.7482268Z ##[end-action id=__self.cache_bazel_repository_key;outcome=success;conclusion=success;duration_ms=11]
+2026-11-04T06:04:35.7485714Z ##[start-action display=Restore bazel repository cache;id=__self.cache_bazel_repository_restore]
+2026-11-04T06:04:35.7523608Z ##[group]Run actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-04T06:04:35.7523995Z with:
+2026-11-04T06:04:35.7524277Z   path: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:35.7525017Z   key: bazel-cache-windows-process-fixtures-lock-x86_64-unknown-linux-gnu-b5ba8f1c0200a59c80506b2507fae3990d85d03e6c2034cdd3b651e3cba00f93
+2026-11-04T06:04:35.7526669Z   restore-keys: bazel-cache-windows-process-fixtures-lock-x86_64-unknown-linux-gnu-
+
+2026-11-04T06:04:35.7527404Z   enableCrossOsArchive: false
+2026-11-04T06:04:35.7528161Z   fail-on-cache-miss: false
+2026-11-04T06:04:35.7528473Z   lookup-only: false
+2026-11-04T06:04:35.7528689Z env:
+2026-11-04T06:04:35.7528972Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:35.7529325Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:35.7529656Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:35.7530068Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:35.7531092Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:35.7532098Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:35.7533313Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:35.7533874Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:35.7534339Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:35.7534967Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:35.7535518Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:35.7535865Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:35.7536140Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:35.7536414Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:35.7538935Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:35.7539178Z ##[endgroup]
+2026-11-04T06:04:35.9627634Z Cache not found for input keys: bazel-cache-windows-process-fixtures-lock-x86_64-unknown-linux-gnu-b5ba8f1c0200a59c80506b2507fae3990d85d03e6c2034cdd3b651e3cba00f93, bazel-cache-windows-process-fixtures-lock-x86_64-unknown-linux-gnu-
+2026-11-04T06:04:35.9732934Z ##[end-action id=__self.cache_bazel_repository_restore;outcome=success;conclusion=success;duration_ms=224]
+2026-11-04T06:04:35.9737370Z ##[start-action display=Set up Bazel execution logs;id=__self.__run_2]
+2026-11-04T06:04:35.9769140Z ##[group]Run mkdir -p "${RUNNER_TEMP}/bazel-execution-logs"
+2026-11-04T06:04:35.9769623Z [36;1mmkdir -p "${RUNNER_TEMP}/bazel-execution-logs"[0m
+2026-11-04T06:04:35.9770702Z [36;1mecho "CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=${RUNNER_TEMP}/bazel-execution-logs" >> "${GITHUB_ENV}"[0m
+2026-11-04T06:04:35.9799398Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:35.9799766Z env:
+2026-11-04T06:04:35.9800000Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:35.9800505Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:35.9800765Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:35.9801023Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:35.9801282Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:35.9801680Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:35.9802368Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:35.9802729Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:35.9803158Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:35.9803787Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:35.9804333Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:35.9804682Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:35.9804962Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:35.9805233Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:35.9807859Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:35.9808114Z ##[endgroup]
+2026-11-04T06:04:35.9909481Z ##[end-action id=__self.__run_2;outcome=success;conclusion=success;duration_ms=17]
+2026-11-04T06:04:36.0080181Z ##[warning]Unexpected input(s) 'toolchain', valid inputs are ['targets', 'target', 'components']
+2026-11-04T06:04:36.0085467Z ##[group]Run dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+2026-11-04T06:04:36.0085854Z with:
+2026-11-04T06:04:36.0086047Z   toolchain: 1.96.0
+2026-11-04T06:04:36.0086270Z   components: rustfmt
+2026-11-04T06:04:36.0086481Z env:
+2026-11-04T06:04:36.0086669Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.0086902Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.0087124Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.0087372Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.0087634Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.0088026Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.0088426Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.0088774Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.0089259Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.0089861Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.0090604Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.0090956Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0091251Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0091521Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.0093987Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.0094382Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.0094799Z ##[endgroup]
+2026-11-04T06:04:36.0104615Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-11-04T06:04:36.0124159Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-11-04T06:04:36.0124505Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-11-04T06:04:36.0125044Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-11-04T06:04:36.0125609Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-11-04T06:04:36.0125904Z [36;1m  exit 1[0m
+2026-11-04T06:04:36.0126235Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-11-04T06:04:36.0126653Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-11-04T06:04:36.0127180Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.0127692Z [36;1m  else[0m
+2026-11-04T06:04:36.0128097Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.0128558Z [36;1m  fi[0m
+2026-11-04T06:04:36.0128853Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-11-04T06:04:36.0129395Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.0129861Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-11-04T06:04:36.0130721Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.0131222Z [36;1melse[0m
+2026-11-04T06:04:36.0131467Z [36;1m  echo "toolchain=$toolchain" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.0131763Z [36;1mfi[0m
+2026-11-04T06:04:36.0151203Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.0151553Z env:
+2026-11-04T06:04:36.0151751Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.0151997Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.0152216Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.0152466Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.0152723Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.0153121Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.0153729Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.0154102Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.0154551Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.0155158Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.0155708Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.0156052Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0156332Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0156603Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.0159059Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.0159466Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.0159897Z   toolchain: 1.96.0
+2026-11-04T06:04:36.0160107Z ##[endgroup]
+2026-11-04T06:04:36.0213502Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=10]
+2026-11-04T06:04:36.0217455Z ##[start-action display=Construct rustup command line;id=__dtolnay_rust-toolchain.flags]
+2026-11-04T06:04:36.0237245Z ##[group]Run echo "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT
+2026-11-04T06:04:36.0237894Z [36;1mecho "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.0238521Z [36;1mecho "components=$(for c in ${components//,/ }; do echo -n ' --component' $c; done)" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.0239005Z [36;1mecho "downgrade=" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.0258423Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.0258764Z env:
+2026-11-04T06:04:36.0258961Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.0259196Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.0259412Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.0259659Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.0259934Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.0260564Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.0260992Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.0261336Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.0261765Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.0262404Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.0262942Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.0263280Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0263560Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0263830Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.0266270Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.0266676Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.0267093Z   targets: 
+2026-11-04T06:04:36.0267287Z   components: rustfmt
+2026-11-04T06:04:36.0267687Z ##[endgroup]
+2026-11-04T06:04:36.0331817Z ##[end-action id=__dtolnay_rust-toolchain.flags;outcome=success;conclusion=success;duration_ms=11]
+2026-11-04T06:04:36.0334085Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-11-04T06:04:36.0354055Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+2026-11-04T06:04:36.0354554Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-11-04T06:04:36.0374363Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.0374711Z env:
+2026-11-04T06:04:36.0374919Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.0375151Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.0375376Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.0375628Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.0375888Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.0376475Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.0376904Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.0377250Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.0377680Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.0378286Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.0378831Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.0379170Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0379451Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0379715Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.0382532Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.0382949Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.0383369Z ##[endgroup]
+2026-11-04T06:04:36.0453638Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=11]
+2026-11-04T06:04:36.0455935Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-11-04T06:04:36.0476602Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-11-04T06:04:36.0476985Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-11-04T06:04:36.0477740Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-11-04T06:04:36.0478481Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-11-04T06:04:36.0478769Z [36;1mfi[0m
+2026-11-04T06:04:36.0498615Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.0498969Z env:
+2026-11-04T06:04:36.0499176Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.0499406Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.0499628Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.0499890Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.0500148Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.0500872Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.0501276Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.0501618Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.0502050Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.0502649Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.0503188Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.0503529Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0503805Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0504077Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.0506542Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.0506955Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.0507568Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.0507817Z ##[endgroup]
+2026-11-04T06:04:36.0560667Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=10]
+2026-11-04T06:04:36.0563081Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-11-04T06:04:36.0566835Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-04T06:04:36.0569882Z ##[start-action display=rustup toolchain install 1.96.0;id=__dtolnay_rust-toolchain.__run_4]
+2026-11-04T06:04:36.0590092Z ##[group]Run log=$(mktemp)
+2026-11-04T06:04:36.0590666Z [36;1mlog=$(mktemp)[0m
+2026-11-04T06:04:36.0590919Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-11-04T06:04:36.0591197Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-11-04T06:04:36.0591991Z [36;1m  if rustup toolchain install 1.96.0 --component rustfmt --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-11-04T06:04:36.0592613Z [36;1m    break[0m
+2026-11-04T06:04:36.0592817Z [36;1m  else[0m
+2026-11-04T06:04:36.0593012Z [36;1m    status=$?[0m
+2026-11-04T06:04:36.0593225Z [36;1m  fi[0m
+2026-11-04T06:04:36.0593515Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-11-04T06:04:36.0594075Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-11-04T06:04:36.0594544Z [36;1m    exit "$status"[0m
+2026-11-04T06:04:36.0594766Z [36;1m  fi[0m
+2026-11-04T06:04:36.0595112Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-11-04T06:04:36.0595526Z [36;1m  sleep 30[0m
+2026-11-04T06:04:36.0595727Z [36;1mdone[0m
+2026-11-04T06:04:36.0615450Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.0615794Z env:
+2026-11-04T06:04:36.0615988Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.0616233Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.0616465Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.0616729Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.0616986Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.0617378Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.0617783Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.0618129Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.0618555Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.0619178Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.0619736Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.0620078Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0620679Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.0620984Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.0623438Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.0623862Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.0624297Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.0624561Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-11-04T06:04:36.0624798Z ##[endgroup]
+2026-11-04T06:04:36.1197866Z info: syncing channel updates for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-04T06:04:36.2007746Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-11-04T06:04:36.2156159Z info: downloading component rustfmt
+2026-11-04T06:04:36.4866750Z 
+2026-11-04T06:04:36.4943185Z   1.96.0-x86_64-unknown-linux-gnu updated - rustc 1.96.0 (ac68faa20 2026-05-25) (from rustc 1.96.0 (ac68faa20 2026-05-25))
+2026-11-04T06:04:36.4943799Z 
+2026-11-04T06:04:36.5004009Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=443]
+2026-11-04T06:04:36.5007657Z ##[start-action display=rustup default 1.96.0;id=__dtolnay_rust-toolchain.__run_5]
+2026-11-04T06:04:36.5026691Z ##[group]Run rustup default 1.96.0 --force-non-host
+2026-11-04T06:04:36.5027071Z [36;1mrustup default 1.96.0 --force-non-host[0m
+2026-11-04T06:04:36.5046845Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.5047203Z env:
+2026-11-04T06:04:36.5047404Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.5047641Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.5047868Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.5048124Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.5048393Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.5048809Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.5049244Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.5049615Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.5050051Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.5051193Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.5051784Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.5052132Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5052420Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5052697Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.5055190Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.5055609Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.5056054Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.5056302Z ##[endgroup]
+2026-11-04T06:04:36.5147063Z info: using existing install for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-04T06:04:36.5156097Z info: default toolchain set to 1.96.0-x86_64-unknown-linux-gnu
+2026-11-04T06:04:36.5156596Z 
+2026-11-04T06:04:36.5230416Z info: note that the toolchain '1.96.0-x86_64-unknown-linux-gnu' is currently in use (overridden by environment variable RUSTUP_TOOLCHAIN)
+2026-11-04T06:04:36.5231553Z   1.96.0-x86_64-unknown-linux-gnu unchanged - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-04T06:04:36.5232122Z 
+2026-11-04T06:04:36.5249998Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=24]
+2026-11-04T06:04:36.5252740Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-11-04T06:04:36.5272979Z ##[group]Run DATE=$(rustc +1.96.0 --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-11-04T06:04:36.5273815Z [36;1mDATE=$(rustc +1.96.0 --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-11-04T06:04:36.5274459Z [36;1mHASH=$(rustc +1.96.0 --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-11-04T06:04:36.5274944Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-11-04T06:04:36.5294795Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.5295154Z env:
+2026-11-04T06:04:36.5295360Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.5295593Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.5295818Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.5296073Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.5296331Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.5296728Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.5297136Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.5297480Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.5297910Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.5298545Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.5299104Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.5299455Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5299733Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5300505Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.5302996Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.5303403Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.5303844Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.5304098Z ##[endgroup]
+2026-11-04T06:04:36.5647468Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=39]
+2026-11-04T06:04:36.5649729Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-11-04T06:04:36.5669252Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-11-04T06:04:36.5669630Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-11-04T06:04:36.5669965Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-11-04T06:04:36.5670579Z [36;1mfi[0m
+2026-11-04T06:04:36.5691231Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.5691602Z env:
+2026-11-04T06:04:36.5691799Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.5692038Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.5692263Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.5692516Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.5692773Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.5693159Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.5693580Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.5693932Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.5694363Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.5694962Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.5695507Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.5695850Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5696128Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5696402Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.5698825Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.5699218Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.5699648Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.5699893Z ##[endgroup]
+2026-11-04T06:04:36.5752689Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=10]
+2026-11-04T06:04:36.5754780Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-11-04T06:04:36.5773558Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-11-04T06:04:36.5773939Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-11-04T06:04:36.5774277Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-11-04T06:04:36.5774566Z [36;1mfi[0m
+2026-11-04T06:04:36.5794521Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.5794886Z env:
+2026-11-04T06:04:36.5795089Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.5795323Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.5795545Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.5795796Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.5796056Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.5796451Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.5796871Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.5797223Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.5797654Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.5798247Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.5798789Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.5799130Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5799408Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5799865Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.5802651Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.5803061Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.5803489Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.5803748Z   CARGO_INCREMENTAL: 0
+2026-11-04T06:04:36.5803957Z ##[endgroup]
+2026-11-04T06:04:36.5855715Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=10]
+2026-11-04T06:04:36.5857851Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-11-04T06:04:36.5899467Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-11-04T06:04:36.5899988Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-11-04T06:04:36.5901456Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-11-04T06:04:36.5902250Z [36;1m  if rustc +1.96.0 --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-11-04T06:04:36.5902825Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-11-04T06:04:36.5903367Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-11-04T06:04:36.5903883Z [36;1m  elif rustc +1.96.0 --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-11-04T06:04:36.5904464Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-11-04T06:04:36.5904984Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-11-04T06:04:36.5905327Z [36;1m  fi[0m
+2026-11-04T06:04:36.5905519Z [36;1mfi[0m
+2026-11-04T06:04:36.5925872Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.5926248Z env:
+2026-11-04T06:04:36.5926462Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.5926719Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.5926945Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.5927202Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.5927466Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.5927862Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.5928276Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.5928625Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.5929051Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.5929650Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.5930464Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.5930860Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5931153Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.5931432Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.5933863Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.5934256Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.5934691Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.5934941Z   CARGO_INCREMENTAL: 0
+2026-11-04T06:04:36.5935161Z   CARGO_TERM_COLOR: always
+2026-11-04T06:04:36.5935389Z ##[endgroup]
+2026-11-04T06:04:36.6257702Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=39]
+2026-11-04T06:04:36.6260604Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-11-04T06:04:36.6281235Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-11-04T06:04:36.6282083Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-11-04T06:04:36.6282751Z [36;1mif rustc +1.96.0 --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-11-04T06:04:36.6283422Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-11-04T06:04:36.6283771Z [36;1mfi[0m
+2026-11-04T06:04:36.6303952Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.6304314Z env:
+2026-11-04T06:04:36.6304521Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.6304760Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.6305012Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.6305279Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.6305551Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.6305946Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.6306379Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.6306738Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.6307348Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.6307981Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.6308555Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.6308922Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.6309211Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.6309488Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.6312302Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.6312721Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.6313157Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.6313410Z   CARGO_INCREMENTAL: 0
+2026-11-04T06:04:36.6313635Z   CARGO_TERM_COLOR: always
+2026-11-04T06:04:36.6313861Z ##[endgroup]
+2026-11-04T06:04:36.6494401Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=23]
+2026-11-04T06:04:36.6497654Z ##[start-action display=rustc +1.96.0 --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-11-04T06:04:36.6515893Z ##[group]Run rustc +1.96.0 --version --verbose
+2026-11-04T06:04:36.6516240Z [36;1mrustc +1.96.0 --version --verbose[0m
+2026-11-04T06:04:36.6536187Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T06:04:36.6536538Z env:
+2026-11-04T06:04:36.6536738Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.6536977Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.6537205Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.6537464Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.6537730Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.6538121Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.6538527Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.6538874Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.6539311Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.6539917Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.6540651Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.6541001Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.6541281Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.6541548Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.6543958Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.6544352Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.6544794Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.6545054Z   CARGO_INCREMENTAL: 0
+2026-11-04T06:04:36.6545271Z   CARGO_TERM_COLOR: always
+2026-11-04T06:04:36.6545491Z ##[endgroup]
+2026-11-04T06:04:36.6703524Z rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-04T06:04:36.6704066Z binary: rustc
+2026-11-04T06:04:36.6704529Z commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+2026-11-04T06:04:36.6705126Z commit-date: 2026-05-25
+2026-11-04T06:04:36.6705578Z host: x86_64-unknown-linux-gnu
+2026-11-04T06:04:36.6706382Z release: 1.96.0
+2026-11-04T06:04:36.6706640Z LLVM version: 22.1.2
+2026-11-04T06:04:36.6721663Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=22]
+2026-11-04T06:04:36.6754023Z ##[group]Run python3 qualification/windows-process-fixtures-current/generate.py --output "$RUNNER_TEMP/windows-process-fixtures-generated" --baseline-lock original-lock-source/codex-rs/Cargo.lock
+2026-11-04T06:04:36.6755475Z [36;1mpython3 qualification/windows-process-fixtures-current/generate.py --output "$RUNNER_TEMP/windows-process-fixtures-generated" --baseline-lock original-lock-source/codex-rs/Cargo.lock[0m
+2026-11-04T06:04:36.6777527Z shell: /usr/bin/bash -e {0}
+2026-11-04T06:04:36.6777777Z env:
+2026-11-04T06:04:36.6777973Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:04:36.6778210Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:04:36.6778438Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:04:36.6778688Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:04:36.6778962Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:04:36.6779356Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:04:36.6779766Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:04:36.6780155Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:04:36.6780898Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:04:36.6781503Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:04:36.6782037Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:04:36.6782374Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.6782656Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:04:36.6782927Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:04:36.6785315Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:04:36.6785716Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:04:36.6786152Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:04:36.6786404Z   CARGO_INCREMENTAL: 0
+2026-11-04T06:04:36.6786622Z   CARGO_TERM_COLOR: always
+2026-11-04T06:04:36.6786932Z   HEPTA_EXPECTED_COMMIT: f5bddc124052837befca7735b9e5a46ab708e5a5
+2026-11-04T06:04:36.6787272Z ##[endgroup]
+2026-11-04T06:04:37.2998281Z {"name": "initial-clean-source", "argv": ["git", "--no-replace-objects", "diff", "--exit-code", "HEAD", "--"], "exit_code": 0, "seconds": 0.18301858499999923, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+2026-11-04T06:04:56.0097881Z {"name": "committed-lock-first", "argv": ["just", "bazel-lock-check"], "exit_code": 0, "seconds": 18.70993204799999, "log_sha256": "0b22e06831edf40a9cc310014606fbb74ee4eee0525ec03e405ccdef2b2f8584"}
+2026-11-04T06:04:56.6159621Z {"name": "original-formatter", "argv": ["just", "fmt", "--base", "00963996f16c067fbd04517d22d3d7e53d1d09a6"], "exit_code": 0, "seconds": 0.6060330389999962, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+2026-11-04T06:04:57.2210640Z {"name": "original-formatter-check", "argv": ["just", "fmt", "--check", "--base", "00963996f16c067fbd04517d22d3d7e53d1d09a6"], "exit_code": 0, "seconds": 0.6049351550000068, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+2026-11-04T06:05:13.9421355Z {"name": "actual-cargo-metadata", "argv": ["cargo", "metadata", "--all-features", "--format-version", "1"], "exit_code": 0, "seconds": 16.710774227, "log_sha256": "5ae0aefb678724d4a819755e27ac69bc2a7287307fac10516724f7cb227fd9f1"}
+2026-11-04T06:05:15.1165074Z {"name": "actual-locked-metadata", "argv": ["cargo", "metadata", "--locked", "--all-features", "--format-version", "1"], "exit_code": 0, "seconds": 1.0343681230000072, "log_sha256": "d9e3fbd6fedcc99c0b7cdf1899d27a7cc2959583dca3486aea826c7359e22f1d"}
+2026-11-04T06:05:34.6336250Z {"name": "original-lock-update", "argv": ["just", "bazel-lock-update"], "exit_code": 0, "seconds": 19.424185965999996, "log_sha256": "5563e76f49aee6994e659bb32f8c4b0af0852af69a8228a347a1e342bb173807"}
+2026-11-04T06:05:39.8184762Z {"name": "original-lock-check", "argv": ["just", "bazel-lock-check"], "exit_code": 0, "seconds": 5.184958782999999, "log_sha256": "8a03137c747cf0c86b6158fb609d6ac0d7c7835b4b503f1a92a5cabe82c053dc"}
+2026-11-04T06:05:40.8917585Z LOCK_GENERATION_RESULT={"source_commit": "f5bddc124052837befca7735b9e5a46ab708e5a5", "base_commit": "00963996f16c067fbd04517d22d3d7e53d1d09a6", "status": "committed-lock-qualified", "commands": [{"name": "initial-clean-source", "argv": ["git", "--no-replace-objects", "diff", "--exit-code", "HEAD", "--"], "exit_code": 0, "seconds": 0.18301858499999923, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}, {"name": "committed-lock-first", "argv": ["just", "bazel-lock-check"], "exit_code": 0, "seconds": 18.70993204799999, "log_sha256": "0b22e06831edf40a9cc310014606fbb74ee4eee0525ec03e405ccdef2b2f8584"}, {"name": "original-formatter", "argv": ["just", "fmt", "--base", "00963996f16c067fbd04517d22d3d7e53d1d09a6"], "exit_code": 0, "seconds": 0.6060330389999962, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}, {"name": "original-formatter-check", "argv": ["just", "fmt", "--check", "--base", "00963996f16c067fbd04517d22d3d7e53d1d09a6"], "exit_code": 0, "seconds": 0.6049351550000068, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}, {"name": "actual-cargo-metadata", "argv": ["cargo", "metadata", "--all-features", "--format-version", "1"], "exit_code": 0, "seconds": 16.710774227, "log_sha256": "5ae0aefb678724d4a819755e27ac69bc2a7287307fac10516724f7cb227fd9f1"}, {"name": "actual-locked-metadata", "argv": ["cargo", "metadata", "--locked", "--all-features", "--format-version", "1"], "exit_code": 0, "seconds": 1.0343681230000072, "log_sha256": "d9e3fbd6fedcc99c0b7cdf1899d27a7cc2959583dca3486aea826c7359e22f1d"}, {"name": "original-lock-update", "argv": ["just", "bazel-lock-update"], "exit_code": 0, "seconds": 19.424185965999996, "log_sha256": "5563e76f49aee6994e659bb32f8c4b0af0852af69a8228a347a1e342bb173807"}, {"name": "original-lock-check", "argv": ["just", "bazel-lock-check"], "exit_code": 0, "seconds": 5.184958782999999, "log_sha256": "8a03137c747cf0c86b6158fb609d6ac0d7c7835b4b503f1a92a5cabe82c053dc"}], "scope": "Real lock generation and formatting; native product qualification is separate.", "cargo_delta": {"packages": 1517, "added_dependencies": {"codex-git-utils": ["base64 0.22.1"]}, "versions_sources_checksums_unchanged": true}, "changed_paths": [], "committed_cargo_equals_generated": true, "committed_bazel_equals_generated": true, "source_unchanged": true}
+2026-11-04T06:05:40.9197217Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-04T06:05:40.9197650Z with:
+2026-11-04T06:05:40.9198027Z   name: windows-process-fixtures-generated-f5bddc124052837befca7735b9e5a46ab708e5a5
+2026-11-04T06:05:40.9198579Z   path: /home/runner/work/_temp/windows-process-fixtures-generated
+2026-11-04T06:05:40.9198960Z   if-no-files-found: error
+2026-11-04T06:05:40.9199192Z   retention-days: 14
+2026-11-04T06:05:40.9199408Z   compression-level: 6
+2026-11-04T06:05:40.9199628Z   overwrite: false
+2026-11-04T06:05:40.9199841Z   include-hidden-files: false
+2026-11-04T06:05:40.9200073Z   archive: true
+2026-11-04T06:05:40.9200590Z env:
+2026-11-04T06:05:40.9200805Z   RUSTUP_TOOLCHAIN: 1.96.0
+2026-11-04T06:05:40.9201038Z   GIT_CONFIG_COUNT: 1
+2026-11-04T06:05:40.9201252Z   GIT_CONFIG_KEY_0: core.autocrlf
+2026-11-04T06:05:40.9201499Z   GIT_CONFIG_VALUE_0: false
+2026-11-04T06:05:40.9201752Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-04T06:05:40.9202174Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:05:40.9202574Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-04T06:05:40.9202920Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-04T06:05:40.9203343Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-04T06:05:40.9204146Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-41782882626-generate
+2026-11-04T06:05:40.9204715Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-04T06:05:40.9205069Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:05:40.9205359Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-04T06:05:40.9205646Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-04T06:05:40.9208089Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-04T06:05:40.9208489Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-04T06:05:40.9208927Z   CARGO_HOME: /home/runner/.cargo
+2026-11-04T06:05:40.9209185Z   CARGO_INCREMENTAL: 0
+2026-11-04T06:05:40.9209415Z   CARGO_TERM_COLOR: always
+2026-11-04T06:05:40.9209638Z ##[endgroup]
+2026-11-04T06:05:41.0860745Z With the provided path, there will be 16 files uploaded
+2026-11-04T06:05:41.0867906Z Artifact name is valid!
+2026-11-04T06:05:41.0868742Z Root directory input is valid!
+2026-11-04T06:05:41.3032264Z Uploading artifact: windows-process-fixtures-generated-f5bddc124052837befca7735b9e5a46ab708e5a5.zip
+2026-11-04T06:05:41.3073839Z Beginning upload of artifact content to blob storage
+2026-11-04T06:05:41.8987211Z Uploaded bytes 4301409
+2026-11-04T06:05:41.9157531Z Finished uploading artifact content to blob storage!
+2026-11-04T06:05:41.9158817Z SHA256 digest of uploaded artifact is 1a4b32b288818d5d89e1e60e9870ebe983ddf8c9575a3ef97cd203efa51ee71e
+2026-11-04T06:05:41.9159756Z Finalizing artifact upload
+2026-11-04T06:05:42.3803052Z Artifact windows-process-fixtures-generated-f5bddc124052837befca7735b9e5a46ab708e5a5 successfully finalized. Artifact ID 13300540318
+2026-11-04T06:05:42.3804598Z Artifact windows-process-fixtures-generated-f5bddc124052837befca7735b9e5a46ab708e5a5 has been successfully uploaded! Final size is 4301409 bytes. Artifact ID is 13300540318
+2026-11-04T06:05:42.3808086Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41782882626/artifacts/13300540318
+2026-11-04T06:05:42.4072013Z Post job cleanup.
+2026-11-04T06:05:42.4076024Z ##[start-action display=Set up Bazel;id=__e8a58eb4-ecff-4d89-ba6b-a60e98a8148e.__bazel-contrib_setup-bazel]
+2026-11-04T06:05:42.4127436Z Post job cleanup.
+2026-11-04T06:05:42.5822606Z ##[end-action id=__e8a58eb4-ecff-4d89-ba6b-a60e98a8148e.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=174]
+2026-11-04T06:05:42.5891686Z Post job cleanup.
+2026-11-04T06:05:42.6904139Z [command]/usr/bin/git version
+2026-11-04T06:05:42.6955158Z git version 2.56.0
+2026-11-04T06:05:42.7001759Z Temporarily overriding HOME='/home/runner/work/_temp/d3c71cae-ef33-420e-9d68-4f35fd61f9bf' before making global git config changes
+2026-11-04T06:05:42.7003500Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T06:05:42.7008296Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/original-lock-source
+2026-11-04T06:05:42.7055206Z Removing SSH command configuration
+2026-11-04T06:05:42.7064026Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:05:42.7113783Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T06:05:42.7455487Z Removing HTTP extra header
+2026-11-04T06:05:42.7461789Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:05:42.7525682Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T06:05:42.7820453Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:05:42.7830027Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:05:42.7913184Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T06:05:42.8361682Z Post job cleanup.
+2026-11-04T06:05:42.9359994Z [command]/usr/bin/git version
+2026-11-04T06:05:42.9422948Z git version 2.56.0
+2026-11-04T06:05:42.9489733Z Temporarily overriding HOME='/home/runner/work/_temp/13dcb85b-5bbd-4680-9580-2e2fbfa6b75a' before making global git config changes
+2026-11-04T06:05:42.9491229Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T06:05:42.9494202Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T06:05:42.9593147Z Removing SSH command configuration
+2026-11-04T06:05:42.9602500Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T06:05:42.9650039Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T06:05:42.9961227Z Removing HTTP extra header
+2026-11-04T06:05:42.9971643Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T06:05:43.0013927Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T06:05:43.0367090Z Removing includeIf entries pointing to credentials config files
+2026-11-04T06:05:43.0378295Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T06:05:43.0436315Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T06:05:43.0883101Z Evaluate and set job outputs
+2026-11-04T06:05:43.0887792Z Set output 'qualified'
+2026-11-04T06:05:43.0889860Z Cleaning up orphan processes
+2026-11-04T06:05:43.1346856Z Terminate orphan process: pid (3683) (java.lang=ALL-UNNAMED)
