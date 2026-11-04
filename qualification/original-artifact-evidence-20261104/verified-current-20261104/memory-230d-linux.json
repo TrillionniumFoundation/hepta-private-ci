@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "key": "memory-230d-linux",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+  "original_run": 41750472531,
+  "artifact_id": 13285990483,
+  "zip_bytes": 44580,
+  "zip_sha256": "52a56ccd6575d7aabe99cd5c41152e277fd4c5cc79f5f038dee0214498ee3998",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 126,
+    "before_sha256": "f462cec43f1c50bc8570aef58da3e19200ba101a1693f772160b8b8bac30b776",
+    "after_sha256": "f462cec43f1c50bc8570aef58da3e19200ba101a1693f772160b8b8bac30b776",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs/hepta-memory",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      "BUILD.bazel",
+      "defs.bzl",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/run-bazel-ci.sh",
+      ".github/scripts/run-bazel-query-ci.sh",
+      "scripts/check-module-bazel-lock.sh",
+      "scripts/list-bazel-clippy-targets.sh",
+      "qualification/memory-migration-20261103",
+      ".github/workflows/hepta-memory-migration-qualification.yml"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "original_tests": null,
+    "original_steps": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.4428694329999985
+      },
+      {
+        "name": "committed-lock-check",
+        "command": [
+          "/usr/bin/bash",
+          "./scripts/check-module-bazel-lock.sh"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 22.993633088999985
+      },
+      {
+        "name": "original-memory-unit-tests",
+        "command": [
+          "/usr/bin/bash",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/hepta-memory:hepta-memory-unit-tests"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 124.05669775699997
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=/home/runner/.cache/codex-ci/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-linux",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.7687215030000516
+      },
+      {
+        "name": "original-clippy-selector",
+        "command": [
+          "/usr/bin/bash",
+          "./scripts/list-bazel-clippy-targets.sh"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.331993106000027
+      },
+      {
+        "name": "original-clippy",
+        "command": [
+          "/usr/bin/bash",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--remote-download-toplevel",
+          "--",
+          "build",
+          "--config=clippy",
+          "--",
+          "//codex-rs/hepta-memory:hepta-memory-unit-tests-bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 40.77053384499999
+      },
+      {
+        "name": "committed-inputs-clean-after",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.4247465159999706
+      }
+    ],
+    "original_commands": null,
+    "native_logs": {
+      "memory.log": {
+        "summaries": [
+          [
+            "ok",
+            "272",
+            "0",
+            "7",
+            "0",
+            "0"
+          ]
+        ],
+        "failed_cases": [],
+        "ignored_cases": [
+          "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+          "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+          "cognitive_store_tests::kg_projection_crash_child",
+          "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+          "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+          "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+          "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+        ],
+        "panic_blocks": []
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 17,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "8fca39d416a85f5f9706e70f414a6b572646d3eca8297c255a3868b6947840b9",
+  "read_only_verifier": {
+    "commit": "f74f57df892d1f4f8c1341638d056e8704447ba6",
+    "run": 41752290809,
+    "job": 126320033113
+  },
+  "representation": "Parsed EVIDENCE_VERIFIED_JSON summary; full report digest remains separately recorded."
+}

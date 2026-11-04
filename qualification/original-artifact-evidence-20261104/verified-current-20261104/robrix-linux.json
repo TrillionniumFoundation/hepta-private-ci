@@ -1,0 +1,357 @@
+{
+  "schema": 1,
+  "key": "robrix-linux",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "767f069c96a6cd2735b3a4166799a1de79017d25",
+  "original_run": 41754188875,
+  "artifact_id": 13287865424,
+  "zip_bytes": 23176,
+  "zip_sha256": "2d711ad9236bb2ed30545d016046ead727d94b4614eb569fc76a1f11464bbbc3",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 108,
+    "before_sha256": "1dd89601e0f44a6952db90d0bf15e91b4e9d8c2e57966b31d8b3463ebb062365",
+    "after_sha256": "1dd89601e0f44a6952db90d0bf15e91b4e9d8c2e57966b31d8b3463ebb062365",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs/hepta-supervisor",
+      "codex-rs/utils/cargo-bin",
+      "codex-rs/hepta-agent-protocol",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      "BUILD.bazel",
+      "defs.bzl",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/run-bazel-ci.sh",
+      ".github/scripts/run-bazel-query-ci.sh",
+      "scripts/check-module-bazel-lock.sh",
+      "scripts/list-bazel-clippy-targets.sh",
+      "qualification/robrix-runfiles-20261104",
+      ".github/workflows/hepta-robrix-runfiles-qualification.yml"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "original_tests": null,
+    "original_steps": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.0881144200000108
+      },
+      {
+        "name": "committed-lock-check",
+        "command": [
+          "/usr/bin/bash",
+          "./scripts/check-module-bazel-lock.sh"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 19.403840598000002
+      },
+      {
+        "name": "original-robrix-corpus-tests",
+        "command": [
+          "/usr/bin/bash",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 87.58756325
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=/home/runner/.cache/codex-ci/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-linux",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.503712964000016
+      },
+      {
+        "name": "original-clippy-selector",
+        "command": [
+          "/usr/bin/bash",
+          "./scripts/list-bazel-clippy-targets.sh"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.3660383809999814
+      },
+      {
+        "name": "original-clippy",
+        "command": [
+          "/usr/bin/bash",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--remote-download-toplevel",
+          "--",
+          "build",
+          "--config=clippy",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 32.160808718
+      },
+      {
+        "name": "committed-inputs-clean-after",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.09020782900000768
+      }
+    ],
+    "original_commands": null,
+    "native_logs": {
+      "robrix.log": {
+        "summaries": [
+          [
+            "ok",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        ],
+        "failed_cases": [],
+        "ignored_cases": [],
+        "panic_blocks": []
+      }
+    },
+    "original_receipt": {
+      "commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+      "status": "passed",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "config": "ci-linux",
+      "steps": [
+        {
+          "name": "committed-inputs-clean-before",
+          "command": [
+            "git",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 0.0881144200000108
+        },
+        {
+          "name": "committed-lock-check",
+          "command": [
+            "/usr/bin/bash",
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 19.403840598000002
+        },
+        {
+          "name": "original-robrix-corpus-tests",
+          "command": [
+            "/usr/bin/bash",
+            "./.github/scripts/run-bazel-ci.sh",
+            "--print-failed-test-logs",
+            "--print-failed-action-summary",
+            "--remote-download-toplevel",
+            "--",
+            "test",
+            "--keep_going",
+            "--nocache_test_results",
+            "--test_output=all",
+            "--",
+            "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 87.58756325
+        },
+        {
+          "name": "original-testlog-location",
+          "command": [
+            "python3",
+            "./.github/scripts/run_bazel_with_buildbuddy.py",
+            "--output_user_root=/home/runner/.cache/codex-ci/b",
+            "--noexperimental_remote_repo_contents_cache",
+            "info",
+            "--config=ci-linux",
+            "bazel-testlogs"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 1.503712964000016
+        },
+        {
+          "name": "original-clippy-selector",
+          "command": [
+            "/usr/bin/bash",
+            "./scripts/list-bazel-clippy-targets.sh"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 3.3660383809999814
+        },
+        {
+          "name": "original-clippy",
+          "command": [
+            "/usr/bin/bash",
+            "./.github/scripts/run-bazel-ci.sh",
+            "--print-failed-test-logs",
+            "--print-failed-action-summary",
+            "--remote-download-toplevel",
+            "--",
+            "build",
+            "--config=clippy",
+            "--",
+            "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 32.160808718
+        },
+        {
+          "name": "committed-inputs-clean-after",
+          "command": [
+            "git",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 0.09020782900000768
+        }
+      ],
+      "bash_executable": "/usr/bin/bash",
+      "test_counts": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "original_cases": [
+        "writer_reproduces_the_tracked_artifact_set_byte_for_byte",
+        "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+      ],
+      "source_inputs_unchanged": true,
+      "outputs": {
+        "committed-inputs-clean-after.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "committed-inputs-clean-after.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "committed-inputs-clean-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "committed-inputs-clean-before.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "committed-lock-check.stderr": {
+          "bytes": 2192,
+          "sha256": "46b85c19285a2ed8a66e57f68751726f0e3b89fb1e5e998ff9181e8e6e4974c3"
+        },
+        "committed-lock-check.stdout": {
+          "bytes": 18,
+          "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+        },
+        "original-clippy-selector.stderr": {
+          "bytes": 390,
+          "sha256": "a9f7ddd712987bef271b1f74f33babdcf1552bfaf6f12e6089c6af0746f6449a"
+        },
+        "original-clippy-selector.stdout": {
+          "bytes": 14184,
+          "sha256": "8020faf52a252f9acfdb278afbb3a759b00f5b63780f276db1f4d06efae427d0"
+        },
+        "original-clippy.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "original-clippy.stdout": {
+          "bytes": 3465,
+          "sha256": "c1edb60809cc79c10710f0bd2793be39da55de177c7fc70350fbae5d4dd43945"
+        },
+        "original-robrix-corpus-tests.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "original-robrix-corpus-tests.stdout": {
+          "bytes": 16899,
+          "sha256": "814fbf7b5a7d00eb7ea4b1765099bb0865332ad1a54c169a65d27ff82b39c968"
+        },
+        "original-testlog-location.stderr": {
+          "bytes": 375,
+          "sha256": "89e73e1d05eeb27eb02a618335755032745e3a6538a66ff5fc92b404e2ad32c2"
+        },
+        "original-testlog-location.stdout": {
+          "bytes": 79,
+          "sha256": "3c773d3365a4362e613e374832f048d1c3c4418f6a1cc408457a6a6a7b9a7c79"
+        },
+        "robrix.log": {
+          "bytes": 476,
+          "sha256": "45276f2efd329bb6646a4f986ff78ae1c542e06413f716eadaf9448d9c521eed"
+        },
+        "robrix.xml": {
+          "bytes": 956,
+          "sha256": "c15064509baea437a5c74e6321a3200a3969c1c14bbb68d653bc8f3b3d8b5b20"
+        },
+        "source-inputs.json": {
+          "bytes": 13139,
+          "sha256": "ebac734505b52256f93c3863a26c1609f6caed3ed29d985e58f27e55faedd065"
+        }
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 17,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "f838e0fb2a6e4871fcb748d79aa0c78e7cdc5ef9aa9623d4bf905714f19dead7",
+  "read_only_verifier": {
+    "commit": "76388954a74fede042b0753287a2050dcd6bc1f7",
+    "run": 41755181237,
+    "job": 126329497221
+  },
+  "representation": "Parsed EVIDENCE_VERIFIED_JSON summary; full report digest remains separately recorded."
+}

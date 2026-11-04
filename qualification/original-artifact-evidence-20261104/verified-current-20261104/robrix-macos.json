@@ -1,0 +1,331 @@
+{
+  "schema": 1,
+  "key": "robrix-macos",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "767f069c96a6cd2735b3a4166799a1de79017d25",
+  "original_run": 41754188875,
+  "artifact_id": 13286564138,
+  "zip_bytes": 22459,
+  "zip_sha256": "4a7c27f363c5adf83bc0675674e0311e0c371885eaa3c30c78970c578fd4fb72",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 108,
+    "before_sha256": "1dd89601e0f44a6952db90d0bf15e91b4e9d8c2e57966b31d8b3463ebb062365",
+    "after_sha256": "1dd89601e0f44a6952db90d0bf15e91b4e9d8c2e57966b31d8b3463ebb062365",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs/hepta-supervisor",
+      "codex-rs/utils/cargo-bin",
+      "codex-rs/hepta-agent-protocol",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      "BUILD.bazel",
+      "defs.bzl",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/run-bazel-ci.sh",
+      ".github/scripts/run-bazel-query-ci.sh",
+      "scripts/check-module-bazel-lock.sh",
+      "scripts/list-bazel-clippy-targets.sh",
+      "qualification/robrix-runfiles-20261104",
+      ".github/workflows/hepta-robrix-runfiles-qualification.yml"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "original_tests": null,
+    "original_steps": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.5631908339999967
+      },
+      {
+        "name": "original-robrix-corpus-tests",
+        "command": [
+          "/bin/bash",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 139.742271625
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=/Users/runner/.cache/codex-ci/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-macos",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 2.6488024589999952
+      },
+      {
+        "name": "original-clippy-selector",
+        "command": [
+          "/bin/bash",
+          "./scripts/list-bazel-clippy-targets.sh"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.0646445419999964
+      },
+      {
+        "name": "original-clippy",
+        "command": [
+          "/bin/bash",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--remote-download-toplevel",
+          "--",
+          "build",
+          "--config=clippy",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 23.92912750000002
+      },
+      {
+        "name": "committed-inputs-clean-after",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.8555404580000072
+      }
+    ],
+    "original_commands": null,
+    "native_logs": {
+      "robrix.log": {
+        "summaries": [
+          [
+            "ok",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        ],
+        "failed_cases": [],
+        "ignored_cases": [],
+        "panic_blocks": []
+      }
+    },
+    "original_receipt": {
+      "commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+      "status": "passed",
+      "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "config": "ci-macos",
+      "steps": [
+        {
+          "name": "committed-inputs-clean-before",
+          "command": [
+            "git",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 0.5631908339999967
+        },
+        {
+          "name": "original-robrix-corpus-tests",
+          "command": [
+            "/bin/bash",
+            "./.github/scripts/run-bazel-ci.sh",
+            "--print-failed-test-logs",
+            "--print-failed-action-summary",
+            "--remote-download-toplevel",
+            "--",
+            "test",
+            "--keep_going",
+            "--nocache_test_results",
+            "--test_output=all",
+            "--",
+            "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 139.742271625
+        },
+        {
+          "name": "original-testlog-location",
+          "command": [
+            "python3",
+            "./.github/scripts/run_bazel_with_buildbuddy.py",
+            "--output_user_root=/Users/runner/.cache/codex-ci/b",
+            "--noexperimental_remote_repo_contents_cache",
+            "info",
+            "--config=ci-macos",
+            "bazel-testlogs"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 2.6488024589999952
+        },
+        {
+          "name": "original-clippy-selector",
+          "command": [
+            "/bin/bash",
+            "./scripts/list-bazel-clippy-targets.sh"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 3.0646445419999964
+        },
+        {
+          "name": "original-clippy",
+          "command": [
+            "/bin/bash",
+            "./.github/scripts/run-bazel-ci.sh",
+            "--print-failed-test-logs",
+            "--print-failed-action-summary",
+            "--remote-download-toplevel",
+            "--",
+            "build",
+            "--config=clippy",
+            "--",
+            "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 23.92912750000002
+        },
+        {
+          "name": "committed-inputs-clean-after",
+          "command": [
+            "git",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 0.8555404580000072
+        }
+      ],
+      "bash_executable": "/bin/bash",
+      "test_counts": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "original_cases": [
+        "writer_reproduces_the_tracked_artifact_set_byte_for_byte",
+        "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+      ],
+      "source_inputs_unchanged": true,
+      "outputs": {
+        "committed-inputs-clean-after.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "committed-inputs-clean-after.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "committed-inputs-clean-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "committed-inputs-clean-before.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "original-clippy-selector.stderr": {
+          "bytes": 390,
+          "sha256": "9db8305ff54415912e89c4ed8a2d91e223618f3a5b8c0ae0ce1a30952a67ef92"
+        },
+        "original-clippy-selector.stdout": {
+          "bytes": 14184,
+          "sha256": "8020faf52a252f9acfdb278afbb3a759b00f5b63780f276db1f4d06efae427d0"
+        },
+        "original-clippy.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "original-clippy.stdout": {
+          "bytes": 3117,
+          "sha256": "22b246ce06ca9d91939650bcfc92cee8e25954522535b89816661a7d57fe2d5e"
+        },
+        "original-robrix-corpus-tests.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "original-robrix-corpus-tests.stdout": {
+          "bytes": 21262,
+          "sha256": "849a30cc03d983c26c2ecb1b4d6308c174fe739e6b430857dbffacd596420984"
+        },
+        "original-testlog-location.stderr": {
+          "bytes": 411,
+          "sha256": "44320b7103bb8de3146a2d2c039b38b1f926c87782c8e1cf2eeab766b478a25f"
+        },
+        "original-testlog-location.stdout": {
+          "bytes": 89,
+          "sha256": "42be8b6eb9eb67cf17aba8a6b21ce6ca4472260ae49efcbb73c2cc0579218eda"
+        },
+        "robrix.log": {
+          "bytes": 476,
+          "sha256": "6f48f2a68c7acfa2bb406ba2c7356efdfe4cb6d4889ac92ab73013c7d88585dc"
+        },
+        "robrix.xml": {
+          "bytes": 956,
+          "sha256": "e8e2edb99d324a708471311e3788c8219eae8401bcbdd94e0cdef0ea931feb6e"
+        },
+        "source-inputs.json": {
+          "bytes": 13139,
+          "sha256": "ebac734505b52256f93c3863a26c1609f6caed3ed29d985e58f27e55faedd065"
+        }
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 15,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "0b592157471197bf0cbb32ea0876e331028ac7e83f13752a0e2197b1576f52bd",
+  "read_only_verifier": {
+    "commit": "76388954a74fede042b0753287a2050dcd6bc1f7",
+    "run": 41755181237,
+    "job": 126329497340
+  },
+  "representation": "Parsed EVIDENCE_VERIFIED_JSON summary; full report digest remains separately recorded."
+}

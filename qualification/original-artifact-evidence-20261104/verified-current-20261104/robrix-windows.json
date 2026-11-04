@@ -1,0 +1,219 @@
+{
+  "schema": 1,
+  "key": "robrix-windows",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "767f069c96a6cd2735b3a4166799a1de79017d25",
+  "original_run": 41754188875,
+  "artifact_id": 13287169410,
+  "zip_bytes": 19970,
+  "zip_sha256": "45e307b4e42f679359c392b11dba112daf4016370377e7d8cbcf0ff0448f5234",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 108,
+    "before_sha256": "1dd89601e0f44a6952db90d0bf15e91b4e9d8c2e57966b31d8b3463ebb062365",
+    "after_sha256": "1dd89601e0f44a6952db90d0bf15e91b4e9d8c2e57966b31d8b3463ebb062365",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs/hepta-supervisor",
+      "codex-rs/utils/cargo-bin",
+      "codex-rs/hepta-agent-protocol",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      "BUILD.bazel",
+      "defs.bzl",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/run-bazel-ci.sh",
+      ".github/scripts/run-bazel-query-ci.sh",
+      "scripts/check-module-bazel-lock.sh",
+      "scripts/list-bazel-clippy-targets.sh",
+      "qualification/robrix-runfiles-20261104",
+      ".github/workflows/hepta-robrix-runfiles-qualification.yml"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "failed",
+  "result": {
+    "original_tests": null,
+    "original_steps": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.18799999999998818
+      },
+      {
+        "name": "original-robrix-corpus-tests",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 149.531
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=D:/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-windows",
+          "--platforms=//:windows_x86_64_msvc",
+          "--host_platform=//:local_windows_msvc",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.6719999999999686
+      }
+    ],
+    "original_commands": null,
+    "native_logs": {
+      "robrix.log": {
+        "summaries": [],
+        "failed_cases": [],
+        "ignored_cases": [],
+        "panic_blocks": []
+      }
+    },
+    "original_receipt": {
+      "commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+      "status": "failed",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "machine": "AMD64",
+      "config": "ci-windows",
+      "steps": [
+        {
+          "name": "committed-inputs-clean-before",
+          "command": [
+            "git",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 0.18799999999998818
+        },
+        {
+          "name": "original-robrix-corpus-tests",
+          "command": [
+            "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+            "./.github/scripts/run-bazel-ci.sh",
+            "--print-failed-test-logs",
+            "--print-failed-action-summary",
+            "--windows-msvc-host-platform",
+            "--remote-download-toplevel",
+            "--",
+            "test",
+            "--platforms=//:windows_x86_64_msvc",
+            "--keep_going",
+            "--nocache_test_results",
+            "--test_output=all",
+            "--",
+            "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 149.531
+        },
+        {
+          "name": "original-testlog-location",
+          "command": [
+            "python3",
+            "./.github/scripts/run_bazel_with_buildbuddy.py",
+            "--output_user_root=D:/b",
+            "--noexperimental_remote_repo_contents_cache",
+            "info",
+            "--config=ci-windows",
+            "--platforms=//:windows_x86_64_msvc",
+            "--host_platform=//:local_windows_msvc",
+            "bazel-testlogs"
+          ],
+          "exit": 0,
+          "elapsed_seconds": 3.6719999999999686
+        }
+      ],
+      "bash_executable": "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+      "source_inputs_unchanged": true,
+      "outputs": {
+        "committed-inputs-clean-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "committed-inputs-clean-before.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "original-robrix-corpus-tests.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "original-robrix-corpus-tests.stdout": {
+          "bytes": 86591,
+          "sha256": "aba860f51c17a0ce4845db90c247e364191565ba63280ff0cae50e4b9292e965"
+        },
+        "original-testlog-location.stderr": {
+          "bytes": 399,
+          "sha256": "dc61fc440d012f3982b626dba090f9063481bd9bcc1f264f5ee71045c4b036f6"
+        },
+        "original-testlog-location.stdout": {
+          "bytes": 69,
+          "sha256": "ca1ba1d775f66516a0b28a8458988e847319ce61cc103aede057887a87bfc571"
+        },
+        "robrix.log": {
+          "bytes": 261,
+          "sha256": "b56d5acba69051bd0d50ae3d20c5b1e86901241012388602888aae787e087c93"
+        },
+        "robrix.xml": {
+          "bytes": 651,
+          "sha256": "b8e25fe6ca7948137528c1e17d5a38dd8b23ee8e581f41a0bfc3b073887a48b6"
+        },
+        "source-inputs.json": {
+          "bytes": 13249,
+          "sha256": "002c75f907fb39c0f7cdc3c3583e6cf064ea81fc0223aecdd763c57c9fd009fa"
+        }
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 9,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "40d91a8eda4414e10cda6b4c5e1559a4502d122d75059e1091a710fa9e433742",
+  "read_only_verifier": {
+    "commit": "76388954a74fede042b0753287a2050dcd6bc1f7",
+    "run": 41755181237,
+    "job": 126329497144
+  },
+  "representation": "Parsed EVIDENCE_VERIFIED_JSON summary; full report digest remains separately recorded."
+}

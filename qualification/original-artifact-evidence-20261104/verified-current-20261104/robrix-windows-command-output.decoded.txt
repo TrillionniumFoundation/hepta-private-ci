@@ -1,0 +1,1367 @@
+BuildBuddy API key is available; using remote Bazel configuration.
+Using generic BuildBuddy configuration: buildbuddy-generic.
+2026/11/04 01:28:36 Downloading https://releases.bazel.build/9.0.0/release/bazel-9.0.0-windows-x86_64.exe...
+Extracting Bazel installation...
+Starting local Bazel server (9.0.0) and connecting to it...
+INFO: Invocation ID: 29cda004-f4d6-45eb-8402-994658b23d6b
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/29cda004-f4d6-45eb-8402-994658b23d6b
+Computing main repo mapping: 
+Computing main repo mapping: 
+Computing main repo mapping: 
+Computing main repo mapping: 
+Computing main repo mapping: 
+Computing main repo mapping: 
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Computing main repo mapping: 
+Computing main repo mapping: 
+Computing main repo mapping: 
+Computing main repo mapping: 
+Computing main repo mapping: 
+Computing main repo mapping: 
+Loading: 
+Loading: 4 packages loaded
+Loading: 4 packages loaded
+    currently loading: codex-rs/hepta-supervisor
+Loading: 4 packages loaded
+    currently loading: codex-rs/hepta-supervisor
+DEBUG: D:/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "libgit2", version = "1.9.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "libgit2-sys",
+    gen_build_script = "off",
+    deps = ["@libgit2"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "libgit2-sys",
+    gen_build_script = "on",
+)
+```
+DEBUG: D:/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+WARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:
+
+```
+bazel_dep(name = "libssh2", version = "1.11.1.bcr.1")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    crate = "libssh2-sys",
+    gen_build_script = "off",
+    deps = ["@libssh2"],
+)
+```
+
+You can disable this warning by configuring your MODULE.bazel like so:
+
+```
+crate.annotation(
+    crate = "libssh2-sys",
+    gen_build_script = "on",
+)
+```
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (5 packages loaded)
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (9 packages loaded, 7 targets configured)
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (9 packages loaded, 7 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (40 packages loaded, 21 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (80 packages loaded, 21 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (80 packages loaded, 21 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (94 packages loaded, 676 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (142 packages loaded, 2220 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (161 packages loaded, 2993 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (174 packages loaded, 3703 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (189 packages loaded, 4530 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (204 packages loaded, 5729 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (224 packages loaded, 6284 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (250 packages loaded, 7380 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (286 packages loaded, 8331 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (315 packages loaded, 9095 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (338 packages loaded, 11193 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (350 packages loaded, 11593 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (360 packages loaded, 14059 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (367 packages loaded, 14324 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (367 packages loaded, 14324 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (367 packages loaded, 14324 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (369 packages loaded, 14747 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (369 packages loaded, 14747 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (371 packages loaded, 14779 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (372 packages loaded, 14797 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (372 packages loaded, 14797 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (372 packages loaded, 14797 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (373 packages loaded, 14815 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (375 packages loaded, 14873 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (375 packages loaded, 14873 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (376 packages loaded, 14887 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (377 packages loaded, 14895 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (378 packages loaded, 14895 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (379 packages loaded, 14911 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (380 packages loaded, 14945 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (381 packages loaded, 14959 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (383 packages loaded, 14987 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (383 packages loaded, 14987 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (383 packages loaded, 14987 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (384 packages loaded, 15003 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (409 packages loaded, 16320 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (430 packages loaded, 17322 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (461 packages loaded, 18122 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (480 packages loaded, 18652 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (498 packages loaded, 19913 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (516 packages loaded, 20938 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (536 packages loaded, 21477 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (549 packages loaded, 22509 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (559 packages loaded, 22763 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (582 packages loaded, 23518 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (601 packages loaded, 24142 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (610 packages loaded, 25362 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (627 packages loaded, 25813 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (659 packages loaded, 26878 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (683 packages loaded, 27390 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (699 packages loaded, 28027 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (722 packages loaded, 28773 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (743 packages loaded, 29605 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (762 packages loaded, 30139 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (774 packages loaded, 31219 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (788 packages loaded, 32330 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (789 packages loaded, 32857 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (789 packages loaded, 34278 targets configured)
+
+Analyzing: target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (793 packages loaded, 35417 targets configured)
+
+INFO: Analyzed target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (796 packages loaded, 35494 targets configured).
+[178 / 1,063] Creating source manifest for @@rules_rs++crate+crates__generic-array-0.14.7//:_bs_ [for tool]; 0s local ... (19 actions, 2 running)
+[412 / 2,211] Compiling external/rules_autoconf+/config_generator.c [for tool]; 0s remote-cache ... (14 actions, 0 running)
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-sha3.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-timer.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-gcd.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-base.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-sha3.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-noise.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-health.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-base.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-timer.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-gcd.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-noise.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-health.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+[463 / 2,211] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe [for tool] ... (4 actions, 0 running)
+[552 / 2,211] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/lib/libhashbrown-379c2b5854b7942b.rmeta [for tool]
+INFO: From Compiling ssl/ssl_decrepit.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling ssl/ssl_decrepit.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling ssl/ssl_c_test.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling ssl/ssl_c_test.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+[664 / 2,211] Compiling ssl/handshake.cc; 0s remote-cache ... (10 actions, 0 running)
+INFO: From Compiling crypto/asn1/a_bitstr.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_bool.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_d2i_fp.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_dup.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_gentm.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_mbstr.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_octet.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_object.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_mbstr.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_object.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_i2d_fp.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_d2i_fp.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_bitstr.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_gentm.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_octet.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_strnid.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_strex.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_strex.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_strnid.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_time.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_int.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_int.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_bool.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_type.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/asn1_lib.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_utctm.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_utf8.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_dup.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_utctm.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/asn1_par.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_utf8.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_time.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/asn1_par.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/asn_pack.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_type.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/f_int.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/f_string.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/asn1_lib.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/f_int.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_dec.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_enc.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/posix_time.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/f_string.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_dec.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/asn_pack.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_fre.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_typ.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_new.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_utl.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_new.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/base64/base64.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/posix_time.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_enc.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_fre.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/base64/base64.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/bio.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_typ.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/bio_addr.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/bio_mem.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/tasn_utl.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/bio_mem.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/dgram.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/connect.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/fd.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/errno.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/file.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/connect.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/bio.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/bio_addr.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/hexdump.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/md.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/pair.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/fd.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/dgram.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/file.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/pair.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/printf.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/errno.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/hexdump.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/socket.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/md.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/asn1/a_i2d_fp.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/blake2/blake2.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bn_extra/bn_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/printf.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/socket.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bn_extra/convert.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/buf/buf.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/asn1_compat.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/ber.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/cbb.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bn_extra/bn_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/blake2/blake2.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/unicode.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/asn1_compat.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/cbs.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/buf/buf.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/ber.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bn_extra/convert.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/cipher_extra.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/cbb.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+[793 / 2,211] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain/bin/rustc_driver-a13b2a09f32f9fcf.dll [for tool] ... (13 actions, 0 running)
+INFO: From Compiling crypto/chacha/chacha.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/unicode.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/derive_key.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_aes_cbc_hmac_sha1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_aes_cbc_hmac_sha256.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bytestring/cbs.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_aesctrhmac.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/cipher_extra.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_aesgcmsiv.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_aesgcmsiv.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_chacha20poly1305.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_aes_cbc_hmac_sha256.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_des.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_aes_cbc_hmac_sha1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_aesctrhmac.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/derive_key.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/chacha/chacha.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/socket_helper.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_null.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_rc2.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_rc2.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_chacha20poly1305.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_rc4.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_tls.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_des.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/tls_cbc.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/conf/conf.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/console/console.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_null.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/bio/socket_helper.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/crypto.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/bio/base64_bio.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/blowfish/blowfish.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_rc4.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/cast/cast.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/e_tls.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/cipher_extra/tls_cbc.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/cast/cast_tables.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/cfb/cfb.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/console/console.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/conf/conf.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/crypto.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/bio/base64_bio.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/evp/evp_do_all.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/cast/cast.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/blowfish/blowfish.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/obj/obj_decrepit.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/dh/dh_decrepit.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/obj/obj_decrepit.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/cast/cast_tables.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/dh/dh_decrepit.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/dh_extra/params.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/rsa/rsa_decrepit.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/evp/evp_do_all.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/x509/x509_decrepit.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/cfb/cfb.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/ripemd/ripemd.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/des/des.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/dh_extra/params.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/x509/x509_decrepit.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/rsa/rsa_decrepit.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/digest_extra/digest_extra.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/dsa/dsa_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/dsa/dsa.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/dh_extra/dh_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/decrepit/ripemd/ripemd.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ec_extra/ec_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/des/des.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ec_extra/ec_derive.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/digest_extra/digest_extra.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ec_extra/hash_to_curve.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ec_extra/ec_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/dsa/dsa_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ecdh_extra/ecdh_extra.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ecdsa_extra/ecdsa_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ec_extra/ec_derive.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_dh.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/dh_extra/dh_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/engine/engine.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/dsa/dsa.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/evp_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/err/err.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_dh_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+[879 / 2,211] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain/bin/rustc_driver-a13b2a09f32f9fcf.dll [for tool] ... (18 actions, 0 running)
+INFO: From Compiling crypto/evp_extra/p_dsa.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ec_extra/hash_to_curve.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ecdsa_extra/ecdsa_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_dh.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/err/err.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ecdh_extra/ecdh_extra.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_dh_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_dsa_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_ed25519_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_dsa_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/engine/engine.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_ec_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_hmac_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_kem_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/evp_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_dsa.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_x25519.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_pqdsa_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_x25519_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_rsa_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_methods.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_kem_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/print.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/scrypt.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_methods.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/sign.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_ed25519_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/scrypt.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_ec_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_hmac_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ex_data.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_pqdsa_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/sign.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_x25519.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_x25519_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/fipsmodule/fips_shared_support.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/fipsmodule/cpucap/cpucap.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/p_rsa_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/hpke/hpke.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/fipsmodule/bcm.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ex_data.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/evp_extra/print.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/lhash/lhash.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/md4/md4.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/hpke/hpke.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/hrss/hrss.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/hrss/hrss.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/mem.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/obj/obj.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/obj/obj_xref.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/lhash/lhash.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/fipsmodule/cpucap/cpucap.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_asn.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_extension.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_lib.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/fipsmodule/bcm.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/fipsmodule/fips_shared_support.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_http.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_client.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/obj/obj_xref.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_verify.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/md4/md4.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_print.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_server.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/mem.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/obj/obj.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_http.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_lib.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_all.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_asn.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_info.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_pk8.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_oth.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_extension.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_client.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_lib.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_server.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_pkey.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_pk8.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_print.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_xaux.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_x509.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_info.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_oth.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ocsp/ocsp_verify.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs7/pkcs7_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs7/bio/cipher.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_lib.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs8/p5_pbev2.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs7/pkcs7.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_all.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs7/pkcs7_x509.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs8/pkcs8_x509.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_xaux.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_pkey.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs8/pkcs8.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/poly1305/poly1305_arm.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs7/pkcs7_x509.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/poly1305/poly1305.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs7/pkcs7_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs8/pkcs8.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs8/pkcs8_x509.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs8/p5_pbev2.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pem/pem_x509.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pool/pool.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/poly1305/poly1305_vec.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/urandom.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/poly1305/poly1305.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs7/bio/cipher.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pool/pool.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/ccrandomgeneratebytes.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/deterministic.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/getentropy.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/getentropy.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/pkcs7/pkcs7.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/rand_extra.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/ccrandomgeneratebytes.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/refcount_c11.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/windows.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/vm_ube_fallback.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rc4/rc4.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/poly1305/poly1305_vec.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/refcount_c11.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/urandom.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rsa_extra/rsa_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/refcount_lock.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/refcount_win.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/deterministic.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rsa_extra/rsa_print.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rsa_extra/rsa_crypt.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rsa_extra/rsa_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rsa_extra/rsassa_pss_asn1.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rsa_extra/rsassa_pss_asn1.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rc4/rc4.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/windows.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/refcount_lock.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/siphash/siphash.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/vm_ube_fallback.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/refcount_win.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rsa_extra/rsa_print.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rsa_extra/rsa_crypt.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/stack/stack.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/thread.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/spake25519/spake25519.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/stack/stack.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/thread_none.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/thread_pthread.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/thread_none.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/trust_token/trust_token.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/siphash/siphash.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/trust_token/pmbtoken.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/trust_token/voprf.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ube/vm_ube_detect.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ube/fork_ube_detect.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/rand_extra/rand_extra.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/thread.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ube/ube.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/spake25519/spake25519.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ui/ui.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ube/vm_ube_detect.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/thread_pthread.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/a_digest.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ui/ui.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/poly1305/poly1305_arm.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/trust_token/pmbtoken.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/trust_token/trust_token.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+[1,046 / 2,211] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain/bin/rustc_driver-a13b2a09f32f9fcf.dll ... (18 actions, 0 running)
+INFO: From Compiling crypto/thread_win.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/trust_token/voprf.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/a_digest.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/a_sign.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/i2d_pr.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/a_sign.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/by_dir.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/a_verify.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/policy.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/rsa_pss.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/thread_win.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/algorithm.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/asn1_gen.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/i2d_pr.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/t_crl.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/asn1_gen.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/a_verify.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/rsa_pss.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/policy.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/algorithm.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/t_req.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/t_x509.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/t_req.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/t_x509a.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/t_crl.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_akeya.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_akey.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_akey.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_conf.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_bitst.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_bcons.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_alt.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/t_x509.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_cpols.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_cpols.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_akeya.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_crld.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/t_x509a.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_bcons.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_enum.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_extku.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_enum.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_conf.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_genn.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_bitst.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_alt.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_crld.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_info.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_ia5.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_int.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_extku.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_lib.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_genn.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_ncons.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_ocsp.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_int.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_ia5.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_pcons.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_info.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_pmaps.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ube/ube.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_prn.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/by_file.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_ncons.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_ocsp.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_lib.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/by_dir.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_purp.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_utl.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_skey.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_pcons.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_pmaps.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/name_print.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_prn.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/by_file.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_d2.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_purp.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_def.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_att.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_cmp.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_ext.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_lu.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_skey.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/name_print.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/v3_utl.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_obj.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_req.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_set.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_d2.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_obj.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_trs.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_ext.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_def.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_cmp.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_lu.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509cset.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_txt.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_att.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_trs.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_req.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_vfy.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_set.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_txt.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509name.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_exten.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509spki.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_vpm.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_name.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_vpm.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509cset.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_attrib.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/ube/fork_ube_detect.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_pubkey.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_req.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_pubkey.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_crl.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_algor.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_req.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509rset.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_sig.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_spki.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_val.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_x509a.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_sig.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_all.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_x509.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_x509.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling generated-src/err_data.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_spki.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_x509a.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_val.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_vfy.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_v3.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+[1,181 / 2,211] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain/bin/rustc_driver-a13b2a09f32f9fcf.dll ... (13 actions, 0 running)
+INFO: From Compiling crypto/x509/x_attrib.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_all.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509rset.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling generated-src/err_data.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509_v3.c:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_algor.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509spki.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x509name.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_crl.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_name.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+INFO: From Compiling crypto/x509/x_exten.c [for tool]:
+cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+[1,270 / 2,211] Compiling Rust bin @@rules_rs++crate+crates__serde_json-1.0.154//:_bs_ (70 files) [for tool]; 0s remote-cache ... (29 actions, 0 running)
+[1,673 / 2,211] Compiling Rust rlib @@rules_rs++crate+crates__annotate-snippets-0.9.2//:annotate-snippets v0.9.2 (20 files); 0s remote-cache ... (29 actions, 0 running)
+[2,008 / 2,211] Compiling Rust rlib @@rules_rs++crate+crates__lock_free_hashtable-0.1.4//:lock_free_hashtable v0.1.4 (6 files); 0s remote-cache ... (29 actions, 0 running)
+[2,175 / 2,211] Compiling Rust rlib @@rules_rs++crate+crates__rama-dns-0.3.0-alpha.4//:rama-dns v0.3.0-alpha.4 (9 files); 0s remote-cache ... (6 actions, 0 running)
+INFO: From Compiling Rust rlib //codex-rs/hepta-supervisor:hepta-supervisor (40 files):
+warning: function `restart_available` is never used
+   --> codex-rs/hepta-supervisor/src\restart_budget.rs:114:8
+    |
+114 | pub fn restart_available(
+    |        ^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `read_restart_journal` is never used
+   --> codex-rs/hepta-supervisor/src\restart_journal.rs:313:15
+    |
+313 | pub(crate) fn read_restart_journal(
+    |               ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `restore_window` is never used
+   --> codex-rs/hepta-supervisor/src\restart_journal.rs:356:15
+    |
+356 | pub(crate) fn restore_window(
+    |               ^^^^^^^^^^^^^^
+
+warning: methods `reset_restart_budget_for_release`, `reset_restart_budget`, and `restore_restart_budget` are never used
+  --> codex-rs/hepta-supervisor/src\restart_state.rs:37:19
+   |
+19 | impl<D: ProcessDriver> Supervisor<D> {
+   | ------------------------------------ methods in this implementation
+...
+37 |     pub(crate) fn reset_restart_budget_for_release(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+47 |     pub(crate) fn reset_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+...
+64 |     pub(crate) fn restore_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `reset_slot_restart_budget` is never used
+   --> codex-rs/hepta-supervisor/src\restart_state.rs:147:4
+    |
+147 | fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `restart_window_started_at`, `restart_window_started_unix_millis`, `restart_retry_at`, `restart_automatic`, `restart_after_exit`, and `restart_exhausted` are never read
+   --> codex-rs/hepta-supervisor/src\runtime.rs:153:9
+    |
+145 | pub(crate) struct AgentSlot<P> {
+    |                   --------- fields in this struct
+...
+153 |     pub restart_window_started_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^
+154 |     pub restart_window_started_unix_millis: Option<u64>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+155 |     pub restart_retry_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^
+156 |     pub restart_automatic: bool,
+    |         ^^^^^^^^^^^^^^^^^
+157 |     pub restart_after_exit: bool,
+    |         ^^^^^^^^^^^^^^^^^^
+158 |     pub restart_exhausted: bool,
+    |         ^^^^^^^^^^^^^^^^^
+
+warning: methods `next_control_revision` and `set_control_revision` are never used
+   --> codex-rs/hepta-supervisor/src\supervisor.rs:211:19
+    |
+ 58 | impl<D: ProcessDriver> Supervisor<D> {
+    | ------------------------------------ methods in this implementation
+...
+211 |     pub(crate) fn next_control_revision(&self, agent_id: &AgentId) -> Result<u64, SupervisorError> {
+    |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+220 |     pub(crate) fn set_control_revision(
+    |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: 7 warnings emitted
+
+[2,203 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-intent-recovery (46 files); 1s remote-cache ... (7 actions, 0 running)
+[2,203 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-intent-recovery (46 files); Downloading external/rules_rs++crate+crates__jiff-0.2.23/libjiff-258649626.rlib, 1.1 MiB / 12.2 MiB; 2s remote-cache ... (7 actions, 0 running)
+[2,203 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-intent-recovery (46 files); Downloading external/rules_rs++crate+crates__jiff-0.2.23/libjiff-258649626.rlib, 2.1 MiB / 12.2 MiB; 3s remote-cache ... (7 actions, 0 running)
+[2,203 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-intent-recovery (46 files); Downloading external/rules_rs++crate+crates__jiff-0.2.23/libjiff-258649626.rlib, 8.5 MiB / 12.2 MiB; 5s remote-cache ... (7 actions, 0 running)
+[2,203 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (46 files); 0s local, remote-cache ... (7 actions, 4 running)
+[2,203 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (46 files); 5s local, remote-cache ... (7 actions, 4 running)
+[2,203 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (46 files); 7s local, remote-cache ... (7 actions, 5 running)
+INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-approver (46 files):
+warning: unused import: `zeroize::Zeroizing`
+  --> codex-rs/hepta-supervisor/src/bin/hepta-final-use-approver.rs:15:5
+   |
+15 | use zeroize::Zeroizing;
+   |     ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: 1 warning emitted
+
+[2,204 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (46 files); 8s local, remote-cache ... (6 actions, 5 running)
+[2,207 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (1 file); 2s local, remote-cache ... (3 actions running)
+INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-revocation-signer (46 files):
+warning: unused import: `zeroize::Zeroizing`
+  --> codex-rs/hepta-supervisor/src/bin/hepta-final-use-revocation-signer.rs:15:5
+   |
+15 | use zeroize::Zeroizing;
+   |     ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: 1 warning emitted
+
+[2,209 / 2,211] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (1 file); 3s local, remote-cache
+[2,211 / 2,212] [Prepa] Testing //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test
+[2,211 / 2,212] Testing //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test; 1s local
+[2,211 / 2,212] Testing //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test; 2s local, remote-cache
+INFO: From Testing //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test:
+==================== Test output for //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test:
+
+running 2 tests
+test writer_reproduces_the_tracked_artifact_set_byte_for_byte ... ok
+================================================================================
+INFO: Found 1 test target...
+Target //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test up-to-date:
+  bazel-bin/codex-rs/hepta-supervisor/hepta-supervisor-robrix_control_projection-test.exe
+INFO: Elapsed time: 143.920s, Critical Path: 26.58s
+INFO: 2212 processes: 1540 remote cache hit, 664 internal, 9 local.
+INFO: Build completed successfully, 2212 total actions
+INFO: 
+//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test PASSED in 2.5s
+
+Executed 1 out of 1 test: 1 test passes.
+There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.
+INFO: 
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/29cda004-f4d6-45eb-8402-994658b23d6b
+

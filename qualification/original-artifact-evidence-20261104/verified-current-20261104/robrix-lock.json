@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "key": "robrix-lock",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "767f069c96a6cd2735b3a4166799a1de79017d25",
+  "original_run": 41754188875,
+  "artifact_id": 13286508861,
+  "zip_bytes": 611352,
+  "zip_sha256": "3af1568e587cf13597e8ad6985ffcd636c0e0200afd64b7fb23e2380bd78730c",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 1658,
+    "before_sha256": "2257eeb8243c04f9870742d5ae29c0397e7c09c7cd752e2354cb6cc712b7c5df",
+    "after_sha256": "2257eeb8243c04f9870742d5ae29c0397e7c09c7cd752e2354cb6cc712b7c5df",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "MODULE.bazel",
+      "BUILD.bazel",
+      ".bazelrc",
+      ".bazelversion",
+      "defs.bzl",
+      "bazel",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "codex-rs/**/Cargo.toml",
+      "codex-rs/third_party",
+      "patches",
+      "tools/argument-comment-lint",
+      "scripts/update_cargo_bazel.py",
+      "scripts/check-module-bazel-lock.sh",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/actions/prepare-bazel-ci",
+      ".github/workflows/rust-ci.yml",
+      ".github/workflows/rust-ci-full.yml",
+      ".github/workflows/rust-release-argument-comment-lint.yml",
+      ".github/workflows/hepta-robrix-runfiles-qualification.yml",
+      "qualification/robrix-runfiles-20261104"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "commands": [
+      [
+        "committed-lock-check",
+        [
+          "./scripts/check-module-bazel-lock.sh"
+        ],
+        0
+      ],
+      [
+        "original-lock-update",
+        [
+          "just",
+          "bazel-lock-update"
+        ],
+        0
+      ],
+      [
+        "original-lock-check",
+        [
+          "./scripts/check-module-bazel-lock.sh"
+        ],
+        0
+      ]
+    ],
+    "lock_sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+    "lock_bytes": 1701389,
+    "checkout_checks": [
+      {
+        "stage": "before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0
+      },
+      {
+        "stage": "after",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0
+      }
+    ]
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 13,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "2c2500367896e76237fc08dbeb7e8e4b73f28148153aa9bd36833fd42920ac43",
+  "read_only_verifier": {
+    "commit": "76388954a74fede042b0753287a2050dcd6bc1f7",
+    "run": 41755181237,
+    "job": 126329497233
+  },
+  "representation": "Parsed EVIDENCE_VERIFIED_JSON summary; full report digest remains separately recorded."
+}

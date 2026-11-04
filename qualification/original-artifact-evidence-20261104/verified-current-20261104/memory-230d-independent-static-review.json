@@ -1,0 +1,61 @@
+{
+  "schema": "memory-successor-fixture-static-review-v1",
+  "candidate": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+  "parent": "c4023a27d00622382d8f23830fae93350252bf5f",
+  "inputs": [
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+      "ref": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+      "git_blob_sha": "1f080c913fab362a68b7a988c7b871b57f24fe31",
+      "sha256": "f81c26a9e7ed3b9c5a251118003afdf37f4fded329441af3470dd44898f5d57e",
+      "bytes": 26215
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+      "ref": "c4023a27d00622382d8f23830fae93350252bf5f",
+      "git_blob_sha": "14b629d44b36d9c93acff4c90300ee356af4d130",
+      "sha256": "41ad8e5e69901c4ef057bc55dd694fa923c72142ea01741fad6c47ac3fc6e5da",
+      "bytes": 25875
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "ref": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+      "git_blob_sha": "090ca350ac2089e0a610b39914400abeb1d593fe",
+      "sha256": "0794bf1a554508c56795b5b70184a8e1b0c2543a7c94e00dccca32827c9e7a95",
+      "bytes": 18235
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "ref": "c4023a27d00622382d8f23830fae93350252bf5f",
+      "git_blob_sha": "e9adb5979c37aa47eeeded998597f6703013bf70",
+      "sha256": "2e234df00adaa1f55c1e74cb2426eb5fba4d47f5549ca1f40ccf24a10aa5756a",
+      "bytes": 18152
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "ref": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+      "git_blob_sha": "1bcd82a012961d73e84349c7003d1975ad12b17c",
+      "sha256": "beb9e87922f6874d8535539d042096c27a6e5f8ff1b48902fe4952b18975294f",
+      "bytes": 8389
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "ref": "c4023a27d00622382d8f23830fae93350252bf5f",
+      "git_blob_sha": "b6f2d1b35b708cadae9db5978efd4dfea71a0ded",
+      "sha256": "054e7fd3d075bbff50dacf36cad3393666b9ff6e8e989bf21944e05c4b7f42b8",
+      "bytes": 8257
+    }
+  ],
+  "complete_git_diff_read": true,
+  "all_original_assertion_line_sequences_equal": true,
+  "local_turn_binding_first308_production_lines_equal": true,
+  "child_exit73_wal_indeterminate_and_tree_equality_assertions_unchanged": true,
+  "only_owned_fixture_roots_canonicalized": true,
+  "original_native_clippy_and_reader_diff_unchanged": true,
+  "result": "No blocking issue identified in the reviewed source diff.",
+  "limits": [
+    "Static review only; no native build/test or formatter execution.",
+    "Original 44,985-byte negative log/gzip was not independently replayed by this reviewer.",
+    "Current native qualification must still execute on the published exact candidate."
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.independent.memory-recovery-static-review.v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "8dfdf8c2fb146e8d47a943e7270851224eafa532",
+  "parent": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+  "pull_request": 4751,
+  "scope": "Narrow new Windows drive-spelling reconciliation, existing shared root identity check, actual recovery flush and new spelling tests; not a new full audit of all transplanted provider files.",
+  "inputs": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "git_blob_sha": "79927d04f53c5075a774227f67d58d97a139b7f7",
+      "sha256": "10ddf58087626a1b45d9d257f2896de7c48d75f1eb3df9d3a9d10b8d780ece49",
+      "bytes": 27111
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "git_blob_sha": "d792fcb37c6056def7ae61efd32c2d028f49b44e",
+      "sha256": "c98d571050a739df2dd61fa52d41f479e64f465cddc912bc9b76bf1712482d69",
+      "bytes": 15491
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_path.rs",
+      "git_blob_sha": "b084411f8d0fd6352669e8ca8c67bf4bf9f9f2b8",
+      "sha256": "cf9e8bed3cfe7d8f8169fa6f8f0563973efc1844870cbafa798c240b58c493be",
+      "bytes": 2134
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+      "git_blob_sha": "1f6326de18cbfaf6c4f06a8aa153282927510eda",
+      "sha256": "d34401b8e8718914126aa513ccd257e1a76fe2838d4fcc71400fda246ed9a7ef",
+      "bytes": 961
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+      "git_blob_sha": "cb41206ab6bfb219f0e0feb98a317a64794e4327",
+      "sha256": "005db7a596160711aff6893b551415f718e11f4ffd9e8be38227ff5530982abe",
+      "bytes": 3985
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs",
+      "git_blob_sha": "fdad69f3516fe61b52e552637777c00317311d24",
+      "sha256": "b92db97068863f8f744f5df8d49846bdfef3660b7c9941193079a23c3e5fe4da",
+      "bytes": 1681
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+      "git_blob_sha": "7d6a95dcd6e21eba8a61a935eb2304068b3942ad",
+      "sha256": "69931049995e9fb6d781003e8e23994f85783f81a47f586e1421c31132aeb471",
+      "bytes": 10129
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "git_blob_sha": "d697a393a58830a310cc6d659d23bc9949d6172b",
+      "sha256": "cc149cf6e60db172970498756325cd00af3ac00f9ad298831bbe907c702b7cac",
+      "bytes": 14211
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "git_blob_sha": "ba645e90dc5a95d74d50370c7b2da90280c71229",
+      "sha256": "55edcbb06d3ac763a18a3628a58e76ff2c625d4cff39d368ee8a4ce89796ce0d",
+      "bytes": 6404
+    }
+  ],
+  "findings": [],
+  "conclusion": "No new blocking defect found in the reviewed narrow changes. Current exact-head hosted native qualification remains required.",
+  "confirmed": [
+    "same_recovery_home only reconciles Disk/VerbatimDisk with matching drive and remaining Path components. Other namespaces and directories reject; non-Windows retains direct path equality.",
+    "bind_existing_recovery_database, guard revalidate_for, and materialize target-parent checks all use the same comparison; retained handles continue their existing identity and permission validation.",
+    "Removing the duplicate Memory canonical_root != root check does not remove canonical_path_without_redirection: Unix equality remains there, and Windows shared validation still checks component equivalence and every ancestor for a reparse attribute. Local NTFS restriction remains a separate retained-provider gate.",
+    "Candidate synchronization opens a writable Windows file and propagates sync_all failure. Directory synchronization obtains the existing private directory for sync and performs a real sync_all; opening a handle alone is not acknowledged as durability.",
+    "materialize copy keeps fixed per-object and aggregate size limits, validates retained source before and after reading, uses create-new private child creation, never copies SHM, and propagates file/directory flush errors.",
+    "New state tests cover both spellings, different-root/namespace denial, no outside target creation and unchanged source bytes. New Memory test uses exact-current-cut witness and original authority verifier for both actual root spellings."
+  ],
+  "limits": [
+    "Static read-only review only: no Rust compilation, native Windows execution, SQLite recovery or test controls were run here.",
+    "No reuse of old e9cf provider PASS as qualification for this new combined commit.",
+    "Point-in-time absent-sidecar checks do not establish an atomic absence lease; this review does not expand the original recovery contract.",
+    "No change to global scientific or production HOLD status."
+  ]
+}
