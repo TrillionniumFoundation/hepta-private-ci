@@ -19,12 +19,10 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: memory-230d-macos
-            source: 230d2d69a8c68ae6f8c502118fd9a8ee33027c37
-          - key: memory-230d-windows
-            source: 230d2d69a8c68ae6f8c502118fd9a8ee33027c37
-          - key: memory-230d-linux
-            source: 230d2d69a8c68ae6f8c502118fd9a8ee33027c37
+          - key: legacy-env-source
+            source: 112c05026a36a3555b01886c5bad9bb9f9c1d2e8
+          - key: legacy-env-merge
+            source: 5333650cac868e4a1d2c9efbd9d80ab656a8c655
     env:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: core.autocrlf
@@ -77,7 +75,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           EVIDENCE_KEY: ${{ matrix.key }}
         run: >-
-          python3 harness/qualification/original-artifact-evidence-20261104/verify.py
+          python3 harness/qualification/original-artifact-evidence-20261104/verify_legacy_env.py
           --manifest harness/qualification/original-artifact-evidence-20261104/artifacts.json
           --key "$EVIDENCE_KEY" --source source
           --output "$RUNNER_TEMP/evidence-$EVIDENCE_KEY"
