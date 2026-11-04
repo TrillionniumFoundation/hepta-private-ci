@@ -12,6 +12,7 @@ import time
 import xml.etree.ElementTree as ET
 
 from common import ROOT, HERE, BAZEL_GROUPS, BAZEL_SHARDS, digest, require, snapshot
+from common import memory_ignored_cases, require_memory_process_cases
 
 def libtest_inventory(raw, allow_empty=False):
     text = raw.decode("utf-8").replace("\r\n", "\n")
@@ -180,10 +181,12 @@ def main():
             listed = libtest_inventory((output / ("original-inventory-" + name + ".stdout")).read_bytes())
             ignored = libtest_inventory(
                 (output / ("original-ignored-inventory-" + name + ".stdout")).read_bytes(), allow_empty=True)
-            expected_ignored = config["original_ignored_memory_cases"] if name == "memory" else []
+            expected_ignored = memory_ignored_cases(config, platform.system()) if name == "memory" else []
             require(set(ignored) == set(expected_ignored) and set(ignored) <= set(listed),
                     "original ignored inventory changed")
             inventories[name] = {"all_cases": listed, "original_ignored": ignored}
+            if name == "memory":
+                require_memory_process_cases(listed, set(listed) - set(ignored), platform.system())
         code = run("original-library-targets", [*wrapper, "test", "--keep_going",
                    "--nocache_test_results", "--test_output=all", "--", *targets.values()])
         copied = {}
@@ -206,7 +209,7 @@ def main():
             pairs = report_members(directory, shard_counts[name])
             for _, xml in pairs:
                 validate_wrapper_xml(xml.read_bytes())
-            allowed = config["original_ignored_memory_cases"] if name == "memory" else []
+            allowed = memory_ignored_cases(config, platform.system()) if name == "memory" else []
             receipt["targets"][name] = complete_shard_counts(
                 [log.read_bytes() for log, _ in pairs], inventories[name]["all_cases"], allowed)
         require(run("original-scoped-clippy", [*wrapper, "build", "--config=clippy", "--",

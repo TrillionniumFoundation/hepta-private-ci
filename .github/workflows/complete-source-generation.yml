@@ -21,9 +21,9 @@ jobs:
       qualified: ${{ steps.generate.outputs.qualified }}
     env:
       RUSTUP_TOOLCHAIN: 1.96.0
-      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_COUNT: "1"
       GIT_CONFIG_KEY_0: core.autocrlf
-      GIT_CONFIG_VALUE_0: 'false'
+      GIT_CONFIG_VALUE_0: "false"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -78,9 +78,9 @@ jobs:
       deployment: false
     env:
       BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
-      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_COUNT: "1"
       GIT_CONFIG_KEY_0: core.autocrlf
-      GIT_CONFIG_VALUE_0: 'false'
+      GIT_CONFIG_VALUE_0: "false"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

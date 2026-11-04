@@ -1,21 +1,22 @@
 import unittest
 
 from check_windows_private_state_acquisition import CREATION
+from check_windows_private_state_acquisition import CREATE_NEW
 from check_windows_private_state_acquisition import SUBSTITUTION
 from check_windows_private_state_acquisition import check_result
 
 
 def fixture(lane):
-    failed = {"unchecked-create": CREATION, "path-check-open": SUBSTITUTION}.get(lane)
+    failed = {"unchecked-create": {CREATION, CREATE_NEW}, "path-check-open": {SUBSTITUTION}}.get(lane, set())
     lines = [
         f"PASS [ 0.1s] codex-utils-path {name}"
-        if name != failed
+        if name not in failed
         else f"FAIL [ 0.1s] codex-utils-path {name}"
-        for name in (CREATION, SUBSTITUTION)
+        for name in (CREATION, SUBSTITUTION, CREATE_NEW)
     ]
     lines.append(
-        "Summary [ 0.2s] 2 tests run: "
-        + ("1 passed, 1 failed" if failed else "2 passed")
+        "Summary [ 0.2s] 3 tests run: "
+        + (f"{3 - len(failed)} passed, {len(failed)} failed" if failed else "3 passed")
         + ", 15 skipped"
     )
     lines.append(
@@ -48,11 +49,11 @@ class AcquisitionOracleTests(unittest.TestCase):
         for lane in ("positive", "unchecked-create", "path-check-open"):
             output = fixture(lane)
             lines = output.splitlines()
-            for index in range(2):
+            for index in range(3):
                 lines[index] = lines[index].replace(
-                    "] codex-utils-path", f"] ({index + 1}/2) codex-utils-path"
+                    "] codex-utils-path", f"] ({index + 1}/3) codex-utils-path"
                 )
-            output = "\n".join(lines + lines[:2]) + "\n"
+            output = "\n".join(lines + lines[:3]) + "\n"
             output = output.replace("PASS", "\x1b[32;1mPASS\x1b[0m")
             output = output.replace("FAIL", "\x1b[31;1mFAIL\x1b[0m")
             with self.subTest(lane=lane):
@@ -66,16 +67,17 @@ class AcquisitionOracleTests(unittest.TestCase):
     def test_rejects_inconsistent_progress_or_missing_selected_case(self):
         output = (
             fixture("positive")
-            .replace("] codex-utils-path", "] (1/2) codex-utils-path", 1)
-            .replace("] codex-utils-path", "] (2/2) codex-utils-path", 1)
+            .replace("] codex-utils-path", "] (1/3) codex-utils-path", 1)
+            .replace("] codex-utils-path", "] (2/3) codex-utils-path", 1)
+            .replace("] codex-utils-path", "] (3/3) codex-utils-path", 1)
         )
         changes = (
-            output.replace("(2/2)", "(1/2)"),
-            output.replace("(2/2)", "(3/2)"),
-            output.replace("(2/2)", "(2/3)"),
-            output.replace("(2/2)", "(0/2)"),
+            output.replace("(2/3)", "(1/3)"),
+            output.replace("(2/3)", "(4/3)"),
+            output.replace("(2/3)", "(2/4)"),
+            output.replace("(2/3)", "(0/3)"),
             "\n".join(line for line in output.splitlines() if SUBSTITUTION not in line),
-            output + f"PASS [ 0.1s] (2/2) codex-utils-path {CREATION}\n",
+            output + f"PASS [ 0.1s] (2/3) codex-utils-path {CREATION}\n",
         )
         for changed in changes:
             with self.subTest(output=changed), self.assertRaises(RuntimeError):
@@ -91,7 +93,7 @@ class AcquisitionOracleTests(unittest.TestCase):
             output = fixture(lane)
             changes = (
                 output.replace(CREATION, "wrong_test"),
-                output.replace("2 tests run", "1 tests run"),
+                output.replace("3 tests run", "2 tests run"),
                 output.replace("swapped=true", "swapped=false"),
                 output.replace("created=true", "created=false")
                 if lane == "unchecked-create"

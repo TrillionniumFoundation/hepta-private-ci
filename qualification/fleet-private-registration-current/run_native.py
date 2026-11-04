@@ -13,6 +13,7 @@ import time
 import xml.etree.ElementTree as ET
 
 from common import ROOT, WORKSPACE, HERE, NATIVE_GROUPS, digest, require, snapshot
+from common import memory_ignored_cases, require_memory_process_cases
 
 WINDOWS_REQUIRED = {
     "codex-utils-path": {
@@ -224,9 +225,11 @@ def main():
                 require(run(package + "-inventory", ["cargo", "nextest", "list", "--locked",
                         "-p", package, "--lib", "--message-format=json"], WORKSPACE) == 0,
                         "library inventory failed")
-                ignored = config["original_ignored_memory_cases"] if package == "codex-hepta-memory" else []
+                ignored = memory_ignored_cases(config, platform.system()) if package == "codex-hepta-memory" else []
                 listed = inventory((output / (package + "-inventory.stdout")).read_bytes(), package, ignored)
                 item["inventory"] = listed
+                if package == "codex-hepta-memory":
+                    require_memory_process_cases(listed["all_cases"], listed["expected"], platform.system())
                 if os.name == "nt":
                     require_windows_cases(listed, package)
                 binary = Path(listed["binary"])

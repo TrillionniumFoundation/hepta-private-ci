@@ -226,5 +226,62 @@ class ComposedWindowsCoverageControls(unittest.TestCase):
         self.assertEqual(BAZEL_SHARDS["retained-memory"], {"path": 1, "state": 4, "memory": 1})
         self.assertEqual(set(BAZEL_GROUPS["fleet-owner"]), {"path", "fleet", "agentd"})
 
+
+
+class OriginalUnixSubprocessCoverageControls(unittest.TestCase):
+    def setUp(self):
+        from common import HERE, OBJECTIVE_SENDER_CHILD, OBJECTIVE_SENDER_PARENTS
+        self.config = json.loads((HERE / "scope.json").read_bytes())
+        self.child = OBJECTIVE_SENDER_CHILD
+        self.parents = OBJECTIVE_SENDER_PARENTS
+        self.all_cases = sorted(self.parents | {self.child, "ordinary_case"})
+        self.expected = sorted(self.parents | {"ordinary_case"})
+
+    def test_unix_keeps_original_probes_and_exact_subprocess_fixture(self):
+        from common import memory_ignored_cases, require_memory_process_cases
+        original = self.config["original_ignored_memory_cases"]
+        for system in ("Linux", "Darwin"):
+            self.assertEqual(memory_ignored_cases(self.config, system),
+                             sorted([*original, self.child]))
+            require_memory_process_cases(self.all_cases, self.expected, system)
+        for name in (self.child + "_other", next(iter(self.parents))):
+            changed = copy.deepcopy(self.config)
+            changed["original_ignored_memory_unix_subprocess_cases"] = [name]
+            with self.assertRaises(RuntimeError):
+                memory_ignored_cases(changed, "Linux")
+
+    def test_each_original_parent_is_required_and_cannot_be_an_ignored_pass(self):
+        from common import require_memory_process_cases
+        for parent in self.parents:
+            selected = [name for name in self.expected if name != parent]
+            with self.subTest(parent=parent), self.assertRaises(RuntimeError):
+                require_memory_process_cases(self.all_cases, selected, "Linux")
+        with self.assertRaises(RuntimeError):
+            require_memory_process_cases(self.all_cases, self.all_cases, "Linux")
+        wrong = [name.replace("production_writer::", "other_owner::") for name in self.expected]
+        with self.assertRaises(RuntimeError):
+            require_memory_process_cases(self.all_cases, wrong, "Darwin")
+
+    def test_windows_preserves_original_seven_and_rejects_unix_case_inventory(self):
+        from common import memory_ignored_cases, require_memory_process_cases
+        self.assertEqual(memory_ignored_cases(self.config, "Windows"),
+                         sorted(self.config["original_ignored_memory_cases"]))
+        require_memory_process_cases(["ordinary_case"], ["ordinary_case"], "Windows")
+        for name in self.parents | {self.child}:
+            with self.subTest(name=name), self.assertRaises(RuntimeError):
+                require_memory_process_cases(["ordinary_case", name], ["ordinary_case"], "Windows")
+
+    def test_unknown_hosts_and_replacing_original_probes_are_rejected(self):
+        from common import memory_ignored_cases, require_memory_process_cases
+        with self.assertRaises(RuntimeError):
+            memory_ignored_cases(self.config, "Other")
+        with self.assertRaises(RuntimeError):
+            require_memory_process_cases(self.all_cases, self.expected, "Other")
+        for name in self.parents | {self.child}:
+            changed = copy.deepcopy(self.config)
+            changed["original_ignored_memory_cases"].append(name)
+            with self.subTest(name=name), self.assertRaises(RuntimeError):
+                memory_ignored_cases(changed, "Linux")
+
 if __name__ == "__main__":
     unittest.main()

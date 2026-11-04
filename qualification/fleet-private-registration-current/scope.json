@@ -37,5 +37,18 @@
       "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane"
     ]
   },
-  "meaning": "Every compiled library case is enumerated at the actual candidate. The historical case totals and schema-15 inventory are not reused for the schema-16/17 composition. The explicit required names are additional coverage checks, not selectors."
+  "meaning": "Every compiled library case is enumerated at the actual candidate. The historical case totals and schema-15 inventory are not reused for the schema-16/17 composition. The explicit required names are additional coverage checks, not selectors.",
+  "original_ignored_memory_unix_subprocess_cases": [
+    "production_writer::objective_sender::crash_tests::objective_sender_subprocess_fixture"
+  ],
+  "original_memory_unix_process_parents": [
+    "production_writer::objective_sender::crash_tests::a_second_real_process_and_different_lease_still_cannot_send_retained_run",
+    "production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission"
+  ],
+  "unix_subprocess_inventory_source": {
+    "child_source_blob": "c024b0d82da8cdc3f2dcb818fd1658f531adfb4a",
+    "module_source_blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+    "compile_guard": "all(test, unix)",
+    "meaning": "The existing ignored fixture is run by both mandatory nonignored parent tests. Its own name is not an independent pass, and no Rust ignore or original stress probe was changed."
+  }
 }

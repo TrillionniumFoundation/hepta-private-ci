@@ -24,10 +24,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
-      GIT_CONFIG_COUNT: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
+      GIT_CONFIG_COUNT: "1"
       GIT_CONFIG_KEY_0: core.autocrlf
-      GIT_CONFIG_VALUE_0: 'false'
+      GIT_CONFIG_VALUE_0: "false"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -43,10 +43,10 @@ jobs:
           import subprocess
           import unittest
           suite = unittest.defaultTestLoader.discover("qualification/fleet-private-registration-current", pattern="test_readers.py")
-          if suite.countTestCases() != 28:
+          if suite.countTestCases() != 32:
               raise SystemExit("unexpected reader-control inventory")
           result = unittest.TextTestRunner(verbosity=2).run(suite)
-          if not result.wasSuccessful() or result.testsRun != 28 or result.skipped or result.expectedFailures or result.unexpectedSuccesses:
+          if not result.wasSuccessful() or result.testsRun != 32 or result.skipped or result.expectedFailures or result.unexpectedSuccesses:
               raise SystemExit("reader controls did not execute completely")
           for name in ("run_native.py", "run_bazel.py"):
               result = subprocess.run([
@@ -77,31 +77,31 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {runner: windows-2025, group: path-fleet, minutes: 30}
-          - {runner: ubuntu-24.04, group: path-fleet, minutes: 30}
-          - {runner: macos-15, group: path-fleet, minutes: 30}
-          - {runner: windows-2025, group: agentd, minutes: 80}
-          - {runner: ubuntu-24.04, group: agentd, minutes: 80}
-          - {runner: macos-15, group: agentd, minutes: 80}
-          - {runner: windows-2025, group: retained-memory, minutes: 30}
-          - {runner: ubuntu-24.04, group: retained-memory, minutes: 30}
-          - {runner: macos-15, group: retained-memory, minutes: 30}
+          - { runner: windows-2025, group: path-fleet, minutes: 30 }
+          - { runner: ubuntu-24.04, group: path-fleet, minutes: 30 }
+          - { runner: macos-15, group: path-fleet, minutes: 30 }
+          - { runner: windows-2025, group: agentd, minutes: 80 }
+          - { runner: ubuntu-24.04, group: agentd, minutes: 80 }
+          - { runner: macos-15, group: agentd, minutes: 80 }
+          - { runner: windows-2025, group: retained-memory, minutes: 30 }
+          - { runner: ubuntu-24.04, group: retained-memory, minutes: 30 }
+          - { runner: macos-15, group: retained-memory, minutes: 30 }
     name: Complete ${{ matrix.group }} libraries (${{ matrix.runner }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: ${{ matrix.minutes }}
     env:
-      CARGO_INCREMENTAL: '0'
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_DEV_DEBUG: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
       RUSTUP_TOOLCHAIN: 1.96.0
-      RUST_MIN_STACK: '8388608'
+      RUST_MIN_STACK: "8388608"
       NEXTEST_PROFILE: local
       PYTHONIOENCODING: utf-8
-      PYTHONDONTWRITEBYTECODE: '1'
-      GIT_CONFIG_COUNT: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
+      GIT_CONFIG_COUNT: "1"
       GIT_CONFIG_KEY_0: core.autocrlf
-      GIT_CONFIG_VALUE_0: 'false'
+      GIT_CONFIG_VALUE_0: "false"
       HEPTA_EXPECTED_COMMIT: ${{ inputs.source_sha }}
     defaults:
       run:
@@ -163,10 +163,10 @@ jobs:
     env:
       BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
       HEPTA_EXPECTED_COMMIT: ${{ inputs.source_sha }}
-      PYTHONDONTWRITEBYTECODE: '1'
-      GIT_CONFIG_COUNT: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
+      GIT_CONFIG_COUNT: "1"
       GIT_CONFIG_KEY_0: core.autocrlf
-      GIT_CONFIG_VALUE_0: 'false'
+      GIT_CONFIG_VALUE_0: "false"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

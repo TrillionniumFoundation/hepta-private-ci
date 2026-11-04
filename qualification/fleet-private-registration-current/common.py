@@ -69,3 +69,36 @@ def snapshot(*, verify_index=False):
 
 def digest(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+OBJECTIVE_SENDER_CHILD = "production_writer::objective_sender::crash_tests::objective_sender_subprocess_fixture"
+OBJECTIVE_SENDER_PARENTS = {
+    "production_writer::objective_sender::crash_tests::a_second_real_process_and_different_lease_still_cannot_send_retained_run",
+    "production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission",
+}
+
+
+def memory_ignored_cases(config, system):
+    require(system in {"Linux", "Darwin", "Windows"}, "unsupported memory inventory host")
+    original = config["original_ignored_memory_cases"]
+    require(len(original) == len(set(original)), "duplicate original ignored case")
+    children = config["original_ignored_memory_unix_subprocess_cases"]
+    require(children == [OBJECTIVE_SENDER_CHILD], "unexpected Unix subprocess fixture")
+    require(set(config["original_memory_unix_process_parents"]) == OBJECTIVE_SENDER_PARENTS,
+            "changed original subprocess parent contract")
+    require(not (set(original) & (set(children) | OBJECTIVE_SENDER_PARENTS)),
+            "subprocess case cannot replace an original ignored probe")
+    return sorted([*original, *children] if system in {"Linux", "Darwin"} else original)
+
+
+def require_memory_process_cases(all_cases, expected, system):
+    require(system in {"Linux", "Darwin", "Windows"}, "unsupported memory inventory host")
+    all_names, executed = set(all_cases), set(expected)
+    if system == "Windows":
+        require(not (({OBJECTIVE_SENDER_CHILD} | OBJECTIVE_SENDER_PARENTS) & all_names),
+                "Unix subprocess cases unexpectedly compiled on Windows")
+    else:
+        require(OBJECTIVE_SENDER_CHILD in all_names and OBJECTIVE_SENDER_CHILD not in executed,
+                "original Unix subprocess fixture inventory changed")
+        require(OBJECTIVE_SENDER_PARENTS <= executed,
+                "both original Unix subprocess parents must execute")

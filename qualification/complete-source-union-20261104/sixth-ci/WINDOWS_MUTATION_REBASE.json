@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "source_commit": "5d19a578ac28a6ce7fc67a348b10297dc370c19f",
+  "production_path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+  "production_blob": "091a2f80f4e709aaeb750e4f5eb8fa939f7924c1",
+  "production_sha256": "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51",
+  "mutations": [
+    {
+      "lane": "unchecked-create",
+      "patch_path": ".github/fixtures/windows-private-state-acquisition/unchecked-create.patch",
+      "patch_sha256": "8bf4af97052c88e917032964b9f8fdcecdb7fd90badb97fb5c5875ed5357ec49",
+      "mutant": {
+        "bytes": 8660,
+        "sha256": "29ca6ae19afcf5f092e89f6d3bf791e6fb219d23af6f3f8e53543c90e3185fd8",
+        "git_blob": "407231cbb307a5bf5ea0d2f001cabf2bbcb3210b"
+      }
+    },
+    {
+      "lane": "path-check-open",
+      "patch_path": ".github/fixtures/windows-private-state-acquisition/path-check-open.patch",
+      "patch_sha256": "1d47fd0b3c909335c51e559b024ceff772674a1bcc09f3efad0c6b2e50425a13",
+      "mutant": {
+        "bytes": 8620,
+        "sha256": "18baef2317b32e6c13348b15d7301ffd0bb8c09ea3922263142647ccbd05d642",
+        "git_blob": "0786f9922d3696ca44ec319b7c0e997adc35d8a0"
+      }
+    }
+  ],
+  "production_changed": false,
+  "original_cases_and_observations_unchanged": true,
+  "current_additional_case": "private_state_windows::directory::tests::create_new_rejects_junction_without_creating_redirected_leaf",
+  "expected_outcomes": {
+    "positive": {
+      "passed": 3,
+      "failed": 0
+    },
+    "unchecked-create": {
+      "passed": 1,
+      "failed": 2
+    },
+    "path-check-open": {
+      "passed": 2,
+      "failed": 1
+    }
+  },
+  "scope": "Frozen negative-control patches are reanchored to the composed implementation. Actual Windows execution must still prove the exact original filesystem observations and every selected case; this record is not native qualification."
+}

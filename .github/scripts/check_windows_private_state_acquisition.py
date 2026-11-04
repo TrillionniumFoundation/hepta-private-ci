@@ -14,10 +14,11 @@ FIXTURES = ROOT / ".github/fixtures/windows-private-state-acquisition"
 PREFIX = "private_state_windows::directory::tests::"
 CREATION = PREFIX + "rejects_junction_before_creating_private_leaf"
 SUBSTITUTION = PREFIX + "rejects_ancestor_substitution_at_retained_open"
-SOURCE_SHA256 = "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6"
+CREATE_NEW = PREFIX + "create_new_rejects_junction_without_creating_redirected_leaf"
+SOURCE_SHA256 = "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51"
 PATCHES = {
-    "unchecked-create": "93ed0742de0e4cfe226334fd2f71f1129ee42125f214ecf77297916d97696369",
-    "path-check-open": "24efb0448aaac1cc0a1b70bf661ad590fe0d1ee407d7787ea5b33c9923f2b320",
+    "unchecked-create": "8bf4af97052c88e917032964b9f8fdcecdb7fd90badb97fb5c5875ed5357ec49",
+    "path-check-open": "1d47fd0b3c909335c51e559b024ceff772674a1bcc09f3efad0c6b2e50425a13",
 }
 COMMAND = [
     "just",
@@ -73,7 +74,7 @@ def check_result(lane, returncode, output):
         statuses[name] = status
         if position:
             require(
-                total == "2" and position in {"1", "2"}, "wrong exact test progress"
+                total == "3" and position in {"1", "2", "3"}, "wrong exact test progress"
             )
             require(
                 name not in progress or progress[name] == position,
@@ -81,23 +82,24 @@ def check_result(lane, returncode, output):
             )
             progress[name] = position
     require(
-        not progress or len(progress) == 2 and set(progress.values()) == {"1", "2"},
+        not progress or len(progress) == 3 and set(progress.values()) == {"1", "2", "3"},
         "incomplete or duplicate test progress",
     )
-    expected = {CREATION: "PASS", SUBSTITUTION: "PASS"}
+    expected = {CREATION: "PASS", SUBSTITUTION: "PASS", CREATE_NEW: "PASS"}
     if lane == "unchecked-create":
         expected[CREATION] = "FAIL"
+        expected[CREATE_NEW] = "FAIL"
     if lane == "path-check-open":
         expected[SUBSTITUTION] = "FAIL"
     require(statuses == expected, f"wrong exact test outcomes: {statuses}")
     require(returncode == (0 if lane == "positive" else 1), "wrong command exit code")
     summaries = re.findall(r"^\s*Summary\s+\[[^\]]+\]\s+(.*)$", clean, re.MULTILINE)
     require(len(summaries) == 1, "missing or duplicate nextest summary")
-    counts = (
-        "2 tests run: 2 passed"
-        if lane == "positive"
-        else "2 tests run: 1 passed, 1 failed"
-    )
+    counts = {
+        "positive": "3 tests run: 3 passed",
+        "unchecked-create": "3 tests run: 1 passed, 2 failed",
+        "path-check-open": "3 tests run: 2 passed, 1 failed",
+    }[lane]
     require(
         re.fullmatch(re.escape(counts) + r", [0-9]+ skipped", summaries[0]),
         "wrong test counts",
