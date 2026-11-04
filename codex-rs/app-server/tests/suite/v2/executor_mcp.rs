@@ -170,18 +170,9 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
     let thread_id = start_thread(&mut app_server, /*selected_capability_roots*/ None).await?;
 
     let namespace = format!("mcp__{PROJECT_MCP_SERVER_NAME}");
-    let search_call_id = "browser-mcp-discovery";
     let response_mock = responses::mount_sse_sequence(
         &responses_server,
         vec![
-            responses::sse(vec![
-                responses::ev_response_created("resp-browser-mcp-search"),
-                responses::ev_tool_search_call(
-                    search_call_id,
-                    &json!({"query": format!("{namespace} echo"), "limit": 8}),
-                ),
-                responses::ev_completed("resp-browser-mcp-search"),
-            ]),
             responses::sse(vec![
                 responses::ev_response_created("resp-browser-mcp-call"),
                 responses::ev_function_call_with_namespace(
@@ -218,10 +209,9 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
     )
     .await??;
     let requests = response_mock.requests();
-    assert_eq!(requests.len(), 3);
-    assert!(requests[0].tool_by_name(&namespace, "echo").is_none());
-    assert_mcp_echo_discovered(&requests[1], search_call_id, &namespace);
-    let output = requests[2].function_call_output("browser-mcp-call");
+    assert_eq!(requests.len(), 2);
+    assert!(requests[0].tool_by_name(&namespace, "echo").is_some());
+    let output = requests[1].function_call_output("browser-mcp-call");
     assert!(
         output
             .get("output")
@@ -914,18 +904,9 @@ startup_timeout_sec = 10
     );
 
     let namespace = format!("mcp__{MCP_SERVER_NAME}");
-    let search_call_id = "executor-mcp-discovery";
     let response_mock = responses::mount_sse_sequence(
         &responses_server,
         vec![
-            responses::sse(vec![
-                responses::ev_response_created("resp-executor-mcp-search"),
-                responses::ev_tool_search_call(
-                    search_call_id,
-                    &json!({"query": format!("{namespace} echo"), "limit": 8}),
-                ),
-                responses::ev_completed("resp-executor-mcp-search"),
-            ]),
             responses::sse(vec![
                 responses::ev_response_created("resp-executor-mcp-call"),
                 responses::ev_function_call_with_namespace(
@@ -967,10 +948,9 @@ startup_timeout_sec = 10
     .await??;
 
     let requests = response_mock.requests();
-    assert_eq!(requests.len(), 3);
-    assert!(requests[0].tool_by_name(&namespace, "echo").is_none());
-    assert_mcp_echo_discovered(&requests[1], search_call_id, &namespace);
-    let output = requests[2].function_call_output(TOOL_CALL_ID);
+    assert_eq!(requests.len(), 2);
+    assert!(requests[0].tool_by_name(&namespace, "echo").is_some());
+    let output = requests[1].function_call_output(TOOL_CALL_ID);
     let output = output
         .get("output")
         .and_then(serde_json::Value::as_str)
@@ -1185,21 +1165,4 @@ async fn start_thread(
     let ThreadStartResponse { thread, .. } =
         timeout(DEFAULT_READ_TIMEOUT, app_server.read_response(request_id)).await??;
     Ok(thread.id)
-}
-
-fn assert_mcp_echo_discovered(
-    request: &responses::ResponsesRequest,
-    call_id: &str,
-    namespace: &str,
-) {
-    let output = request.tool_search_output(call_id);
-    assert_eq!(
-        output.get("status").and_then(Value::as_str),
-        Some("completed")
-    );
-    assert_eq!(
-        output.get("execution").and_then(Value::as_str),
-        Some("client")
-    );
-    assert!(responses::namespace_child_tool(&output, namespace, "echo").is_some());
 }
