@@ -205,7 +205,8 @@ Windows durability, sandbox isolation or at-most-once qualification.
 4. The adapter performs its bounded asynchronous HTTPS read. It does not hold
    the owner mutex over network awaits, so trusted revocations can progress.
 5. `with_verified_use` checks that token and authority share the same owner,
-   validates binding/time/epoch/revocation under the authority mutex, then
+   validates binding/time/epoch/revocation and equality with the complete
+   claim-time head under the authority mutex, then
    releases the mutex before invoking the already selected synchronous
    callback. The successful final validation is the consumer-entry
    linearization point.
@@ -254,25 +255,40 @@ This closes the typed/canonical-JSON witness contract without turning an audit
 receipt into a portable bearer grant. Product code that does not need the
 serialized evidence may continue to use the opaque-token APIs.
 
-## Exact-frontier asynchronous entry
+## Exact-frontier final entry
 
-`claim` also snapshots the exact durable revocation head and includes that head,
-the signed grant and signature in the opaque token witness. Runtime Codex uses
-`VerifiedUseToken::enter(expected)` immediately before the first effectful
-await. This consumes the token, rechecks the protected owner clock, live
-revocations and binding, and requires the current head to equal the claim-time
-head. Even an unrelated frontier advance requires new independent authorization.
-The returned `EnteredUseToken` is non-constructible, non-cloneable and
-non-serializable; it establishes one effect entry, never permission to retry.
+`claim` snapshots the complete durable revocation head and includes that head,
+the signed grant and signature in the opaque token witness. Every final entry
+requires the current head to equal that claim-time head, in addition to its
+existing owner, binding, protected-clock, epoch and revocation checks. This
+applies to `VerifiedUseToken::enter` / `enter_verified_use`,
+`with_verified_use` / `deliver_final_use_with_witness`,
+`with_verified_effect` / `with_verified_use_async`, and
+`with_dispatch_boundary` / `dispatch_final_use_with_witness`.
 
-This entry-only API releases the owner mutex before I/O. A later revocation may
-deny future entries but cannot prove that the already-entered operation stopped.
-Unknown results must reconcile the same durable operation identity before a
-new grant. It differs from `with_verified_use_async` / `with_verified_effect`,
-which retain an active-effect guard for adapters whose contract requires
-revocation commits to return `DispatchInProgress` during the bounded effect.
-Synchronous `with_verified_use` retains its existing consumer-entry
-linearization contract and does not hold the mutex across arbitrary callbacks.
+Any head change, including an unrelated revision advance, refuses the old
+token with `StaleRevocationHead` before callback or effect entry. Existing live
+grant errors, including `Revoked`, retain precedence over this head mismatch.
+The claim's nonce remains consumed. If no effect has entered, a new
+independently authorized claim at the current head can cross the same boundary;
+a local token refresh or nonce refund cannot supply that authorization.
+
+Runtime Codex uses `VerifiedUseToken::enter(expected)` immediately before the
+first effectful await. The returned `EnteredUseToken` is non-constructible,
+non-cloneable and non-serializable; it establishes one effect entry, never
+permission to retry. This entry-only API releases the owner mutex before I/O.
+A later revocation may deny future entries but cannot prove that an
+already-entered operation stopped. An already-entered or indeterminate effect
+must be reconciled against the same durable operation identity; a new grant
+must not become an automatic retry of that effect.
+
+`with_verified_use_async` / `with_verified_effect` retain an active-effect guard
+for adapters whose contract requires revocation commits to return
+`DispatchInProgress` during the bounded effect. Synchronous
+`with_verified_use` retains its consumer-entry linearization contract and
+does not hold the mutex across arbitrary callbacks. The local dispatch APIs
+retain their short mutex fence. These distinct effect lifetimes all share the
+same exact-head check before entry.
 
 `revocation_head()` only reports the locally trusted head. An independently
 authenticated feed must pass `update_revocations`; reading the head does not
@@ -300,7 +316,7 @@ fetch newer data or replace protected time and the external rollback frontier.
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired`                                          | Reject stale or currently unauthorized use under the locally trusted head                                                                                     |
 | `AlreadyClaimed`, `CapacityExceeded`                                                          | Require owner reconciliation/new authorization or an epoch transition                                                                                         |
 | `InvalidTrust`, `AntiRollbackViolation`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner clock/frontier/configuration/storage without resetting authority implicitly                                                         |
-| `StaleRevocationHead`                                                                         | Reject a rollback/inconsistent host update                                                                                                                    |
+| `StaleRevocationHead`                                                                         | Reject an inconsistent host update or a token whose complete claim-time head differs from the current head; keep its nonce consumed                            |
 
 Bao additionally distinguishes provider denial, missing data, transport failure,
 timeout, malformed/oversized replies, version mismatch and digest mismatch.
