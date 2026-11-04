@@ -1,0 +1,43 @@
+{
+  "source_commit": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+  "source_tree": "fcbb3b9c180f929661348dc5d6453e8c04fe369e",
+  "tested_checkout": "cf13fb2ffc18e7ef7a814845faf26b95f1fcca89",
+  "lock": {
+    "run_id": 41726681634,
+    "job_id": 126233179938,
+    "artifact_id": 13274416692,
+    "bytes": 610346,
+    "sha256": "c25ce1d58cf5cd92f13d9dea03e33f515140c19b06940793bf5bf488a2cf60ef",
+    "verified_git_inputs": 1664,
+    "verified_outputs": 9,
+    "committed_generated_git_lock_equal": true,
+    "lock_sha256": "50ffccd2af246c69a365f7ec35d84ca6ee3b16381ae1775a585d2fc8795a216d",
+    "original_command_exits": [
+      0,
+      0,
+      0
+    ],
+    "provenance": "Independent byte-level replay performed in the previous live execution environment during this conversation; a fresh remote replay is being performed separately."
+  },
+  "lint": {
+    "run_id": 41726681773,
+    "job_id": 126235308440,
+    "job_conclusion": "success",
+    "decoded_bytes": 143712,
+    "decoded_sha256": "53be97b11d8b728e7c644bc9e949fcec8396f206669f4ca59aa726acbcf4b160",
+    "gzip_bytes": 143745,
+    "gzip_sha256": "efd26c41954ba159dc78f4d1ed494dce664bb496246783159fdab3fbe70e0825",
+    "outer_rust_tests": 8,
+    "outer_library": 5,
+    "outer_binary": 3,
+    "nested_ui_cases": 9,
+    "python_wrapper_tests": 6,
+    "failures": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "original_nightly": "nightly-2025-09-18",
+    "cli_bootstrap_toolchain": "1.97.0"
+  },
+  "scope": "Maintained lint/bootstrap and committed lock only; unrelated full CI, native release builds and production gates remain open.",
+  "original_artifact_embedded": false
+}

@@ -1,0 +1,140 @@
+{
+  "id": 126235308440,
+  "run_id": 41726681773,
+  "workflow_name": "blocking-ci",
+  "head_branch": "fix/private-ci-maintained-dylint-20261103-gpt6",
+  "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41726681773",
+  "run_attempt": 1,
+  "node_id": "CR_kwDOTrgxoM8AAAAdZDXxmA",
+  "head_sha": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/126235308440",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41726681773/job/126235308440",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-11-03T22:03:06Z",
+  "started_at": "2026-11-03T22:04:50Z",
+  "completed_at": "2026-11-03T22:10:15Z",
+  "name": "rust-ci / Argument comment lint package",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-03T22:04:51Z",
+      "completed_at": "2026-11-03T22:04:52Z"
+    },
+    {
+      "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-03T22:04:52Z",
+      "completed_at": "2026-11-03T22:04:58Z"
+    },
+    {
+      "name": "Run ./.github/actions/setup-ci",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-03T22:04:58Z",
+      "completed_at": "2026-11-03T22:05:02Z"
+    },
+    {
+      "name": "Run dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-03T22:05:02Z",
+      "completed_at": "2026-11-03T22:05:10Z"
+    },
+    {
+      "name": "Install nightly argument-comment-lint toolchain",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-03T22:05:10Z",
+      "completed_at": "2026-11-03T22:05:29Z"
+    },
+    {
+      "name": "Cache cargo-dylint tooling",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-11-03T22:05:29Z",
+      "completed_at": "2026-11-03T22:05:30Z"
+    },
+    {
+      "name": "Install cargo-dylint tooling",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-03T22:05:30Z",
+      "completed_at": "2026-11-03T22:07:41Z"
+    },
+    {
+      "name": "Check Python wrapper syntax",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-03T22:07:41Z",
+      "completed_at": "2026-11-03T22:07:41Z"
+    },
+    {
+      "name": "Test Python wrapper helpers",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-03T22:07:41Z",
+      "completed_at": "2026-11-03T22:07:41Z"
+    },
+    {
+      "name": "Test argument comment lint package",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-11-03T22:07:41Z",
+      "completed_at": "2026-11-03T22:10:07Z"
+    },
+    {
+      "name": "Check for a clean worktree",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-11-03T22:10:07Z",
+      "completed_at": "2026-11-03T22:10:07Z"
+    },
+    {
+      "name": "Post Cache cargo-dylint tooling",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 21,
+      "started_at": "2026-11-03T22:10:07Z",
+      "completed_at": "2026-11-03T22:10:12Z"
+    },
+    {
+      "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22,
+      "started_at": "2026-11-03T22:10:12Z",
+      "completed_at": "2026-11-03T22:10:12Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 23,
+      "started_at": "2026-11-03T22:10:12Z",
+      "completed_at": "2026-11-03T22:10:12Z"
+    }
+  ],
+  "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/126235308440",
+  "labels": [
+    "ubuntu-24.04"
+  ],
+  "runner_id": 1000331607,
+  "runner_name": "GitHub Actions 1000331607",
+  "runner_group_id": 0,
+  "runner_group_name": "GitHub Actions"
+}
