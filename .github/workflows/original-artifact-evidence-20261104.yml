@@ -19,17 +19,25 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: schemaee-original
-            source: ee24895753b65e5b7cf0ec01398995af2fbfe0f2
-            script: verify_schema_original.py
-            full_source: true
-          - key: env4db-source
-            source: 4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37
-            script: verify.py
+          - key: memory296-windows
+            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
+            script: verify_memory_current.py
             full_source: false
-          - key: env4db-merge-failed
-            source: 9149d3e01bcc3777b605920cef6bbb166bacf61c
-            script: verify.py
+          - key: memory296-bazel
+            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
+            script: verify_memory_current.py
+            full_source: false
+          - key: memory296-generation
+            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
+            script: verify_memory_current.py
+            full_source: false
+          - key: memory296-macos
+            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
+            script: verify_memory_current.py
+            full_source: false
+          - key: memory296-linux
+            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
+            script: verify_memory_current.py
             full_source: false
     env:
       GIT_CONFIG_COUNT: 1

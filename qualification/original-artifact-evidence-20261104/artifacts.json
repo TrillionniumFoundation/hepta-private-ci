@@ -697,5 +697,74 @@
       "original-process-suites.log",
       "deferred-idle-controls-command.log"
     ]
+  },
+  {
+    "key": "memory296-windows",
+    "kind": "memory-native",
+    "host": "windows",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "workflow_head": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "run_id": 41775031301,
+    "artifact_id": 13297535923,
+    "bytes": 981387,
+    "sha256": "fc05ad7e7936d7904a1ccabec4362203243b9ae41a0d4d58432d80bdf32fecc1",
+    "expected_original_status": "passed",
+    "reader": "qualification/windows-memory-recovery-current/generate.py"
+  },
+  {
+    "key": "memory296-bazel",
+    "kind": "memory-bazel",
+    "host": "linux",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "workflow_head": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "run_id": 41775031301,
+    "artifact_id": 13296453541,
+    "bytes": 957345,
+    "sha256": "9131fc9556126c24d55888334a23f070090007990f5c4fc895c4734ef1e92102",
+    "expected_original_status": "passed",
+    "reader": "qualification/windows-memory-recovery-current/generate.py"
+  },
+  {
+    "key": "memory296-generation",
+    "kind": "memory-generation",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "workflow_head": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "run_id": 41775031301,
+    "artifact_id": 13296617492,
+    "bytes": 4295231,
+    "sha256": "c0a04dd960af3899c4f381fa66c8e9dd251ea34747c2cec80d5a00a19864435f",
+    "expected_original_status": "committed-lock-qualified",
+    "reader": "qualification/windows-memory-recovery-current/generate.py"
+  },
+  {
+    "key": "memory296-macos",
+    "kind": "memory-native",
+    "host": "macos",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "workflow_head": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "run_id": 41775031301,
+    "artifact_id": 13296753062,
+    "bytes": 977558,
+    "sha256": "cec93f0692591f86c56c3aea58db4ccedb6073e56adf7f5a38f0f91f2c7d24f3",
+    "expected_original_status": "passed",
+    "reader": "qualification/windows-memory-recovery-current/generate.py"
+  },
+  {
+    "key": "memory296-linux",
+    "kind": "memory-native",
+    "host": "linux",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "workflow_head": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "run_id": 41775031301,
+    "artifact_id": 13297006867,
+    "bytes": 978596,
+    "sha256": "08050c84f54ab73a40bd8d466a1530ac5e4dff623fdf4a09713ed305165280d6",
+    "expected_original_status": "passed",
+    "reader": "qualification/windows-memory-recovery-current/generate.py"
   }
 ]
