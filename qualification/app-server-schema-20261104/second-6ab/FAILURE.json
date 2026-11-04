@@ -1,0 +1,31 @@
+{
+  "commit": "6ab6f754e336cb296c418f33d4e68ac1f6df047b",
+  "tree": "348edfdc3b63ffea7246f3ab08a0035465df974d",
+  "run": 41768682444,
+  "job": 126373013522,
+  "status": "ORIGINAL_GENERATORS_AND_LIBRARY_COMMAND_EXIT_ZERO_BUT_NO_FRESH_JUNIT",
+  "original_stable_generator_exit": 0,
+  "original_experimental_generator_exit": 0,
+  "complete_original_library_inventory_exit": 0,
+  "complete_original_library_exit": 0,
+  "qualification": false,
+  "artifact": {
+    "id": 13294795551,
+    "bytes": 1787075,
+    "sha256": "e5df769450ed33484c064dca71af9e4e2a7a9a048bd184bc939ecad4e09fddf1"
+  },
+  "reason": "nextest 0.9.103 custom profile's absent JUnit path does not fall back to the default profile; this repository uses profile.local inherits=default. No JUnit was emitted, so the original strict reader correctly refused qualification.",
+  "complete_decoded_original_job": {
+    "bytes": 107273,
+    "sha256": "97904a5f1d1d005003b6984013e3f79f4a61ee58d3e3b62b3898eedc6ed4c9e7",
+    "git_blob": "19483dd04cf45ccb7a1836d5e4f8ec2e8fae730c"
+  },
+  "transport": {
+    "format": "RFC1952 stored-DEFLATE gzip",
+    "bytes": 107301,
+    "sha256": "f28c840c97e21da5cf7c1e35f67bc7513f2a4f1efca3ef8576cba5ba545fa64c"
+  },
+  "native_case_counts_verified": false,
+  "original_generated_files_retained_in_zip": true,
+  "generated_source_adopted": false
+}

@@ -154,6 +154,9 @@ def main():
         run("source-clean-before", ["git", "diff", "--exit-code", "HEAD", "--"], ROOT)
         receipt["rustc"] = run("rustc-version", ["rustc", "--version"])
         require(receipt["rustc"].startswith("rustc 1.96.0 "), "pinned Rust compiler changed")
+        receipt["nextest"] = run("nextest-version", ["cargo", "nextest", "--version"])
+        require(receipt["nextest"].startswith("cargo-nextest 0.9.151 "),
+                "native nextest version differs from the qualified repository profile")
         before = tracked_inputs()
         write_json(output / "source-inputs-before.json", before)
         original_schema = schema_inventory()

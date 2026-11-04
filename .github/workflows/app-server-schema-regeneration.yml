@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 4
+          fetch-depth: 5
           filter: blob:none
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
@@ -35,7 +35,7 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: nextest
-          version: 0.9.103
+          version: 0.9.151
       - name: Run both original schema recipes and every original protocol library test
         run: python3 qualification/app-server-schema-20261104/generate.py --output "$RUNNER_TEMP/app-server-schema"
       - name: Retain complete original generation and native outputs
