@@ -113,6 +113,16 @@
       "requiredTests": [
         "sqlite_recovery::windows::tests::materialize_tests::retained_windows_materialization_preserves_bound_source_bundle"
       ]
+    },
+    {
+      "id": "canonical-windows-memory-recovery",
+      "package": "codex-hepta-memory",
+      "expectedTestCount": 2,
+      "requiredTests": [
+        "cognitive_store::recovery::tests::windows::canonical_windows_root_reads_retained_cold_image_without_mutating_source",
+        "cognitive_store::recovery::tests::windows::canonical_windows_root_recovers_and_reopens_the_original_generation_path"
+      ],
+      "filter": "test(=cognitive_store::recovery::tests::windows::canonical_windows_root_reads_retained_cold_image_without_mutating_source) | test(=cognitive_store::recovery::tests::windows::canonical_windows_root_recovers_and_reopens_the_original_generation_path)"
     }
   ]
 }
