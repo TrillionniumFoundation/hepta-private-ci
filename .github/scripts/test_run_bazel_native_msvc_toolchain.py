@@ -83,8 +83,56 @@ class NativeWindowsMsvcToolchainTest(unittest.TestCase):
                 "--",
                 "//fake:target",
             ],
+            [
+                "build",
+                "--config=buildbuddy-generic-rbe",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--config=buildbuddy-openai-rbe",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--config",
+                "remote",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--remote_executor=grpcs://executor.example.invalid",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--remote_executor",
+                "grpcs://executor.example.invalid",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
             ["run", "//fake:tool", "--", "--platforms=//:windows_x86_64_msvc"],
         ]
+        for config in ("ci-linux", "ci-macos", "ci-v8", "ci-windows-cross"):
+            requests.append(
+                [
+                    "build",
+                    "--config",
+                    config,
+                    "--platforms=//:windows_x86_64_msvc",
+                    "--",
+                    "//fake:target",
+                ]
+            )
         for requested in requests:
             with self.subTest(requested=requested):
                 actual = run_bazel_with_buildbuddy.bazel_args_with_remote_config(
