@@ -146,13 +146,15 @@ fn install_filesystem_landlock_rules_on_current_thread(
         .handle_access(access_rw)?
         .create()?
         .add_rules(landlock::path_beneath_rules(&["/"], access_ro))?
-        .add_rules(landlock::path_beneath_rules(&["/dev/null"], access_rw))?
-        .no_new_privs(/*yes*/ true);
+        .add_rules(landlock::path_beneath_rules(&["/dev/null"], access_rw))?;
 
     if !writable_roots.is_empty() {
         ruleset = ruleset.add_rules(landlock::path_beneath_rules(&writable_roots, access_rw))?;
     }
 
+    // Fail closed if the kernel refuses PR_SET_NO_NEW_PRIVS.  Keep this
+    // explicit rather than relying on a version-specific Landlock builder API.
+    set_no_new_privs()?;
     let status = ruleset.restrict_self()?;
 
     if status.ruleset == landlock::RulesetStatus::NotEnforced {
