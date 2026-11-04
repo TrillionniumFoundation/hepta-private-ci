@@ -18,7 +18,9 @@ pub struct SelectedPublicInitialSmolLmMaterialV2 {
 
 impl VerifiedArtifactSelectionV1 {
     /// Preserve the exact independently verified selector window and CURRENT
-    /// owner while admitting only the public V2 genesis compatibility domain.
+    /// owner while admitting only PQ-authenticated public V2 execution material.
+    /// Historical classical records remain readable through their original APIs;
+    /// their validity does not authorize a new public V2 runtime preparation.
     pub fn load_public_initial_smollm_material_v2(
         self,
         snapshot_file: File,
@@ -26,6 +28,11 @@ impl VerifiedArtifactSelectionV1 {
         current: VerifiedCurrentRegistryViewV1,
         now: u64,
     ) -> Result<SelectedPublicInitialSmolLmMaterialV2, ArtifactSelectionError> {
+        if self.authentication_profile
+            != codex_hepta_contracts::LearningAuthenticationProfile::MlDsa65V2
+        {
+            return Err(ArtifactSelectionError::AuthenticationProfile);
+        }
         let manifest = &self.pin.manifest;
         if manifest.compatibility_digest != Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2)
             || manifest.kind != crate::ArtifactKind::Parameters

@@ -1,5 +1,7 @@
 //! Real selected initial weights on the ordinary Agentd control socket.
 //! Controlled owner/selector/issuer keys are test scope, not product enrollment.
+use super::pq_inputs::archive_pq_authority;
+use super::pq_inputs::ordinary_inputs;
 use super::*;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
@@ -193,7 +195,7 @@ async fn real_public_initial_reopens_same_ordinary_owners() -> TestResult<()> {
     let (input, mut worker, bytes) = input_and_worker("public-reopen-session-0")?;
     let root = input.output.join("r");
     fs::create_dir(&root)?;
-    let fixture = Fixture::with_profile(
+    let fixture = Fixture::with_pq_profile(
         root.join("o"),
         &bytes,
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
@@ -257,21 +259,23 @@ async fn session(
     let current_receipt = current
         .current_registry_view(initial_now_seconds()?)?
         .receipt();
-    let (inputs, issuer, authority) = inputs(worker, effects, u8::try_from(reads + 1)?).await?;
-    let mut issuer = OwnedTask::new(issuer);
-    let prepared =
-        match prepare_public_initial_smollm_agentd_v2(config, material, current, inputs).await {
-            Ok(prepared) => prepared,
-            Err(mut error) => {
-                let cleanup = error.shutdown_retained().await;
-                issuer.abort_and_join().await;
-                archive_authority(&authority, effects)?;
-                return Err(format!(
-                    "initial preparation failed: {error}; retained cleanup: {cleanup:?}"
+    let authentication_profile = material.authentication_profile();
+    let (inputs, mut issuer, authority) =
+        ordinary_inputs(worker, effects, u8::try_from(reads + 1)?).await?;
+    let prepared = match prepare_public_initial_smollm_agentd_v2(config, material, current, inputs)
+        .await
+    {
+        Ok(prepared) => prepared,
+        Err(mut error) => {
+            let cleanup = error.shutdown_retained().await;
+            let issuer_cleanup = issuer.abort_and_join().await;
+            archive_pq_authority(&authority, effects)?;
+            return Err(format!(
+                    "initial preparation failed: {error}; retained cleanup: {cleanup:?}; issuer cleanup: {issuer_cleanup:?}"
                 )
                 .into());
-            }
-        };
+        }
+    };
     let PreparedSmolLmAgentdV1 {
         config,
         session: model_session,
@@ -363,6 +367,7 @@ async fn session(
                 "record_count":current_receipt.records,"file_digest":current_receipt.file_digest.to_string()},
             "selection_digest":selection.to_string(),"observations":observations,"ordinary_context_reads":reads,
             "withdrawal_refused":withdrawal_refused,"controlled_test_issuer":true,"training_rounds":0,
+            "authentication_profile":authentication_profile,
             "beneficial_releases":0,"cold_runtime_installed":false,"public_network_ready":false,
             "product_qualification_issued":false,"home_root":identity.home_root,"spawn_generation":identity.spawn_generation,
             "codex_executable":codex_executable}))
@@ -445,15 +450,11 @@ async fn session(
     let model_shutdown = model_session.shutdown().await;
     let issuer_result: TestResult<()> =
         if result.is_ok() && stop_result.is_ok() && model_shutdown.is_ok() {
-            match issuer.finish().await {
-                Ok(outcome) => outcome.map_err(issuer_error),
-                Err(error) => Err(error.into()),
-            }
+            issuer.finish_owned().await.map_err(issuer_error)
         } else {
-            issuer.abort_and_join().await;
-            Ok(())
+            issuer.abort_and_join().await.map_err(issuer_error)
         };
-    let archived = archive_authority(&authority, effects);
+    let archived = archive_pq_authority(&authority, effects);
     let stop_record = fs::write(
         effects.join("ordinary-runtime-stop.json"),
         serde_json::to_vec_pretty(&serde_json::json!({
@@ -493,7 +494,7 @@ async fn session(
 #[ignore = "requires original pinned real SmolLM materials; ordinary reads are not three training rounds"]
 async fn real_selected_initial_serves_ordinary_context_then_refuses_revocation() -> TestResult<()> {
     let (input, mut worker, bytes) = input_and_worker("ordinary-selected-initial")?;
-    let mut fixture = Fixture::with_profile(
+    let mut fixture = Fixture::with_pq_profile(
         // The original AF_UNIX layout must fit without socket aliases.
         input.output.join("o"),
         &bytes,

@@ -53,7 +53,7 @@ async fn real_selected_initial_cancelled_cleanup_await_rejoins_same_actual_task(
     assert!(owner.cleanup.is_none());
     assert!(owner.session.port.is_none());
     assert!(owner.with_current_initial_load(|_| Ok(())).is_err());
-    issuer.await?.map_err(issuer_error)?;
+    issuer.finish().await.map_err(issuer_error)?;
     archive_authority(&authority, &input.output)?;
     Ok(())
 }

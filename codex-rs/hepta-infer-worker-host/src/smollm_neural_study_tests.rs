@@ -326,7 +326,7 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
         diverse::declaration(&mut declaration)?;
     }
     let study = save(&root.join("study.json"), &declaration)?;
-    let mut fixture = Fixture::with_study_objective(
+    let mut fixture = Fixture::with_pq_study_objective(
         root.join("o"),
         &parent_bytes,
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
