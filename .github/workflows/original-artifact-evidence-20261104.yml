@@ -19,9 +19,21 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: tee-3616-builder-version-failure
-            source: 3616f6fcb1a2fdf77398a3a04bb906301af7b153
-            script: verify_tee_failure.py
+          - key: memory-b12-windows-failed
+            source: b12f9b216d91bb760582a9df0d569f7e051a1016
+            script: verify_memory_current.py
+          - key: memory-b12-bazel-failed
+            source: b12f9b216d91bb760582a9df0d569f7e051a1016
+            script: verify_memory_current.py
+          - key: env-306-source-failed
+            source: 306da9948bfebf86f425d76f089921244a4a64d9
+            script: verify.py
+          - key: env-306-merge-failed
+            source: f8d21a60d76215d7bc36c1eb5c9f55322d97ac87
+            script: verify.py
+          - key: memory-b12-macos-failed
+            source: b12f9b216d91bb760582a9df0d569f7e051a1016
+            script: verify_memory_current.py
     env:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: core.autocrlf
@@ -46,10 +58,32 @@ jobs:
           persist-credentials: false
           sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /codex-rs/
+            /.github/
+            /scripts/
+            /bazel/
+            /patches/
+            /third_party/
+            /cargo_bazel_template/
+            /tools/argument-comment-lint/
+            /justfile
+            /defs.bzl
+            /BUILD.bazel
+            /MODULE.bazel
+            /MODULE.bazel.lock
             /.bazelrc
-            /qualification/bazel9-output-backport-20261104/
+            /.bazelversion
+            /workspace_root_test_launcher.*
+            /qualification/windows-private-state-current/
+            /qualification/windows-memory-recovery-current/
+            /qualification/windows-process-env-current/
+            /qualification/windows-process-fixtures-current/
+            /qualification/memory-migration-20261103/
+            /qualification/dylint-20261103/
+            /qualification/robrix-runfiles-20261104/
+            /qualification/keyring-sync-provider/build_pinned_client.py
       - name: Check verifier syntax
-        run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_tee_failure.py
+        run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py
       - name: Verify original ZIP, Git inputs and recorded outputs
         env:
           GITHUB_TOKEN: ${{ github.token }}

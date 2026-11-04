@@ -410,6 +410,8 @@ def main():
                     require(all(row["exit"] == 0 for row in receipt["steps"]), "Robrix original command failed")
 
             if spec["kind"] == "env":
+                if "original-process-suites.log" in members:
+                    emit_raw("original-process-suites.log", members["original-process-suites.log"])
                 require(receipt["pre_test_powershell_probe"] is False, "unexpected prewarming")
                 bash = receipt["bash_launcher"]
                 require(bash["version_exit"] == 0 and

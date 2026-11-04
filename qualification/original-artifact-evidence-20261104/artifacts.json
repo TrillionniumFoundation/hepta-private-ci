@@ -269,5 +269,73 @@
     "sha256": "09e35e87906ddc00df06f14153e348bcb023efc5a789557a7b051e6689674747",
     "receipt_path": "bazel9-output-backport/evidence/receipt.json",
     "expected_original_status": "failed"
+  },
+  {
+    "key": "memory-b12-windows-failed",
+    "kind": "memory-native",
+    "source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+    "workflow_head": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+    "host": "windows",
+    "run_id": 41756875503,
+    "artifact_id": 13290865451,
+    "bytes": 932899,
+    "sha256": "d4e462cad9f1e2ac4aadb2ea0fa74f6b84fcc24edfff825057a6ae32c0608b00",
+    "reader": "qualification/windows-memory-recovery-current/generate.py",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "expected_original_status": "failed"
+  },
+  {
+    "key": "memory-b12-bazel-failed",
+    "kind": "memory-bazel",
+    "source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+    "workflow_head": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+    "host": "linux",
+    "run_id": 41756875503,
+    "artifact_id": 13291170166,
+    "bytes": 896736,
+    "sha256": "3e87e4a6cc6ae4bda63e5c06b77b3cf396084e914b5e778eaa955c2f1bcf1982",
+    "reader": "qualification/windows-memory-recovery-current/generate.py",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "expected_original_status": "failed"
+  },
+  {
+    "key": "env-306-source-failed",
+    "kind": "env",
+    "source": "306da9948bfebf86f425d76f089921244a4a64d9",
+    "workflow_head": "306da9948bfebf86f425d76f089921244a4a64d9",
+    "run_id": 41758742975,
+    "artifact_id": 13291075177,
+    "bytes": 4297546,
+    "sha256": "90e3ec8b4d99e0e697a6231ccaa2d3d9a820dfeb8679c91b123f09d27c99450c",
+    "reader": "qualification/windows-process-env-current/run_qualification.py",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "expected_original_status": "failed"
+  },
+  {
+    "key": "env-306-merge-failed",
+    "kind": "env",
+    "source": "f8d21a60d76215d7bc36c1eb5c9f55322d97ac87",
+    "workflow_head": "306da9948bfebf86f425d76f089921244a4a64d9",
+    "run_id": 41758742975,
+    "artifact_id": 13291105263,
+    "bytes": 4311090,
+    "sha256": "7454d700e5351b13ce2979fdb0327ee7d377e805836d4baf8ef9a6f0a2beb29c",
+    "reader": "qualification/windows-process-env-current/run_qualification.py",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "expected_original_status": "failed"
+  },
+  {
+    "key": "memory-b12-macos-failed",
+    "kind": "memory-native",
+    "source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+    "workflow_head": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+    "host": "macos",
+    "run_id": 41756875503,
+    "artifact_id": 13290717285,
+    "bytes": 976527,
+    "sha256": "66f7550b14e3a35610df570f566427c08b4049157f98f2e93c0b3f6881792187",
+    "reader": "qualification/windows-memory-recovery-current/generate.py",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "expected_original_status": "failed"
   }
 ]
