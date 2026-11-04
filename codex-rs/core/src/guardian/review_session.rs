@@ -938,13 +938,19 @@ async fn run_review_on_session(
             guardian_model_provider_id: params.spawn_config.model_provider_id.clone(),
             had_prior_review_context: had_prior_review_context(&prompt_mode),
         });
-    if send_followup_reminder {
-        append_guardian_followup_reminder(review_session).await;
-    }
     let prompt_items = run_before_review_deadline(
         deadline,
         params.external_cancel.as_ref(),
         Box::pin(async {
+            // TurnComplete is published before the previous terminalizer drops
+            // its admission fence. Wait before injecting any follow-up context,
+            // under the same original review deadline and cancellation token.
+            if let Some(completion) = review_session.session.pending_turn_terminalization() {
+                completion.await;
+            }
+            if send_followup_reminder {
+                append_guardian_followup_reminder(review_session).await?;
+            }
             params
                 .parent_session
                 .services
@@ -1253,12 +1259,17 @@ async fn run_review_on_session(
     (outcome.0, outcome.1, analytics_result)
 }
 
-async fn append_guardian_followup_reminder(review_session: &GuardianReviewSession) {
+async fn append_guardian_followup_reminder(
+    review_session: &GuardianReviewSession,
+) -> codex_protocol::error::Result<()> {
     let reminder: ResponseItem = ContextualUserFragment::into(GuardianFollowupReviewReminder);
+    let turn_context = review_session.session.new_default_turn().await;
+    // Preserve the idle/terminalizing admission fence and propagate refusal.
+    // A failed reminder must not silently become a completed review without it.
     review_session
         .session
-        .inject_no_new_turn(vec![reminder], /*current_turn_context*/ None)
-        .await;
+        .inject_client_response_items(vec![reminder], turn_context.as_ref())
+        .await
 }
 
 async fn load_rollout_items_for_fork(

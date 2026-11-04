@@ -400,9 +400,8 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
 
 /// Exercises the actual control socket and lifecycle transition. This is not a
 /// provider/App Server startup test or an independent task-benefit experiment.
-/// Windows AF_UNIX is denied by the kernel-peer boundary; that negative path
-/// is exercised by control::peer_auth_tests on Windows instead.
-#[cfg(unix)]
+/// Windows uses the authenticated owner-local transport; the independent raw
+/// AF_UNIX rejection remains covered by control::peer_auth_tests.
 #[tokio::test]
 async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation() {
     use codex_hepta_fleet::AgentLifecycle;
@@ -423,6 +422,13 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     use codex_hepta_paths::HeptaFleetRoot;
     use tokio_util::sync::CancellationToken;
 
+    // Keep the real Unix control socket within Darwin's SUN_LEN bound.
+    #[cfg(target_os = "macos")]
+    let directory = tempfile::Builder::new()
+        .prefix("agentd-ranker-")
+        .tempdir_in("/tmp")
+        .unwrap();
+    #[cfg(not(target_os = "macos"))]
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path().canonicalize().unwrap();
     let fleet_path = root.join("fleet");
