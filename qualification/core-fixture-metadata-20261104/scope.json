@@ -213,7 +213,8 @@
     "codex-rs/linux-sandbox/src/landlock.rs",
     "codex-rs/codex-mcp/src/binding.rs",
     "codex-rs/codex-mcp/src/binding_tests.rs",
-    "codex-rs/core/src/hook_mcp_executor.rs"
+    "codex-rs/core/src/hook_mcp_executor.rs",
+    "codex-rs/core/src/agent/control_tests.rs"
   ],
   "compile_prerequisite": {
     "path": "codex-rs/linux-sandbox/src/landlock.rs",
@@ -243,5 +244,12 @@
     ],
     "old_binding_tests": 5,
     "new_binding_tests": 3
+  },
+  "clippy_prerequisite": {
+    "path": "codex-rs/core/src/agent/control_tests.rs",
+    "old_blob": "d31bd4d02e11b32c8b2d76f6fd87593235292b05",
+    "new_blob": "06c53414c3274a6b7c5dfccffb381505c694af76",
+    "owner": "root",
+    "reason": "Original Mac Clippy rejected stderr macro; same existing diagnostic and 5s budget now use tracing."
   }
 }

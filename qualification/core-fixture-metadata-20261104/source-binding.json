@@ -124,6 +124,13 @@
       "bytes": 2887,
       "sha256": "e837c8dbcc20be11e00e55871882d99c72e1a9b2434c9144a9ed7b8d390e98dc",
       "base_blob": "397c9da7a50c5f6e2df352024581cad5b3b8805d"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "blob": "06c53414c3274a6b7c5dfccffb381505c694af76",
+      "bytes": 170577,
+      "sha256": "60e9a529b7ff99ff7216f29be1d9101cd1d9992377d1eb6c0bb6975bfe9fb784",
+      "base_blob": "d31bd4d02e11b32c8b2d76f6fd87593235292b05"
     }
   ],
   "protected_files": [
@@ -192,5 +199,12 @@
     ],
     "old_binding_tests": 5,
     "new_binding_tests": 3
+  },
+  "clippy_prerequisite": {
+    "path": "codex-rs/core/src/agent/control_tests.rs",
+    "old_blob": "d31bd4d02e11b32c8b2d76f6fd87593235292b05",
+    "new_blob": "06c53414c3274a6b7c5dfccffb381505c694af76",
+    "owner": "root",
+    "reason": "Original Mac Clippy rejected stderr macro; same existing diagnostic and 5s budget now use tracing."
   }
 }

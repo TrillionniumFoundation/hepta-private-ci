@@ -2547,7 +2547,7 @@ async fn spawn_agent_fork_last_n_turns_keeps_only_recent_turns() {
         }
     })
     .await;
-    eprintln!(
+    tracing::debug!(
         "[fork-startup-diagnostic] parent={parent_thread_id} boundary_elapsed_ms={} boundary_completed={} hook={child_startup:?}",
         boundary_started.elapsed().as_millis(),
         boundary_result.is_ok(),
