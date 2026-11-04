@@ -23,6 +23,7 @@ use core_test_support::responses::WebSocketConnectionConfig;
 use core_test_support::responses::start_websocket_server_with_headers;
 use core_test_support::skip_if_no_network;
 use pretty_assertions::assert_eq;
+use std::collections::VecDeque;
 use std::path::Path;
 use tempfile::TempDir;
 use tokio::time::Duration;
@@ -95,6 +96,7 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
     };
 
     let mut attestation_requests = 0;
+    let mut pending_messages = VecDeque::new();
     let thread_request_id = mcp
         .send_thread_start_request_with_auto_env(ThreadStartParams::default())
         .await?;
@@ -104,6 +106,7 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
             &mut mcp,
             RequestId::Integer(thread_request_id),
             &mut attestation_requests,
+            &mut pending_messages,
         ),
     )
     .await??;
@@ -126,6 +129,7 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
             &mut mcp,
             RequestId::Integer(turn_request_id),
             &mut attestation_requests,
+            &mut pending_messages,
         ),
     )
     .await??;
@@ -133,7 +137,11 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
 
     timeout(DEFAULT_READ_TIMEOUT, async {
         loop {
-            match mcp.read_next_message().await? {
+            let message = match pending_messages.pop_front() {
+                Some(message) => message,
+                None => mcp.read_next_message().await?,
+            };
+            match message {
                 JSONRPCMessage::Request(request) => {
                     answer_attestation_generate(
                         &mut mcp,
@@ -175,9 +183,21 @@ async fn read_response_while_answering_attestation(
     mcp: &mut TestAppServer,
     expected_id: RequestId,
     attestation_requests: &mut usize,
+    pending_messages: &mut VecDeque<JSONRPCMessage>,
 ) -> Result<JSONRPCResponse> {
     loop {
-        match mcp.read_next_message().await? {
+        let message = if let Some(index) = pending_messages.iter().position(|message| {
+            matches!(message, JSONRPCMessage::Response(response) if response.id == expected_id)
+                || matches!(message, JSONRPCMessage::Error(error) if error.id == expected_id)
+        }) {
+            let Some(message) = pending_messages.remove(index) else {
+                bail!("buffered response disappeared");
+            };
+            message
+        } else {
+            mcp.read_next_message().await?
+        };
+        match message {
             JSONRPCMessage::Request(request) => {
                 answer_attestation_generate(
                     mcp,
@@ -192,7 +212,7 @@ async fn read_response_while_answering_attestation(
             JSONRPCMessage::Error(error) if error.id == expected_id => {
                 bail!("request failed while answering attestation: {error:?}");
             }
-            _ => {}
+            message => pending_messages.push_back(message),
         }
     }
 }
