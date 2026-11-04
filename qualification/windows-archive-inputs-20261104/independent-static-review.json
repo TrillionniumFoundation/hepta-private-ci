@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.independent.windows-wrapper-static-review.v1",
+  "reviewer": "hepta_blockers",
+  "scope": "New LLVM temporary archive predicate and Windows filesystem regression; no local or native execution",
+  "patch": {
+    "git_blob_sha": "6cd03175f189d1829945b45c3e58a24f21f0f555",
+    "sha256": "64ae53f0b56fce9ea03a202142a055307d416868e5e08b6b1f3b6a2c30870092",
+    "bytes": 3700
+  },
+  "upstream": {
+    "repo": "bazelbuild/rules_rust",
+    "requested_ref": "f19661ba",
+    "commit": "f19661ba71f77c993ce1eb082053692610fe4313",
+    "path": "util/process_wrapper/main.rs",
+    "git_blob_sha": "3139b45a857fe8d2baae8d7c05495360bf9b8ae7",
+    "sha256": "8407dac24553b1d82d5eae8d46e082aa53509e841d16aae02db2590f908fb246",
+    "bytes": 15588
+  },
+  "findings": [],
+  "conclusion": "No blocking defect found in the narrowly reviewed predicate and test. The original Windows/Linux process-wrapper suites and failing original Clippy path still require exact-head execution.",
+  "confirmed": [
+    "New exclusion requires an archive prefix ending .lib, .rlib or .a, the .temp-archive- separator, exactly seven ASCII hexadecimal digits, and final .a after ASCII case folding.",
+    "Filename filtering does not add any broad NotFound, permission or copy-error swallowing. Existing hard-link fallback to copy and its error propagation remain unchanged.",
+    "Existing .tmp and .rcgu.o exclusions are preserved rather than broadened by the new archive test.",
+    "Regression creates ten final or nearby names and five temporary outputs on the real filesystem, invokes consolidate_dependency_search_paths, compares every retained payload byte, checks every excluded name absent and checks the final directory count.",
+    "Test uses a path with spaces, a Unicode filename and mixed-case hex; final .lib/.rlib/.a, wrong suffix, six/eight digits, nonhex, extra suffix and missing archive-prefix cases remain in the expected output set.",
+    "Module is Windows-test-only; upstream imports, guard constructor and ProcessWrapperError Error implementation support the new fixture's use."
+  ],
+  "limits": [
+    "The filesystem regression is a deterministic name-selection check, not a concurrent LLVM rename stress test.",
+    "A deliberately named final file matching the exact reserved temporary shape is indistinguishable by filename alone; this change relies on the compiler temporary-name convention.",
+    "No test counts or production qualification are claimed by this static review."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "upstream_commit": "f19661ba71f77c993ce1eb082053692610fe4313",
+  "original_main_sha256": "8407dac24553b1d82d5eae8d46e082aa53509e841d16aae02db2590f908fb246",
+  "candidate_main_sha256": "d7fe64c575b51c742fe7b0b2461175572aa4341878980e3dd9c960bc7a35c7a8",
+  "candidate_test_sha256": "68f749daf6c3677bb4fdb0c77908985c29215157fa54fdfbcebb95d1d3566748",
+  "candidate_patch_sha256": "64ae53f0b56fce9ea03a202142a055307d416868e5e08b6b1f3b6a2c30870092",
+  "original_cases": [
+    "large_wrapper_prefix_preserves_all_arguments_and_child_response_files",
+    "multiline_values_remain_literal_through_the_normal_flag_parser",
+    "ordinary_wrapper_and_child_arguments_do_not_read_response_files",
+    "test_enforce_allow_features_flag_user_didnt_say",
+    "test_enforce_allow_features_flag_user_requested_something",
+    "test_enforce_allow_features_flag_user_requested_something_in_param_file",
+    "test_extra_args",
+    "test_flag_help",
+    "test_flag_single_repeated",
+    "test_json_parsing_error",
+    "test_process_line_diagnostic_json",
+    "test_process_line_diagnostic_rendered",
+    "test_process_line_noise",
+    "test_read_to_array",
+    "test_repeated_flags",
+    "test_stamp_status_to_array",
+    "unreadable_wrapper_response_file_fails_before_running_the_child",
+    "wrapper_response_files_cannot_change_the_child_boundary_or_recurse"
+  ],
+  "original_case_count": 18,
+  "native_windows_case": "windows_archive_tests::preserve_final_archives_and_exclude_llvm_temp_files",
+  "native_windows_case_count": 19
+}
