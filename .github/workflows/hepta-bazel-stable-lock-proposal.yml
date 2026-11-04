@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - ".bazelversion"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/**/Cargo.toml"
       - "MODULE.bazel"
       - "MODULE.bazel.lock"
       - ".github/workflows/hepta-bazel-stable-lock-proposal.yml"
