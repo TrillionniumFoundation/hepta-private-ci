@@ -1,3 +1,5 @@
+diff --git a/util/process_wrapper/main.rs b/util/process_wrapper/main.rs
+index 3139b45..cb775cf 100644
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
 @@ -18,4 +18,6 @@
@@ -35,6 +37,9 @@
              if !seen.insert(file_name_lower) {
                  continue;
              }
+diff --git a/util/process_wrapper/windows_archive_tests.rs b/util/process_wrapper/windows_archive_tests.rs
+new file mode 100644
+index 0000000..6f3c262
 --- /dev/null
 +++ b/util/process_wrapper/windows_archive_tests.rs
 @@ -0,0 +1,55 @@

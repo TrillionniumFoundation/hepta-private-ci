@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "ced3c30c6096f6099fdf0fbabe406781ff16a16c",
+  "source_tree": "f855166b3e06ac8beee4517c431b8d4b023aed72",
+  "run_id": 41755668823,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41755668823",
+  "jobs": [
+    {
+      "id": 126331063765,
+      "name": "source-format",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 126331063864,
+      "name": "native (windows-latest, x86_64-pc-windows-msvc, ci-windows)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 126331064013,
+      "name": "original-lock",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 126331064045,
+      "name": "native (ubuntu-24.04, x86_64-unknown-linux-gnu, ci-linux)",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "conclusion": "FAIL_BEFORE_RUST_TEST_EXECUTION",
+  "failure": "Bazel's native patch parser rejects the new test file without Git new-file metadata.",
+  "native_cases_executed": 0,
+  "logs": [
+    {
+      "job_id": 126331063864,
+      "path": "qualification/windows-archive-inputs-20261104/native-ced3/windows.job.log.gz",
+      "decoded_bytes": 165955,
+      "decoded_sha256": "45c9c1907f2291807a073f493c0efba6fe4e2da9ef7b4e83fccc020c5754b354",
+      "gzip_bytes": 165988,
+      "gzip_sha256": "602fbab7f77c8a12c1a466fd2f3bcb4995b9e0ebd3482e8f5adcff4b2a1fdc5a",
+      "encoding": "UTF-8 decoded job endpoint preserved byte-for-byte, RFC1952 stored-DEFLATE"
+    },
+    {
+      "job_id": 126331064045,
+      "path": "qualification/windows-archive-inputs-20261104/native-ced3/linux.job.log.gz",
+      "decoded_bytes": 97917,
+      "decoded_sha256": "179df44eac1cfc20b952fda04fe8579992d4927e71a759b5180fedd6f5936435",
+      "gzip_bytes": 97945,
+      "gzip_sha256": "076a619335e2b9e89d6afe8bbee814316a1ed68f4f18a74563d86d161b996c06",
+      "encoding": "UTF-8 decoded job endpoint preserved byte-for-byte, RFC1952 stored-DEFLATE"
+    },
+    {
+      "job_id": 126331064013,
+      "path": "qualification/windows-archive-inputs-20261104/native-ced3/lock.job.log.gz",
+      "decoded_bytes": 82323,
+      "decoded_sha256": "03bf6537094dd928c02dea5f45dc5a9cb37a5c9e922e07f034ea9911b2f6fb6d",
+      "gzip_bytes": 82351,
+      "gzip_sha256": "f819435fa4873a4c1115f46ce26b78ad7cf0054c01eeb7991918bd4da41c0b7d",
+      "encoding": "UTF-8 decoded job endpoint preserved byte-for-byte, RFC1952 stored-DEFLATE"
+    }
+  ],
+  "successor": {
+    "changes": "Only Git diff/file metadata is added to the existing patch. All unified source hunk lines remain byte-identical.",
+    "old_patch_git_blob": "6cd03175f189d1829945b45c3e58a24f21f0f555",
+    "new_patch_git_blob": "d6dccc1cce56c8e028d98efa69b6d2e01eab7d8c",
+    "old_patch_sha256": "64ae53f0b56fce9ea03a202142a055307d416868e5e08b6b1f3b6a2c30870092",
+    "new_patch_sha256": "23699b698cc8ef483efcc23804c1fc9b306e926b91cbd40a62cd8fb3f0a8d9e8",
+    "exact_source_hunks_unchanged": true,
+    "candidate_main_sha256": "d7fe64c575b51c742fe7b0b2461175572aa4341878980e3dd9c960bc7a35c7a8",
+    "candidate_test_sha256": "68f749daf6c3677bb4fdb0c77908985c29215157fa54fdfbcebb95d1d3566748",
+    "original_case_count": 18,
+    "native_windows_case_count": 19
+  },
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL",
+  "closure": false
+}

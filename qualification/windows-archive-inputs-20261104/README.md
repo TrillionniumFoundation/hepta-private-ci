@@ -17,3 +17,9 @@ The qualification also checks the actual materialized upstream main and test sou
 The fresh original full native Windows Clippy job remains required to close the observed 1,282-target build failure. These unit tests alone do not qualify that job, unrelated product tests or whole private-ci.
 
 Posture: **Draft / HOLD_NO_GO / DENY_ALL**. No local executor is available; no local toolchain execution, main merge, release or activation is claimed.
+
+## First native packaging failure and successor
+
+The first candidate `ced3c30c6096f6099fdf0fbabe406781ff16a16c` failed before any Rust test ran: Bazel's native patch parser could not create the new test file from a plain unified new-file hunk. Windows, Linux and the original lock generator all preserve that same failure in `native-ced3/`; the source formatter passed. The successor adds the standard Git `diff --git`, `index` and `new file mode 100644` metadata, matching existing repository patches. Every source hunk remains byte-identical to the independently reviewed candidate, and both expected materialized Rust source hashes are unchanged. The patch hash in `source-binding.json` now binds those complete Git headers.
+
+All original native acceptance remains required. No result from the packaging failure is counted as an executed or passing Rust test.
