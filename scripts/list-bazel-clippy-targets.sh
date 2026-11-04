@@ -27,9 +27,9 @@ manual_rust_test_targets="$(
     --output=label \
     -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
 )"
-if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
-  # Non-Windows clippy jobs lint the native test binaries; the
-  # Windows-cross binaries exist only for the fast Windows test leg.
+if [[ "${RUNNER_OS:-}" != "Windows" || $windows_cross_compile -eq 0 ]]; then
+  # Native Clippy jobs lint native test binaries on every host. Cross-ABI
+  # helpers belong only to the explicitly selected Windows cross leg.
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
 elif [[ $windows_cross_compile -eq 1 ]]; then
   # `bazel query` is intentionally pre-analysis and does not remove targets
@@ -39,6 +39,18 @@ elif [[ $windows_cross_compile -eq 1 ]]; then
   # the Windows helpers and unit-test helpers, but do not pass the native-only
   # sharded integration helpers as explicit clippy targets.
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-test-bin$' || true)"
+fi
+
+if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 0 ]]; then
+  # This Agentd process qualification test uses Unix sockets and is explicitly
+  # incompatible with Windows in codex-rs/hepta-agentd/BUILD.bazel. `bazel query`
+  # cannot resolve target_compatible_with before analysis: omit only its
+  # explicit manual label on native Windows, not the Linux/macOS qualification
+  # or any native Windows unit tests.
+  manual_rust_test_targets="$(
+    printf '%s\n' "${manual_rust_test_targets}" |
+      grep -vFx -- '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin' || true
+  )"
 fi
 
 printf '%s\n' \
