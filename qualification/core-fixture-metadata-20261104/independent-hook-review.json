@@ -1,0 +1,97 @@
+{
+  "schema": "independent-hook-mcp-source-review-v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "chain_blockers",
+  "mode": "READ_ONLY_STATIC",
+  "native_executions": 0,
+  "inputs": [
+    {
+      "key": "binding-old",
+      "git_blob": "90d4fcfe4e56d41d13e5b89f05c3cc41af25fb2c",
+      "bytes": 11110,
+      "sha256": "8ea552ea0592bfe76d402844199b6b10b31e35dda6e5dfcd83864415d214935b"
+    },
+    {
+      "key": "binding-new",
+      "git_blob": "089921b16f0e3cedffe2c1f38d52ab0dd258a29e",
+      "bytes": 11678,
+      "sha256": "91baba283de7da2e1bebeeaa1d245c4ce741653d06812ae496341ac591dc1064"
+    },
+    {
+      "key": "executor-old",
+      "git_blob": "397c9da7a50c5f6e2df352024581cad5b3b8805d",
+      "bytes": 2820,
+      "sha256": "48ca8068453f87c8c6ff6a1707fa885fde3ea4456fc9a0f0fe5f7a5e4ba02c90"
+    },
+    {
+      "key": "executor-new",
+      "git_blob": "ea597a396a9eb031f31d5884bf525b325d5150a0",
+      "bytes": 2887,
+      "sha256": "e837c8dbcc20be11e00e55871882d99c72e1a9b2434c9144a9ed7b8d390e98dc"
+    },
+    {
+      "key": "binding-tests-old",
+      "git_blob": "6e200299fb4a9259c5c396ba9b04980caeecb061",
+      "bytes": 11777,
+      "sha256": "eeeef0c79d1c622386b4857ceaeceeff47c7fc54d4eee582fa5c73499c115a68"
+    },
+    {
+      "key": "binding-tests-new",
+      "git_blob": "71d2b12b62a875a63fe4ab7da141475c5312b3ff",
+      "bytes": 14916,
+      "sha256": "77b654c58f924f97801853e9b901f4a237c8d894f58c96ba58e52c2cb47b282b"
+    }
+  ],
+  "context": [
+    {
+      "role": "runtime",
+      "git_blob": "0ff4d56a281d00936d0e26fef67ea85315d577e1",
+      "bytes": 40360,
+      "sha256": "cf1762c1ca527915de437477642d9421559e2da178f0718ba2da087c9fd7f476",
+      "source": "5d19a578ac28a6ce7fc67a348b10297dc370c19f"
+    },
+    {
+      "role": "connection_manager",
+      "git_blob": "46ea8dc63df82880994b221a629972c753c0b78d",
+      "bytes": 40018,
+      "sha256": "fdc760abec4d12209d855bc42e28c761604bc72c8275a566f302a1ae269de848",
+      "source": "5d19a578ac28a6ce7fc67a348b10297dc370c19f"
+    },
+    {
+      "role": "tool_catalog",
+      "git_blob": "1cda1d902fd31897b3de6b9dd629dce8741b6c75",
+      "bytes": 17286,
+      "sha256": "dbb0d154f570637679baf29e72cec930c34c85bd4735e4038f228ba8bc0b99af",
+      "source": "5d19a578ac28a6ce7fc67a348b10297dc370c19f"
+    }
+  ],
+  "checks": [
+    {
+      "name": "CALL_CATALOG_AUTHORITY",
+      "finding": "capture_binding_with_metadata applies each server tool_filter, captures exact ready clients, constructs PreparedMcpCall under the catalog revision, and only then separates model-visible tools. The new accessor clones an existing calls-map entry and never creates authority for a filtered, absent or unready tool."
+    },
+    {
+      "name": "MODEL_VISIBILITY",
+      "finding": "Existing tools() and prepare_call model visibility filter are byte-preserved. Only explicitly configured hooks use the new accessor."
+    },
+    {
+      "name": "HOOK_POLICY",
+      "finding": "Session upgrade and governed-thread or active-tool-policy denial still precede binding lookup. Original threadId metadata and requested timeout pass unchanged to PreparedMcpCall::call."
+    },
+    {
+      "name": "REVISION_AND_TIMEOUT",
+      "finding": "Existing call_with_preparation retains exact revision read guard through preparation/execution, rejects stale revision before preparation and uses min(server timeout, requested timeout). No modification in this path."
+    },
+    {
+      "name": "TESTS",
+      "finding": "All old binding test bytes remain a prefix. Three new tests statically cover hidden-vs-model separation with captured client/approval metadata, absent/filtered entries and stale-revision rejection before preparation. No compiler or test execution was performed."
+    }
+  ],
+  "conclusion": "No new confirmed authorization or Rust source-level blocker in the reviewed narrow change.",
+  "limits": [
+    "This is not native compilation or a proof of all hook authorization policies.",
+    "The public hook accessor relies on caller policy enforcement as documented; the reviewed Core executor preserves its existing denial checks.",
+    "A preserved Prompt approval mode is metadata, not a new interactive approval step. This review does not claim hooks acquired an approval mechanism absent from the old executor.",
+    "Runtime and protocol integration still require the original failing hook test and native gate."
+  ]
+}

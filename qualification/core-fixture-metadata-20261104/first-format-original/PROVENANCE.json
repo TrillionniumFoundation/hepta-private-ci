@@ -1,0 +1,230 @@
+{
+  "schema": 1,
+  "source": "3568210b52377f97d1d15403c5b5f97894dfa3a1",
+  "tree": "d78b774db086f65cdee0685545424b999a384674",
+  "run": 41786098496,
+  "job": 126428469217,
+  "artifact": {
+    "id": 13301416523,
+    "bytes": 1835427,
+    "sha256": "63ce14b86b4d7b8884e254209eb1b4e3fb781e6d3462e83717af3849b2fa5c90",
+    "run": 41786098496,
+    "job": 126428469217
+  },
+  "original_job_log": {
+    "bytes": 1830814,
+    "sha256": "759488f2d20dc07cdd038a013cd8eca5953f418bf2ffbc54ee4e706d8d493726",
+    "git_blob": "f534447a08369db65da5668cd51fbcc73551a14d"
+  },
+  "parts": [
+    {
+      "path": "job-00.log.part.gz",
+      "bytes": 359914,
+      "sha256": "af3c85db9ee3c40358223dc92e21d28c3f571ae9475304a89995aa9b594af2d5",
+      "git_blob": "88a4b36ef778dc3dd52b2d5f67a49eea8a03ea35",
+      "original_path": "job-00.log.part",
+      "gzip": {
+        "bytes": 359962,
+        "sha256": "5f07d61b875cf710529ce7d4a4fadaa4827fd735e28cbd99acce9f5377f09c18",
+        "git_blob": "64e4d847d02316813a148f4b4a8ec988c34f4d6c"
+      }
+    },
+    {
+      "path": "job-01.log.part.gz",
+      "bytes": 360000,
+      "sha256": "5352cc37a66edece513e3eb55702dd565347a1e7ec551a5b9052fd5f5b05a2f2",
+      "git_blob": "571d65df3947daa03a948ce94dd06352b78eb819",
+      "original_path": "job-01.log.part",
+      "gzip": {
+        "bytes": 360048,
+        "sha256": "0e18c09a58c2c5b036eeea5aa7aab6489909b9faa44d53973d5abb2803ad1bb7",
+        "git_blob": "2bad14523ce3a650b322cbb54acc3452d356abdb"
+      }
+    },
+    {
+      "path": "job-02.log.part.gz",
+      "bytes": 359934,
+      "sha256": "a3e64db797d4896108a7769424206939c3b63ed0ab9b614e0171c0f5fdbd51f6",
+      "git_blob": "c1b2f51e568dea0864c16d85899d107d46fcb4d3",
+      "original_path": "job-02.log.part",
+      "gzip": {
+        "bytes": 359982,
+        "sha256": "bb41e200ef111e754c34c9069444c01141c17ae62a39c4b5a8be343ab01108d7",
+        "git_blob": "cd070b26a6dfcca98af2f1315ec1f354787bd245"
+      }
+    },
+    {
+      "path": "job-03.log.part.gz",
+      "bytes": 359997,
+      "sha256": "725b859b980edf18e7d8cab77c95b4853cd94aef00133bc2d8702de1a5d6bbef",
+      "git_blob": "50ba1db459190052eca2cf8b6a0c5403f9ae4556",
+      "original_path": "job-03.log.part",
+      "gzip": {
+        "bytes": 360045,
+        "sha256": "aaca90009c4dfccd1afe25af5d7a592bfc69db866bd4b569fac88968f45f9b4f",
+        "git_blob": "753a8d081e19eb4749153821eeea02e6f90d83dc"
+      }
+    },
+    {
+      "path": "job-04.log.part.gz",
+      "bytes": 359296,
+      "sha256": "14405fde85ad0acf74fac0dce457730e3ba78a8ba5291f37522e02dea8add9ff",
+      "git_blob": "42355f51a64316ca108d5e310aefcaf2d1a027e0",
+      "original_path": "job-04.log.part",
+      "gzip": {
+        "bytes": 359344,
+        "sha256": "09c0fe9ce7e4d4e135978381bebf5761727ef954d585110fe2a50b714a025038",
+        "git_blob": "b44520170540d1df2dd6b8a1c782e4f03eccc8b3"
+      }
+    },
+    {
+      "path": "job-05.log.part.gz",
+      "bytes": 31673,
+      "sha256": "32ee10a0b18780dc5cde223204af4782acc3162ca17eef06c70f8fb6ddd34831",
+      "git_blob": "8fffce2b8d021bc49e954255483769ba40abf487",
+      "original_path": "job-05.log.part",
+      "gzip": {
+        "bytes": 31696,
+        "sha256": "234ca9984603b7341de3b8eba8564eee96d1d6590f09d06e9e3cc981c7f4078b",
+        "git_blob": "f08efbd06a7058def8044020bd6186d2a3ac1401"
+      }
+    }
+  ],
+  "result": {
+    "schema": 1,
+    "status": "failed",
+    "run_id": "41786098496",
+    "run_attempt": "1",
+    "host": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "commands": [
+      {
+        "name": "source-commit",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "seconds": 0.001900324000018827
+      },
+      {
+        "name": "source-tree",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD^{tree}"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0021113369999739007
+      },
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.5126945890000343
+      },
+      {
+        "name": "rustc-version",
+        "argv": [
+          "rustc",
+          "-Vv"
+        ],
+        "exit_code": 0,
+        "seconds": 0.012806052000030377
+      },
+      {
+        "name": "nextest-version",
+        "argv": [
+          "cargo",
+          "nextest",
+          "--version"
+        ],
+        "exit_code": 0,
+        "seconds": 1.405959724000013
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "5d19a578ac28a6ce7fc67a348b10297dc370c19f"
+        ],
+        "exit_code": 0,
+        "seconds": 1.545179308999991
+      },
+      {
+        "name": "source-clean-after-formatter",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 1,
+        "seconds": 0.49421293099999275
+      }
+    ],
+    "scopes": {},
+    "problems": [],
+    "scope": "Exact original Core metadata and recovery cases, new fixture capability controls, and complete model-provider-info library. Not complete Core or product acceptance.",
+    "source_commit": "3568210b52377f97d1d15403c5b5f97894dfa3a1",
+    "source_tree": "d78b774db086f65cdee0685545424b999a384674",
+    "source_inputs_unchanged": false
+  },
+  "formatter_outputs": [
+    {
+      "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+      "blob": "336ead79607bfa83b54a9195a130c3ec84dd2b06",
+      "sha256": "39d6ae1b8a11e0a9e74c47fffd56f4088191dcf61bc422274f0f81c92d8e476d",
+      "bytes": 14956,
+      "frames": 2
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "blob": "a0edfcf911a28ce734c6a275729f5c8bffb1bb4e",
+      "sha256": "1e1f5f638ad6665145956bdc070a7182029f8c3f0137739804762a1a366f2e65",
+      "bytes": 163379,
+      "frames": 19
+    },
+    {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "blob": "e30eb70a977632fa349af9406aaf737caf51b0bc",
+      "sha256": "285542b801d1e0fd26fa50324df9696c5cab29ab0105818f6f4d9d4d4d090da8",
+      "bytes": 57950,
+      "frames": 7
+    },
+    {
+      "path": "codex-rs/core/src/fixture_metadata_tests.rs",
+      "blob": "d1922a2d741ef2dd213c93dcac77830d3011525d",
+      "sha256": "17dd52c2b1614142685a447a5315715fb1261a4b8e2bad88b2db1e48c2092317",
+      "bytes": 6272,
+      "frames": 1
+    },
+    {
+      "path": "codex-rs/core/tests/suite/fixture_metadata.rs",
+      "blob": "51d9e1c4bab57e3b65fe86d09023674065d441dc",
+      "sha256": "df632384451562596c65ab538239d44379ae39b2b3c398acadf0d6439d57021f",
+      "bytes": 6705,
+      "frames": 1
+    }
+  ],
+  "native_executions": 0,
+  "storage": {
+    "format": "Independent RFC 1952 gzip members with stored DEFLATE blocks; concatenate decompressed parts in listed order.",
+    "original_bytes_unchanged": true,
+    "decompression_executed_in_this_session": false
+  }
+}
