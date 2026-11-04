@@ -30,6 +30,7 @@ use super::unsafe_state;
 use super::wide_path;
 use super::with_private_security;
 
+const FILE_CREATE: u32 = 2;
 const FILE_OPEN_IF: u32 = 3;
 const FILE_DIRECTORY_FILE: u32 = 1;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;
@@ -68,6 +69,7 @@ unsafe extern "system" {
 
 enum DirectoryOpen {
     Create,
+    CreateNew,
     ExistingRead,
     ExistingReadWrite,
     ExistingPathIdentity,
@@ -92,6 +94,10 @@ pub fn canonical_existing_path_without_reparse(path: &Path) -> io::Result<PathBu
 
 pub(super) fn open(root: &Path) -> io::Result<File> {
     open_with_mode(root, DirectoryOpen::Create)
+}
+
+pub(super) fn create_new(root: &Path) -> io::Result<File> {
+    open_with_mode(root, DirectoryOpen::CreateNew)
 }
 
 pub(super) fn open_existing(root: &Path) -> io::Result<File> {
@@ -133,7 +139,7 @@ fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
             // Applied only if the leaf is created. Existing security is never
             // repaired; the caller validates the exact returned handle.
             security_descriptor: match mode {
-                DirectoryOpen::Create => security.lpSecurityDescriptor,
+                DirectoryOpen::Create | DirectoryOpen::CreateNew => security.lpSecurityDescriptor,
                 DirectoryOpen::ExistingRead
                 | DirectoryOpen::ExistingReadWrite
                 | DirectoryOpen::ExistingPathIdentity => ptr::null(),
@@ -153,9 +159,9 @@ fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
                 match mode {
                     DirectoryOpen::ExistingPathIdentity => FILE_READ_ATTRIBUTES | SYNCHRONIZE,
                     DirectoryOpen::ExistingRead => FILE_GENERIC_READ,
-                    DirectoryOpen::Create | DirectoryOpen::ExistingReadWrite => {
-                        FILE_GENERIC_READ | FILE_GENERIC_WRITE
-                    }
+                    DirectoryOpen::Create
+                    | DirectoryOpen::CreateNew
+                    | DirectoryOpen::ExistingReadWrite => FILE_GENERIC_READ | FILE_GENERIC_WRITE,
                 },
                 &attributes,
                 &mut io_status,
@@ -165,6 +171,7 @@ fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
                 FILE_SHARE_READ | FILE_SHARE_WRITE,
                 match mode {
                     DirectoryOpen::Create => FILE_OPEN_IF,
+                    DirectoryOpen::CreateNew => FILE_CREATE,
                     DirectoryOpen::ExistingRead
                     | DirectoryOpen::ExistingReadWrite
                     | DirectoryOpen::ExistingPathIdentity => 1, // FILE_OPEN
@@ -174,6 +181,7 @@ fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
                     | match mode {
                         DirectoryOpen::ExistingPathIdentity => 0,
                         DirectoryOpen::Create
+                        | DirectoryOpen::CreateNew
                         | DirectoryOpen::ExistingRead
                         | DirectoryOpen::ExistingReadWrite => FILE_DIRECTORY_FILE,
                     },
