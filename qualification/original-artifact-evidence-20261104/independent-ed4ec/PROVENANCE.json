@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "kind": "readonly-original-evidence-checkpoint",
+  "readers_source": "ed4ec11a6609f0b8a9e25d6a1c49369c57cef894",
+  "entries": [
+    {
+      "key": "schemaee-original",
+      "original_repository": "TrillionniumFoundation/hepta-private-ci",
+      "original_source": "ee24895753b65e5b7cf0ec01398995af2fbfe0f2",
+      "original_run": 41772155775,
+      "original_artifact": {
+        "id": 13296735995,
+        "bytes": 2511332,
+        "sha256": "fffd7c40dc5b020c8f6baa8925fe9f1ac5810cf804782aefe64bc4fe7db0d251"
+      },
+      "original_status": "passed",
+      "readonly_run": 41776616025,
+      "readonly_job": 126398351539,
+      "readonly_source": "ed4ec11a6609f0b8a9e25d6a1c49369c57cef894",
+      "readonly_artifact": {
+        "id": 13296529977,
+        "bytes": 2526562,
+        "sha256": "095168f28ebdc8b3e6401891a6d1f0cdd56da0525d5e10715494cabae9db91d5"
+      },
+      "full_verified_report_sha256": "e4afdc86216f5a3d6fa09acfddb7a62311ff445ea7ffe4048a096cef38a9cb3c",
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-ed4ec/schemaee-original/VERIFIED_PROJECTION.json",
+        "bytes": 31256,
+        "sha256": "80493d7c1df49c756eb9f1d7a5aceaa03aefd2f7bef704c3298a0fc643e0c3ea"
+      },
+      "readonly_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-ed4ec/schemaee-original/readonly-job.log",
+        "bytes": 81778,
+        "sha256": "74a07f3b03f1bb381c5cb21fc30d679a340c18bdcdd2dfb7f1b2f9518579dec2"
+      }
+    },
+    {
+      "key": "env4db-source",
+      "original_repository": "TrillionniumFoundation/hepta-private-ci",
+      "original_source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+      "original_run": 41774118682,
+      "original_artifact": {
+        "id": 13296269512,
+        "bytes": 4493558,
+        "sha256": "db44136e4ae124836ad942d5f46086f3fb4b2670269897ee66ca26ecfb1bc6ad"
+      },
+      "original_status": "passed",
+      "readonly_run": 41776616025,
+      "readonly_job": 126398351731,
+      "readonly_source": "ed4ec11a6609f0b8a9e25d6a1c49369c57cef894",
+      "readonly_artifact": {
+        "id": 13297446635,
+        "bytes": 5357051,
+        "sha256": "2538e3200ba242b6ff77615a841119bf2928e291ad1bae58dda081aa0e24aaf8"
+      },
+      "full_verified_report_sha256": "2d883b0d6d35abbd7c47a1f5847866a4ccc5391def567436042f029e1c1493f7",
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-ed4ec/env4db-source/VERIFIED_PROJECTION.json",
+        "bytes": 10709,
+        "sha256": "719edc3f4d4c73006c4a6efbe396cbf015e9bac1f4542eb3c99b1d3a5bdba018"
+      },
+      "readonly_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-ed4ec/env4db-source/readonly-job.log",
+        "bytes": 215217,
+        "sha256": "47bc9c0dcf89e0b781a9b8bac38b31bc4c1b06e1bf581ac77f19ffc2ce3649c5"
+      }
+    },
+    {
+      "key": "env4db-merge-failed",
+      "original_repository": "TrillionniumFoundation/hepta-private-ci",
+      "original_source": "9149d3e01bcc3777b605920cef6bbb166bacf61c",
+      "original_run": 41774118682,
+      "original_artifact": {
+        "id": 13295958902,
+        "bytes": 4470163,
+        "sha256": "d41cdd1f089e068e206e7d01238326ddc00ebb62305fdf428b55f1c4911eed4b"
+      },
+      "original_status": "failed",
+      "readonly_run": 41776616025,
+      "readonly_job": 126398351818,
+      "readonly_source": "ed4ec11a6609f0b8a9e25d6a1c49369c57cef894",
+      "readonly_artifact": {
+        "id": 13297820071,
+        "bytes": 5332735,
+        "sha256": "6f7715c328da6761f7e81e1dd16509d5c9818126f978d21cb3b157450736d09d"
+      },
+      "full_verified_report_sha256": "6e4cfd1eda063cfac8c09b45d36b313c766e3dbf21a44fff3d68033b8171ae71",
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-ed4ec/env4db-merge-failed/VERIFIED_PROJECTION.json",
+        "bytes": 9866,
+        "sha256": "8ebb0adb1eb8357f29ac266e272ae10ecd8c1ca1e9b26991077b883a5095b914"
+      },
+      "readonly_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-ed4ec/env4db-merge-failed/readonly-job.log",
+        "bytes": 228594,
+        "sha256": "6dd0373dbfb07371992f123b6768faf3d8006949193849a718fdb1296656f667"
+      }
+    }
+  ],
+  "boundary": "VERIFIED_PROJECTION preserves the exact emitted compact report. Full output hash dictionaries are retained inside each readonly artifact and are bound by full_verified_report_sha256. No archived source or product binary was executed. Original Env merge failure remains failed. Product heads are unchanged.",
+  "process_log_reconstruction": {
+    "owner": "hepta_blockers",
+    "status": "Independent peer reconstructed all six original test logs and reported exact original member SHA256/size equality; that peer retains the small logs in its original fixture followup. This checkpoint preserves complete readonly job logs and exact original artifact identities."
+  }
+}

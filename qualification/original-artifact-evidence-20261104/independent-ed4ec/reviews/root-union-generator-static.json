@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "private-ci independent reviewer",
+  "kind": "static-source-review",
+  "execution_count": 0,
+  "inputs": [
+    {
+      "role": "union generator",
+      "git_blob": "4f4ed1a1aa3f8c784a5f2bf86b107ae6da44d929",
+      "bytes": 12814,
+      "sha256": "a0d2a551306974ed76199f799b040b38ed1e26e56c94ede796f702b4dd58fc2e"
+    },
+    {
+      "role": "ten reader controls",
+      "git_blob": "5234b01097a65fe12f688e9e11a6c116cb75fbac",
+      "bytes": 4079,
+      "sha256": "8815e6b253df4e1fdb9870ab3fd26124764c68231aaf1628e9552a0de2757089"
+    },
+    {
+      "role": "original hosted workflow",
+      "git_blob": "b444e353098a6ca7dbe5779b329c0e3db4d4c42c",
+      "bytes": 3601,
+      "sha256": "8a11d2ba6f8f4d242fb099bec96e2ee26b075a328ed9cf58e695bea27e2d919b"
+    }
+  ],
+  "findings": [
+    "Full tracked source snapshot checks raw bytes and raw symbolic-link payloads against Git. Initial HEAD diff must be clean.",
+    "Original formatter, unlocked and locked Cargo metadata, and real Bazel update/check commands retain their order and failure statuses.",
+    "Qualified requires the first committed lock check to pass and all original source inputs to remain equal. Generated source or lock changes require adoption and another original run.",
+    "Only the configured unicode-normalization version replacement and added local control package identities are accepted; all resolved local dependency deltas are retained for review.",
+    "No confirmed false-green in the inspected generator, controls and workflow scope."
+  ],
+  "boundaries": [
+    "Static review only: no Python controls, resolver, native compiler, Cargo or Bazel was run by this review.",
+    "Local dependency edge changes are limited by local package names, not independently enumerated expected edges. Actual versioned manifests and the resolver bind the generated graph; the full retained delta still requires review.",
+    "The scope configuration was not included in this three-blob review; this report does not independently prove its expected identities.",
+    "No original assertions, source capabilities, CI timeouts or production admission were relaxed by this review."
+  ]
+}
