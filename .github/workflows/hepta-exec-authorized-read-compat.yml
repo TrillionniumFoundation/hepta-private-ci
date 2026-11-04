@@ -5,6 +5,7 @@ on:
     paths:
       - "codex-rs/exec/**"
       - "codex-rs/exec-server/**"
+      - "codex-rs/rollout/**"
       - ".github/workflows/hepta-exec-authorized-read-compat.yml"
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
@@ -63,6 +64,16 @@ jobs:
       - name: Install repository CI tools
         uses: ./.github/actions/setup-ci-tools
 
+      - name: Install required Linux filesystem sandbox
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends bubblewrap
+          command -v bwrap
+          bwrap --version
+
       - name: Install pinned nextest
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
@@ -95,6 +106,11 @@ jobs:
               "codex-rs/exec/tests/suite/resume.rs",
               "codex-rs/exec-server/tests/file_system_unix.rs",
               "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+              "codex-rs/exec-server/src/remote_file_system.rs",
+              "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+              "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+              "codex-rs/rollout/src/state_db.rs",
+              "codex-rs/rollout/src/state_db_tests.rs",
               "codex-rs/Cargo.lock",
               "codex-rs/rust-toolchain.toml",
               "codex-rs/.config/nextest.toml",
@@ -119,9 +135,20 @@ jobs:
               "run_id": os.environ["GITHUB_RUN_ID"],
               "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
           }
+          identity["rustc"] = subprocess.check_output(
+              ["rustc", "--version", "--verbose"], cwd=root / "codex-rs", text=True)
+          if platform.system() == "Linux":
+              sandbox_binary = shutil.which("bwrap")
+              if sandbox_binary is None:
+                  raise SystemExit("the real Linux filesystem sandbox dependency is missing")
+              identity["bwrap"] = {
+                  "path": sandbox_binary,
+                  "sha256": digest(Path(sandbox_binary)),
+                  "version": subprocess.check_output([sandbox_binary, "--version"], text=True),
+              }
           (output / "source.json").write_text(json.dumps(identity, indent=2) + "\n")
           server = ["just", "test", "--locked", "-p", "codex-exec-server",
-                    "--test", "authorized_read_rpc"]
+                    "--lib", "--test", "authorized_read_rpc"]
           if platform.system() != "Windows":
               server += ["--test", "file_system_unix"]
           server += ["--no-tests", "fail", "--retries", "0", "--status-level", "all", "--final-status-level", "all"]
@@ -131,13 +158,24 @@ jobs:
           required_server = ["authorized_read_rpc_is_capability_gated_and_denies_outside_root"]
           if platform.system() == "Darwin":
               required_server += [
-                  "file_system_bounded_authorized_read_enforces_limit_without_prefix::remote",
-                  "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote",
+                  "file_system_bounded_authorized_read_enforces_limit_without_prefix::test_case_2_remote",
+                  "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::test_case_2_remote",
               ]
           elif platform.system() != "Windows":
               required_server += ["remote_authorized_read_rejects_all_paths_without_stable_handle_capability"]
+          rollout = ["just", "test", "--locked", "-p", "codex-rollout", "--lib",
+                     "--no-tests", "fail", "--retries", "0", "--status-level", "all",
+                     "--final-status-level", "all"]
+          required_rollout = [
+              "state_db::tests::list_threads_db_rejects_mismatched_sqlite_config_without_cleanup",
+              "state_db::tests::index_reads_accept_config_before_native_home_canonicalization",
+          ]
+          if platform.system() != "Windows":
+              required_rollout.append(
+                  "state_db::tests::index_reads_accept_same_home_alias_but_reject_retargeted_or_missing_alias")
           scopes = [
               ("server", server, required_server),
+              ("rollout", rollout, required_rollout),
               ("resume", resume, [
                   "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db",
                   "suite::resume::exec_resume_last_trusts_usable_state_db_candidate",
@@ -181,7 +219,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --package codex-exec --package codex-exec-server -- --check
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --package codex-exec --package codex-exec-server --package codex-rollout -- --check
 
       - name: Preserve native source, output and JUnit evidence
         if: always()

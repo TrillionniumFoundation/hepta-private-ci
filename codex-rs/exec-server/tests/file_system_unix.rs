@@ -1110,7 +1110,8 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
     let context = create_file_system_context(implementation).await?;
     let file_system = context.file_system;
 
-    let tmp = TempDir::new()?;
+    // Grant the canonical namespace that stable-handle authorization checks.
+    let tmp = TempDir::new_in(std::env::temp_dir().canonicalize()?)?;
     let root = tmp.path().join("allowed");
     std::fs::create_dir_all(&root)?;
     let exact_path = root.join("exact.txt");
@@ -1134,7 +1135,11 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
         .await
         .expect_err("a file larger than the bound must fail closed");
     assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
-    assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    let expected_message = match implementation {
+        FileSystemImplementation::Local => "authorized file read exceeds bound",
+        FileSystemImplementation::Remote => "remote authorized file read exceeded its bound",
+    };
+    assert_eq!(error.to_string(), expected_message);
 
     Ok(())
 }
@@ -1148,7 +1153,8 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
     let context = create_file_system_context(implementation).await?;
     let file_system = context.file_system;
 
-    let tmp = TempDir::new()?;
+    // Grant the canonical namespace that stable-handle authorization checks.
+    let tmp = TempDir::new_in(std::env::temp_dir().canonicalize()?)?;
     let allowed_dir = tmp.path().join("allowed");
     let outside_dir = tmp.path().join("outside");
     std::fs::create_dir_all(&allowed_dir)?;
@@ -1167,7 +1173,16 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a symlink escaping the readable root must fail closed");
-    assert_sandbox_denied(&error);
+    match implementation {
+        FileSystemImplementation::Local => assert_sandbox_denied(&error),
+        FileSystemImplementation::Remote => {
+            assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+            assert_eq!(
+                error.to_string(),
+                "remote authorized file read was rejected"
+            );
+        }
+    }
 
     let parent_escape = allowed_dir
         .join("nested")
@@ -1183,7 +1198,16 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a parent traversal escaping the readable root must fail closed");
-    assert_normalized_path_rejected(&error);
+    match implementation {
+        FileSystemImplementation::Local => assert_normalized_path_rejected(&error),
+        FileSystemImplementation::Remote => {
+            assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+            assert_eq!(
+                error.to_string(),
+                "remote authorized file read was rejected"
+            );
+        }
+    }
 
     Ok(())
 }

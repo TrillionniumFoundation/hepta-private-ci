@@ -53,7 +53,8 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
     ))
     .await?;
 
-    let temp = tempfile::tempdir()?;
+    // Stable-handle policies grant the real namespace returned by the kernel.
+    let temp = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
     let allowed_dir = temp.path().join("allowed");
     let denied_dir = temp.path().join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
