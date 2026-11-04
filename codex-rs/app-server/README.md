@@ -25,6 +25,7 @@ unchanged.
 ## Table of Contents
 
 - [Protocol](#protocol)
+- [Process shutdown](#process-shutdown)
 - [Message Schema](#message-schema)
 - [Core Primitives](#core-primitives)
 - [Lifecycle Overview](#lifecycle-overview)
@@ -73,6 +74,23 @@ Backpressure behavior:
 - The server uses bounded queues between transport ingress, request processing, and outbound writes.
 - When request ingress is saturated, new requests are rejected with a JSON-RPC error code `-32001` and message `"Server overloaded; retry later."`.
 - Clients should treat this as retryable and use exponential backoff with jitter.
+
+## Process shutdown
+
+For non-stdio transports with shutdown signal handling enabled, `SIGTERM` and
+`SIGINT` first request the existing graceful drain; a later forceable signal can
+end that drain. `SIGHUP` requests graceful drain without forcing an active turn.
+Unix signal subscriptions are registered before the acceptors start and remain
+owned by the server while it processes connections. Cancelling one main-loop
+receive future does not unregister those subscriptions or discard a first
+signal delivered during another branch. Stdio and embeddings that disable the
+signal handler retain their existing lifecycle rules.
+
+The Linux `shutdown_signals::tests` regressions exercise actual isolated child
+processes for `SIGTERM`, `SIGINT`, and `SIGHUP`, including delivery between two
+receive futures. These checks cover signal retention, not the completion time
+of thread hooks or other server cleanup. Embeddings still need to observe and
+reap their actual child within their own unchanged shutdown deadline.
 
 ## Message Schema
 

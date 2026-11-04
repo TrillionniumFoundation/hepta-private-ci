@@ -9,6 +9,7 @@
 
 mod admission_profile_json;
 mod compiler;
+mod desktop_thread_source;
 mod error;
 mod error_policy;
 mod feasibility;
@@ -30,6 +31,11 @@ pub use admission_profile_json::ObjectiveAdmissionProfileJsonError;
 pub use admission_profile_json::decode_admission_profile_json_v1;
 pub use compiler::canonical_native_objective_conflict_bytes_v1;
 pub use compiler::canonical_native_objective_semantic_bytes_v1;
+pub use desktop_thread_source::DESKTOP_THREAD_PROFILE_V1;
+pub use desktop_thread_source::DesktopThreadAction;
+pub use desktop_thread_source::DesktopThreadSourceContext;
+pub use desktop_thread_source::desktop_thread_admission_profile_json_v1;
+pub use desktop_thread_source::desktop_thread_source_json_v1;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;

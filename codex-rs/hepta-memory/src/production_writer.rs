@@ -78,6 +78,7 @@ pub use objective_sender::ObjectiveSenderRetainedPosition;
 pub use objective_sender::ObjectiveSenderSnapshot;
 pub use objective_sender::ObjectiveSenderTicket;
 pub use objective_sender::ObjectiveSenderWriterFence;
+pub use objective_sender::OriginalDesktopThreadReference;
 pub use objective_sender::OriginalNotesThreadReference;
 pub use objective_sender::ProductionObjectiveSender;
 pub(crate) use objective_sender::verify_sender_store;
@@ -102,6 +103,11 @@ mod owner_publication;
 mod notes_owner;
 pub(crate) use notes_owner::NotesPreDispatchRejection;
 pub use notes_owner::NotesRetirementPermit;
+
+#[path = "production_calculator_owner.rs"]
+mod calculator_owner;
+pub(crate) use calculator_owner::CalculatorPreDispatchRejection;
+pub use calculator_owner::CalculatorRetirementPermit;
 
 #[path = "production_hos2_execution.rs"]
 mod hos2_execution;
@@ -1093,6 +1099,13 @@ impl ProductionDurableWriter {
                             LocalReconcileOutcome::Committed,
                         )
                         .await?;
+                    } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+                        self.settle_calculator_terminal(
+                            &request,
+                            &receipt,
+                            LocalReconcileOutcome::Committed,
+                        )
+                        .await?;
                     } else {
                         self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
                             .await?;
@@ -1109,6 +1122,13 @@ impl ProductionDurableWriter {
                         .await?;
                     } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
                         self.settle_notes_terminal(
+                            &request,
+                            &reason,
+                            LocalReconcileOutcome::Rejected,
+                        )
+                        .await?;
+                    } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+                        self.settle_calculator_terminal(
                             &request,
                             &reason,
                             LocalReconcileOutcome::Rejected,
@@ -1139,6 +1159,7 @@ impl ProductionDurableWriter {
         }
         // Failure retains source terminality and permits a later exact ACK.
         let _ = self.retry_notes_retirement(target).await;
+        let _ = self.retry_calculator_retirement(target).await;
         Ok(reconciled)
     }
 
@@ -1770,6 +1791,14 @@ impl ProductionDurableWriter {
                 .retire_notes_receipt(target, &receipt.request.occurrence_key)
                 .await;
         }
+        if let Ok(receipt) = &settled
+            && receipt.request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1
+            && receipt.state == LocalOutcomeState::Committed
+        {
+            let _ = self
+                .retire_calculator_receipt(target, &receipt.request.occurrence_key)
+                .await;
+        }
         settled
     }
 
@@ -1787,6 +1816,18 @@ impl ProductionDurableWriter {
             Ok(self
                 .lease
                 .reject_notes_before_dispatch(&proof)
+                .await?
+                .into())
+        } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+            self.verify_authority().await?;
+            let proof = CalculatorPreDispatchRejection::at_rejected_entry(
+                request,
+                dispatch_event_id,
+                reason,
+            );
+            Ok(self
+                .lease
+                .reject_calculator_before_dispatch(&proof)
                 .await?
                 .into())
         } else if inherited {
@@ -1815,6 +1856,13 @@ impl ProductionDurableWriter {
                 } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
                     self.settle_notes_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
                         .await?
+                } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+                    self.settle_calculator_terminal(
+                        &request,
+                        &receipt,
+                        LocalReconcileOutcome::Committed,
+                    )
+                    .await?
                 } else {
                     self.reconcile(occurrence_key, LocalReconcileOutcome::Committed)
                         .await?
@@ -1836,6 +1884,13 @@ impl ProductionDurableWriter {
                 } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
                     self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
+                } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+                    self.settle_calculator_terminal(
+                        &request,
+                        &reason,
+                        LocalReconcileOutcome::Rejected,
+                    )
+                    .await?
                 } else {
                     self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
                         .await?
@@ -1904,6 +1959,13 @@ impl ProductionDurableWriter {
                         LocalReconcileOutcome::Committed,
                     )
                     .await
+                } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+                    self.settle_calculator_terminal(
+                        &request,
+                        &target_receipt,
+                        LocalReconcileOutcome::Committed,
+                    )
+                    .await
                 } else {
                     self.apply(occurrence_key, target_receipt.clone()).await
                 };
@@ -1929,6 +1991,13 @@ impl ProductionDurableWriter {
                 } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
                     self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
+                } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+                    self.settle_calculator_terminal(
+                        &request,
+                        &reason,
+                        LocalReconcileOutcome::Rejected,
+                    )
+                    .await?
                 } else {
                     self.reject(occurrence_key, &reason).await?
                 };
@@ -2588,6 +2657,15 @@ pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     /// the original writer derives it from its existing durable terminal event.
     fn retire_notes_receipt(&self, _permit: &NotesRetirementPermit) -> Result<(), String> {
         Err("target does not provide Notes receipt retirement".to_string())
+    }
+
+    /// Calculator-only metadata retirement, bound to the original writer's
+    /// verified durable terminal. This permit cannot be made by a target.
+    fn retire_calculator_receipt(
+        &self,
+        _permit: &CalculatorRetirementPermit,
+    ) -> Result<(), String> {
+        Err("target does not provide Calculator receipt retirement".into())
     }
 
     fn observe_terminal<'a>(

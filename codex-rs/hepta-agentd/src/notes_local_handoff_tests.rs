@@ -142,6 +142,7 @@ fn request(owner: &AgentId, spawn: u64) -> ObjectiveSenderRequest {
             expected_peer_pid: 4321,
             endpoint_identity: "/handoff-fixture/agentd.sock".into(),
             original_notes_thread: None,
+            original_desktop_thread: None,
         },
     )
     .unwrap()

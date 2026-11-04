@@ -20,6 +20,8 @@ mod objective_tests;
 
 #[path = "notes_objective_composition_tests.rs"]
 mod composition_tests;
+#[path = "desktop_prepare_deadline_tests.rs"]
+mod desktop_prepare_deadline_tests;
 #[path = "notes_literal_prepare_tests.rs"]
 mod literal_prepare_tests;
 #[path = "notes_previous_host_tests.rs"]

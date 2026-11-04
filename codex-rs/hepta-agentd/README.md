@@ -1,4 +1,4 @@
-# Agentd and finite Notes Organ
+# Agentd and finite desktop organs
 
 The default `run` entry embeds the original App Server and general Agentd planes.
 The Linux `run_notes_organ(config, root)` entry is an explicit finite Notes composition.
@@ -6,8 +6,19 @@ Both retain the original Fleet process identity, one run coordinator, AuthBus si
 and replay checks, immutable Objective publication, production writer, local lease,
 FinalUse targets and original terminal receipt reconciliation.
 
+The independent Notes and Calculator candidate adds the explicit `desktop`
+production profile and a new six-tool original Core thread. Its source contract,
+executed parent results and unverified joint-runtime gates are maintained in
+[Original Desktop organ candidate](DESKTOP_ORGAN_CANDIDATE.md). The finite
+Notes-only entry and its existing catalog remain separate.
+
 ## Development entry points
 
+- [Original Desktop organ candidate](DESKTOP_ORGAN_CANDIDATE.md): versioned
+  Notes/Calculator catalog and seed, one original writer and shared turn fence,
+  causal status, startup budgets and exact qualification limits.
+- [Original Root production launcher](PRODUCTION_LAUNCHER.md): actual inherited
+  descriptors, late sealed deployment and the distinct primary profiles.
 - [Original Root session File custody](ROOT_SESSION_FILE_CUSTODY.md): active
   session, blocking work, fenced read-only clones and actual retirement checks.
 - [Native text session](NATIVE_TEXT_SESSION.md): original Root launcher,
@@ -22,7 +33,7 @@ FinalUse targets and original terminal receipt reconciliation.
   production-writer/FinalUse attachment, fixed original receiver contract and
   required retained host capability. Default Agentd does not register it.
 
-## Trusted composition
+## Trusted finite Notes composition
 
 Before calling the finite entry, the embedding must recover the original protected
 writer against the independently retained Root Current, attach the actual Notes

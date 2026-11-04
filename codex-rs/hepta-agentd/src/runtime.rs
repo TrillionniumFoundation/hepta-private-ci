@@ -46,7 +46,11 @@ pub async fn run(
     #[cfg(target_os = "linux")]
     let notes_thread_tools = config.take_original_notes_thread_tools();
     #[cfg(target_os = "linux")]
-    let app_server_model_tools = if notes_thread_tools.is_some() {
+    let desktop_thread_tools = config.take_original_desktop_thread_tools();
+    #[cfg(target_os = "linux")]
+    let app_server_model_tools = if desktop_thread_tools.is_some() {
+        crate::app_runtime::AppServerModelToolProfile::OriginalDesktop
+    } else if notes_thread_tools.is_some() {
         crate::app_runtime::AppServerModelToolProfile::OriginalNotes
     } else {
         crate::app_runtime::AppServerModelToolProfile::Standard
@@ -93,7 +97,13 @@ pub async fn run(
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
     let notes_objective = config.notes_objective();
-    if notes_objective.is_some()
+    let desktop_objective = config.desktop_objective();
+    if notes_objective.is_some() && desktop_objective.is_some() {
+        return Err(AgentdError::Invalid(
+            "multiple finite Objective profiles selected".into(),
+        ));
+    }
+    if (notes_objective.is_some() || desktop_objective.is_some())
         && (production_writer_host.is_none()
             || intelligence_product.is_some()
             || intelligence_invocation.is_some())
@@ -121,6 +131,12 @@ pub async fn run(
             .notes_objective
             .set(notes)
             .map_err(|_| AgentdError::Invalid("Notes Objective already attached".into()))?;
+    }
+    if let Some(desktop) = desktop_objective {
+        state
+            .desktop_objective
+            .set(desktop)
+            .map_err(|_| AgentdError::Invalid("Desktop Objective already attached".into()))?;
     }
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
@@ -241,7 +257,9 @@ pub async fn run(
             let (host, interval) = operations.attach(Arc::clone(recovered_host)).await?;
             Some((host, interval))
         }
-        None if state.notes_objective.get().is_some() => {
+        None if state.notes_objective.get().is_some()
+            || state.desktop_objective.get().is_some() =>
+        {
             let host = production_writer_host.as_ref().ok_or_else(|| {
                 AgentdError::Protocol("Notes requires its precomposed original owner".into())
             })?;
@@ -252,6 +270,9 @@ pub async fn run(
     if let Some((host, _)) = &production_operations {
         if let Some(notes) = state.notes_objective.get() {
             notes.validate_host(host)?;
+        }
+        if let Some(desktop) = state.desktop_objective.get() {
+            desktop.validate_host(host)?;
         }
         state.attach_production_operations(Arc::clone(host))?;
         production_writer_host = Some(Arc::clone(host));
@@ -322,6 +343,13 @@ pub async fn run(
         if let Some(tools) = notes_thread_tools {
             tasks.spawn_required(
                 "notes-original-thread-tools",
+                tools.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(tools) = desktop_thread_tools {
+            tasks.spawn_required(
+                "desktop-original-thread-tools",
                 tools.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }

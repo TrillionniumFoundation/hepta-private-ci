@@ -438,16 +438,14 @@ impl HostAuthorityService {
             crate::authority_host_runtime::owner_alive(ui_pidfd, end)?;
             match listener.accept() {
                 Ok((stream, _)) => {
-                    let policy = HostAuthorityPeerPolicy {
-                        peer: codex_hepta_contracts::HostIssuerPeer {
+                    let policy = text_peer_policy(
+                        codex_hepta_contracts::HostIssuerPeer {
                             uid: registration.peer_uid,
                             pid: registration.peer_pid,
                         },
                         timeout,
-                        lifetime: end.saturating_duration_since(std::time::Instant::now()),
-                        request_bound: 32 * 1024,
-                        response_bound: 32 * 1024,
-                    };
+                        end.saturating_duration_since(std::time::Instant::now()),
+                    );
                     // A wrong peer or malformed request never affects another
                     // lane and cannot extend the original bounded lifetime.
                     if let Ok(mut channel) =
@@ -472,10 +470,29 @@ impl HostAuthorityService {
     }
 }
 
+fn text_peer_policy(
+    peer: codex_hepta_contracts::HostIssuerPeer,
+    timeout: Duration,
+    root_remaining: Duration,
+) -> HostAuthorityPeerPolicy {
+    // This lane accepts one frame per connection. Include the first byte in
+    // its existing exchange budget so an idle UI cannot occupy the worker for
+    // the whole Root lifetime after the original daemon has already exited.
+    // The original peer/pidfd and post-handler checks remain authoritative.
+    HostAuthorityPeerPolicy {
+        peer,
+        timeout,
+        lifetime: timeout.min(root_remaining),
+        request_bound: 32 * 1024,
+        response_bound: 32 * 1024,
+    }
+}
+
 struct SocketGuard {
     path: std::path::PathBuf,
     identity: std::fs::Metadata,
 }
+
 impl Drop for SocketGuard {
     fn drop(&mut self) {
         use std::os::unix::fs::MetadataExt;
@@ -486,3 +503,7 @@ impl Drop for SocketGuard {
         }
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_host_text_deadline_tests.rs"]
+mod deadline_tests;

@@ -51,6 +51,8 @@ enum ReconciliationEvidence<'a> {
     Hos2Terminal(&'a Hos2TerminalReceipt),
     NotesTerminal(&'a crate::production_notes::NotesTerminalReceipt),
     NotesPreDispatchRejected(&'a crate::production_writer::NotesPreDispatchRejection),
+    CalculatorTerminal(&'a crate::production_calculator::CalculatorTerminalReceipt),
+    CalculatorPreDispatchRejected(&'a crate::production_writer::CalculatorPreDispatchRejection),
     Hos2ProtocolConflict(&'a Hos2ProtocolConflict),
 }
 
@@ -2408,6 +2410,29 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    pub(crate) async fn reconcile_calculator_terminal(
+        &self,
+        occurrence_key: &str,
+        receipt: &crate::production_calculator::CalculatorTerminalReceipt,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key.to_string(),
+            ReconciliationEvidence::CalculatorTerminal(receipt),
+        )
+        .await
+    }
+
+    pub(crate) async fn reject_calculator_before_dispatch(
+        &self,
+        proof: &crate::production_writer::CalculatorPreDispatchRejection,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            proof.parts().0.occurrence_key.clone(),
+            ReconciliationEvidence::CalculatorPreDispatchRejected(proof),
+        )
+        .await
+    }
+
     pub(crate) async fn reconcile_hos2_terminal(
         &self,
         occurrence_key: &str,
@@ -2443,6 +2468,10 @@ impl LocalLeaseOutbox {
             ReconciliationEvidence::Hos2Terminal(receipt) => receipt.outcome(),
             ReconciliationEvidence::NotesTerminal(receipt) => receipt.outcome(),
             ReconciliationEvidence::NotesPreDispatchRejected(_) => LocalReconcileOutcome::Rejected,
+            ReconciliationEvidence::CalculatorTerminal(receipt) => receipt.outcome(),
+            ReconciliationEvidence::CalculatorPreDispatchRejected(_) => {
+                LocalReconcileOutcome::Rejected
+            }
             ReconciliationEvidence::Hos2ProtocolConflict(_) => {
                 LocalReconcileOutcome::StillIndeterminate
             }
@@ -2469,6 +2498,10 @@ impl LocalLeaseOutbox {
         let payload = match evidence {
             ReconciliationEvidence::NotesTerminal(receipt) => receipt.as_str().to_string(),
             ReconciliationEvidence::NotesPreDispatchRejected(proof) => proof.parts().2.to_string(),
+            ReconciliationEvidence::CalculatorTerminal(receipt) => receipt.as_str().to_string(),
+            ReconciliationEvidence::CalculatorPreDispatchRejected(proof) => {
+                proof.parts().2.to_string()
+            }
             ReconciliationEvidence::Hos2Terminal(receipt) => {
                 receipt.to_json().map_err(LocalLeaseOutboxError::Invalid)?
             }
@@ -2528,9 +2561,11 @@ impl LocalLeaseOutbox {
                     .matches(&occurrence_key, &outbox.payload_json)
                     .map_err(LocalLeaseOutboxError::Invalid)?,
                 ReconciliationEvidence::NotesTerminal(_)
-                | ReconciliationEvidence::NotesPreDispatchRejected(_) => {
+                | ReconciliationEvidence::NotesPreDispatchRejected(_)
+                | ReconciliationEvidence::CalculatorTerminal(_)
+                | ReconciliationEvidence::CalculatorPreDispatchRejected(_) => {
                     return Err(LocalLeaseOutboxError::Invalid(
-                        "Notes evidence targets HOS2".to_string(),
+                        "application evidence targets HOS2".to_string(),
                     ));
                 }
                 ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
@@ -2570,9 +2605,46 @@ impl LocalLeaseOutbox {
                     ));
                 }
                 ReconciliationEvidence::Hos2Terminal(_)
-                | ReconciliationEvidence::Hos2ProtocolConflict(_) => {
+                | ReconciliationEvidence::Hos2ProtocolConflict(_)
+                | ReconciliationEvidence::CalculatorTerminal(_)
+                | ReconciliationEvidence::CalculatorPreDispatchRejected(_) => {
                     return Err(LocalLeaseOutboxError::Invalid(
-                        "HOS2 evidence targets Notes".to_string(),
+                        "another destination's evidence targets Notes".to_string(),
+                    ));
+                }
+            }
+        } else if outbox.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+            match evidence {
+                ReconciliationEvidence::CalculatorTerminal(receipt) => receipt
+                    .matches(&outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Invalid)?,
+                ReconciliationEvidence::CalculatorPreDispatchRejected(proof) => {
+                    let (request, _, _) = proof.parts();
+                    if request.lease_id != self.lease_id
+                        || request.occurrence_key != occurrence_key
+                        || request.topic != outbox.topic
+                        || request.payload_json != outbox.payload_json
+                    {
+                        return Err(LocalLeaseOutboxError::AccessDenied(
+                            "Calculator pre-entry proof targets a different operation".into(),
+                        ));
+                    }
+                }
+                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
+                ReconciliationEvidence::General(
+                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                ) => {
+                    return Err(LocalLeaseOutboxError::AccessDenied(
+                        "Calculator terminal settlement requires the original observation owner"
+                            .into(),
+                    ));
+                }
+                ReconciliationEvidence::Hos2Terminal(_)
+                | ReconciliationEvidence::Hos2ProtocolConflict(_)
+                | ReconciliationEvidence::NotesTerminal(_)
+                | ReconciliationEvidence::NotesPreDispatchRejected(_) => {
+                    return Err(LocalLeaseOutboxError::Invalid(
+                        "another destination's evidence targets Calculator".into(),
                     ));
                 }
             }
@@ -2611,6 +2683,15 @@ impl LocalLeaseOutbox {
         {
             return Err(LocalLeaseOutboxError::AccessDenied(
                 "Notes pre-entry proof is not the current dispatch claim".to_string(),
+            ));
+        }
+        if let ReconciliationEvidence::CalculatorPreDispatchRejected(proof) = evidence
+            && (latest.event_id != proof.parts().1
+                || latest.generation != self.generation
+                || latest.fencing_token != self.fencing_token)
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "Calculator pre-entry proof is not the current dispatch claim".into(),
             ));
         }
         let current_fence =
@@ -2848,6 +2929,13 @@ impl LocalLeaseOutbox {
                 "Notes terminal settlement requires the original observation owner".to_string(),
             ));
         }
+        if outbox.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1
+            && matches!(kind, "reconcile_committed" | "reconcile_rejected")
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "Calculator terminal settlement requires the original observation owner".into(),
+            ));
+        }
         if outbox.topic == crate::HOS2_INSTALL_TOPIC_V1 {
             if matches!(kind, "reconcile_committed" | "reconcile_rejected") {
                 return Err(LocalLeaseOutboxError::AccessDenied(
@@ -2869,7 +2957,9 @@ impl LocalLeaseOutbox {
         .await?;
         if matches!(
             outbox.topic.as_str(),
-            crate::NOTES_REPLACE_TOPIC_V1 | crate::HOS2_INSTALL_TOPIC_V1
+            crate::NOTES_REPLACE_TOPIC_V1
+                | crate::CALCULATOR_EVALUATE_TOPIC_V1
+                | crate::HOS2_INSTALL_TOPIC_V1
         ) && kind == "rolled_back"
             && current == LocalOutcomeState::Indeterminate
         {

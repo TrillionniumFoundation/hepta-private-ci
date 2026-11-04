@@ -94,6 +94,7 @@ fn recorded_source_requires_exact_raw_tuple_signed_commitments_and_operation() {
         expected_peer_pid: 1,
         endpoint_identity: "/fixture/control".into(),
         original_notes_thread: Some(reference),
+        original_desktop_thread: None,
     };
     let operation = ProductionRetainedOperation {
         operation: intent,

@@ -18,7 +18,7 @@ pub(crate) struct VerifiedHumanTurn {
 }
 
 impl VerifiedHumanTurn {
-    pub(super) async fn from_original_input(
+    pub(crate) async fn from_original_input(
         adapter: &AgentdNotesLiteralAdapter,
         route: &AgentdTextSessionConfig,
         original: &ThreadItem,
@@ -44,12 +44,12 @@ impl VerifiedHumanTurn {
     pub(crate) fn owner(&self) -> &crate::text_session::TextOwnerReceipt {
         &self.owner
     }
-    pub(super) fn delivery_id(&self) -> &str {
+    pub(crate) fn delivery_id(&self) -> &str {
         &self.delivery_id
     }
 }
 
-pub(super) fn original_client_id(original: &ThreadItem) -> Result<&str, AgentdError> {
+pub(crate) fn original_client_id(original: &ThreadItem) -> Result<&str, AgentdError> {
     let ThreadItem::UserMessage {
         client_id: Some(id),
         ..
@@ -124,7 +124,7 @@ fn original_ingress(
     })
 }
 
-pub(super) fn confirm_original_queue(
+pub(crate) fn confirm_original_queue(
     response: &codex_app_server_protocol::ThreadQueueReconcileResponse,
     client_id: &str,
     expected: &str,

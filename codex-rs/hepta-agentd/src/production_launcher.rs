@@ -20,6 +20,7 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdRootProductionInputs;
 use crate::PreparedRootAgentdConfig;
+use crate::desktop_root_composition::attach_root_desktop_operation_host_with_startup_before;
 
 #[path = "production_launcher_inputs.rs"]
 mod inputs;
@@ -30,6 +31,9 @@ use inputs::PrimaryInputs;
 
 #[path = "production_notes_deployment.rs"]
 mod notes_deployment;
+
+#[path = "production_desktop_deployment.rs"]
+mod desktop_deployment;
 
 enum Startup {
     Ordinary(Box<AgentdConfig>),
@@ -177,6 +181,13 @@ impl AgentdProductionLaunch {
         let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None;
         let mut android_device: Option<Arc<crate::AgentdAndroidTextDevice>> = None;
         let result = async {
+            if matches!(&primary, PrimaryInputs::Desktop { .. })
+                && (notes.is_some() || notes_ui.is_some())
+            {
+                return Err(AgentdError::Invalid(
+                    "joint Desktop launch cannot consume legacy Notes inputs".into(),
+                ));
+            }
             // The Root late handoff is already complete. Read the original
             // sealed Notes deployment once, before receiving its application
             // offer, so the trusted Session's staged reservation can be
@@ -193,6 +204,7 @@ impl AgentdProductionLaunch {
             let release = notes_ui
                 .as_mut()
                 .and_then(|(deployment, _, _)| deployment.startup_release.take());
+            let mut desktop_attachment = None;
             let (attachment, android_deadline) = match primary {
                 PrimaryInputs::Android {
                     server,
@@ -243,7 +255,7 @@ impl AgentdProductionLaunch {
                         release,
                     )
                     .await?;
-                    (attachment, Some(deadline))
+                    (Some(attachment), Some(deadline))
                 }
                 PrimaryInputs::Notes => {
                     let notes = notes.ok_or_else(|| {
@@ -259,10 +271,58 @@ impl AgentdProductionLaunch {
                         release,
                     )
                     .await?;
-                    (attachment, None)
+                    (Some(attachment), None)
+                }
+                PrimaryInputs::Desktop {
+                    handoff,
+                    deployment,
+                    session_pidfd,
+                    deadline,
+                } => {
+                    // The real Root handoff above, including all original lanes,
+                    // precedes this read of the late sealed joint deployment.
+                    deadline.remaining()?;
+                    let desktop_deployment::DesktopDeployment {
+                        bindings,
+                        peer,
+                        startup_release,
+                        route,
+                        seed,
+                    } = desktop_deployment::read(deployment, config.identity())?;
+                    let session =
+                        crate::AgentdNotesSessionLifetime::from_inherited(session_pidfd, &peer)?;
+                    deadline.remaining()?;
+                    session.check_alive()?;
+                    let joint = attach_root_desktop_operation_host_with_startup_before(
+                        &mut config,
+                        self.root,
+                        handoff,
+                        Duration::from_millis(100),
+                        startup_release,
+                        deadline,
+                    )
+                    .await?;
+                    deadline.remaining()?;
+                    session.check_alive()?;
+                    config = config.with_root_desktop_thread_tools(
+                        &joint,
+                        bindings,
+                        route,
+                        seed,
+                        session,
+                        Duration::from_secs(10),
+                    )?;
+                    deadline.remaining()?;
+                    // Retain the whole joint attachment, including Calculator's
+                    // read-only observer, until the original runtime stops.
+                    desktop_attachment = Some(joint);
+                    (None, None)
                 }
             };
             if let Some((deployment, listener, session_pidfd)) = notes_ui {
+                let original = attachment.as_ref().ok_or_else(|| {
+                    AgentdError::Invalid("legacy Notes UI has no original Root attachment".into())
+                })?;
                 let notes_deployment::NotesDeployment {
                     bindings,
                     peer,
@@ -279,7 +339,7 @@ impl AgentdProductionLaunch {
                 match interaction {
                     crate::notes_launch_mode::NotesLaunchMode::LiteralUiV1 => {
                         let (configured, adapter) = config.with_root_notes_literal_adapter(
-                            &attachment,
+                            original,
                             bindings,
                             Duration::from_secs(10),
                         )?;
@@ -304,7 +364,7 @@ impl AgentdProductionLaunch {
                         )?;
                         config = config
                             .with_root_notes_thread_tools(
-                                &attachment,
+                                original,
                                 bindings,
                                 route,
                                 Duration::from_secs(10),
@@ -328,7 +388,7 @@ impl AgentdProductionLaunch {
             let result = crate::run(config, arg0_paths).await;
             // Keep the authenticated Root feed and original checkpoint/grant
             // handles alive until all original runtime workers have stopped.
-            drop(attachment);
+            drop((attachment, desktop_attachment));
             result
         }
         .await;

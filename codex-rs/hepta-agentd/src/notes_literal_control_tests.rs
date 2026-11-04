@@ -55,6 +55,7 @@ async fn retained(
             expected_peer_pid: expected_pid,
             endpoint_identity: path.to_string_lossy().into_owned(),
             original_notes_thread: None,
+            original_desktop_thread: None,
         },
     )?;
     Ok((sender.retain_before_send(request).await?, ingress))

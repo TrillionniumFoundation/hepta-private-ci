@@ -45,6 +45,7 @@ fn a_retained_original_turn_source_cannot_be_attributed_to_a_new_call() {
             expected_peer_pid: 1,
             endpoint_identity: "/fixture/original-agentd.sock".into(),
             original_notes_thread: None,
+            original_desktop_thread: None,
         },
     )
     .unwrap();

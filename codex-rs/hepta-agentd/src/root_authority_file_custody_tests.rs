@@ -65,12 +65,15 @@ async fn original_blocking_cas_keeps_file_after_session_and_worker_retire()
     assert!(retained.upgrade().is_some());
     assert!(!takes_lock(&contender)?);
     frontier.wait.store(false, Ordering::Release);
+    // Weak retirement is not a file-close completion barrier. Observe the
+    // same contender's actual lock availability within the original budget.
     tokio::time::timeout(Duration::from_secs(1), async {
-        while retained.upgrade().is_some() {
+        while retained.upgrade().is_some() || !takes_lock(&contender)? {
             tokio::task::yield_now().await;
         }
+        Ok::<(), Box<dyn Error>>(())
     })
-    .await?;
+    .await??;
     assert!(takes_lock(&contender)?);
     assert!(clock.now_unix_ms().is_err());
     assert!(verifier.verify(&authority, &authority.agent_id).is_err());

@@ -187,6 +187,7 @@ pub(super) fn request() -> ObjectiveSenderRequest {
             expected_peer_pid: 4321,
             endpoint_identity: "/test/original-agentd.sock".to_string(),
             original_notes_thread: None,
+            original_desktop_thread: None,
         },
     )
     .expect("structural fixture request")

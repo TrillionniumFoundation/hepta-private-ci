@@ -44,6 +44,8 @@ pub(crate) enum AppServerModelToolProfile {
     Standard,
     #[cfg(target_os = "linux")]
     OriginalNotes,
+    #[cfg(target_os = "linux")]
+    OriginalDesktop,
 }
 
 impl AppServerModelToolProfile {
@@ -51,7 +53,7 @@ impl AppServerModelToolProfile {
         match self {
             Self::Standard => true,
             #[cfg(target_os = "linux")]
-            Self::OriginalNotes => false,
+            Self::OriginalNotes | Self::OriginalDesktop => false,
         }
     }
 }
@@ -338,6 +340,25 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[tokio::test]
     async fn notes_embedding_keeps_the_store_but_removes_general_cognitive_tool_state() {
+        finite_embedding_keeps_only_the_original_store(
+            super::AppServerModelToolProfile::OriginalNotes,
+        )
+        .await;
+    }
+
+    #[cfg(target_os = "linux")]
+    #[tokio::test]
+    async fn desktop_embedding_keeps_the_store_but_removes_general_cognitive_tool_state() {
+        finite_embedding_keeps_only_the_original_store(
+            super::AppServerModelToolProfile::OriginalDesktop,
+        )
+        .await;
+    }
+
+    #[cfg(target_os = "linux")]
+    async fn finite_embedding_keeps_only_the_original_store(
+        profile: super::AppServerModelToolProfile,
+    ) {
         use codex_hepta_fleet::AgentManifest;
         use codex_hepta_fleet::FleetRegistry;
         use codex_hepta_fleet::WorkspaceBinding;
@@ -387,7 +408,7 @@ mod tests {
             /*qualification_turn_writer*/ None,
             /*prompt_runtime_host*/ None,
             /*graceful_drain*/ None,
-            super::AppServerModelToolProfile::OriginalNotes,
+            profile,
         )
         .expect("Notes runtime options");
         assert!(Arc::ptr_eq(

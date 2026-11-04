@@ -87,7 +87,7 @@ apply before this descriptor is issued.
 
 | Flag | Existing input represented |
 | --- | --- |
-| `--root-production-profile` | `android` (default) or explicit `notes`; each selects a real primary target |
+| `--root-production-profile` | `android` (default), explicit `notes`, or the separate `desktop` Notes/Calculator candidate |
 | `--root-production-handoff-fd` | The inherited unnamed Root pair, consumed once |
 | `--root-production-uid`, `--root-production-gid` | Dedicated, nonzero original Agentd owner |
 | `--root-production-control-fd` | Original Root-bound, not-yet-listening control socket |
@@ -101,6 +101,9 @@ apply before this descriptor is issued.
 | `--notes-literal-deployment-fd` | Root sealed finite Notes bindings and actual Session peer, with optional original previous-store recovery |
 | `--notes-literal-ui-fd` | Root-bound UI listener at this original Agent's `run/notes-objective.sock` |
 | `--notes-session-pidfd` | Already retained actual Session lifetime; not a numeric PID discovery request |
+| `--desktop-production-handoff-fd` | Joint Session reservation/activation and ordered Notes then Calculator offers; required only for `desktop` |
+| `--desktop-thread-deployment-fd` | Distinct Root-sealed Desktop profile, two actual targets and new original Core seed |
+| `--desktop-session-pidfd` | Actual joint Session lifetime, independently pinned to the sealed process birth |
 
 All required flags must be supplied together; repeated flags, shared descriptor
 numbers, standard-stream descriptors and an expired/oversized deadline are
@@ -117,7 +120,83 @@ unused original Device owner does not become a fabricated device destination.
 Notes startup has the handoff's existing 30-second bound, while each later
 Notes action retains its own original protected source/sender deadline.
 
+## Separate Notes and Calculator candidate
+
+The explicit `desktop` profile requires all three Desktop descriptors and the
+same original Root handoff/control/App Server/owner inputs. It rejects Android
+parameters and all legacy Notes descriptors, including the Notes UI listener.
+The dedicated `PrimaryInputs::Desktop` branch does not reinterpret a Notes
+deployment or attach Calculator under a Notes target identity.
+
+The trusted Root caller uses
+`PreparedHostAuthoritySession::with_desktop_startup_from_session_before` with a
+`hepta.root.desktop_launch_profile.v1` profile whose `profile` is exactly
+`notes_calculator_v1`. The actual Session reservation supplies both targets
+and a nonce. It is metadata, not application rights or an attachment ACK.
+Root validates the actual Session sender credentials, held pidfd and target
+pair before sealing the late deployment.
+
+The child inherits a separately opened read-only descriptor before Root fills
+the deployment. Root must finish and seal the producer before its late handoff;
+the child reads only after authenticating that original handoff and its lanes.
+The loader requires the original unlinked, Root-owned `0400` four-seal file,
+at most 16 KiB, and the actual post-drop owner. Its strict fields are:
+
+| Field | Required value |
+| --- | --- |
+| `schema`, `profile` | `hepta.agentd.original_desktop_launch.v1`, `notes_calculator_v1` |
+| `agent_id`, `spawn_generation` | Exact original Agentd Registry/Config identity |
+| `session` | Actual `uid`, `pid`, `boot_id`, `process_start_ticks`, independently checked against the retained Session pidfd |
+| `bindings` | The same ten original fields listed for Notes below: scope, scope digest, issuer, policy generation, locale and five input digests |
+| `startup_release` | Required exact `notes`, `calculator`, `nonce`; task IDs 1 and 2, same Session instance and distinct application incarnations |
+| `interaction` | Required `kind: original_desktop_thread_tool_v1`, actual `route` and `DesktopThreadSeedReceipt` |
+
+Unknown fields, an absent/null required interaction, a legacy Notes seed or
+`previous_recovery` are not supported. The new seed must match the actual
+six-tool SessionMeta, execution configuration and observed model/provider
+tuple. Its data does not authorize a model turn or replace the original human
+admission. Existing Notes threads and their three-tool catalogs are unchanged.
+
+`attach_root_desktop_operation_host_with_startup_before` receives the launcher's
+original absolute `CLOCK_BOOTTIME` deadline. It recovers the same protected
+writer once, verifies its live authority, activates the sealed reservation and
+accepts Notes's original two-descriptor offer/ACK followed by Calculator's.
+Notes uses the original Notes FinalUse consumer; Calculator uses the original
+Device consumer with its distinct exact admission. The original atomic host
+installer publishes the composition after both handoffs and live checks.
+`with_root_desktop_thread_tools` installs the six-tool Core callback runtime on
+that attachment. The launcher retains the entire
+`AgentdDesktopProductionAttachment { root, calculator }` until `run` ends.
+
+One 30-second budget is created while parsing the `desktop` inputs and is
+checked through Root preparation, late handoff, deployment loading, protected
+recovery, activation and both attachment phases. Shorter phase limits cap that
+deadline. Successful I/O and ACKs are checked again before being accepted; a
+late response cannot reset the budget. The original Session's independently
+bounded reservation still has to be alive. The new effect path similarly
+carries its total preparation/admission budget through retained writer and
+sender work; late acknowledgement leaves the existing result unknown and
+does not create another dispatch opportunity.
+
+This is a finite session under the existing Root lifetime maximum of
+300,000 ms. It provides no issuer-renewal service, epoch continuation or
+qualified joint product restart. Use the new profile only with the matching
+Desktop Root/Session implementation and a newly seeded original thread. See
+[the candidate handbook](DESKTOP_ORGAN_CANDIDATE.md) for source ownership,
+verification commands and the current unexecuted joint-runtime gates.
+
 ## Startup and retained lifetimes
+
+The Root text-UI lane accepts one frame per connection. Each accepted connection
+uses the smaller of its existing exchange timeout and the remaining Root
+lifetime, including the wait for the first byte, complete frame, handler and
+response. Receiving the first byte does not grant a new budget. An idle Shell
+connection therefore cannot retain this worker for the whole Root lifetime
+after Agentd exits; the lane checks the original daemon pidfd again after the
+bounded exchange. An already running handler is not forcibly cancelled. Its
+existing authority checks and the peer channel's post-handler deadline checks
+still determine whether any response can be accepted. This does not renew the
+writer or issuer, change peer admission, or qualify a product recovery run.
 
 1. Original arg0 helper dispatch runs first. A synchronous preflight then takes
    the inherited descriptors and opens the original environment Config. The
@@ -156,6 +235,9 @@ Notes action retains its own original protected source/sender deadline.
    The launcher retains the Root attachment and MCP manager until it exits,
    invalidates the one-shot Android effect lane and closes the original MCP
    session on normal/error completion.
+
+The sequence above describes the existing Android/Notes branches; the joint
+Desktop branch has the separate ordered startup specified above.
 
 The native Android deadline is never restarted during this sequence. Slow
 Root/MCP startup may use up the original budget and fail before any action.

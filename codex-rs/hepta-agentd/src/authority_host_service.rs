@@ -65,6 +65,7 @@ pub struct HostAuthorityService {
     identity: AgentdIdentity,
     writer: Option<RegisteredWriter>,
     notes: Option<crate::RootNotesGrantAdmission>,
+    calculator: Option<crate::deployment_issuer::RootCalculatorGrantAdmission>,
     // The exact Registry object opened by the original Root factory. Its Arc
     // shares the existing lock/owner; Notes registration must never reopen it.
     root_registry: Option<Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>>,
@@ -89,6 +90,7 @@ impl HostAuthorityService {
             identity,
             writer: None,
             notes: None,
+            calculator: None,
             root_registry: None,
             checkpoint: None,
             consumers: None,
@@ -163,6 +165,43 @@ impl HostAuthorityService {
             lifetime_ms,
         )?;
         self.with_registered_notes(notes)
+    }
+
+    /// Attach only an exact Calculator policy already provisioned by the same
+    /// original issuer, registry and live writer proof.
+    pub(crate) fn with_calculator_from_original_session(
+        mut self,
+        target: &codex_hepta_memory::CalculatorTargetIdentity,
+        lifetime_ms: u64,
+    ) -> io::Result<Self> {
+        if self.calculator.is_some() {
+            return Err(io::Error::other(
+                "original Calculator route already registered",
+            ));
+        }
+        let registry = self
+            .root_registry
+            .as_ref()
+            .ok_or_else(|| io::Error::other("retained original Root registry required"))?;
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original registered writer required"))?;
+        let admission =
+            crate::deployment_issuer::RootCalculatorGrantAdmission::from_registered_calculator(
+                &self.issuer,
+                Arc::clone(registry),
+                writer.registration.clone(),
+                target,
+                lifetime_ms,
+            )?;
+        if !admission.matches_writer(&writer.registration, &writer.proof) {
+            return Err(io::Error::other(
+                "Calculator delegation differs from original writer",
+            ));
+        }
+        self.calculator = Some(admission);
+        Ok(self)
     }
 
     /// Open the existing protected checkpoint for this verified writer and
@@ -350,9 +389,14 @@ impl HostAuthorityService {
                 if schema_version != 1 || bytes.len() > 16 * 1024 {
                     return Err(HostIssuerTransportError::InvalidRequest);
                 }
-                let result = match &self.notes {
-                    Some(notes) => notes.issue_registered_route(&self.issuer, &binding),
-                    None => self.issuer.issue(&binding),
+                let result = match &self.calculator {
+                    Some(calculator) if binding.destination_id == calculator.destination() => {
+                        calculator.issue(&self.issuer, &binding)
+                    }
+                    _ => match &self.notes {
+                        Some(notes) => notes.issue_registered_route(&self.issuer, &binding),
+                        None => self.issuer.issue(&binding),
+                    },
                 };
                 let grant = match result {
                     Ok(grant) => grant,
