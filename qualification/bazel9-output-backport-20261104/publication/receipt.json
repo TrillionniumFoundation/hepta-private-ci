@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/bazel9-windows-output-backport-20261104-gpt6",
+  "current_source": "58290bcdf0ae2ee7eb12bcd6a8af2627873cd959",
+  "current_tree": "0560d9170e3caad39c2e4e5d801300a7d945c533",
+  "parent": "b8eaf1ab48228db97a5b7310a490d8ecdd24cfad",
+  "ancestor_product_source": "767f069c96a6cd2735b3a4166799a1de79017d25",
+  "original_publication": [
+    {
+      "sha": "b8eaf1ab48228db97a5b7310a490d8ecdd24cfad",
+      "tree": "0679690b8cb1001bc595fdc2927e81b7b341bd37",
+      "author": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "committer": "273673612+Tomasrgbsf@users.noreply.github.com"
+    },
+    {
+      "path": ".bazelrc",
+      "bytes": 13838,
+      "blob": "f5215a0892a7f29668609aad3abbdf7fc1607c85",
+      "sha256": "7ca4fa8ade39ba80442aa1320fecc5561cd71798b07eb780f29ee37d57d4caee"
+    },
+    {
+      "path": "qualification/bazel9-output-backport-20261104/bazel9-windows-tee-drain.patch",
+      "bytes": 4562,
+      "blob": "4735950cc19b2723918903f6c04ceedcd5d6598d",
+      "sha256": "06146cf94199fc7ba4c800487f452ee171776645634403f46866268d521b676c"
+    },
+    {
+      "path": "qualification/bazel9-output-backport-20261104/source-binding.json",
+      "bytes": 2992,
+      "blob": "792487efd15ac04d6074a88753804e87c4d14e79",
+      "sha256": "2aa1b97593bbaed86ddd3d895b8524654d952bfb9d525e8623f2b9f43c4b78a0"
+    },
+    {
+      "path": "qualification/bazel9-output-backport-20261104/build.py",
+      "bytes": 14485,
+      "blob": "59ee8feccfc40b5a18e92fb67b9ac6af9645e86b",
+      "sha256": "03b400a928dad5188e01c9da066cd900987e571a64981cb69547d6542608ec03"
+    },
+    {
+      "path": "qualification/bazel9-output-backport-20261104/upstream-static-review.json",
+      "bytes": 7359,
+      "blob": "ad3b7f13e7e32a85fe0a3f8781964b9b66bb77eb",
+      "sha256": "779fd46bd4bd01bc854a5236e61803016562e60b029d323abfc355ba54be9273"
+    },
+    {
+      "path": "qualification/bazel9-output-backport-20261104/README.md",
+      "bytes": 4012,
+      "blob": "75e75a06b0c9f50852b75ae5c27bb9a8dfa30935",
+      "sha256": "3dab3090eaeb4cc1845a1283b5bb6ae2616e4c39c2e5981c82ea5059035c3a42"
+    },
+    {
+      "path": ".github/workflows/bazel9-windows-output-backport.yml",
+      "bytes": 2217,
+      "blob": "322eb1aad233074865bc29136309d544e4835fdd",
+      "sha256": "865d2cc0cd27a9530d06243e4d13e95ff5575a35c3526dd54de033a985a94afb"
+    }
+  ],
+  "final_helper": {
+    "path": "qualification/bazel9-output-backport-20261104/build.py",
+    "bytes": 14544,
+    "git_blob": "3020382ee10cb097a81f55ce5f5418e562e721cb",
+    "sha256": "a53a3d31d1fa99be37962f8077f24e0223591116c8ea0a441c835092b8bc323e",
+    "delta_from_reviewed_helper": "Replace the not-directory error branch with explicit kind=directory inventory entries, retaining the error for unsupported entries. All other lines remain byte-identical."
+  },
+  "independent_review_git_blob": "8a4c04757a8d703308a1ac499c882f8b02292a34",
+  "independent_review_sha256": "381c6ec63f24174e98241aedf091ab654995d44cb539d85cf56ed00c13522088",
+  "upstream_static_review_git_blob": "ad3b7f13e7e32a85fe0a3f8781964b9b66bb77eb",
+  "hosted_run_id": 41759867371,
+  "hosted_status": "queued_at_publication",
+  "native_pass_claim": false,
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL",
+  "author_and_committer": "273673612+Tomasrgbsf@users.noreply.github.com",
+  "original_library_items_deleted": 0
+}
