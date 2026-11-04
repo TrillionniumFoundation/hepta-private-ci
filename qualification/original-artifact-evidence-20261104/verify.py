@@ -342,14 +342,56 @@ def main():
             result = inspect_state(spec, receipt, members, git)
         elif spec["kind"] == "dylint":
             result = inspect_dylint(receipt, members, git)
+        elif spec["kind"] == "robrix-lock":
+            require(receipt["status"] == "passed" and receipt["committed_lock_required"] is True,
+                    "Robrix original committed lock did not pass")
+            commands = [(row["name"], row["command"], row["exit"]) for row in receipt["steps"]]
+            require(commands == [
+                ("committed-lock-check", ["./scripts/check-module-bazel-lock.sh"], 0),
+                ("original-lock-update", ["just", "bazel-lock-update"], 0),
+                ("original-lock-check", ["./scripts/check-module-bazel-lock.sh"], 0),
+            ], "Robrix lock sequence differs")
+            lock = members["MODULE.bazel.lock"]
+            require(lock == members["committed-MODULE.bazel.lock"] == git.read("MODULE.bazel.lock"),
+                    "Robrix generated/committed/Git lock mismatch")
+            require(receipt["committed_lock_matches"] is True
+                    and receipt["committed_lock_sha256"] == receipt["generated_lock_sha256"] == sha(lock)
+                    and receipt["generated_lock_bytes"] == len(lock), "Robrix lock receipt mismatch")
+            require([(row["stage"], row["command"], row["exit"]) for row in receipt["checkout_checks"]] == [
+                ("before", ["git", "diff", "--exit-code", "HEAD", "--"], 0),
+                ("after", ["git", "diff", "--exit-code", "HEAD", "--"], 0),
+            ], "Robrix checkout checks differ")
+            result = {"commands": commands, "lock_sha256": sha(lock), "lock_bytes": len(lock),
+                      "checkout_checks": receipt["checkout_checks"]}
+
         else:
             result = {"original_tests": receipt.get("tests"), "original_steps": receipt.get("steps"),
                       "original_commands": receipt.get("commands"), "native_logs": {}}
             for name, raw in members.items():
-                if name == "memory.log" or (spec["kind"] == "env" and name.endswith("-test.log")):
+                if name in {"memory.log", "robrix.log"} or (spec["kind"] == "env" and name.endswith("-test.log")):
                     result["native_logs"][name] = observations(raw)
                     emit_raw(name, raw)
             require(result["native_logs"], "original native logs are missing")
+            if spec["kind"] == "robrix":
+                for name in ["original-robrix-corpus-tests.stdout", "original-robrix-corpus-tests.stderr",
+                             "robrix.xml", "original-testlog-location.stdout", "original-testlog-location.stderr"]:
+                    require(name in members, "missing original Robrix output: " + name)
+                    emit_raw(name, members[name])
+                result["original_receipt"] = {
+                    key: value for key, value in receipt.items() if key != "source_after"
+                }
+                if receipt["status"] == "passed":
+                    text = members["robrix.log"].decode().replace("\r\n", "\n")
+                    summaries = re.findall(
+                        r"test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out",
+                        text)
+                    require(summaries == [("2", "0", "0", "0", "0")], "Robrix full target did not pass")
+                    require(set(re.findall(r"^test (\S+) \.\.\. ok$", text, re.M)) == {
+                        "robrix_control_v2_generated_projection_and_cross_parser_corpus",
+                        "writer_reproduces_the_tracked_artifact_set_byte_for_byte",
+                    }, "Robrix original case set differs")
+                    require(all(row["exit"] == 0 for row in receipt["steps"]), "Robrix original command failed")
+
             if spec["kind"] == "env":
                 require(receipt["pre_test_powershell_probe"] is False, "unexpected prewarming")
                 bash = receipt["bash_launcher"]

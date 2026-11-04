@@ -31,6 +31,7 @@ def main():
     require(spec["kind"] == "legacy-env", "wrong evidence reader")
     args.output.mkdir(parents=True, exist_ok=False)
     metadata, raw, members = fetch_artifact(spec)
+    (args.output / "original.zip").write_bytes(raw)
     sources = [name for name in members if name == "source.json" or name.endswith("/source.json")]
     require(len(sources) == 1, "ambiguous original source receipt")
     prefix = sources[0][:-len("source.json")]
@@ -44,8 +45,23 @@ def main():
     git = GitBytes(args.source, spec["source"])
     try:
         require(git.command("rev-parse", "HEAD^{tree}").decode().strip() == source["tree"], "wrong source tree")
+        input_bytes = {}
         for name in INPUTS:
-            require(git.digest(name, True) == source["inputs"][name], "original Git input mismatch: " + name)
+            raw_git = git.read(name)
+            actual = source["inputs"][name]
+            raw_sha = sha(raw_git)
+            if actual == raw_sha:
+                input_bytes[name] = {"git_blob": git.tree[name][2], "git_sha256": raw_sha,
+                                     "recorded_sha256": actual, "checkout_bytes": "exact"}
+                continue
+            # This historical Windows workflow did not pin core.autocrlf.
+            # Prove its exact CRLF checkout bytes, never silently normalize or
+            # describe those bytes as identical to the canonical Git blob.
+            require(b"\r" not in raw_git and b"\0" not in raw_git
+                    and sha(raw_git.replace(b"\n", b"\r\n")) == actual,
+                    "original Git input mismatch beyond exact CRLF checkout: " + name)
+            input_bytes[name] = {"git_blob": git.tree[name][2], "git_sha256": raw_sha,
+                                 "recorded_sha256": actual, "checkout_bytes": "exact LF-to-CRLF transform"}
         observed_objects = git.command("ls-tree", "HEAD", "--", *INPUTS).decode()
         require(observed_objects == source["input_git_objects"], "original Git object list differs")
         workflow = git.read(".github/workflows/windows-bazel-process-native.yml")
@@ -99,7 +115,8 @@ def main():
               "original_run": spec["run_id"], "original_job": spec["job_id"],
               "artifact_id": spec["artifact_id"], "zip_bytes": len(raw), "zip_sha256": sha(raw),
               "crc_all_members": True, "git_inputs_verified": len(INPUTS),
-              "source_before": source["inputs"], "original_checker_reports_unchanged": True,
+              "source_before": source["inputs"], "input_byte_verification": input_bytes,
+              "original_checker_reports_unchanged": True,
               "source_after_map_not_retained_by_original_reader": True,
               "qualifier_workflow_sha256": sha(workflow), "pre_test_powershell_probe": False,
               "original_qualification_status": "passed", "evidence_verification": "passed",
