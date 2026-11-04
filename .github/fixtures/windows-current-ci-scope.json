@@ -104,6 +104,15 @@
         "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
       ],
       "filter": "test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots)"
+    },
+    {
+      "id": "retained-windows-materialization",
+      "package": "codex-state",
+      "filter": "test(=sqlite_recovery::windows::tests::materialize_tests::retained_windows_materialization_preserves_bound_source_bundle)",
+      "expectedTestCount": 1,
+      "requiredTests": [
+        "sqlite_recovery::windows::tests::materialize_tests::retained_windows_materialization_preserves_bound_source_bundle"
+      ]
     }
   ]
 }

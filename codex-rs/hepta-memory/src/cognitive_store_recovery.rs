@@ -169,12 +169,12 @@ impl CognitiveStore {
         let config = SqliteConfig::from_sqlite_home(sqlite_home);
         let source_guard = config
             .bind_existing_recovery_database(&source_path)
-            .map_err(recovery_error)?;
+            .map_err(|error| recovery_error_at("retained_source_bind", error))?;
 
         let candidate = canonical_root.join(recovered_database_filename(expected, &writer_fence));
         config
             .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
-            .map_err(recovery_error)?;
+            .map_err(|error| recovery_error_at("candidate_materialization", error))?;
 
         let result = async {
             let commit_gate = CognitiveCommitGate::default();
@@ -383,6 +383,15 @@ fn validate_requirement<'a>(
         ));
     }
     Ok(expected)
+}
+
+fn recovery_error_at(stage: &'static str, error: SqliteRecoveryError) -> CognitiveRecoveryError {
+    let message = format!("{stage}: {error}");
+    match error {
+        SqliteRecoveryError::Unavailable => CognitiveRecoveryError::Unavailable(message),
+        SqliteRecoveryError::Indeterminate => CognitiveRecoveryError::Indeterminate(message),
+        _ => CognitiveRecoveryError::Indeterminate(message),
+    }
 }
 
 fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {
