@@ -1,0 +1,36 @@
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/crossterm`
+From https://github.com/openai-oss-forks/crossterm
+ * [new ref]         45fecb9508105988f42fe6ff0441783ed3717f92 -> refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+From https://github.com/openai-oss-forks/tokio-tungstenite
+ * [new ref]         0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186 -> refs/commit/0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+From https://github.com/openai-oss-forks/tungstenite-rs
+ * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Updating[0m git repository `https://github.com/dzbarsky/rules_rust`
+From https://github.com/dzbarsky/rules_rust
+ * [new ref]             b56cbaa8465e74127f1ea216f813cd377295ad81 -> refs/commit/b56cbaa8465e74127f1ea216f813cd377295ad81
+[1m[92m    Updating[0m git repository `https://github.com/helix-editor/nucleo.git`
+From https://github.com/helix-editor/nucleo
+ * [new ref]         4253de9faabb4e5c6d81d946a5e35a90f87347ee -> refs/commit/4253de9faabb4e5c6d81d946a5e35a90f87347ee
+[1m[91merror[0m: failed to get `typewit` as a dependency of package `konst v0.4.3`
+    ... which satisfies dependency `konst = "^0.4.3"` (locked to 0.4.3) of package `ruma-common v0.20.2`
+    ... which satisfies dependency `ruma-common = "^0.20.2"` (locked to 0.20.2) of package `ruma v0.17.2`
+    ... which satisfies dependency `ruma = "^0.17.0"` (locked to 0.17.2) of package `matrix-sdk v0.19.1 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`
+    ... which satisfies dependency `matrix-sdk = "=0.19.1"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-matrixd)`
+
+Caused by:
+  failed to load source for dependency `typewit`
+
+Caused by:
+  unable to update registry `crates-io`
+
+Caused by:
+  download of ty/pe/typewit failed
+
+Caused by:
+  curl failed
+
+Caused by:
+  [16] Error in the HTTP2 framing layer

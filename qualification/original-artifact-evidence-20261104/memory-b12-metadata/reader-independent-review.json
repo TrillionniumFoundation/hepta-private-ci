@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.independent.memory-current-evidence-reader-review.v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "scope": "Read-only static review of the new original native/Bazel qualification and synthetic reader controls. No local Python, Cargo, native test or Bazel execution.",
+  "inputs": [
+    {
+      "path": "qualification/windows-memory-recovery-current/run_native.py",
+      "git_blob_sha": "de325801b73a3b738ea8005df762ae6db33d284d",
+      "sha256": "031d607c7f5ad138783f48aa0f6d823cd859a655fdd167f123ae96ba999a34ea",
+      "bytes": 10996
+    },
+    {
+      "path": "qualification/windows-memory-recovery-current/run_bazel.py",
+      "git_blob_sha": "d1fb6b7ed6046d1a4ee8e51fadf5f8edb47d7d35",
+      "sha256": "cc18ef0b487750eddb8f3408c790bbce7807ecdd4ecbe091f2a7d64d333e2c75",
+      "bytes": 7829
+    },
+    {
+      "path": "qualification/windows-memory-recovery-current/test_readers.py",
+      "git_blob_sha": "49d45422f89700259735e2971dea6812979a9553",
+      "sha256": "3632bfb997c4423d8af6e15ee713698f897206f9be8dca91da68639de347602f",
+      "bytes": 4758
+    },
+    {
+      "path": ".github/workflows/hepta-windows-memory-current.yml",
+      "git_blob_sha": "29da2cc0a4c2cfef72e8997ed693ec2a21454734",
+      "sha256": "9344380b459b5a84228dda0a266d76774f9ed30ef6346f575ce7a44f96bde54a",
+      "bytes": 6232
+    },
+    {
+      "path": "qualification/windows-memory-recovery-current/generate.py",
+      "git_blob_sha": "ab2d72d032fd2603dbbbeab9474c90339553939b",
+      "sha256": "014d8ee215c7cb186b77bcc1b0bfb14dfd54b76d2bfac946525c8e744ae0435d",
+      "bytes": 9456
+    },
+    {
+      "path": "qualification/windows-memory-recovery-current/scope.json",
+      "git_blob_sha": "d62df0a0e4c0c23e3823b4a832687017b5892587",
+      "sha256": "ee503abe0720d046bb8bcdae6d132fe7df916db9e9d165f360816ff09b3c966e",
+      "bytes": 3144
+    },
+    {
+      "path": "codex-rs/hepta-memory/BUILD.bazel",
+      "git_blob_sha": "9833759c3be0dba1013bc0a234eb93257a1560fc",
+      "sha256": "a6ba8b3463e2c2656143260ee46283628da718aef968fd214f0b9e548974be84",
+      "bytes": 362
+    },
+    {
+      "path": "codex-rs/utils/path-utils/BUILD.bazel",
+      "git_blob_sha": "fdfbf099b1ad609023abbab3f0dbc742479e8c9d",
+      "sha256": "077c5bd595e45a9180c4df4e5f8ab249ee15a1708f819ce0664f41b430c235d8",
+      "bytes": 123
+    },
+    {
+      "path": "codex-rs/state/BUILD.bazel",
+      "git_blob_sha": "8f27a6255fa88e40a93db65e110a4b3c934b6958",
+      "sha256": "4bdf532e9243f6b91bf33beff3de0533887f2cbdb7e7ec14ad74ad42d44c4170",
+      "bytes": 707
+    }
+  ],
+  "findings": [],
+  "conclusion": "No new blocking false-success path found within the reviewed qualification logic; exact-head hosted outcomes and original artifact verification remain necessary.",
+  "confirmed": [
+    "Inventory rejects duplicate JSON keys, wrong or unlisted libraries, empty/inconsistent case sets, changed ignored names and nonignored filters.",
+    "Native report is unlinked before the original command; successful process must produce a fresh report. All nonignored inventory names must appear exactly once in JUnit; failure/error/skipped/retry elements and mismatched counters reject.",
+    "All three libraries are attempted with failures accumulated; any failed package, scoped Clippy, source change or test-binary hash change prevents passed status.",
+    "Scope retains the exact seven named original Memory ignored cases; other libraries allow none. Workflow retains 30-minute native/Bazel budgets, 8 MiB native stack and zero retries.",
+    "Native and original Bazel jobs depend on generation reporting committed-lock-qualified for the exact GitHub source SHA.",
+    "Bazel requires fresh reports, original three unfiltered targets, --nocache_test_results, actual 3/3 execution summary, no measured/filtered cases and exact original ignored names. Clippy is directed to unit-test-bin targets from the original crate wrappers.",
+    "generate.require raises RuntimeError independently of Python assert optimization; source snapshots include tracked owner source, lockfiles, workflow, scripts and qualification inputs."
+  ],
+  "limits": [
+    "Bazel coverage validation relies on the original unfiltered targets and the terminal Rust completion summary; it does not independently enumerate a Bazel test-case universe as the Cargo inventory/JUnit path does.",
+    "The 13 synthetic reader control methods were inspected but not executed here.",
+    "No inherited provider PASS is reused as new native qualification; production and scientific HOLD remain unchanged."
+  ]
+}

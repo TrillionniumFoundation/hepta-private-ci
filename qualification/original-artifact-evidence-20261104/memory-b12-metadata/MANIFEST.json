@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "verifier_head": "6f837273982b8295f3a48a5582763b48d1351117",
+  "verifier_run": 41757623872,
+  "verifier_job": 126337368713,
+  "source_head": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "original_run": 41756875503,
+  "original_job": 126334940588,
+  "original_artifact": {
+    "id": 13288493715,
+    "bytes": 1614173,
+    "sha256": "0c2d9d6245d36c8d02ff04f70b2d67fb6760c4935b760d51d59459480c935c83"
+  },
+  "verifier_artifact": {
+    "id": 13288524638,
+    "bytes": 2479740,
+    "sha256": "fd303387fb82cb942bedf6db7461900f484196047caa566fc60301927251d562"
+  },
+  "files": [
+    {
+      "path": "qualification/original-artifact-evidence-20261104/memory-b12-metadata/VERIFIED_COMPACT.json",
+      "bytes": 3478,
+      "sha256": "be783186760e0213e9603912aaa6578dbc5fbd616cfb8a39ce4e4874e81a6aab"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/memory-b12-metadata/actual-cargo-metadata.log",
+      "bytes": 2267,
+      "sha256": "6ad6e4e7389474be6899d6aac010c7503e2c05cda33be203ea561c57a6985c7c"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/memory-b12-metadata/README.md",
+      "bytes": 1586,
+      "sha256": "cdc6300ae716508f879d52f5947af711e06c40eb1ee29c3c47906b64a7537c16"
+    }
+  ],
+  "review": {
+    "path": "qualification/original-artifact-evidence-20261104/memory-b12-metadata/reader-independent-review.json",
+    "blob": "a6149564f9268a3ca0f9746dbf1e1f70449c6355",
+    "bytes": 4620,
+    "sha256": "2e3a599485e9c734f9dd9587170b997fb4e1d4da4a3d5beba729f09aaed9e0ff"
+  },
+  "rerun": {
+    "only_failed_job": true,
+    "source_and_commands_unchanged": true,
+    "new_job": 126340641087,
+    "status_at_recording": "queued"
+  }
+}

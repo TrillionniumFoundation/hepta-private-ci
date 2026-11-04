@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "key": "memory-b12-metadata-failure",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "original_run": 41756875503,
+  "artifact_id": 13288493715,
+  "zip_bytes": 1614173,
+  "zip_sha256": "0c2d9d6245d36c8d02ff04f70b2d67fb6760c4935b760d51d59459480c935c83",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 9203,
+    "before_sha256": "98839873f5c3433de23aab19b2efdce50dc2b8e40b495217022a6743687a4b4d",
+    "after_sha256": "98839873f5c3433de23aab19b2efdce50dc2b8e40b495217022a6743687a4b4d",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "failed",
+  "result": {
+    "original_commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.4527843860000047,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 20.442148806000006,
+        "log_sha256": "11b8a3fcb1b336e841344a6ceb886620abfd35529fe0bde0a2668988fdbb36ca"
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+        ],
+        "exit_code": 0,
+        "seconds": 0.9746965899999935,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+        ],
+        "exit_code": 0,
+        "seconds": 0.964472286000003,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 101,
+        "seconds": 8.171633877999994,
+        "log_sha256": "6ad6e4e7389474be6899d6aac010c7503e2c05cda33be203ea561c57a6985c7c"
+      }
+    ],
+    "failed_command_logs": {
+      "actual-cargo-metadata.log": {
+        "bytes": 2267,
+        "sha256": "6ad6e4e7389474be6899d6aac010c7503e2c05cda33be203ea561c57a6985c7c"
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 9,
+    "retained_outputs": 0,
+    "command_logs": 5
+  },
+  "verified_report_sha256": "83288136b553b2489f23927512eb6f0a71be37c264efbccacba5943ba971a26a"
+}
