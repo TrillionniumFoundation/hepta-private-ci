@@ -19,7 +19,7 @@ ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 
 def assess(group: dict, returncode: int, log: str) -> dict:
     text = ANSI.sub("", log)
-    starts = re.findall(r"Starting (\d+) tests across", text)
+    starts = re.findall(r"Starting (\d+) tests? across", text)
     selected = int(starts[-1]) if starts else None
     terminal = re.findall(
         r"^\s*(PASS|FAIL|TIMEOUT|EXECFAIL|LEAK|SKIP)\s+\[[^\]\n]+\]\s+"

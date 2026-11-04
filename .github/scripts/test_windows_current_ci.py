@@ -51,6 +51,39 @@ class StrictWindowsReceiptTests(unittest.TestCase):
             )["passed"]
         )
 
+    def test_actual_single_native_materialization_keeps_exact_selection(self):
+        name = (
+            "sqlite_recovery::windows::tests::materialize_tests::"
+            "retained_windows_materialization_preserves_bound_source_bundle"
+        )
+        group = {
+            **GROUP,
+            "id": "retained-windows-materialization",
+            "package": "codex-state",
+            "requiredTests": [name],
+        }
+        actual = (
+            "Starting 1 test across 1 binary (213 tests skipped)\n"
+            f"        PASS [   0.016s] codex-state {name}\n"
+            "     Summary [   0.018s] 1 test run: 1 passed, 213 skipped\n"
+        )
+        result = assess(group, 0, actual)
+        self.assertEqual(result["selectedTestCount"], 1)
+        self.assertEqual(result["observedTests"], [name])
+        self.assertTrue(result["passed"])
+        for changed in (
+            actual.replace("Starting 1 test", "Starting 0 tests"),
+            actual.replace("Starting 1 test", "Starting 2 tests"),
+            actual.replace("Starting 1 test across", "missing start record"),
+            actual.replace(f"codex-state {name}", "codex-state replacement"),
+            actual.replace(f"codex-state {name}", f"other-package {name}"),
+            actual.replace("PASS [", "LEAK ["),
+            actual.replace("PASS [", "FAIL ["),
+        ):
+            with self.subTest(log=changed):
+                self.assertFalse(assess(group, 0, changed)["passed"])
+        self.assertFalse(assess(group, 1, actual)["passed"])
+
     def test_diagnostics_continue_but_each_failure_is_retained(self):
         seen = []
 
