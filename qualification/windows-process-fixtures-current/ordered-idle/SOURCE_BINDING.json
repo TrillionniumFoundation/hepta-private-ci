@@ -82,6 +82,11 @@
         "bytes": 8206
       },
       "after": {
+        "git_blob_sha": "9d6bdfc1e4911043e7abdcdb8d31e2e28ac5e311",
+        "sha256": "8588bab3410475127d9b0d8f29a318940a5d6311e29abfcef0258235bbba8402",
+        "bytes": 9362
+      },
+      "previous_successor_after": {
         "git_blob_sha": "9c7dbc3caf7438c13229ad178bd9d8229bf8ea93",
         "sha256": "258d4fa2209f4bb3c793306f0705a118e4f7bed49c11a7c70eff7eccec7788c1",
         "bytes": 9035
@@ -95,6 +100,11 @@
         "bytes": 1132
       },
       "after": {
+        "git_blob_sha": "4f86bf8bf07618815d9dc606cd8fffb162995c21",
+        "sha256": "89ece5e059b44456c0117020b572a644b0b939c8b63feeb7ad3f4d21c022eba9",
+        "bytes": 3864
+      },
+      "previous_successor_after": {
         "git_blob_sha": "2ecd3441e119362de1fbea33178ff9c26586a140",
         "sha256": "62cc002049d889e99113f74281f942333fd6a3e78b4fe53abae4fe167e1d5ff2",
         "bytes": 2866
@@ -138,17 +148,36 @@
         "sha256": "51dd14efaf9c65a9c919b14a8716ffbdc0fb73cc910e6c2d5b2edecfed5a37c8",
         "bytes": 5554
       }
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "before": {
+        "git_blob_sha": "964ad57b5dd73dc6fba1b248cdc314dc54520001",
+        "sha256": "1c7fa852df5a796a5b8384363dd0d8b907bd8efcd1f767025d5ee5d963de339f",
+        "bytes": 97057
+      },
+      "after": {
+        "git_blob_sha": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8",
+        "sha256": "c4bede7a3ec5e44e30b769aa1d3d0ef23891902bd7a6c230c98ef3673262d992",
+        "bytes": 97163
+      },
+      "historical_commit": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+      "historical_blob": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8",
+      "entire_file_exact_historical_bytes": true
     }
   ],
   "checks": {
-    "queue_existing_test_file_unchanged": true,
+    "queue_existing_test_file_unchanged": false,
     "git_original_assertion_and_expect_lines_unchanged": true,
     "task_state_machine_other_than_two_private_module_declarations_unchanged": true,
     "normal_admission_functions_unchanged": true,
     "production_git_and_jobobject_unchanged": true,
     "original_native_test_argv_unchanged": true,
     "original_report_acceptance_function_unchanged": true,
-    "original_source_and_merge_matrix_and_timeouts_unchanged": true
+    "original_source_and_merge_matrix_and_timeouts_unchanged": true,
+    "queue_all_35_case_names_and_131_assertion_lines_unchanged": true,
+    "queue_original_completion_wait_restored_exactly": true,
+    "production_unchanged_from_cfb": true
   },
   "additional_tests": {
     "old_async_order_and_capacity_controls": 2,
@@ -163,7 +192,7 @@
     "python_tests": false,
     "formatting": false
   },
-  "status": "Draft with an explicit follower-completion handshake in the cancellation control. Original generation and native gates remain required on this exact follow-up.",
+  "status": "Fixture-only successor to cfb: restore the original queue completion wait and use direct managed child startup. Exact current-source generation and both full native gates remain required.",
   "original_formatter_adoption": {
     "source_commit": "7a1393304a76c45052e538087565c00a135f5a14",
     "run_id": 41767138349,
@@ -193,7 +222,45 @@
     "original_two_controls_unchanged": true,
     "production_unchanged": true,
     "previous_independent_review_blob": "9b1b1bcff2a4fd8c8efc5b8a5bd5a59f45981100",
-    "hosted_original_generation_pending_on_updated_fixture": true,
-    "native_execution_claimed": false
+    "hosted_original_generation_pending_on_updated_fixture": false,
+    "native_execution_claimed": true,
+    "observed_on_commit": "cfb729fdeacbdb7bb146d1ef5dfd370f0db2fa3c",
+    "observed_scope": {
+      "source_head_job": 126381283795,
+      "base_merge_job": 126381283786,
+      "selected_controls_passed_each": 3,
+      "other_core_cases_filtered_each": 2331,
+      "full_core_qualified": false
+    }
+  },
+  "fixture_followup": {
+    "parent": "cfb729fdeacbdb7bb146d1ef5dfd370f0db2fa3c",
+    "queue": {
+      "only_difference_from_cfb": "Restore the original three-line bounded completion await in duplicate_queued_client_ids_dispatch_to_core_once.",
+      "production_changes": false,
+      "original_assertions_preserved": true
+    },
+    "git": {
+      "previous_fixture": {
+        "git_blob_sha": "9c7dbc3caf7438c13229ad178bd9d8229bf8ea93",
+        "sha256": "258d4fa2209f4bb3c793306f0705a118e4f7bed49c11a7c70eff7eccec7788c1",
+        "bytes": 9035
+      },
+      "candidate_fixture": {
+        "git_blob_sha": "9d6bdfc1e4911043e7abdcdb8d31e2e28ac5e311",
+        "sha256": "8588bab3410475127d9b0d8f29a318940a5d6311e29abfcef0258235bbba8402",
+        "bytes": 9362
+      },
+      "only_launch_change": "Replace Start-Process with managed Process.Start and UseShellExecute=false, without separate standard-stream redirects or breakaway.",
+      "known_stage_before_launch": true,
+      "universal_failure_claimed": false,
+      "original_assertion_and_expect_lines_preserved": true,
+      "readiness_seconds": 30,
+      "production_timeout_ms": 100,
+      "parent_exit_seconds": 10,
+      "survivor_observation_seconds": 3,
+      "prewarm": false
+    },
+    "native_validation_status": "pending on this new successor"
   }
 }

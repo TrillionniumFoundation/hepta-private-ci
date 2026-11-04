@@ -27,7 +27,6 @@
     ]
   },
   "excluded_upstream_scope": [
-    "duplicate_queued_client_ids_dispatch_to_core_once pending_turn_terminalization wait",
     "production Git or JobObject changes",
     "larger timeouts or PowerShell prewarming",
     "unrelated TaskFlow state-machine changes or global turn-admission waits"
@@ -54,7 +53,7 @@
     ],
     "scope": "Observe the exact existing completion, defer ordered queue work, then use unchanged normal atomic admission. Do not remove any fence.",
     "new_control": "cancelled predecessor does not bypass the follower's own fence",
-    "runtime_status": "pending-current-source-native",
+    "runtime_status": "cfb source and merge each ran the strengthened 3 controls successfully; original queue suite remained 34/35. This fixture successor requires fresh full source and merge qualification.",
     "new_control_count": 3,
     "current_control_gate": "Separate exact three-case core-unit-tests selector; original Git33/queue35 argv and readers unchanged."
   },
@@ -63,6 +62,18 @@
     "prewarming": false,
     "original_command_model_preserved": true,
     "readiness_budget_seconds": 30,
-    "production_git_or_jobobject_changed": false
+    "production_git_or_jobobject_changed": false,
+    "child_launcher": "System.Diagnostics.Process.Start with UseShellExecute=false; parent/child UTF-16LE EncodedCommand and inherited standard handles retained",
+    "observed_failure": "3cd source/merge and cfb merge stalled after parent-before-child-launch, before the Start-Process call returned. cfb source passed all 33 Git tests; a universal cause is not established."
+  },
+  "queue_completion_fixture": {
+    "historical_commit": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+    "historical_blob": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8",
+    "entire_file_exact": true,
+    "reason": "Restore the original completion observation after TurnComplete and before externally emitting idle; the now-present observer waits on the original bounded terminalizer without changing its authority.",
+    "original_cases": 35,
+    "original_assertion_lines": 131,
+    "all_assertions_unchanged": true,
+    "new_polling_or_timeout": false
   }
 }

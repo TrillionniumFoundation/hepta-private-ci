@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.windows-process-fixture-followup.v1",
+  "parent": "cfb729fdeacbdb7bb146d1ef5dfd370f0db2fa3c",
+  "local_execution": {
+    "available": false,
+    "rust_tests": false,
+    "python_tests": false
+  },
+  "observed_original_runs": [
+    {
+      "source": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+      "actual_merge": "d500f40b21bc5c26e7950ab22af783b9c82d6066",
+      "run": 41768053006,
+      "source_job": 126372448786,
+      "merge_job": 126372448911,
+      "readback_run": 41771756201,
+      "readback_jobs": [
+        126382822375,
+        126382822682
+      ],
+      "source_bound_paths_each": 9102,
+      "git_each": {
+        "passed": 31,
+        "failed": 2
+      },
+      "queue_each": {
+        "passed": 34,
+        "failed": 1,
+        "failed_case": "duplicate_queued_client_ids_dispatch_to_core_once",
+        "line": 1999,
+        "assertion": "service.list(thread_id).await?.is_empty()"
+      },
+      "earlier_queue_cases_now_passed": [
+        "registered_queue_lifecycle_starts_messages_in_fifo_order",
+        "rejected_queue_messages_remain_durable_and_block_followups"
+      ],
+      "selected_controls_each": 3,
+      "other_core_filtered": 2331,
+      "selected_control_scope": "pre-handshake 3cd source; not the strengthened cfb cancellation control"
+    },
+    {
+      "source": "cfb729fdeacbdb7bb146d1ef5dfd370f0db2fa3c",
+      "actual_merge": "3205a976d142ba6c42299b74cf9219a0f8a6fc8a",
+      "run": 41769060426,
+      "source_job": 126381283795,
+      "merge_job": 126381283786,
+      "source_git": {
+        "passed": 33,
+        "failed": 0
+      },
+      "merge_git": {
+        "passed": 31,
+        "failed": 2
+      },
+      "queue_each": {
+        "passed": 34,
+        "failed": 1,
+        "exact_case_not_independently_read_back_for_cfb": true
+      },
+      "selected_strengthened_controls_each": 3,
+      "other_core_filtered": 2331,
+      "artifact_independent_readback": false,
+      "observed_evidence": "Original hosted job JSON and decoded full job logs; do not substitute the 3cd ZIP for cfb."
+    }
+  ],
+  "exact_retained_3cd_logs": [
+    {
+      "path": "source/git-utils-unit-tests-test.log",
+      "git_blob_sha": "ce622bcc4fe99d21ff771fa994259395d0590fe8",
+      "sha256": "9143d6f8d93f9ef7686b19ac60deb3967e7ba29f20f2c77ed07b01f89b0eefb1",
+      "bytes": 6070,
+      "original_recorded_sha256_matches": true
+    },
+    {
+      "path": "source/queue-queue_service-test-test.log",
+      "git_blob_sha": "200353067127593dfbc43b3e4832cc8ffee8f0f5",
+      "sha256": "90d7b95608f2f04fc36e7f743b2a638fe26942e84acf0bfe559f08ff652e6d51",
+      "bytes": 3103,
+      "original_recorded_sha256_matches": true
+    },
+    {
+      "path": "source/deferred-idle-controls-test.log",
+      "git_blob_sha": "ff03f7a91800e176c455d7861fc921e1e15cb05a",
+      "sha256": "23d9de53266a956d114b252ee3bf4002d2de3616e670282ac062a3c2ae1bac89",
+      "bytes": 547,
+      "original_recorded_sha256_matches": true
+    },
+    {
+      "path": "merge/git-utils-unit-tests-test.log",
+      "git_blob_sha": "bc22bf0d23419c5c024955170f9850cb6904d77d",
+      "sha256": "0f8bd5880fdf74d236620b0b1af40e18cce6c8daa7cf44e90aa8c0f3b0ae2f94",
+      "bytes": 6070,
+      "original_recorded_sha256_matches": true
+    },
+    {
+      "path": "merge/queue-queue_service-test-test.log",
+      "git_blob_sha": "f5f8758bff18f315f56ef1b5a79bdb1a4f4c8ca1",
+      "sha256": "9077a3a5181398074565ec9ae653eeaf02499cdbb7e40ca2d84d820084ead7a9",
+      "bytes": 3103,
+      "original_recorded_sha256_matches": true
+    },
+    {
+      "path": "merge/deferred-idle-controls-test.log",
+      "git_blob_sha": "27ebb4c5f3775a0aa2be42bdb7ea6a7b7376acf8",
+      "sha256": "18ee92f7a6ee40f0c0d4627ff0feabe5b11de966ead1cf12996c9eab11da1ccd",
+      "bytes": 547,
+      "original_recorded_sha256_matches": true
+    }
+  ],
+  "original_job_log_identities": [
+    {
+      "run": 41768053006,
+      "job": 126372448786,
+      "git_blob_sha": "7576e373c23b7874a4f537173137c4a7a2e4eb9c",
+      "sha256": "ca1300a42ec637609056ee8aa2afd0ceb40f912be2a4cf5dfb395ee315339800",
+      "bytes": 182379
+    },
+    {
+      "run": 41768053006,
+      "job": 126372448911,
+      "git_blob_sha": "3b42b1243db0e5cafdf4071b74412e2372868c74",
+      "sha256": "d6822f15fff510fb8b43b54e526c1d3bc48f868529dabb78529fbaf5bab3e5c0",
+      "bytes": 182465
+    },
+    {
+      "run": 41769060426,
+      "job": 126381283795,
+      "git_blob_sha": "1d3a13c49895bb67c4c6e6c86ec559a1cb2228b4",
+      "sha256": "14e201c69dced341b7b58dc1179be9e6566760c37ed3ba69b2001bb5f9cc2bc7",
+      "bytes": 182209
+    },
+    {
+      "run": 41769060426,
+      "job": 126381283786,
+      "git_blob_sha": "f8c09d7b6a50dc65495c65c5c2ad4495cf6bfd4f",
+      "sha256": "ad692901b408ec28e7049205b076a05c6ce73ba722ad2189471765b26bde111f",
+      "bytes": 182337
+    }
+  ],
+  "bridge_job_log_identities": [
+    {
+      "run": 41771756201,
+      "job": 126382822375,
+      "git_blob_sha": "e510f02718edac2caefb094def56d9ca07f5bec6",
+      "sha256": "8b3d1321e67d6d99364fe65c9b321c27933beef5b7d601ecd8a9be941019770f",
+      "bytes": 220639
+    },
+    {
+      "run": 41771756201,
+      "job": 126382822682,
+      "git_blob_sha": "822cede51eb24e5affbb18031b41367fdbcc28c0",
+      "sha256": "2b8827045bec5358ab2801d68ec3038ccb62d92bbc2eb9c7f2d866eeac418537",
+      "bytes": 230805
+    }
+  ],
+  "candidate": {
+    "queue": {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "git_blob_sha": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8",
+      "sha256": "c4bede7a3ec5e44e30b769aa1d3d0ef23891902bd7a6c230c98ef3673262d992",
+      "bytes": 97163,
+      "original_ref": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+      "exact_original_blob_reused": true,
+      "all_35_cases_and_131_assertion_lines_preserved": true,
+      "completion_observer_only": true
+    },
+    "git": {
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "git_blob_sha": "9d6bdfc1e4911043e7abdcdb8d31e2e28ac5e311",
+      "sha256": "8588bab3410475127d9b0d8f29a318940a5d6311e29abfcef0258235bbba8402",
+      "bytes": 9362,
+      "candidate_native_tests_executed": false,
+      "exact_failure_stage_observed": true,
+      "underlying_start_process_cause_proven": false,
+      "change": "Use direct managed Process.Start, UseShellExecute=false. No breakaway, stdio redirection, prewarm or timeout increase."
+    },
+    "production_changed_from_parent": false,
+    "qualification_commands_or_thresholds_changed": false
+  },
+  "official_managed_launcher_source": {
+    "repository": "microsoft/referencesource",
+    "path": "System/services/monitoring/system/diagnosticts/Process.cs",
+    "git_blob_sha": "3096cb509f6881646098c6e20ed2d02aba79f410",
+    "sha256": "1ca9c7d0bcecfd61fa19e19dff3dd63bb01830d6a988e62e8b8c93daf657d9ff",
+    "bytes": 126029,
+    "scope": "The reference source CreateProcess path inherits handles, has no breakaway flag, and defaults to attached console; this is not a fingerprint of the runner's framework binary."
+  },
+  "current_status": "DRAFT; new exact source and base-merge original native gates pending",
+  "scientific_admission": false,
+  "library_clearance": false,
+  "original_library_items_deleted": 0
+}

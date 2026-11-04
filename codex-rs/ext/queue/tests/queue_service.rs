@@ -1994,6 +1994,9 @@ async fn duplicate_queued_client_ids_dispatch_to_core_once() -> anyhow::Result<(
         matches!(event, EventMsg::TurnComplete(_)).then_some(())
     })
     .await;
+    if let Some(completion) = test.codex.pending_turn_terminalization() {
+        completion.await;
+    }
     emit_idle(&service, thread_id).await;
 
     assert!(service.list(thread_id).await?.is_empty());

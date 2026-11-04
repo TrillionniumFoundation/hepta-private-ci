@@ -1,0 +1,107 @@
+Executing tests from //codex-rs/git-utils:git-utils-unit-tests
+-----------------------------------------------------------------------------
+
+running 33 tests
+test apply::tests::apply_add_success ... ok
+test apply::tests::extract_paths_handles_quoted_headers ... ok
+test apply::tests::extract_paths_ignores_dev_null_header ... ok
+test apply::tests::extract_paths_unescapes_c_style_in_quoted_headers ... ok
+test apply::tests::parse_output_unescapes_quoted_paths ... ok
+test apply::tests::apply_modify_conflict ... ok
+test apply::tests::apply_modify_skipped_missing_index ... ok
+test baseline::tests::diff_reports_added_modified_and_deleted_files ... ok
+test baseline::tests::ensure_recovers_from_unborn_repository ... ok
+test apply::tests::apply_then_revert_success ... ok
+test baseline::tests::reset_creates_fresh_baseline ... ok
+test baseline::tests::status_scan_does_not_write_added_file_blobs ... ok
+test baseline::tests::reset_drops_previous_history ... ok
+Initialized empty Git repository in D:/tmp/.tmpUJXfsW/remote.git/
+Initialized empty Git repository in D:/tmp/.tmpbi1gRM/.git/
+Initialized empty Git repository in D:/tmp/.tmpUJXfsW/repo/.git/
+test apply::tests::preflight_blocks_partial_changes ... ok
+[main (root-commit) 1d6b416] initial
+ 1 file changed, 1 insertion(+)
+ create mode 100644 tracked.txt
+[main (root-commit) 1e5c8bf] base commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 base.txt
+Initialized empty Git repository in D:/tmp/.tmp1cY2Ph/.git/
+[main (root-commit) 1e5c8bf] base commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 base.txt
+test branch::tests::merge_base_returns_none_when_branch_missing ... ok
+test fsmonitor::tests::detects_supported_builtin_fsmonitor_values ... ok
+Switched to a new branch 'feature'
+To D:\tmp\.tmpUJXfsW\remote.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+[feature 071bd29] feature commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 feature.txt
+Switched to a new branch 'feature'
+Switched to branch 'main'
+[feature 071bd29] feature commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 feature.txt
+[main ee544de] main commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 main.txt
+Switched to a new branch 'rewrite'
+Switched to branch 'feature'
+test apply::tests::revert_preflight_does_not_stage_index ... ok
+rm 'base.txt'
+rm 'feature.txt'
+[rewrite (root-commit) 9730514] rewrite main
+ 1 file changed, 1 insertion(+)
+ create mode 100644 new-main.txt
+branch 'main' set up to track 'origin/main'.
+Switched to branch 'feature'
+test branch::tests::merge_base_returns_shared_commit ... ok
+test info::tests::canonicalize_git_remote_url_handles_ghe_without_lowercasing_path ... ok
+test info::tests::canonicalize_git_remote_url_normalizes_github_variants ... ok
+test info::tests::canonicalize_git_remote_url_rejects_non_repository_values ... ok
+
+running 1 test
+test info::tests::git_metadata_commands_do_not_inherit_stdin ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 32 filtered out; finished in 0.31s
+
+test info::tests::git_metadata_commands_do_not_inherit_stdin ... ok
+test branch::tests::merge_base_prefers_upstream_when_remote_ahead ... ok
+test status::tests::canceling_one_consumer_preserves_the_shared_status_scan ... ok
+test status::tests::canceling_the_last_consumer_allows_a_fresh_status_scan ... ok
+test status::tests::completed_status_requests_are_not_reused_while_a_consumer_retains_them ... ok
+test status::tests::completed_status_requests_start_fresh_scans_and_prune_expired_entries ... ok
+test status::tests::concurrent_status_requests_share_one_repository_scan ... ok
+test info::tests::local_git_branches_excludes_detached_head_entry ... ok
+test status::tests::status_requests_do_not_share_different_repositories ... ok
+test status::tests::status_requests_from_sibling_directories_use_the_known_worktree_root ... ok
+test git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running ... FAILED
+test git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running ... FAILED
+
+failures:
+
+---- git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running stdout ----
+
+thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (3212) panicked at git-utils/src\git_process_tests.rs:129:13:
+wait for Git wrapper child readiness: Err(Elapsed(())); wrapper status before cleanup: Ok(None); child PID file "D:\\tmp\\.tmp6EPOjn\\child.pid": Err(Os { code: 2, kind: NotFound, message: "The system cannot find the file specified." }); child ready file "D:\\tmp\\.tmp6EPOjn\\child-ready": Ok(false); wrapper stage before cleanup: Ok("parent-before-child-launch"); child stage before cleanup: Err(Os { code: 2, kind: NotFound, message: "The system cannot find the file specified." }); wrapper output after cleanup: status: exit code: 0; stdout:
+
+stderr:
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----
+
+thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (5920) panicked at git-utils/src\git_process_tests.rs:129:13:
+wait for Git wrapper child readiness: Err(Elapsed(())); wrapper status before cleanup: Ok(None); child PID file "D:\\tmp\\.tmpiZkUMc\\child.pid": Err(Os { code: 2, kind: NotFound, message: "The system cannot find the file specified." }); child ready file "D:\\tmp\\.tmpiZkUMc\\child-ready": Ok(false); wrapper stage before cleanup: Ok("parent-before-child-launch"); child stage before cleanup: Err(Os { code: 2, kind: NotFound, message: "The system cannot find the file specified." }); wrapper output after cleanup: status: exit code: 0; stdout:
+
+stderr:
+
+
+
+failures:
+    git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running
+    git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running
+
+test result: FAILED. 31 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 35.77s
+

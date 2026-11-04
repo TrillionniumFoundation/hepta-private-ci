@@ -43,17 +43,20 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "[System.IO.File]::WriteAllText($env:GIT_CHILD_STAGE_FILE, 'child-script-started'); Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        // Start-Process joins -ArgumentList into one command line. Quoting a
-        // multiword -Command script is not preserved on Windows; use a single
-        // space-free UTF-16LE -EncodedCommand argument for the child.
+        // Pass the child script as one space-free UTF-16LE argument so it
+        // survives the native Windows command line without another quoting
+        // layer around the script.
         let encoded_child = base64::engine::general_purpose::STANDARD.encode(
             child_command
                 .encode_utf16()
                 .flat_map(u16::to_le_bytes)
                 .collect::<Vec<_>>(),
         );
+        // The retained Windows runs reached Start-Process but it did not return.
+        // Use the direct managed process start for this fixture. Standard streams
+        // and the wrapper's Job Object remain inherited by the real descendant.
         let launch_child = format!(
-            "[System.IO.File]::WriteAllText($env:GIT_WRAPPER_STAGE_FILE, 'parent-before-child-launch'); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:GIT_WRAPPER_STAGE_FILE, 'parent-after-child-launch'); [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); "
+            "[System.IO.File]::WriteAllText($env:GIT_WRAPPER_STAGE_FILE, 'parent-before-child-launch'); $childInfo = New-Object System.Diagnostics.ProcessStartInfo; $childInfo.FileName = 'powershell.exe'; $childInfo.Arguments = '-NoProfile -NonInteractive -EncodedCommand {encoded_child}'; $childInfo.UseShellExecute = $false; $child = [System.Diagnostics.Process]::Start($childInfo); [System.IO.File]::WriteAllText($env:GIT_WRAPPER_STAGE_FILE, 'parent-after-child-launch'); [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); "
         );
         let wrapper_command = match wrapper_lifetime {
             GitWrapperLifetime::WaitForChild => {
