@@ -2671,27 +2671,42 @@ async fn spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_li
         .await
         .expect("parent rollout should flush");
 
-    let child_thread_id = harness
-        .control
-        .spawn_agent_with_metadata(
-            harness.config.clone(),
-            text_input("child task"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: None,
-            })),
-            SpawnAgentOptions {
-                fork_parent_spawn_call_id: Some(parent_spawn_call_id),
-                fork_mode: Some(SpawnAgentForkMode::LastNTurns(2)),
-                ..Default::default()
-            },
-        )
+    let child_known_threads = harness.manager.list_thread_ids().await;
+    let child_startup = harness.manager.pause_next_startup_before_delivery();
+    let child_spawn = harness.control.spawn_agent_with_metadata(
+        harness.config.clone(),
+        text_input("child task"),
+        Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
+            parent_thread_id,
+            depth: 1,
+            agent_path: None,
+            agent_nickname: None,
+            agent_role: None,
+        })),
+        SpawnAgentOptions {
+            fork_parent_spawn_call_id: Some(parent_spawn_call_id),
+            fork_mode: Some(SpawnAgentForkMode::LastNTurns(2)),
+            ..Default::default()
+        },
+    );
+    tokio::pin!(child_spawn);
+    timeout(Duration::from_secs(5), async {
+        tokio::select! {
+            _ = &mut child_spawn => panic!("fork spawn completed before startup delivery was released"),
+            () = child_startup.wait_until_entered() => {}
+        }
+    })
+    .await
+    .expect("fork startup should reach the delivery boundary");
+    let child_started_threads = harness
+        .manager
+        .list_thread_ids()
         .await
-        .expect("bounded forked spawn should drop startup prefix")
-        .thread_id;
+        .into_iter()
+        .filter(|thread_id| !child_known_threads.contains(thread_id))
+        .collect::<Vec<_>>();
+    assert_eq!(child_started_threads.len(), 1);
+    let child_thread_id = child_started_threads[0];
 
     let child_thread = harness
         .manager
@@ -2719,6 +2734,15 @@ async fn spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_li
             .is_none(),
         "bounded forked child should still rebuild context after truncating the cached prefix"
     );
+
+    child_startup.release();
+    let delivered_thread_id = timeout(Duration::from_secs(5), &mut child_spawn)
+        .await
+        .expect("fork startup should finish after delivery is released")
+        .expect("bounded forked spawn should drop startup prefix")
+        .thread_id;
+    assert_eq!(delivered_thread_id, child_thread_id);
+    wait_for_recorded_user_message(child_thread.as_ref(), "child task").await;
 
     let _ = harness
         .control
