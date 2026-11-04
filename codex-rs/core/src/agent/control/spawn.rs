@@ -895,11 +895,23 @@ impl AgentControl {
         let parent_history_mode = parent_thread.config_snapshot().await.history_mode;
         // `record_conversation_items` only queues persistence writes asynchronously.
         // Flush before snapshotting store history for a fork.
+        #[cfg(test)]
+        state.record_startup_before_delivery_for_tests(
+            "fork-parent-flush",
+            Some(parent_thread_id),
+            /*thread_id*/ None,
+        );
         parent_thread.ensure_rollout_materialized().await;
         parent_thread.flush_rollout().await?;
 
         let destination_history_mode = matches!(parent_history_mode, ThreadHistoryMode::Paginated)
             .then_some(ThreadHistoryMode::Paginated);
+        #[cfg(test)]
+        state.record_startup_before_delivery_for_tests(
+            "fork-history-read",
+            Some(parent_thread_id),
+            /*thread_id*/ None,
+        );
         let mut forked_rollout_items =
             load_agent_model_context(state, parent_thread_id, parent_history_mode)
                 .await?
@@ -909,6 +921,12 @@ impl AgentControl {
                     ))
                 })?;
 
+        #[cfg(test)]
+        state.record_startup_before_delivery_for_tests(
+            "fork-history-ready",
+            Some(parent_thread_id),
+            /*thread_id*/ None,
+        );
         let selected_capability_roots = forked_rollout_items
             .iter()
             .find_map(|item| {
@@ -1093,6 +1111,12 @@ impl AgentControl {
         let mut thread_extension_init = ExtensionDataInit::new();
         thread_extension_init.insert(selected_capability_roots);
 
+        #[cfg(test)]
+        state.record_startup_before_delivery_for_tests(
+            "fork-dispatch",
+            Some(parent_thread_id),
+            /*thread_id*/ None,
+        );
         state
             .fork_thread_with_source(
                 config.clone(),

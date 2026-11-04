@@ -2539,14 +2539,20 @@ async fn spawn_agent_fork_last_n_turns_keeps_only_recent_turns() {
         },
     );
     tokio::pin!(child_spawn);
-    timeout(Duration::from_secs(5), async {
+    let boundary_started = std::time::Instant::now();
+    let boundary_result = timeout(Duration::from_secs(5), async {
         tokio::select! {
             _ = &mut child_spawn => panic!("fork spawn completed before startup delivery was released"),
             () = child_startup.wait_until_entered() => {}
         }
     })
-    .await
-    .expect("fork startup should reach the delivery boundary");
+    .await;
+    eprintln!(
+        "[fork-startup-diagnostic] parent={parent_thread_id} boundary_elapsed_ms={} boundary_completed={} hook={child_startup:?}",
+        boundary_started.elapsed().as_millis(),
+        boundary_result.is_ok(),
+    );
+    boundary_result.expect("fork startup should reach the delivery boundary");
     let child_started_threads = harness
         .manager
         .list_thread_ids()
