@@ -1,5 +1,5 @@
 //! Bounded admission to the exact original process-bound channels.
-use super::paths;
+pub(super) use super::socket_publication::listener;
 use super::supervisor;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
@@ -8,16 +8,8 @@ use std::io;
 use std::os::fd::AsRawFd;
 use std::os::unix::net::UnixListener;
 use std::os::unix::net::UnixStream;
-use std::path::Path;
 use std::time::Duration;
 use std::time::Instant;
-
-pub(super) fn listener(path: &Path, gid: u32) -> io::Result<UnixListener> {
-    let listener = UnixListener::bind(path)?;
-    paths::owner_socket(path, gid)?;
-    listener.set_nonblocking(true)?;
-    Ok(listener)
-}
 
 pub(super) fn accept(listener: &UnixListener, pid: u32) -> io::Result<UnixStream> {
     let end = Instant::now() + Duration::from_secs(2);

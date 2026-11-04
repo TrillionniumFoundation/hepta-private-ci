@@ -2,6 +2,7 @@
 //! fixed process-bound channel; no host plan installs a signer, lease or cut.
 
 use super::boot::Boot;
+use super::command_runtime::block_on_original;
 use super::ipc;
 use super::supervisor;
 use codex_hepta_agentd::AgentdConfig;
@@ -134,8 +135,7 @@ pub(super) fn run(
     while channel.exchange(|bytes| {
         let command =
             serde_json::from_slice(bytes).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-        let value = runtime
-            .block_on(execute(&owner, command))
+        let value = block_on_original(&runtime, execute(&owner, command))
             .map_err(|_| HostIssuerTransportError::Unavailable)?;
         serde_json::to_vec(&value).map_err(|_| HostIssuerTransportError::Unavailable)
     })? {}
