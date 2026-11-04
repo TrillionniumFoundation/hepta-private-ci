@@ -262,7 +262,7 @@ impl CodexThread {
     }
 
     pub async fn submit(&self, op: Op) -> CodexResult<String> {
-        self.io.submit(op).await
+        self.submit_with_trace(op, /*trace*/ None).await
     }
 
     /// Returns the session telemetry handle for thread-scoped production instrumentation.
@@ -336,11 +336,21 @@ impl CodexThread {
         self.session.flush_rollout().await
     }
 
+    /// Observes pending terminalization before submitting settings or history changes.
+    /// The session still performs its atomic admission and authority checks afterward.
+    /// An idle callback must defer these submissions until the callback has returned.
     pub async fn submit_with_trace(
         &self,
         op: Op,
         trace: Option<W3cTraceContext>,
     ) -> CodexResult<String> {
+        if matches!(
+            &op,
+            Op::ThreadSettings { .. } | Op::Compact | Op::ThreadRollback { .. }
+        ) && let Some(completion) = self.pending_turn_terminalization()
+        {
+            completion.await;
+        }
         self.io
             .submit_with_trace(
                 op, trace, /*parent_turn_id*/ None, /*root_turn_id*/ None,

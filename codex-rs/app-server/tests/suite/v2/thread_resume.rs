@@ -1210,6 +1210,117 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
 }
 
 #[tokio::test]
+async fn cold_resume_uses_current_named_profile_roots_and_retains_runtime_cwd() -> Result<()> {
+    let server = create_mock_responses_server_repeating_assistant("Done").await;
+    for change_configured_root in [false, true] {
+        for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {
+            let codex_home = TempDir::new()?;
+            let original_root = TempDir::new()?;
+            let replacement_root = TempDir::new()?;
+            let retained_root = TempDir::new()?;
+            let runtime_cwd = TempDir::new()?;
+            let previous_runtime_root = TempDir::new()?;
+            let original_root_path = original_root.path().canonicalize()?;
+            let replacement_root_path = replacement_root.path().canonicalize()?;
+            let retained_root_path = retained_root.path().canonicalize()?;
+            let runtime_cwd_path = runtime_cwd.path().canonicalize()?;
+            let previous_runtime_root_path = previous_runtime_root.path().canonicalize()?;
+            let write_profile = |root: &Path| -> Result<()> {
+                MockResponsesConfig::new(&server.uri())
+                    .with_root_config("default_permissions = \":danger-full-access\"")
+                    .with_extra_config(&format!(
+                        "[permissions.dev]\nextends = \":workspace\"\n\n[permissions.dev.workspace_roots]\n{} = true\n{} = true",
+                        serde_json::to_string(&root.to_string_lossy())?,
+                        serde_json::to_string(&retained_root_path.to_string_lossy())?,
+                    ))
+                    .write(codex_home.path())?;
+                Ok(())
+            };
+            write_profile(original_root_path.as_path())?;
+            let thread_id = {
+                let mut mcp = TestAppServer::builder()
+                    .with_codex_home(codex_home.path())
+                    .without_managed_config()
+                    .build_initialized()
+                    .await?;
+                let thread_id = materialize_dev_permission_thread(&mut mcp, history_mode).await?;
+                timeout(
+                    DEFAULT_READ_TIMEOUT,
+                    mcp.start_turn_and_wait_for_completion(TurnStartParams {
+                        thread_id: thread_id.clone(),
+                        cwd: Some(runtime_cwd_path.clone()),
+                        runtime_workspace_roots: Some(vec![AbsolutePathBuf::from_absolute_path(
+                            previous_runtime_root_path.as_path(),
+                        )?]),
+                        input: vec![UserInput::Text {
+                            text: "persist runtime cwd and roots".to_string(),
+                            text_elements: Vec::new(),
+                        }],
+                        ..Default::default()
+                    }),
+                )
+                .await??;
+                thread_id
+            };
+
+            let current_root = if change_configured_root {
+                replacement_root_path.as_path()
+            } else {
+                original_root_path.as_path()
+            };
+            write_profile(current_root)?;
+            let mut mcp = TestAppServer::builder()
+                .with_codex_home(codex_home.path())
+                .without_managed_config()
+                .build_initialized()
+                .await?;
+            let resume_id = mcp
+                .send_thread_resume_request(ThreadResumeParams {
+                    thread_id,
+                    ..Default::default()
+                })
+                .await?;
+            let ThreadResumeResponse {
+                cwd,
+                active_permission_profile,
+                runtime_workspace_roots,
+                ..
+            } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+            assert_eq!(cwd.as_path(), runtime_cwd_path.as_path());
+            assert_eq!(
+                active_permission_profile,
+                Some(ActivePermissionProfile {
+                    id: "dev".to_string(),
+                    extends: Some(BUILT_IN_PERMISSION_PROFILE_WORKSPACE.to_string()),
+                })
+            );
+            assert!(
+                runtime_workspace_roots
+                    .contains(&AbsolutePathBuf::from_absolute_path(current_root,)?)
+            );
+            assert!(
+                runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(
+                    retained_root_path.as_path(),
+                )?)
+            );
+            assert!(
+                !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(
+                    previous_runtime_root_path.as_path(),
+                )?)
+            );
+            if change_configured_root {
+                assert!(
+                    !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(
+                        original_root_path.as_path(),
+                    )?)
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+#[tokio::test]
 async fn cold_resume_with_removed_permission_profile_uses_configured_default() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {

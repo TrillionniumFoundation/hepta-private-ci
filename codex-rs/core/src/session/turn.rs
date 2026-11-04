@@ -593,11 +593,9 @@ pub(crate) async fn run_turn(
             let sampling_request_input: Vec<ResponseItem> =
                 prepare_sampling_request_input_future(&sess, step_context.as_ref()).await;
 
-            let responses_metadata = turn_context.turn_metadata_state.to_responses_metadata(
-                sess.installation_id.clone(),
-                window_id,
-                CodexResponsesRequestKind::Turn,
-            );
+            let responses_metadata = sess
+                .responses_metadata(turn_context.as_ref(), CodexResponsesRequestKind::Turn)
+                .await;
             run_sampling_request_future(
                 Arc::clone(&sess),
                 Arc::clone(&step_context),
